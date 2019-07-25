@@ -1,12 +1,11 @@
 package me.neznamy.tab.bukkit.packets;
 
-import org.bukkit.event.Listener;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.bukkit.Main;
 import me.neznamy.tab.bukkit.NameTagX;
+import me.neznamy.tab.bukkit.Playerlist;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.shared.Configs;
@@ -15,13 +14,14 @@ import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
-public class Packet implements Listener {
+public class Packet{
 
 	public static void inject(final ITabPlayer player, final PacketReader reader){
 		try {
 			player.getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
+					if (Main.disabled) return;
 					try{
 						long time = System.nanoTime();
 						ITabPlayer receiver = Shared.getPlayer(player.getUniqueId());
@@ -40,6 +40,7 @@ public class Packet implements Listener {
 					super.channelRead(context, packet);
 				}
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+					if (Main.disabled) return;
 					try{
 						long time = System.nanoTime();
 						ITabPlayer receiver = Shared.getPlayer(player.getUniqueId());
@@ -60,6 +61,7 @@ public class Packet implements Listener {
 
 						time = System.nanoTime();
 						if (NameTagX.enable) {
+							//unlimited nametag mode
 							if (PacketAPI.PacketPlayOutAnimation.isInstance(packet)) {
 								if (PacketAPI.PacketPlayOutAnimation_ACTION.getInt(packet) == 2) {
 									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), receiver, false);
@@ -70,50 +72,55 @@ public class Packet implements Listener {
 									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutBed_ENTITY.getInt(packet), receiver, true);
 								}
 							}
-						}
-
-
-						//unlimited nametag mode
-						PacketPlayOut pack = null;
-						PacketSendEvent event = null;
-						if ((pack = PacketPlayOutNamedEntitySpawn.read(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutEntityDestroy.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutEntityTeleport.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutRelEntityMove.read(packet))				!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutRelEntityMoveLook.read(packet))			!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutMount.read(packet))						!= null) event = new PacketSendEvent(receiver, pack);
-						if (NMSClass.versionNumber == 8 && (pack = PacketPlayOutAttachEntity_1_8_x.read(packet))!= null) event = new PacketSendEvent(receiver, pack);
-						if (event != null) {
-							try {
-								reader.justRead(event);
-							} catch (Exception e) {
-								Shared.error("An error occured when reading packets (fancy reader)", e);
+							PacketPlayOut pack = null;
+							PacketSendEvent event = null;
+							if ((pack = PacketPlayOutNamedEntitySpawn.read(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutEntityDestroy.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutEntityTeleport.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutRelEntityMove.read(packet))				!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutRelEntityMoveLook.read(packet))			!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutMount.read(packet))						!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
+							if (NMSClass.versionNumber == 8 && (pack = PacketPlayOutAttachEntity_1_8_x.read(packet))!= null) event = new PacketSendEvent(receiver, pack);
+							if (event != null) {
+								try {
+									reader.onNameTagXPacket(event);
+								} catch (Exception e) {
+									Shared.error("An error occured when reading packets (fancy reader)", e);
+								}
 							}
 						}
 
 
-						pack = null;
-						event = null;
-
-						if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutPlayerInfo.fromNMS(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
-						if ((pack = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) 		!= null) event = new PacketSendEvent(receiver, pack);
+						
+						PacketPlayOut pack = null;
+						PacketSendEvent event = null;
+						if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
+							//preventing pets from having owner's nametag properties if feature is enabled
+							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) 		!= null) event = new PacketSendEvent(receiver, pack);
+						}
+						if (Playerlist.enable) {
+							//correcting name, spectators if enabled, changing npc names if enabled
+							if ((pack = PacketPlayOutPlayerInfo.fromNMS(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
+						}
+						
 						if (event != null) {
 							try {
 								reader.onPacketSend(event);
 							} catch (Exception e) {
 								Shared.error("An error occured when reading packets (fancy reader)", e);
 							}
-							pack = event.getPacket();
 							if (event.isCancelled()) {
+								Shared.nanoTimeGeneral += (System.nanoTime()-time);
 								return;
 							}
+							pack = event.getPacket();
 						}
 						if (pack != null) {
 							packet = pack.toNMS();
 						}
 						Shared.nanoTimeGeneral += (System.nanoTime()-time);
-						if (packet == null) return;
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}
@@ -128,7 +135,7 @@ public class Packet implements Listener {
 
 	public static abstract class PacketReader{
 		public abstract void onPacketSend(PacketSendEvent e) throws Exception;
-		public abstract void justRead(PacketSendEvent e);
+		public abstract void onNameTagXPacket(PacketSendEvent e);
 	}
 
 	public static class PacketSendEvent{

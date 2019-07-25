@@ -260,73 +260,32 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static void inject(ITabPlayer p) {
 		Packet.inject(p, new PacketReader() {
 
-			@SuppressWarnings({ "rawtypes" })
-
 			public void onPacketSend(PacketSendEvent e) throws Exception {
-				if (disabled) return;
-				final ITabPlayer p = e.getPlayer();
-				final PacketPlayOut packet = e.getPacket();
+				ITabPlayer p = e.getPlayer();
+				PacketPlayOut packet = e.getPacket();
 				if (packet instanceof PacketPlayOutPlayerInfo) {
 					if (Playerlist.modifyPacketOrCancel((PacketPlayOutPlayerInfo) packet, p)) e.setCancelled(true);
 				}
-				if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
-					if (packet instanceof PacketPlayOutEntityMetadata) {
-						List<Item> items = ((PacketPlayOutEntityMetadata)packet).getList();
-						for (Item i : items) {
-							if (i.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) {
-								//1.12-
-								if (i.getValue() instanceof com.google.common.base.Optional) {
-									com.google.common.base.Optional o = (com.google.common.base.Optional) i.getValue();
-									if (o.isPresent() && o.get() instanceof UUID) {
-										i.setValue(com.google.common.base.Optional.of(UUID.randomUUID()));
-									}
-								}
-								//1.13+
-								if (i.getValue() instanceof java.util.Optional) {
-									java.util.Optional o = (java.util.Optional) i.getValue();
-									if (o.isPresent() && o.get() instanceof UUID) {
-										i.setValue(java.util.Optional.of(UUID.randomUUID()));
-									}
-								}
-							}
-						}
-					}
-					if (packet instanceof PacketPlayOutSpawnEntityLiving) {
-						DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)packet).getDataWatcher();
-						Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
-						if (petOwner != null) {
-							//1.12-
-							if (petOwner.getValue() instanceof com.google.common.base.Optional) {
-								com.google.common.base.Optional o = (com.google.common.base.Optional) petOwner.getValue();
-								if (o.isPresent() && o.get() instanceof UUID) {
-									petOwner.setValue(com.google.common.base.Optional.of(UUID.randomUUID()));
-								}
-							}
-							//1.13+
-							if (petOwner.getValue() instanceof java.util.Optional) {
-								java.util.Optional o = (java.util.Optional) petOwner.getValue();
-								if (o.isPresent() && o.get() instanceof UUID) {
-									petOwner.setValue(java.util.Optional.of(UUID.randomUUID()));
-								}
-							}
+				if (packet instanceof PacketPlayOutEntityMetadata) {
+					List<Item> items = ((PacketPlayOutEntityMetadata)packet).getList();
+					for (Item petOwner : items) {
+						if (petOwner.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) {
+							modify(petOwner);
 						}
 					}
 				}
-				if (!NameTagX.enable || Configs.disabledNametag.contains(p.getWorldName())) return;
-				Shared.runTask("processing packet out", new Runnable() {
-
-
-					public void run() {
-						NameTagX.processPacketOUT(packet, p);
+				if (packet instanceof PacketPlayOutSpawnEntityLiving) {
+					DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)packet).getDataWatcher();
+					Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
+					if (petOwner != null) {
+						modify(petOwner);
 					}
-				});
+				}
 			}
-
-
-			public void justRead(final PacketSendEvent e) {
-				if (disabled) return;
+			public void onNameTagXPacket(final PacketSendEvent e) {
 				final ITabPlayer p = e.getPlayer();
-				if (!NameTagX.enable || Configs.disabledNametag.contains(p.getWorldName())) return;
+				if (Configs.disabledNametag.contains(p.getWorldName())) return;
+				//sending packets outside of the packet reader or protocollib will complain
 				Shared.runTask("processing packet out", new Runnable() {
 
 
@@ -336,6 +295,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				});
 			}
 		});
+	}
+	@SuppressWarnings("rawtypes")
+	private static void modify(Item petOwner) {
+		//1.12-
+		if (petOwner.getValue() instanceof com.google.common.base.Optional) {
+			com.google.common.base.Optional o = (com.google.common.base.Optional) petOwner.getValue();
+			if (o.isPresent() && o.get() instanceof UUID) {
+				petOwner.setValue(com.google.common.base.Optional.of(UUID.randomUUID()));
+			}
+		}
+		//1.13+
+		if (petOwner.getValue() instanceof java.util.Optional) {
+			java.util.Optional o = (java.util.Optional) petOwner.getValue();
+			if (o.isPresent() && o.get() instanceof UUID) {
+				petOwner.setValue(java.util.Optional.of(UUID.randomUUID()));
+			}
+		}
 	}
 	@SuppressWarnings("unchecked")
 	public Object createComponent(String text) {
