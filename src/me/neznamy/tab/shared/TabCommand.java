@@ -120,7 +120,7 @@ public class TabCommand{
 			} else if (args[0].equalsIgnoreCase("parse")) {
 				if (sender != null) {
 					sendMessage(sender, "§6Attempting to parse string §e" + args[1] + "§6 for player §e" + sender.getName());
-					sendMessage(sender, "§6Result: " + me.neznamy.tab.shared.Placeholders.replace(args[1], sender));
+					sendMessage(sender, "§6Result: §r" + Placeholders.replace(args[1], sender));
 				}
 			}
 		} else if (args.length == 1){
