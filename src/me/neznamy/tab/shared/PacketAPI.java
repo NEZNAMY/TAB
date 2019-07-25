@@ -18,7 +18,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -46,9 +45,6 @@ public abstract class PacketAPI{
 	}
 	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
-	}
-	public static void sendActionBar(ITabPlayer to, String message) {
-		new PacketPlayOutChat(message, ChatMessageType.GAME_INFO).send(to);
 	}
 	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
 		new PacketPlayOutChat(message.toString()).send(to);
