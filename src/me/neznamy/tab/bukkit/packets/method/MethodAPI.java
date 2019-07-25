@@ -24,7 +24,7 @@ public abstract class MethodAPI {
 	public abstract double[] getRecentTps();
 	public abstract void sendPacket(Player p, Object nmsPacket);
 	public abstract Object newPacketPlayOutEntityDestroy(int[] ids);
-	
+
 	public double getTPS() {
 		if (!spigot) return -1;
 		return getRecentTps()[0];
@@ -41,7 +41,6 @@ public abstract class MethodAPI {
 			}
 		} catch (Exception e) {
 			Shared.error("Failed to initialize MethodAPI class", e);
-//			instance = new MethodAPI_Reflection();
 		}
 	}
 }

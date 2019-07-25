@@ -36,8 +36,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean disabled = false;
 
 	public void onEnable(){
+		long total = System.currentTimeMillis();
 		if (me.neznamy.tab.bukkit.packets.PacketAPI.isVersionSupported()){
-			long time = System.currentTimeMillis();
 			instance = this;
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
@@ -50,7 +50,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 			load(false, true);
-			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			if (NMSClass.versionNumber < 8) {
 				Shared.print("§c", "Your server version (" + NMSClass.version + ") is not supported - too old! Disabling...");
@@ -87,9 +87,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void load(boolean broadcastTime, boolean inject) {
 		try {
+			long time = System.currentTimeMillis();
 			disabled = false;
 			Shared.startupErrors = 0;
-			long time = System.currentTimeMillis();
 			Configs.loadFiles();
 			Placeholders.initialize();
 			Shared.data.clear();

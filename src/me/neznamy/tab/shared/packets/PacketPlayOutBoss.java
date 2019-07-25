@@ -21,12 +21,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	private boolean createFog;
 
 	public PacketPlayOutBoss(UUID uuid, String title, float progress, BarColor color, BarStyle style) {
-		this.action = Action.ADD;
-		this.uuid = uuid;
-		this.title = title;
-		this.progress = progress;
-		this.color = color;
-		this.style = style;
+		this(uuid, title, progress, color, style, false, false, false);
 	}
 	public PacketPlayOutBoss(UUID uuid, String title, float progress, BarColor color, BarStyle style, boolean darkenSky, boolean playMusic, boolean createFog) {
 		this.action = Action.ADD;
@@ -80,8 +75,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			PacketPlayOutBoss_PLAY_MUSIC.set(packet, playMusic);
 			PacketPlayOutBoss_CREATE_FOG.set(packet, createFog);
 		}
-		if (action == Action.REMOVE) {
-		}
 		if (action == Action.UPDATE_PCT) {
 			PacketPlayOutBoss_PROGRESS.set(packet, progress);
 		}
@@ -108,8 +101,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setColor(color.toBungee());
 			packet.setDivision(style.toBungee());
 			packet.setFlags(getFlags());
-		}
-		if (action == Action.REMOVE) {
 		}
 		if (action == Action.UPDATE_PCT) {
 			packet.setHealth(progress);
