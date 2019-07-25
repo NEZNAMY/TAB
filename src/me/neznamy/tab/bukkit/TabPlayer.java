@@ -170,9 +170,7 @@ public class TabPlayer extends ITabPlayer{
 			}
 		}
 		for (Player all : getPlayer().getWorld().getPlayers()) {
-			if (all.getName().equals(getName())) {
-				continue;
-			}
+			if (all.getName().equals(getName())) continue;
 			NameTagLineManager.spawnArmorStand(this, Shared.getPlayer(all.getUniqueId()));
 		}
 	}
