@@ -76,7 +76,6 @@ public class NameTagX{
 		if (enable) p.unregisterTeam();
 	}
 	public static void modifyPacketIN(Object packetplayinuseentity) throws Exception {
-		if (!enable) return;
 		int id = PacketAPI.PacketPlayInUseEntity_ENTITYID.getInt(packetplayinuseentity);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (NameTagLineManager.isArmorStandID(all, id)) {
@@ -85,7 +84,6 @@ public class NameTagX{
 		}
 	}
 	public static void processPacketOUT(PacketPlayOut packet, ITabPlayer packetReceiver){
-		if (!enable) return;
 		try {
 			boolean teleportPacket = packet instanceof PacketPlayOutEntityTeleport;
 			if (packet instanceof PacketPlayOutRelEntityMove || packet instanceof PacketPlayOutRelEntityMoveLook || teleportPacket) {

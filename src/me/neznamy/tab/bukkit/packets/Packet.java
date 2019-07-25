@@ -24,12 +24,6 @@ public class Packet{
 					if (Main.disabled) return;
 					try{
 						long time = System.nanoTime();
-						ITabPlayer receiver = Shared.getPlayer(player.getUniqueId());
-						if (receiver == null) {
-							//plugin reload and player data not loaded yet
-							super.channelRead(context, packet);
-							return;
-						}
 						if (NameTagX.enable) {
 							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
 						}
