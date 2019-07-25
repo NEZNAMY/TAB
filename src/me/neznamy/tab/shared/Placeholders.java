@@ -36,7 +36,7 @@ public class Placeholders {
 			else if (version <= 316) online.put("1-11-x", online.get("1-11-x")+1);
 			else if (version <= 340) online.put("1-12-x", online.get("1-12-x")+1);
 			else if (version <= 404) online.put("1-13-x", online.get("1-13-x")+1);
-			else if (version <= 490) online.put("1-14-x", online.get("1-14-x")+1);
+			else if (version <= 498) online.put("1-14-x", online.get("1-14-x")+1);
 			else online.put("1-14-x", online.get("1-14-x")+1); //current newest one
 		}
 	}
