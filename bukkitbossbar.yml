@@ -1,0 +1,53 @@
+enabled: false
+
+#if you are for example using an animation to make it refresh while bar is still on the same frame
+#in TICKS
+refresh-interval: 20
+
+bossbar-toggle-command: /bossbar
+
+#styles (SERVER 1.9+)
+#NOTCHED_6
+#NOTCHED_10
+#NOTCHED_12
+#NOTCHED_20
+#PROGRESS
+
+#colors (SERVER 1.9+)
+#BLUE
+#GREEN
+#PINK
+#PURPLE
+#RED
+#WHITE
+#YELLOW
+
+#progress - number between 0 and 100
+#refresh - how often to switch between frames, in milliseconds
+
+
+#IF YOU ARE USING SERVER 1.8.X
+#ignore style and color sections, these are for 1.9+
+#the entity will be slightly visible when progress is less than ~50% (client-sided bug)
+#only 1 line can be displayed at a time
+#consider updating your server
+
+bars:
+  ServerInfo:
+    refresh: 5000
+    frames:
+      frame1:
+        style: "PROGRESS"
+        color: "BLUE"
+        progress: "33"
+        text: "&fWebsite: &bwww.domain.com"
+      frame2:
+        style: "NOTCHED_12"
+        color: "GREEN"
+        progress: "67"
+        text: "&fDiscord: &adiscord.io/servername"
+      frame3:
+        style: "PROGRESS"
+        color: "WHITE"
+        progress: "100"
+        text: "&fTeamSpeak: &ets3.servername.eu"

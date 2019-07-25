@@ -1,0 +1,167 @@
+change-nametag-prefix-suffix: true #Warning! Disabling will break sorting of players in tablist!
+change-tablist-prefix-suffix: true
+enable-header-footer: true
+
+#20 ticks = 1 second
+nametag-refresh-interval-ticks: 20
+tablist-refresh-interval-ticks: 20
+header-footer-refresh-interval-ticks: 1
+
+header:
+  - "%animation:ServerName%"
+  - "&6&lRank: %rank%"
+  - "&7&l>> %animation:Welcome%&3 &l%nick%&7&l! &7&l<<"
+  - "&7Online players: &f%online%"
+  - "&6Online staff: &e%staffonline%"
+  - "%animation:ping-tps%"
+  - ""
+  - "&7&l Used memory: %memory-used% MB / %memory-max% MB"
+  - "%animation:MyAnimation1%"
+# - "%animation:versions%" #requires ViaVersion or ProtocolSupport
+footer:
+  - "%animation:MyAnimation1%"
+  - "%animation:time%"
+  - ""
+  - "&7Visit our webpage %animation:web%"
+
+#the yellow number in tablist
+#options: PING, HEARTS, NONE (to disable it), CUSTOM (any placeholder defined below this)
+tablist-objective: PING
+tablist-objective-custom-value: "%some_placeholderapi_placeholder%"
+
+group-sorting-priority-list:
+  - "Owner"
+  - "Admin"
+  - "Mod"
+  - "Helper"
+  - "Builder"
+  - "Premium"
+  - "Player"
+  - "default"
+
+#properties: tabprefix, tabsuffix, tagprefix (in name tag), tagsuffix, customtabname (modifying the name itself), header, footer
+#extra ones which need unlimited nametag mode enabled: abovename (line of text above name tag), belowname (below name tag), customtagname
+Groups:
+  Owner:
+    tabprefix: "&0&l[&a&lOwner&0&l] &a"
+    tagprefix: "&2&lOwner &a"
+    header:
+      - "ur server man"
+    footer:
+      - "welcome"
+      - ""
+      - "THIS IS NOT A BUG"
+      - "DO NOT REPORT THIS AS A BUG"
+      - "This is per-group header/footer"
+      - "applied to Owner group"
+      - "You can modify this or delete in config in Groups section"
+  Admin:
+    tabprefix: "&0&l[&4&lAdmin&0&l] &1"
+    tagprefix: "%animation:admin_prefix%"
+  Player:
+    tabprefix: "&0&l[&7&lPlayer&0&l] &3"
+    tagprefix: "&2&lPlayer &3"
+    
+  #any other group not defined above
+  _OTHER_:
+    tabprefix: "%vault-prefix% "
+    tagprefix: "%vault-prefix% "
+    tabsuffix: "%afk%"
+    tagsuffix: "%afk%"
+    customtabname: "%essentialsnick%"
+    customtagname: "%essentialsnick%"
+
+#personal settings, override group settings
+Users:
+  _NEZNAMY_:
+    tabprefix: "&6&lTAB Author &a"
+    tagprefix: "&6&lTAB &a"
+    abovename: "&2Oh look, 3 lines of text !"
+    belowname: "&eThere's only one plugin out there supporting it"
+    
+#servers 1.9+
+enable-collision: true
+    
+#preventing players in spectator gamemode from appearing at the bottom of tablist with transparent name FOR OTHER PLAYERS
+do-not-move-spectators: false
+
+#VERY EXPERIMENTAL !
+#IF YOU EXPERIENCE ANY ISSUES CONTACT ME
+unlimited-nametag-prefix-suffix-mode:
+  enabled: false
+  
+  #modifying names of NPCs to avoid empty names on NPCs of online players
+  #this blocks any other attemps to change the name visibility or anything, so you need to disable it if you are using some citizens addon that changes their name
+  #needs a relog to see the change
+  modify-npc-names: false
+
+
+#list of worlds with different settings than default, other worlds will use settings from above
+per-world-settings:
+  world1:
+    header:
+      - "an example of world with custom"
+    footer:
+      - "header/footer and prefix/suffix"
+    Groups:
+      Owner:
+        tabprefix: "&0&l[&a&lOwner&0&l] &a"
+        tagprefix: "&2&lOwner &a"
+        header:
+          - "ur server man"
+        footer:
+          - "welcome"
+      Admin:
+        tabprefix: "&2&lAdmin &1&l"
+        tagprefix: "&2&lAdmin &1&l"
+      Player:
+        tabprefix: "&5&lPlayer &3&l"
+        tagprefix: "&5&lPlayer &3&l"
+    Users:
+      Player1:
+        tabprefix: "Hi "
+
+#setting output of some placeholders
+placeholders:
+  deluxetag-yes: "< %value% >"
+  deluxetag-no: "&oNo Tag :("
+  faction-yes: "< %value% >"
+  faction-no: "&2Wilderness"
+  afk-yes: " &4*&4&lAFK&4*&r"
+  afk-no: ""
+  date-format: "dd.MM.yyyy"
+  time-format: "[HH:mm:ss / h:mm a]" #pick one of the two common formats
+  
+  #if time doesn't show correctly, you can change the time it shows
+  #setting to -1 will make it show 1 hour less than it does currently, 1 makes it show one hour more than currently, 0 does nothing
+  time-offset: 0
+  
+#used for %staffonline% variable
+staff-groups:
+  - "Admin"
+  - "Mod"
+  - "Owner"
+  - "Moderator"
+  - "Helper"
+  
+#better showing of %rank% value
+rank-aliases:
+  Admin: "&4&lADMIN"
+  Mod: "&b&lMOD"
+  Premium: "&6&lPREMIUM"
+  Ultra: "&b&lULTRA"
+  Legend: "&a&lLEGEND"
+  Titan: "&c&lTITAN"
+  Youtuber: "&c&lYOUTUBE"
+  
+disable-features-in-worlds:
+  header-footer:
+    - disabledworld
+  tablist-names:
+    - disabledworld
+  nametag:
+    - disabledworld
+  tablist-objective:
+    - disabledworld
+  bossbar:
+    - disabledworld

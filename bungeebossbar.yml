@@ -1,0 +1,47 @@
+enabled: false
+
+#if you are for example using an animation to make it refresh while bar is still on the same frame
+#in MILLISECONDS
+refresh-interval: 1000
+
+bossbar-toggle-command: /bossbar
+
+#NOTCHED_6
+#NOTCHED_10
+#NOTCHED_12
+#NOTCHED_20
+#PROGRESS
+
+#BLUE
+#GREEN
+#PINK
+#PURPLE
+#RED
+#WHITE
+#YELLOW
+
+#progress - number between 0 and 100
+#refresh - how often to switch between frames, in milliseconds
+
+
+#ONLY VISIBLE FOR 1.9+ PLAYERS
+
+bars:
+  ServerInfo:
+    refresh: 5000
+    frames:
+      frame1:
+        style: "PROGRESS"
+        color: "BLUE"
+        progress: "33"
+        text: "&fWebsite: &bwww.domain.com"
+      frame2:
+        style: "NOTCHED_12"
+        color: "GREEN"
+        progress: "67"
+        text: "&fDiscord: &adiscord.io/servername"
+      frame3:
+        style: "PROGRESS"
+        color: "WHITE"
+        progress: "100"
+        text: "&fTeamSpeak: &ets3.servername.eu"

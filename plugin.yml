@@ -1,0 +1,10 @@
+name: TAB
+version: 2.5.0-pre1
+author: NEZNAMY
+main: me.neznamy.tab.bukkit.Main
+api-version: 1.13
+softdepend: [PlaceholderAPI, ViaVersion, ProtocolSupport, Vault, Factions, UltraPermissions, LuckPerms, PowerfulPerms, GroupManager, PermissionsEx, DeluxeTags, Essentials]
+website: "https://www.spigotmc.org/resources/57806/"
+description: "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more"
+commands:
+  tab:

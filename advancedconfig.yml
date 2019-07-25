@@ -1,0 +1,24 @@
+ #players will only see in tablist those who are in the same world
+per-world-playerlist: false
+
+ #allow players with tab.bypass permission to see every player in tablist even if the setting above is enabled
+allow-pwp-bypass-permission: false
+
+ #even if per-world-playerlist is enabled, people in these worlds will see everyone on server in tablist
+ignore-pwp-in-worlds:
+ - ignoredworld
+ - spawn
+
+#an option to remove minecraft vanilla feature since 1.9 making named pets have same prefix as their owner (and being invisible when unlimited nametag mode is enabled)
+#needs relog to see the change
+fix-pet-names: false
+
+#asking permission plugin for primary group only
+use-primary-group: true
+
+#if the option above is disabled, full group list will be asked for and group higher in this list will be used as primary
+primary-group-finding-list:
+  - Owner
+  - Admin
+  - Helper
+  - default
