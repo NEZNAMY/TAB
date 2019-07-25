@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,17 +150,17 @@ public class DataWatcher{
 	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
 		DataWatcher watcher = new DataWatcher(DataWatcher_ENTITY.get(nmsWatcher));
 		Object map = DataWatcher_DATAVALUES.get(nmsWatcher);
+		Collection<Object> values;
 		if (map instanceof Map) {
-			for (Object watchableObject : ((Map<?, Object>)map).values()) {
-				Item w = Item.fromNMS(watchableObject);
-				watcher.setValue(w.getType(), w.getValue());
-			}
+			//1.9+, tacospigot, paperspigot
+			values = ((Map<?, Object>)map).values();
 		} else {
 			//1.8.x
-			for (Object watchableObject : ((TIntObjectHashMap<Object>)map).valueCollection()) {
-				Item w = Item.fromNMS(watchableObject);
-				watcher.setValue(w.getType(), w.getValue());
-			}
+			values = ((TIntObjectHashMap<Object>)map).valueCollection();
+		}
+		for (Object watchableObject : values) {
+			Item w = Item.fromNMS(watchableObject);
+			watcher.setValue(w.getType(), w.getValue());
 		}
 		return watcher;
 	}
