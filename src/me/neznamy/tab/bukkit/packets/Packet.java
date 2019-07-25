@@ -9,7 +9,6 @@ import me.neznamy.tab.bukkit.Main;
 import me.neznamy.tab.bukkit.NameTagX;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
-import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
@@ -44,7 +43,6 @@ public class Packet implements Listener {
 									}
 								});
 							}
-							if (BossBar.onChat(player, msg)) return;
 						}
 						Shared.nanoTimeGeneral += (System.nanoTime()-time);
 					} catch (Exception e){

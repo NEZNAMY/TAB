@@ -248,6 +248,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.error("An error occured when processing PlayerChangedWorldEvent", ex);
 		}
 	}
+	@EventHandler
+	public void a(PlayerCommandPreprocessEvent e) {
+		if (BossBar.onChat(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
+	}
 	public static void inject(ITabPlayer p) {
 		Packet.inject(p, new PacketReader() {
 

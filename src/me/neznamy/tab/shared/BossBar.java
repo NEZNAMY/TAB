@@ -28,18 +28,13 @@ public class BossBar{
 		if (!enable) return false;
 		if (message.equalsIgnoreCase(Configs.bossbarToggleCommand)) {
 			sender.bossbarVisible = !sender.bossbarVisible;
-			Shared.runTask("processing command", new Runnable() {
-
-				public void run() {
-					if (sender.bossbarVisible) {
-						for (BossBarLine line : lines) sendBar(sender, line);
-						sender.sendMessage(Configs.bossbar_on);
-					} else {
-						for (BossBarLine line : lines) PacketAPI.removeBossBar(sender, line.getBossBar());
-						sender.sendMessage(Configs.bossbar_off);
-					}
-				}
-			});
+			if (sender.bossbarVisible) {
+				for (BossBarLine line : lines) sendBar(sender, line);
+				sender.sendMessage(Configs.bossbar_on);
+			} else {
+				for (BossBarLine line : lines) PacketAPI.removeBossBar(sender, line.getBossBar());
+				sender.sendMessage(Configs.bossbar_off);
+			}
 			return true;
 		}
 		return false;

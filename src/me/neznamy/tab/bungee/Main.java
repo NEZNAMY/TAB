@@ -26,6 +26,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Command;
@@ -176,6 +177,10 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.error("An error occured when player joined/changed server", ex);
 		}
 	}
+	@EventHandler
+	public void a(ChatEvent e) {
+		if (BossBar.onChat(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+	}
 	private void inject(final ITabPlayer player) {
 		player.getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
@@ -186,7 +191,6 @@ public class Main extends Plugin implements Listener, MainClass{
 						if (((Chat)wrapper.packet).getMessage().equalsIgnoreCase("/btab")) {
 							sendPluginInfo(player);
 						}
-						if (BossBar.onChat(player, ((Chat)wrapper.packet).getMessage())) return;
 					}
 				} catch (Exception e){
 					Shared.error("An error occured when analyzing packets", e);
