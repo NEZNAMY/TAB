@@ -1,12 +1,12 @@
 package me.neznamy.tab.bukkit.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutEntityMetadata extends PacketPlayOut{
@@ -14,7 +14,9 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 	private int entityId;
 	private List<Item> list;
 
-	public PacketPlayOutEntityMetadata() {
+	public PacketPlayOutEntityMetadata(int entityId, List<Item> items) {
+		this.entityId = entityId;
+		list = items;
 	}
 	public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher, boolean force){
 		this.entityId = entityId;
@@ -24,14 +26,6 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 			list = dataWatcher.getObjectsThatNeedUpdate();
 		}
 	}
-	public PacketPlayOutEntityMetadata setEntityId(int entityId) {
-		this.entityId = entityId;
-		return this;
-	}
-	public PacketPlayOutEntityMetadata setList(List<Item> list) {
-		this.list = list;
-		return this;
-	}
 	public int getEntityId() {
 		return entityId;
 	}
@@ -39,14 +33,11 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 		return list;
 	}
 	public Object toNMS() throws Exception{
-		Object nmsPacket = newPacketPlayOutEntityMetadata.newInstance();
-		PacketPlayOutEntityMetadata_ENTITYID.set(nmsPacket, entityId);
-		List<Object> list = Lists.newArrayList();
-		for (Item o : this.list) {
-			list.add(o.toNMS());
+		DataWatcher w = new DataWatcher(null);
+		for (Item item : list) {
+			w.setValue(item.getType(), item.getValue());
 		}
-		PacketPlayOutEntityMetadata_LIST.set(nmsPacket, list);
-		return nmsPacket;
+		return MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, w.toNMS(), true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,18 +50,16 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 			for (Object o : items) {
 				list.add(Item.fromNMS(o));
 			}
-		return new PacketPlayOutEntityMetadata().setEntityId(entityId).setList(list);
+		return new PacketPlayOutEntityMetadata(entityId, list);
 	}
 
 	private static Class<?> PacketPlayOutEntityMetadata;
-	private static Constructor<?> newPacketPlayOutEntityMetadata;
 	private static Field PacketPlayOutEntityMetadata_ENTITYID;
 	private static Field PacketPlayOutEntityMetadata_LIST;
 
 	static {
 		try {
 			PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
-			newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor();
 			(PacketPlayOutEntityMetadata_ENTITYID = PacketPlayOutEntityMetadata.getDeclaredField("a")).setAccessible(true);
 			(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
 		} catch (Exception e) {

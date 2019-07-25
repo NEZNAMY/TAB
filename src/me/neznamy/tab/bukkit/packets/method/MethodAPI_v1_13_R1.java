@@ -40,4 +40,7 @@ public class MethodAPI_v1_13_R1 extends MethodAPI {
 	public Object newPacketPlayOutChat(Object chatComponent, Object position) {
 		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, (ChatMessageType) position);
 	}
+	public Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force) {
+		return new PacketPlayOutEntityMetadata(entityId, (DataWatcher) dataWatcher, force);
+	}
 }

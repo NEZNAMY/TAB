@@ -25,7 +25,8 @@ public abstract class MethodAPI {
 	public abstract void sendPacket(Player p, Object nmsPacket);
 	public abstract Object newPacketPlayOutEntityDestroy(int[] ids);
 	public abstract Object newPacketPlayOutChat(Object chatComponent, Object position);
-
+	public abstract Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force);
+	
 	public double getTPS() {
 		if (!spigot) return -1;
 		return getRecentTps()[0];
