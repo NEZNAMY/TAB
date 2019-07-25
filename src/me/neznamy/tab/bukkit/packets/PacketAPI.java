@@ -17,9 +17,6 @@ public class PacketAPI{
 	public static Class<?> PacketPlayInUseEntity;
 	public static Field PacketPlayInUseEntity_ENTITYID;
 	
-	public static Class<?> PacketPlayInChat;
-	public static Field PacketPlayInChat_MESSAGE;
-	
 	public static Class<?> PacketPlayOutBed;
 	public static Field PacketPlayOutBed_ENTITY;
 	
@@ -36,7 +33,6 @@ public class PacketAPI{
 				(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
 				(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
 				if (versionNumber < 14) (PacketPlayOutBed_ENTITY = (PacketPlayOutBed = NMSClass.get("PacketPlayOutBed")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayInChat_MESSAGE = (PacketPlayInChat = NMSClass.get("PacketPlayInChat")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayInUseEntity_ENTITYID = (PacketPlayInUseEntity = NMSClass.get("PacketPlayInUseEntity")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutAnimation_ENTITY = (PacketPlayOutAnimation = NMSClass.get("PacketPlayOutAnimation")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutAnimation_ACTION = PacketPlayOutAnimation.getDeclaredField("b")).setAccessible(true);

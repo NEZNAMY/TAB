@@ -250,7 +250,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@EventHandler
 	public void a(PlayerCommandPreprocessEvent e) {
-		if (BossBar.onChat(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
+		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
+			sendPluginInfo(sender);
+			return;
+		}
+		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 	}
 	public static void inject(ITabPlayer p) {
 		Packet.inject(p, new PacketReader() {

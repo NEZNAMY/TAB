@@ -35,8 +35,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
-import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.packet.Chat;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.Team;
 
@@ -179,24 +177,17 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	@EventHandler
 	public void a(ChatEvent e) {
-		if (BossBar.onChat(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+		ITabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
+		if (e.getMessage().equalsIgnoreCase("/btab")) {
+			sendPluginInfo(sender);
+			return;
+		}
+		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 	}
 	private void inject(final ITabPlayer player) {
 		player.getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-				try{
-					PacketWrapper wrapper = (PacketWrapper) packet;
-					if (wrapper.packet != null && wrapper.packet instanceof Chat) {
-						if (((Chat)wrapper.packet).getMessage().equalsIgnoreCase("/btab")) {
-							sendPluginInfo(player);
-						}
-					}
-				} catch (Exception e){
-					Shared.error("An error occured when analyzing packets", e);
-				} catch (Error e){
-					Shared.error("An error occured when analyzing packets", e);
-				}
 				super.channelRead(context, packet);
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {

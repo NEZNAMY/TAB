@@ -33,17 +33,6 @@ public class Packet implements Listener {
 						if (NameTagX.enable) {
 							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
 						}
-						if (PacketAPI.PacketPlayInChat.isInstance(packet)) {
-							final String msg = ((String) PacketAPI.PacketPlayInChat_MESSAGE.get(packet));
-							if (msg.equalsIgnoreCase("/tab") || msg.equalsIgnoreCase("/tab:tab")) {
-								Shared.runTask("processing command", new Runnable() {
-
-									public void run() {
-										Main.instance.sendPluginInfo(Shared.getPlayer(player.getUniqueId()));
-									}
-								});
-							}
-						}
 						Shared.nanoTimeGeneral += (System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
