@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
-
 import me.neznamy.tab.bukkit.packets.EnumAPI;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Shared;
@@ -23,9 +21,9 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	}
 	public Object toNMS() throws Exception {
 		if (versionNumber >= 12) {
-			return newPacketPlayOutChat.newInstance(component, type.toNMS());
+			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
 		} else {
-			return newPacketPlayOutChat.newInstance(component, type.toByte());
+			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toByte());
 		}
 	}
 	public Object toBungee(int clientVersion) {
@@ -50,18 +48,6 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
-		}
-	}
-	
-	private static Constructor<?> newPacketPlayOutChat;
-	
-	static {
-		try {
-			if (versionNumber >= 8) {
-				newPacketPlayOutChat = getConstructor(getNMSClass("PacketPlayOutChat"), 2);
-			}
-		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutChat", e);
 		}
 	}
 }

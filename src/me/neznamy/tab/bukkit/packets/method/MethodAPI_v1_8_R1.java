@@ -39,6 +39,9 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 	public Object newPacketPlayOutEntityDestroy(int[] ids) {
 		return new PacketPlayOutEntityDestroy(ids);
 	}
+	public Object newPacketPlayOutChat(Object chatComponent, Object position) {
+		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, (Byte) position);
+	}
 	
 	private static Field NetworkManager_CHANNEL;
 	
