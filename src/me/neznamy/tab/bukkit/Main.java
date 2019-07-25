@@ -375,7 +375,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public Object toNMS(ITabPlayer to, UniversalPacketPlayOut packet) throws Exception {
+	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) throws Exception {
 		return packet.toNMS();
 	}
 }

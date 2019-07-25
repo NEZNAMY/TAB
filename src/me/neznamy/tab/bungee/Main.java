@@ -259,7 +259,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public Object toNMS(ITabPlayer to, UniversalPacketPlayOut packet) {
-		return packet.toBungee(to.getVersion());
+	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) {
+		return packet.toBungee(protocolVersion);
 	}
 }

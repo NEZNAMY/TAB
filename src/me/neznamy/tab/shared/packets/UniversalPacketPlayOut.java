@@ -36,7 +36,7 @@ public abstract class UniversalPacketPlayOut{
 	}
 	public void send(ITabPlayer to) {
 		try {
-			Object packet = Shared.mainClass.toNMS(to, this);
+			Object packet = Shared.mainClass.toNMS(this, to.getVersion());
 			if (packet != null) to.sendPacket(packet);
 		} catch (Exception e) {
 			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
