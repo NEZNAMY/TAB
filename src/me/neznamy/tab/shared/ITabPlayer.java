@@ -19,8 +19,8 @@ public abstract class ITabPlayer{
 	public String tabPrefix;
 	public String tagSuffix;
 	public String tabSuffix;
-	private String belowname;
-	private String abovename;
+	public String belowname;
+	public String abovename;
 	public String customtagname;
 	public String customtabname;
 

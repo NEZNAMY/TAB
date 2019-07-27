@@ -42,6 +42,7 @@ public class TABAPI {
 			me.neznamy.tab.bukkit.Main.instance.load(false, false);
 		}
 	}
+	
 	public static void setCustomTabNameTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
@@ -50,7 +51,7 @@ public class TABAPI {
 		t.updatePlayerListName(false);
 	}
 	public static void setCustomTagNameTemporarily(UUID uniqueId, String value) {
-		if (!Configs.unlimitedTags) return;//throw new IllegalStateException("Unlimited nametag mode is not enabled! Use TABAPI.enableUnlimitedNameTagModePermanently() to enable it (you can also enable it in the config).");
+		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
 		t.temporaryCustomTagName = value;
@@ -81,6 +82,18 @@ public class TABAPI {
 		t.temporaryTagSuffix = value;
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 	}
+	public static void setAboveNameTemporarily(UUID uniqueId, String value) {
+		ITabPlayer t = Shared.getPlayer(uniqueId);
+		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
+		t.temporaryAboveName = value;
+		t.restartArmorStands();
+	}
+	public static void setBelowNameTemporarily(UUID uniqueId, String value) {
+		ITabPlayer t = Shared.getPlayer(uniqueId);
+		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
+		t.temporaryBelowName = value;
+		t.restartArmorStands();
+	}
 	
 	public static void setCustomTabNamePermanently(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
@@ -92,7 +105,7 @@ public class TABAPI {
 	public static void setCustomTagNamePermanently(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		if (!Configs.unlimitedTags) return;//throw new IllegalStateException("Unlimited nametag mode is not enabled! Use TABAPI.enableUnlimitedNameTagModePermanently() to enable it (you can also enable it in the config).");
+		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		TabCommand.savePlayer(null, Shared.getPlayer(uniqueId).getName(), "customtagname", value);
 		t.updatePlayerListName(false);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
@@ -121,6 +134,18 @@ public class TABAPI {
 		TabCommand.savePlayer(null, Shared.getPlayer(uniqueId).getName(), "tagsuffix", value);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 	}
+	public static void seAboveNamePermanently(UUID uniqueId, String value) {
+		ITabPlayer t = Shared.getPlayer(uniqueId);
+		if (t == null) return;
+		TabCommand.savePlayer(null, Shared.getPlayer(uniqueId).getName(), "abovename", value);
+		if (Configs.unlimitedTags) t.restartArmorStands();
+	}
+	public static void setBelowNamePermanently(UUID uniqueId, String value) {
+		ITabPlayer t = Shared.getPlayer(uniqueId);
+		if (t == null) return;
+		TabCommand.savePlayer(null, Shared.getPlayer(uniqueId).getName(), "belowname", value);
+		if (Configs.unlimitedTags) t.restartArmorStands();
+	}
 	
 	public static String getTemporaryCustomTabName(UUID uniqueId) {
 		return Shared.getPlayer(uniqueId).temporaryCustomTabName;
@@ -139,6 +164,12 @@ public class TABAPI {
 	}
 	public static String getTemporaryTagSuffix(UUID uniqueId) {
 		return Shared.getPlayer(uniqueId).temporaryTagSuffix;
+	}
+	public static String getTemporaryAboveName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).temporaryAboveName;
+	}
+	public static String getTemporaryBelowName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).temporaryBelowName;
 	}
 	
 	public static boolean hasTemporaryCustomTabName(UUID uniqueId) {
@@ -159,71 +190,43 @@ public class TABAPI {
 	public static boolean hasTemporaryTagSuffix(UUID uniqueId) {
 		return getTemporaryTagSuffix(uniqueId) != null;
 	}
+	public static boolean hasTemporaryAboveName(UUID uniqueId) {
+		return getTemporaryAboveName(uniqueId) != null;
+	}
+	public static boolean hasTemporaryBelowName(UUID uniqueId) {
+		return getTemporaryBelowName(uniqueId) != null;
+	}
 	
 	public static void removeTemporaryCustomTabName(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryCustomTabName = null;
-			t.updatePlayerListName(false);
-		}
+		setCustomTabNameTemporarily(uniqueId, null);
 	}
 	public static void removeTemporaryCustomTagName(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryCustomTagName = null;
-			t.updatePlayerListName(false);
-			if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
-		}
+		setCustomTagNameTemporarily(uniqueId, null);
 	}
 	public static void removeTemporaryTabPrefix(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryTabPrefix = null;
-			t.updatePlayerListName(false);
-		}
+		setTabPrefixTemporarily(uniqueId, null);
 	}
 	public static void removeTemporaryTabSuffix(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryTabSuffix = null;
-			t.updatePlayerListName(false);
-		}
+		setTabSuffixTemporarily(uniqueId, null);
 	}
 	public static void removeTemporaryTagPrefix(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryTagPrefix = null;
-			if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
-		}
+		setTagPrefixTemporarily(uniqueId, null);
 	}
 	public static void removeTemporaryTagSuffix(UUID uniqueId) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (t != null) {
-			t.temporaryTagSuffix = null;
-			if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
-		}
+		setTagSuffixTemporarily(uniqueId, null);
+	}
+	public static void removeTemporaryAboveName(UUID uniqueId) {
+		setAboveNameTemporarily(uniqueId, null);
+	}
+	public static void removeTemporaryBelowName(UUID uniqueId) {
+		setBelowNameTemporarily(uniqueId, null);
 	}
 	
-	public static void setAboveNameTemporarily(UUID uniqueId, String value) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (!Configs.unlimitedTags) return;//throw new IllegalStateException("Unlimited nametag mode is not enabled! Use TABAPI.enableUnlimitedNameTagModePermanently() to enable it (you can also enable it in the config).");
-		t.temporaryAboveName = value;
-		t.restartArmorStands();
+	public static String getOriginalCustomTabName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).customtabname;
 	}
-	public static void setBelowNameTemporarily(UUID uniqueId, String value) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (!Configs.unlimitedTags) return;//throw new IllegalStateException("Unlimited nametag mode is not enabled! Use TABAPI.enableUnlimitedNameTagModePermanently() to enable it (you can also enable it in the config).");
-		t.temporaryBelowName = value;
-		t.restartArmorStands();
-	}
-	public static void sendHeaderFooter(UUID uniqueId, String header, String footer) {
-		new PacketPlayOutPlayerListHeaderFooter(header, footer).send(Shared.getPlayer(uniqueId));
-	}
-	public static void refreshHeaderFooter(UUID uniqueId) {
-		HeaderFooter.refreshHeaderFooter(Shared.getPlayer(uniqueId));
-	}
-	public static void clearHeaderFooter(UUID uniqueId) {
-		new PacketPlayOutPlayerListHeaderFooter("","").send(Shared.getPlayer(uniqueId));
+	public static String getOriginalCustomTagName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).customtagname;
 	}
 	public static String getOriginalTabPrefix(UUID uniqueId) {
 		return Shared.getPlayer(uniqueId).tabPrefix;
@@ -237,12 +240,23 @@ public class TABAPI {
 	public static String getOriginalTagSuffix(UUID uniqueId) {
 		return Shared.getPlayer(uniqueId).tagSuffix;
 	}
-	public static String getOriginalCustomTagName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).customtagname;
+	public static String getOriginalAboveName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).abovename;
 	}
-	public static String getOriginalCustomTabName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).customtabname;
+	public static String getOriginalBelowName(UUID uniqueId) {
+		return Shared.getPlayer(uniqueId).belowname;
 	}
+	
+	public static void sendHeaderFooter(UUID uniqueId, String header, String footer) {
+		new PacketPlayOutPlayerListHeaderFooter(header, footer).send(Shared.getPlayer(uniqueId));
+	}
+	public static void refreshHeaderFooter(UUID uniqueId) {
+		HeaderFooter.refreshHeaderFooter(Shared.getPlayer(uniqueId));
+	}
+	public static void clearHeaderFooter(UUID uniqueId) {
+		new PacketPlayOutPlayerListHeaderFooter("","").send(Shared.getPlayer(uniqueId));
+	}
+	
 	public static void hideNametag(UUID uniqueId) {
 		hiddenNametag.add(uniqueId);
 		Shared.getPlayer(uniqueId).updateTeamPrefixSuffix();
