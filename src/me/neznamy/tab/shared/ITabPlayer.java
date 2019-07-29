@@ -224,9 +224,7 @@ public abstract class ITabPlayer{
 		if (rank == null || rank.length() == 0) {
 			rank = group;
 		}
-		for (String staffGroup : Configs.staffGroups) {
-			if (staffGroup.equalsIgnoreCase(group)) isStaff = true;
-		}
+		isStaff = hasPermission("tab.staff");
 		updateRawHeaderAndFooter();
 	}
 	private String getValue(String s) {

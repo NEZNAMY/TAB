@@ -28,7 +28,6 @@ public class Configs {
 	public static String dateFormat;
 	public static String timeFormat;
 	public static double timeOffset;
-	public static List<String> staffGroups = new ArrayList<String>();
 	
 	
 	public static ConfigurationFile animation;
@@ -99,7 +98,6 @@ public class Configs {
 			sortedGroups.put(group, sort);
 			index++;
 		}
-		staffGroups = config.getStringList("staff-groups", Lists.newArrayList("Admin", "Mod", "Owner", "Moderator", "Helper"));
 		Map<String, Object> cs = config.getConfigurationSection("rank-aliases");
 		if (cs != null) {
 			rankAliases = cs;

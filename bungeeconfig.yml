@@ -28,7 +28,7 @@ header:
   - "&6&lRank: %rank%"
   - "&7&l>> %animation:Welcome%&3 &l%nick%&7&l! &7&l<<"
   - "&7Online players: &f%online%"
-  - "&6Online staff: &e%staffonline%"
+  - "&6Online staff: &e%staffonline%" # staffs are people with "tab.staff" permission
   - ""
   - "&7&l Used memory: %memory-used% MB / %memory-max% MB"
   - "%animation:MyAnimation1%"
@@ -63,14 +63,6 @@ group-sorting-priority-list:
   - "Premium"
   - "Player"
   - "default"
-
-#used for %staffonline% variable
-staff-groups:
-  - "Admin"
-  - "Mod"
-  - "Owner"
-  - "Moderator"
-  - "Helper"
 
 #better showing of %rank% value
 rank-aliases:

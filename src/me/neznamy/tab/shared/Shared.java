@@ -102,7 +102,7 @@ public class Shared {
 			
 			public void run() {
 				cpuValues.add(cpuTime);
-				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)cpuTime/10000000) + "%"); 
+//				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)cpuTime/10000000) + "%"); 
 				cpuTime = 0;
 				if (cpuValues.size() > 60*15) cpuValues.remove(0); //15 minute history
 			}
