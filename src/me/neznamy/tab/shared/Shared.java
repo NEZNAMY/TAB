@@ -101,7 +101,7 @@ public class Shared {
 		scheduleRepeatingTask(1000, "calculating cpu usage", new Runnable() {
 			public void run() {
 				cpuValues.add(nanoTimeGeneral);
-				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)nanoTimeGeneral/10000000) + "%"); 
+//				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)nanoTimeGeneral/10000000) + "%"); 
 				nanoTimeGeneral = 0;
 				if (cpuValues.size() > 60*15) cpuValues.remove(0); //15 minute history
 			}
