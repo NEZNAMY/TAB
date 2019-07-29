@@ -2,7 +2,7 @@ package me.neznamy.tab.bukkit;
 
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.ITabPlayer;
 
@@ -54,11 +54,8 @@ public class NameTagLineManager {
 		if (armorStandOwner.getName().equals(packetReceiver.getName())) return; //avoiding buggy movement when riding entities
 		new PacketPlayOutEntityTeleport((Player)armorStandOwner.getPlayer()).send(packetReceiver);
 	}
-	public static void replaceFormats(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.replaceFormat();
-	}
-	public static void updateMetadata(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateMetadata();
+	public static void refreshNames(ITabPlayer armorStandOwner) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) as.refreshName();
 	}
 	public static boolean isArmorStandID(ITabPlayer p, int id) {
 		for (ArmorStand as : p.getArmorStands()) if (as.getEntityId() == id) return true;

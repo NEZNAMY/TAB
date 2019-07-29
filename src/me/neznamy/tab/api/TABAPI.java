@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import me.neznamy.tab.bukkit.NameTagLineManager;
-import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.HeaderFooter;
 import me.neznamy.tab.shared.ITabPlayer;

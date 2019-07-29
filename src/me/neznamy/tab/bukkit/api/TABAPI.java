@@ -2,7 +2,7 @@ package me.neznamy.tab.bukkit.api;
 
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.shared.Shared;
 
 @Deprecated

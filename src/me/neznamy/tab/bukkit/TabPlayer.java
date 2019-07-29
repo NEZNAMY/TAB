@@ -13,7 +13,7 @@ import com.github.cheesesoftware.PowerfulPermsAPI.Group;
 
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
-import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -200,6 +200,7 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		try {
 			MethodAPI.getInstance().sendPacket(getPlayer(), nmsPacket);
+//			System.out.println(getName() + " - " + nmsPacket.getClass().getSimpleName());
 		} catch (NullPointerException e) {
 			queuedPackets.add(nmsPacket);
 		}

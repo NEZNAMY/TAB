@@ -76,7 +76,7 @@ Users:
   _NEZNAMY_:
     tabprefix: "&6&lTAB Author &a"
     tagprefix: "&6&lTAB &a"
-    abovename: "&2Oh look, 3 lines of text !"
+    abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
     
 #servers 1.9+

@@ -1,9 +1,8 @@
-package me.neznamy.tab.bukkit.objects;
+package me.neznamy.tab.bukkit.packets;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -11,12 +10,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.bukkit.packets.NMSClass;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Shared;
@@ -26,8 +21,9 @@ public class ArmorStand{
 	private ITabPlayer tabp;
 	private Player player;
 	private double yOffset;
-	private String rawFormat;
 	private String ID;
+	private String rawFormat;
+	private String lastReplacedFormat = "";
 
 	private int entityId = Shared.getNextEntityId();
 	private UUID uuid = UUID.randomUUID();
@@ -36,7 +32,7 @@ public class ArmorStand{
 	private boolean invisible;
 
 	private boolean inBed;
-	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
+	private ConcurrentHashMap<ITabPlayer, String> registeredTo = new ConcurrentHashMap<ITabPlayer, String>();
 	private FakeDataWatcher datawatcher;
 
 	private long lastLocationRefresh = 0;
@@ -47,8 +43,8 @@ public class ArmorStand{
 		this.ID = ID;
 		this.yOffset = yOffset;
 		rawFormat = format;
-		datawatcher = new FakeDataWatcher(player);
-		replaceFormat();
+		datawatcher = new FakeDataWatcher();
+		refreshName();
 		updateLocation();
 	}
 	public String getID() {
@@ -57,8 +53,12 @@ public class ArmorStand{
 	public void setNameFormat(String format) {
 		rawFormat = format;
 	}
-	public void replaceFormat() {
-		setCustomName(Placeholders.replace(rawFormat, tabp));
+	public void refreshName() {
+		String newFormat = Placeholders.replace(rawFormat, tabp);
+		if (newFormat.equals(lastReplacedFormat) && !newFormat.contains("%rel_")) return;
+		lastReplacedFormat = newFormat;
+		datawatcher.setCustomNameVisible(newFormat.length() > 0 && !invisible);
+		updateMetadata(false);
 	}
 	public void setInBed(boolean inBed) {
 		this.inBed = inBed;
@@ -68,8 +68,11 @@ public class ArmorStand{
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to) {
 		updateLocation();
-		addToRegistered(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(datawatcher.get(to));
+		String name = lastReplacedFormat;
+		if (me.neznamy.tab.shared.Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
+		DataWatcher w = datawatcher.create(name);
+		if (!registeredTo.contains(to)) registeredTo.put(to, name);
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(w);
 	}
 	public PacketPlayOutEntityTeleport getTeleportPacket() {
 		updateLocation();
@@ -81,37 +84,37 @@ public class ArmorStand{
 	}
 	public void teleport() {
 		PacketPlayOutEntityTeleport packet = getTeleportPacket();
-		synchronized(registeredTo) {for (ITabPlayer all : registeredTo) packet.send(all);}
+		for (ITabPlayer all : registeredTo.keySet()) packet.send(all);
 	}
 	public void sneak(boolean b) {
 		if (sneaking == b) return;
 		datawatcher.setSneaking(b);
 		sneaking = b;
 		teleport();
-		updateMetadata();
+		updateMetadata(true);
 	}
 	public void destroy() {
-		synchronized(registeredTo) {for (ITabPlayer all : registeredTo) getDestroyPacket(all, false).send(all);}
+		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
 		if ((!player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR) == invisible) {
 			invisible = !invisible;
-			updateMetadata();
+			updateMetadata(true);
 		}
 	}
-	public void updateMetadata() {
-		synchronized(registeredTo) {
-			for (ITabPlayer all : registeredTo) {
-				boolean alreadyInvisible = !datawatcher.isCustomNameVisible();
-				if (invisible || alreadyInvisible || TABAPI.hasHiddenNametag(player.getUniqueId())) datawatcher.setCustomNameVisible(false);
-				new PacketPlayOutEntityMetadata(entityId, datawatcher.get(all), true).send(all);
-			}
+	private void updateMetadata(boolean force) {
+		for (Entry<ITabPlayer, String> entry : registeredTo.entrySet()) {
+			ITabPlayer all = entry.getKey();
+			String lastName = entry.getValue();
+			if (invisible || !datawatcher.isCustomNameVisible() || TABAPI.hasHiddenNametag(player.getUniqueId())) datawatcher.setCustomNameVisible(false);
+			String name = lastReplacedFormat;
+			if (me.neznamy.tab.shared.Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
+			DataWatcher w = datawatcher.create(name);
+			if (lastName.equals(name) && !force) continue;
+			registeredTo.put(all, name);
+			new PacketPlayOutEntityMetadata(entityId, w, true).send(all);
 		}
-	}
-	private void setCustomName(String format) {
-		datawatcher.setCustomName(format);
-		datawatcher.setCustomNameVisible(format.length() > 0 && !invisible);
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;
@@ -135,8 +138,5 @@ public class ArmorStand{
 	}
 	public void removeFromRegistered(ITabPlayer removed) {
 		registeredTo.remove(removed);
-	}
-	public void addToRegistered(ITabPlayer added) {
-		if (!registeredTo.contains(added)) registeredTo.add(added);
 	}
 }

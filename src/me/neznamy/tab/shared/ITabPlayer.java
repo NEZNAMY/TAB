@@ -10,7 +10,7 @@ import io.netty.channel.Channel;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.bukkit.NameTagLineManager;
-import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -125,8 +125,7 @@ public abstract class ITabPlayer{
 			if (NameTagLineManager.getByID(this, "ABOVENAME") != null) {
 				NameTagLineManager.getByID(this, "ABOVENAME").setNameFormat(getAboveName());
 			}
-			NameTagLineManager.replaceFormats(this);
-			NameTagLineManager.updateMetadata(this);
+			NameTagLineManager.refreshNames(this);
 		}
 	}
 	public boolean getTeamVisibility() {
