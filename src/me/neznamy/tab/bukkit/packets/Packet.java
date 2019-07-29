@@ -27,7 +27,7 @@ public class Packet{
 						if (NameTagX.enable) {
 							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
 						}
-						Shared.nanoTimeGeneral += (System.nanoTime()-time);
+						Shared.cpuTime += (System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}
@@ -47,7 +47,7 @@ public class Packet{
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							if (!receiver.disabledNametag) {
 								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
-									Shared.nanoTimeGeneral += (System.nanoTime()-time);
+									Shared.cpuTime += (System.nanoTime()-time);
 									return;
 								}
 							}
@@ -106,7 +106,7 @@ public class Packet{
 								Shared.error("An error occured when reading packets (fancy reader)", e);
 							}
 							if (event.isCancelled()) {
-								Shared.nanoTimeGeneral += (System.nanoTime()-time);
+								Shared.cpuTime += (System.nanoTime()-time);
 								return;
 							}
 							pack = event.getPacket();
@@ -114,7 +114,7 @@ public class Packet{
 						if (pack != null) {
 							packet = pack.toNMS();
 						}
-						Shared.nanoTimeGeneral += (System.nanoTime()-time);
+						Shared.cpuTime += (System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}

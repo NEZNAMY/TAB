@@ -18,14 +18,14 @@ public class Shared {
 
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
-	public static long nanoTimeGeneral;
+	public static long cpuTime;
 	private static int nextEntityId = 2000000000;
 	public static List<Long> cpuValues = new ArrayList<Long>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	private static ExecutorService exe = Executors.newCachedThreadPool();
 	public static String pluginVersion;
-	public static final String newline = System.getProperty("line.separator");
-	public static int startupErrors = 0;
+	private static final String newline = System.getProperty("line.separator");
+	public static int startupWarns = 0;
 	public static MainClass mainClass;
 	public static final String DECODER_NAME = "TABReader";
 
@@ -99,41 +99,38 @@ public class Shared {
 	}
 	public static void startCPUTask() {
 		scheduleRepeatingTask(1000, "calculating cpu usage", new Runnable() {
+			
 			public void run() {
-				cpuValues.add(nanoTimeGeneral);
-//				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)nanoTimeGeneral/10000000) + "%"); 
-				nanoTimeGeneral = 0;
+				cpuValues.add(cpuTime);
+				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)cpuTime/10000000) + "%"); 
+				cpuTime = 0;
 				if (cpuValues.size() > 60*15) cpuValues.remove(0); //15 minute history
 			}
 		});
 	}
-	public static String ERROR_PREFIX() {
+	private static String ERROR_PREFIX() {
 		return new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + " - " + new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - ";
 	}
 	public static int getNextEntityId() {
 		return nextEntityId++;
 	}
-	public static void startupError(String message) {
+	public static void startupWarn(String message) {
 		print("§c", message);
-		startupErrors++;
+		startupWarns++;
 	}
 	public static void print(String color, String message) {
 		mainClass.sendConsoleMessage(color + "[TAB] " + message);
 	}
-	public static void print(String message) {
-		print("", message);
-	}
 	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final Runnable r) {
 		if (delayMilliseconds == 0) return;
 		tasks.add(exe.submit(new Runnable() {
-
 
 			public void run() {
 				while (true) {
 					try {
 						long time = System.nanoTime();
 						r.run();
-						nanoTimeGeneral += (System.nanoTime()-time);
+						cpuTime += (System.nanoTime()-time);
 						Thread.sleep(delayMilliseconds);
 					} catch (InterruptedException e) {
 						break;
@@ -149,12 +146,11 @@ public class Shared {
 	public static void runTask(final String description, final Runnable r) {
 		exe.submit(new Runnable() {
 
-
 			public void run() {
 				try {
 					long time = System.nanoTime();
 					r.run();
-					nanoTimeGeneral += (System.nanoTime()-time);
+					cpuTime += (System.nanoTime()-time);
 				} catch (Exception e) {
 					error("An error occured when " + description, e);
 				} catch (Error e) {
@@ -173,7 +169,7 @@ public class Shared {
 					Thread.sleep(delayMilliseconds);
 					long time = System.nanoTime();
 					r.run();
-					nanoTimeGeneral += (System.nanoTime()-time);
+					cpuTime += (System.nanoTime()-time);
 				} catch (InterruptedException e) {
 				} catch (Exception e) {
 					error("An error occured when " + description, e);

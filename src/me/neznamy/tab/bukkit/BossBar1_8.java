@@ -42,13 +42,13 @@ public class BossBar1_8 implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		for (BossBarLine line : BossBar.lines) BossBar.sendBar(p, line);
-		Shared.nanoTimeGeneral += (System.nanoTime()-time);
+		Shared.cpuTime += (System.nanoTime()-time);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
 		if (!BossBar.enable) return;
 		long time = System.nanoTime();
 		for (BossBarLine line : BossBar.lines) BossBar.sendBar(Shared.getPlayer(e.getPlayer().getUniqueId()), line);
-		Shared.nanoTimeGeneral += (System.nanoTime()-time);
+		Shared.cpuTime += (System.nanoTime()-time);
 	}
 }

@@ -41,7 +41,7 @@ public class IConfigs{
 		try{
 			TabObjective.type = TabObjectiveType.valueOf(Configs.config.getString("tablist-objective", "PING").toUpperCase());
 		} catch (Exception e) {
-			Shared.startupError("\"§e" + Configs.config.getString("tablist-objective", "PING") + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM and NONE §cfor disabling the feature.");
+			Shared.startupWarn("\"§e" + Configs.config.getString("tablist-objective", "PING") + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM and NONE §cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
 		TabObjective.customValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");

@@ -87,7 +87,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
-			Shared.startupErrors = 0;
+			Shared.startupWarns = 0;
 			Configs.loadFiles();
 			Placeholders.initialize();
 			Shared.data.clear();
@@ -108,7 +108,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			HeaderFooter.load();
 			PerWorldPlayerlist.load();
 			Shared.startCPUTask();
-			if (Shared.startupErrors > 0) Shared.print("§e", "There were " + Shared.startupErrors + " startup errors.");
+			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup errors.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e1) {
 			Shared.print("§c", "Did not enable. Check errors.txt for more info.");

@@ -40,7 +40,7 @@ public class ConfigurationFile{
 			input.close();
 		} catch (Exception e) {
 			if (input != null) input.close();
-			Shared.startupError("File " + destination + " has broken formatting.");
+			Shared.startupWarn("File " + destination + " has broken formatting.");
 			Shared.print("§6", "Error message: " + e.getMessage());
 			throw e;
 		}

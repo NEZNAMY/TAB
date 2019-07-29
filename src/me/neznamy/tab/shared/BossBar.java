@@ -69,7 +69,7 @@ public class BossBar{
 		
 		public BossBarLine(int refresh, List<BossBarFrame> frames) {
 			if (refresh == 0) {
-				Shared.startupError("One of the BossBars has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
+				Shared.startupWarn("One of the BossBars has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
 				refresh = 1000;
 			}
 			this.refresh = refresh;
@@ -115,13 +115,13 @@ public class BossBar{
 				this.color = BarColor.valueOf(color);
 			} catch (Exception e) {
 				this.color = BarColor.PURPLE;
-				Shared.startupError("\"" + color + "\" is not a valid boss bar color!");
+				Shared.startupWarn("\"" + color + "\" is not a valid boss bar color!");
 			}
 			try {
 				this.style = BarStyle.valueOf(style);
 			} catch (Exception e) {
 				this.style = BarStyle.PROGRESS;
-				Shared.startupError("\"" + style + "\" is not a valid boss bar style!");
+				Shared.startupWarn("\"" + style + "\" is not a valid boss bar style!");
 			}
 			this.progress = progress;
 			this.message = message;
