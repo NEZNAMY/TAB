@@ -331,7 +331,3 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return packet.toNMS();
 	}
 }
-//MOZNO organizacia tabu
-//MOZNO mysql
-//TODO add glow
-//TODO zlepsit command system
