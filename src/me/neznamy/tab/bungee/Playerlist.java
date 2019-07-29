@@ -17,13 +17,13 @@ public class Playerlist {
 	public static void load() {
 		if (enable) {
 			for (ITabPlayer p : Shared.getPlayers()) {
-				if (!Configs.disabledTablistNames.contains(p.getWorldName())) p.updatePlayerListName(true);
+				if (!p.disabledTablistNames) p.updatePlayerListName(true);
 			}
 			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", new Runnable() {
 				
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
-						if (!Configs.disabledTablistNames.contains(p.getWorldName())) p.updatePlayerListName(false);
+						if (!p.disabledTablistNames) p.updatePlayerListName(false);
 					}
 				}
 			});
@@ -47,13 +47,13 @@ public class Playerlist {
 			if (Configs.doNotMoveSpectators && gamemode == 3 && uuid != receiver.getUniqueId()) playerInfoData.setGamemode(1);
 		}
 		if (action == Action.UPDATE_DISPLAY_NAME) {
-			if (player == null || Configs.disabledTablistNames.contains(player.getWorldName())) return;
+			if (player == null || player.disabledTablistNames) return;
 			String format = player.getTabFormat(receiver);
 			playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(format));
 		}
 		if (action == Action.ADD_PLAYER) {
 			if (player != null) {
-				if (!Configs.disabledTablistNames.contains(player.getWorldName())) {
+				if (!player.disabledTablistNames) {
 					String format = player.getTabFormat(receiver);
 					playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(format));
 					if (Configs.doNotMoveSpectators && gamemode == 3 && uuid != receiver.getUniqueId()) playerInfoData.setGamemode(1);

@@ -11,6 +11,9 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.bukkit.objects.ArmorStand;
+import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public abstract class ITabPlayer{
 
@@ -50,6 +53,12 @@ public abstract class ITabPlayer{
 	public String ipAddress;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
+	
+	public boolean disabledHeaderFooter;
+	public boolean disabledTablistNames;
+	public boolean disabledNametag;
+	public boolean disabledTablistObjective;
+	public boolean disabledBossbar;
 
 
 	//bukkit only
@@ -97,7 +106,7 @@ public abstract class ITabPlayer{
 		return format;
 	}
 	public void updateTeam() {
-		if (Configs.disabledNametag.contains(getWorldName())) return;
+		if (disabledNametag) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
 			updateTeamPrefixSuffix();
@@ -362,7 +371,7 @@ public abstract class ITabPlayer{
 		return armorStands;
 	}
 	public void updateTeamPrefixSuffix() {
-		if (Configs.disabledNametag.contains(getWorldName())) return;
+		if (disabledNametag) return;
 		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
 		for (ITabPlayer all : Shared.getPlayers()) {
 			String replacedPrefix = replaced[0];
@@ -375,7 +384,7 @@ public abstract class ITabPlayer{
 		}
 	}
 	public void registerTeam() {
-		if (Configs.disabledNametag.contains(getWorldName())) return;
+		if (disabledNametag) return;
 		unregisterTeam();
 		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
 		String replacedPrefix = replaced[0];
@@ -389,7 +398,7 @@ public abstract class ITabPlayer{
 		}
 	}
 	public void registerTeam(ITabPlayer to) {
-		if (Configs.disabledNametag.contains(getWorldName())) return;
+		if (disabledNametag) return;
 		unregisterTeam(to);
 		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
 		String replacedPrefix = replaced[0];
@@ -409,5 +418,45 @@ public abstract class ITabPlayer{
 	}
 	public String getIPAddress() {
 		return ipAddress;
+	}
+	public void onWorldChange(String from, String to) {
+		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(to);
+		disabledTablistNames = Configs.disabledTablistNames.contains(to);
+		disabledNametag = Configs.disabledNametag.contains(to);
+		disabledTablistObjective = Configs.disabledTablistObjective.contains(to);
+		disabledBossbar = Configs.disabledBossbar.contains(to);
+		updateGroupIfNeeded();
+		updateAll();
+		if (BossBar.enable) {
+			if (disabledBossbar) {
+				for (BossBarLine line : BossBar.lines) PacketAPI.removeBossBar(this, line.getBossBar());
+			}
+			if (!disabledBossbar && Configs.disabledBossbar.contains(from)) {
+				for (BossBarLine line : BossBar.lines) BossBar.sendBar(this, line);
+			}
+		}
+		if (HeaderFooter.enable) {
+			if (disabledHeaderFooter) {
+				new PacketPlayOutPlayerListHeaderFooter("","").send(this);
+			} else {
+				HeaderFooter.refreshHeaderFooter(this);
+			}
+		}
+		if (NameTag16.enable || Configs.unlimitedTags) {
+			if (disabledNametag) {
+				unregisterTeam();
+			} else {
+				registerTeam();
+			}
+		}
+		if (Shared.mainClass.listNames()) updatePlayerListName(false);
+		if (TabObjective.type != TabObjectiveType.NONE) {
+			if (disabledTablistObjective && !Configs.disabledTablistObjective.contains(from)) {
+				TabObjective.unload(this);
+			}
+			if (!disabledTablistObjective && Configs.disabledTablistObjective.contains(from)) {
+				TabObjective.playerJoin(this);
+			}
+		}
 	}
 }

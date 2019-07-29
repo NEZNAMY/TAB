@@ -51,11 +51,6 @@ public class IConfigs{
 		Placeholders.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
 		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.disabledHeaderFooter = Configs.config.getStringList("disable-features-in-worlds.header-footer", Lists.newArrayList("disabledworld"));
-		Configs.disabledTablistNames = Configs.config.getStringList("disable-features-in-worlds.tablist-names", Lists.newArrayList("disabledworld"));
-		Configs.disabledNametag = Configs.config.getStringList("disable-features-in-worlds.nametag", Lists.newArrayList("disabledworld"));
-		Configs.disabledTablistObjective = Configs.config.getStringList("disable-features-in-worlds.tablist-objective", Lists.newArrayList("disabledworld"));
-		Configs.disabledBossbar = Configs.config.getStringList("disable-features-in-worlds.bossbar", Lists.newArrayList("disabledworld"));
 	}
 	public static void loadBossbar() throws Exception {
 		Configs.bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");

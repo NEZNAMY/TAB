@@ -100,9 +100,9 @@ public class Configs {
 			index++;
 		}
 		staffGroups = config.getStringList("staff-groups", Lists.newArrayList("Admin", "Mod", "Owner", "Moderator", "Helper"));
-		Map<String, Object> cs = Configs.config.getConfigurationSection("rank-aliases");
+		Map<String, Object> cs = config.getConfigurationSection("rank-aliases");
 		if (cs != null) {
-			Configs.rankAliases = cs;
+			rankAliases = cs;
 		} else {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("Admin", "&4&lADMIN");
@@ -113,9 +113,14 @@ public class Configs {
 			map.put("Titan", "&c&lTITAN");
 			map.put("Youtuber", "&c&lYOUTUBE");
 			map.put("_OTHER_", "%vault-prefix%");
-			Configs.config.set("rank-aliases", Configs.rankAliases = map);
-			Configs.config.save();
+			config.set("rank-aliases", rankAliases = map);
+			config.save();
 		}
+		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.header-footer", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-names", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledNametag = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.nametag", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-objective", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledBossbar = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.bossbar", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml");

@@ -20,13 +20,13 @@ public class Playerlist {
 	public static void load() {
 		if (enable) {
 			for (ITabPlayer p : Shared.getPlayers()) {
-				if (!Configs.disabledTablistNames.contains(p.getWorldName())) p.updatePlayerListName(true);
+				if (!p.disabledTablistNames) p.updatePlayerListName(true);
 			}
 			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", new Runnable() {
 				
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
-						if (!Configs.disabledTablistNames.contains(p.getWorldName())) p.updatePlayerListName(false);
+						if (!p.disabledTablistNames) p.updatePlayerListName(false);
 					}
 				}
 			});
@@ -48,7 +48,7 @@ public class Playerlist {
 			if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
-			if (packetPlayer == null || Configs.disabledTablistNames.contains(packetPlayer.getWorldName())) return false;
+			if (packetPlayer == null || packetPlayer.disabledTablistNames) return false;
 			String format = packetPlayer.getTabFormat(receiver);
 			playerInfoData.setPlayerListName(format);
 		}
@@ -77,7 +77,7 @@ public class Playerlist {
 					Shared.error("Data of player " + gameProfile.getName() + " did not exist when reading PacketPlayOutPlayerInfo!?");
 					return false;
 				}
-				if (!Configs.disabledTablistNames.contains(packetPlayer.getWorldName())) {
+				if (!packetPlayer.disabledTablistNames) {
 					String format = packetPlayer.getTabFormat(receiver);
 					playerInfoData.setPlayerListName(format);
 					if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);

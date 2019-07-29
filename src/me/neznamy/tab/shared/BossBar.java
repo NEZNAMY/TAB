@@ -50,7 +50,7 @@ public class BossBar{
 		lines.clear();
 	}
 	public static void sendBar(ITabPlayer p, BossBarLine l) {
-		if (!p.bossbarVisible || Configs.disabledBossbar.contains(p.getWorldName())) return;
+		if (!p.bossbarVisible || p.disabledBossbar) return;
 		String[] message_progress = Placeholders.replaceMultiple(p, l.getCurrentFrame().getMessage(), l.getCurrentFrame().getProgress());
 		float progress;
 		try {
@@ -89,7 +89,7 @@ public class BossBar{
 		public void update() {
 			BossBarFrame f = getCurrentFrame();
 			for (ITabPlayer all : Shared.getPlayers()) {
-				if (Configs.disabledBossbar.contains(all.getWorldName())) continue;
+				if (all.disabledBossbar) continue;
 				String[] message_progress = Placeholders.replaceMultiple(all, f.getMessage(), f.getProgress());
 				float progress;
 				try {

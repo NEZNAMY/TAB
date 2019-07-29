@@ -19,11 +19,9 @@ import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.bukkit.packets.Packet.*;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.FancyMessage.*;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared.ServerType;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.*;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
@@ -209,41 +207,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
 			PerWorldPlayerlist.trigger(e.getPlayer());
-			p.updateGroupIfNeeded();
-			p.updateAll();
 			String from = e.getFrom().getName();
 			String to = p.getWorldName();
-			if (BossBar.enable) {
-				if (Configs.disabledBossbar.contains(to)) {
-					for (BossBarLine line : BossBar.lines) PacketAPI.removeBossBar(p, line.getBossBar());
-				}
-				if (!Configs.disabledBossbar.contains(to) && Configs.disabledBossbar.contains(from)) {
-					for (BossBarLine line : BossBar.lines) BossBar.sendBar(p, line);
-				}
-			}
-			if (HeaderFooter.enable) {
-				if (Configs.disabledHeaderFooter.contains(to)) {
-					new PacketPlayOutPlayerListHeaderFooter("","").send(p);
-				} else {
-					HeaderFooter.refreshHeaderFooter(p);
-				}
-			}
-			if (NameTag16.enable || NameTagX.enable) {
-				if (Configs.disabledNametag.contains(to)) {
-					p.unregisterTeam();
-				} else {
-					p.registerTeam();
-				}
-			}
-			if (listNames()) p.updatePlayerListName(false);
-			if (TabObjective.type != TabObjectiveType.NONE) {
-				if (Configs.disabledTablistObjective.contains(to) && !Configs.disabledTablistObjective.contains(from)) {
-					TabObjective.unload(p);
-				}
-				if (!Configs.disabledTablistObjective.contains(to) && Configs.disabledTablistObjective.contains(from)) {
-					TabObjective.playerJoin(p);
-				}
-			}
+			p.onWorldChange(from, to);
 		} catch (Exception ex) {
 			Shared.error("An error occured when processing PlayerChangedWorldEvent", ex);
 		}
@@ -284,7 +250,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			public void onNameTagXPacket(final PacketSendEvent e) {
 				final ITabPlayer p = e.getPlayer();
-				if (Configs.disabledNametag.contains(p.getWorldName())) return;
+				if (p.disabledNametag) return;
 				//sending packets outside of the packet reader or protocollib will complain
 				Shared.runTask("processing packet out", new Runnable() {
 
@@ -315,6 +281,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@SuppressWarnings("unchecked")
 	public Object createComponent(String text) {
+		if (text == null || text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
 		JSONObject object = new JSONObject();
 		object.put("text", text);
 		return MethodAPI.getInstance().ICBC_fromString(object.toString());
@@ -366,8 +333,5 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 }
 //MOZNO organizacia tabu
 //MOZNO mysql
-//MOZNO bossbar on/off
 //TODO add glow
 //TODO zlepsit command system
-//TODO disguise compatibility
-//opravit komentare

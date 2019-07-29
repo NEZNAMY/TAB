@@ -45,7 +45,7 @@ public class Packet{
 						}
 
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-							if (!Configs.disabledNametag.contains(receiver.getWorldName())) {
+							if (!receiver.disabledNametag) {
 								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
 									Shared.nanoTimeGeneral += (System.nanoTime()-time);
 									return;

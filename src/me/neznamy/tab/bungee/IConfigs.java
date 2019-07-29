@@ -3,16 +3,14 @@ package me.neznamy.tab.bungee;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.shared.BossBar;
+import me.neznamy.tab.shared.BossBar.BossBarFrame;
+import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.HeaderFooter;
 import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.TabObjective;
-import me.neznamy.tab.shared.BossBar.BossBarFrame;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 
 public class IConfigs {
@@ -26,11 +24,6 @@ public class IConfigs {
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
-		Configs.disabledHeaderFooter = Configs.config.getStringList("disable-features-in-servers.header-footer", Lists.newArrayList("disabledserver"));
-		Configs.disabledTablistNames = Configs.config.getStringList("disable-features-in-servers.tablist-names", Lists.newArrayList("disabledserver"));
-		Configs.disabledNametag = Configs.config.getStringList("disable-features-in-servers.nametag", Lists.newArrayList("disabledserver"));
-		Configs.disabledTablistObjective = Configs.config.getStringList("disable-features-in-servers.tablist-objective", Lists.newArrayList("disabledserver"));
-		Configs.disabledBossbar = Configs.config.getStringList("disable-features-in-servers.bossbar", Lists.newArrayList("disabledserver"));
 	}
 	public static void loadBossbar() throws Exception {
 		Configs.bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");

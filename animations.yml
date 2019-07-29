@@ -2,7 +2,7 @@
 animations:
   MyAnimation1:
     #in MILLISECONDS
-    change-interval: 50
+    change-interval: 100
     texts:
       - "&d-&3--------------"
       - "&3-&d-&3-------------"
@@ -71,23 +71,6 @@ animations:
       - "&ewww.domain.com"
       - "&ewww.domain.com"
       - "&ewww.domain.com"
-  online:
-    change-interval: 150
-    texts:
-      - "&7"
-      - "&7"
-      - "&b"
-      - "&7"
-      - "&7"
-      - "&b"
-      - "&b"
-      - "&b"
-      - "&7"
-      - "&7"
-      - "&b"
-      - "&7"
-      - "&4"
-      - "&8"
   vote:
     change-interval: 1000
     texts:
@@ -147,7 +130,7 @@ animations:
       - "Online players with MC 1.5.x : %version-group:1-5-x%"
       - "Online players with unknown version: %version-group:other%"
   admin_prefix:
-    change-interval: 250
+    change-interval: 200
     texts:
       - "&6&lAdmin &e"
       - "&6&lAdmin &e"

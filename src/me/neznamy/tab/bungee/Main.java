@@ -1,44 +1,21 @@
 package me.neznamy.tab.bungee;
 
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.shared.BossBar;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.HeaderFooter;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.MainClass;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.Placeholders;
-import me.neznamy.tab.shared.Shared;
+import io.netty.channel.*;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.Shared.ServerType;
-import me.neznamy.tab.shared.TabCommand;
-import me.neznamy.tab.shared.TabObjective;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.plugin.*;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.Team;
 
-@SuppressWarnings("deprecation")
 public class Main extends Plugin implements Listener, MainClass{
 
 	public static Main instance;
@@ -137,39 +114,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				String from = p.getWorldName();
 				String to = e.getPlayer().getServer().getInfo().getName();
 				((TabPlayer)p).server = e.getPlayer().getServer();
-				p.updateGroupIfNeeded();
-				p.updateAll();
-				if (BossBar.enable) {
-					if (Configs.disabledBossbar.contains(to)) {
-						for (BossBarLine line : BossBar.lines) PacketAPI.removeBossBar(p, line.getBossBar());
-					}
-					if (!Configs.disabledBossbar.contains(to) && Configs.disabledBossbar.contains(from)) {
-						for (BossBarLine line : BossBar.lines) BossBar.sendBar(p, line);
-					}
-				}
-				if (HeaderFooter.enable) {
-					if (Configs.disabledHeaderFooter.contains(to)) {
-						new PacketPlayOutPlayerListHeaderFooter("","").send(p);
-					} else {
-						HeaderFooter.refreshHeaderFooter(p);
-					}
-				}
-				if (NameTag16.enable) {
-					if (Configs.disabledNametag.contains(to)) {
-						p.unregisterTeam();
-					} else {
-						p.registerTeam();
-					}
-				}
-				if (listNames()) p.updatePlayerListName(false);
-				if (TabObjective.type != TabObjectiveType.NONE) {
-					if (Configs.disabledTablistObjective.contains(to) && !Configs.disabledTablistObjective.contains(from)) {
-						TabObjective.unload(p);
-					}
-					if (!Configs.disabledTablistObjective.contains(to) && Configs.disabledTablistObjective.contains(from)) {
-						TabObjective.playerJoin(p);
-					}
-				}
+				p.onWorldChange(from, to);
 			}
 		} catch (Exception ex){
 			Shared.error("An error occured when player joined/changed server", ex);
@@ -193,12 +138,11 @@ public class Main extends Plugin implements Listener, MainClass{
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
-						if (!Configs.disabledTablistNames.contains(player.getWorldName()))
+						if (!player.disabledTablistNames)
 							Playerlist.modifyPacket((PlayerListItem) packet, player);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
-						if (!Configs.disabledNametag.contains(player.getWorldName()))
-							if (killPacket(packet)) return;
+						if (!player.disabledNametag && killPacket(packet)) return;
 					}
 				} catch (Exception e){
 					Shared.error("An error occured when analyzing packets", e);
@@ -208,6 +152,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		});
 	}
 	public String createComponent(String text) {
+		if (text == null || text.length() == 0) return "{\"translate\":\"\"}";
 		return ComponentSerializer.toString(new TextComponent(text));
 	}
 	public void sendPluginInfo(ITabPlayer to) {
@@ -220,6 +165,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		component.addExtra(extra2);
 		((ProxiedPlayer)to.getPlayer()).sendMessage(component);
 	}
+	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
 		ProxyServer.getInstance().getConsole().sendMessage(message);
 	}

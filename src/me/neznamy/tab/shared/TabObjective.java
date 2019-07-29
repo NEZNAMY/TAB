@@ -10,7 +10,7 @@ public class TabObjective{
 	public static void load() {
 		if (type == TabObjectiveType.NONE) return;
 		for (ITabPlayer p : Shared.getPlayers()){
-			if (Configs.disabledTablistObjective.contains(p.getWorldName())) continue;
+			if (p.disabledTablistObjective) continue;
 			if (type == TabObjectiveType.HEARTS) {
 				PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.HEARTS);
 			} else {
@@ -23,7 +23,7 @@ public class TabObjective{
 		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", new Runnable() {
 	        public void run(){
 	        	for (ITabPlayer p : Shared.getPlayers()){
-	        		if (Configs.disabledTablistObjective.contains(p.getWorldName())) continue;
+	        		if (p.disabledTablistObjective) continue;
 	        		final int value;
 	        		if (type == TabObjectiveType.PING) 			value = (int) p.getPing();
 	        		else if (type == TabObjectiveType.HEARTS) 	value = p.getHealth();
@@ -38,7 +38,7 @@ public class TabObjective{
 		});
 	}
 	public static void playerJoin(ITabPlayer p) {
-		if (type == TabObjectiveType.NONE || Configs.disabledTablistObjective.contains(p.getWorldName())) return;
+		if (type == TabObjectiveType.NONE || p.disabledTablistObjective) return;
 		if (type == TabObjectiveType.HEARTS){
 			PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.HEARTS);
 		} else {
@@ -67,12 +67,12 @@ public class TabObjective{
 		if (type == TabObjectiveType.NONE) return;
 		if (type == TabObjectiveType.HEARTS) {
 			for (ITabPlayer p : Shared.getPlayers()){
-				if (Configs.disabledTablistObjective.contains(p.getWorldName())) continue;
+				if (p.disabledTablistObjective) continue;
 				PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.HEARTS);
 			}
 		} else {
 			for (ITabPlayer p : Shared.getPlayers()){
-				if (Configs.disabledTablistObjective.contains(p.getWorldName())) continue;
+				if (p.disabledTablistObjective) continue;
 				PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.INTEGER);
 			}
 		}
