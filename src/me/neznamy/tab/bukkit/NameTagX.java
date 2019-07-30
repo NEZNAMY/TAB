@@ -129,7 +129,7 @@ public class NameTagX{
 						if (i.getType().getPosition() == 0) {
 							byte properties = Byte.parseByte(i.getValue().toString());
 							boolean sneaking = (properties & 2) != 0;
-							NameTagLineManager.sneak(metaPlayer, sneaking);
+							NameTagLineManager.sneak(metaPlayer, packetReceiver, sneaking);
 						}
 						if (NMSClass.versionNumber >= 14) {
 							if (i.getType().getPosition() == 6) {

@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.Shared;
 
 public class ArmorStand{
 
-	private ITabPlayer tabp;
+	private ITabPlayer owner;
 	private Player player;
 	private double yOffset;
 	private String ID;
@@ -37,9 +37,9 @@ public class ArmorStand{
 
 	private long lastLocationRefresh = 0;
 
-	public ArmorStand(ITabPlayer tabp, String format, double yOffset, String ID) {
-		this.tabp = tabp;
-		player = (Player) tabp.getPlayer();
+	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID) {
+		this.owner = owner;
+		player = (Player) owner.getPlayer();
 		this.ID = ID;
 		this.yOffset = yOffset;
 		rawFormat = format;
@@ -54,7 +54,7 @@ public class ArmorStand{
 		rawFormat = format;
 	}
 	public void refreshName() {
-		String newFormat = Placeholders.replace(rawFormat, tabp);
+		String newFormat = Placeholders.replace(rawFormat, owner);
 		if (newFormat.equals(lastReplacedFormat) && !newFormat.contains("%rel_")) return;
 		lastReplacedFormat = newFormat;
 		datawatcher.setCustomNameVisible(newFormat.length() > 0 && !invisible);
@@ -86,15 +86,13 @@ public class ArmorStand{
 		PacketPlayOutEntityTeleport packet = getTeleportPacket();
 		for (ITabPlayer all : registeredTo.keySet()) packet.send(all);
 	}
-	public void sneak(boolean b) {
-		if (sneaking == b) return;
+	public void sneak(ITabPlayer packetReceiver, boolean b) {
+		if (packetReceiver == owner) return;
 		datawatcher.setSneaking(b);
 		sneaking = b;
 		updateLocation();
-		for (ITabPlayer all : registeredTo.keySet()) {
-			getDestroyPacket(all, false).send(all);
-			getSpawnPacket(all).send(all);
-		}
+		getDestroyPacket(packetReceiver, false).send(packetReceiver);
+		getSpawnPacket(packetReceiver).send(packetReceiver);
 	}
 	public void destroy() {
 		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);

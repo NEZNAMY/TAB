@@ -35,8 +35,8 @@ public class NameTagLineManager {
 	public static void teleportArmorStandToOwnerForEveryone(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.teleport();
 	}
-	public static void sneak(ITabPlayer armorStandOwner, boolean b) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(b);
+	public static void sneak(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean b) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(packetReceiver, b);
 	}
 	public static void destroy(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.destroy();
