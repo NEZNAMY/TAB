@@ -90,8 +90,11 @@ public class ArmorStand{
 		if (sneaking == b) return;
 		datawatcher.setSneaking(b);
 		sneaking = b;
-		teleport();
-		updateMetadata(true);
+		updateLocation();
+		for (ITabPlayer all : registeredTo.keySet()) {
+			getDestroyPacket(all, false).send(all);
+			getSpawnPacket(all).send(all);
+		}
 	}
 	public void destroy() {
 		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);
