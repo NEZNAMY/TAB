@@ -53,7 +53,7 @@ public abstract class ITabPlayer{
 	public String ipAddress;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
-	
+
 	public boolean disabledHeaderFooter;
 	public boolean disabledTablistNames;
 	public boolean disabledNametag;
@@ -145,7 +145,7 @@ public abstract class ITabPlayer{
 			newGroup = getGroupFromPermPlugin();
 		} else {
 			String[] playerGroups = getGroupsFromPermPlugin();
-			if (playerGroups != null)
+			if (playerGroups != null && playerGroups.length > 0) {
 				loop:
 					for (String entry : Configs.primaryGroupFindingList) {
 						for (String playerGroup : playerGroups) {
@@ -155,9 +155,10 @@ public abstract class ITabPlayer{
 							}
 						}
 					}
-			if (newGroup == null) newGroup = playerGroups[0];
+				if (newGroup == null) newGroup = playerGroups[0];
+			}
 		}
-		if (group == null || !group.equals(newGroup)) {
+		if (newGroup != null && (group == null || !group.equals(newGroup))) {
 			group = newGroup;
 			updateAll();
 		}
