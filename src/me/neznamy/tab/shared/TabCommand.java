@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.Arrays;
 
+import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -21,7 +22,7 @@ public class TabCommand{
 			return;
 		}
 		if (args.length >= 3){
-			//tab object <name> type <value>
+			//tab object <name> type [value]
 			//tab object <name> remove
 			String type = args[2].toLowerCase();
 			String value = "";
@@ -127,6 +128,7 @@ public class TabCommand{
 			//tab reload
 			//tab debug
 			//tab cpu
+			//tab ntpreview
 			if (args[0].equalsIgnoreCase("reload")){
 				if (canReload(sender)){
 					Shared.mainClass.reload(sender);
@@ -135,6 +137,12 @@ public class TabCommand{
 				if (canDebug(sender)){
 					debug(sender, null);
 				} else sendMessage(sender, Configs.no_perm);
+			} else if (args[0].equalsIgnoreCase("ntpreview")){
+				if (Configs.unlimitedTags) {
+					if (sender != null) {
+						NameTagLineManager.spawnArmorStand(sender, sender, false);
+					}
+				} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 			} else if (args[0].equalsIgnoreCase("cpu")){
 				if (canCPU(sender)) {
 					String Min1 = "-";

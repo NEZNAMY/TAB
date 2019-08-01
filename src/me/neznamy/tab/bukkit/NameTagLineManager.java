@@ -26,14 +26,8 @@ public class NameTagLineManager {
 	public static void setInBed(ITabPlayer armorStandOwner, boolean inBed) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.setInBed(inBed);
 	}
-	public static boolean isInBed(ITabPlayer armorStandOwner) {
-		return armorStandOwner.getArmorStands().get(0).isInBed();
-	}
 	public static void updateVisibility(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateVisibility();
-	}
-	public static void teleportArmorStandToOwnerForEveryone(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.teleport();
 	}
 	public static void sneak(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean b) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(packetReceiver, b);
@@ -44,8 +38,8 @@ public class NameTagLineManager {
 	public static void destroy(ITabPlayer armorStandOwner, ITabPlayer packetReceiver){
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getDestroyPacket(packetReceiver, true).send(packetReceiver);
 	}
-	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getSpawnPacket(packetReceiver).send(packetReceiver);
+	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean addToRegistered) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getSpawnPacket(packetReceiver, addToRegistered).send(packetReceiver);
 	}
 	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getTeleportPacket().send(packetReceiver);

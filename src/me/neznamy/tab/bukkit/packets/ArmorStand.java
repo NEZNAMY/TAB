@@ -66,12 +66,12 @@ public class ArmorStand{
 	public boolean isInBed() {
 		return inBed;
 	}
-	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to) {
+	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
 		String name = lastReplacedFormat;
 		if (me.neznamy.tab.shared.Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
 		DataWatcher w = datawatcher.create(name);
-		if (!registeredTo.contains(to)) registeredTo.put(to, name);
+		if (!registeredTo.contains(to) && addToRegistered) registeredTo.put(to, name);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(w);
 	}
 	public PacketPlayOutEntityTeleport getTeleportPacket() {
@@ -92,7 +92,7 @@ public class ArmorStand{
 		sneaking = b;
 		updateLocation();
 		getDestroyPacket(packetReceiver, false).send(packetReceiver);
-		getSpawnPacket(packetReceiver).send(packetReceiver);
+		getSpawnPacket(packetReceiver, false).send(packetReceiver);
 	}
 	public void destroy() {
 		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);

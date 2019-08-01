@@ -51,7 +51,7 @@ public class NameTagX{
 					continue;
 				}
 				if (all == wPlayer) continue;
-				NameTagLineManager.spawnArmorStand(all, wPlayer);
+				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
 		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", new Runnable() {
@@ -112,7 +112,7 @@ public class NameTagX{
 			}
 			if (packet instanceof PacketPlayOutNamedEntitySpawn) {
 				ITabPlayer spawnedPlayer = Shared.getPlayer(((PacketPlayOutNamedEntitySpawn)packet).getEntityId());
-				if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver);
+				if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 			}
 			if (packet instanceof PacketPlayOutEntityDestroy) {
 				int[] ids = ((PacketPlayOutEntityDestroy)packet).getEntities();

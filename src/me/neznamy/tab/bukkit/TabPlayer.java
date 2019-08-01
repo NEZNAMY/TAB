@@ -31,6 +31,7 @@ public class TabPlayer extends ITabPlayer{
 	public TabPlayer(Player p) {
 		player = p;
 		updateGroupIfNeeded();
+		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 		version = Placeholders.getVersion(this);
 	}
@@ -107,7 +108,7 @@ public class TabPlayer extends ITabPlayer{
 		return null;
 	}
 	public String getMoney() {
-		if (System.currentTimeMillis() - lastRefreshMoney > 10000L) {
+		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
 			lastRefreshMoney = System.currentTimeMillis();
 			money = refreshMoney();
 		}
@@ -171,7 +172,7 @@ public class TabPlayer extends ITabPlayer{
 		}
 		for (Player all : getPlayer().getWorld().getPlayers()) {
 			if (all.getName().equals(getName())) continue;
-			NameTagLineManager.spawnArmorStand(this, Shared.getPlayer(all.getUniqueId()));
+			NameTagLineManager.spawnArmorStand(this, Shared.getPlayer(all.getUniqueId()), true);
 		}
 	}
 	public String getName() {
@@ -209,6 +210,7 @@ public class TabPlayer extends ITabPlayer{
 		getPlayer().setPlayerListName(name);
 	}
 	public void sendMessage(String message) {
+		if (message == null || message.length() == 0) return;
 		getPlayer().sendMessage(message);
 	}
 	protected void loadChannel() {
