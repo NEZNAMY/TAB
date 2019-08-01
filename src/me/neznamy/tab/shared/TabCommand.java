@@ -252,9 +252,9 @@ public class TabCommand{
 		if (Shared.servertype == ServerType.BUKKIT) sendMessage(sender, "§6PlaceholderAPI: §a" + me.neznamy.tab.bukkit.Placeholders.placeholderAPI);
 		sendMessage(sender, "§6Found Permission system: §a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.usePrimaryGroup) {
-			sendMessage(sender, "§ePermission group choice logic: §aPrimary group§8/§r§8§mChoose from list");
+			sendMessage(sender, "§6Permission group choice logic: §aPrimary group§8/§r§8§mChoose from list");
 		} else {
-			sendMessage(sender, "§ePermission group choice logic: §8§mPrimary group§r§8/§aChoose from list");
+			sendMessage(sender, "§6Permission group choice logic: §8§mPrimary group§r§8/§aChoose from list");
 		}
 		sendMessage(sender, "§7§m>-------------------------------<");
 		if (analyzed != null) {

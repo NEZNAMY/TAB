@@ -78,6 +78,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			TabObjective.load();
 			HeaderFooter.load();
 			Shared.startCPUTask();
+			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e1) {
 			Shared.print("§c", "Did not enable.");
@@ -99,9 +100,9 @@ public class Main extends Plugin implements Listener, MainClass{
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) {
 				p = new TabPlayer(e.getPlayer());
+				inject(p);
 				p.updatePlayerListName(false);
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
-				inject(p);
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);

@@ -75,7 +75,7 @@ Groups:
 Users:
   _NEZNAMY_:
     tabprefix: "&6&lTAB Author &a"
-    tagprefix: "&6&lTAB &a"
+    tagprefix: "&6&lTAB &r&a"
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
     
