@@ -40,7 +40,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
 			Bukkit.getPluginManager().registerEvents(this, this);
-			getCommand("tab").setExecutor(new CommandExecutor() {
+			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
 					TabCommand.execute(sender instanceof Player ? Shared.getPlayer(sender.getName()) : null, args);
