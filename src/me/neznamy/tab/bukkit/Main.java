@@ -69,7 +69,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (disabled) return;
 			long time = System.currentTimeMillis();
 			Shared.cancelAllTasks();
-			Configs.animations = null;
+			Configs.animations = new ArrayList<Animation>();
 			PerWorldPlayerlist.unload();
 			HeaderFooter.unload();
 			TabObjective.unload();
@@ -108,7 +108,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			HeaderFooter.load();
 			PerWorldPlayerlist.load();
 			Shared.startCPUTask();
-			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup errors.");
+			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e1) {
 			Shared.print("§c", "Did not enable. Check errors.txt for more info.");
