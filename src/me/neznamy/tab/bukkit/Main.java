@@ -60,7 +60,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void onDisable() {
 		if (!disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) Shared.uninject(p);
+			for (ITabPlayer p : Shared.getPlayers()) p.getChannel().pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}

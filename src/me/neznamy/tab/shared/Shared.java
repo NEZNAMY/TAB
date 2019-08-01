@@ -16,6 +16,9 @@ import java.util.concurrent.Future;
 
 public class Shared {
 
+	private static final String newline = System.getProperty("line.separator");
+	public static final String DECODER_NAME = "TABReader";
+	
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static long cpuTime;
@@ -24,10 +27,8 @@ public class Shared {
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	private static ExecutorService exe = Executors.newCachedThreadPool();
 	public static String pluginVersion;
-	private static final String newline = System.getProperty("line.separator");
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
-	public static final String DECODER_NAME = "TABReader";
 
 	public static void init(MainClass mainClass, ServerType serverType, String pluginVersion) {
 		Shared.mainClass = mainClass;
@@ -109,7 +110,7 @@ public class Shared {
 		});
 	}
 	private static String ERROR_PREFIX() {
-		return new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + " - " + new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - ";
+		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
 	}
 	public static int getNextEntityId() {
 		return nextEntityId++;
@@ -183,19 +184,6 @@ public class Shared {
 	}
 	public static void cancelAllTasks() {
 		for (Future<?> f : tasks) f.cancel(true);
-	}
-	public static void uninject(final ITabPlayer player) {
-		player.getChannel().eventLoop().execute(new Runnable() {
-
-
-			public void run() {
-				try {
-					player.getChannel().pipeline().remove(DECODER_NAME);
-				} catch (Exception e){
-
-				}
-			}
-		});
 	}
 	public static enum ServerType{
 		BUKKIT, BUNGEE;

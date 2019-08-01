@@ -5,7 +5,7 @@ enable-header-footer: true
 #20 ticks = 1 second
 nametag-refresh-interval-ticks: 20
 tablist-refresh-interval-ticks: 20
-header-footer-refresh-interval-ticks: 1
+header-footer-refresh-interval-ticks: 2
 
 header:
   - "%animation:ServerName%"
@@ -25,7 +25,7 @@ footer:
   - "&7Visit our webpage %animation:web%"
 
 #the yellow number in tablist
-#options: PING, HEARTS, NONE (to disable it), CUSTOM (any placeholder defined below this)
+#options: PING, HEARTS, NONE (to disable it), CUSTOM (any placeholder defined below)
 tablist-objective: PING
 tablist-objective-custom-value: "%some_placeholderapi_placeholder%"
 

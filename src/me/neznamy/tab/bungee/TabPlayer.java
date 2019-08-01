@@ -26,6 +26,7 @@ public class TabPlayer extends ITabPlayer{
 		player = p;
 		server = p.getServer();
 		updateGroupIfNeeded();
+		updateAll();
 		if (NameTag16.enable) teamName = buildTeamName();
 		if (Shared.mainClass.listNames()) updatePlayerListName(false);
 		version = getPlayer().getPendingConnection().getVersion();
@@ -95,6 +96,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {
+		if (message == null || message.length() == 0) return;
 		getPlayer().sendMessage(message);
 	}
 	protected void loadChannel() {

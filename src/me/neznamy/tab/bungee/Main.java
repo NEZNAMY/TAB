@@ -29,7 +29,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 
-			
 			public void execute(CommandSender sender, String[] args) {
 				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(sender.getName()) : null, args);
 			}
@@ -39,7 +38,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void onDisable() {
 		if (!disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) Shared.uninject(p);
+			for (ITabPlayer p : Shared.getPlayers()) p.getChannel().pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}
@@ -90,10 +89,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		Placeholders.recalculateOnlineVersions();
-		if (disconnectedPlayer != null) {
-			NameTag16.playerQuit(disconnectedPlayer);
-			Shared.data.remove(e.getPlayer().getUniqueId());
-		}
+		NameTag16.playerQuit(disconnectedPlayer);
+		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler
 	public void a(ServerSwitchEvent e){
@@ -138,8 +135,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
-						if (!player.disabledTablistNames)
-							Playerlist.modifyPacket((PlayerListItem) packet, player);
+						if (!player.disabledTablistNames) Playerlist.modifyPacket((PlayerListItem) packet, player);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
 						if (!player.disabledNametag && killPacket(packet)) return;

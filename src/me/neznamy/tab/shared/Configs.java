@@ -9,6 +9,8 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.shared.BossBar.BossBarFrame;
+import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.Shared.ServerType;
 
 public class Configs {
@@ -130,9 +132,27 @@ public class Configs {
 	}
 	public static void loadBossbar() throws Exception {
 		if (Shared.servertype == ServerType.BUKKIT) {
-			me.neznamy.tab.bukkit.IConfigs.loadBossbar();
+			Configs.bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");
+			BossBar.refresh = (Configs.bossbar.getInt("refresh-interval", 20)*50);
 		} else {
-			me.neznamy.tab.bungee.IConfigs.loadBossbar();
+			Configs.bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");
+			BossBar.refresh = Configs.bossbar.getInt("refresh-interval", 1000);
+		}
+		BossBar.enable = Configs.bossbar.getBoolean("enabled", false);
+		Configs.bossbarToggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
+		BossBar.lines.clear();
+		if (Configs.bossbar.getConfigurationSection("bars") != null) {
+			for (String bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
+				List<BossBarFrame> frames = new ArrayList<BossBarFrame>();
+				for (String frame : Configs.bossbar.getConfigurationSection("bars." + bar + ".frames").keySet()){
+					String style = Configs.bossbar.getString("bars." + bar + ".frames." + frame + ".style");
+					String color = Configs.bossbar.getString("bars." + bar + ".frames." + frame + ".color");
+					String progress = Configs.bossbar.getString("bars." + bar + ".frames." + frame + ".progress");
+					String message = Configs.bossbar.getString("bars." + bar + ".frames." + frame + ".text");
+					frames.add(new BossBarFrame(style, color, progress, message));
+				}
+				if (!frames.isEmpty()) BossBar.lines.add(new BossBarLine(Configs.bossbar.getInt("bars." + bar + ".refresh", 1000), frames));
+			}
 		}
 	}
 	public static void loadTranslation() throws Exception {
