@@ -25,17 +25,18 @@ public class IConfigs{
 		NameTagX.enable = false;
 		NameTag16.enable = false;
 		if (changeNameTag) {
+			Configs.unlimitedTags = unlimitedTags;
 			if (unlimitedTags) {
 				NameTagX.enable = true;
-				Configs.unlimitedTags = true;
 			} else {
 				NameTag16.enable = true;
 			}
 		}
+		String objective = Configs.config.getString("tablist-objective", "PING");
 		try{
-			TabObjective.type = TabObjectiveType.valueOf(Configs.config.getString("tablist-objective", "PING").toUpperCase());
+			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
 		} catch (Exception e) {
-			Shared.startupWarn("\"§e" + Configs.config.getString("tablist-objective", "PING") + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM and NONE §cfor disabling the feature.");
+			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
 		TabObjective.customValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
