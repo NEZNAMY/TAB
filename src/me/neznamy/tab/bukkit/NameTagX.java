@@ -93,7 +93,7 @@ public class NameTagX{
 				if (packet instanceof PacketPlayOutRelEntityMoveLook) id = ((PacketPlayOutRelEntityMoveLook)packet).getEntityId();
 				ITabPlayer pl = Shared.getPlayer(id);
 				if (pl != null) {
-					//a player moved
+					//player moved
 					if (((Player) pl.getPlayer()).isFlying() && !teleportPacket) {
 						//fixing a client-sided bug
 						NameTagLineManager.teleportOwner(pl, packetReceiver);

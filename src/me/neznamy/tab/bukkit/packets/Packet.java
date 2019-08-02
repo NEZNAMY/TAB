@@ -37,15 +37,9 @@ public class Packet{
 					if (Main.disabled) return;
 					try{
 						long time = System.nanoTime();
-						ITabPlayer receiver = Shared.getPlayer(player.getUniqueId());
-						if (receiver == null) {
-							//plugin reload and player data not loaded yet
-							super.write(context, packet, channelPromise);
-							return;
-						}
-
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-							if (!receiver.disabledNametag) {
+							//nametag anti-override
+							if (!player.disabledNametag) {
 								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
 									Shared.cpuTime += (System.nanoTime()-time);
 									return;
@@ -58,24 +52,24 @@ public class Packet{
 							//unlimited nametag mode
 							if (PacketAPI.PacketPlayOutAnimation.isInstance(packet)) {
 								if (PacketAPI.PacketPlayOutAnimation_ACTION.getInt(packet) == 2) {
-									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), receiver, false);
+									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), player, false);
 								}
 							}
 							if (NMSClass.versionNumber < 14) {
 								if (PacketAPI.PacketPlayOutBed.isInstance(packet)) {
-									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutBed_ENTITY.getInt(packet), receiver, true);
+									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutBed_ENTITY.getInt(packet), player, true);
 								}
 							}
 							PacketPlayOut pack = null;
 							PacketSendEvent event = null;
-							if ((pack = PacketPlayOutNamedEntitySpawn.read(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutEntityDestroy.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutEntityTeleport.read(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutRelEntityMove.read(packet))				!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutRelEntityMoveLook.read(packet))			!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutMount.read(packet))						!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
-							if (NMSClass.versionNumber == 8 && (pack = PacketPlayOutAttachEntity_1_8_x.read(packet))!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutNamedEntitySpawn.read(packet)) 			!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutEntityDestroy.read(packet)) 				!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutEntityTeleport.read(packet)) 				!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutRelEntityMove.read(packet))				!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutRelEntityMoveLook.read(packet))			!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutMount.read(packet))						!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(player, pack);
+							if (NMSClass.versionNumber == 8 && (pack = PacketPlayOutAttachEntity_1_8_x.read(packet))!= null) event = new PacketSendEvent(player, pack);
 							if (event != null) {
 								try {
 									reader.onNameTagXPacket(event);
@@ -91,12 +85,12 @@ public class Packet{
 						PacketSendEvent event = null;
 						if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
 							//preventing pets from having owner's nametag properties if feature is enabled
-							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(receiver, pack);
-							if ((pack = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) 		!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutEntityMetadata.fromNMS(packet)) 			!= null) event = new PacketSendEvent(player, pack);
+							if ((pack = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) 		!= null) event = new PacketSendEvent(player, pack);
 						}
 						if (Playerlist.enable) {
 							//correcting name, spectators if enabled, changing npc names if enabled
-							if ((pack = PacketPlayOutPlayerInfo.fromNMS(packet)) 				!= null) event = new PacketSendEvent(receiver, pack);
+							if ((pack = PacketPlayOutPlayerInfo.fromNMS(packet)) 				!= null) event = new PacketSendEvent(player, pack);
 						}
 						
 						if (event != null) {
