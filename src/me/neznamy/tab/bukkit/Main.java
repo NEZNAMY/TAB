@@ -173,7 +173,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(final PlayerQuitEvent e){
 		if (disabled) return;
-		Shared.runTask("player left the server", new Runnable() {
+		Shared.runTaskLater(50, "player left the server", new Runnable() {
 
 
 			public void run() {
@@ -184,18 +184,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				for (ITabPlayer all : Shared.getPlayers()) {
 					NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
 				}
-
-				//attepting to fix "floating nametags when players leave"
-				//why the fuck is this needed
-				int[] ids = new int[disconnectedPlayer.getArmorStands().size()];
-				for (int i=0; i<disconnectedPlayer.getArmorStands().size(); i++) {
-					ids[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
-				}
-				PacketPlayOutEntityDestroy destroy = new PacketPlayOutEntityDestroy(ids);
-				for (ITabPlayer all : Shared.getPlayers()) {
-					destroy.send(all);
-				}
-				//
 				Shared.data.remove(e.getPlayer().getUniqueId());
 			}
 		});
