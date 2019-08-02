@@ -14,13 +14,17 @@ import org.json.simple.JSONObject;
 
 import com.github.cheesesoftware.PowerfulPermsAPI.PowerfulPermsPlugin;
 
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.bukkit.packets.Packet.*;
+import me.neznamy.tab.bukkit.packets.PacketAPI;
+import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
+import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.FancyMessage.*;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared.ServerType;
 import me.neznamy.tab.shared.packets.*;
 
@@ -211,47 +215,112 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 	}
-	public static void inject(ITabPlayer p) {
-		Packet.inject(p, new PacketReader() {
+	public static void inject(final ITabPlayer player) {
+		try {
+			player.getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
-			public void onPacketSend(PacketSendEvent e) throws Exception {
-				ITabPlayer p = e.getPlayer();
-				PacketPlayOut packet = e.getPacket();
-				if (packet instanceof PacketPlayOutPlayerInfo) {
-					if (Playerlist.modifyPacketOrCancel((PacketPlayOutPlayerInfo) packet, p)) e.setCancelled(true);
-				}
-				if (packet instanceof PacketPlayOutEntityMetadata) {
-					List<Item> items = ((PacketPlayOutEntityMetadata)packet).getList();
-					for (Item petOwner : items) {
-						if (petOwner.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) {
-							modify(petOwner);
+				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
+					if (Main.disabled) return;
+					try{
+						long time = System.nanoTime();
+						if (NameTagX.enable) {
+							//preventing players from hitting armor stands, modifying id to owner's id if needed
+							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
 						}
+						Shared.cpuTime += (System.nanoTime()-time);
+					} catch (Exception e){
+						Shared.error("An error occured when reading packets", e);
 					}
+					super.channelRead(context, packet);
 				}
-				if (packet instanceof PacketPlayOutSpawnEntityLiving) {
-					DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)packet).getDataWatcher();
-					Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
-					if (petOwner != null) {
-						modify(petOwner);
-					}
-				}
-			}
-			public void onNameTagXPacket(final PacketSendEvent e) {
-				final ITabPlayer p = e.getPlayer();
-				if (p.disabledNametag) return;
-				//sending packets outside of the packet reader or protocollib will cause problems
-				Shared.runTask("processing packet out", new Runnable() {
+				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+					if (Main.disabled) return;
+					try{
+						long time = System.nanoTime();
+						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+							//nametag anti-override
+							if (!player.disabledNametag) {
+								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
+									Shared.cpuTime += (System.nanoTime()-time);
+									return;
+								}
+							}
+						}
+						if (NameTagX.enable) {
+							//unlimited nametag mode
+							if (player.disabledNametag) return;
+							if (PacketAPI.PacketPlayOutAnimation.isInstance(packet)) {
+								if (PacketAPI.PacketPlayOutAnimation_ACTION.getInt(packet) == 2) {
+									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), player, false);
+								}
+							}
+							if (NMSClass.versionNumber < 14) {
+								if (PacketAPI.PacketPlayOutBed.isInstance(packet)) {
+									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutBed_ENTITY.getInt(packet), player, true);
+								}
+							}
+							PacketPlayOut pack = null;
+							if (pack == null) pack = PacketPlayOutNamedEntitySpawn.read(packet);
+							if (pack == null) pack = PacketPlayOutEntityDestroy.read(packet);
+							if (pack == null) pack = PacketPlayOutEntityTeleport.read(packet);
+							if (pack == null) pack = PacketPlayOutRelEntityMove.read(packet);
+							if (pack == null) pack = PacketPlayOutRelEntityMoveLook.read(packet);
+							if (pack == null) pack = PacketPlayOutMount.read(packet);
+							if (pack == null) pack = PacketPlayOutEntityMetadata.fromNMS(packet);
+							if (pack == null && NMSClass.versionNumber == 8) pack = PacketPlayOutAttachEntity_1_8_x.read(packet);
+							if (pack != null) {
+								final PacketPlayOut p = pack;
+								//sending packets outside of the packet reader or protocollib will cause problems
+								Shared.runTask("processing packet out", new Runnable() {
 
 
-					public void run() {
-						NameTagX.processPacketOUT(e.getPacket(), p);
+									public void run() {
+										NameTagX.processPacketOUT(p, player);
+									}
+								});
+							}
+						}
+
+						PacketPlayOut p = null;
+						
+						if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
+							//preventing pets from having owner's nametag properties if feature is enabled
+							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
+								List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
+								for (Item petOwner : items) {
+									if (petOwner.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) modifyDataWatcherItem(petOwner);
+								}
+							}
+							if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
+								DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
+								Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
+								if (petOwner != null) modifyDataWatcherItem(petOwner);
+							}
+						}
+						if (Playerlist.enable) {
+							//correcting name, spectators if enabled, changing npc names if enabled
+							if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
+								if (Playerlist.modifyPacketOrCancel((PacketPlayOutPlayerInfo) p, player)) {
+									Shared.cpuTime += (System.nanoTime()-time);
+									return;
+								}
+							}
+						}
+						if (p != null) packet = p.toNMS();
+						Shared.cpuTime += (System.nanoTime()-time);
+					} catch (Exception e){
+						Shared.error("An error occured when reading packets", e);
 					}
-				});
-			}
-		});
+					super.write(context, packet, channelPromise);
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			player.getChannel().pipeline().remove(Shared.DECODER_NAME);
+			inject(player);
+		}
 	}
 	@SuppressWarnings("rawtypes")
-	private static void modify(Item petOwner) {
+	private static void modifyDataWatcherItem(Item petOwner) {
 		//1.12-
 		if (petOwner.getValue() instanceof com.google.common.base.Optional) {
 			com.google.common.base.Optional o = (com.google.common.base.Optional) petOwner.getValue();
@@ -267,6 +336,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		}
 	}
+	
 	@SuppressWarnings("unchecked")
 	public Object createComponent(String text) {
 		if (text == null || text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
@@ -303,7 +373,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		FancyMessage message = new FancyMessage();
 		message.add(new Extra("§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
 		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
-		PacketAPI.sendFancyMessage(to, message);
+		new PacketPlayOutChat(message.toString()).send(to);
 	}
 	@SuppressWarnings("unchecked")
 	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
