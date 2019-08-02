@@ -251,7 +251,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			public void onNameTagXPacket(final PacketSendEvent e) {
 				final ITabPlayer p = e.getPlayer();
 				if (p.disabledNametag) return;
-				//sending packets outside of the packet reader or protocollib will complain
+				//sending packets outside of the packet reader or protocollib will cause problems
 				Shared.runTask("processing packet out", new Runnable() {
 
 
