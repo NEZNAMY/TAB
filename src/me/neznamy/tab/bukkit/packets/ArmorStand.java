@@ -57,7 +57,6 @@ public class ArmorStand{
 		String newFormat = Placeholders.replace(rawFormat, owner);
 		if (newFormat.equals(lastReplacedFormat) && !newFormat.contains("%rel_")) return;
 		lastReplacedFormat = newFormat;
-		datawatcher.setCustomNameVisible(newFormat.length() > 0 && !invisible);
 		updateMetadata(false);
 	}
 	public void setInBed(boolean inBed) {
@@ -70,6 +69,7 @@ public class ArmorStand{
 		updateLocation();
 		String name = lastReplacedFormat;
 		if (me.neznamy.tab.shared.Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
+		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 		DataWatcher w = datawatcher.create(name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.put(to, name);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(w);
@@ -108,9 +108,9 @@ public class ArmorStand{
 		for (Entry<ITabPlayer, String> entry : registeredTo.entrySet()) {
 			ITabPlayer all = entry.getKey();
 			String lastName = entry.getValue();
-			if (invisible || !datawatcher.isCustomNameVisible() || TABAPI.hasHiddenNametag(player.getUniqueId())) datawatcher.setCustomNameVisible(false);
 			String name = lastReplacedFormat;
 			if (me.neznamy.tab.shared.Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
+			datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 			DataWatcher w = datawatcher.create(name);
 			if (lastName.equals(name) && !force) continue;
 			registeredTo.put(all, name);
