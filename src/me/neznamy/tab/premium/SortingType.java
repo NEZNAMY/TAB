@@ -1,10 +1,13 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.premium;
+
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.Shared;
 
 public enum SortingType {
 	
-	GROUPS, GROUP_PERMISSIONS, NICKNAME_ALPHABETICAL, TABPREFIX_ALPHABETICAL, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_ALPHABETICAL;
-	
-	public static String placeholder;
+	GROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z;
 	
 	public String getTeamName(ITabPlayer p) {
 		String teamName = "";
@@ -25,32 +28,30 @@ public enum SortingType {
 				}
 			}
 			break;
-		case NICKNAME_ALPHABETICAL:
-			teamName = p.getNickname();
-			break;
-		case TABPREFIX_ALPHABETICAL:
-			teamName = p.getTabPrefix();
+		case TABPREFIX_A_TO_Z:
+			teamName = p.getActiveProperty("tabprefix");
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
-			teamName = Placeholders.replace(placeholder, p);
+			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
 			try {
-				Integer.parseInt(teamName);
+				Long.parseLong(teamName);
 			} catch (Exception e) {
 				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			while (teamName.length() < 10) teamName = "0" + teamName;
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
-			teamName = Placeholders.replace(placeholder, p);
+			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
 			try {
-				int value = Integer.parseInt(teamName);
+				long value = Long.parseLong(teamName);
 				teamName = (9999999999L-value)+"";
 			} catch (Exception e) {
 				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			break;
-		case PLACEHOLDER_ALPHABETICAL:
-			teamName = Placeholders.replace(placeholder, p);
+		case PLACEHOLDER_A_TO_Z:
+			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
+			break;
 		}
 		teamName += p.getName();
 		teamName = Placeholders.replace(teamName, p);
@@ -66,9 +67,10 @@ public enum SortingType {
 				}
 			}
 			if (!nameUsed) {
+				if (!Premium.caseSensitive) name2 = name2.toLowerCase();
 				return name2;
 			}
 		}
-		return teamName;
+		return "InvalidTeam";
 	}
 }

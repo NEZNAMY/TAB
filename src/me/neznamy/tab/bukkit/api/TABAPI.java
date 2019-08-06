@@ -3,12 +3,11 @@ package me.neznamy.tab.bukkit.api;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.bukkit.packets.ArmorStand;
-import me.neznamy.tab.shared.Shared;
 
 @Deprecated
 public class TABAPI {
 
-	public static ArmorStand bindLine(Player p, String text, double heightDifference){
+	public static ArmorStand bindLine(Player p, String text, float heightDifference){
 		return me.neznamy.tab.api.TABAPI.bindLine(p.getUniqueId(), text, heightDifference);
 	}
 	public static void unbindLine(Player p, ArmorStand as) {
@@ -59,24 +58,24 @@ public class TABAPI {
 	}
 	
 	public static String getTemporaryCustomTabName(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryCustomTabName;
+		return me.neznamy.tab.api.TABAPI.getTemporaryCustomTabName(p.getUniqueId());
 	}
 	public static String getTemporaryCustomTagName(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryCustomTagName;
+		return me.neznamy.tab.api.TABAPI.getTemporaryCustomTagName(p.getUniqueId());
 	}
 	public static String getTemporaryTabPrefix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryTabPrefix;
+		return me.neznamy.tab.api.TABAPI.getTemporaryTabPrefix(p.getUniqueId());
 	}
 	public static String getTemporaryTabSuffix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryTabSuffix;
+		return me.neznamy.tab.api.TABAPI.getTemporaryTabSuffix(p.getUniqueId());
 	}
 	public static String getTemporaryTagPrefix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryTagPrefix;
+		return me.neznamy.tab.api.TABAPI.getTemporaryTagPrefix(p.getUniqueId());
 	}
 	public static String getTemporaryTagSuffix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).temporaryTagSuffix;
+		return me.neznamy.tab.api.TABAPI.getTemporaryTagSuffix(p.getUniqueId());
 	}
-	
+
 	public static boolean hasTemporaryCustomTabName(Player p) {
 		return getTemporaryCustomTabName(p) != null;
 	}
@@ -131,22 +130,22 @@ public class TABAPI {
 		me.neznamy.tab.api.TABAPI.clearHeaderFooter(p.getUniqueId());
 	}
 	public static String getOriginalTabPrefix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).tabPrefix;
+		return me.neznamy.tab.api.TABAPI.getOriginalTabPrefix(p.getUniqueId());
 	}
 	public static String getOriginalTagPrefix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).tagPrefix;
+		return me.neznamy.tab.api.TABAPI.getOriginalTagPrefix(p.getUniqueId());
 	}
 	public static String getOriginalTabSuffix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).tabSuffix;
+		return me.neznamy.tab.api.TABAPI.getOriginalTabSuffix(p.getUniqueId());
 	}
 	public static String getOriginalTagSuffix(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).tagSuffix;
+		return me.neznamy.tab.api.TABAPI.getOriginalTagSuffix(p.getUniqueId());
 	}
 	public static String getOriginalCustomTagName(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).customtagname;
+		return me.neznamy.tab.api.TABAPI.getOriginalCustomTagName(p.getUniqueId());
 	}
 	public static String getOriginalCustomTabName(Player p) {
-		return Shared.getPlayer(p.getUniqueId()).customtabname;
+		return me.neznamy.tab.api.TABAPI.getOriginalCustomTabName(p.getUniqueId());
 	}
 	public static void hideNametag(Player p) {
 		me.neznamy.tab.api.TABAPI.hideNametag(p.getUniqueId());

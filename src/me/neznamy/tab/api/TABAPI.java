@@ -19,7 +19,7 @@ public class TABAPI {
 
 	public static List<UUID> hiddenNametag = new ArrayList<UUID>();
 
-	public static ArmorStand bindLine(UUID uniqueId, String text, double heightDifference){
+	public static ArmorStand bindLine(UUID uniqueId, String text, float heightDifference){
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		return NameTagLineManager.bindLine(t, text, heightDifference, (Math.random()*1000000)+"");
@@ -46,7 +46,7 @@ public class TABAPI {
 	public static void setCustomTabNameTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryCustomTabName = value;
+		t.temporaryproperties.put("customtabname", value);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 		t.updatePlayerListName(false);
 	}
@@ -54,44 +54,44 @@ public class TABAPI {
 		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryCustomTagName = value;
+		t.temporaryproperties.put("customtagname", value);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 		t.updatePlayerListName(false);
 	}
 	public static void setTabPrefixTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryTabPrefix = value;
+		t.temporaryproperties.put("tabprefix", value);
 		t.updatePlayerListName(false);
 	}
 	public static void setTabSuffixTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryTabSuffix = value;
+		t.temporaryproperties.put("tabsuffix", value);
 		t.updatePlayerListName(false);
 	}
 	public static void setTagPrefixTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryTagPrefix = value;
+		t.temporaryproperties.put("tagprefix", value);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 	}
 	public static void setTagSuffixTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (t == null) return;
-		t.temporaryTagSuffix = value;
+		t.temporaryproperties.put("tagsuffix", value);
 		if (NameTag16.enable || Configs.unlimitedTags) t.updateTeam();
 	}
 	public static void setAboveNameTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
-		t.temporaryAboveName = value;
+		t.temporaryproperties.put("abovename", value);
 		t.restartArmorStands();
 	}
 	public static void setBelowNameTemporarily(UUID uniqueId, String value) {
 		ITabPlayer t = Shared.getPlayer(uniqueId);
 		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
-		t.temporaryBelowName = value;
+		t.temporaryproperties.put("belowname", value);
 		t.restartArmorStands();
 	}
 	
@@ -148,28 +148,28 @@ public class TABAPI {
 	}
 	
 	public static String getTemporaryCustomTabName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryCustomTabName;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("customtabname");
 	}
 	public static String getTemporaryCustomTagName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryCustomTagName;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("customtagname");
 	}
 	public static String getTemporaryTabPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryTabPrefix;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("tabprefix");
 	}
 	public static String getTemporaryTabSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryTabSuffix;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("tabsuffix");
 	}
 	public static String getTemporaryTagPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryTagPrefix;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("tagprefix");
 	}
 	public static String getTemporaryTagSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryTagSuffix;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("tagsuffix");
 	}
 	public static String getTemporaryAboveName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryAboveName;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("abovename");
 	}
 	public static String getTemporaryBelowName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).temporaryBelowName;
+		return Shared.getPlayer(uniqueId).getTemporaryProperty("belowname");
 	}
 	
 	public static boolean hasTemporaryCustomTabName(UUID uniqueId) {
@@ -223,28 +223,28 @@ public class TABAPI {
 	}
 	
 	public static String getOriginalCustomTabName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).customtabname;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("customtabname");
 	}
 	public static String getOriginalCustomTagName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).customtagname;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("customtagname");
 	}
 	public static String getOriginalTabPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).tabPrefix;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("tabprefix");
 	}
 	public static String getOriginalTagPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).tagPrefix;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("tagprefix");
 	}
 	public static String getOriginalTabSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).tabSuffix;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("tabsuffix");
 	}
 	public static String getOriginalTagSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).tagSuffix;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("tagsuffix");
 	}
 	public static String getOriginalAboveName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).abovename;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("abovename");
 	}
 	public static String getOriginalBelowName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).belowname;
+		return Shared.getPlayer(uniqueId).getOriginalProperty("belowname");
 	}
 	
 	public static void sendHeaderFooter(UUID uniqueId, String header, String footer) {

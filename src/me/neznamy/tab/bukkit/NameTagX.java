@@ -104,9 +104,7 @@ public class NameTagX{
 					//an animal carrying a player moved
 					for (Integer entity : vehicles.get(id)) {
 						ITabPlayer passenger = Shared.getPlayer(entity);
-						if (passenger != null) {
-							NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
-						}
+						if (passenger != null) NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
 					}
 				}
 			}
@@ -127,13 +125,13 @@ public class NameTagX{
 				if (metaPlayer != null){
 					for (Item i : items) {
 						if (i.getType().getPosition() == 0) {
-							byte properties = Byte.parseByte(i.getValue().toString());
+							byte properties = (Byte) i.getValue();
 							boolean sneaking = (properties & 2) != 0;
 							NameTagLineManager.sneak(metaPlayer, packetReceiver, sneaking);
 						}
 						if (NMSClass.versionNumber >= 14) {
 							if (i.getType().getPosition() == 6) {
-								if (i.getValue() == EnumAPI.EntityPose_SLEEPING) NameTagX.onBedStatusChange(metaPlayer.getEntityId(), packetReceiver, true);
+								if (i.getValue() == EnumAPI.EntityPose_SLEEPING) onBedStatusChange(metaPlayer.getEntityId(), packetReceiver, true);
 							}
 						}
 					}
@@ -147,13 +145,16 @@ public class NameTagX{
 				for (int i=0; i<passg.length; i++) {
 					passengers[i] = passg[i];
 				}
-				if (passengers.length == 0) vehicles.remove(vehicle);
-				else vehicles.put(vehicle, Arrays.asList(passengers));
+				if (passengers.length == 0) {
+					//detach
+					vehicles.remove(vehicle);
+				} else {
+					//attach
+					vehicles.put(vehicle, Arrays.asList(passengers));
+				}
 				for (int entity : passengers) {
 					ITabPlayer pass = Shared.getPlayer(entity);
-					if (pass != null) {
-						NameTagLineManager.teleportArmorStand(pass, packetReceiver);
-					}
+					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 				}
 			}
 			if (packet instanceof PacketPlayOutAttachEntity_1_8_x) {
@@ -176,7 +177,6 @@ public class NameTagX{
 					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 				}
 			}
-			
 		} catch (Exception e) {
 			Shared.error("An error occured when processing packetOUT:", e);
 		}
@@ -184,7 +184,6 @@ public class NameTagX{
 	public static void onBedStatusChange(final int entered, final ITabPlayer packetReceiver, final boolean inBed) {
 		Shared.runTask("processing packet out", new Runnable() {
 
-			
 			public void run() {
 				ITabPlayer p = Shared.getPlayer(entered);
 				if (p != null) {

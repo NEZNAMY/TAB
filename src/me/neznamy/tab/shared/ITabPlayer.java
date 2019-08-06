@@ -11,6 +11,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.bukkit.packets.ArmorStand;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -18,23 +19,8 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 public abstract class ITabPlayer{
 
 	public Object player;
-	public String tagPrefix;
-	public String tabPrefix;
-	public String tagSuffix;
-	public String tabSuffix;
-	public String belowname;
-	public String abovename;
-	public String customtagname;
-	public String customtabname;
-
-	public String temporaryTagPrefix;
-	public String temporaryTabPrefix;
-	public String temporaryTagSuffix;
-	public String temporaryTabSuffix;
-	public String temporaryBelowName;
-	public String temporaryAboveName;
-	public String temporaryCustomTagName;
-	public String temporaryCustomTabName;
+	public HashMap<String, String> originalproperties = new HashMap<String, String>();
+	public HashMap<String, String> temporaryproperties = new HashMap<String, String>();
 
 	private String group;
 	private long lastRefreshGroup;
@@ -71,7 +57,7 @@ public abstract class ITabPlayer{
 	public abstract String getNickname();
 
 	//per-type
-	public abstract void setPlayerListName(String name);
+	public abstract void setPlayerListName();
 	public abstract String getGroupFromPermPlugin();
 	public abstract String[] getGroupsFromPermPlugin();
 	public abstract boolean hasPermission(String permission);
@@ -95,7 +81,7 @@ public abstract class ITabPlayer{
 		}
 		if (force || replacedTabFormat == null || !newFormat.equals(replacedTabFormat) || newFormat.contains("%rel_")) {
 			replacedTabFormat = newFormat;
-			setPlayerListName(getName());
+			setPlayerListName();
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
@@ -116,14 +102,8 @@ public abstract class ITabPlayer{
 			registerTeam();
 		}
 		if (Configs.unlimitedTags) {
-			if (NameTagLineManager.getByID(this, "NAMETAG") != null) {
-				NameTagLineManager.getByID(this, "NAMETAG").setNameFormat(getTagFormat());
-			}
-			if (NameTagLineManager.getByID(this, "BELOWNAME") != null) {
-				NameTagLineManager.getByID(this, "BELOWNAME").setNameFormat(getBelowName());
-			}
-			if (NameTagLineManager.getByID(this, "ABOVENAME") != null) {
-				NameTagLineManager.getByID(this, "ABOVENAME").setNameFormat(getAboveName());
+			for (ArmorStand as : armorStands) {
+				as.setNameFormat(getActiveProperty(as.getID()));
 			}
 			NameTagLineManager.refreshNames(this);
 		}
@@ -164,54 +144,36 @@ public abstract class ITabPlayer{
 		}
 	}
 	public String getTabFormat() {
-		return getTabPrefix() + getTabName() + getTabSuffix();
+		return getActiveProperty("tabprefix") + getActiveProperty("customtabname") + getActiveProperty("tabsuffix");
 	}
 	public String getTagFormat() {
-		return getTagPrefix() + getTagName() + getTagSuffix();
+		return getActiveProperty("tagprefix") + getActiveProperty("customtagname") + getActiveProperty("tagsuffix");
 	}
-	public String getTabName() {
-		if (temporaryCustomTabName != null) return temporaryCustomTabName;
-		if (customtabname.length() > 0) return customtabname;
-		return getName();
+	public String getOriginalProperty(String property) {
+		return originalproperties.get(property);
 	}
-	public String getTagName() {
-		if (temporaryCustomTagName != null) return temporaryCustomTagName;
-		if (customtagname.length() > 0) return customtagname;
-		return getName();
+	public String getActiveProperty(String property) {
+		if (property.equals("nametag")) return getTagFormat();
+		String value = getTemporaryProperty(property) != null ? getTemporaryProperty(property) : getOriginalProperty(property);
+		if (property.contains("custom") && value == null) return getName();
+		return value;
 	}
-	public String getAboveName() {
-		if (temporaryAboveName != null) return temporaryAboveName;
-		return abovename;
-	}
-	public String getBelowName() {
-		if (temporaryBelowName != null) return temporaryBelowName;
-		return belowname;
-	}
-	public String getTabPrefix() {
-		if (temporaryTabPrefix != null) return temporaryTabPrefix;
-		return tabPrefix;
-	}
-	public String getTagPrefix() {
-		if (temporaryTagPrefix != null) return temporaryTagPrefix;
-		return tagPrefix;
-	}
-	public String getTabSuffix() {
-		if (temporaryTabSuffix != null) return temporaryTabSuffix;
-		return tabSuffix;
-	}
-	public String getTagSuffix() {
-		if (temporaryTagSuffix != null) return temporaryTagSuffix;
-		return tagSuffix;
+	public String getTemporaryProperty(String property) {
+		return temporaryproperties.get(property);
 	}
 	public void updateAll() {
-		tabPrefix = getValue("tabprefix");
-		tagPrefix = getValue("tagprefix");
-		tabSuffix = getValue("tabsuffix");
-		tagSuffix = getValue("tagsuffix");
-		belowname = getValue("belowname");
-		abovename = getValue("abovename");
-		customtabname = getValue("customtabname");
-		customtagname = getValue("customtagname");
+		originalproperties.put("tabprefix", getValue("tabprefix"));
+		originalproperties.put("tagprefix", getValue("tagprefix"));
+		originalproperties.put("tabsuffix", getValue("tabsuffix"));
+		originalproperties.put("tagsuffix", getValue("tagsuffix"));
+		originalproperties.put("customtabname", getValue("customtabname"));
+		originalproperties.put("customtagname", getValue("customtagname"));
+		for (String property : Premium.dynamicLines) {
+			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
+		}
+		for (String property : Premium.staticLines.keySet()) {
+			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
+		}
 		for (Map.Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(group)) {
 				rank = (String) entry.getValue();
@@ -309,6 +271,9 @@ public abstract class ITabPlayer{
 		}
 	}
 	public String buildTeamName() {
+		if (Premium.is()) {
+			return Premium.sortingType.getTeamName(this);
+		}
 		String name = null;
 		if (!Configs.sortByNickname) {
 			if (Configs.sortByPermissions) {
@@ -328,12 +293,12 @@ public abstract class ITabPlayer{
 			}
 			if (name == null) {
 				if (Shared.mainClass.listNames()) {
-					name = getTabPrefix();
+					name = getActiveProperty("tabprefix");
 				} else {
 					if (!NameTag16.enable && !Configs.unlimitedTags) {
 						return getName();
 					}
-					name = getTagPrefix();
+					name = getActiveProperty("tagprefix");
 				}
 			}
 			if (name == null || name.equals("")) {
@@ -370,7 +335,7 @@ public abstract class ITabPlayer{
 	}
 	public void updateTeamPrefixSuffix() {
 		if (disabledNametag) return;
-		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
+		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
 		for (ITabPlayer all : Shared.getPlayers()) {
 			String replacedPrefix = replaced[0];
 			String replacedSuffix = replaced[1];
@@ -384,7 +349,7 @@ public abstract class ITabPlayer{
 	public void registerTeam() {
 		if (disabledNametag) return;
 		unregisterTeam();
-		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
+		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
 		String replacedPrefix = replaced[0];
 		String replacedSuffix = replaced[1];
 		for (ITabPlayer all : Shared.getPlayers()) {
@@ -398,7 +363,7 @@ public abstract class ITabPlayer{
 	public void registerTeam(ITabPlayer to) {
 		if (disabledNametag) return;
 		unregisterTeam(to);
-		String[] replaced = Placeholders.replaceMultiple(this, getTagPrefix(), getTagSuffix());
+		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
 		String replacedPrefix = replaced[0];
 		String replacedSuffix = replaced[1];
 		if (Placeholders.relationalPlaceholders) {

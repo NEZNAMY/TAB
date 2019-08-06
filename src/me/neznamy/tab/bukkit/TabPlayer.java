@@ -2,6 +2,7 @@ package me.neznamy.tab.bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.entity.Entity;
@@ -13,8 +14,8 @@ import com.github.cheesesoftware.PowerfulPermsAPI.Group;
 
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
-import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
@@ -50,18 +51,7 @@ public class TabPlayer extends ITabPlayer{
 				}
 				NameTagX.vehicles.put(vehicle.getEntityId(), list);
 			}
-			if (getBelowName().equals("")) {
-				NameTagLineManager.bindLine(this, getTagFormat(), 0.0, "NAMETAG");
-				if (!getAboveName().equals("")) {
-					NameTagLineManager.bindLine(this, getAboveName(), 0.22, "ABOVENAME");
-				}
-			} else {
-				NameTagLineManager.bindLine(this, getBelowName(), 0.0, "BELOWNAME");
-				NameTagLineManager.bindLine(this, getTagFormat(), 0.22, "NAMETAG");
-				if (!getAboveName().equals("")) {
-					NameTagLineManager.bindLine(this, getAboveName(), 0.44, "ABOVENAME");
-				}
-			}
+			loadArmorStands();
 		}
 		PerWorldPlayerlist.trigger(getPlayer());
 		for (Object packet : queuedPackets) sendPacket(packet);
@@ -145,34 +135,24 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void restartArmorStands() {
 		NameTagLineManager.destroy(this);
-		ArmorStand as = NameTagLineManager.getByID(this, "NAMETAG");
-		armorStands.remove(as);
-		as.destroy();
-		as = NameTagLineManager.getByID(this, "BELOWNAME");
-		if (as != null) {
-			armorStands.remove(as);
-			as.destroy();
-		}
-		as = NameTagLineManager.getByID(this, "ABOVENAME");
-		if (as != null) {
-			armorStands.remove(as);
-			as.destroy();
-		}
-		if (getBelowName().equals("")) {
-			NameTagLineManager.bindLine(this, getTagFormat(), 0.0, "NAMETAG");
-			if (!getAboveName().equals("")) {
-				NameTagLineManager.bindLine(this, getAboveName(), 0.22, "ABOVENAME");
-			}
-		} else {
-			NameTagLineManager.bindLine(this, getBelowName(), 0.0, "BELOWNAME");
-			NameTagLineManager.bindLine(this, getTagFormat(), 0.22, "NAMETAG");
-			if (!getAboveName().equals("")) {
-				NameTagLineManager.bindLine(this, getAboveName(), 0.44, "ABOVENAME");
-			}
-		}
+		armorStands.clear();
+		loadArmorStands();
 		for (Player all : getPlayer().getWorld().getPlayers()) {
 			if (all.getName().equals(getName())) continue;
 			NameTagLineManager.spawnArmorStand(this, Shared.getPlayer(all.getUniqueId()), true);
+		}
+	}
+	public void loadArmorStands() {
+		float height = -0.22F;
+		for (String line : Premium.dynamicLines) {
+			String value = getActiveProperty(line);
+			if (value == null || value.length() == 0) continue;
+			NameTagLineManager.bindLine(this, value, height+=0.22F, line);
+		}
+		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
+			String value = getActiveProperty(line.getKey());
+			if (value == null || value.length() == 0) continue;
+			NameTagLineManager.bindLine(this, value, Double.parseDouble(line.getValue()+""), line.getKey());
 		}
 	}
 	public String getName() {
@@ -206,8 +186,8 @@ public class TabPlayer extends ITabPlayer{
 			queuedPackets.add(nmsPacket);
 		}
 	}
-	public void setPlayerListName(String name) {
-		getPlayer().setPlayerListName(name);
+	public void setPlayerListName() {
+		getPlayer().setPlayerListName(getPlayer().getPlayerListName());
 	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
