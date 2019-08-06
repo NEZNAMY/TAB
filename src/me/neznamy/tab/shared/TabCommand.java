@@ -285,7 +285,7 @@ public class TabCommand{
 	}
 	public static void help(ITabPlayer sender){
 		if (isAdmin(sender) && !Shared.mainClass.isDisabled()) {
-			for (String msg : Configs.help_menu) sendMessage(sender, msg.replace("&", "§"));
+			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
 		}
 	}
 	public static void savePlayer(ITabPlayer p, String player, String type, String value){

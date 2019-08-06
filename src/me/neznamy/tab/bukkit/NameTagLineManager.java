@@ -17,12 +17,6 @@ public class NameTagLineManager {
 		p.armorStands.add(as);
 		return as;
 	}
-	public static ArmorStand getByID(ITabPlayer armorStandOwner, String ID) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) {
-			if (as.getID().equals(ID)) return as;
-		}
-		return null;
-	}
 	public static void updateVisibility(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateVisibility();
 	}

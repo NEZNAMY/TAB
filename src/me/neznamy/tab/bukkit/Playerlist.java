@@ -35,11 +35,11 @@ public class Playerlist {
 	public static void unload() {
 		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
 	}
-	public static boolean modifyPacketOrCancel(PacketPlayOutPlayerInfo packet, ITabPlayer receiver) throws Exception{
-		if (!enable) return false;
-		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_LATENCY) return false;
+	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver) throws Exception{
+		if (!enable) return;
+		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_LATENCY) return;
 
-		if (packet.getPlayers().isEmpty()) return false;
+		if (packet.getPlayers().isEmpty()) return; //yes some plugins send packets like that
 		PlayerInfoData playerInfoData = packet.getPlayers().get(0);
 		GameProfile gameProfile = playerInfoData.getGameProfile();
 		ITabPlayer packetPlayer = Shared.getPlayer(gameProfile.getId());
@@ -48,7 +48,7 @@ public class Playerlist {
 			if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
-			if (packetPlayer == null || packetPlayer.disabledTablistNames) return false;
+			if (packetPlayer == null || packetPlayer.disabledTablistNames) return;
 			String format = packetPlayer.getTabFormat(receiver);
 			playerInfoData.setPlayerListName(format);
 		}
@@ -75,7 +75,7 @@ public class Playerlist {
 				//player
 				if (packetPlayer == null) {
 					Shared.error("Data of player " + gameProfile.getName() + " did not exist when reading PacketPlayOutPlayerInfo!?");
-					return false;
+					return;
 				}
 				if (!packetPlayer.disabledTablistNames) {
 					String format = packetPlayer.getTabFormat(receiver);
@@ -84,6 +84,5 @@ public class Playerlist {
 				}
 			}
 		}
-		return false;
 	}
 }

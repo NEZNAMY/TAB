@@ -100,7 +100,7 @@ public class NameTagX{
 						NameTagLineManager.teleportArmorStand(pl, packetReceiver);
 					}
 				} else if (vehicles.containsKey(id)){
-					//an animal carrying a player moved
+					//an animal carrying a something moved
 					for (Integer entity : vehicles.get(id)) {
 						ITabPlayer passenger = Shared.getPlayer(entity);
 						if (passenger != null) NameTagLineManager.teleportArmorStand(passenger, packetReceiver);

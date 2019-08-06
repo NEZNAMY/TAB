@@ -16,7 +16,7 @@ public class Premium {
 	public static SortingType sortingType = null;
 	public static String sortingPlaceholder;
 	public static boolean caseSensitive;
-	public static List<String> dynamicLines = Lists.newArrayList("abovename", "nametag", "belowname");
+	public static List<? extends Object> dynamicLines = Lists.newArrayList("abovename", "nametag", "belowname");
 	public static Map<String, Double> staticLines = Maps.newConcurrentMap();
 	
 	public static boolean is() {
@@ -35,7 +35,7 @@ public class Premium {
 		}
 		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 		caseSensitive = premiumconfig.getBoolean("case-sentitive-sorting", true);
-		dynamicLines = premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Lists.newArrayList("abovename", "nametag", "belowname", "another"));
+		dynamicLines = premiumconfig.getList("unlimited-nametag-mode-dynamic-lines", Lists.newArrayList("abovename", "nametag", "belowname", "another"));
 		Collections.reverse(dynamicLines);
 		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
 	}

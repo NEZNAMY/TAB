@@ -17,6 +17,7 @@ import com.github.cheesesoftware.PowerfulPermsAPI.PowerfulPermsPlugin;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.bukkit.Placeholders;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.bukkit.packets.PacketAPI;
@@ -26,6 +27,7 @@ import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.FancyMessage.*;
 import me.neznamy.tab.shared.Shared.ServerType;
+import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.*;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
@@ -38,8 +40,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean disabled = false;
 
 	public void onEnable(){
-		long total = System.currentTimeMillis();
 		if (me.neznamy.tab.bukkit.packets.PacketAPI.isVersionSupported()){
+			long total = System.currentTimeMillis();
 			instance = this;
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
@@ -250,6 +252,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 						if (NameTagX.enable && !player.disabledNametag) {
+							//unlimited nametag mode
 							PacketPlayOut pack = null;
 							if (pack == null) pack = PacketPlayOutNamedEntitySpawn.read(packet); //spawning armor stand
 							if (pack == null) pack = PacketPlayOutEntityDestroy.read(packet); //destroying armor stand
@@ -263,8 +266,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								final PacketPlayOut p = pack;
 								//sending packets outside of the packet reader or protocollib will cause problems
 								Shared.runTask("processing packet out", new Runnable() {
-
-
 									public void run() {
 										NameTagX.processPacketOUT(p, player);
 									}
@@ -273,7 +274,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						}
 
 						PacketPlayOut p = null;
-						
+
 						if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
 							//preventing pets from having owner's nametag properties if feature is enabled
 							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
@@ -291,10 +292,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						if (Playerlist.enable) {
 							//correcting name, spectators if enabled, changing npc names if enabled
 							if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
-								if (Playerlist.modifyPacketOrCancel((PacketPlayOutPlayerInfo) p, player)) {
-									Shared.cpuTime += (System.nanoTime()-time);
-									return;
-								}
+								Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
 							}
 						}
 						if (p != null) packet = p.toNMS();
@@ -327,7 +325,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		}
 	}
-	
 	@SuppressWarnings("unchecked")
 	public Object createComponent(String text) {
 		if (text == null || text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
@@ -378,5 +375,40 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) throws Exception {
 		return packet.toNMS();
+	}
+	public void loadConfig() throws Exception {
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml");
+		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
+		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
+		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
+		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
+		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
+		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
+		HeaderFooter.refresh = (Configs.config.getInt("header-footer-refresh-interval-ticks", 1)*50);
+		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
+		NameTagX.enable = false;
+		NameTag16.enable = false;
+		if (changeNameTag) {
+			Configs.unlimitedTags = unlimitedTags;
+			if (unlimitedTags) {
+				NameTagX.enable = true;
+			} else {
+				NameTag16.enable = true;
+			}
+		}
+		String objective = Configs.config.getString("tablist-objective", "PING");
+		try{
+			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
+		} catch (Exception e) {
+			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
+			TabObjective.type = TabObjectiveType.NONE;
+		}
+		TabObjective.customValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
+		Placeholders.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
+		Placeholders.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
+		Placeholders.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
+		Placeholders.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
+		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
+		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 	}
 }

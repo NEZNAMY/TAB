@@ -23,11 +23,11 @@ public class Configs {
 	public static HashMap<String, String> sortedGroups;
 	public static Map<String, Object> rankAliases;
 	public static boolean doNotMoveSpectators;
-	public static List<String> disabledHeaderFooter;
-	public static List<String> disabledTablistNames;
-	public static List<String> disabledNametag;
-	public static List<String> disabledTablistObjective;
-	public static List<String> disabledBossbar;
+	public static List<Object> disabledHeaderFooter;
+	public static List<Object> disabledTablistNames;
+	public static List<Object> disabledNametag;
+	public static List<Object> disabledTablistObjective;
+	public static List<Object> disabledBossbar;
 	public static String dateFormat;
 	public static String timeFormat;
 	public static double timeOffset;
@@ -51,17 +51,16 @@ public class Configs {
 	public static String value_assigned;
 	public static String value_removed;
 	public static String plugin_disabled = "§c[TAB] Plugin is disabled because one of your configuration files is broken. Check console for more info.";
-	public static List<String> help_menu = new ArrayList<String>();
+	public static List<Object> help_menu = new ArrayList<Object>();
 	public static String bossbar_off;
 	public static String bossbar_on;
-	
 	
 	public static ConfigurationFile advancedconfig;
 	public static boolean sortByNickname = false;
 	public static boolean sortByPermissions = false;
 	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
-	public static List<String> primaryGroupFindingList = Lists.newArrayList("Owner", "Admin", "Helper", "default");
+	public static List<? extends Object> primaryGroupFindingList = Lists.newArrayList("Owner", "Admin", "Helper", "default");
 	
 	
 	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
@@ -81,12 +80,7 @@ public class Configs {
 	}
 	
 	public static void loadConfig() throws Exception {
-		if (Shared.servertype == ServerType.BUKKIT) {
-			me.neznamy.tab.bukkit.IConfigs.loadConfig();
-		}
-		if (Shared.servertype == ServerType.BUNGEE) {
-			me.neznamy.tab.bungee.IConfigs.loadConfig();
-		}
+		Shared.mainClass.loadConfig();
 		HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]");
@@ -95,12 +89,12 @@ public class Configs {
 		doNotMoveSpectators = config.getBoolean("do-not-move-spectators", false);
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
-		for (String group : config.getStringList("group-sorting-priority-list", Lists.newArrayList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
+		for (Object group : config.getList("group-sorting-priority-list", Lists.newArrayList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
 			String sort = index+"";
 			while (sort.length()<4) {
 				sort = "0" + sort;
 			}
-			sortedGroups.put(group, sort);
+			sortedGroups.put(group+"", sort);
 			index++;
 		}
 		Map<String, Object> cs = config.getConfigurationSection("rank-aliases");
@@ -119,18 +113,18 @@ public class Configs {
 			config.set("rank-aliases", rankAliases = map);
 			config.save();
 		}
-		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.header-footer", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-names", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledNametag = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.nametag", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-objective", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledBossbar = config.getStringList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.bossbar", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledHeaderFooter = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.header-footer", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledTablistNames = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-names", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledNametag = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.nametag", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledTablistObjective = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-objective", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledBossbar = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.bossbar", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml");
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
 			for (String s : animation.getConfigurationSection("animations").keySet())
-				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 1000)));
+				animations.add(new Animation(s, animation.getList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 1000)));
 		}
 	}
 	public static void loadBossbar() throws Exception {
@@ -168,7 +162,7 @@ public class Configs {
 		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded").replace("&", "§");
 		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%").replace("&", "§");
 		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%").replace("&", "§");
-		help_menu = translation.getStringList("help_menu");
+		help_menu = translation.getList("help_menu");
 		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace("&", "§");
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "§");
 	}

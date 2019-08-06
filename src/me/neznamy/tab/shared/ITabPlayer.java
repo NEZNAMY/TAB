@@ -19,8 +19,8 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 public abstract class ITabPlayer{
 
 	public Object player;
-	public HashMap<String, String> originalproperties = new HashMap<String, String>();
-	public HashMap<String, String> temporaryproperties = new HashMap<String, String>();
+	public HashMap<Object, String> originalproperties = new HashMap<Object, String>();
+	public HashMap<Object, String> temporaryproperties = new HashMap<Object, String>();
 
 	private String group;
 	private long lastRefreshGroup;
@@ -127,9 +127,9 @@ public abstract class ITabPlayer{
 			String[] playerGroups = getGroupsFromPermPlugin();
 			if (playerGroups != null && playerGroups.length > 0) {
 				loop:
-					for (String entry : Configs.primaryGroupFindingList) {
+					for (Object entry : Configs.primaryGroupFindingList) {
 						for (String playerGroup : playerGroups) {
-							if (playerGroup.equalsIgnoreCase(entry)) {
+							if (playerGroup.equalsIgnoreCase(entry+"")) {
 								newGroup = playerGroup;
 								break loop;
 							}
@@ -149,17 +149,17 @@ public abstract class ITabPlayer{
 	public String getTagFormat() {
 		return getActiveProperty("tagprefix") + getActiveProperty("customtagname") + getActiveProperty("tagsuffix");
 	}
-	public String getOriginalProperty(String property) {
-		return originalproperties.get(property);
+	public String getOriginalProperty(Object line) {
+		return originalproperties.get(line);
 	}
-	public String getActiveProperty(String property) {
-		if (property.equals("nametag")) return getTagFormat();
-		String value = getTemporaryProperty(property) != null ? getTemporaryProperty(property) : getOriginalProperty(property);
-		if (property.contains("custom") && value == null) return getName();
+	public String getActiveProperty(Object line) {
+		if (line.equals("nametag")) return getTagFormat();
+		String value = getTemporaryProperty(line) != null ? getTemporaryProperty(line) : getOriginalProperty(line);
+		if ((line+"").contains("custom") && value == null) return getName();
 		return value;
 	}
-	public String getTemporaryProperty(String property) {
-		return temporaryproperties.get(property);
+	public String getTemporaryProperty(Object line) {
+		return temporaryproperties.get(line);
 	}
 	public void updateAll() {
 		originalproperties.put("tabprefix", getValue("tabprefix"));
@@ -168,7 +168,7 @@ public abstract class ITabPlayer{
 		originalproperties.put("tagsuffix", getValue("tagsuffix"));
 		originalproperties.put("customtabname", getValue("customtabname"));
 		originalproperties.put("customtagname", getValue("customtagname"));
-		for (String property : Premium.dynamicLines) {
+		for (Object property : Premium.dynamicLines) {
 			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
 		}
 		for (String property : Premium.staticLines.keySet()) {
@@ -189,15 +189,15 @@ public abstract class ITabPlayer{
 		isStaff = hasPermission("tab.staff");
 		updateRawHeaderAndFooter();
 	}
-	private String getValue(String s) {
+	private String getValue(Object property) {
 		String w = getWorldName();
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Users." + getName() + "." + s)) != null) return value;
-		if ((value = Configs.config.getString("Users." + getName() + "." + s)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups." + group + "." + s)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups._OTHER_." + s)) != null) return value;
-		if ((value = Configs.config.getString("Groups." + group + "." + s)) != null) return value;
-		if ((value = Configs.config.getString("Groups._OTHER_." + s)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Users." + getName() + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups." + group + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups._OTHER_." + property)) != null) return value;
+		if ((value = Configs.config.getString("Groups." + group + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
 	}
 	private void unregisterTeam(ITabPlayer to) {
@@ -245,29 +245,29 @@ public abstract class ITabPlayer{
 	public void updateRawHeaderAndFooter() {
 		rawHeader = "";
 		rawFooter = "";
-		List<String> h = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getStringList("Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".header");
-		if (h == null) h = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".header");
-		if (h == null) h = Configs.config.getStringList("Groups." + group + ".header");
-		if (h == null) h = Configs.config.getStringList("header");
-		if (h == null) h = new ArrayList<String>();
-		List<String> f = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getStringList("Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".footer");
-		if (f == null) f = Configs.config.getStringList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".footer");
-		if (f == null) f = Configs.config.getStringList("Groups." + group + ".footer");
-		if (f == null) f = Configs.config.getStringList("footer");
-		if (f == null) f = new ArrayList<String>();
+		List<Object> h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
+		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
+		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".header");
+		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".header");
+		if (h == null) h = Configs.config.getList("Groups." + group + ".header");
+		if (h == null) h = Configs.config.getList("header");
+		if (h == null) h = new ArrayList<Object>();
+		List<Object> f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".footer");
+		if (f == null) f = Configs.config.getList("Users." + getName() + ".footer");
+		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".footer");
+		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".footer");
+		if (f == null) f = Configs.config.getList("Groups." + group + ".footer");
+		if (f == null) f = Configs.config.getList("footer");
+		if (f == null) f = new ArrayList<Object>();
 		int i = 0;
-		for (String a : h) {
+		for (Object headerLine : h) {
 			if (++i > 1) rawHeader += "\n§r";
-			rawHeader += a;
+			rawHeader += headerLine;
 		}
 		i = 0;
-		for (String a : f) {
+		for (Object footerLine : f) {
 			if (++i > 1) rawFooter += "\n§r";
-			rawFooter += a;
+			rawFooter += footerLine;
 		}
 	}
 	public String buildTeamName() {

@@ -8,7 +8,7 @@ public class Animation {
 	private String[] messages;
 	private int interval;
 	
-	public Animation(String name, List<String> messages, int interval){
+	public Animation(String name, List<Object> list, int interval){
 		if (interval == 0) {
 			Shared.startupWarn("Animation \"" + name + "\" has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
 			interval = 1000;
@@ -19,7 +19,7 @@ public class Animation {
 			if (interval == 0) interval = 50;
 		}
 		this.name = name;
-		this.messages = messages.toArray(new String[0]);
+		this.messages = list.toArray(new String[0]);
 		this.interval = interval;
 	}
 	public String getMessage(){

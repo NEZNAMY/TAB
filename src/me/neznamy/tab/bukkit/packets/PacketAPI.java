@@ -12,7 +12,7 @@ public class PacketAPI{
 	
 	private static final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 	private static final int versionNumber = Integer.parseInt(version.split("_")[1]);
-	private static final boolean versionSupported = (versionNumber >= 8 && versionNumber < 14) || version.equals("v1_14_R1");
+	private static final boolean versionSupported = (versionNumber >= 8 && versionNumber <= 14);
 	
 	public static Class<?> PacketPlayInUseEntity;
 	public static Field PacketPlayInUseEntity_ENTITYID;

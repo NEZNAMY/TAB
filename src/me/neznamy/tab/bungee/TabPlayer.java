@@ -19,7 +19,7 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 public class TabPlayer extends ITabPlayer{
-	
+
 	public Server server;
 
 	public TabPlayer(ProxiedPlayer p) {
@@ -65,7 +65,6 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
 	}
-	
 	public String getNickname() {
 		return getName();
 	}

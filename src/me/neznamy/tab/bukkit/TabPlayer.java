@@ -144,10 +144,10 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void loadArmorStands() {
 		float height = -0.22F;
-		for (String line : Premium.dynamicLines) {
+		for (Object line : Premium.dynamicLines) {
 			String value = getActiveProperty(line);
 			if (value == null || value.length() == 0) continue;
-			NameTagLineManager.bindLine(this, value, height+=0.22F, line);
+			NameTagLineManager.bindLine(this, value, height+=0.22F, line+"");
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			String value = getActiveProperty(line.getKey());
