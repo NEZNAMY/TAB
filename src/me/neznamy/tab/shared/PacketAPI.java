@@ -26,7 +26,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public abstract class PacketAPI{
+public class PacketAPI{
 
 	public static Object getField(Object object, String name) throws Exception {
 		Field field = object.getClass().getDeclaredField(name);

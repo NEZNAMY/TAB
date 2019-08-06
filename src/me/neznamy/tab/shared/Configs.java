@@ -75,7 +75,6 @@ public class Configs {
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
-		if (Shared.servertype == ServerType.BUKKIT) me.neznamy.tab.bukkit.IConfigs.loadAdvancedConfig();
 		if (Premium.is()) Premium.loadPremiumConfig();
 	}
 	

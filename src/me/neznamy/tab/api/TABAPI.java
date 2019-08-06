@@ -40,7 +40,7 @@ public class TABAPI {
 			Configs.config.save();
 			me.neznamy.tab.bukkit.Main.instance.unload();
 			me.neznamy.tab.bukkit.Main.instance.load(false, false);
-		}
+		} else throw new IllegalStateException();
 	}
 	
 	public static void setCustomTabNameTemporarily(UUID uniqueId, String value) {

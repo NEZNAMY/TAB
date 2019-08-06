@@ -18,14 +18,14 @@ public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
+	private static final ExecutorService exe = Executors.newCachedThreadPool();
 	
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static long cpuTime;
 	private static int nextEntityId = 2000000000;
-	public static List<Long> cpuValues = new ArrayList<Long>();
+	static List<Long> cpuValues = new ArrayList<Long>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
-	private static ExecutorService exe = Executors.newCachedThreadPool();
 	public static String pluginVersion;
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
