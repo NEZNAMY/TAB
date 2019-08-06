@@ -122,6 +122,7 @@ public class NameTagX{
 				List<Item> items = ((PacketPlayOutEntityMetadata)packet).getList();
 				ITabPlayer metaPlayer = Shared.getPlayer(((PacketPlayOutEntityMetadata) packet).getEntityId());
 				if (metaPlayer != null){
+					if (metaPlayer == packetReceiver) return;
 					for (Item i : items) {
 						if (i.getType().getPosition() == 0) {
 							byte properties = (Byte) i.getValue();
