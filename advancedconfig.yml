@@ -9,6 +9,12 @@ ignore-pwp-in-worlds:
  - ignoredworld
  - spawn
 
+ #sorting players only by their username (or essentials nickname if set)
+sort-players-by-nickname: false
+
+ #sorting by permissions. Permission node is "tab.sort.<group>" and priorities can be set in config
+sort-players-by-permissions: false
+
 #an option to remove minecraft vanilla feature since 1.9 making named pets have same prefix as their owner (and being invisible when unlimited nametag mode is enabled)
 #needs relog to see the change
 fix-pet-names: false
