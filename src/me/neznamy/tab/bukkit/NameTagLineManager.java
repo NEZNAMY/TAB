@@ -23,9 +23,6 @@ public class NameTagLineManager {
 		}
 		return null;
 	}
-	public static void setInBed(ITabPlayer armorStandOwner, boolean inBed) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.setInBed(inBed);
-	}
 	public static void updateVisibility(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateVisibility();
 	}

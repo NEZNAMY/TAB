@@ -58,8 +58,6 @@ public class EnumAPI {
 
 	public static Object EnumScoreboardHealthDisplay_INTEGER;
 	public static Object EnumScoreboardHealthDisplay_HEARTS;
-	
-	public static Object EntityPose_SLEEPING;
 
 	public static Object PacketPlayOutBoss_Action_since_1_9_R1_ADD;
 	public static Object PacketPlayOutBoss_Action_since_1_9_R1_REMOVE;
@@ -189,10 +187,6 @@ public class EnumAPI {
 					ChatMessageType_since_1_12_R1_CHAT = ChatMessageType.getDeclaredField("CHAT").get(null);
 					ChatMessageType_since_1_12_R1_SYSTEM = ChatMessageType.getDeclaredField("SYSTEM").get(null);
 					ChatMessageType_since_1_12_R1_GAME_INFO = ChatMessageType.getDeclaredField("GAME_INFO").get(null);
-				}
-				if (NMSClass.versionNumber >= 14) {
-					Class<?> EntityPose = NMSClass.get("EntityPose");
-					EntityPose_SLEEPING = EntityPose.getDeclaredField("SLEEPING").get(null);
 				}
 			}
 		} catch (Exception e) {

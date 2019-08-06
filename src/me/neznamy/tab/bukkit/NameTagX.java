@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.bukkit.packets.EnumAPI;
 import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.bukkit.packets.PacketAPI;
 import me.neznamy.tab.bukkit.packets.PacketPlayOut;
@@ -129,11 +128,6 @@ public class NameTagX{
 							boolean sneaking = (properties & 2) != 0;
 							NameTagLineManager.sneak(metaPlayer, packetReceiver, sneaking);
 						}
-						if (NMSClass.versionNumber >= 14) {
-							if (i.getType().getPosition() == 6) {
-								if (i.getValue() == EnumAPI.EntityPose_SLEEPING) onBedStatusChange(metaPlayer.getEntityId(), packetReceiver, true);
-							}
-						}
 					}
 				}
 			}
@@ -180,18 +174,6 @@ public class NameTagX{
 		} catch (Exception e) {
 			Shared.error("An error occured when processing packetOUT:", e);
 		}
-	}
-	public static void onBedStatusChange(final int entered, final ITabPlayer packetReceiver, final boolean inBed) {
-		Shared.runTask("processing packet out", new Runnable() {
-
-			public void run() {
-				ITabPlayer p = Shared.getPlayer(entered);
-				if (p != null) {
-					NameTagLineManager.setInBed(p, inBed);
-					NameTagLineManager.teleportArmorStand(p, packetReceiver);
-				}
-			}
-		});
 	}
 	@SuppressWarnings("deprecation")
 	public static List<Entity> getPassengers(Entity vehicle){

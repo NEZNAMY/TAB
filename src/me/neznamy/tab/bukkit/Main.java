@@ -250,26 +250,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 						if (NameTagX.enable && !player.disabledNametag) {
-							//unlimited nametag mode
-							if (PacketAPI.PacketPlayOutAnimation.isInstance(packet)) {
-								if (PacketAPI.PacketPlayOutAnimation_ACTION.getInt(packet) == 2) {
-									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), player, false);
-								}
-							}
-							if (NMSClass.versionNumber < 14) {
-								if (PacketAPI.PacketPlayOutBed.isInstance(packet)) {
-									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutBed_ENTITY.getInt(packet), player, true);
-								}
-							}
 							PacketPlayOut pack = null;
-							if (pack == null) pack = PacketPlayOutNamedEntitySpawn.read(packet);
-							if (pack == null) pack = PacketPlayOutEntityDestroy.read(packet);
-							if (pack == null) pack = PacketPlayOutEntityTeleport.read(packet);
-							if (pack == null) pack = PacketPlayOutRelEntityMove.read(packet);
-							if (pack == null) pack = PacketPlayOutRelEntityMoveLook.read(packet);
-							if (pack == null) pack = PacketPlayOutMount.read(packet);
-							if (pack == null) pack = PacketPlayOutEntityMetadata.fromNMS(packet);
-							if (pack == null && NMSClass.versionNumber == 8) pack = PacketPlayOutAttachEntity_1_8_x.read(packet);
+							if (pack == null) pack = PacketPlayOutNamedEntitySpawn.read(packet); //spawning armor stand
+							if (pack == null) pack = PacketPlayOutEntityDestroy.read(packet); //destroying armor stand
+							if (pack == null) pack = PacketPlayOutEntityTeleport.read(packet); //teleporting armor stand
+							if (pack == null) pack = PacketPlayOutRelEntityMove.read(packet); //teleporting armor stand
+							if (pack == null) pack = PacketPlayOutRelEntityMoveLook.read(packet); //teleporting armor stand
+							if (pack == null) pack = PacketPlayOutMount.read(packet); //1.9+ mount detection
+							if (pack == null) pack = PacketPlayOutEntityMetadata.fromNMS(packet); //sneaking
+							if (pack == null && NMSClass.versionNumber == 8) pack = PacketPlayOutAttachEntity_1_8_x.read(packet); //1.8.x mount detection
 							if (pack != null) {
 								final PacketPlayOut p = pack;
 								//sending packets outside of the packet reader or protocollib will cause problems

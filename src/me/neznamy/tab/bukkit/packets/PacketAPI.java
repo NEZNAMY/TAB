@@ -17,13 +17,6 @@ public class PacketAPI{
 	public static Class<?> PacketPlayInUseEntity;
 	public static Field PacketPlayInUseEntity_ENTITYID;
 	
-	public static Class<?> PacketPlayOutBed;
-	public static Field PacketPlayOutBed_ENTITY;
-	
-	public static Class<?> PacketPlayOutAnimation;
-	public static Field PacketPlayOutAnimation_ENTITY;
-	public static Field PacketPlayOutAnimation_ACTION;
-	
 	public static Field GameProfile_properties;
 	public static Field GameProfile_legacy;
     
@@ -32,10 +25,7 @@ public class PacketAPI{
 			if (versionSupported) {
 				(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
 				(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
-				if (versionNumber < 14) (PacketPlayOutBed_ENTITY = (PacketPlayOutBed = NMSClass.get("PacketPlayOutBed")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayInUseEntity_ENTITYID = (PacketPlayInUseEntity = NMSClass.get("PacketPlayInUseEntity")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutAnimation_ENTITY = (PacketPlayOutAnimation = NMSClass.get("PacketPlayOutAnimation")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutAnimation_ACTION = PacketPlayOutAnimation.getDeclaredField("b")).setAccessible(true);
 			}
 		} catch (Exception e) {
 			Shared.error("Failed to initialize PacketAPI class", e);

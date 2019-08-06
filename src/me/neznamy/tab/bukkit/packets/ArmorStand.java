@@ -31,7 +31,6 @@ public class ArmorStand{
 	private boolean sneaking;
 	private boolean invisible;
 
-	private boolean inBed;
 	private ConcurrentHashMap<ITabPlayer, String> registeredTo = new ConcurrentHashMap<ITabPlayer, String>();
 	private FakeDataWatcher datawatcher;
 
@@ -58,12 +57,6 @@ public class ArmorStand{
 		if (newFormat.equals(lastReplacedFormat) && !newFormat.contains("%rel_")) return;
 		lastReplacedFormat = newFormat;
 		updateMetadata(false);
-	}
-	public void setInBed(boolean inBed) {
-		this.inBed = inBed;
-	}
-	public boolean isInBed() {
-		return inBed;
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
@@ -123,7 +116,7 @@ public class ArmorStand{
 		double x = player.getLocation().getX();
 		double y;
 		double z = player.getLocation().getZ();
-		if (inBed) {
+		if (player.isSleeping()) {
 			y = player.getLocation().getY() + yOffset - 1.76;
 		} else {
 			if (NMSClass.versionNumber >= 9) {
