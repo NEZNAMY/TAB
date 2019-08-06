@@ -30,7 +30,7 @@ public class Playerlist {
 		}
 	}
 	public static void unload() {
-		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName(p.getName());
+		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
 	}
 	public static void modifyPacket(PlayerListItem packet, ITabPlayer receiver){
 		if (!enable) return;

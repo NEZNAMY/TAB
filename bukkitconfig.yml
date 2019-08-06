@@ -29,15 +29,16 @@ footer:
 tablist-objective: PING
 tablist-objective-custom-value: "%some_placeholderapi_placeholder%"
 
+#NOT case sensitive
 group-sorting-priority-list:
-  - "Owner"
-  - "Admin"
-  - "Mod"
-  - "Helper"
-  - "Builder"
-  - "Premium"
-  - "Player"
-  - "default"
+  - owner
+  - admin
+  - mod
+  - helper
+  - builder
+  - premium
+  - player
+  - default
 
 #properties: tabprefix, tabsuffix, tagprefix (in name tag), tagsuffix, customtabname (modifying the name itself), header, footer
 #extra ones which need unlimited nametag mode enabled: abovename (line of text above name tag), belowname (below name tag), customtagname

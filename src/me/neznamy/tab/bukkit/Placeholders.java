@@ -7,6 +7,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
@@ -109,9 +110,21 @@ public class Placeholders {
 		try {
 			return PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), s);
 		} catch (Exception e) {
-			Shared.error("PlaceholderAPI replace task failed. Please send this error to the FIRST author whose name or plugin name you see here:", e);
+			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+			if (papi != null) {
+				Shared.error("PlaceholderAPI replace task failed.");
+				Shared.error("PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion());
+				Shared.error("String to parse: " + s);
+				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", e);
+			} //else now we know why it failed
 		} catch (Error e) {
-			Shared.error("PlaceholderAPI replace task failed. Please send this error to the FIRST author whose name or plugin name you see here:", e);
+			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+			if (papi != null) {
+				Shared.error("PlaceholderAPI replace task failed.");
+				Shared.error("PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion());
+				Shared.error("String to parse: " + s);
+				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", e);
+			} //else now we know why it failed
 		}
 		return s;
 	}

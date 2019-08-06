@@ -33,7 +33,7 @@ public class Playerlist {
 		}
 	}
 	public static void unload() {
-		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName(p.getName());
+		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
 	}
 	public static boolean modifyPacketOrCancel(PacketPlayOutPlayerInfo packet, ITabPlayer receiver) throws Exception{
 		if (!enable) return false;

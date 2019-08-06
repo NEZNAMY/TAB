@@ -84,7 +84,7 @@ public class TabPlayer extends ITabPlayer{
 	public int getHealth() {
 		return 0;
 	}
-	public void setPlayerListName(String name) {
+	public void setPlayerListName() {
 		Item playerInfoData = new Item();
 		playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(getName()));
 		playerInfoData.setUsername(getName());

@@ -177,7 +177,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(final PlayerQuitEvent e){
 		if (disabled) return;
-		Shared.runTaskLater(50, "player left the server", new Runnable() {
+		Shared.runTaskLater(100, "player left the server", new Runnable() {
 
 
 			public void run() {

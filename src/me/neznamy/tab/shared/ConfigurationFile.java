@@ -48,6 +48,9 @@ public class ConfigurationFile{
 	public ConfigurationFile(String sourceAndDestination) throws Exception{
 		this(sourceAndDestination, sourceAndDestination);
 	}
+	public Object get(String path) {
+		return get(path, null);
+	}
 	public Object get(String path, Object defaultValue) {
 		try {
 			Object value = values;
