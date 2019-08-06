@@ -234,7 +234,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					super.channelRead(context, packet);
 				}
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					if (Main.disabled) return;
+					if (Main.disabled) {
+						super.write(context, packet, channelPromise);
+						return;
+					}
 					try{
 						long time = System.nanoTime();
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
@@ -246,9 +249,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								}
 							}
 						}
-						if (NameTagX.enable) {
+						if (NameTagX.enable && !player.disabledNametag) {
 							//unlimited nametag mode
-							if (player.disabledNametag) return;
 							if (PacketAPI.PacketPlayOutAnimation.isInstance(packet)) {
 								if (PacketAPI.PacketPlayOutAnimation_ACTION.getInt(packet) == 2) {
 									NameTagX.onBedStatusChange(PacketAPI.PacketPlayOutAnimation_ENTITY.getInt(packet), player, false);
