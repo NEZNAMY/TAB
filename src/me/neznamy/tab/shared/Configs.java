@@ -76,7 +76,7 @@ public class Configs {
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
-		loadAdvancedConfig();
+		if (Shared.servertype == ServerType.BUKKIT) me.neznamy.tab.bukkit.IConfigs.loadAdvancedConfig();
 		if (Premium.is()) Premium.loadPremiumConfig();
 	}
 	
@@ -171,10 +171,5 @@ public class Configs {
 		help_menu = translation.getStringList("help_menu");
 		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace("&", "§");
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "§");
-	}
-	public static void loadAdvancedConfig() throws Exception {
-		if (Shared.servertype == ServerType.BUKKIT) {
-			me.neznamy.tab.bukkit.IConfigs.loadAdvancedConfig();
-		}
 	}
 }
