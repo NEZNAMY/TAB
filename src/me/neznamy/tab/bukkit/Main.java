@@ -1,6 +1,7 @@
 package me.neznamy.tab.bukkit;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
@@ -55,6 +56,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 			load(false, true);
+			Metrics metrics = new Metrics(this);
+			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
+
+				public String call() throws Exception {
+					return Configs.unlimitedTags ? "Yes" : "No";
+				}
+				
+			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			if (NMSClass.versionNumber < 8) {

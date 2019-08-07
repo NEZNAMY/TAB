@@ -35,6 +35,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		});
 		load(false, true);
+		new Metrics(this);
 		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
