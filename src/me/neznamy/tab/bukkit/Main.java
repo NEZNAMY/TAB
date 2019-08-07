@@ -62,7 +62,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				public String call() throws Exception {
 					return Configs.unlimitedTags ? "Yes" : "No";
 				}
-				
 			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {

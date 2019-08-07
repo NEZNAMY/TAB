@@ -155,7 +155,7 @@ public abstract class ITabPlayer{
 	public String getActiveProperty(Object line) {
 		if (line.equals("nametag")) return getTagFormat();
 		String value = getTemporaryProperty(line) != null ? getTemporaryProperty(line) : getOriginalProperty(line);
-		if ((line+"").contains("custom") && value == null) return getName();
+		if ((line+"").contains("custom") && (value == null || value.length() == 0)) return getName();
 		return value;
 	}
 	public String getTemporaryProperty(Object line) {
