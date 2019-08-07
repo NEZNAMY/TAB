@@ -79,13 +79,15 @@ public class ArmorStand{
 		PacketPlayOutEntityTeleport packet = getTeleportPacket();
 		for (ITabPlayer all : registeredTo.keySet()) packet.send(all);
 	}
-	public void sneak(ITabPlayer packetReceiver, boolean b) {
-		if (packetReceiver == owner) return;
-		datawatcher.setSneaking(b);
-		sneaking = b;
+	public void sneak(boolean sneaking) {
+		datawatcher.setSneaking(sneaking);
+		this.sneaking = sneaking;
 		updateLocation();
-		getDestroyPacket(packetReceiver, false).send(packetReceiver);
-		getSpawnPacket(packetReceiver, false).send(packetReceiver);
+		for (ITabPlayer all : registeredTo.keySet()) {
+			if (all == owner) continue;
+			getDestroyPacket(all, false).send(all);
+			getSpawnPacket(all, false).send(all);
+		}
 	}
 	public void destroy() {
 		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);

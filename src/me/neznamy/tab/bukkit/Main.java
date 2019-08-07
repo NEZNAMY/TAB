@@ -261,7 +261,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							if (pack == null) pack = PacketPlayOutRelEntityMove.read(packet); //teleporting armor stand
 							if (pack == null) pack = PacketPlayOutRelEntityMoveLook.read(packet); //teleporting armor stand
 							if (pack == null) pack = PacketPlayOutMount.read(packet); //1.9+ mount detection
-							if (pack == null) pack = PacketPlayOutEntityMetadata.fromNMS(packet); //sneaking
 							if (pack == null && NMSClass.versionNumber == 8) pack = PacketPlayOutAttachEntity_1_8_x.read(packet); //1.8.x mount detection
 							if (pack != null) {
 								final PacketPlayOut p = pack;

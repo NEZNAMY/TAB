@@ -20,8 +20,8 @@ public class NameTagLineManager {
 	public static void updateVisibility(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateVisibility();
 	}
-	public static void sneak(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean b) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(packetReceiver, b);
+	public static void sneak(ITabPlayer armorStandOwner, boolean sneaking) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(sneaking);
 	}
 	public static void destroy(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.destroy();

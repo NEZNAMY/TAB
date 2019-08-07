@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.bukkit.packets.PacketAPI;
 import me.neznamy.tab.bukkit.packets.PacketPlayOut;
@@ -19,14 +23,13 @@ import me.neznamy.tab.bukkit.packets.PacketPlayOutAttachEntity_1_8_x;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutMount;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutNamedEntitySpawn;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
-public class NameTagX{
+public class NameTagX implements Listener{
 
 	public static boolean enable;
 	public static int refresh;
@@ -41,6 +44,7 @@ public class NameTagX{
 	}
 	public static void load() {
 		if (!enable) return;
+		Bukkit.getPluginManager().registerEvents(new NameTagX(), Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.registerTeam();
 			for (Player w : ((Player) all.getPlayer()).getWorld().getPlayers()) {
@@ -82,6 +86,16 @@ public class NameTagX{
 			}
 		}
 	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void a(final PlayerToggleSneakEvent e) {
+		Shared.runTask("processing sprint toggle", "nametagX", new Runnable() {
+
+			public void run() {
+				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+				NameTagLineManager.sneak(p, e.isSneaking());
+			}
+		});
+	}
 	public static void processPacketOUT(PacketPlayOut packet, ITabPlayer packetReceiver){
 		try {
 			boolean teleportPacket = packet instanceof PacketPlayOutEntityTeleport;
@@ -116,20 +130,6 @@ public class NameTagX{
 				for (int id : ids) {
 					ITabPlayer despawnedPlayer = Shared.getPlayer(id);
 					if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
-				}
-			}
-			if (packet instanceof PacketPlayOutEntityMetadata) {
-				List<Item> items = ((PacketPlayOutEntityMetadata)packet).getList();
-				ITabPlayer metaPlayer = Shared.getPlayer(((PacketPlayOutEntityMetadata) packet).getEntityId());
-				if (metaPlayer != null){
-					if (metaPlayer == packetReceiver) return;
-					for (Item i : items) {
-						if (i.getType().getPosition() == 0) {
-							byte properties = (Byte) i.getValue();
-							boolean sneaking = (properties & 2) != 0;
-							NameTagLineManager.sneak(metaPlayer, packetReceiver, sneaking);
-						}
-					}
 				}
 			}
 			if (packet instanceof PacketPlayOutMount) {
