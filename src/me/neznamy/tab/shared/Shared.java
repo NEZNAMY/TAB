@@ -7,9 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +23,7 @@ public class Shared {
 	
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
-	public static Map<String, Long> cpuTimes = new HashMap<String, Long>();
+	public static ConcurrentHashMap<String, Long> cpuTimes = new ConcurrentHashMap<String, Long>();
 	private static int nextEntityId = 2000000000;
 	static List<Long> cpuValues = new ArrayList<Long>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();

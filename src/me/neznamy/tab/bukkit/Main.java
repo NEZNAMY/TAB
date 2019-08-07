@@ -128,21 +128,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			if (disabled) return;
 			if (e.getResult() == Result.ALLOWED) {
-				final Player p = e.getPlayer();
-				if (Shared.getPlayer(p.getName()) != null) {
-					Shared.error("Data of " + p.getName() + " already exists but login event was not cancelled?");
-					return;
-				}
+				Player p = e.getPlayer();
 				Shared.data.put(p.getUniqueId(), new TabPlayer(p));
-				Shared.runTaskLater(300, "checking if player is online", "other", new Runnable() {
-
-
-					public void run() {
-						if (!p.isOnline()) {
-							Shared.data.remove(p.getUniqueId());
-						}
-					}
-				});
 			}
 		} catch (Exception ex) {
 			Shared.error("An error occured when player attempted to join the server", ex);
@@ -153,16 +140,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			if (p == null) {
-				p = new TabPlayer(e.getPlayer());
-				Shared.data.put(e.getPlayer().getUniqueId(), p);
-				Shared.error("Data of " + p.getName() + " did not exist in JoinEvent. Creating..");
-			}
 			inject(p);
 			p.onJoin();
 			final ITabPlayer pl = p;
 			Shared.runTask("player joined the server", "other", new Runnable() {
-
 
 				public void run() {
 					me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
@@ -178,22 +159,17 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void a(final PlayerQuitEvent e){
+	public void a(PlayerQuitEvent e){
 		if (disabled) return;
-		Shared.runTaskLater(100, "player left the server", "other", new Runnable() {
-
-
-			public void run() {
-				ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-				me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
-				NameTag16.playerQuit(disconnectedPlayer);
-				NameTagX.playerQuit(disconnectedPlayer);
-				for (ITabPlayer all : Shared.getPlayers()) {
-					NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
-				}
-				Shared.data.remove(e.getPlayer().getUniqueId());
-			}
-		});
+		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+		me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
+		NameTag16.playerQuit(disconnectedPlayer);
+		NameTagX.playerQuit(disconnectedPlayer);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
+		}
+		NameTagLineManager.destroy(disconnectedPlayer);
+		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerChangedWorldEvent e){
