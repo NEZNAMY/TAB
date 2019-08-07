@@ -127,10 +127,11 @@ public class Shared {
 		mainClass.sendConsoleMessage(color + "[TAB] " + message);
 	}
 	public static void cpu(String feature, long value) {
-		if (!cpuTimes.containsKey(feature)) {
+		Long current = cpuTimes.get(feature);
+		if (current == null) {
 			cpuTimes.put(feature, value);
 		} else {
-			cpuTimes.put(feature, cpuTimes.get(feature)+value);
+			cpuTimes.put(feature, current+value);
 		}
 	}
 	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final String feature, final Runnable r) {
