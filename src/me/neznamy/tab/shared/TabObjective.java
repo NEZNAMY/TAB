@@ -20,7 +20,7 @@ public class TabObjective{
 		int refresh = 500;
 		if (type == TabObjectiveType.PING) refresh = 2050;
 		if (type == TabObjectiveType.HEARTS) refresh = 100;
-		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", "tablistobjective", new Runnable() {
 	        public void run(){
 	        	for (ITabPlayer p : Shared.getPlayers()){
 	        		if (p.disabledTablistObjective) continue;

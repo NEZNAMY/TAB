@@ -18,7 +18,7 @@ public class BossBar{
 		for (BossBarLine l : lines) {
 			for (ITabPlayer p : Shared.getPlayers()) sendBar(p, l);
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", "bossbar", new Runnable() {
 			public void run() {
 				for (BossBarLine line : lines) line.update();
 			}

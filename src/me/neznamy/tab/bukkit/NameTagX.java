@@ -57,13 +57,13 @@ public class NameTagX implements Listener{
 				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "nametag", new Runnable() {
 
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", new Runnable() {
+		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "nametagX", new Runnable() {
 
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);

@@ -7,7 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +25,7 @@ public class Shared {
 	
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
-	public static long cpuTime;
+	public static Map<String, Long> cpuTimes = new HashMap<String, Long>();
 	private static int nextEntityId = 2000000000;
 	static List<Long> cpuValues = new ArrayList<Long>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
@@ -99,12 +102,15 @@ public class Shared {
 		return new DecimalFormat("#.##").format(value);
 	}
 	public static void startCPUTask() {
-		scheduleRepeatingTask(1000, "calculating cpu usage", new Runnable() {
+		scheduleRepeatingTask(1000, "calculating cpu usage", "other", new Runnable() {
 			
 			public void run() {
-				cpuValues.add(cpuTime);
+				for (Entry<String, Long> entry : cpuTimes.entrySet()) {
+					cpuValues.add(entry.getValue());
+					//TODO feature-specific results
+				}
 //				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)cpuTime/10000000) + "%"); 
-				cpuTime = 0;
+				cpuTimes.clear();
 				if (cpuValues.size() > 60*15) cpuValues.remove(0); //15 minute history
 			}
 		});
@@ -122,7 +128,14 @@ public class Shared {
 	public static void print(String color, String message) {
 		mainClass.sendConsoleMessage(color + "[TAB] " + message);
 	}
-	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final Runnable r) {
+	public static void cpu(String feature, long value) {
+		if (!cpuTimes.containsKey(feature)) {
+			cpuTimes.put(feature, value);
+		} else {
+			cpuTimes.put(feature, cpuTimes.get(feature)+value);
+		}
+	}
+	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final String feature, final Runnable r) {
 		if (delayMilliseconds == 0) return;
 		tasks.add(exe.submit(new Runnable() {
 
@@ -131,7 +144,7 @@ public class Shared {
 					try {
 						long time = System.nanoTime();
 						r.run();
-						cpuTime += (System.nanoTime()-time);
+						cpu(feature, System.nanoTime()-time);
 						Thread.sleep(delayMilliseconds);
 					} catch (InterruptedException e) {
 						break;
@@ -144,14 +157,14 @@ public class Shared {
 			}
 		}));
 	}
-	public static void runTask(final String description, final Runnable r) {
+	public static void runTask(final String description, final String feature, final Runnable r) {
 		exe.submit(new Runnable() {
 
 			public void run() {
 				try {
 					long time = System.nanoTime();
 					r.run();
-					cpuTime += (System.nanoTime()-time);
+					cpu(feature, System.nanoTime()-time);
 				} catch (Exception e) {
 					error("An error occured when " + description, e);
 				} catch (Error e) {
@@ -160,7 +173,7 @@ public class Shared {
 			}
 		});
 	}
-	public static void runTaskLater(final int delayMilliseconds, final String description, final Runnable r) {
+	public static void runTaskLater(final int delayMilliseconds, final String description, final String feature, final Runnable r) {
 		final Future<?>[] array = new Future[1];
 		array[0] = exe.submit(new Runnable() {
 
@@ -170,7 +183,7 @@ public class Shared {
 					Thread.sleep(delayMilliseconds);
 					long time = System.nanoTime();
 					r.run();
-					cpuTime += (System.nanoTime()-time);
+					cpu(feature, System.nanoTime()-time);
 				} catch (InterruptedException e) {
 				} catch (Exception e) {
 					error("An error occured when " + description, e);

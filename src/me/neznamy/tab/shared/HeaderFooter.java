@@ -9,7 +9,7 @@ public class HeaderFooter {
 	
 	public static void load() {
 		if (!enable) return;
-		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", new Runnable(){
+		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", "headerfooter", new Runnable(){
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p);
 			}

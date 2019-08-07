@@ -134,7 +134,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return;
 				}
 				Shared.data.put(p.getUniqueId(), new TabPlayer(p));
-				Shared.runTaskLater(300, "checking if player is online", new Runnable() {
+				Shared.runTaskLater(300, "checking if player is online", "other", new Runnable() {
 
 
 					public void run() {
@@ -161,7 +161,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			inject(p);
 			p.onJoin();
 			final ITabPlayer pl = p;
-			Shared.runTask("player joined the server", new Runnable() {
+			Shared.runTask("player joined the server", "other", new Runnable() {
 
 
 				public void run() {
@@ -180,7 +180,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(final PlayerQuitEvent e){
 		if (disabled) return;
-		Shared.runTaskLater(100, "player left the server", new Runnable() {
+		Shared.runTaskLater(100, "player left the server", "other", new Runnable() {
 
 
 			public void run() {
@@ -230,7 +230,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							//preventing players from hitting armor stands, modifying id to owner's id if needed
 							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
 						}
-						Shared.cpuTime += (System.nanoTime()-time);
+						Shared.cpu("nametagX", System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}
@@ -247,7 +247,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							//nametag anti-override
 							if (!player.disabledNametag) {
 								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
-									Shared.cpuTime += (System.nanoTime()-time);
+									Shared.cpu("nametag", System.nanoTime()-time);
 									return;
 								}
 							}
@@ -265,7 +265,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							if (pack != null) {
 								final PacketPlayOut p = pack;
 								//sending packets outside of the packet reader or protocollib will cause problems
-								Shared.runTask("processing packet out", new Runnable() {
+								Shared.runTask("processing packet out", "nametagX", new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(p, player);
 									}
@@ -296,7 +296,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 						if (p != null) packet = p.toNMS();
-						Shared.cpuTime += (System.nanoTime()-time);
+						Shared.cpu("other", System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}

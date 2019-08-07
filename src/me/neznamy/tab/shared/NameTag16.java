@@ -16,13 +16,13 @@ public class NameTag16 {
 	public static void load() {
 		if (!enable) return;
 		for (ITabPlayer p : Shared.getPlayers()) p.registerTeam();
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "nametag", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug
-		if (Shared.servertype == ServerType.BUKKIT) Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", new Runnable() {
+		if (Shared.servertype == ServerType.BUKKIT) Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "nametag", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!((Player) p.getPlayer()).hasPotionEffect(PotionEffectType.INVISIBILITY));
 			}

@@ -22,7 +22,7 @@ public class Playerlist {
 			for (ITabPlayer p : Shared.getPlayers()) {
 				if (!p.disabledTablistNames) p.updatePlayerListName(true);
 			}
-			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", new Runnable() {
+			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", "playerlist", new Runnable() {
 				
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
