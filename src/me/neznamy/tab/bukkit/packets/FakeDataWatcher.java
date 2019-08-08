@@ -35,6 +35,8 @@ public class FakeDataWatcher {
 		} else {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(customNameVisible?1:0));
 		}
+		int markerPosition = NMSClass.versionNumber >= 14 ? 13 : NMSClass.versionNumber >= 10 ? 11 : 10;
+		datawatcher.setValue(new DataWatcherObject(markerPosition, DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
     }
 }

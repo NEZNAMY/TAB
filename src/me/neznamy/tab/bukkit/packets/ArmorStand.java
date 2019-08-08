@@ -127,6 +127,7 @@ public class ArmorStand{
 				y = player.getLocation().getY() + yOffset - (sneaking ? 0.30 : 0.18);
 			}
 		}
+		y += 2;
 		location = new Location(null,x,y,z);
 	}
 	public int getEntityId() {
