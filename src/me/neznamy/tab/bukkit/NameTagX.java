@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.NMSClass;
-import me.neznamy.tab.bukkit.packets.PacketAPI;
 import me.neznamy.tab.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutAttachEntity_1_8_x;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
@@ -77,14 +76,6 @@ public class NameTagX implements Listener{
 	}
 	public static void playerQuit(ITabPlayer p) {
 		if (enable) p.unregisterTeam();
-	}
-	public static void modifyPacketIN(Object packetplayinuseentity) throws Exception {
-		int id = PacketAPI.PacketPlayInUseEntity_ENTITYID.getInt(packetplayinuseentity);
-		for (ITabPlayer all : Shared.getPlayers()) {
-			if (NameTagLineManager.isArmorStandID(all, id)) {
-				PacketAPI.PacketPlayInUseEntity_ENTITYID.set(packetplayinuseentity, all.getEntityId());
-			}
-		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(final PlayerToggleSneakEvent e) {

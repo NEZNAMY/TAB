@@ -1,10 +1,11 @@
 package me.neznamy.tab.bukkit;
 
+import java.lang.reflect.Field;
+
 import org.bukkit.GameMode;
 
 import com.mojang.authlib.GameProfile;
 
-import me.neznamy.tab.bukkit.packets.PacketAPI;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -64,8 +65,8 @@ public class Playerlist {
 							name = gameProfile.getName() + " ";
 						}
 						GameProfile clone = new GameProfile(gameProfile.getId(), name);
-						PacketAPI.GameProfile_properties.set(clone, gameProfile.getProperties());
-						PacketAPI.GameProfile_legacy.set(clone, gameProfile.isLegacy());
+						GameProfile_properties.set(clone, gameProfile.getProperties());
+						GameProfile_legacy.set(clone, gameProfile.isLegacy());
 						playerInfoData.setGameProfile(clone);
 						packet.getPlayers().clear();
 						packet.getPlayers().add(playerInfoData);
@@ -83,6 +84,18 @@ public class Playerlist {
 					if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);
 				}
 			}
+		}
+	}
+	
+	public static Field GameProfile_properties;
+	public static Field GameProfile_legacy;
+	
+	static{
+		try {
+			(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
+			(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
+		} catch (Exception e) {
+			Shared.error("Failed to initialize Playerlist class", e);
 		}
 	}
 }

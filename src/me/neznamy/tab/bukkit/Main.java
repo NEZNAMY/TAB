@@ -22,7 +22,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.bukkit.Placeholders;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.bukkit.packets.PacketAPI;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
@@ -42,7 +41,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean disabled = false;
 
 	public void onEnable(){
-		if (me.neznamy.tab.bukkit.packets.PacketAPI.isVersionSupported()){
+		if (NMSClass.isVersionSupported()){
 			long total = System.currentTimeMillis();
 			instance = this;
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
@@ -207,21 +206,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			player.getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-					if (Main.disabled) return;
-					try{
-						long time = System.nanoTime();
-						if (NameTagX.enable) {
-							//preventing players from hitting armor stands, modifying id to owner's id if needed
-							if (PacketAPI.PacketPlayInUseEntity.isInstance(packet)) NameTagX.modifyPacketIN(packet);
-						}
-						Shared.cpu("nametagX", System.nanoTime()-time);
-					} catch (Exception e){
-						Shared.error("An error occured when reading packets", e);
-					}
 					super.channelRead(context, packet);
 				}
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					if (Main.disabled) {
+					if (disabled) {
 						super.write(context, packet, channelPromise);
 						return;
 					}
@@ -230,7 +218,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							//nametag anti-override
 							if (!player.disabledNametag) {
-								if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
+								if ((NameTag16.enable || NameTagX.enable) && instance.killPacket(packet)) {
 									Shared.cpu("nametag", System.nanoTime()-time);
 									return;
 								}
@@ -325,10 +313,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return Playerlist.enable;
 	}
 	public String getPermissionPlugin() {
-		if (Main.pex) return "PermissionsEx";
-		if (Main.groupManager != null) return "GroupManager";
-		if (Main.luckPerms) return "LuckPerms";
-		if (Main.powerfulPerms != null) return "PowerfulPerms";
+		if (pex) return "PermissionsEx";
+		if (groupManager != null) return "GroupManager";
+		if (luckPerms) return "LuckPerms";
+		if (powerfulPerms != null) return "PowerfulPerms";
 		if (Placeholders.perm != null) return Placeholders.perm.getName() + " (detected by Vault)";
 		return "-";
 	}

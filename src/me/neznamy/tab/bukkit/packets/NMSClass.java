@@ -8,7 +8,11 @@ public class NMSClass {
 	
 	public static final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 	public static final int versionNumber = Integer.parseInt(version.split("_")[1]);
+	private static final boolean versionSupported = (versionNumber >= 8 && versionNumber <= 14);
 
+	public static boolean isVersionSupported() {
+		return versionSupported;
+	}
 	public static Class<?> getNMSClass(String name) throws Exception{
 		return get(name);
 	}
