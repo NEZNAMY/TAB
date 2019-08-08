@@ -266,20 +266,22 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								for (Item petOwner : items) {
 									if (petOwner.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) modifyDataWatcherItem(petOwner);
 								}
+								packet = p.toNMS();
 							}
 							if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
 								DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
 								Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
 								if (petOwner != null) modifyDataWatcherItem(petOwner);
+								packet = p.toNMS();
 							}
 						}
 						if (Playerlist.enable) {
 							//correcting name, spectators if enabled, changing npc names if enabled
 							if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
 								Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
+								packet = p.toNMS();
 							}
 						}
-						if (p != null) packet = p.toNMS();
 						Shared.cpu("other", System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);

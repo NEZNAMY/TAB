@@ -30,7 +30,7 @@ public abstract class ITabPlayer{
 	private String rawFooter;
 	private String lastReplacedHeader = "";
 	private String lastReplacedFooter = "";
-	private String rank;
+	private String rank = "§7No Rank";
 	public String replacedTabFormat = "";
 	private boolean isStaff;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();

@@ -16,7 +16,7 @@ public class Premium {
 	public static SortingType sortingType = null;
 	public static String sortingPlaceholder;
 	public static boolean caseSensitive;
-	public static List<? extends Object> dynamicLines = Lists.newArrayList("abovename", "nametag", "belowname");
+	public static List<? extends Object> dynamicLines = Lists.newArrayList("belowname", "nametag", "abovename");
 	public static Map<String, Double> staticLines = Maps.newConcurrentMap();
 	
 	public static boolean is() {
