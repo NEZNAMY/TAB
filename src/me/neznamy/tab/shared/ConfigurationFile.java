@@ -87,6 +87,12 @@ public class ConfigurationFile{
 	public List<Object> getList(String path, List<String> defaultValue) {
 		return (List<Object>) get(path, defaultValue);
 	}
+	public List<String> getStringList(String path) {
+		return getStringList(path, null);
+	}
+	public List<String> getStringList(String path, List<String> defaultValue) {
+		return (List<String>) get(path, defaultValue);
+	}
 	public int getInt(String path, int defaultValue) {
 		return Integer.parseInt(get(path, defaultValue).toString());
 	}

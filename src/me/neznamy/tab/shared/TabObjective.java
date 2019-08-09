@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class TabObjective{
@@ -20,7 +21,7 @@ public class TabObjective{
 		int refresh = 500;
 		if (type == TabObjectiveType.PING) refresh = 2050;
 		if (type == TabObjectiveType.HEARTS) refresh = 100;
-		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", "tablistobjective", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
 	        public void run(){
 	        	for (ITabPlayer p : Shared.getPlayers()){
 	        		if (p.disabledTablistObjective) continue;

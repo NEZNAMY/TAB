@@ -5,6 +5,7 @@ import java.util.UUID;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.Shared.Feature;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -19,7 +20,7 @@ public class Playerlist {
 			for (ITabPlayer p : Shared.getPlayers()) {
 				if (!p.disabledTablistNames) p.updatePlayerListName(true);
 			}
-			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", "playerlist", new Runnable() {
+			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST, new Runnable() {
 				
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 
@@ -12,6 +13,8 @@ import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.Scoreboard;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -30,13 +33,13 @@ public abstract class ITabPlayer{
 	private String rawFooter;
 	private String lastReplacedHeader = "";
 	private String lastReplacedFooter = "";
-	private String rank = "§7No Rank";
+	private String rank;
 	public String replacedTabFormat = "";
 	private boolean isStaff;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
 	public int version;
 	public Channel channel;
-	public String ipAddress;
+	public String ipAddress = "-";
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
 
@@ -45,6 +48,9 @@ public abstract class ITabPlayer{
 	public boolean disabledNametag;
 	public boolean disabledTablistObjective;
 	public boolean disabledBossbar;
+	
+	public Scoreboard activeScoreboard;
+	public boolean hiddenScoreboard;
 
 
 	//bukkit only
@@ -71,6 +77,12 @@ public abstract class ITabPlayer{
 	protected abstract void loadChannel();
 
 
+	public ITabPlayer(Object player) {
+		this.player = player;
+		updateGroupIfNeeded();
+		updateAll();
+		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
+	}
 	public void updatePlayerListName(boolean force) {
 		getGroup();
 		String newFormat = getTabFormat();
@@ -174,14 +186,12 @@ public abstract class ITabPlayer{
 		for (String property : Premium.staticLines.keySet()) {
 			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
 		}
-		for (Map.Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
+		rank = (String) Configs.rankAliases.get("_OTHER_");
+		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(group)) {
 				rank = (String) entry.getValue();
 				break;
 			}
-		}
-		if (rank == null) {
-			rank = (String) Configs.rankAliases.get("_OTHER_");
 		}
 		if (rank == null || rank.length() == 0) {
 			rank = group;
@@ -210,6 +220,7 @@ public abstract class ITabPlayer{
 		return teamName;
 	}
 	public String getRank() {
+		if (rank == null) return "§7No Rank";
 		return rank;
 	}
 	public int getLastTabObjectiveValue() {
@@ -421,5 +432,15 @@ public abstract class ITabPlayer{
 				TabObjective.playerJoin(this);
 			}
 		}
+		if (ScoreboardManager.enabled) {
+			ScoreboardManager.playerQuit(this);
+			ScoreboardManager.playerJoin(this);
+		}
+	}
+	public void setActiveScoreboard(Scoreboard board) {
+		activeScoreboard = board;
+	}
+	public Scoreboard getActiveScoreboard() {
+		return activeScoreboard;
 	}
 }

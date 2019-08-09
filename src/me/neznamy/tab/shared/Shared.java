@@ -8,24 +8,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import me.neznamy.tab.shared.FancyMessage.ClickAction;
+import me.neznamy.tab.shared.FancyMessage.Extra;
+import me.neznamy.tab.shared.FancyMessage.HoverAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+
 public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	private static final ExecutorService exe = Executors.newCachedThreadPool();
-	
+	public static final boolean consoleErrors = false;
+
 	public static ServerType servertype;
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
-	public static ConcurrentHashMap<String, Long> cpuTimes = new ConcurrentHashMap<String, Long>();
+	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
+	public static List<CPUSample> cpuHistory = new ArrayList<CPUSample>();
 	private static int nextEntityId = 2000000000;
-	static List<Long> cpuValues = new ArrayList<Long>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static String pluginVersion;
 	public static int startupWarns = 0;
@@ -69,29 +74,29 @@ public class Shared {
 			BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 			if (message != null) {
 				buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-//				print("§c", message);
+				if (consoleErrors) print("Â§c", message);
 			}
 			if (e != null) {
 				buf.write(ERROR_PREFIX() + e.getClass().getName() +": " + e.getMessage() + newline);
-//				printClean("§c" + e.getClass().getName() +": " + e.getMessage());
+				if (consoleErrors) printClean("Â§c" + e.getClass().getName() +": " + e.getMessage());
 				for (StackTraceElement ste : e.getStackTrace()) {
 					buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-//					printClean("§c       at " + ste.toString());
+					if (consoleErrors) printClean("Â§c       at " + ste.toString());
 				}
 			}
 			if (err != null) {
 				buf.write(ERROR_PREFIX() + err.getClass().getName() +": " + err.getMessage() + newline);
-//				printClean("§c" + e.getClass().getName() +": " + e.getMessage());
+				if (consoleErrors) printClean("Â§c" + e.getClass().getName() +": " + e.getMessage());
 				for (StackTraceElement ste : err.getStackTrace()) {
 					buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-//					printClean("§c       at " + ste.toString());
+					if (consoleErrors) printClean("Â§c       at " + ste.toString());
 				}
 			}
 			buf.close();
 		} catch (Exception ex) {
-			print("§c", "An error occured when generating error message");
+			print("Â§c", "An error occured when generating error message");
 			ex.printStackTrace();
-			print("§c", "Original error: " + message);
+			print("Â§c", "Original error: " + message);
 			if (e != null) e.printStackTrace();
 			if (err != null) err.printStackTrace();
 		}
@@ -100,16 +105,12 @@ public class Shared {
 		return new DecimalFormat("#.##").format(value);
 	}
 	public static void startCPUTask() {
-		scheduleRepeatingTask(1000, "calculating cpu usage", "other", new Runnable() {
-			
+		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.OTHER, new Runnable() {
+
 			public void run() {
-				for (Entry<String, Long> entry : cpuTimes.entrySet()) {
-					cpuValues.add(entry.getValue());
-					//TODO feature-specific results
-				}
-//				for (ITabPlayer p : getPlayers()) p.sendMessage(round((float)cpuTime/10000000) + "%"); 
-				cpuTimes.clear();
-				if (cpuValues.size() > 60*15) cpuValues.remove(0); //15 minute history
+				cpuHistory.add(new CPUSample(cpuLastSecond));
+				cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
+				if (cpuHistory.size() > 60*15) cpuHistory.remove(0); //15 minute history
 			}
 		});
 	}
@@ -120,21 +121,24 @@ public class Shared {
 		return nextEntityId++;
 	}
 	public static void startupWarn(String message) {
-		print("§c", message);
+		print("Â§c", message);
 		startupWarns++;
 	}
 	public static void print(String color, String message) {
 		mainClass.sendConsoleMessage(color + "[TAB] " + message);
 	}
-	public static void cpu(String feature, long value) {
-		Long current = cpuTimes.get(feature);
-		if (current == null) {
-			cpuTimes.put(feature, value);
+	public static void printClean(String message) {
+		mainClass.sendConsoleMessage(message);
+	}
+	public static void cpu(Feature feature, long value) {
+		Long previous = cpuLastSecond.get(feature);
+		if (previous != null) {
+			cpuLastSecond.put(feature, previous+value);
 		} else {
-			cpuTimes.put(feature, current+value);
+			cpuLastSecond.put(feature, value);
 		}
 	}
-	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final String feature, final Runnable r) {
+	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final Feature feature, final Runnable r) {
 		if (delayMilliseconds == 0) return;
 		tasks.add(exe.submit(new Runnable() {
 
@@ -156,7 +160,7 @@ public class Shared {
 			}
 		}));
 	}
-	public static void runTask(final String description, final String feature, final Runnable r) {
+	public static void runTask(final String description, final Feature feature, final Runnable r) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -172,7 +176,7 @@ public class Shared {
 			}
 		});
 	}
-	public static void runTaskLater(final int delayMilliseconds, final String description, final String feature, final Runnable r) {
+	public static void runTaskLater(final int delayMilliseconds, final String description, final Feature feature, final Runnable r) {
 		final Future<?>[] array = new Future[1];
 		array[0] = exe.submit(new Runnable() {
 
@@ -197,7 +201,51 @@ public class Shared {
 	public static void cancelAllTasks() {
 		for (Future<?> f : tasks) f.cancel(true);
 	}
+	public static void sendPluginInfo(ITabPlayer to) {
+		FancyMessage message = new FancyMessage();
+		message.add(new Extra("Â§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "Â§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
+		message.add(new Extra(" Â§0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
+		new PacketPlayOutChat(message.toString()).send(to);
+	}
 	public static enum ServerType{
 		BUKKIT, BUNGEE;
+	}
+	public static enum Feature{
+		
+		NAMETAG("Name tags"),
+		PLAYERLIST("Tablist names"),
+		BOSSBAR("Boss Bar"),
+		SCOREBOARD("Scoreboard"),
+		HEADERFOOTER("Header/Footer"),
+		TABLISTOBJECTIVE("Tablist objective"),
+		NAMETAGX("Unlimited nametag mode"),
+		OTHER("Other");
+		
+		private String string;
+		
+		Feature(String string) {
+			this.string = string;
+		}
+		public String toString() {
+			return string;
+		}
+	}
+	public static class CPUSample{
+		
+		private ConcurrentHashMap<Feature, Long> values;
+		
+		public CPUSample(ConcurrentHashMap<Feature, Long> cpuLastSecond) {
+			this.values = cpuLastSecond;
+		}
+		public long getTotalCpuTime() {
+			long time = 0;
+			for (long value : values.values()) {
+				time += value;
+			}
+			return time;
+		}
+		public ConcurrentHashMap<Feature, Long> getValues(){
+			return values;
+		}
 	}
 }

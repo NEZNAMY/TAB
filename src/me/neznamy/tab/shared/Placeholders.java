@@ -7,11 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.neznamy.tab.shared.Shared.ServerType;
 
 public class Placeholders {
-	
+
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 	public static boolean relationalPlaceholders;
 	public static int maxPlayers;
-	
+
 	public static void recalculateOnlineVersions() {
 		online.put("1-14-x", 0);
 		online.put("1-13-x", 0);
@@ -40,7 +40,7 @@ public class Placeholders {
 			else online.put("1-14-x", online.get("1-14-x")+1); //current newest one
 		}
 	}
-	
+
 	public static String getTime() {
 		return new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 	}
@@ -58,36 +58,59 @@ public class Placeholders {
 		}
 		return s;
 	}
-	public static String color(String s) {
-		return s.replace("&0", "ง0").replace("&1", "ง1").replace("&2", "ง2").replace("&3", "ง3").replace("&4", "ง4")
-				.replace("&5", "ง5").replace("&6", "ง6").replace("&7", "ง7").replace("&8", "ง8").replace("&9", "ง9")
-				.replace("&a", "งa").replace("&b", "งb").replace("&c", "งc").replace("&d", "งd").replace("&e", "งe")
-				.replace("&f", "งf").replace("&k", "งk").replace("&l", "งl").replace("&m", "งm").replace("&n", "งn")
-				.replace("&o", "งo").replace("&r", "งr");
+	//code taken from bukkit, so it can work on bungee too
+	public static String color(String textToTranslate){
+		if (!textToTranslate.contains("&")) return textToTranslate;
+		char[] b = textToTranslate.toCharArray();
+		for (int i = 0; i < b.length - 1; i++) {
+			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[(i + 1)]) > -1)){
+				b[i] = 'ยง';
+				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
+			}
+		}
+		return new String(b);
+	}
+	//code taken from bukkit, so it can work on bungee too
+	public static String getLastColors(String input) {
+		String result = "";
+		int length = input.length();
+		for (int index = length - 1; index > -1; index--){
+			char section = input.charAt(index);
+			if ((section == 'ยง') && (index < length - 1)){
+				char c = input.charAt(index + 1);
+				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
+					result = "ยง" + c + result;
+					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 	public static String[] replaceMultiple(ITabPlayer p, String... args) {
 		String string = "";
-        int i = 0;
-        while (i < args.length) {
-        	if (i>0) {
-            	string += "@@@###@@@";
-            }
-            string += "|||@@@|||" + args[i];
-            ++i;
-        }
-        string = replace(string, p);
-        String[] arr = string.split("@@@###@@@");
-        for (int j=0; j<arr.length; j++) {
-        	arr[j] = arr[j].replace("|||@@@|||", "");
-        }
-        return arr;
+		int i = 0;
+		while (i < args.length) {
+			if (i>0) {
+				string += "@@@###@@@";
+			}
+			string += "|||@@@|||" + args[i];
+			++i;
+		}
+		string = replace(string, p);
+		String[] arr = string.split("@@@###@@@");
+		for (int j=0; j<arr.length; j++) {
+			arr[j] = arr[j].replace("|||@@@|||", "");
+		}
+		return arr;
 	}
 	public static String replace(String string, ITabPlayer p) {
 		if (!string.contains("%") && !string.contains("{")) return color(string);
 		string = setAnimations(string);
 		if (string.contains("%rank%")) string = string.replace("%rank%", p.getRank());
 		if (Shared.servertype == ServerType.BUKKIT) {
-        	string = me.neznamy.tab.bukkit.Placeholders.replace(string, p);
+			string = me.neznamy.tab.bukkit.Placeholders.replace(string, p);
 		}
 		if (string.contains("%memory-used%")) string = string.replace("%memory-used%", ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + ""));
 		if (string.contains("%memory-max%")) string = string.replace("%memory-max%", ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"");

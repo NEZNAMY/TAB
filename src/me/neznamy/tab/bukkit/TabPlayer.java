@@ -30,13 +30,20 @@ public class TabPlayer extends ITabPlayer{
 	private List<Object> queuedPackets = new ArrayList<Object>();
 
 	public TabPlayer(Player p) {
-		player = p;
-		updateGroupIfNeeded();
-		updateAll();
-		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
+		super(p);
 		version = Placeholders.getVersion(this);
+		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
+		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
+		disabledNametag = Configs.disabledNametag.contains(getWorldName());
+		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
+		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 	}
 	public void onJoin() throws Exception {
+		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
+		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
+		disabledNametag = Configs.disabledNametag.contains(getWorldName());
+		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
+		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 		ipAddress = getPlayer().getAddress().getAddress().getHostAddress();
 		if (Shared.mainClass.listNames()) updatePlayerListName(false);
 		if (NameTagX.enable || NameTag16.enable) {

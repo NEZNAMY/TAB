@@ -25,11 +25,13 @@ import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.FancyMessage.*;
+import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.Shared.ServerType;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
-import me.neznamy.tab.shared.packets.*;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
@@ -91,6 +93,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			NameTag16.unload();
 			NameTagX.unload();
 			BossBar.unload();
+			ScoreboardManager.unload();
 			Shared.data.clear();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e) {
@@ -121,6 +124,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			TabObjective.load();
 			HeaderFooter.load();
 			PerWorldPlayerlist.load();
+			ScoreboardManager.load();
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -150,7 +154,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			inject(p);
 			p.onJoin();
 			final ITabPlayer pl = p;
-			Shared.runTask("player joined the server", "other", new Runnable() {
+			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
 					me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
@@ -159,6 +163,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					NameTag16.playerJoin(pl);
 					NameTagX.playerJoin(pl);
 					BossBar.playerJoin(pl);
+					ScoreboardManager.playerJoin(pl);
 				}
 			});
 		} catch (Exception ex) {
@@ -172,6 +177,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
 		NameTagX.playerQuit(disconnectedPlayer);
+		ScoreboardManager.playerQuit(disconnectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
 		}
@@ -196,10 +202,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void a(PlayerCommandPreprocessEvent e) {
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
-			sendPluginInfo(sender);
+			Shared.sendPluginInfo(sender);
 			return;
 		}
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
+		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 	public static void inject(final ITabPlayer player) {
 		try {
@@ -219,7 +226,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							//nametag anti-override
 							if (!player.disabledNametag) {
 								if ((NameTag16.enable || NameTagX.enable) && instance.killPacket(packet)) {
-									Shared.cpu("nametag", System.nanoTime()-time);
+									Shared.cpu(Feature.NAMETAG, System.nanoTime()-time);
 									return;
 								}
 							}
@@ -237,7 +244,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							if (pack != null) {
 								final PacketPlayOut p = pack;
 								//sending packets outside of the packet reader or protocollib will cause problems
-								Shared.runTask("processing packet out", "nametagX", new Runnable() {
+								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(p, player);
 									}
@@ -270,7 +277,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								packet = p.toNMS();
 							}
 						}
-						Shared.cpu("other", System.nanoTime()-time);
+						Shared.cpu(Feature.OTHER, System.nanoTime()-time);
 					} catch (Exception e){
 						Shared.error("An error occured when reading packets", e);
 					}
@@ -330,12 +337,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		unload();
 		load(true, false);
 		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
-	}
-	public void sendPluginInfo(ITabPlayer to) {
-		FancyMessage message = new FancyMessage();
-		message.add(new Extra("§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
-		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
-		new PacketPlayOutChat(message.toString()).send(to);
 	}
 	@SuppressWarnings("unchecked")
 	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{

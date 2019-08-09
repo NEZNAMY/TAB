@@ -1,6 +1,7 @@
 package me.neznamy.tab.bungee;
 
 import io.netty.channel.*;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.Shared.ServerType;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
@@ -55,6 +56,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Playerlist.unload();
 			NameTag16.unload();
 			BossBar.unload();
+			ScoreboardManager.unload();
 			Shared.data.clear();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e) {
@@ -79,6 +81,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Playerlist.load();
 			TabObjective.load();
 			HeaderFooter.load();
+			ScoreboardManager.load();
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -93,6 +96,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
+		ScoreboardManager.playerQuit(disconnectedPlayer);
 		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler
@@ -110,6 +114,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				TabObjective.playerJoin(p);
 				NameTag16.playerJoin(p);
 				BossBar.playerJoin(p);
+				ScoreboardManager.playerJoin(p);
 			} else {
 				String from = p.getWorldName();
 				String to = e.getPlayer().getServer().getInfo().getName();
@@ -124,10 +129,11 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void a(ChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
-			sendPluginInfo(sender);
+			Shared.sendPluginInfo(sender);
 			return;
 		}
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
+		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 	private void inject(final ITabPlayer player) {
 		player.getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
@@ -153,16 +159,6 @@ public class Main extends Plugin implements Listener, MainClass{
 	public String createComponent(String text) {
 		if (text == null || text.length() == 0) return "{\"translate\":\"\"}";
 		return ComponentSerializer.toString(new TextComponent(text));
-	}
-	public void sendPluginInfo(ITabPlayer to) {
-		TextComponent component = new TextComponent("");
-		TextComponent extra1 = new TextComponent("§3TAB v" + Shared.pluginVersion);
-		extra1.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aClick to visit plugin's spigot page").create()));
-		extra1.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
-		TextComponent extra2 = new TextComponent(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)");
-		component.addExtra(extra1);
-		component.addExtra(extra2);
-		((ProxiedPlayer)to.getPlayer()).sendMessage(component);
 	}
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {

@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 import me.lucko.luckperms.LuckPerms;
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.Shared;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,14 +23,14 @@ public class TabPlayer extends ITabPlayer{
 	public Server server;
 
 	public TabPlayer(ProxiedPlayer p) {
-		player = p;
-		server = p.getServer();
-		updateGroupIfNeeded();
-		updateAll();
-		if (NameTag16.enable) teamName = buildTeamName();
-		if (Shared.mainClass.listNames()) updatePlayerListName(false);
+		super(p);
 		version = getPlayer().getPendingConnection().getVersion();
 		ipAddress = p.getAddress().getAddress().getHostAddress();
+		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
+		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
+		disabledNametag = Configs.disabledNametag.contains(getWorldName());
+		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
+		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 	}
 	public String getGroupFromPermPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
@@ -54,6 +54,7 @@ public class TabPlayer extends ITabPlayer{
 		return getPlayer().getUniqueId();
 	}
 	public String getWorldName() {
+		if (server == null) server = getPlayer().getServer(); //no other effective way to initialize
 		return server.getInfo().getName();
 	}
 	public boolean hasPermission(String permission) {

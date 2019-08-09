@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.bukkit.packets.NMSClass;
@@ -8,6 +10,7 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.Shared.ServerType;
 
 public class TabCommand{
@@ -145,34 +148,38 @@ public class TabCommand{
 				} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 			} else if (args[0].equalsIgnoreCase("cpu")){
 				if (canCPU(sender)) {
-					String Min1 = "-";
-					if (Shared.cpuValues.size() >= 60) {
-						long var = 0;
-						for (int i=Shared.cpuValues.size()-60; i<Shared.cpuValues.size(); i++) {
-							var += Shared.cpuValues.get(i);
+					sendMessage(sender, "§3[TAB] §a--------------------------------------");
+					sendMessage(sender, "§3[TAB] §6CPU from last 1m, 5m, 15m: §a" + getTotalCpu(60) + ", " + getTotalCpu(300) + ", " + getTotalCpu(900));
+					int history = 60;
+					if (Shared.cpuHistory.size() >= history) {
+						HashMap<Feature, Long> lastMinute = new HashMap<Feature, Long>();
+						for (int i=Shared.cpuHistory.size()-history; i<Shared.cpuHistory.size(); i++) {
+							for (Entry<Feature, Long> entry : Shared.cpuHistory.get(i).getValues().entrySet()) {
+								Feature feature = entry.getKey();
+								if (!lastMinute.containsKey(feature)) lastMinute.put(feature, 0L);
+								lastMinute.put(feature, lastMinute.get(feature)+entry.getValue());
+							}
 						}
-						Min1 = Shared.round((float)var/60/10000000) + "%";
-					}
-					String Min5 = "-";
-					if (Shared.cpuValues.size() >= 300) {
-						long var = 0;
-						for (int i=Shared.cpuValues.size()-300; i<Shared.cpuValues.size(); i++) {
-							var += Shared.cpuValues.get(i);
+						sendMessage(sender, "§3[TAB] §aFeature specific from the last minute:");
+						for (Entry<Feature, Long> entry : lastMinute.entrySet()) {
+							sendMessage(sender, "§3[TAB] §6" + entry.getKey().toString() + " - §a" + Shared.round((float)entry.getValue()/history/10000000) + "%");
 						}
-						Min5 = Shared.round((float)var/300/10000000) + "%";
 					}
-					String Min15 = "-";
-					if (Shared.cpuValues.size() >= 900) {
-						long var = 0;
-						for (int i=Shared.cpuValues.size()-900; i<Shared.cpuValues.size(); i++) {
-							var += Shared.cpuValues.get(i);
-						}
-						Min15 = Shared.round((float)var/900/10000000) + "%";
-					}
-					sendMessage(sender, "§3[TAB] §6CPU from last 1m, 5m, 15m: §a" + Min1 + ", " + Min5 + ", " + Min15);
+					sendMessage(sender, "§3[TAB] §a--------------------------------------");
 				} else sendMessage(sender, Configs.no_perm);
 			} else help(sender);
 		} else help(sender);
+	}
+	private static String getTotalCpu(int history) {
+		String cpu = "-";
+		if (Shared.cpuHistory.size() >= history) {
+			long var = 0;
+			for (int i=Shared.cpuHistory.size()-history; i<Shared.cpuHistory.size(); i++) {
+				var += Shared.cpuHistory.get(i).getTotalCpuTime();
+			}
+			cpu = Shared.round((float)var/history/10000000) + "%";
+		}
+		return cpu;
 	}
 	public static void save(ITabPlayer sender, String arg0, String arg1, String type, String value) {
 		if (arg0.equalsIgnoreCase("group")){

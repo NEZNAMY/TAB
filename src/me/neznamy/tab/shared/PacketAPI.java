@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.bukkit.packets.DataWatcher;
 import me.neznamy.tab.bukkit.packets.DataWatcherObject;
 import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
@@ -59,7 +61,17 @@ public class PacketAPI{
 	public static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
 		new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null).send(to);
 	}
-
+	public static void registerScoreboardScore(ITabPlayer p, String team, String body, String prefix, String suffix, String objective, int score) {
+        sendScoreboardTeamPacket(p, team, prefix, suffix, false, false, Lists.newArrayList(body), 0, 3);
+        changeScoreboardScore(p, body, objective, score);
+    }
+    public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
+        new PacketPlayOutScoreboardScore(Action.REMOVE, null, score, 0).send(p);
+        sendScoreboardTeamPacket(p, ID, null, null, false, false, null, 1, 69);
+    }
+    public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
+        new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2).send(p);
+    }
 	public static void sendBossBar(ITabPlayer to, BossBAR bar, float progress, String message) {
 		if (UniversalPacketPlayOut.versionNumber != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId(), message, progress, bar.getColor(), bar.getStyle()).send(to);

@@ -25,3 +25,52 @@ unlimited-nametag-mode-dynamic-lines:
 #can also be negative, but be careful when configuring value so it won't end up inside of the player
 unlimited-nametag-mode-static-lines:
   myCustomLine: 0.66
+
+
+##############################################
+################# SCOREBOARD #################
+##############################################
+
+#for bungee mode it counts as "server" instead of "world", such as disabled in servers
+scoreboard:
+  enabled: false
+  toggle-command: /sb
+  disable-in-worlds: 
+    - disabledworld
+  #set to NONE to have no default scoreboard
+  default-scoreboard: "MyDefaultScoreboard"
+  refresh-interval-ticks: 1
+  per-world:
+    survival: "survival"
+  
+scoreboards:
+  MyDefaultScoreboard:
+    title: "&7&l> %animation:ServerName% &7&l<"
+    lines:
+      - "%animation:MyAnimation1%"
+      - "&7%animation:Welcome%"
+      - "&b%nick%"
+      - ""
+      - "&7Online Players"
+      - "&b%online% &7/ &b%maxplayers%"
+      - ""
+      - "Money"
+      - "&f%money%&a$"
+      - ""
+      - "&7Website"
+      - "%animation:web%"
+      - "&a/sb &fto turn off"
+      - "%animation:MyAnimation1%"
+  survival:
+    title: "&7&l> %animation:ServerName% &7&l<"
+    lines:
+      - "%animation:MyAnimation1%"
+      - "&7Welcome to"
+      - "&b%world% &7world"
+      - ""
+      - "&7Online Players in world"
+      - "&b%worldonline%"
+      - ""
+      - "Position"
+      - "&b%xPos%&8X &b%yPos%&8Y &b%zPos%&8Z"
+      - "%animation:MyAnimation1%"

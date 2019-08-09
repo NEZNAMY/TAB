@@ -81,7 +81,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 				if (versionNumber >= 13) {
 					newPacketPlayOutScoreboardScore_4 = getConstructor(PacketPlayOutScoreboardScore, 4);
 				} else {
-					newPacketPlayOutScoreboardScore_1 = getConstructor(PacketPlayOutScoreboardScore, 1);
+					newPacketPlayOutScoreboardScore_1 = PacketPlayOutScoreboardScore.getConstructor(String.class);
 				}
 			}
 		} catch (Exception e) {

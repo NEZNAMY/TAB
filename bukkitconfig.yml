@@ -146,6 +146,7 @@ rank-aliases:
   Legend: "&a&lLEGEND"
   Titan: "&c&lTITAN"
   Youtuber: "&c&lYOUTUBE"
+  _OTHER_: "&7No Rank"
   
 disable-features-in-worlds:
   header-footer:

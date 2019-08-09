@@ -2,9 +2,9 @@ package me.neznamy.tab.shared;
 
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class FancyMessage {
 
@@ -15,16 +15,15 @@ public class FancyMessage {
 	public void add(Extra c) {
 		extras.add(c);
 	}
-	@SuppressWarnings("unchecked")
 	public String toString() {
-		JSONObject main = new JSONObject();
-		main.put("text", "");
+		JsonObject main = new JsonObject();
+		main.addProperty("text", "");
 		if (!extras.isEmpty()) {
-			List<JSONObject> list = Lists.newArrayList();
+			JsonArray list = new JsonArray();
 			for (Extra c : extras) {
 				list.add(c.toJSON());
 			}
-			main.put("extra", list);
+			main.add("extra", list);
 		}
 		return main.toString();
 	}
@@ -36,7 +35,7 @@ public class FancyMessage {
 		private ClickAction click;
 		private String clickValue;
 		
-		public Extra(String...text) {
+		public Extra(String... text) {
 			String txt = "";
 			for (int i=0; i<text.length; i++) {
 				if (i>0) txt += "\n";
@@ -64,56 +63,38 @@ public class FancyMessage {
 			this.clickValue = txt;
 			return this;
 		}
-		@SuppressWarnings("unchecked")
-		public JSONObject toJSON() {
-			JSONObject obj = new JSONObject();
-			obj.put("text", text);
+		public JsonObject toJSON() {
+			JsonObject obj = new JsonObject();
+			obj.addProperty("text", text);
 			if (hover != null) {
-				JSONObject hoverevent = new JSONObject();
-				hoverevent.put("action", hover.get());
-				hoverevent.put("value", hoverValue);
-				obj.put("hoverEvent", hoverevent);
+				JsonObject o = new JsonObject();
+				o.addProperty("action", hover.toString());
+				o.addProperty("value", hoverValue);
+				obj.add("hoverEvent", o);
 			}
 			if (click != null) {
-				JSONObject clickevent = new JSONObject();
-				clickevent.put("action", click.get());
-				clickevent.put("value", clickValue);
-				obj.put("clickEvent", clickevent);
+				JsonObject o = new JsonObject();
+				o.addProperty("action", click.toString());
+				o.addProperty("value", clickValue);
+				obj.add("clickEvent", o);
 			}
 			return obj;
 		}
 	}
 	public enum HoverAction{
+
+		SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY;
 		
-//		SHOW_ACHIEVEMENT("show_achievement"),
-		SHOW_TEXT("show_text"),
-		SHOW_ITEM("show_item"),
-		SHOW_ENTITY("show_entity");
-		
-		private String string;
-		
-		private HoverAction(String string) {
-			this.string = string;
-		}
-		public String get() {
-			return string;
+		public String toString() {
+			return super.toString().toLowerCase();
 		}
 	}
 	public enum ClickAction{
-		
-		OPEN_URL("open_url"),
-		OPEN_FILE("open_file"),
-		RUN_COMMAND("run_command"),
-		SUGGEST_COMMAND("suggest_command"),
-		CHANGE_PAGE("change_page");
-		
-		private String string;
-		
-		private ClickAction(String string) {
-			this.string = string;
-		}
-		public String get() {
-			return string;
+
+		OPEN_URL, OPEN_FILE, RUN_COMMAND, SUGGEST_COMMAND,CHANGE_PAGE;
+
+		public String toString() {
+			return super.toString().toLowerCase();
 		}
 	}
 }

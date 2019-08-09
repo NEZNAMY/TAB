@@ -12,6 +12,7 @@ import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
@@ -21,7 +22,7 @@ public class BossBar1_8 implements Listener {
 		if (!BossBar.enable) return;
 		if (NMSClass.versionNumber == 8) {
 			Bukkit.getPluginManager().registerEvents(new BossBar1_8(), Main.instance);
-			Shared.scheduleRepeatingTask(500, "refreshing bossbar", "bossbar", new Runnable() {
+			Shared.scheduleRepeatingTask(500, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 
 				
 				public void run() {
@@ -42,13 +43,13 @@ public class BossBar1_8 implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		for (BossBarLine line : BossBar.lines) BossBar.sendBar(p, line);
-		Shared.cpu("bossbar", System.nanoTime()-time);
+		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
 		if (!BossBar.enable) return;
 		long time = System.nanoTime();
 		for (BossBarLine line : BossBar.lines) BossBar.sendBar(Shared.getPlayer(e.getPlayer().getUniqueId()), line);
-		Shared.cpu("bossbar", System.nanoTime()-time);
+		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 }

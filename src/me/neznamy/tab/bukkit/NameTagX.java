@@ -27,6 +27,7 @@ import me.neznamy.tab.bukkit.packets.PacketPlayOutMount;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutNamedEntitySpawn;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.Shared.Feature;
 
 public class NameTagX implements Listener{
 
@@ -56,13 +57,13 @@ public class NameTagX implements Listener{
 				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "nametag", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", Feature.NAMETAG, new Runnable() {
 
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "nametagX", new Runnable() {
+		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAGX, new Runnable() {
 
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
@@ -79,7 +80,7 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(final PlayerToggleSneakEvent e) {
-		Shared.runTask("processing sprint toggle", "nametagX", new Runnable() {
+		Shared.runTask("processing sprint toggle", Feature.NAMETAGX, new Runnable() {
 
 			public void run() {
 				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());

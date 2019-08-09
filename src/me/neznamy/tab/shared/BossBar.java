@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.shared.PacketAPI.BossBAR;
+import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -18,7 +19,7 @@ public class BossBar{
 		for (BossBarLine l : lines) {
 			for (ITabPlayer p : Shared.getPlayers()) sendBar(p, l);
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", "bossbar", new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 			public void run() {
 				for (BossBarLine line : lines) line.update();
 			}
