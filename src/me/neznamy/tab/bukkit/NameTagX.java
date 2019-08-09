@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.google.common.collect.Lists;
@@ -85,6 +86,16 @@ public class NameTagX implements Listener{
 			public void run() {
 				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				NameTagLineManager.sneak(p, e.isSneaking());
+			}
+		});
+	}
+	@EventHandler
+	public void a(final PlayerMoveEvent e) {
+		Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
+
+			public void run() {
+				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+				if (p.previewingNametag) NameTagLineManager.teleportArmorStand(p, p);
 			}
 		});
 	}

@@ -21,3 +21,5 @@ help_menu:
   - "&3/tab debug [player] &7- displays debug information about you [about requested player]"
 bossbar-toggle-on: "&2Bossbar is now visible"
 bossbar-toggle-off: "&7Bossbar is no longer visible. Magic!"
+preview-on: "&7Preview mode &aactivated."
+preview-off: "&7Preview mode &3deactivated."

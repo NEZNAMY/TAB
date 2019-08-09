@@ -143,7 +143,14 @@ public class TabCommand{
 			} else if (args[0].equalsIgnoreCase("ntpreview")){
 				if (Configs.unlimitedTags) {
 					if (sender != null) {
-						NameTagLineManager.spawnArmorStand(sender, sender, false);
+						if (sender.previewingNametag) {
+							NameTagLineManager.destroy(sender, sender);
+							sendMessage(sender, Configs.preview_off);
+						} else {
+							NameTagLineManager.spawnArmorStand(sender, sender, false);
+							sendMessage(sender, Configs.preview_on);
+						}
+						sender.previewingNametag = !sender.previewingNametag;
 					}
 				} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 			} else if (args[0].equalsIgnoreCase("cpu")){

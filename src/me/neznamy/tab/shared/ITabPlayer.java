@@ -51,6 +51,7 @@ public abstract class ITabPlayer{
 	
 	public Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
+	public boolean previewingNametag;
 
 
 	//bukkit only

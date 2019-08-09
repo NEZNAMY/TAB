@@ -54,6 +54,8 @@ public class Configs {
 	public static List<Object> help_menu = new ArrayList<Object>();
 	public static String bossbar_off;
 	public static String bossbar_on;
+	public static String preview_off;
+	public static String preview_on;
 	
 	public static ConfigurationFile advancedconfig;
 	public static boolean sortByNickname = false;
@@ -164,5 +166,7 @@ public class Configs {
 		help_menu = translation.getList("help_menu");
 		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace("&", "§");
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "§");
+		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.").replace("&", "§");
+		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.").replace("&", "§");
 	}
 }
