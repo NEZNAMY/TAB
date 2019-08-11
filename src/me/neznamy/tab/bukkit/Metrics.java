@@ -29,6 +29,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.premium.Premium;
+
 /**
  * bStats collects some data for plugin authors.
  *
@@ -205,6 +207,7 @@ public class Metrics {
 
 		String pluginName = "TAB Reborn";
 		String pluginVersion = plugin.getDescription().getVersion();
+		if (Premium.is()) pluginVersion += "+";
 
 		data.put("pluginName", pluginName); // Append the name of the plugin
 		data.put("pluginVersion", pluginVersion); // Append the version of the plugin

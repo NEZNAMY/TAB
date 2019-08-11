@@ -3,6 +3,8 @@ package me.neznamy.tab.bungee;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
+import me.neznamy.tab.premium.Premium;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -155,6 +157,7 @@ public class Metrics {
 
 		String pluginName = "TAB Reborn";
 		String pluginVersion = plugin.getDescription().getVersion();
+		if (Premium.is()) pluginVersion += "+";
 
 		data.addProperty("pluginName", pluginName);
 		data.addProperty("pluginVersion", pluginVersion);
