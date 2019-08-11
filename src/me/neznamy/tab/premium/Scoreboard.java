@@ -90,7 +90,7 @@ public class Scoreboard {
 				String replaced = Placeholders.replace(rawtext, p);
 				if (replaced.equals(lastReplacedText.get(p))) return null;
 				lastReplacedText.put(p, replaced);
-				if (replaced.length() > 16 && UniversalPacketPlayOut.versionNumber < 13) {
+				if (replaced.length() > 16) {
 					String prefix = replaced.substring(0, 16);
 					String suffix = replaced.substring(16, replaced.length());
 					if (prefix.length() == 16 && prefix.toCharArray()[15] == '§') {
@@ -98,7 +98,7 @@ public class Scoreboard {
 						suffix = "§" + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
-					if (suffix.length() > 16) suffix = suffix.substring(0, 16);
+					if (suffix.length() > 16 && UniversalPacketPlayOut.versionNumber < 13) suffix = suffix.substring(0, 16);
 					return Lists.newArrayList(prefix, suffix);
 				} else {
 					return Lists.newArrayList(replaced, "");
