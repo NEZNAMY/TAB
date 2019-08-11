@@ -22,8 +22,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.bukkit.Placeholders;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
@@ -237,17 +235,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						}
 						if (NameTagX.enable && !player.disabledNametag) {
 							//unlimited nametag mode
-							PacketPlayOut pack = null;
-							if (pack == null) pack = PacketPlayOutNamedEntitySpawn.read(packet); //spawning armor stand
-							if (pack == null) pack = PacketPlayOutEntityDestroy.read(packet); //destroying armor stand
-							if (pack == null) pack = PacketPlayOutEntityTeleport.read(packet); //teleporting armor stand
-							if (pack == null) pack = PacketPlayOutRelEntityMove.read(packet); //teleporting armor stand
-							if (pack == null) pack = PacketPlayOutRelEntityMoveLook.read(packet); //teleporting armor stand
-							if (pack == null) pack = PacketPlayOutMount.read(packet); //1.9+ mount detection
-							if (pack == null && NMSClass.versionNumber == 8) pack = PacketPlayOutAttachEntity_1_8_x.read(packet); //1.8.x mount detection
-							if (pack != null) {
-								final PacketPlayOut p = pack;
+							NameTagXPacket pack = null;
+							if ((pack = NameTagXPacket.fromNMS(packet)) != null) {
 								//sending packets outside of the packet reader or protocollib will cause problems
+								final NameTagXPacket p = pack;
 								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(p, player);

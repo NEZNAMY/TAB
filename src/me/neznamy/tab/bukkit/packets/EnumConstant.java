@@ -3,7 +3,7 @@ package me.neznamy.tab.bukkit.packets;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class EnumAPI {
+public class EnumConstant {
 
 	public static Object BarColor_since_1_9_R1_BLUE;
 	public static Object BarColor_since_1_9_R1_GREEN;
@@ -45,10 +45,6 @@ public class EnumAPI {
 	public static Object EnumChatFormat_UNDERLINE; 
 	public static Object EnumChatFormat_ITALIC; 
 	public static Object EnumChatFormat_RESET;
-
-	public static Object EnumEntityUseAction_ATTACK;
-	public static Object EnumEntityUseAction_INTERACT;
-	public static Object EnumEntityUseAction_INTERACT_AT;
 
 	public static Object EnumPlayerInfoAction_ADD_PLAYER;
 	public static Object EnumPlayerInfoAction_REMOVE_PLAYER;
@@ -116,24 +112,16 @@ public class EnumAPI {
 				EnumGamemode_SPECTATOR = EnumGamemode.getDeclaredField("SPECTATOR").get(null);
 				EnumGamemode_SURVIVAL = EnumGamemode.getDeclaredField("SURVIVAL").get(null);
 
-				Class<?> EnumEntityUseAction;
 				Class<?> EnumScoreboardHealthDisplay;
 				Class<?> EnumPlayerInfoAction;
 				try{
 					//1.8.R1
-					EnumEntityUseAction = NMSClass.get("EnumEntityUseAction");
 					EnumScoreboardHealthDisplay = NMSClass.get("EnumScoreboardHealthDisplay");
 					EnumPlayerInfoAction = NMSClass.get("EnumPlayerInfoAction");
 				} catch (Exception e) {
-					EnumEntityUseAction = NMSClass.get("PacketPlayInUseEntity$EnumEntityUseAction");
 					EnumScoreboardHealthDisplay = NMSClass.get("IScoreboardCriteria$EnumScoreboardHealthDisplay");
 					EnumPlayerInfoAction = NMSClass.get("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 				}
-
-
-				EnumEntityUseAction_ATTACK = EnumEntityUseAction.getDeclaredField("ATTACK").get(null);
-				EnumEntityUseAction_INTERACT = EnumEntityUseAction.getDeclaredField("INTERACT").get(null);
-				EnumEntityUseAction_INTERACT_AT = EnumEntityUseAction.getDeclaredField("INTERACT_AT").get(null);
 
 				EnumScoreboardHealthDisplay_INTEGER = EnumScoreboardHealthDisplay.getDeclaredField("INTEGER").get(null);
 				EnumScoreboardHealthDisplay_HEARTS = EnumScoreboardHealthDisplay.getDeclaredField("HEARTS").get(null);

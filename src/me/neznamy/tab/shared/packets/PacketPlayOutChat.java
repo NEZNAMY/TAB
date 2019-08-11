@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.bukkit.packets.EnumAPI;
+import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.ServerType;
@@ -32,9 +32,9 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	
 	public enum ChatMessageType{
 
-		CHAT((byte)0, EnumAPI.ChatMessageType_since_1_12_R1_CHAT), 
-		SYSTEM((byte)1, EnumAPI.ChatMessageType_since_1_12_R1_SYSTEM), 
-		GAME_INFO((byte)2, EnumAPI.ChatMessageType_since_1_12_R1_GAME_INFO);
+		CHAT((byte)0, EnumConstant.ChatMessageType_since_1_12_R1_CHAT), 
+		SYSTEM((byte)1, EnumConstant.ChatMessageType_since_1_12_R1_SYSTEM), 
+		GAME_INFO((byte)2, EnumConstant.ChatMessageType_since_1_12_R1_GAME_INFO);
 
 		private byte byteEquivalent;
 		private Object nmsEquivalent;

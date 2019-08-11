@@ -4,11 +4,11 @@ import org.bukkit.GameMode;
 
 public enum EnumGamemode{
 
-	NOT_SET(EnumAPI.EnumGamemode_NOT_SET), 
-	SURVIVAL(EnumAPI.EnumGamemode_SURVIVAL), 
-	CREATIVE(EnumAPI.EnumGamemode_CREATIVE), 
-	ADVENTURE(EnumAPI.EnumGamemode_ADVENTURE), 
-	SPECTATOR(EnumAPI.EnumGamemode_SPECTATOR);
+	NOT_SET(EnumConstant.EnumGamemode_NOT_SET), 
+	SURVIVAL(EnumConstant.EnumGamemode_SURVIVAL), 
+	CREATIVE(EnumConstant.EnumGamemode_CREATIVE), 
+	ADVENTURE(EnumConstant.EnumGamemode_ADVENTURE), 
+	SPECTATOR(EnumConstant.EnumGamemode_SPECTATOR);
 
 	private Object nmsEquivalent;
 	

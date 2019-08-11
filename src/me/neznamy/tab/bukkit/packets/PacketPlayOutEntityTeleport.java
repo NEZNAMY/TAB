@@ -18,8 +18,9 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 	private float pitch;
 	private boolean onGround;
 	
-	public PacketPlayOutEntityTeleport(int entityId) {
-		this.entityId = entityId;
+	public PacketPlayOutEntityTeleport(Entity entity) {
+		this(entity.getEntityId(), entity.getLocation());
+		onGround = entity.isOnGround();
 	}
 	public PacketPlayOutEntityTeleport(int entityId, Location loc) {
 		this(entityId, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -32,17 +33,8 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 		this.yaw = yaw;
 		this.pitch = pitch;
 	}
-	public PacketPlayOutEntityTeleport(Entity entity) {
-		entityId = entity.getEntityId();
-		x = entity.getLocation().getX();
-		y = entity.getLocation().getY();
-		z = entity.getLocation().getZ();
-		yaw = entity.getLocation().getYaw();
-		pitch = entity.getLocation().getPitch();
-		onGround = entity.isOnGround();
-	}
-	public int getEntityId() {
-		return entityId;
+	public double getY() {
+		return y;
 	}
 	public Object toNMS() throws Exception {
 		Object packet = newPacketPlayOutEntityTeleport.newInstance();
@@ -60,11 +52,6 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 		if (pitch != 0) PacketPlayOutEntityTeleport_PITCH.set(packet, (byte)(pitch * 256.0f / 360.0f));
 		if (onGround) PacketPlayOutEntityTeleport_ONGROUND.set(packet, onGround);
 		return packet;
-	}
-	public static PacketPlayOutEntityTeleport read(Object nmsPacket) throws Exception {
-		if (!PacketPlayOutEntityTeleport.isInstance(nmsPacket)) return null;
-		int entityId = PacketPlayOutEntityTeleport_ENTITYID.getInt(nmsPacket);
-		return new PacketPlayOutEntityTeleport(entityId);
 	}
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;

@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import me.neznamy.tab.bukkit.packets.EnumAPI;
+import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
@@ -42,8 +42,8 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	}
 	public enum Action{
 		
-        CHANGE((byte) 0, EnumAPI.PacketPlayOutScoreboardScore_Action_CHANGE),
-        REMOVE((byte) 1, EnumAPI.PacketPlayOutScoreboardScore_Action_REMOVE);
+        CHANGE((byte) 0, EnumConstant.PacketPlayOutScoreboardScore_Action_CHANGE),
+        REMOVE((byte) 1, EnumConstant.PacketPlayOutScoreboardScore_Action_REMOVE);
         
 		private byte bungeeEquivalent;
 		private Object nmsEquivalent;

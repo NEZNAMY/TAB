@@ -50,11 +50,11 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 
 	public enum EnumPlayerInfoAction{
 		
-		ADD_PLAYER(EnumAPI.EnumPlayerInfoAction_ADD_PLAYER),
-		REMOVE_PLAYER(EnumAPI.EnumPlayerInfoAction_REMOVE_PLAYER),
-		UPDATE_DISPLAY_NAME(EnumAPI.EnumPlayerInfoAction_UPDATE_DISPLAY_NAME),
-		UPDATE_GAME_MODE(EnumAPI.EnumPlayerInfoAction_UPDATE_GAME_MODE),
-		UPDATE_LATENCY(EnumAPI.EnumPlayerInfoAction_UPDATE_LATENCY);
+		ADD_PLAYER(EnumConstant.EnumPlayerInfoAction_ADD_PLAYER),
+		REMOVE_PLAYER(EnumConstant.EnumPlayerInfoAction_REMOVE_PLAYER),
+		UPDATE_DISPLAY_NAME(EnumConstant.EnumPlayerInfoAction_UPDATE_DISPLAY_NAME),
+		UPDATE_GAME_MODE(EnumConstant.EnumPlayerInfoAction_UPDATE_GAME_MODE),
+		UPDATE_LATENCY(EnumConstant.EnumPlayerInfoAction_UPDATE_LATENCY);
 		
 		private Object nmsEquivalent;
 		

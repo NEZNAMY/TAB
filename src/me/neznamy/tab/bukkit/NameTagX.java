@@ -18,14 +18,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.NMSClass;
-import me.neznamy.tab.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutAttachEntity_1_8_x;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutMount;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutNamedEntitySpawn;
+import me.neznamy.tab.bukkit.packets.NameTagXPacket;
+import me.neznamy.tab.bukkit.packets.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
@@ -99,14 +93,12 @@ public class NameTagX implements Listener{
 			}
 		});
 	}
-	public static void processPacketOUT(PacketPlayOut packet, ITabPlayer packetReceiver){
+	@SuppressWarnings("deprecation")
+	public static void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
 		try {
-			boolean teleportPacket = packet instanceof PacketPlayOutEntityTeleport;
-			if (packet instanceof PacketPlayOutRelEntityMove || packet instanceof PacketPlayOutRelEntityMoveLook || teleportPacket) {
-				int id = 0;
-				if (teleportPacket) id = ((PacketPlayOutEntityTeleport)packet).getEntityId();
-				if (packet instanceof PacketPlayOutRelEntityMove) id = ((PacketPlayOutRelEntityMove)packet).getEntityId();
-				if (packet instanceof PacketPlayOutRelEntityMoveLook) id = ((PacketPlayOutRelEntityMoveLook)packet).getEntityId();
+			boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
+			if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
+				int id = packet.getEntityId();
 				ITabPlayer pl = Shared.getPlayer(id);
 				if (pl != null) {
 					//player moved
@@ -117,28 +109,35 @@ public class NameTagX implements Listener{
 						NameTagLineManager.teleportArmorStand(pl, packetReceiver);
 					}
 				} else if (vehicles.containsKey(id)){
-					//an animal carrying a something moved
+					//a vehicle carrying something moved
 					for (Integer entity : vehicles.get(id)) {
 						ITabPlayer passenger = Shared.getPlayer(entity);
-						if (passenger != null) NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
+						if (passenger != null) {
+							NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
+/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
+								if (packetReceiver == passenger || packetReceiver == pl) continue;
+								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
+								new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);
+							}*/
+						}
 					}
 				}
 			}
-			if (packet instanceof PacketPlayOutNamedEntitySpawn) {
-				ITabPlayer spawnedPlayer = Shared.getPlayer(((PacketPlayOutNamedEntitySpawn)packet).getEntityId());
+			if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
+				ITabPlayer spawnedPlayer = Shared.getPlayer(packet.getEntityId());
 				if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 			}
-			if (packet instanceof PacketPlayOutEntityDestroy) {
-				int[] ids = ((PacketPlayOutEntityDestroy)packet).getEntities();
+			if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
+				int[] ids = packet.getEntityArray();
 				for (int id : ids) {
 					ITabPlayer despawnedPlayer = Shared.getPlayer(id);
 					if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
 				}
 			}
-			if (packet instanceof PacketPlayOutMount) {
+			if (packet.getPacketType() == PacketType.MOUNT) {
 				//1.9+ mount detection
-				Integer vehicle = ((PacketPlayOutMount) packet).getVehicle();
-				int[] passg = ((PacketPlayOutMount) packet).getPassengers();
+				int vehicle = packet.getEntityId();
+				int[] passg = packet.getEntityArray();
 				Integer[] passengers = new Integer[passg.length];
 				for (int i=0; i<passg.length; i++) {
 					passengers[i] = passg[i];
@@ -155,11 +154,11 @@ public class NameTagX implements Listener{
 					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 				}
 			}
-			if (packet instanceof PacketPlayOutAttachEntity_1_8_x) {
+			if (packet.getPacketType() == PacketType.ATTACH_ENTITY) {
 				//1.8.x mount detection
-				if (((PacketPlayOutAttachEntity_1_8_x) packet).getA() == 0) {
-					int vehicle = ((PacketPlayOutAttachEntity_1_8_x) packet).getVehicle();
-					int passenger = ((PacketPlayOutAttachEntity_1_8_x) packet).getPassenger();
+				if (packet.getExtra() == 0) {
+					int vehicle = packet.getEntityId();
+					int passenger = packet.getEntityArray()[0];
 					if (vehicle != -1) {
 						//attach
 						vehicles.put(vehicle, Lists.newArrayList(passenger));

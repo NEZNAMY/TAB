@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import me.neznamy.tab.bukkit.packets.EnumAPI;
+import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.BossBar;
 
@@ -127,12 +127,12 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 	public enum Action {
 
-		ADD(0, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_ADD),
-		REMOVE(1, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_REMOVE),
-		UPDATE_PCT(2, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PCT),
-		UPDATE_NAME(3, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_NAME),
-		UPDATE_STYLE(4, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_STYLE),
-		UPDATE_PROPERTIES(5, EnumAPI.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PROPERTIES);
+		ADD(0, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_ADD),
+		REMOVE(1, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_REMOVE),
+		UPDATE_PCT(2, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PCT),
+		UPDATE_NAME(3, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_NAME),
+		UPDATE_STYLE(4, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_STYLE),
+		UPDATE_PROPERTIES(5, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PROPERTIES);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;
@@ -150,13 +150,13 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 	public enum BarColor {
 
-		PINK(0, EnumAPI.BarColor_since_1_9_R1_PINK),
-		BLUE(1, EnumAPI.BarColor_since_1_9_R1_BLUE),
-		RED(2, EnumAPI.BarColor_since_1_9_R1_RED),
-		GREEN(3, EnumAPI.BarColor_since_1_9_R1_GREEN),
-		YELLOW(4, EnumAPI.BarColor_since_1_9_R1_YELLOW),
-		PURPLE(5, EnumAPI.BarColor_since_1_9_R1_PURPLE),
-		WHITE(6, EnumAPI.BarColor_since_1_9_R1_WHITE);
+		PINK(0, EnumConstant.BarColor_since_1_9_R1_PINK),
+		BLUE(1, EnumConstant.BarColor_since_1_9_R1_BLUE),
+		RED(2, EnumConstant.BarColor_since_1_9_R1_RED),
+		GREEN(3, EnumConstant.BarColor_since_1_9_R1_GREEN),
+		YELLOW(4, EnumConstant.BarColor_since_1_9_R1_YELLOW),
+		PURPLE(5, EnumConstant.BarColor_since_1_9_R1_PURPLE),
+		WHITE(6, EnumConstant.BarColor_since_1_9_R1_WHITE);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;
@@ -174,11 +174,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 	public enum BarStyle {
 
-		PROGRESS(0, EnumAPI.BarStyle_since_1_9_R1_PROGRESS),
-		NOTCHED_6(1, EnumAPI.BarStyle_since_1_9_R1_NOTCHED_6),
-		NOTCHED_10(2, EnumAPI.BarStyle_since_1_9_R1_NOTCHED_10),
-		NOTCHED_12(3, EnumAPI.BarStyle_since_1_9_R1_NOTCHED_12),
-		NOTCHED_20(4, EnumAPI.BarStyle_since_1_9_R1_NOTCHED_20);
+		PROGRESS(0, EnumConstant.BarStyle_since_1_9_R1_PROGRESS),
+		NOTCHED_6(1, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_6),
+		NOTCHED_10(2, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_10),
+		NOTCHED_12(3, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_12),
+		NOTCHED_20(4, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_20);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;

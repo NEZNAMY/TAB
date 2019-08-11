@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import me.neznamy.tab.bukkit.packets.EnumAPI;
+import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
@@ -41,8 +41,8 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 	public enum EnumScoreboardHealthDisplay{
 		
-		INTEGER("INTEGER", EnumAPI.EnumScoreboardHealthDisplay_INTEGER),
-		HEARTS("HEARTS", EnumAPI.EnumScoreboardHealthDisplay_HEARTS);
+		INTEGER("INTEGER", EnumConstant.EnumScoreboardHealthDisplay_INTEGER),
+		HEARTS("HEARTS", EnumConstant.EnumScoreboardHealthDisplay_HEARTS);
 
 		private String name;
 		private Object nmsEquivalent;
