@@ -45,7 +45,7 @@ public class Placeholders {
 		return new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 	}
 	public static String getDate() {
-		return new SimpleDateFormat(Configs.dateFormat).format(new Date());
+		return new SimpleDateFormat(Configs.dateFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 	}
 	public static String setAnimations(String s) {
 		if (s.contains("animat")) {
