@@ -172,17 +172,21 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(PlayerQuitEvent e){
-		if (disabled) return;
-		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
-		NameTag16.playerQuit(disconnectedPlayer);
-		NameTagX.playerQuit(disconnectedPlayer);
-		ScoreboardManager.playerQuit(disconnectedPlayer);
-		for (ITabPlayer all : Shared.getPlayers()) {
-			NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
+		try {
+			if (disabled) return;
+			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+			me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
+			NameTag16.playerQuit(disconnectedPlayer);
+			NameTagX.playerQuit(disconnectedPlayer);
+			ScoreboardManager.playerQuit(disconnectedPlayer);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
+			}
+			NameTagLineManager.destroy(disconnectedPlayer);
+			Shared.data.remove(e.getPlayer().getUniqueId());
+		} catch (Exception ex) {
+			Shared.error("An error occured when player left server", ex);
 		}
-		NameTagLineManager.destroy(disconnectedPlayer);
-		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerChangedWorldEvent e){
@@ -385,7 +389,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
 		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		
+
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml");
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
