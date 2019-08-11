@@ -18,6 +18,9 @@ public class ScoreboardManager {
 	public static Map<String, String> perWorld;
 	public static Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	
+	public static String scoreboard_on;
+	public static String scoreboard_off;
+	
 	public static void load() {
 		if (!enabled) return;
 		for (ITabPlayer p : Shared.getPlayers()) {
@@ -62,9 +65,11 @@ public class ScoreboardManager {
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			if (sender.hiddenScoreboard) {
 				playerJoin(sender);
+				sender.sendMessage(scoreboard_on);
 			} else {
 				if (sender.getActiveScoreboard() != null) sender.getActiveScoreboard().unregister(sender);
 				sender.setActiveScoreboard(null);
+				sender.sendMessage(scoreboard_off);
 			}
 			sender.hiddenScoreboard = !sender.hiddenScoreboard;
 			return true;

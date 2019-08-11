@@ -13,14 +13,14 @@ import me.neznamy.tab.shared.Shared;
 public class Premium {
 
 	public static ConfigurationFile premiumconfig;
-	public static SortingType sortingType = null;
+	public static SortingType sortingType;
 	public static String sortingPlaceholder;
 	public static boolean caseSensitive;
 	public static List<? extends Object> dynamicLines = Lists.newArrayList("belowname", "nametag", "abovename");
 	public static Map<String, Double> staticLines = Maps.newConcurrentMap();
 
 	public static boolean is() {
-		return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,6 +45,8 @@ public class Premium {
 		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1);
 		ScoreboardManager.perWorld = (Map<String, String>) premiumconfig.get("scoreboard.per-world");
+		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled").replace("&", "§");
+		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "§");
 		if (premiumconfig.get("scoreboards")!= null) 
 			for (String scoreboard : ((Map<String, Object>)premiumconfig.get("scoreboards")).keySet()) {
 				String title = premiumconfig.getString("scoreboards." + scoreboard + ".title");

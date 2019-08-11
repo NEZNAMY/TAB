@@ -74,3 +74,6 @@ scoreboards:
       - "Position"
       - "&b%xPos%&8X &b%yPos%&8Y &b%zPos%&8Z"
       - "%animation:MyAnimation1%"
+#toggle messages
+scoreboard-on: "&2Scorebord enabled"
+scoreboard-off: "&7Scoreboard disabled"
