@@ -21,7 +21,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private Collection<String> entities;
 	private int action;
 	private int signature;
-	
+
 	@SuppressWarnings("unchecked")
 	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String teamPush, Collection<String> entities, int action, int signature, EnumChatFormat format) {
 		this.team = team;
@@ -40,17 +40,15 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		PacketPlayOutScoreboardTeam_NAME.set(packet, team);
 		if (versionNumber >= 13) {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(packet, Shared.mainClass.createComponent(team));
-			if (prefix != null) {
+			if (prefix != null && prefix.length() > 0) {
 				PacketPlayOutScoreboardTeam_PREFIX.set(packet, Shared.mainClass.createComponent(prefix));
-				if (prefix.length() > 0) {
-					String last = ChatColor.getLastColors(prefix);
-					if (last != null && last.length() > 0) {
-						chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
-					}
+				String last = ChatColor.getLastColors(prefix);
+				if (last != null && last.length() > 0) {
+					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
 				}
 				PacketPlayOutScoreboardTeam_CHATFORMAT.set(packet, chatFormat.toNMS());
 			}
-			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
+			if (suffix != null && suffix.length() > 0) PacketPlayOutScoreboardTeam_SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
 		} else {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
 			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
@@ -82,7 +80,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		}
 		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
-	
+
 	public static Class<?> PacketPlayOutScoreboardTeam;
 	private static Constructor<?> newPacketPlayOutScoreboardTeam;
 	private static Field PacketPlayOutScoreboardTeam_NAME;
@@ -95,7 +93,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	public static Field PacketPlayOutScoreboardTeam_PLAYERS;
 	private static Field PacketPlayOutScoreboardTeam_ACTION;
 	public static Field PacketPlayOutScoreboardTeam_SIGNATURE;
-	
+
 	static {
 		try {
 			if (versionNumber >= 8) {
