@@ -73,7 +73,7 @@ public class EnumConstant {
 
 	static {
 		try {
-			if (UniversalPacketPlayOut.versionNumber > 0) {
+			if (UniversalPacketPlayOut.versionNumber >= 8) {
 				Class<?> EnumChatFormat = NMSClass.get("EnumChatFormat");
 				EnumChatFormat_BLACK = EnumChatFormat.getDeclaredField("BLACK").get(null);
 				EnumChatFormat_DARK_BLUE = EnumChatFormat.getDeclaredField("DARK_BLUE").get(null);
@@ -178,7 +178,7 @@ public class EnumConstant {
 				}
 			}
 		} catch (Exception e) {
-			Shared.error("Failed to initialize EnumAPI class", e);
+			Shared.error("Failed to initialize EnumConstant class", e);
 		}
 	}
 }
