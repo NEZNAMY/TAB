@@ -15,7 +15,6 @@ import org.json.simple.JSONObject;
 
 import com.github.cheesesoftware.PowerfulPermsAPI.PowerfulPermsPlugin;
 import com.google.common.collect.Lists;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -41,11 +40,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean disabled = false;
 
 	public void onEnable(){
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromString(Bukkit.getBukkitVersion().split("-")[0]);
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
+		ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		if (ProtocolVersion.SERVER_VERSION.isSupported()){
 			long total = System.currentTimeMillis();
 			instance = this;
-			ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
 			Bukkit.getPluginManager().registerEvents(this, this);
@@ -57,19 +56,21 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 			load(false, true);
-			Metrics metrics = new Metrics(this);
-			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
+			if (!ProtocolVersion.packageName.equals("v1_8_R1")) {
+				Metrics metrics = new Metrics(this);
+				metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
 
-				public String call() throws Exception {
-					return Configs.unlimitedTags ? "Yes" : "No";
-				}
-			}));
+					public String call() throws Exception {
+						return Configs.unlimitedTags ? "Yes" : "No";
+					}
+				}));
+			}
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) {
-				Shared.print("§c", "Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too old! Disabling...");
+				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too old! Disabling...");
 			} else {
-				Shared.print("§c", "Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too new! Please update the plugin.");
+				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too new! Please update the plugin.");
 			}
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
@@ -205,6 +206,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler
 	public void a(PlayerCommandPreprocessEvent e) {
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
 			Shared.sendPluginInfo(sender);
 			return;
