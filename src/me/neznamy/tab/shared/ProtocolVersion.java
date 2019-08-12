@@ -27,19 +27,19 @@ public enum ProtocolVersion {
 	public static String packageName;
 	
 	private int number;
-	private String friendly;
+	private String friendlyName;
 	private int minorVersion;
 	
-	ProtocolVersion(int number, String friendly, int minorVersion){
+	ProtocolVersion(int number, String friendlyName, int minorVersion){
 		this.number = number;
-		this.friendly = friendly;
+		this.friendlyName = friendlyName;
 		this.minorVersion = minorVersion;
 	}
 	public int getNumber() {
 		return number;
 	}
 	public String getFriendlyName() {
-		return friendly;
+		return friendlyName;
 	}
 	public int getMinorVersion() {
 		return minorVersion;
@@ -47,12 +47,24 @@ public enum ProtocolVersion {
 	public boolean isSupported() {
 		return minorVersion >= 8;
 	}
-	public static ProtocolVersion fromString(String s) {
+	public ProtocolVersion friendlyName(String name) {
+		friendlyName = name;
+		return this;
+	}
+	public ProtocolVersion minorVersion(int version) {
+		minorVersion = version;
+		return this;
+	}
+	public static ProtocolVersion fromServerString(String s) {
 		if (s.startsWith("1.8")) return v1_8_x;
 		if (s.startsWith("1.10")) return v1_10_x;
 		if (s.equals("1.9.3") || s.equals("1.9.4")) return v1_9_3and4;
 		if (s.equals("1.11.1") || s.equals("1.11.2")) return v1_11_1and2;
-		return valueOf("v" + s.replace(".", "_"));
+		try {
+			return valueOf("v" + s.replace(".", "_"));
+		} catch (Exception e) {
+			return UNKNOWN.friendlyName(s).minorVersion(Integer.parseInt(s.split("\\.")[1]));
+		}
 	}
 	public static ProtocolVersion fromNumber(int number) {
 		for (ProtocolVersion v : values()) {

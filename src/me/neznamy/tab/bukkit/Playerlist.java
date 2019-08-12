@@ -11,6 +11,7 @@ import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
 
@@ -92,11 +93,13 @@ public class Playerlist {
 	public static Field GameProfile_legacy;
 	
 	static{
-		try {
-			(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
-			(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
-		} catch (Exception e) {
-			Shared.error("Failed to initialize Playerlist class", e);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			try {
+				(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
+				(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
+			} catch (Exception e) {
+				Shared.error("Failed to initialize Playerlist class", e);
+			}
 		}
 	}
 }

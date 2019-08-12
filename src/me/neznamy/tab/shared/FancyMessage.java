@@ -16,6 +16,7 @@ public class FancyMessage {
 		extras.add(c);
 	}
 	public String toString() {
+		if (ProtocolVersion.packageName.equals("v1_8_R1")) return null;
 		JsonObject main = new JsonObject();
 		main.addProperty("text", "");
 		if (!extras.isEmpty()) {

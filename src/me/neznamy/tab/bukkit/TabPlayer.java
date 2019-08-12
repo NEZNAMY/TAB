@@ -139,9 +139,15 @@ public class TabPlayer extends ITabPlayer{
 		NameTagLineManager.destroy(this);
 		armorStands.clear();
 		loadArmorStands();
-		for (Player all : getPlayer().getWorld().getPlayers()) {
-			if (all.getName().equals(getName())) continue;
-			NameTagLineManager.spawnArmorStand(this, Shared.getPlayer(all.getUniqueId()), true);
+		for (Player w : getPlayer().getWorld().getPlayers()) {
+			ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
+			if (wPlayer == null) {
+				Shared.error("Data of " + w.getName() + " don't exist ?");
+				continue;
+			}
+			if (w == wPlayer) continue;
+			if (w.getName().equals(getName())) continue;
+			NameTagLineManager.spawnArmorStand(this, wPlayer, true);
 		}
 	}
 	public void loadArmorStands() {

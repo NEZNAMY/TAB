@@ -13,6 +13,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	private ChatMessageType type;
 	
 	public PacketPlayOutChat(String json) {
+		if (json == null) return;
 		component = Shared.servertype == ServerType.BUKKIT ? MethodAPI.getInstance().ICBC_fromString(json) : json;
 		this.type = ChatMessageType.CHAT;
 	}
@@ -21,6 +22,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		this.type = type;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
+		if (component == null) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
 		} else {
@@ -28,6 +30,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
+		if (component == null) return null;
 		return new Chat((String) component, type.toByte());
 	}
 	
