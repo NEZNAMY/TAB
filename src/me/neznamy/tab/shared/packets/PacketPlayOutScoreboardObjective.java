@@ -26,12 +26,12 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String title = this.title;
-		if (!clientVersion.is1_13orNewer()) {
+		if (clientVersion.getMinorVersion() < 13) {
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}
 		Object packet = newPacketPlayOutScoreboardObjective.newInstance();
 		PacketPlayOutScoreboardObjective_OBJECTIVENAME.set(packet, objectiveName);
-		if (versionNumber >= 13) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			PacketPlayOutScoreboardObjective_TITLE.set(packet, Shared.mainClass.createComponent(title));
 		} else {
 			PacketPlayOutScoreboardObjective_TITLE.set(packet, title);
@@ -42,7 +42,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String title = this.title;
-		if (clientVersion.is1_13orNewer()) {
+		if (clientVersion.getMinorVersion() >= 13) {
 			title = (String) Shared.mainClass.createComponent(title);
 		} else {
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
@@ -76,7 +76,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	
 	static {
 		try {
-			if (versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
 				newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
 				(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);

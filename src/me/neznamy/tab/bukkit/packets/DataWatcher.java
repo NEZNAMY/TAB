@@ -12,6 +12,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class DataWatcher{
@@ -84,7 +85,7 @@ public class DataWatcher{
 		}
 		public Object toNMS() throws Exception{
 			Object nmsObject;
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				nmsObject = newItem.newInstance(type.toNMS(), value);
 			} else {
 				nmsObject = newItem.newInstance(type.getClassType(), type.getPosition(), value);
@@ -97,7 +98,7 @@ public class DataWatcher{
 			Object value = Item_VALUE.get(nmsObject);
 			boolean needsUpdate = Item_NEEDSUPDATE.getBoolean(nmsObject);
 			DataWatcherObject type;
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				type = DataWatcherObject.fromNMS(Item_CLASSTYPE.get(nmsObject));
 			} else {
 				int classType = Item_CLASSTYPE.getInt(nmsObject);
@@ -116,14 +117,14 @@ public class DataWatcher{
 
 		static {
 			try {
-				if (NMSClass.versionNumber >= 9) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 					Item = NMSClass.get("DataWatcher$Item");
 					newItem = NMSClass.getConstructor(Item, 2);
 					(Item_CLASSTYPE = Item.getDeclaredField("a")).setAccessible(true);
 					(Item_VALUE = Item.getDeclaredField("b")).setAccessible(true);
 					(Item_NEEDSUPDATE = Item.getDeclaredField("c")).setAccessible(true);
 				} else {
-					if (NMSClass.version.equals("v1_8_R1")) {
+					if (ProtocolVersion.packageName.equals("v1_8_R1")) {
 						Item = NMSClass.get("WatchableObject");
 					} else {
 						Item = NMSClass.get("DataWatcher$WatchableObject");
@@ -175,9 +176,9 @@ public class DataWatcher{
 		try {
 			DataWatcher = NMSClass.get("DataWatcher");
 			newDataWatcher = NMSClass.getConstructor(DataWatcher, 1);
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				DataWatcher_register = DataWatcher.getMethod("register", DataWatcherObject.DataWatcherObject, Object.class);
-				if (NMSClass.versionNumber >= 10) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
 					//1.10+
 					try {
 						//1.14.4+

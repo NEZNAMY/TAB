@@ -94,7 +94,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		if (!clientVersion.is1_9orNewer()) return null;
+		if (clientVersion.getMinorVersion() < 9) return null;
 		BossBar packet = new BossBar(uuid, action.toBungee());
 		if (action == Action.ADD) {
 			packet.setTitle((String) Shared.mainClass.createComponent(title));
@@ -210,7 +210,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 	static {
 		try {
-			if (versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
 				newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
 				(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);

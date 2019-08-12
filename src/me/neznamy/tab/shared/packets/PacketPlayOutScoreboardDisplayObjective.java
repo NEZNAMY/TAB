@@ -33,7 +33,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 
 	static {
 		try {
-			if (versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective");
 				newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
 				(PacketPlayOutScoreboardDisplayObjective_POSITION = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("a")).setAccessible(true);

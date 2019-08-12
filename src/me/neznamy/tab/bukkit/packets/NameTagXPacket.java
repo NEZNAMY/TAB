@@ -2,6 +2,7 @@ package me.neznamy.tab.bukkit.packets;
 
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class NameTagXPacket {
@@ -74,18 +75,18 @@ public class NameTagXPacket {
 	
 	static {
 		try {
-			if (NMSClass.versionNumber == 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
 				PacketPlayOutAttachEntity = NMSClass.get("PacketPlayOutAttachEntity");
 				(PacketPlayOutAttachEntity_A = PacketPlayOutAttachEntity.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutAttachEntity_PASSENGER = PacketPlayOutAttachEntity.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutAttachEntity_VEHICLE = PacketPlayOutAttachEntity.getDeclaredField("c")).setAccessible(true);
 			}
-			if (NMSClass.versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				(PacketPlayOutNamedEntitySpawn_ENTITYID = (PacketPlayOutNamedEntitySpawn = NMSClass.get("PacketPlayOutNamedEntitySpawn")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutEntityDestroy_ENTITIES = (PacketPlayOutEntityDestroy = NMSClass.get("PacketPlayOutEntityDestroy")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutEntityTeleport_ENTITYID = (NMSClass.get("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutEntity_ENTITYID = (NMSClass.get("PacketPlayOutEntity")).getDeclaredField("a")).setAccessible(true);
-				if (NMSClass.version.equals("v1_8_R1")) {
+				if (ProtocolVersion.packageName.equals("v1_8_R1")) {
 					PacketPlayOutRelEntityMove = NMSClass.get("PacketPlayOutRelEntityMove");
 					PacketPlayOutRelEntityMoveLook = NMSClass.get("PacketPlayOutRelEntityMoveLook");
 				} else {
@@ -94,7 +95,7 @@ public class NameTagXPacket {
 				}
 				(PacketPlayOutEntityTeleport_ENTITYID = (PacketPlayOutEntityTeleport = NMSClass.get("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
 			}
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				PacketPlayOutMount = NMSClass.get("PacketPlayOutMount");
 				(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutMount_PASSENGERS = PacketPlayOutMount.getDeclaredField("b")).setAccessible(true);

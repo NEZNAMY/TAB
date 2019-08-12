@@ -33,7 +33,7 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	
 	static {
 		try {
-			if (versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 				newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
 				try {

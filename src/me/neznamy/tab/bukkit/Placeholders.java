@@ -62,7 +62,7 @@ public class Placeholders {
 		} catch (Exception e) {
 			Shared.error("An error occured when getting version of " + p.getName(), e);
 		}
-		return Main.SERVER_VERSION;
+		return ProtocolVersion.SERVER_VERSION;
 	}
 	public static void initialize(){
 		try{

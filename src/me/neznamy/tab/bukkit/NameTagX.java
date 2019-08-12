@@ -17,10 +17,10 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.bukkit.packets.NameTagXPacket;
 import me.neznamy.tab.bukkit.packets.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
 
@@ -181,7 +181,7 @@ public class NameTagX implements Listener{
 	@SuppressWarnings("deprecation")
 	public static List<Entity> getPassengers(Entity vehicle){
 		List<Entity> passengers = new ArrayList<Entity>();
-		if (NMSClass.versionNumber >= 11) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
 			passengers = vehicle.getPassengers();
 		} else {
 			if (vehicle.getPassenger() != null) passengers.add(vehicle.getPassenger());

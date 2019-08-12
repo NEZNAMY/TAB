@@ -1,5 +1,6 @@
 package me.neznamy.tab.bukkit.packets;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class DataWatcherSerializer {
@@ -26,14 +27,14 @@ public class DataWatcherSerializer {
 
 	static {
 		try {
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				Class<?> DWR = NMSClass.get("DataWatcherRegistry");
 				Byte = DWR.getDeclaredField("a").get(null);
 				Integer = DWR.getDeclaredField("b").get(null);
 				Float = DWR.getDeclaredField("c").get(null);
 				String = DWR.getDeclaredField("d").get(null);
 				IChatBaseComponent = DWR.getDeclaredField("e").get(null);
-				if (NMSClass.versionNumber >= 13) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 					Optional_IChatBaseComponent = DWR.getDeclaredField("f").get(null);
 					ItemStack = DWR.getDeclaredField("g").get(null);
 					Optional_IBlockData = DWR.getDeclaredField("h").get(null);
@@ -53,10 +54,10 @@ public class DataWatcherSerializer {
 					Optional_BlockPosition = DWR.getDeclaredField("k").get(null);
 					EnumDirection = DWR.getDeclaredField("l").get(null);
 					Optional_UUID = DWR.getDeclaredField("m").get(null);
-					if (NMSClass.versionNumber >= 12) {
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
 						NBTTagCompound = DWR.getDeclaredField("n").get(null);
 					}
-					if (NMSClass.versionNumber >= 11) {
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
 						ItemStack = DWR.getDeclaredField("f").get(null);
 					} else {
 						Optional_ItemStack = DWR.getDeclaredField("f").get(null);

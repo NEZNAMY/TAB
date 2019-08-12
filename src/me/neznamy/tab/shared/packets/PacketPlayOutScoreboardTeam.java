@@ -38,13 +38,13 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String prefix = this.prefix;
 		String suffix = this.suffix;
-		if (!clientVersion.is1_13orNewer()) {
+		if (clientVersion.getMinorVersion() < 13) {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
 			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
 		}
 		Object packet = newPacketPlayOutScoreboardTeam.newInstance();
 		PacketPlayOutScoreboardTeam_NAME.set(packet, team);
-		if (versionNumber >= 13) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(packet, Shared.mainClass.createComponent(team));
 			if (prefix != null && prefix.length() > 0) {
 				PacketPlayOutScoreboardTeam_PREFIX.set(packet, Shared.mainClass.createComponent(prefix));
@@ -60,7 +60,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			if (prefix != null) PacketPlayOutScoreboardTeam_PREFIX.set(packet, prefix);
 			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(packet, suffix);
 		}
-		if (versionNumber >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			PacketPlayOutScoreboardTeam_PUSH.set(packet, teamPush);
 		}
 		PacketPlayOutScoreboardTeam_PLAYERS.set(packet, entities);
@@ -72,7 +72,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
 		int color = 0;
-		if (clientVersion.is1_13orNewer()) {
+		if (clientVersion.getMinorVersion() >= 13) {
 			if (prefix != null) prefix = (String) Shared.mainClass.createComponent(prefix);
 			if (prefix != null) suffix = (String) Shared.mainClass.createComponent(suffix);
 			teamDisplay = (String) Shared.mainClass.createComponent(team);
@@ -99,15 +99,15 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 
 	static {
 		try {
-			if (versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
 				newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor();
-				if (versionNumber >= 9) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 					(PacketPlayOutScoreboardTeam_PUSH = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
 					PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h");
 					PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("i");
 					PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("j");
-					if (versionNumber >= 13) {
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 						(PacketPlayOutScoreboardTeam_CHATFORMAT = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
 					}
 				} else {

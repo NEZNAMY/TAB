@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.bukkit.packets.NMSClass;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public abstract class MethodAPI {
@@ -34,7 +34,7 @@ public abstract class MethodAPI {
 
 	static {
 		try {
-			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + NMSClass.version).getConstructor().newInstance();
+			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + ProtocolVersion.packageName).getConstructor().newInstance();
 			try {
 				Class.forName("org.spigotmc.SpigotConfig");
 				spigot = true;

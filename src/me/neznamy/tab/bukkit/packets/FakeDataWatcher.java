@@ -2,6 +2,7 @@ package me.neznamy.tab.bukkit.packets;
 
 import java.util.Optional;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class FakeDataWatcher {
@@ -25,17 +26,17 @@ public class FakeDataWatcher {
 		DataWatcher datawatcher = new DataWatcher(null);
 		if (name == null || name.length() == 0) name = "§r";
 		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
-		if (NMSClass.versionNumber >= 13) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(Shared.mainClass.createComponent(name)));
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
-		if (NMSClass.versionNumber >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), customNameVisible);
 		} else {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(customNameVisible?1:0));
 		}
-		int markerPosition = NMSClass.versionNumber >= 14 ? 13 : NMSClass.versionNumber >= 10 ? 11 : 10;
+		int markerPosition = ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14 ? 13 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10 ? 11 : 10;
 		datawatcher.setValue(new DataWatcherObject(markerPosition, DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
     }

@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutPlayerInfo extends PacketPlayOut{
@@ -171,7 +172,7 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 	static {
 		try {
 			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
-			if (version.equals("v1_8_R1")) {
+			if (ProtocolVersion.packageName.equals("v1_8_R1")) {
 				_PlayerInfoData = getNMSClass("PlayerInfoData");
 			} else {
 				_PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");

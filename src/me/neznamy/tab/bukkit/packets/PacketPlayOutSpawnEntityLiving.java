@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
@@ -105,7 +106,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			}
 			PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS.set(packet, list);
 		}
-		if (versionNumber >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			PacketPlayOutSpawnEntityLiving_UUID.set(packet, uuid);
 			if (X != 0) PacketPlayOutSpawnEntityLiving_X.set(packet, X);
 			if (Y != 0) PacketPlayOutSpawnEntityLiving_Y.set(packet, Y);
@@ -139,7 +140,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			for (Object o : items) {
 				list.add(Item.fromNMS(o));
 			}
-		if (versionNumber >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			uuid = (UUID) PacketPlayOutSpawnEntityLiving_UUID.get(nmsPacket);
 			x = PacketPlayOutSpawnEntityLiving_X.getDouble(nmsPacket);
 			y = PacketPlayOutSpawnEntityLiving_Y.getDouble(nmsPacket);
@@ -177,7 +178,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 
 	static {
 		try {
-			if (versionNumber >= 13) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 				entityIds.put(EntityType.ARMOR_STAND, 1);
 				entityIds.put(EntityType.WITHER, 83);
 			} else {
@@ -188,7 +189,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
 			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
 			(PacketPlayOutSpawnEntityLiving_ENTITYID = PacketPlayOutSpawnEntityLiving.getDeclaredField("a")).setAccessible(true);
-			if (versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				(PacketPlayOutSpawnEntityLiving_UUID = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_ENTITYTYPE = PacketPlayOutSpawnEntityLiving.getDeclaredField("c")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_X = PacketPlayOutSpawnEntityLiving.getDeclaredField("d")).setAccessible(true);

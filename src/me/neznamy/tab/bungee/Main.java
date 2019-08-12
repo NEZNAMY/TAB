@@ -26,6 +26,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void onEnable(){
 		long time = System.currentTimeMillis();
 		instance = this;
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.UNKNOWN;
 		Shared.init(this, ServerType.BUNGEE, getDescription().getVersion());
 		Placeholders.maxPlayers = ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
 		getProxy().getPluginManager().registerListener(this, this);

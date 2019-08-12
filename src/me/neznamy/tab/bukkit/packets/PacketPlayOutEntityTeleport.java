@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutEntityTeleport extends PacketPlayOut{
@@ -39,7 +40,7 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 	public Object toNMS() throws Exception {
 		Object packet = newPacketPlayOutEntityTeleport.newInstance();
 		PacketPlayOutEntityTeleport_ENTITYID.set(packet, entityId);
-		if (versionNumber >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			PacketPlayOutEntityTeleport_X.set(packet, x);
 			PacketPlayOutEntityTeleport_Y.set(packet, y);
 			PacketPlayOutEntityTeleport_Z.set(packet, z);

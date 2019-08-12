@@ -8,19 +8,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.Shared.Feature;
 
 public class BossBar1_8 implements Listener {
 
 	public static void load() {
 		if (!BossBar.enable) return;
-		if (NMSClass.versionNumber == 8) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
 			Bukkit.getPluginManager().registerEvents(new BossBar1_8(), Main.instance);
 			Shared.scheduleRepeatingTask(500, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 

@@ -21,7 +21,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		this.type = type;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		if (versionNumber >= 12) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
 		} else {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toByte());

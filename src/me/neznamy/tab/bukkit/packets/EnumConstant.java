@@ -1,7 +1,7 @@
 package me.neznamy.tab.bukkit.packets;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class EnumConstant {
 
@@ -73,7 +73,7 @@ public class EnumConstant {
 
 	static {
 		try {
-			if (UniversalPacketPlayOut.versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				Class<?> EnumChatFormat = NMSClass.get("EnumChatFormat");
 				EnumChatFormat_BLACK = EnumChatFormat.getDeclaredField("BLACK").get(null);
 				EnumChatFormat_DARK_BLUE = EnumChatFormat.getDeclaredField("DARK_BLUE").get(null);
@@ -133,7 +133,7 @@ public class EnumConstant {
 				EnumPlayerInfoAction_UPDATE_LATENCY = EnumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(null);
 
 				Class<?> PacketPlayOutScoreboardScore_Action;
-				if (NMSClass.versionNumber >= 13) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 					PacketPlayOutScoreboardScore_Action = NMSClass.get("ScoreboardServer$Action");
 				} else {
 					try {
@@ -145,7 +145,7 @@ public class EnumConstant {
 				PacketPlayOutScoreboardScore_Action_CHANGE = PacketPlayOutScoreboardScore_Action.getDeclaredField("CHANGE").get(null);
 				PacketPlayOutScoreboardScore_Action_REMOVE = PacketPlayOutScoreboardScore_Action.getDeclaredField("REMOVE").get(null);
 
-				if (NMSClass.versionNumber >= 9) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 					Class<?> BarColor = NMSClass.get("BossBattle$BarColor");
 					BarColor_since_1_9_R1_BLUE = BarColor.getDeclaredField("BLUE").get(null);
 					BarColor_since_1_9_R1_GREEN = BarColor.getDeclaredField("GREEN").get(null);
@@ -170,7 +170,7 @@ public class EnumConstant {
 					PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PROPERTIES = PacketPlayOutBoss_Action.getDeclaredField("UPDATE_PROPERTIES").get(null);
 					PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_STYLE = PacketPlayOutBoss_Action.getDeclaredField("UPDATE_STYLE").get(null);
 				}
-				if (NMSClass.versionNumber >= 12) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
 					Class<?> ChatMessageType = NMSClass.get("ChatMessageType");
 					ChatMessageType_since_1_12_R1_CHAT = ChatMessageType.getDeclaredField("CHAT").get(null);
 					ChatMessageType_since_1_12_R1_SYSTEM = ChatMessageType.getDeclaredField("SYSTEM").get(null);

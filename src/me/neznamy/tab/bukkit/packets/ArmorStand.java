@@ -14,6 +14,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class ArmorStand{
@@ -121,7 +122,7 @@ public class ArmorStand{
 		if (player.isSleeping()) {
 			y = player.getLocation().getY() + yOffset - 1.76;
 		} else {
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				y = player.getLocation().getY() + yOffset - (sneaking ? 0.45 : 0.18);
 			} else {
 				y = player.getLocation().getY() + yOffset - (sneaking ? 0.30 : 0.18);

@@ -39,12 +39,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean pex;
 	public static Main instance;
 	public static boolean disabled = false;
-	public static final ProtocolVersion SERVER_VERSION = ProtocolVersion.fromString(Bukkit.getBukkitVersion().split("-")[0]);
 
 	public void onEnable(){
-		if (NMSClass.isVersionSupported()){
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromString(Bukkit.getBukkitVersion().split("-")[0]);
+		if (ProtocolVersion.SERVER_VERSION.isSupported()){
 			long total = System.currentTimeMillis();
 			instance = this;
+			ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
 			Bukkit.getPluginManager().registerEvents(this, this);
@@ -65,10 +66,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
-			if (NMSClass.versionNumber < 8) {
-				Shared.print("§c", "Your server version (" + NMSClass.version + ") is not supported - too old! Disabling...");
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) {
+				Shared.print("§c", "Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too old! Disabling...");
 			} else {
-				Shared.print("§c", "Your server version (" + NMSClass.version + ") is not supported - too new! Please update the plugin.");
+				Shared.print("§c", "Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too new! Please update the plugin.");
 			}
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
@@ -250,18 +251,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 						PacketPlayOut p = null;
 
-						if (NMSClass.versionNumber > 8 && Configs.fixPetNames) {
+						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
 							//preventing pets from having owner's nametag properties if feature is enabled
 							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
 								List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
 								for (Item petOwner : items) {
-									if (petOwner.getType().getPosition() == (NMSClass.versionNumber>=14?16:14)) modifyDataWatcherItem(petOwner);
+									if (petOwner.getType().getPosition() == (ProtocolVersion.SERVER_VERSION.getMinorVersion()>=14?16:14)) modifyDataWatcherItem(petOwner);
 								}
 								packet = p.toNMS();
 							}
 							if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
 								DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
-								Item petOwner = watcher.getItem(NMSClass.versionNumber>=14?16:14);
+								Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getMinorVersion()>=14?16:14);
 								if (petOwner != null) modifyDataWatcherItem(petOwner);
 								packet = p.toNMS();
 							}

@@ -3,6 +3,7 @@ package me.neznamy.tab.bukkit.packets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class DataWatcherObject{
@@ -24,7 +25,7 @@ public class DataWatcherObject{
 		return newDataWatcherObject.newInstance(position, classType);
 	}
 	public Object getNMSKey() throws Exception{
-		return NMSClass.versionNumber >= 9 ? toNMS() : position;
+		return ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 ? toNMS() : position;
 	}
 	
 	public static DataWatcherObject fromNMS(Object nmsObject) throws Exception{
@@ -40,7 +41,7 @@ public class DataWatcherObject{
 	
 	static {
 		try {
-			if (NMSClass.versionNumber >= 9) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				DataWatcherObject = NMSClass.get("DataWatcherObject");
 				newDataWatcherObject = NMSClass.getConstructor(DataWatcherObject, 2);
 				(DataWatcherObject_POSITION = DataWatcherObject.getDeclaredField("a")).setAccessible(true);

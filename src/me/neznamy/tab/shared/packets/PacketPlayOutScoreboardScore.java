@@ -23,7 +23,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
     }
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
-		if (versionNumber >= 13) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			return newPacketPlayOutScoreboardScore_4.newInstance(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
@@ -72,14 +72,14 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	
 	static {
 		try {
-			if (versionNumber >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
 				newPacketPlayOutScoreboardScore_0 = getConstructor(PacketPlayOutScoreboardScore, 0);
 				(PacketPlayOutScoreboardScore_PLAYER = PacketPlayOutScoreboardScore.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutScoreboardScore_OBJECTIVENAME = PacketPlayOutScoreboardScore.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutScoreboardScore_SCORE = PacketPlayOutScoreboardScore.getDeclaredField("c")).setAccessible(true);
 				(PacketPlayOutScoreboardScore_ACTION = PacketPlayOutScoreboardScore.getDeclaredField("d")).setAccessible(true);
-				if (versionNumber >= 13) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 					newPacketPlayOutScoreboardScore_4 = getConstructor(PacketPlayOutScoreboardScore, 4);
 				} else {
 					newPacketPlayOutScoreboardScore_1 = PacketPlayOutScoreboardScore.getConstructor(String.class);

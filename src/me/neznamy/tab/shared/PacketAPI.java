@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class PacketAPI{
 
@@ -73,7 +72,7 @@ public class PacketAPI{
         new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2).send(p);
     }
 	public static void sendBossBar(ITabPlayer to, BossBAR bar, float progress, String message) {
-		if (UniversalPacketPlayOut.versionNumber != 8) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId(), message, progress, bar.getColor(), bar.getStyle()).send(to);
 		} else {
 			Location l = ((Player) to.getPlayer()).getEyeLocation().add(((Player) to.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
@@ -88,14 +87,14 @@ public class PacketAPI{
 		}
 	}
 	public static void removeBossBar(ITabPlayer to, BossBAR bar) {
-		if (UniversalPacketPlayOut.versionNumber != 8) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId()).send(to);
 		} else {
 			new PacketPlayOutEntityDestroy(bar.getEntityId()).send(to);
 		}
 	}
 	public static void updateBossBar(ITabPlayer to, BossBAR bar, BarColor color, BarStyle style, float progress, String message) {
-		if (UniversalPacketPlayOut.versionNumber != 8) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			boolean updateStyle = false;
 			if (bar.getColor() != color) {
 				bar.setColor(color);
