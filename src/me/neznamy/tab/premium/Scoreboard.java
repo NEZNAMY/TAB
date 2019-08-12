@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Scoreboard {
 
@@ -35,7 +34,6 @@ public class Scoreboard {
 	public void register(ITabPlayer p) {
 		if (!players.containsKey(p)) {
 			String replacedTitle = Placeholders.replace(title, p);
-			if (replacedTitle.length() > 32 && UniversalPacketPlayOut.versionNumber < 13) replacedTitle = replacedTitle.substring(0, 32);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores.values()) {
 				s.register(p);
@@ -62,7 +60,6 @@ public class Scoreboard {
 	public void refresh() {
 		for (ITabPlayer p : players.keySet()) {
 			String replacedTitle = Placeholders.replace(title, p);
-			if (replacedTitle.length() > 32 && UniversalPacketPlayOut.versionNumber < 13) replacedTitle = replacedTitle.substring(0, 32);
 			if (replacedTitle.equals(players.get(p))) continue;
 			PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			players.put(p, replacedTitle);
@@ -93,12 +90,11 @@ public class Scoreboard {
 				if (replaced.length() > 16) {
 					String prefix = replaced.substring(0, 16);
 					String suffix = replaced.substring(16, replaced.length());
-					if (prefix.length() == 16 && prefix.toCharArray()[15] == '§') {
+					if (prefix.toCharArray()[15] == '§') {
 						prefix = prefix.substring(0, 15);
 						suffix = "§" + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
-					if (suffix.length() > 16 && UniversalPacketPlayOut.versionNumber < 13) suffix = suffix.substring(0, 16);
 					return Lists.newArrayList(prefix, suffix);
 				} else {
 					return Lists.newArrayList(replaced, "");

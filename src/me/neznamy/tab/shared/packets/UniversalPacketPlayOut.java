@@ -5,7 +5,9 @@ import java.lang.reflect.Constructor;
 import org.bukkit.Bukkit;
 
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 
 public abstract class UniversalPacketPlayOut{
 
@@ -22,8 +24,8 @@ public abstract class UniversalPacketPlayOut{
 		}
 	}
 	
-	public abstract Object toNMS() throws Exception;
-	public abstract Object toBungee(int clientVersion);
+	public abstract Object toNMS(ProtocolVersion clientVersion) throws Exception;
+	public abstract DefinedPacket toBungee(ProtocolVersion clientVersion);
 	
 	public static Class<?> getNMSClass(String name) throws Exception{
 		return Class.forName("net.minecraft.server." + version + "." + name);

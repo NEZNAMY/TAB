@@ -4,7 +4,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
@@ -23,7 +25,11 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		this.displayType = displayType;
 		this.action = action;
 	}
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
+		String title = this.title;
+		if (!clientVersion.is1_13orNewer()) {
+			if (title != null && title.length() > 32) title = title.substring(0, 32);
+		}
 		Object packet = newPacketPlayOutScoreboardObjective.newInstance();
 		PacketPlayOutScoreboardObjective_OBJECTIVENAME.set(packet, objectiveName);
 		if (versionNumber >= 13) {
@@ -35,27 +41,30 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (action != 0) PacketPlayOutScoreboardObjective_ACTION.set(packet, action);
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
-		if (clientVersion > 340) title = (String) Shared.mainClass.createComponent(title);
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+		String title = this.title;
+		if (clientVersion.is1_13orNewer()) {
+			title = (String) Shared.mainClass.createComponent(title);
+		} else {
+			if (title != null && title.length() > 32) title = title.substring(0, 32);
+		}
 		return new ScoreboardObjective(objectiveName, title, displayType.toBungee(), (byte)action);
 	}
 	public enum EnumScoreboardHealthDisplay{
 		
-		INTEGER("INTEGER", EnumConstant.EnumScoreboardHealthDisplay_INTEGER),
-		HEARTS("HEARTS", EnumConstant.EnumScoreboardHealthDisplay_HEARTS);
+		INTEGER(EnumConstant.EnumScoreboardHealthDisplay_INTEGER),
+		HEARTS(EnumConstant.EnumScoreboardHealthDisplay_HEARTS);
 
-		private String name;
 		private Object nmsEquivalent;
 
-		private EnumScoreboardHealthDisplay(String name, Object nmsEquivalent) {
-			this.name = name;
+		private EnumScoreboardHealthDisplay(Object nmsEquivalent) {
 			this.nmsEquivalent = nmsEquivalent;
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
 		public HealthDisplay toBungee() {
-			return HealthDisplay.valueOf(name);
+			return HealthDisplay.valueOf(toString());
 		}
 	}
 
@@ -77,7 +86,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 				(PacketPlayOutScoreboardObjective_ACTION = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
 			}
 		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutScoreboardDisplayObjective", e);
+			Shared.error("Failed to initialize PacketPlayOutScoreboardObjective", e);
 		}
 	}
 }

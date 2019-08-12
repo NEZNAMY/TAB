@@ -195,7 +195,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) {
+	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
 		return packet.toBungee(protocolVersion);
 	}
 	public void loadConfig() throws Exception {

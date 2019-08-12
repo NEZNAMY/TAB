@@ -20,6 +20,7 @@ import me.clip.deluxetags.DeluxeTag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import net.milkbowl.vault.chat.Chat;
@@ -47,21 +48,21 @@ public class Placeholders {
 	public static boolean factionsInitialized;
 	public static boolean deluxeTags;
 
-	public static int getVersion(ITabPlayer p){
+	public static ProtocolVersion getVersion(ITabPlayer p){
 		try {
 			int version;
 			if (viaVersion){
 				version = Via.getAPI().getPlayerVersion(p.getUniqueId());
-				if (version > 0) return version;
+				if (version > 0) return ProtocolVersion.fromNumber(version);
 			}
 			if (protocolSupport){
 				version = ProtocolSupportAPI.getProtocolVersion((Player) p.getPlayer()).getId();
-				if (version > 0) return version;
+				if (version > 0) return ProtocolVersion.fromNumber(version);
 			}
 		} catch (Exception e) {
 			Shared.error("An error occured when getting version of " + p.getName(), e);
 		}
-		return -1;
+		return Main.SERVER_VERSION;
 	}
 	public static void initialize(){
 		try{

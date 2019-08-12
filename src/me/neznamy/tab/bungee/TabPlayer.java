@@ -6,6 +6,7 @@ import java.util.UUID;
 import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.md_5.bungee.api.ProxyServer;
@@ -24,7 +25,7 @@ public class TabPlayer extends ITabPlayer{
 
 	public TabPlayer(ProxiedPlayer p) {
 		super(p);
-		version = getPlayer().getPendingConnection().getVersion();
+		version = ProtocolVersion.fromNumber(getPlayer().getPendingConnection().getVersion());
 		ipAddress = p.getAddress().getAddress().getHostAddress();
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
 		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());

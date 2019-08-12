@@ -12,6 +12,6 @@ public interface MainClass {
 	public void reload(ITabPlayer sender);
 	public Object createComponent(String text);
 	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception;
-	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) throws Exception;
+	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
 }

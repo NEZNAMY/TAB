@@ -7,7 +7,9 @@ import java.util.Collections;
 
 import org.bukkit.ChatColor;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
@@ -34,8 +36,13 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		this.signature = signature;
 		this.chatFormat = format == null ? EnumChatFormat.RESET : format;
 	}
-	public Object toNMS() throws Exception {
-		if (team == null || team.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
+		String prefix = this.prefix;
+		String suffix = this.suffix;
+		if (!clientVersion.is1_13orNewer()) {
+			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
+			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
+		}
 		Object packet = newPacketPlayOutScoreboardTeam.newInstance();
 		PacketPlayOutScoreboardTeam_NAME.set(packet, team);
 		if (versionNumber >= 13) {
@@ -50,8 +57,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			}
 			if (suffix != null && suffix.length() > 0) PacketPlayOutScoreboardTeam_SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
 		} else {
-			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
-			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(packet, team);
 			if (prefix != null) PacketPlayOutScoreboardTeam_PREFIX.set(packet, prefix);
 			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(packet, suffix);
@@ -65,18 +70,17 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		PacketPlayOutScoreboardTeam_VISIBILITY.set(packet, visibility);
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
-		if (team == null || team.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
-		int color = chatFormat.toBungee();
-		if (clientVersion > 340) {
+		int color = 0;
+		if (clientVersion.is1_13orNewer()) {
 			if (prefix != null) prefix = (String) Shared.mainClass.createComponent(prefix);
 			if (prefix != null) suffix = (String) Shared.mainClass.createComponent(suffix);
 			teamDisplay = (String) Shared.mainClass.createComponent(team);
+			color = chatFormat.toBungee();
 		} else {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
 			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
-			color = 0;
 		}
 		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}

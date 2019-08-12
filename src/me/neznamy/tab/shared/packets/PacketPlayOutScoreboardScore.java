@@ -4,7 +4,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
@@ -20,7 +22,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
         this.score = score;
         this.action = action;
     }
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (versionNumber >= 13) {
 			return newPacketPlayOutScoreboardScore_4.newInstance(action.toNMS(), objectiveName, player, score);
@@ -37,7 +39,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		}
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
 	public enum Action{

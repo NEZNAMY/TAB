@@ -31,14 +31,9 @@ public class TabPlayer extends ITabPlayer{
 
 	public TabPlayer(Player p) {
 		super(p);
-		version = Placeholders.getVersion(this);
-		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
-		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
-		disabledNametag = Configs.disabledNametag.contains(getWorldName());
-		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
-		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 	}
 	public void onJoin() throws Exception {
+		version = Placeholders.getVersion(this);
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
 		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());

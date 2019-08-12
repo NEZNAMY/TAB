@@ -5,7 +5,9 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 public class PacketPlayOutBoss extends UniversalPacketPlayOut{
@@ -62,7 +64,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		this.createFog = createFog;
 	}
 
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutBoss.newInstance();
 		PacketPlayOutBoss_UUID.set(packet, uuid);
 		PacketPlayOutBoss_ACTION.set(packet, action.toNMS());
@@ -92,8 +94,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		}
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
-		if (clientVersion <= 47) return null;
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+		if (!clientVersion.is1_9orNewer()) return null;
 		BossBar packet = new BossBar(uuid, action.toBungee());
 		if (action == Action.ADD) {
 			packet.setTitle((String) Shared.mainClass.createComponent(title));
@@ -223,7 +225,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 				(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
 			}
 		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutScoreboardScore", e);
+			Shared.error("Failed to initialize PacketPlayOutBoss", e);
 		}
 	}
 }

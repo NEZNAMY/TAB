@@ -5,11 +5,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.bukkit.NameTagLineManager;
-import me.neznamy.tab.bukkit.packets.NMSClass;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.Shared.ServerType;
 
@@ -47,7 +42,7 @@ public class TabCommand{
 				}
 			} else if (type.equals("tagprefix")) {
 				if (canChangeTagPrefix(sender)) {
-					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags && (NMSClass.versionNumber < 13 && NMSClass.versionNumber != 0)){
+					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags){
 						sendMessage(sender, Configs.value_too_long.replace("%type%", type).replace("%length%", value.length()+""));
 					} else {
 						save(sender, args[0], args[1], type, value);
@@ -57,7 +52,7 @@ public class TabCommand{
 				}
 			} else if (type.equals("tagsuffix")) {
 				if (canChangeTagSuffix(sender)) {
-					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags && (NMSClass.versionNumber < 13 && NMSClass.versionNumber != 0)){
+					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags){
 						sendMessage(sender, Configs.value_too_long.replace("%type%", type).replace("%length%", value.length()+""));
 					} else {
 						save(sender, args[0], args[1], type, value);

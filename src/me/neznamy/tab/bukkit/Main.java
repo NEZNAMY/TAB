@@ -39,6 +39,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean pex;
 	public static Main instance;
 	public static boolean disabled = false;
+	public static final ProtocolVersion SERVER_VERSION = ProtocolVersion.fromString(Bukkit.getBukkitVersion().split("-")[0]);
 
 	public void onEnable(){
 		if (NMSClass.isVersionSupported()){
@@ -343,8 +344,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public Object toNMS(UniversalPacketPlayOut packet, int protocolVersion) throws Exception {
-		return packet.toNMS();
+	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
+		return packet.toNMS(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml");

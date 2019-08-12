@@ -3,7 +3,9 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut{
@@ -15,13 +17,13 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
         this.position = position;
         this.objectiveName = objectiveName;
     }
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutScoreboardDisplayObjective.newInstance();
 		PacketPlayOutScoreboardDisplayObjective_POSITION.set(packet, position);
 		PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.set(packet, objectiveName);
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardDisplay((byte)position, objectiveName);
 	}
 	

@@ -37,7 +37,7 @@ public abstract class ITabPlayer{
 	public String replacedTabFormat = "";
 	private boolean isStaff;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
-	public int version;
+	public ProtocolVersion version = ProtocolVersion.UNKNOWN; //preventing errors before this is loaded
 	public Channel channel;
 	public String ipAddress = "-";
 	public boolean nameTagVisible = true;
@@ -384,7 +384,7 @@ public abstract class ITabPlayer{
 		}
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
 	}
-	public int getVersion() {
+	public ProtocolVersion getVersion() {
 		return version;
 	}
 	public Channel getChannel() {

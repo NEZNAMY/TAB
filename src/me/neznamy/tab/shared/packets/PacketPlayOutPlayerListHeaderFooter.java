@@ -3,7 +3,9 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
@@ -15,13 +17,13 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 		this.header = header;
 		this.footer = footer;
 	}
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutPlayerListHeaderFooter.newInstance();
 		PacketPlayOutPlayerListHeaderFooter_HEADER.set(packet, Shared.mainClass.createComponent(header));
 		PacketPlayOutPlayerListHeaderFooter_FOOTER.set(packet, Shared.mainClass.createComponent(footer));
 		return packet;
 	}
-	public Object toBungee(int clientVersion) {
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
 		return new PlayerListHeaderFooter((String) Shared.mainClass.createComponent(header), (String) Shared.mainClass.createComponent(footer));
 	}
 	

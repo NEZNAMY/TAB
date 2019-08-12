@@ -2,8 +2,10 @@ package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.ServerType;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Chat;
 
 public class PacketPlayOutChat extends UniversalPacketPlayOut{
@@ -19,14 +21,14 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		component = Shared.mainClass.createComponent(message);
 		this.type = type;
 	}
-	public Object toNMS() throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		if (versionNumber >= 12) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
 		} else {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toByte());
 		}
 	}
-	public Object toBungee(int clientVersion) {
+	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
 		return new Chat((String) component, type.toByte());
 	}
 	
