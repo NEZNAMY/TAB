@@ -205,6 +205,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@EventHandler
 	public void a(PlayerCommandPreprocessEvent e) {
+		if (disabled) return;
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
