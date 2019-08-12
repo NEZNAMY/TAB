@@ -25,7 +25,7 @@ public class Placeholders {
 		online.put("1-5-x", 0);
 		online.put("other", 0);
 		for (ITabPlayer p : Shared.getPlayers()){
-			int version = p.getVersion();
+			int version = p.getVersion().getNumber();
 			if (version == 60 || version == 61) online.put("1-5-x", online.get("1-5-x")+1);
 			else if (version >= 73 && version <= 78) online.put("1-6-x", online.get("1-6-x")+1);
 			else if (version <= 0) online.put("other", online.get("other")+1);
@@ -124,6 +124,7 @@ public class Placeholders {
 		if (string.contains("%maxplayers%")) string = string.replace("%maxplayers%", maxPlayers+"");
 		if (string.contains("%online%")) string = string.replace("%online%", Shared.getPlayers().size()+"");
 		if (string.contains("%ping%")) string = string.replace("%ping%", p.getPing()+"");
+		if (string.contains("%player-version%")) string = string.replace("%player-version%", p.getVersion().getFriendlyName());
 		if (string.contains("%"+Shared.mainClass.getSeparatorType()+"%")) string = string.replace("%"+Shared.mainClass.getSeparatorType()+"%", p.getWorldName());
 		if (string.contains("%"+Shared.mainClass.getSeparatorType()+"online%")){
 			int var = 0;
