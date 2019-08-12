@@ -66,7 +66,7 @@ public class PacketAPI{
         changeScoreboardScore(p, body, objective, score);
     }
     public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
-        new PacketPlayOutScoreboardScore(Action.REMOVE, null, score, 0).send(p);
+        new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0).send(p);
         sendScoreboardTeamPacket(p, ID, null, null, false, false, null, 1, 69);
     }
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
