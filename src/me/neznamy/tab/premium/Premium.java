@@ -16,7 +16,7 @@ public class Premium {
 	public static SortingType sortingType;
 	public static String sortingPlaceholder;
 	public static boolean caseSensitive;
-	public static List<? extends Object> dynamicLines = Lists.newArrayList("belowname", "nametag", "abovename");
+	public static List<String> dynamicLines = Lists.newArrayList("belowname", "nametag", "abovename");
 	public static Map<String, Double> staticLines = Maps.newConcurrentMap();
 
 	public static boolean is() {
@@ -35,10 +35,11 @@ public class Premium {
 		}
 		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 		caseSensitive = premiumconfig.getBoolean("case-sentitive-sorting", true);
-		dynamicLines = premiumconfig.getList("unlimited-nametag-mode-dynamic-lines", Lists.newArrayList("abovename", "nametag", "belowname", "another"));
-		Collections.reverse(dynamicLines);
+		List<String> realList = premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Lists.newArrayList("abovename", "nametag", "belowname", "another"));
+		Premium.dynamicLines.clear();
+		Premium.dynamicLines.addAll(realList);
+		Collections.reverse(Premium.dynamicLines);
 		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
-
 		ScoreboardManager.enabled = premiumconfig.getBoolean("scoreboard.enabled", false);
 		ScoreboardManager.toggleCommand = premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		ScoreboardManager.disabledWorlds = premiumconfig.getList("scoreboard.disable-in-worlds", Lists.newArrayList("disabledworld"));
