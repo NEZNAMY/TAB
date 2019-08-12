@@ -2,17 +2,9 @@ package me.neznamy.tab.bukkit.api;
 
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.bukkit.packets.ArmorStand;
-
 @Deprecated
 public class TABAPI {
 
-	public static ArmorStand bindLine(Player p, String text, float heightDifference){
-		return me.neznamy.tab.api.TABAPI.bindLine(p.getUniqueId(), text, heightDifference);
-	}
-	public static void unbindLine(Player p, ArmorStand as) {
-		me.neznamy.tab.api.TABAPI.unbindLine(p.getUniqueId(), as);
-	}
 	public static boolean isUnlimitedNameTagModeEnabled() {
 		return me.neznamy.tab.api.TABAPI.isUnlimitedNameTagModeEnabled();
 	}

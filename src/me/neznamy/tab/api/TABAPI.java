@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.neznamy.tab.bukkit.NameTagLineManager;
-import me.neznamy.tab.bukkit.packets.ArmorStand;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.HeaderFooter;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -19,17 +17,6 @@ public class TABAPI {
 
 	public static List<UUID> hiddenNametag = new ArrayList<UUID>();
 
-	public static ArmorStand bindLine(UUID uniqueId, String text, float heightDifference){
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
-		return NameTagLineManager.bindLine(t, text, heightDifference, (Math.random()*1000000)+"");
-	}
-	public static void unbindLine(UUID uniqueId, ArmorStand as) {
-		ITabPlayer t = Shared.getPlayer(uniqueId);
-		if (!Configs.unlimitedTags) throw new IllegalStateException("Unlimited nametag mode is not enabled");
-		as.destroy();
-		t.armorStands.remove(as);
-	}
 	public static boolean isUnlimitedNameTagModeEnabled() {
 		return Configs.unlimitedTags;
 	}
