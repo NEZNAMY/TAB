@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut{
@@ -23,7 +22,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.set(packet, objectiveName);
 		return packet;
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardDisplay((byte)position, objectiveName);
 	}
 	

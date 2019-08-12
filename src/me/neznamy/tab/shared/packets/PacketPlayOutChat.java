@@ -5,7 +5,6 @@ import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.ServerType;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Chat;
 
 public class PacketPlayOutChat extends UniversalPacketPlayOut{
@@ -28,7 +27,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toByte());
 		}
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		return new Chat((String) component, type.toByte());
 	}
 	

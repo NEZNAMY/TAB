@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
@@ -70,7 +69,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		PacketPlayOutScoreboardTeam_VISIBILITY.set(packet, visibility);
 		return packet;
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
 		int color = 0;
 		if (clientVersion.is1_13orNewer()) {

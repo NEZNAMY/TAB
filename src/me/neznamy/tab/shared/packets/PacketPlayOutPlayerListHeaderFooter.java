@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
@@ -23,7 +22,7 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 		PacketPlayOutPlayerListHeaderFooter_FOOTER.set(packet, Shared.mainClass.createComponent(footer));
 		return packet;
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		return new PlayerListHeaderFooter((String) Shared.mainClass.createComponent(header), (String) Shared.mainClass.createComponent(footer));
 	}
 	

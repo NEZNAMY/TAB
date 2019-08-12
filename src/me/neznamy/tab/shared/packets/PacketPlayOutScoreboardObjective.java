@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
@@ -41,7 +40,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (action != 0) PacketPlayOutScoreboardObjective_ACTION.set(packet, action);
 		return packet;
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		String title = this.title;
 		if (clientVersion.is1_13orNewer()) {
 			title = (String) Shared.mainClass.createComponent(title);

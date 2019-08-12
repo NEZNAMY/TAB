@@ -7,7 +7,6 @@ import java.util.UUID;
 import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 public class PacketPlayOutBoss extends UniversalPacketPlayOut{
@@ -94,7 +93,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		}
 		return packet;
 	}
-	public DefinedPacket toBungee(ProtocolVersion clientVersion) {
+	public Object toBungee(ProtocolVersion clientVersion) {
 		if (!clientVersion.is1_9orNewer()) return null;
 		BossBar packet = new BossBar(uuid, action.toBungee());
 		if (action == Action.ADD) {
