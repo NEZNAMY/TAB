@@ -47,6 +47,7 @@ public class ScoreboardManager {
 	public static void playerJoin(ITabPlayer p) {
 		if (!enabled) return;
 		if (disabledWorlds.contains(p.getWorldName())) return;
+		if (p.hiddenScoreboard) return;
 		String scoreboard = perWorld.get(p.getWorldName());
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
 		if (scoreboard != null) {
@@ -63,15 +64,15 @@ public class ScoreboardManager {
 		if (!enabled) return false;
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
+			sender.hiddenScoreboard = !sender.hiddenScoreboard;
 			if (sender.hiddenScoreboard) {
-				playerJoin(sender);
-				sender.sendMessage(scoreboard_on);
-			} else {
 				if (sender.getActiveScoreboard() != null) sender.getActiveScoreboard().unregister(sender);
 				sender.setActiveScoreboard(null);
 				sender.sendMessage(scoreboard_off);
+			} else {
+				playerJoin(sender);
+				sender.sendMessage(scoreboard_on);
 			}
-			sender.hiddenScoreboard = !sender.hiddenScoreboard;
 			return true;
 		}
 		return false;
