@@ -84,12 +84,12 @@ public class NameTagX implements Listener{
 		});
 	}
 	@EventHandler
-	public void a(final PlayerMoveEvent e) {
-		Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
+	public void a(PlayerMoveEvent e) {
+		final ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
 
 			public void run() {
-				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-				if (p.previewingNametag) NameTagLineManager.teleportArmorStand(p, p);
+				NameTagLineManager.teleportArmorStand(p, p);
 			}
 		});
 	}
