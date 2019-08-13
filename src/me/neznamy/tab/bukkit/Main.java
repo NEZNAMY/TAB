@@ -64,6 +64,32 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						return Configs.unlimitedTags ? "Yes" : "No";
 					}
 				}));
+				metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
+
+					public String call() throws Exception {
+						return Placeholders.placeholderAPI ? "Yes" : "No";
+					}
+				}));
+				metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
+
+					public String call() throws Exception {
+						if (pex) return "PermissionsEx";
+						if (groupManager != null) return "GroupManager";
+						if (luckPerms) return "LuckPerms";
+						if (powerfulPerms != null) return "PowerfulPerms";
+						if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
+						return "Unknown/None";
+					}
+				}));
+				metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
+
+					public String call() throws Exception {
+						if (Placeholders.viaVersion && Placeholders.protocolSupport) return "ViaVersion + ProtocolSupport";
+						if (Placeholders.viaVersion) return "ViaVersion";
+						if (Placeholders.protocolSupport) return "ProtocolSupport";
+						return "None";
+					}
+				}));
 			}
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
@@ -77,7 +103,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void onDisable() {
 		if (!disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) p.getChannel().pipeline().remove(Shared.DECODER_NAME);
+			for (ITabPlayer p : Shared.getPlayers()) {
+				try {
+					p.getChannel().pipeline().remove(Shared.DECODER_NAME);
+				} catch (NoSuchElementException e) {
+
+				}
+			}
 			unload();
 		}
 	}
