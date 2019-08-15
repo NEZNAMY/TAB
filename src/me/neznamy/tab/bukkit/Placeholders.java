@@ -21,6 +21,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import net.milkbowl.vault.chat.Chat;
@@ -81,6 +82,7 @@ public class Placeholders {
 			deluxeTags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 			viaVersion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 			me.neznamy.tab.shared.Placeholders.relationalPlaceholders = (placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+			if (placeholderAPI) {
 			essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		} catch (Exception e){
@@ -101,7 +103,15 @@ public class Placeholders {
 			s = me.neznamy.tab.shared.Placeholders.setAnimations(s);
 			if (placeholderAPI) s = setPlaceholderAPIPlaceholders(s, p);
 			s = replaceSimplePlaceholders(s, p);
-			if (placeholderAPI) return setPlaceholderAPIPlaceholders(s, p);
+			if (placeholderAPI) s = setPlaceholderAPIPlaceholders(s, p);
+			for (String removed : Configs.removeStrings) {
+				if (s.contains(removed)) {
+					s = s.replace(removed, "");
+				}
+				if (s.contains(removed.replace("&", "�"))) {
+					s = s.replace(removed.replace("&", "�"), ""); //much more likely to actually match
+				}
+			}
 		} catch (Exception e){
 			Shared.error("An error occured when setting placeholders(1) (player: " + p.getName() + ")", e);
 		}

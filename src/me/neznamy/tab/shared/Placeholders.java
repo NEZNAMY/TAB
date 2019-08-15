@@ -106,7 +106,17 @@ public class Placeholders {
 		return arr;
 	}
 	public static String replace(String string, ITabPlayer p) {
-		if (!string.contains("%") && !string.contains("{")) return color(string);
+		if (!string.contains("%") && !string.contains("{")) {
+			for (String removed : Configs.removeStrings) {
+				if (string.contains(removed)) {
+					string = string.replace(removed, "");
+				}
+				if (string.contains(removed.replace("&", "§"))) {
+					string = string.replace(removed.replace("&", "§"), ""); //much more likely to actually match
+				}
+			}
+			return color(string);
+		}
 		string = setAnimations(string);
 		if (string.contains("%rank%")) string = string.replace("%rank%", p.getRank());
 		if (Shared.servertype == ServerType.BUKKIT) {

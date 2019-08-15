@@ -137,6 +137,12 @@ placeholders:
   #setting to -1 will make it show 1 hour less than it does currently, 1 makes it show one hour more than currently, 0 does nothing
   time-offset: 0
   
+  #remove these strings from everywhere. Typically an empty output when using some clan/faction related plugin but player isn't in any
+  #so players won't have empty brackets before their names
+  remove-strings:
+    - "[] "
+    - "< > "
+  
 #better showing of %rank% value
 rank-aliases:
   Admin: "&4&lADMIN"

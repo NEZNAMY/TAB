@@ -417,6 +417,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
 		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
+		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
 
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml");
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);

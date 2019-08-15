@@ -31,6 +31,7 @@ public class Configs {
 	public static String dateFormat;
 	public static String timeFormat;
 	public static double timeOffset;
+	public static List<String> removeStrings = new ArrayList<String>();
 	
 	
 	public static ConfigurationFile animation;
