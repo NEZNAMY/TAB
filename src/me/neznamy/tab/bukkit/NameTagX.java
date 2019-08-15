@@ -114,6 +114,9 @@ public class NameTagX implements Listener{
 						ITabPlayer passenger = Shared.getPlayer(entity);
 						if (passenger != null) {
 							NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
+							
+							//activating this code will fix desync on boats
+							//however, boat movement will be extremely laggy
 /*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
 								if (packetReceiver == passenger || packetReceiver == pl) continue;
 								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
