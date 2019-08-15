@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.bukkit.Placeholders;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
@@ -128,6 +129,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			BossBar.unload();
 			ScoreboardManager.unload();
 			Shared.data.clear();
+			if (Placeholders.expansion != null) PlaceholderAPI.unregisterExpansion(Placeholders.expansion);
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e) {
 			Shared.error("Failed to unload the plugin", e);

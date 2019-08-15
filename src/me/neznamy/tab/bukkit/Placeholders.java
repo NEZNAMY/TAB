@@ -48,6 +48,7 @@ public class Placeholders {
 	public static String factionsType;
 	public static boolean factionsInitialized;
 	public static boolean deluxeTags;
+	public static PlaceholderAPIExpansion expansion;
 
 	public static ProtocolVersion getVersion(ITabPlayer p){
 		try {
@@ -83,6 +84,9 @@ public class Placeholders {
 			viaVersion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 			me.neznamy.tab.shared.Placeholders.relationalPlaceholders = (placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
 			if (placeholderAPI) {
+				expansion = new PlaceholderAPIExpansion(Main.instance);
+				expansion.register();
+			}
 			essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		} catch (Exception e){
@@ -108,8 +112,8 @@ public class Placeholders {
 				if (s.contains(removed)) {
 					s = s.replace(removed, "");
 				}
-				if (s.contains(removed.replace("&", "ï¿½"))) {
-					s = s.replace(removed.replace("&", "ï¿½"), ""); //much more likely to actually match
+				if (s.contains(removed.replace("&", "§"))) {
+					s = s.replace(removed.replace("&", "§"), ""); //much more likely to actually match
 				}
 			}
 		} catch (Exception e){
