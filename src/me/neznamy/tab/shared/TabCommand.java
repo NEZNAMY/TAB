@@ -38,6 +38,7 @@ public class TabCommand{
 					} else {
 						sendMessage(sender, Configs.no_perm);
 					}
+					return;
 				}
 			}
 			for (String property : extraProperties) {
@@ -50,6 +51,7 @@ public class TabCommand{
 					} else {
 						sendMessage(sender, Configs.no_perm);
 					}
+					return;
 				}
 			}
 			if (type.equals("remove")) {
@@ -65,7 +67,9 @@ public class TabCommand{
 					} else help(sender);
 					sendMessage(sender, Configs.data_removed.replace("%category%", args[0]).replace("%value%", args[1]));
 				}
-			} else help(sender);
+				return;
+			}
+			help(sender);
 		} else if (args.length == 2) {
 			//tab debug <player>
 			//tab parse <string>
