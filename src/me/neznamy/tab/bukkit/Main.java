@@ -56,37 +56,31 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 			load(false, true);
-			if (!ProtocolVersion.packageName.equals("v1_8_R1")) {
-				Metrics metrics = new Metrics(this);
-				metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
-
-					public String call() throws Exception {
-						return Configs.unlimitedTags ? "Yes" : "No";
-					}
-				}));
-				metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
-
-					public String call() throws Exception {
-						return Placeholders.placeholderAPI ? "Yes" : "No";
-					}
-				}));
-				metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-
-					public String call() throws Exception {
-						if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
-						return getPermissionPlugin();
-					}
-				}));
-				metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
-
-					public String call() throws Exception {
-						if (Placeholders.viaVersion && Placeholders.protocolSupport) return "ViaVersion + ProtocolSupport";
-						if (Placeholders.viaVersion) return "ViaVersion";
-						if (Placeholders.protocolSupport) return "ProtocolSupport";
-						return "None";
-					}
-				}));
-			}
+			Metrics metrics = new Metrics(this);
+			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
+				public String call() throws Exception {
+					return Configs.unlimitedTags ? "Yes" : "No";
+				}
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
+				public String call() throws Exception {
+					return Placeholders.placeholderAPI ? "Yes" : "No";
+				}
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
+				public String call() throws Exception {
+					if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
+					return getPermissionPlugin();
+				}
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
+				public String call() throws Exception {
+					if (Placeholders.viaVersion && Placeholders.protocolSupport) return "ViaVersion + ProtocolSupport";
+					if (Placeholders.viaVersion) return "ViaVersion";
+					if (Placeholders.protocolSupport) return "ProtocolSupport";
+					return "None";
+				}
+			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) {
@@ -415,7 +409,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
-
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml");
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
