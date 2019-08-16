@@ -3,6 +3,8 @@ package me.neznamy.tab.shared;
 public enum ProtocolVersion {
 
 	UNKNOWN(-1, "Unknown", 0),
+	v1_7_2to5(4, "1.7.2-5", 7),
+	v1_7_6to10(5, "1.7.6-10", 7),
 	v1_8_x(47, "1.8.x", 8),
 	v1_9(107, "1.9", 9),
 	v1_9_1(108, "1.9.1", 9),
