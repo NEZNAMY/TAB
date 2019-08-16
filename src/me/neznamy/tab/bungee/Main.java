@@ -60,13 +60,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
 
 			public String call() throws Exception {
-				if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
-					return "LuckPerms";
-				}
-				if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
-					return "BungeePerms";
-				}
-				return "Unknown/None";
+				return getPermissionPlugin();
 			}
 		}));
 		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -203,7 +197,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public String getPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
-		return "-";
+		return "Unknown/None";
 	}
 	public String getSeparatorType() {
 		return "server";
