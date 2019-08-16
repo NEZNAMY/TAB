@@ -34,9 +34,6 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 		this.yaw = yaw;
 		this.pitch = pitch;
 	}
-	public double getY() {
-		return y;
-	}
 	public Object toNMS() throws Exception {
 		Object packet = newPacketPlayOutEntityTeleport.newInstance();
 		PacketPlayOutEntityTeleport_ENTITYID.set(packet, entityId);
