@@ -1,17 +1,36 @@
 package me.neznamy.tab.bungee;
 
-import io.netty.channel.*;
+import java.util.concurrent.Callable;
+
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.BossBar;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ConfigurationFile;
+import me.neznamy.tab.shared.HeaderFooter;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.MainClass;
+import me.neznamy.tab.shared.NameTag16;
+import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.ServerType;
+import me.neznamy.tab.shared.TabCommand;
+import me.neznamy.tab.shared.TabObjective;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
-import net.md_5.bungee.api.plugin.*;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -37,7 +56,19 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		});
 		load(false, true);
-		new Metrics(this);
+		Metrics metrics = new Metrics(this);
+		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
+
+			public String call() throws Exception {
+				if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
+					return "LuckPerms";
+				}
+				if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
+					return "BungeePerms";
+				}
+				return "Unknown/None";
+			}
+		}));
 		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
