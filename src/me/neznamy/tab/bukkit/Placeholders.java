@@ -83,10 +83,7 @@ public class Placeholders {
 			deluxeTags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 			viaVersion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 			me.neznamy.tab.shared.Placeholders.relationalPlaceholders = (placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
-			if (placeholderAPI) {
-				expansion = new PlaceholderAPIExpansion(Main.instance);
-				expansion.register();
-			}
+			if (placeholderAPI) PlaceholderAPIExpansion.register();
 			essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		} catch (Exception e){

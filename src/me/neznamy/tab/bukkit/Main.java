@@ -18,7 +18,6 @@ import com.google.common.collect.Lists;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.bukkit.Placeholders;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
@@ -74,12 +73,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
 
 					public String call() throws Exception {
-						if (pex) return "PermissionsEx";
-						if (groupManager != null) return "GroupManager";
-						if (luckPerms) return "LuckPerms";
-						if (powerfulPerms != null) return "PowerfulPerms";
 						if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
-						return "Unknown/None";
+						return getPermissionPlugin();
 					}
 				}));
 				metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
@@ -129,7 +124,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			BossBar.unload();
 			ScoreboardManager.unload();
 			Shared.data.clear();
-			if (Placeholders.expansion != null) PlaceholderAPI.unregisterExpansion(Placeholders.expansion);
+			if (Placeholders.expansion != null) PlaceholderAPIExpansion.unregister();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Exception e) {
 			Shared.error("Failed to unload the plugin", e);
@@ -359,7 +354,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (luckPerms) return "LuckPerms";
 		if (powerfulPerms != null) return "PowerfulPerms";
 		if (Placeholders.perm != null) return Placeholders.perm.getName() + " (detected by Vault)";
-		return "-";
+		return "Unknown/None";
 	}
 	public String getSeparatorType() {
 		return "world";
