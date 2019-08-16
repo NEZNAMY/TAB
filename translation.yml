@@ -1,5 +1,4 @@
 no_permission: "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
-value_too_long: "&c[TAB] Error! %type% cannot be longer than 16 characters! (You attempted to use %length% characters). If you wish to completely remove the limit, enable unlimited-nametag-prefix-suffix-mode in config."
 unlimited_nametag_mode_not_enabled: "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-prefix-suffix-mode in config !"
 data_removed: "&3[TAB] All data has been successfully removed from %category% &e%value%"
 player_not_found: "&4[TAB] Player not found !"

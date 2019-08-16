@@ -44,7 +44,6 @@ public class Configs {
 	
 	public static ConfigurationFile translation;
 	public static String no_perm;
-	public static String value_too_long;
 	public static String unlimited_nametag_mode_not_enabled;
 	public static String data_removed;
 	public static String player_not_found;
@@ -157,7 +156,6 @@ public class Configs {
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml");
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.").replace("&", "§");
-		value_too_long = translation.getString("value_too_long", "&c[TAB] Error! %type% cannot be longer than 16 characters! (You attempted to use %length% characters). If you with to completely remove the limit, enable unlimited-nametag-prefix-suffix-mode in config.").replace("&", "§");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !").replace("&", "§");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% §e%value%").replace("&", "§");
 		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !").replace("&", "§");
