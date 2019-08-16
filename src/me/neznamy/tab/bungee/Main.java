@@ -126,6 +126,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void a(PlayerDisconnectEvent e){
 		if (disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
 		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.playerQuit(disconnectedPlayer);
