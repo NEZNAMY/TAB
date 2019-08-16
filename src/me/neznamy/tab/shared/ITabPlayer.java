@@ -35,7 +35,6 @@ public abstract class ITabPlayer{
 	private String lastReplacedFooter = "";
 	private String rank;
 	public String replacedTabFormat = "";
-	private boolean isStaff;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
 	public ProtocolVersion version = ProtocolVersion.UNKNOWN; //preventing errors before this is loaded
 	public Channel channel;
@@ -197,7 +196,6 @@ public abstract class ITabPlayer{
 		if (rank == null || rank.length() == 0) {
 			rank = group;
 		}
-		isStaff = hasPermission("tab.staff");
 		updateRawHeaderAndFooter();
 	}
 	private String getValue(Object property) {
@@ -249,7 +247,7 @@ public abstract class ITabPlayer{
 		lastReplacedFooter = footer;
 	}
 	public boolean isStaff() {
-		return isStaff;
+		return hasPermission("tab.staff");
 	}
 	private boolean getTeamPush() {
 		return Configs.collision;
