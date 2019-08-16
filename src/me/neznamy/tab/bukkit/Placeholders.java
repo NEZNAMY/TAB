@@ -121,21 +121,13 @@ public class Placeholders {
 	public static String setPlaceholderAPIPlaceholders(String s, ITabPlayer p) {
 		try {
 			return PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), s);
-		} catch (Exception e) {
+		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				Shared.error("PlaceholderAPI replace task failed.");
 				Shared.error("PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion());
 				Shared.error("String to parse: " + s);
-				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", e);
-			} //else now we know why it failed
-		} catch (Error e) {
-			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
-			if (papi != null) {
-				Shared.error("PlaceholderAPI replace task failed.");
-				Shared.error("PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion());
-				Shared.error("String to parse: " + s);
-				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", e);
+				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", t);
 			} //else now we know why it failed
 		}
 		return s;

@@ -60,15 +60,9 @@ public class Shared {
 		return data.get(uniqueId);
 	}
 	public static void error(String message) {
-		error(message, null, null);
+		error(message, null);
 	}
-	public static void error(String message, Exception e) {
-		error(message, e, null);
-	}
-	public static void error(String message, Error err) {
-		error(message, null, err);
-	}
-	public static void error(String message, Exception e, Error err) {
+	public static void error(String message, Throwable t) {
 		try {
 			if (!Configs.errorFile.exists()) Configs.errorFile.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
@@ -76,18 +70,10 @@ public class Shared {
 				buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
 				if (consoleErrors) print("§c", message);
 			}
-			if (e != null) {
-				buf.write(ERROR_PREFIX() + e.getClass().getName() +": " + e.getMessage() + newline);
-				if (consoleErrors) printClean("§c" + e.getClass().getName() +": " + e.getMessage());
-				for (StackTraceElement ste : e.getStackTrace()) {
-					buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-					if (consoleErrors) printClean("§c       at " + ste.toString());
-				}
-			}
-			if (err != null) {
-				buf.write(ERROR_PREFIX() + err.getClass().getName() +": " + err.getMessage() + newline);
-				if (consoleErrors) printClean("§c" + e.getClass().getName() +": " + e.getMessage());
-				for (StackTraceElement ste : err.getStackTrace()) {
+			if (t != null) {
+				buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
+				if (consoleErrors) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
+				for (StackTraceElement ste : t.getStackTrace()) {
 					buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
 					if (consoleErrors) printClean("§c       at " + ste.toString());
 				}
@@ -97,8 +83,7 @@ public class Shared {
 			print("§c", "An error occured when generating error message");
 			ex.printStackTrace();
 			print("§c", "Original error: " + message);
-			if (e != null) e.printStackTrace();
-			if (err != null) err.printStackTrace();
+			if (t != null) t.printStackTrace();
 		}
 	}
 	public static String round(double value) {
@@ -151,10 +136,8 @@ public class Shared {
 						Thread.sleep(delayMilliseconds);
 					} catch (InterruptedException e) {
 						break;
-					} catch (Exception e) {
-						error("An error occured when " + description, e);
-					} catch (Error e) {
-						error("An error occured when " + description, e);
+					} catch (Throwable t) {
+						error("An error occured when " + description, t);
 					}
 				}
 			}
@@ -168,10 +151,8 @@ public class Shared {
 					long time = System.nanoTime();
 					r.run();
 					cpu(feature, System.nanoTime()-time);
-				} catch (Exception e) {
-					error("An error occured when " + description, e);
-				} catch (Error e) {
-					error("An error occured when " + description, e);
+				} catch (Throwable t) {
+					error("An error occured when " + description, t);
 				}
 			}
 		});
@@ -188,9 +169,7 @@ public class Shared {
 					r.run();
 					cpu(feature, System.nanoTime()-time);
 				} catch (InterruptedException e) {
-				} catch (Exception e) {
-					error("An error occured when " + description, e);
-				} catch (Error e) {
+				} catch (Throwable e) {
 					error("An error occured when " + description, e);
 				}
 				tasks.remove(array[0]);
