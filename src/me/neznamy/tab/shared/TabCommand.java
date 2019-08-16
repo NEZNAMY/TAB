@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.Shared.ServerType;
 
 public class TabCommand{
 
+	private static final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
+	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
+	
 	public static void execute(ITabPlayer sender, String[] args){
 		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
@@ -28,73 +31,29 @@ public class TabCommand{
 				if (i>3) value += " ";
 				value += args[i];
 			}
-			if (type.equals("tabprefix")) {
-				if (canChangeTabPrefix(sender)) {
-					save(sender, args[0], args[1], type, value);
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("tabsuffix")) {
-				if (canChangeTabSuffix(sender)) {
-					save(sender, args[0], args[1], type, value);
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("tagprefix")) {
-				if (canChangeTagPrefix(sender)) {
-					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags){
-						sendMessage(sender, Configs.value_too_long.replace("%type%", type).replace("%length%", value.length()+""));
-					} else {
+			for (String property : usualProperties) {
+				if (type.equals(property)) {
+					if (canChangeProperty(sender, property)) {
 						save(sender, args[0], args[1], type, value);
-					}
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("tagsuffix")) {
-				if (canChangeTagSuffix(sender)) {
-					if (value.length() > 16 && !value.contains("%") && !Configs.unlimitedTags){
-						sendMessage(sender, Configs.value_too_long.replace("%type%", type).replace("%length%", value.length()+""));
 					} else {
+						sendMessage(sender, Configs.no_perm);
+					}
+				}
+			}
+			for (String property : extraProperties) {
+				if (type.equals(property)) {
+					if (canChangeProperty(sender, property)) {
 						save(sender, args[0], args[1], type, value);
+						if (!Configs.unlimitedTags) {
+							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+						}
+					} else {
+						sendMessage(sender, Configs.no_perm);
 					}
-				} else {
-					sendMessage(sender, Configs.no_perm);
 				}
-			} else if (type.equals("belowname")) {
-				if (canChangeBelowName(sender)) {
-					save(sender, args[0], args[1], type, value);
-					if (!Configs.unlimitedTags) {
-						sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
-					}
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("abovename")) {
-				if (canChangeAboveName(sender)) {
-					save(sender, args[0], args[1], type, value);
-					if (!Configs.unlimitedTags) {
-						sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
-					}
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("customtabname")) {
-				if (canChangeCustomTabName(sender)) {
-					save(sender, args[0], args[1], type, value);
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("customtagname")) {
-				if (canChangeCustomTabName(sender)) {
-					save(sender, args[0], args[1], type, value);
-					if (!Configs.unlimitedTags) {
-						sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
-					}
-				} else {
-					sendMessage(sender, Configs.no_perm);
-				}
-			} else if (type.equals("remove")) {
-				if (canRemove(sender)) {
+			}
+			if (type.equals("remove")) {
+				if (can(sender, "remove")) {
 					if (args[0].equals("group")) {
 						Configs.config.set("Groups." + args[1], null);
 						Configs.config.save();
@@ -111,7 +70,7 @@ public class TabCommand{
 			//tab debug <player>
 			//tab parse <string>
 			if (args[0].equalsIgnoreCase("debug")) {
-				if (canDebug(sender)){
+				if (can(sender, "debug")){
 					ITabPlayer analyzed = Shared.getPlayer(args[1]);
 					if (analyzed != null) debug(sender, analyzed);
 					else sendMessage(sender, Configs.player_not_found);
@@ -129,11 +88,11 @@ public class TabCommand{
 			//tab cpu
 			//tab ntpreview
 			if (args[0].equalsIgnoreCase("reload")){
-				if (canReload(sender)){
+				if (can(sender, "reload")){
 					Shared.mainClass.reload(sender);
 				} else sendMessage(sender, Configs.no_perm);
 			} else if (args[0].equalsIgnoreCase("debug")){
-				if (canDebug(sender)){
+				if (can(sender, "debug")){
 					debug(sender, null);
 				} else sendMessage(sender, Configs.no_perm);
 			} else if (args[0].equalsIgnoreCase("ntpreview")){
@@ -150,7 +109,7 @@ public class TabCommand{
 					}
 				} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 			} else if (args[0].equalsIgnoreCase("cpu")){
-				if (canCPU(sender)) {
+				if (can(sender, "cpu")) {
 					sendMessage(sender, "§3[TAB] §a--------------------------------------");
 					sendMessage(sender, "§3[TAB] §6CPU from last 1m, 5m, 15m: §a" + getTotalCpu(60) + ", " + getTotalCpu(300) + ", " + getTotalCpu(900));
 					int history = 60;
@@ -191,56 +150,15 @@ public class TabCommand{
 			savePlayer(sender, arg1, type, value);
 		} else help(sender);
 	}
-	public static boolean canChangeTabPrefix(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.tabprefix")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeTabSuffix(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.tabsuffix")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeTagPrefix(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.tagprefix")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeTagSuffix(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.tagsuffix")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeBelowName(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.belowname")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeAboveName(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.abovename")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeCustomTabName(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.customtabname")) return true;
-		return canChange(sender);
-	}
-	public static boolean canChangeCustomTagName(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.change.customtagname")) return true;
-		return canChange(sender);
+	public static boolean canChangeProperty(ITabPlayer sender, String property) {
+		return can(sender, "change." + property);
 	}
 	public static boolean canChange(ITabPlayer sender) {
 		if (sender == null || sender.hasPermission("tab.change.*")) return true;
 		return isAdmin(sender);
 	}
-	public static boolean canReload(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.reload")) return true;
-		return isAdmin(sender);
-	}
-	public static boolean canDebug(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.debug")) return true;
-		return isAdmin(sender);
-	}
-	public static boolean canCPU(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.cpu")) return true;
-		return isAdmin(sender);
-	}
-	public static boolean canRemove(ITabPlayer sender) {
-		if (sender == null || sender.hasPermission("tab.remove")) return true;
+	public static boolean can(ITabPlayer sender, String action) {
+		if (sender == null || sender.hasPermission("tab." + action)) return true;
 		return isAdmin(sender);
 	}
 	public static boolean isAdmin(ITabPlayer sender) {
