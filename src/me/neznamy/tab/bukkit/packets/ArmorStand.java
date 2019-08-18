@@ -62,7 +62,7 @@ public class ArmorStand{
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
 		String name = lastReplacedFormat;
-		if (Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
+		if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
 		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 		DataWatcher w = datawatcher.create(name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.put(to, name);
@@ -105,7 +105,7 @@ public class ArmorStand{
 			ITabPlayer all = entry.getKey();
 			String lastName = entry.getValue();
 			String name = lastReplacedFormat;
-			if (Placeholders.relationalPlaceholders) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
+			if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
 			datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 			DataWatcher w = datawatcher.create(name);
 			if (lastName.equals(name) && !force) continue;

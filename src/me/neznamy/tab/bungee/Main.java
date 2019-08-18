@@ -1,5 +1,6 @@
 package me.neznamy.tab.bungee;
 
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -24,6 +25,7 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -123,11 +125,11 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
 		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
-		ScoreboardManager.playerQuit(disconnectedPlayer);
+		ScoreboardManager.unregister(disconnectedPlayer);
 		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler
-	public void a(ServerSwitchEvent e){
+	public void a(final ServerSwitchEvent e){
 		try{
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
@@ -139,15 +141,28 @@ public class Main extends Plugin implements Listener, MainClass{
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);
-				NameTag16.playerJoin(p);
 				BossBar.playerJoin(p);
-				ScoreboardManager.playerJoin(p);
+				ScoreboardManager.register(p);
+				final ITabPlayer pl = p;
+				NameTag16.playerJoin(pl);
+/*				Shared.runTask("processing join", Feature.OTHER, new Runnable() {
+
+					public void run() {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+						NameTag16.playerJoin(pl);
+					}				
+				});*/
 			} else {
 				String from = p.getWorldName();
 				String to = e.getPlayer().getServer().getInfo().getName();
 				((TabPlayer)p).server = e.getPlayer().getServer();
 				p.onWorldChange(from, to);
 			}
+			
 		} catch (Exception ex){
 			Shared.error("An error occured when player joined/changed server", ex);
 		}
@@ -234,5 +249,15 @@ public class Main extends Plugin implements Listener, MainClass{
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
+	}
+	public String setPlaceholders(ITabPlayer p, String text) {
+		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
+			if (text.contains(server.getKey())) text = text.replace("%online_" + server.getKey() + "%", server.getValue().getPlayers().size()+"");
+		}
+		return text;
+	}
+	public void loadBossbar() throws Exception {
+		Configs.bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");
+		BossBar.refresh = Configs.bossbar.getInt("refresh-interval", 1000);
 	}
 }

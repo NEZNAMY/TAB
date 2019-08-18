@@ -94,13 +94,16 @@ public class ConfigurationFile{
 		return (List<String>) get(path, defaultValue);
 	}
 	public int getInt(String path, int defaultValue) {
-		return Integer.parseInt(get(path, defaultValue).toString());
+		return Integer.parseInt(get(path, defaultValue)+"");
+	}
+	public boolean getBoolean(String path) {
+		return Boolean.parseBoolean(get(path, null)+"");
 	}
 	public boolean getBoolean(String path, boolean defaultValue) {
-		return Boolean.parseBoolean(get(path, defaultValue).toString());
+		return Boolean.parseBoolean(get(path, defaultValue)+"");
 	}
 	public double getDouble(String path, double defaultValue) {
-		return Double.parseDouble(get(path, defaultValue).toString());
+		return Double.parseDouble(get(path, defaultValue)+"");
 	}
 	public void set(String path, Object value) {
 		set(values, path, value);

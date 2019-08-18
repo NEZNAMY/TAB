@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarFrame;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
-import me.neznamy.tab.shared.Shared.ServerType;
 
 public class Configs {
 
@@ -129,13 +128,7 @@ public class Configs {
 		}
 	}
 	public static void loadBossbar() throws Exception {
-		if (Shared.servertype == ServerType.BUKKIT) {
-			bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");
-			BossBar.refresh = (bossbar.getInt("refresh-interval", 20)*50);
-		} else {
-			bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");
-			BossBar.refresh = bossbar.getInt("refresh-interval", 1000);
-		}
+		Shared.mainClass.loadBossbar();
 		BossBar.enable = bossbar.getBoolean("enabled", false);
 		bossbarToggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
 		BossBar.lines.clear();

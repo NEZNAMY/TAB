@@ -117,8 +117,9 @@ public class NameTagX implements Listener{
 							
 							//activating this code will fix desync on boats
 							//however, boat movement will be extremely laggy
+							//seems to only work for 1.8.x servers idk why
 /*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
-								if (packetReceiver == passenger || packetReceiver == pl) continue;
+								if (packetReceiver == passenger) continue;
 								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
 								new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);
 							}*/

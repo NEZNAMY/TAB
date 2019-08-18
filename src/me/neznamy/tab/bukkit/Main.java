@@ -49,7 +49,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
-
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
 					TabCommand.execute(sender instanceof Player ? Shared.getPlayer(sender.getName()) : null, args);
 					return false;
@@ -64,7 +63,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
 				public String call() throws Exception {
-					return Placeholders.placeholderAPI ? "Yes" : "No";
+					return Placeholders.placeholderAPI() ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
@@ -86,7 +85,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) {
 				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too old! Disabling...");
 			} else {
-				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too new! Please update the plugin.");
+				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported ! Please update the plugin.");
 			}
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
@@ -187,7 +186,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					NameTag16.playerJoin(pl);
 					NameTagX.playerJoin(pl);
 					BossBar.playerJoin(pl);
-					ScoreboardManager.playerJoin(pl);
+					ScoreboardManager.register(pl);
 				}
 			});
 		} catch (Exception ex) {
@@ -202,7 +201,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
 			NameTag16.playerQuit(disconnectedPlayer);
 			NameTagX.playerQuit(disconnectedPlayer);
-			ScoreboardManager.playerQuit(disconnectedPlayer);
+			ScoreboardManager.unregister(disconnectedPlayer);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
 			}
@@ -261,8 +260,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								}
 							}
 						}
+						Shared.cpu(Feature.NAMETAG, System.nanoTime()-time);
+						
 						if (NameTagX.enable && !player.disabledNametag) {
-							//unlimited nametag mode
+							time = System.nanoTime();
 							NameTagXPacket pack = null;
 							if ((pack = NameTagXPacket.fromNMS(packet)) != null) {
 								//sending packets outside of the packet reader or protocollib will cause problems
@@ -273,22 +274,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 									}
 								});
 							}
+							Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
 						}
-
+						
+						time = System.nanoTime();
 						PacketPlayOut p = null;
-
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
 							//preventing pets from having owner's nametag properties if feature is enabled
 							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
 								List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
 								for (Item petOwner : items) {
-									if (petOwner.getType().getPosition() == (ProtocolVersion.SERVER_VERSION.getMinorVersion()>=14?16:14)) modifyDataWatcherItem(petOwner);
+									if (petOwner.getType().getPosition() == (ProtocolVersion.SERVER_VERSION.getPetOwnerPosition())) modifyDataWatcherItem(petOwner);
 								}
 								packet = p.toNMS();
 							}
 							if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
 								DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
-								Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getMinorVersion()>=14?16:14);
+								Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
 								if (petOwner != null) modifyDataWatcherItem(petOwner);
 								packet = p.toNMS();
 							}
@@ -301,7 +303,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 						Shared.cpu(Feature.OTHER, System.nanoTime()-time);
-					} catch (Exception e){
+					} catch (Throwable e){
 						Shared.error("An error occured when reading packets", e);
 					}
 					super.write(context, packet, channelPromise);
@@ -418,5 +420,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
+	}
+	public String setPlaceholders(ITabPlayer p, String text) {
+		return Placeholders.replace(text, p);
+	}
+	public void loadBossbar() throws Exception {
+		Configs.bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");
+		BossBar.refresh = (Configs.bossbar.getInt("refresh-interval", 20)*50);
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.bukkit.NameTagLineManager;
 import me.neznamy.tab.shared.Shared.Feature;
-import me.neznamy.tab.shared.Shared.ServerType;
 
 public class TabCommand{
 
@@ -181,7 +180,7 @@ public class TabCommand{
 		}
 		sendMessage(sender, "§3[TAB] §a§lShowing debug information");
 		sendMessage(sender, "§7§m>-------------------------------<");
-		if (Shared.servertype == ServerType.BUKKIT) sendMessage(sender, "§6PlaceholderAPI: §a" + me.neznamy.tab.bukkit.Placeholders.placeholderAPI);
+		sendMessage(sender, "§6PlaceholderAPI: §a" + Placeholders.placeholderAPI);
 		sendMessage(sender, "§6Found Permission system: §a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.usePrimaryGroup) {
 			sendMessage(sender, "§6Permission group choice logic: §aPrimary group§8/§r§8§mChoose from list");

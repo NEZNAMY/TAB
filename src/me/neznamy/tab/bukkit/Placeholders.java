@@ -32,7 +32,6 @@ import us.myles.ViaVersion.api.Via;
 
 public class Placeholders {
 	
-	public static boolean placeholderAPI;
 	public static Essentials essentials;
 	public static Economy economy;
 	public static Permission perm;
@@ -82,8 +81,8 @@ public class Placeholders {
 			Main.groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
 			deluxeTags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 			viaVersion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
-			me.neznamy.tab.shared.Placeholders.relationalPlaceholders = (placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
-			if (placeholderAPI) PlaceholderAPIExpansion.register();
+			me.neznamy.tab.shared.Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+			if (placeholderAPI()) PlaceholderAPIExpansion.register();
 			essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		} catch (Exception e){
@@ -102,9 +101,9 @@ public class Placeholders {
 				}
 			}
 			s = me.neznamy.tab.shared.Placeholders.setAnimations(s);
-			if (placeholderAPI) s = setPlaceholderAPIPlaceholders(s, p);
+			if (placeholderAPI()) s = setPlaceholderAPIPlaceholders(s, p);
 			s = replaceSimplePlaceholders(s, p);
-			if (placeholderAPI) s = setPlaceholderAPIPlaceholders(s, p);
+			if (placeholderAPI()) s = setPlaceholderAPIPlaceholders(s, p);
 			for (String removed : Configs.removeStrings) {
 				if (s.contains(removed)) {
 					s = s.replace(removed, "");
@@ -224,5 +223,8 @@ public class Placeholders {
 		} else {
 			return noTag;
 		}
+	}
+	public static boolean placeholderAPI() {
+		return me.neznamy.tab.shared.Placeholders.placeholderAPI;
 	}
 }

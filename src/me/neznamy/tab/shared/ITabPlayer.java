@@ -98,7 +98,7 @@ public abstract class ITabPlayer{
 	}
 	public String getTabFormat(ITabPlayer other) {
 		String format = replacedTabFormat;
-		if (Placeholders.relationalPlaceholders) {
+		if (Placeholders.placeholderAPI) {
 			return PlaceholderAPI.setRelationalPlaceholders((Player) player, (Player)other.getPlayer(), format);
 		}
 		return format;
@@ -349,7 +349,7 @@ public abstract class ITabPlayer{
 		for (ITabPlayer all : Shared.getPlayers()) {
 			String replacedPrefix = replaced[0];
 			String replacedSuffix = replaced[1];
-			if (Placeholders.relationalPlaceholders) {
+			if (Placeholders.placeholderAPI) {
 				replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
 				replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
 			}
@@ -363,7 +363,7 @@ public abstract class ITabPlayer{
 		String replacedPrefix = replaced[0];
 		String replacedSuffix = replaced[1];
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (Placeholders.relationalPlaceholders) {
+			if (Placeholders.placeholderAPI) {
 				replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
 				replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
 			}
@@ -376,7 +376,7 @@ public abstract class ITabPlayer{
 		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
 		String replacedPrefix = replaced[0];
 		String replacedSuffix = replaced[1];
-		if (Placeholders.relationalPlaceholders) {
+		if (Placeholders.placeholderAPI) {
 			replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedPrefix);
 			replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedSuffix);
 		}
@@ -432,8 +432,8 @@ public abstract class ITabPlayer{
 			}
 		}
 		if (ScoreboardManager.enabled) {
-			ScoreboardManager.playerQuit(this);
-			ScoreboardManager.playerJoin(this);
+			ScoreboardManager.unregister(this);
+			ScoreboardManager.register(this);
 		}
 	}
 	public void setActiveScoreboard(Scoreboard board) {

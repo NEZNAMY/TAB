@@ -4,12 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.neznamy.tab.shared.Shared.ServerType;
-
 public class Placeholders {
 
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
-	public static boolean relationalPlaceholders;
+	public static boolean placeholderAPI;
 	public static int maxPlayers;
 
 	public static void recalculateOnlineVersions() {
@@ -119,9 +117,7 @@ public class Placeholders {
 		}
 		string = setAnimations(string);
 		if (string.contains("%rank%")) string = string.replace("%rank%", p.getRank());
-		if (Shared.servertype == ServerType.BUKKIT) {
-			string = me.neznamy.tab.bukkit.Placeholders.replace(string, p);
-		}
+		string = Shared.mainClass.setPlaceholders(p, string);
 		if (string.contains("%memory-used%")) string = string.replace("%memory-used%", ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + ""));
 		if (string.contains("%memory-max%")) string = string.replace("%memory-max%", ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"");
 		if (string.contains("%memory-used-gb%")) string = string.replace("%memory-used-gb%", (Shared.round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + ""));
