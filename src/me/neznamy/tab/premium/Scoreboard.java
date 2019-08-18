@@ -13,18 +13,33 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 
 public class Scoreboard {
 
+	private String name;
 	private String title;
+	private boolean permissionRequired;
+	private String childBoard;
 	private HashMap<Integer, Score> scores = new HashMap<Integer, Score>();
 	private ConcurrentHashMap<ITabPlayer, String> players = new ConcurrentHashMap<ITabPlayer, String>();
 	private String objectiveName;
 
-	public Scoreboard(String title, List<String> lines) {
+	public Scoreboard(String name, String title, List<String> lines, boolean permissionRequired, String childBoard) {
+		this.name = name;
 		this.title = title;
+		this.permissionRequired = permissionRequired;
+		this.childBoard = childBoard;
 		objectiveName = Math.random()*1000000+"";
 		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
 		for (int i=0; i<lines.size(); i++) {
 			scores.put(i, new Score("TABSBTM"+i, getLineName(i),  lines.get(i), 0));
 		}
+	}
+	public String getName() {
+		return name;
+	}
+	public boolean isPermissionRequired() {
+		return permissionRequired;
+	}
+	public String getChildScoreboard() {
+		return childBoard;
 	}
 	public String getLineName(int i) {
 		String id = i+"";

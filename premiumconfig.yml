@@ -30,50 +30,56 @@ unlimited-nametag-mode-static-lines:
 ##############################################
 ################# SCOREBOARD #################
 ##############################################
+#Limitations:
+#1.8 - 1.12 clients: scoreboard title 32 characters, lines 30 characters
+#1.13+ clients: no limits
+#maximum 15 lines, client can't display more
 
-#for bungee mode it counts as "server" instead of "world", such as disabled in servers
+#for bungee mode it counts as "server" instead of "world", such as disable in servers
 scoreboard:
   enabled: false
   toggle-command: /sb
   disable-in-worlds: 
     - disabledworld
   #set to NONE to have no default scoreboard
-  default-scoreboard: "MyDefaultScoreboard"
+  default-scoreboard: "scoreboard3"
   refresh-interval-ticks: 1
   per-world:
-    survival: "survival"
+    testworld: "twscoreboard"
   
 scoreboards:
-  MyDefaultScoreboard:
-    title: "&7&l> %animation:ServerName% &7&l<"
+  scoreboard3:
+    #permission is "tab.scoreboard.<scoreboard name>", in this case tab.scoreboard.scoreboard3
+    permission-required: true
+    #if player is missing the permission, display a different scoreboard
+    #if no other should be displayed / permission required is false, delete the line entirely
+    if-permission-missing: scoreboard2
+    title: "Super board"
     lines:
-      - "%animation:MyAnimation1%"
-      - "&7%animation:Welcome%"
-      - "&b%nick%"
-      - ""
-      - "&7Online Players"
-      - "&b%online% &7/ &b%maxplayers%"
-      - ""
-      - "Money"
-      - "&f%money%&a$"
-      - ""
-      - "&7Website"
-      - "%animation:web%"
-      - "&a/sb &fto turn off"
-      - "%animation:MyAnimation1%"
-  survival:
-    title: "&7&l> %animation:ServerName% &7&l<"
+      - "Scoreboard for people with permission"
+      - "tab.scoreboard.scoreboard3"
+  scoreboard2:
+    #here the permission is "tab.scoreboard.scoreboard2"
+    permission-required: true
+    if-permission-missing: scoreboard1
+    title: "Average board"
     lines:
-      - "%animation:MyAnimation1%"
-      - "&7Welcome to"
-      - "&b%world% &7world"
-      - ""
-      - "&7Online Players in world"
-      - "&b%worldonline%"
-      - ""
-      - "Position"
-      - "&b%xPos%&8X &b%yPos%&8Y &b%zPos%&8Z"
-      - "%animation:MyAnimation1%"
+      - "Scoreboard for people with permission"
+      - "tab.scoreboard.scoreboard2"
+      - "AND MISSING tab.scoreboard.scoreboard3"
+  scoreboard1:
+    permission-required: false
+    title: "Default"
+    lines:
+      - "Scoreboard for people with none of"
+      - "tab.scoreboard.scoreboard3 or"
+      - "tab.scoreboard.scoreboard2 "
+      - "permission"
+  twscoreboard:
+    permission-required: false
+    title: "TestWorld"
+    lines:
+      - "This is scoreboard for everyone in testworld world"
 #toggle messages
 scoreboard-on: "&2Scorebord enabled"
 scoreboard-off: "&7Scoreboard disabled"

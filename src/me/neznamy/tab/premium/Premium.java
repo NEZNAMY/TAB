@@ -50,9 +50,11 @@ public class Premium {
 		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "§");
 		if (premiumconfig.get("scoreboards")!= null) 
 			for (String scoreboard : ((Map<String, Object>)premiumconfig.get("scoreboards")).keySet()) {
+				boolean permissionRequired = premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required");
+				String childBoard = premiumconfig.getString("scoreboards." + scoreboard + ".if-permission-missing");
 				String title = premiumconfig.getString("scoreboards." + scoreboard + ".title");
 				List<String> lines = premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
-				ScoreboardManager.scoreboards.put(scoreboard, new Scoreboard(title, lines));
+				ScoreboardManager.scoreboards.put(scoreboard, new Scoreboard(scoreboard, title, lines, permissionRequired, childBoard));
 			}
 	}
 }
