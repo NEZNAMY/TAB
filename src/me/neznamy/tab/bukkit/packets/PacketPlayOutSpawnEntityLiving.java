@@ -217,7 +217,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHER = PacketPlayOutSpawnEntityLiving.getDeclaredField("l")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS = PacketPlayOutSpawnEntityLiving.getDeclaredField("m")).setAccessible(true);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize PacketPlayOutSpawnEntityLiving class", e);
 		}
 	}

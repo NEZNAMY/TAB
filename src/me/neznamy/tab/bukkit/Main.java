@@ -119,7 +119,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.clear();
 			if (Placeholders.expansion != null) PlaceholderAPIExpansion.unregister();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to unload the plugin", e);
 		}
 	}
@@ -151,7 +151,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Exception e1) {
+		} catch (Throwable e1) {
 			Shared.print("§c", "Did not enable. Check errors.txt for more info.");
 			Shared.error("Failed to load plugin", e1);
 			disabled = true;
@@ -165,7 +165,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Player p = e.getPlayer();
 				Shared.data.put(p.getUniqueId(), new TabPlayer(p));
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Shared.error("An error occured when player attempted to join the server", ex);
 		}
 	}
@@ -189,7 +189,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					ScoreboardManager.register(pl);
 				}
 			});
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Shared.error("An error occured when player joined the server", ex);
 		}
 	}
@@ -207,8 +207,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			NameTagLineManager.destroy(disconnectedPlayer);
 			Shared.data.remove(e.getPlayer().getUniqueId());
-		} catch (Exception ex) {
-			Shared.error("An error occured when player left server", ex);
+		} catch (Throwable t) {
+			Shared.error("An error occured when player left server", t);
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -221,7 +221,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			String from = e.getFrom().getName();
 			String to = p.getWorldName();
 			p.onWorldChange(from, to);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Shared.error("An error occured when processing PlayerChangedWorldEvent", ex);
 		}
 	}
@@ -399,7 +399,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		String objective = Configs.config.getString("tablist-objective", "PING");
 		try{
 			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}

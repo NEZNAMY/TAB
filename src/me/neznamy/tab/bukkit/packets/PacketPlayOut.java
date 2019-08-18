@@ -10,7 +10,7 @@ public abstract class PacketPlayOut extends NMSClass{
 	public void send(ITabPlayer to) {
 		try {
 			to.sendPacket(toNMS());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
 		}
 	}

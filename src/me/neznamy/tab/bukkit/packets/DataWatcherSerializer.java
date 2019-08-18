@@ -73,7 +73,7 @@ public class DataWatcherSerializer {
 				BlockPosition = 6;
 				Vector3f = 7;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize DataWatcherSerializer class", e);
 		}
 	}

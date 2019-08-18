@@ -70,7 +70,7 @@ public class TabPlayer extends ITabPlayer{
 			} catch (UnsupportedOperationException e) {
 				// "SuperPerms no group permissions."
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Shared.error("Failed to get permission group of " + getPlayer().getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
 		return null;
@@ -94,7 +94,7 @@ public class TabPlayer extends ITabPlayer{
 			} catch (UnsupportedOperationException e) {
 				// "SuperPerms no group permissions."
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Shared.error("Failed to get permission group of " + getPlayer().getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
 		return null;
@@ -113,7 +113,7 @@ public class TabPlayer extends ITabPlayer{
 			if (Placeholders.economy != null) money = Shared.round(Placeholders.economy.getBalance(getPlayer()));
 			if (money == null) money = "-";
 			return money;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to get money of " + getName(), e);
 			return "-";
 		}
@@ -204,7 +204,7 @@ public class TabPlayer extends ITabPlayer{
 	protected void loadChannel() {
 		try {
 			channel = MethodAPI.getInstance().getChannel((Player) player);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to get channel of " + getName(), e);
 		}
 	}

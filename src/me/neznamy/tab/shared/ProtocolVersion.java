@@ -74,7 +74,7 @@ public enum ProtocolVersion {
 		if (s.equals("1.11.1") || s.equals("1.11.2")) return v1_11_1and2;
 		try {
 			return valueOf("v" + s.replace(".", "_"));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return UNKNOWN.friendlyName(s).minorVersion(Integer.parseInt(s.split("\\.")[1]));
 		}
 	}

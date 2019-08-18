@@ -79,7 +79,7 @@ public class Shared {
 				}
 			}
 			buf.close();
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			print("§c", "An error occured when generating error message");
 			ex.printStackTrace();
 			print("§c", "Original error: " + message);

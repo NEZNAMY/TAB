@@ -56,7 +56,7 @@ public class BossBar{
 		float progress;
 		try {
 			progress = Float.parseFloat(message_progress[1]);
-		} catch(Exception e) {
+		} catch(Throwable e) {
 			progress = 100;
 			Shared.error("Invalid Bossbar progress: " + message_progress[1]);
 		}
@@ -95,7 +95,7 @@ public class BossBar{
 				float progress;
 				try {
 					progress = Float.parseFloat(message_progress[1]);
-				} catch(Exception e) {
+				} catch(Throwable e) {
 					progress = 100;
 					Shared.error("Invalid Bossbar progress: " + message_progress[1]);
 				}
@@ -114,13 +114,13 @@ public class BossBar{
 		public BossBarFrame(String style, String color, String progress, String message) {
 			try {
 				this.color = BarColor.valueOf(color);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				this.color = BarColor.PURPLE;
 				Shared.startupWarn("\"" + color + "\" is not a valid boss bar color!");
 			}
 			try {
 				this.style = BarStyle.valueOf(style);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				this.style = BarStyle.PROGRESS;
 				Shared.startupWarn("\"" + style + "\" is not a valid boss bar style!");
 			}

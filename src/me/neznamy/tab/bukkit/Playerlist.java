@@ -97,7 +97,7 @@ public class Playerlist {
 			try {
 				(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
 				(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				Shared.error("Failed to initialize Playerlist class", e);
 			}
 		}

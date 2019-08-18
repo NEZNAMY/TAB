@@ -29,7 +29,7 @@ public class Premium {
 		String type = premiumconfig.getString("sorting-type", "GROUPS");
 		try{
 			sortingType = SortingType.valueOf(type.toUpperCase());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.startupWarn("\"§e" + type + "§c\" is not a valid type of sorting type. Valid options are: §eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z.");
 			sortingType = SortingType.GROUPS;
 		}

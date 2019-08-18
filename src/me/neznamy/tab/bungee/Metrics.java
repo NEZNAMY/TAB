@@ -83,7 +83,7 @@ public class Metrics {
 
 		try {
 			loadConfig();
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			// Failed to load configuration
 			plugin.getLogger().log(Level.WARNING, "Failed to load bStats config!", e);
 			return;
@@ -107,7 +107,7 @@ public class Metrics {
 			// We aren't the first so we link to the first metrics class
 			try {
 				usedMetricsClass.getMethod("linkMetrics", Object.class).invoke(null, this);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				if (logFailedRequests) {
 					plugin.getLogger().log(Level.WARNING, "Failed to link to first metrics class " + usedMetricsClass.getName() + "!", e);
 				}
@@ -250,7 +250,7 @@ public class Metrics {
 		try {
 			// Send the data
 			sendData(plugin, data);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// Something went wrong! :(
 			if (logFailedRequests) {
 				plugin.getLogger().log(Level.WARNING, "Could not submit plugin stats!", e);
@@ -310,7 +310,7 @@ public class Metrics {
 			}
 			writeFile(tempFile, getClass().getName());
 			return getClass();
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			if (logFailedRequests) {
 				plugin.getLogger().log(Level.WARNING, "Failed to get first bStats class!", e);
 			}
@@ -334,7 +334,7 @@ public class Metrics {
 			FileReader fileReader = new FileReader(file);
 			bufferedReader = new BufferedReader(fileReader);
 			return bufferedReader.readLine();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return null;
 		} finally {
 			if (bufferedReader != null) bufferedReader.close();
@@ -360,7 +360,7 @@ public class Metrics {
 				bufferedWriter.newLine();
 			}
 			bufferedWriter.close();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			
 		}
 	}

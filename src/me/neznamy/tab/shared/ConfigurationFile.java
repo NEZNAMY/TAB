@@ -62,7 +62,7 @@ public class ConfigurationFile{
 				return defaultValue;
 			}
 			return value;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			if (defaultValue != null) set(path, defaultValue);
 			return defaultValue;
 		}
@@ -131,7 +131,7 @@ public class ConfigurationFile{
 			Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 			yaml.dump(values, writer);
 			writer.close();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to save yaml file " + file.getPath(), e);
 		}
 	}

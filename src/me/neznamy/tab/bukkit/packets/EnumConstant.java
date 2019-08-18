@@ -102,7 +102,7 @@ public class EnumConstant {
 				try{
 					//1.8.R1, 1.10+
 					EnumGamemode = NMSClass.get("EnumGamemode");
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					//1.8.R2, 1.8.R3, 1.9.R1, 1.9.R2
 					EnumGamemode = NMSClass.get("WorldSettings$EnumGamemode");
 				}
@@ -118,7 +118,7 @@ public class EnumConstant {
 					//1.8.R1
 					EnumScoreboardHealthDisplay = NMSClass.get("EnumScoreboardHealthDisplay");
 					EnumPlayerInfoAction = NMSClass.get("EnumPlayerInfoAction");
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					EnumScoreboardHealthDisplay = NMSClass.get("IScoreboardCriteria$EnumScoreboardHealthDisplay");
 					EnumPlayerInfoAction = NMSClass.get("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 				}
@@ -138,7 +138,7 @@ public class EnumConstant {
 				} else {
 					try {
 						PacketPlayOutScoreboardScore_Action = NMSClass.get("EnumScoreboardAction");
-					} catch (Exception e) {
+					} catch (Throwable e) {
 						PacketPlayOutScoreboardScore_Action = NMSClass.get("PacketPlayOutScoreboardScore$EnumScoreboardAction");
 					}
 				}
@@ -177,7 +177,7 @@ public class EnumConstant {
 					ChatMessageType_since_1_12_R1_GAME_INFO = ChatMessageType.getDeclaredField("GAME_INFO").get(null);
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize EnumConstant class", e);
 		}
 	}

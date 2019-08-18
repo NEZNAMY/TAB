@@ -135,7 +135,7 @@ public class DataWatcher{
 					(Item_VALUE = Item.getDeclaredField("c")).setAccessible(true);
 					(Item_NEEDSUPDATE = Item.getDeclaredField("d")).setAccessible(true);
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				Shared.error("Failed to initialize DataWatcherItem class", e);
 			}
 		}
@@ -184,7 +184,7 @@ public class DataWatcher{
 						//1.14.4+
 						(DataWatcher_ENTITY = DataWatcher.getDeclaredField("entity")).setAccessible(true);
 						(DataWatcher_DATAVALUES = DataWatcher.getDeclaredField("entries")).setAccessible(true);
-					} catch (Exception e) {
+					} catch (Throwable e) {
 						//1.14.3-
 						(DataWatcher_ENTITY = DataWatcher.getDeclaredField("c")).setAccessible(true);
 						(DataWatcher_DATAVALUES = DataWatcher.getDeclaredField("d")).setAccessible(true);
@@ -200,7 +200,7 @@ public class DataWatcher{
 				(DataWatcher_ENTITY = DataWatcher.getDeclaredField("a")).setAccessible(true);
 				(DataWatcher_DATAVALUES = DataWatcher.getDeclaredField("dataValues")).setAccessible(true);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize DataWatcher class", e);
 		}
 	}

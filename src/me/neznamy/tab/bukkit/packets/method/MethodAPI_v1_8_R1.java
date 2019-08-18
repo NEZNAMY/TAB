@@ -51,7 +51,7 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 	static {
 		try {
 			(NetworkManager_CHANNEL = NetworkManager.class.getDeclaredField("i")).setAccessible(true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize MethodAPI_v1_8_R1 class", e);
 		}
 	}

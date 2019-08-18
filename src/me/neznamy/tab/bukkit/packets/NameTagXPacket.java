@@ -100,7 +100,7 @@ public class NameTagXPacket {
 				(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutMount_PASSENGERS = PacketPlayOutMount.getDeclaredField("b")).setAccessible(true);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize NameTagXPacket class", e);
 		}
 	}

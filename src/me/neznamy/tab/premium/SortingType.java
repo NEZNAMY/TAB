@@ -35,7 +35,7 @@ public enum SortingType {
 			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
 			try {
 				Long.parseLong(teamName);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			while (teamName.length() < 10) teamName = "0" + teamName;
@@ -45,7 +45,7 @@ public enum SortingType {
 			try {
 				long value = Long.parseLong(teamName);
 				teamName = (9999999999L-value)+"";
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			break;

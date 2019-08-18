@@ -114,7 +114,7 @@ public class Scoreboard {
 				} else {
 					return Lists.newArrayList(replaced, "");
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 				return Lists.newArrayList("", "");
 			}

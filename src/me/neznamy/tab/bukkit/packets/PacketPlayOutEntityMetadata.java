@@ -62,7 +62,7 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 			PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
 			(PacketPlayOutEntityMetadata_ENTITYID = PacketPlayOutEntityMetadata.getDeclaredField("a")).setAccessible(true);
 			(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize PacketPlayOutEntityMetadata class", e);
 		}
 	}

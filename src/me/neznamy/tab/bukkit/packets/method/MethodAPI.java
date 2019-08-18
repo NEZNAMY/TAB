@@ -38,10 +38,10 @@ public abstract class MethodAPI {
 			try {
 				Class.forName("org.spigotmc.SpigotConfig");
 				spigot = true;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				spigot = false;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize MethodAPI class", e);
 		}
 	}

@@ -60,7 +60,7 @@ public class Placeholders {
 				version = ProtocolSupportAPI.getProtocolVersion((Player) p.getPlayer()).getId();
 				if (version > 0) return ProtocolVersion.fromNumber(version);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when getting version of " + p.getName(), e);
 		}
 		return ProtocolVersion.SERVER_VERSION;
@@ -85,7 +85,7 @@ public class Placeholders {
 			if (placeholderAPI()) PlaceholderAPIExpansion.register();
 			essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
-		} catch (Exception e){
+		} catch (Throwable e){
 			Shared.error("An error occured when initializing placeholders:", e);
 		}
 	}
@@ -112,7 +112,7 @@ public class Placeholders {
 					s = s.replace(removed.replace("&", "§"), ""); //much more likely to actually match
 				}
 			}
-		} catch (Exception e){
+		} catch (Throwable e){
 			Shared.error("An error occured when setting placeholders(1) (player: " + p.getName() + ")", e);
 		}
 		return s;
@@ -165,7 +165,7 @@ public class Placeholders {
 			if (s.contains("%displayname%")) s = s.replace("%displayname%", ((Player) p.getPlayer()).getDisplayName());
 			if (s.contains("%deaths%")) s = s.replace("%deaths%", ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"");
 			if (s.contains("%essentialsnick%")) s = s.replace("%essentialsnick%", p.getNickname());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when setting placeholders(2) (player=" + p.getName() + ", online="+((Player) p.getPlayer()).isOnline()+")", e);
 		}
 		return s;
@@ -179,7 +179,7 @@ public class Placeholders {
 			}
 			if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) return xAntiAFKAPI.isAfk((Player) p.getPlayer());
 			return (essentials != null && essentials.getUser(p.getUniqueId()) != null && essentials.getUser(p.getUniqueId()).isAfk());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when getting AFK status of " + p.getName(), e);
 			return false;
 		}
@@ -190,11 +190,11 @@ public class Placeholders {
 				try {
 					Class.forName("com.massivecraft.factions.FPlayers");
 					factionsType = "UUID";
-				} catch (Exception e) {}
+				} catch (Throwable e) {}
 				try {
 					Class.forName("com.massivecraft.factions.entity.MPlayer");
 					factionsType = "MCore";
-				} catch (Exception e) {}
+				} catch (Throwable e) {}
 				factionsInitialized = true;
 			}
 			String name = null;
@@ -208,7 +208,7 @@ public class Placeholders {
 		} catch (IllegalStateException e) {
 			Shared.error("An error occured when getting faction of a player, was server just /reloaded ?", e);
 			return noFaction;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when getting faction of " + p.getName(), e);
 			return noFaction;
 		}

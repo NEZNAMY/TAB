@@ -90,7 +90,7 @@ public class TabObjective{
 		String replaced = Placeholders.replace(customValue, p);
 		try {
 			return Integer.parseInt(replaced);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Value \"" + replaced + "\" is not a valid number for tablist objective! Did you forget to download an expansion ?");
 			return 0;
 		}

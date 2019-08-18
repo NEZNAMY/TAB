@@ -105,7 +105,7 @@ public class TabPlayer extends ITabPlayer{
 			Field wrapperField = InitialHandler.class.getDeclaredField("ch");
 			wrapperField.setAccessible(true);
 			channel = ((ChannelWrapper) wrapperField.get(getPlayer().getPendingConnection())).getHandle();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to get channel of " + getName(), e);
 		}
 	}

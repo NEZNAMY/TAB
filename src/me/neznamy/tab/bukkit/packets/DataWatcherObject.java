@@ -47,7 +47,7 @@ public class DataWatcherObject{
 				(DataWatcherObject_POSITION = DataWatcherObject.getDeclaredField("a")).setAccessible(true);
 				(DataWatcherObject_CLASSTYPE = DataWatcherObject.getDeclaredField("b")).setAccessible(true);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize DataWatcherObject class", e);
 		}
 	}

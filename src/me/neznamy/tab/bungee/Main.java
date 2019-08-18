@@ -87,7 +87,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			ScoreboardManager.unload();
 			Shared.data.clear();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to unload the plugin", e);
 		}
 	}
@@ -113,7 +113,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Exception e1) {
+		} catch (Throwable e1) {
 			Shared.print("§c", "Did not enable.");
 			disabled = true;
 		}
@@ -148,11 +148,7 @@ public class Main extends Plugin implements Listener, MainClass{
 /*				Shared.runTask("processing join", Feature.OTHER, new Runnable() {
 
 					public void run() {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
+						Thread.sleep(1000);
 						NameTag16.playerJoin(pl);
 					}				
 				});*/
@@ -163,7 +159,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				p.onWorldChange(from, to);
 			}
 			
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			Shared.error("An error occured when player joined/changed server", ex);
 		}
 	}
@@ -191,7 +187,7 @@ public class Main extends Plugin implements Listener, MainClass{
 					if (packet instanceof Team && NameTag16.enable) {
 						if (!player.disabledNametag && killPacket(packet)) return;
 					}
-				} catch (Exception e){
+				} catch (Throwable e){
 					Shared.error("An error occured when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);

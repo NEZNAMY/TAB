@@ -185,7 +185,7 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 			(PlayerInfoData_GAMEMODE = _PlayerInfoData.getDeclaredField("c")).setAccessible(true);
 			(PlayerInfoData_PROFILE = _PlayerInfoData.getDeclaredField("d")).setAccessible(true);
 			(PlayerInfoData_LISTNAME = _PlayerInfoData.getDeclaredField("e")).setAccessible(true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize PacketPlayOutPlayerInfo class", e);
 		}
 	}

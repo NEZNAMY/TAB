@@ -178,7 +178,7 @@ public class NameTagX implements Listener{
 					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("An error occured when processing packetOUT:", e);
 		}
 	}

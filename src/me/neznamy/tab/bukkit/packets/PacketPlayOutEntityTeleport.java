@@ -78,7 +78,7 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut{
 			(PacketPlayOutEntityTeleport_YAW = PacketPlayOutEntityTeleport.getDeclaredField("e")).setAccessible(true);
 			(PacketPlayOutEntityTeleport_PITCH = PacketPlayOutEntityTeleport.getDeclaredField("f")).setAccessible(true);
 			(PacketPlayOutEntityTeleport_ONGROUND = PacketPlayOutEntityTeleport.getDeclaredField("g")).setAccessible(true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.error("Failed to initialize PacketPlayOutEntityTeleport class", e);
 		}
 	}

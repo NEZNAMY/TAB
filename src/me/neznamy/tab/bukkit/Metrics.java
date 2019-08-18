@@ -293,7 +293,7 @@ public class Metrics {
 				try {
 					// Send the data
 					sendData(plugin, data);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					// Something went wrong! :(
 					if (logFailedRequests) {
 						plugin.getLogger().log(Level.WARNING, "Could not submit plugin stats of " + plugin.getName(), e);
