@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.bukkit.unlimitedtags.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.ITabPlayer;

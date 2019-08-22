@@ -1,4 +1,4 @@
-package me.neznamy.tab.bukkit;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.bukkit.packets.NameTagXPacket;
-import me.neznamy.tab.bukkit.packets.NameTagXPacket.PacketType;
+import me.neznamy.tab.bukkit.Main;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -53,13 +53,11 @@ public class NameTagX implements Listener{
 			}
 		}
 		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", Feature.NAMETAG, new Runnable() {
-
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
 		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAGX, new Runnable() {
-
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
 			}
@@ -93,7 +91,6 @@ public class NameTagX implements Listener{
 			}
 		});
 	}
-	@SuppressWarnings("deprecation")
 	public static void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
 		try {
 			boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;

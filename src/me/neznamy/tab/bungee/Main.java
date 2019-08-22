@@ -1,5 +1,6 @@
 package me.neznamy.tab.bungee;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
@@ -7,19 +8,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.BossBar;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ConfigurationFile;
-import me.neznamy.tab.shared.HeaderFooter;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.MainClass;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.Placeholders;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.Shared.ServerType;
-import me.neznamy.tab.shared.TabCommand;
-import me.neznamy.tab.shared.TabObjective;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
@@ -48,8 +37,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		long time = System.currentTimeMillis();
 		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.UNKNOWN;
-		Shared.init(this, ServerType.BUNGEE, getDescription().getVersion());
-		Placeholders.maxPlayers = ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
+		Shared.init(this, getDescription().getVersion());
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 
@@ -96,6 +84,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			disabled = false;
 			long time = System.currentTimeMillis();
 			Configs.loadFiles();
+			registerPlaceholders();
 			Shared.data.clear();
 			for (ProxiedPlayer p : getProxy().getPlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -182,7 +171,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
-						if (!player.disabledTablistNames) Playerlist.modifyPacket((PlayerListItem) packet, player);
+						Playerlist.modifyPacket((PlayerListItem) packet, player);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
 						if (!player.disabledNametag && killPacket(packet)) return;
@@ -221,7 +210,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		load(true, false);
 		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
-	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception {
+	public boolean killPacket(Object packetPlayOutScoreboardTeam){
 		if (((Team) packetPlayOutScoreboardTeam).getFriendlyFire() != 69) {
 			String[] players = ((Team) packetPlayOutScoreboardTeam).getPlayers();
 			if (players == null) return false;
@@ -238,22 +227,32 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml");
-		TabObjective.customValue = Configs.config.getString("tablist-objective-value", "%ping%");
-		TabObjective.type = (TabObjective.customValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
+		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
+		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 	}
-	public String setPlaceholders(ITabPlayer p, String text) {
-		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			if (text.contains(server.getKey())) text = text.replace("%online_" + server.getKey() + "%", server.getValue().getPlayers().size()+"");
-		}
-		return text;
-	}
 	public void loadBossbar() throws Exception {
 		Configs.bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");
 		BossBar.refresh = Configs.bossbar.getInt("refresh-interval", 1000);
+	}
+	public static void registerPlaceholders() {
+		Placeholders.list = new ArrayList<Placeholder>();
+		Shared.registerUniversalPlaceholders();
+		Placeholders.list.add(new Placeholder("%maxplayers%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"");
+			}
+		});
+		for (final Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
+			Placeholders.list.add(new Placeholder("%online_" + server.getKey() + "%") {
+				public String set(String string, ITabPlayer p) {
+					return string.replace(identifier, server.getValue().getPlayers().size()+"");
+				}
+			});
+		}
 	}
 }

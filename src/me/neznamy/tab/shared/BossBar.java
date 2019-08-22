@@ -52,15 +52,16 @@ public class BossBar{
 	}
 	public static void sendBar(ITabPlayer p, BossBarLine l) {
 		if (!p.bossbarVisible || p.disabledBossbar) return;
-		String[] message_progress = Placeholders.replaceMultiple(p, l.getCurrentFrame().getMessage(), l.getCurrentFrame().getProgress());
+		String message = Placeholders.replaceAllPlaceholders(l.getCurrentFrame().getMessage(), p); //TODO
+		String progress0 = Placeholders.replaceAllPlaceholders(l.getCurrentFrame().getProgress(), p);
 		float progress;
 		try {
-			progress = Float.parseFloat(message_progress[1]);
+			progress = Float.parseFloat(progress0);
 		} catch(Throwable e) {
 			progress = 100;
-			Shared.error("Invalid Bossbar progress: " + message_progress[1]);
+			Shared.error("Invalid Bossbar progress: " + progress0);
 		}
-		PacketAPI.sendBossBar(p, l.getBossBar(), (float)progress/100, message_progress[0]);
+		PacketAPI.sendBossBar(p, l.getBossBar(), (float)progress/100, message);
 	}
 	public static class BossBarLine{
 		
@@ -91,15 +92,16 @@ public class BossBar{
 			BossBarFrame f = getCurrentFrame();
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all.disabledBossbar) continue;
-				String[] message_progress = Placeholders.replaceMultiple(all, f.getMessage(), f.getProgress());
+				String message = Placeholders.replaceAllPlaceholders(f.getMessage(), all);
+				String progress0 = Placeholders.replaceAllPlaceholders(f.getProgress(), all);
 				float progress;
 				try {
-					progress = Float.parseFloat(message_progress[1]);
+					progress = Float.parseFloat(progress0);
 				} catch(Throwable e) {
 					progress = 100;
-					Shared.error("Invalid Bossbar progress: " + message_progress[1]);
+					Shared.error("Invalid Bossbar progress: " + progress0);
 				}
-				PacketAPI.updateBossBar(all, bossBar, f.getColor(), f.getStyle(), (float)progress/100, message_progress[0]);
+				PacketAPI.updateBossBar(all, bossBar, f.getColor(), f.getStyle(), (float)progress/100, message);
 			}
 		}
 	}

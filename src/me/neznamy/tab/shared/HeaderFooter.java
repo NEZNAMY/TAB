@@ -27,12 +27,8 @@ public class HeaderFooter {
 	}
 	public static void refreshHeaderFooter(ITabPlayer p) {
 		if (p.disabledHeaderFooter) return;
-		String[] hf = Placeholders.replaceMultiple(p, p.getRawHeader(), p.getRawFooter());
-		String header = hf[0];
-		String footer = hf[1];
-		if (header.equals(p.getLastHeader()) && footer.equals(p.getLastFooter())) return;
-		new PacketPlayOutPlayerListHeaderFooter(header, footer).send(p);
-		p.setLastHeader(header);
-		p.setLastFooter(footer);
+		if (p.getProperty("header").isUpdateNeeded() || p.getProperty("footer").isUpdateNeeded()) {
+			new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").get(), p.getProperty("footer").get()).send(p);
+		}
 	}
 }

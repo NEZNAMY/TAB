@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -15,12 +16,17 @@ import com.github.cheesesoftware.PowerfulPermsAPI.Group;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import us.myles.ViaVersion.api.Via;
 
 @SuppressWarnings("deprecation")
 public class TabPlayer extends ITabPlayer{
@@ -33,7 +39,19 @@ public class TabPlayer extends ITabPlayer{
 		super(p);
 	}
 	public void onJoin() throws Exception {
-		version = Placeholders.getVersion(this);
+		this.version = ProtocolVersion.SERVER_VERSION;
+		try {
+			int version;
+			if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")){
+				version = Via.getAPI().getPlayerVersion(getUniqueId());
+				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
+			} else if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
+				version = ProtocolSupportAPI.getProtocolVersion(getPlayer()).getId();
+				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
+			}
+		} catch (Throwable e) {
+			Shared.error("An error occured when getting version of " + getName(), e);
+		}
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
 		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());
@@ -66,7 +84,7 @@ public class TabPlayer extends ITabPlayer{
 			if (Main.groupManager != null) return Main.groupManager.getWorldsHolder().getWorldPermissions(getPlayer()).getGroup(getName());
 			if (Main.powerfulPerms != null) return Main.powerfulPerms.getPermissionManager().getPermissionPlayer(getPlayer().getUniqueId()).getPrimaryGroup().getName();
 			try {
-				if (Placeholders.perm != null) return Placeholders.perm.getPrimaryGroup(getPlayer());
+				if (Main.perm != null) return Main.perm.getPrimaryGroup(getPlayer());
 			} catch (UnsupportedOperationException e) {
 				// "SuperPerms no group permissions."
 			}
@@ -90,7 +108,7 @@ public class TabPlayer extends ITabPlayer{
 				return groups.toArray(new String[0]);
 			}
 			try {
-				if (Placeholders.perm != null) return Placeholders.perm.getPlayerGroups(getPlayer());
+				if (Main.perm != null) return Main.perm.getPlayerGroups(getPlayer());
 			} catch (UnsupportedOperationException e) {
 				// "SuperPerms no group permissions."
 			}
@@ -109,8 +127,8 @@ public class TabPlayer extends ITabPlayer{
 	private String refreshMoney() {
 		try {
 			String money = null;
-			if (Placeholders.essentials != null) money = Shared.round(Economy.getMoneyExact(getName()).doubleValue());
-			if (Placeholders.economy != null) money = Shared.round(Placeholders.economy.getBalance(getPlayer()));
+			if (Main.essentials != null) money = Shared.round(Economy.getMoneyExact(getName()).doubleValue());
+			if (Main.economy != null) money = Shared.round(Main.economy.getBalance(getPlayer()));
 			if (money == null) money = "-";
 			return money;
 		} catch (Throwable e) {
@@ -129,8 +147,8 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public String getNickname() {
 		String name = null;
-		if (Placeholders.essentials != null && Placeholders.essentials.getUser(getPlayer()) != null) {
-			name = Placeholders.essentials.getUser(getPlayer()).getNickname();
+		if (Main.essentials != null && Main.essentials.getUser(getPlayer()) != null) {
+			name = Main.essentials.getUser(getPlayer()).getNickname();
 		}
 		if (name == null || name.length() == 0) name = getName();
 		return name;
@@ -152,13 +170,13 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void loadArmorStands() {
 		float height = -0.22F;
-		for (Object line : Premium.dynamicLines) {
-			String value = getActiveProperty(line);
+		for (String line : Premium.dynamicLines) {
+			String value = getProperty(line).getRaw();
 			if (value == null || value.length() == 0) continue;
 			NameTagLineManager.bindLine(this, value, height+=0.22F, line+"");
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
-			String value = getActiveProperty(line.getKey());
+			String value = getProperty(line.getKey()).getRaw();
 			if (value == null || value.length() == 0) continue;
 			NameTagLineManager.bindLine(this, value, Double.parseDouble(line.getValue()+""), line.getKey());
 		}
@@ -189,7 +207,7 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		try {
 			MethodAPI.getInstance().sendPacket(getPlayer(), nmsPacket);
-//			System.out.println(getName() + " - " + nmsPacket.getClass().getSimpleName());
+			System.out.println(getName() + " - " + nmsPacket.getClass().getSimpleName());
 		} catch (NullPointerException e) {
 			queuedPackets.add(nmsPacket);
 		}
@@ -207,5 +225,8 @@ public class TabPlayer extends ITabPlayer{
 		} catch (Throwable e) {
 			Shared.error("Failed to get channel of " + getName(), e);
 		}
+	}
+	public boolean hasInvisibility() {
+		return getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
 }

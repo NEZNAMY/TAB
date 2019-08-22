@@ -1,14 +1,19 @@
 package me.neznamy.tab.shared;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Placeholders {
 
+	public static List<Placeholder> list;
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 	public static boolean placeholderAPI;
-	public static int maxPlayers;
 
 	public static void recalculateOnlineVersions() {
 		online.put("1-14-x", 0);
@@ -37,24 +42,6 @@ public class Placeholders {
 			else if (version <= 498) online.put("1-14-x", online.get("1-14-x")+1);
 			else online.put("1-14-x", online.get("1-14-x")+1); //current newest one
 		}
-	}
-
-	public static String getTime() {
-		return new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
-	}
-	public static String getDate() {
-		return new SimpleDateFormat(Configs.dateFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
-	}
-	public static String setAnimations(String s) {
-		if (s.contains("animat")) {
-			for (Animation a : Configs.animations) {
-				s = s.replace("%animated-object:" + a.getName() + "%", a.getMessage());
-				s = s.replace("%animation:" + a.getName() + "%", a.getMessage());
-				s = s.replace("{animated-object:" + a.getName() + "}", a.getMessage());
-				s = s.replace("{animation:" + a.getName() + "}", a.getMessage());
-			}
-		}
-		return s;
 	}
 	//code taken from bukkit, so it can work on bungee too
 	public static String color(String textToTranslate){
@@ -86,66 +73,30 @@ public class Placeholders {
 		}
 		return result;
 	}
-	public static String[] replaceMultiple(ITabPlayer p, String... args) {
-		String string = "";
-		int i = 0;
-		while (i < args.length) {
-			if (i>0) {
-				string += "@@@###@@@";
-			}
-			string += "|||@@@|||" + args[i];
-			++i;
+	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
+		for (Placeholder pl : list) {
+			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
 		}
-		string = replace(string, p);
-		String[] arr = string.split("@@@###@@@");
-		for (int j=0; j<arr.length; j++) {
-			arr[j] = arr[j].replace("|||@@@|||", "");
+		string = setPlaceholderAPIPlaceholders(string, p);
+		string = color(string);
+		for (String removed : Configs.removeStrings) {
+			string = string.replace(removed, "");
 		}
-		return arr;
+		return string;
 	}
-	public static String replace(String string, ITabPlayer p) {
-		if (!string.contains("%") && !string.contains("{")) {
-			for (String removed : Configs.removeStrings) {
-				if (string.contains(removed)) {
-					string = string.replace(removed, "");
-				}
-				if (string.contains(removed.replace("&", "§"))) {
-					string = string.replace(removed.replace("&", "§"), ""); //much more likely to actually match
-				}
-			}
-			return color(string);
+	public static String setPlaceholderAPIPlaceholders(String s, ITabPlayer p) {
+		try {
+			if (!placeholderAPI) return s;
+			return PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), s);
+		} catch (Throwable t) {
+			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+			if (papi != null) {
+				Shared.error("PlaceholderAPI replace task failed.");
+				Shared.error("PlaceholderAPI version: " + papi.getDescription().getVersion());
+				Shared.error("String to parse: " + s);
+				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", t);
+			} //else now we know why it failed
 		}
-		string = setAnimations(string);
-		if (string.contains("%rank%")) string = string.replace("%rank%", p.getRank());
-		string = Shared.mainClass.setPlaceholders(p, string);
-		if (string.contains("%memory-used%")) string = string.replace("%memory-used%", ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + ""));
-		if (string.contains("%memory-max%")) string = string.replace("%memory-max%", ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"");
-		if (string.contains("%memory-used-gb%")) string = string.replace("%memory-used-gb%", (Shared.round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + ""));
-		if (string.contains("%memory-max-gb%")) string = string.replace("%memory-max-gb%", (Shared.round((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"");
-		if (string.contains("%nick%")) string = string.replace("%nick%", p.getName());
-		if (string.contains("%time%")) string = string.replace("%time%", getTime());
-		if (string.contains("%date%")) string = string.replace("%date%", getDate());
-		if (string.contains("%IP%")) string = string.replace("%IP%", p.getIPAddress());
-		if (string.contains("%ip%")) string = string.replace("%ip%", p.getIPAddress());
-		if (string.contains("%maxplayers%")) string = string.replace("%maxplayers%", maxPlayers+"");
-		if (string.contains("%online%")) string = string.replace("%online%", Shared.getPlayers().size()+"");
-		if (string.contains("%ping%")) string = string.replace("%ping%", p.getPing()+"");
-		if (string.contains("%player-version%")) string = string.replace("%player-version%", p.getVersion().getFriendlyName());
-		if (string.contains("%"+Shared.mainClass.getSeparatorType()+"%")) string = string.replace("%"+Shared.mainClass.getSeparatorType()+"%", p.getWorldName());
-		if (string.contains("%"+Shared.mainClass.getSeparatorType()+"online%")){
-			int var = 0;
-			for (ITabPlayer all : Shared.getPlayers()){
-				if (p.getWorldName().equals(all.getWorldName())) var++;
-			}
-			string = string.replace("%"+Shared.mainClass.getSeparatorType()+"online%", var+"");
-		}
-		if (string.contains("%staffonline%")){
-			int var = 0;
-			for (ITabPlayer all : Shared.getPlayers()){
-				if (all.isStaff()) var++;
-			}
-			string = string.replace("%staffonline%", var+"");
-		}
-		return color(string);
+		return s;
 	}
 }

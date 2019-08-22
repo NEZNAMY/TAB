@@ -5,30 +5,42 @@ import java.util.concurrent.Callable;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 
+import com.earth2me.essentials.Essentials;
 import com.github.cheesesoftware.PowerfulPermsAPI.PowerfulPermsPlugin;
 import com.google.common.collect.Lists;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.entity.MPlayer;
+
+import ch.soolz.xantiafk.xAntiAFKAPI;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.bukkit.Placeholders;
+import me.clip.deluxetags.DeluxeTag;
 import me.neznamy.tab.bukkit.packets.*;
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagX;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagXPacket;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.TabObjective.*;
 import me.neznamy.tab.shared.Shared.Feature;
-import me.neznamy.tab.shared.Shared.ServerType;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
@@ -38,6 +50,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static boolean pex;
 	public static Main instance;
 	public static boolean disabled = false;
+	public static Essentials essentials;
+	public static Economy economy;
+	public static Permission perm;
+	public static PlaceholderAPIExpansion expansion;
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
@@ -45,8 +61,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (ProtocolVersion.SERVER_VERSION.isSupported()){
 			long total = System.currentTimeMillis();
 			instance = this;
-			Shared.init(this, ServerType.BUKKIT, getDescription().getVersion());
-			me.neznamy.tab.shared.Placeholders.maxPlayers = Bukkit.getMaxPlayers();
+			Shared.init(this, getDescription().getVersion());
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
@@ -63,7 +78,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
 				public String call() throws Exception {
-					return Placeholders.placeholderAPI() ? "Yes" : "No";
+					return Placeholders.placeholderAPI ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
@@ -74,9 +89,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
 				public String call() throws Exception {
-					if (Placeholders.viaVersion && Placeholders.protocolSupport) return "ViaVersion + ProtocolSupport";
-					if (Placeholders.viaVersion) return "ViaVersion";
-					if (Placeholders.protocolSupport) return "ProtocolSupport";
+					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ViaVersion + ProtocolSupport";
+					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) return "ViaVersion";
+					if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ProtocolSupport";
 					return "None";
 				}
 			}));
@@ -117,7 +132,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			BossBar.unload();
 			ScoreboardManager.unload();
 			Shared.data.clear();
-			if (Placeholders.expansion != null) PlaceholderAPIExpansion.unregister();
+			if (expansion != null) PlaceholderAPIExpansion.unregister();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			Shared.error("Failed to unload the plugin", e);
@@ -129,7 +144,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			disabled = false;
 			Shared.startupWarns = 0;
 			Configs.loadFiles();
-			Placeholders.initialize();
+			registerPlaceholders();
 			Shared.data.clear();
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -138,7 +153,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				t.onJoin();
 			}
 			for (ITabPlayer p : Shared.getPlayers()) p.updatePlayerListName(false);
-			me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
+			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
 			BossBar1_8.load();
 			NameTagX.load();
@@ -180,7 +195,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
-					me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
+					Placeholders.recalculateOnlineVersions();
 					HeaderFooter.playerJoin(pl);
 					TabObjective.playerJoin(pl);
 					NameTag16.playerJoin(pl);
@@ -198,7 +213,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			if (disabled) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-			me.neznamy.tab.shared.Placeholders.recalculateOnlineVersions();
+			Placeholders.recalculateOnlineVersions();
 			NameTag16.playerQuit(disconnectedPlayer);
 			NameTagX.playerQuit(disconnectedPlayer);
 			ScoreboardManager.unregister(disconnectedPlayer);
@@ -261,7 +276,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 						Shared.cpu(Feature.NAMETAG, System.nanoTime()-time);
-						
+
 						if (NameTagX.enable && !player.disabledNametag) {
 							time = System.nanoTime();
 							NameTagXPacket pack = null;
@@ -276,7 +291,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 							Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
 						}
-						
+
 						time = System.nanoTime();
 						PacketPlayOut p = null;
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
@@ -349,7 +364,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (groupManager != null) return "GroupManager";
 		if (luckPerms) return "LuckPerms";
 		if (powerfulPerms != null) return "PowerfulPerms";
-		if (Placeholders.perm != null) return Placeholders.perm.getName() + " (detected by Vault)";
+		if (perm != null) return perm.getName() + " (detected by Vault)";
 		return "Unknown/None";
 	}
 	public String getSeparatorType() {
@@ -403,14 +418,20 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
-		TabObjective.customValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
-		Placeholders.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
-		Placeholders.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
-		Placeholders.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
-		Placeholders.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
-		Placeholders.noAfk = Configs.config.getString("placeholders.afk-no", "");
-		Placeholders.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
+		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
+		if (TabObjective.type == TabObjectiveType.PING) TabObjective.rawValue = "%ping%";
+		if (TabObjective.type == TabObjectiveType.HEARTS) TabObjective.rawValue = "%health%";
+		Configs.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
+		Configs.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
+		Configs.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
+		Configs.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
+		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
+		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
+		List<String> remove = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
+		Configs.removeStrings = new ArrayList<String>();
+		for (String s : remove) {
+			Configs.removeStrings.add(s.replace("&", "§"));
+		}
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml");
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
@@ -421,11 +442,203 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
 	}
-	public String setPlaceholders(ITabPlayer p, String text) {
-		return Placeholders.replace(text, p);
-	}
 	public void loadBossbar() throws Exception {
 		Configs.bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");
 		BossBar.refresh = (Configs.bossbar.getInt("refresh-interval", 20)*50);
+	}
+	public static void registerPlaceholders() {
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
+			RegisteredServiceProvider<Economy> rsp1 = Bukkit.getServicesManager().getRegistration(Economy.class);
+			if (rsp1 != null) Main.economy = rsp1.getProvider();
+			RegisteredServiceProvider<Permission> rsp2 = Bukkit.getServicesManager().getRegistration(Permission.class);
+			if (rsp2 != null) Main.perm = rsp2.getProvider();
+		}
+		Main.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
+		Main.powerfulPerms = (PowerfulPermsPlugin) Bukkit.getPluginManager().getPlugin("PowerfulPerms");
+		Main.groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
+		Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+		if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.register();
+		Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
+		
+		Placeholders.list = new ArrayList<Placeholder>();
+		
+		Shared.registerUniversalPlaceholders();
+		
+		Placeholders.list.add(new Placeholder("%xPos%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ((Player) p.getPlayer()).getLocation().getBlockX()+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%yPos%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ((Player) p.getPlayer()).getLocation().getBlockY()+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%zPos%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ((Player) p.getPlayer()).getLocation().getBlockZ()+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%displayname%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ((Player) p.getPlayer()).getDisplayName());
+			}
+		});
+		Placeholders.list.add(new Placeholder("%deaths%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%essentialsnick%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, p.getNickname());
+			}
+		});
+		Placeholders.list.add(new Placeholder("%money%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, p.getMoney());
+			}
+		});
+		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
+			Placeholders.list.add(new Placeholder("%deluxetag%") {
+				public String set(String string, ITabPlayer p) {
+					String tag = DeluxeTag.getPlayerDisplayTag((Player) p.getPlayer());
+					if (tag == null || tag.equals("")) {
+						return string.replace(identifier, Configs.noTag);
+					}
+					return string.replace(identifier, Configs.yesTag.replace("%value%", tag));
+				}
+			});
+		}
+		Placeholders.list.add(new Placeholder("%faction%") {
+
+			public String factionsType;
+			public boolean factionsInitialized;
+
+			public String set(String string, ITabPlayer p) {
+				try {
+					if (!factionsInitialized) {
+						try {
+							Class.forName("com.massivecraft.factions.FPlayers");
+							factionsType = "UUID";
+						} catch (Throwable e) {}
+						try {
+							Class.forName("com.massivecraft.factions.entity.MPlayer");
+							factionsType = "MCore";
+						} catch (Throwable e) {}
+						factionsInitialized = true;
+					}
+					String name = null;
+					if (factionsType == null) return string.replace("%faction%", Configs.noFaction);
+					if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer((Player) p.getPlayer()).getFaction().getTag();
+					if (factionsType.equals("MCore")) name = MPlayer.get(p.getPlayer()).getFactionName();
+					if (name == null || name.length() == 0 || name.contains("Wilderness")) {
+						return string.replace("%faction%", Configs.noFaction);
+					}
+					return string.replace(identifier, Configs.yesFaction.replace("%value%", name));
+				} catch (IllegalStateException e) {
+					Shared.error("An error occured when getting faction of a player, was server just /reloaded ?", e);
+					return string.replace(identifier, Configs.noFaction);
+				} catch (Throwable e) {
+					Shared.error("An error occured when getting faction of " + p.getName(), e);
+					return string.replace(identifier, Configs.noFaction);
+				}
+			}
+		});
+		Placeholders.list.add(new Placeholder("%health%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, p.getHealth()+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%tps%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, Shared.round(Math.min(MethodAPI.getInstance().getTPS(), 20)));
+			}
+		});
+		if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
+			Placeholders.list.add(new Placeholder("%afk%") {
+				@SuppressWarnings("unchecked")
+				public String set(String string, ITabPlayer p) {
+					boolean afk = false;
+					try {
+						me.prunt.autoafk.Main m = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
+						if (((HashMap<Player, Object>) PacketAPI.getField(m, "afkList")).containsKey(p.getPlayer())) afk = true;
+					} catch (Throwable e) {
+						Shared.error("An error occured when getting AFK status of " + p.getName(), e);
+						afk = false;
+					}
+					return string.replace(identifier, afk?Configs.yesAfk:Configs.noAfk);
+				}
+			});
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
+			Placeholders.list.add(new Placeholder("%afk%") {
+				public String set(String string, ITabPlayer p) {
+					return string.replace(identifier, xAntiAFKAPI.isAfk((Player) p.getPlayer())?Configs.yesAfk:Configs.noAfk);
+				}
+			});
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			Placeholders.list.add(new Placeholder("%afk%") {
+				
+				private Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+
+				public String set(String string, ITabPlayer p) {
+					boolean afk = (essentials.getUser(p.getUniqueId()) != null && essentials.getUser(p.getUniqueId()).isAfk());
+					return string.replace(identifier, afk?Configs.yesAfk:Configs.noAfk);
+				}
+			});
+		}
+		Placeholders.list.add(new Placeholder("%canseeonline%") {
+			public String set(String string, ITabPlayer p) {
+				int var = 0;
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+				}
+				return string.replace(identifier, var+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%canseestaffonline%") {
+			public String set(String string, ITabPlayer p) {
+				int var = 0;
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+				}
+				return string.replace(identifier, var+"");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%vault-prefix%") {
+
+			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
+			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
+			private Chat chat = rsp != null ? rsp.getProvider() : null;
+			
+			public String set(String string, ITabPlayer p) {
+				if (chat != null) {
+					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
+					return string.replace(identifier, prefix != null ? prefix : "");
+				}
+				return string.replace(identifier, "");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%vault-suffix%") {
+
+			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
+			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
+			private Chat chat = rsp != null ? rsp.getProvider() : null;
+			
+			public String set(String string, ITabPlayer p) {
+				if (chat != null) {
+					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
+					return string.replace(identifier, prefix != null ? prefix : "");
+				}
+				return string.replace(identifier, "");
+			}
+		});
+		Placeholders.list.add(new Placeholder("%maxplayers%") {
+			public String set(String string, ITabPlayer p) {
+				return string.replace(identifier, Bukkit.getMaxPlayers()+"");
+			}
+		});
 	}
 }

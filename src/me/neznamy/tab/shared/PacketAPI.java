@@ -13,9 +13,9 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.bukkit.packets.DataWatcher;
 import me.neznamy.tab.bukkit.packets.DataWatcherObject;
 import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.bukkit.unlimitedtags.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
@@ -61,6 +61,7 @@ public class PacketAPI{
 		new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null).send(to);
 	}
 	public static void registerScoreboardScore(ITabPlayer p, String team, String body, String prefix, String suffix, String objective, int score) {
+		unregisterScoreboardTeam(p, team);
         sendScoreboardTeamPacket(p, team, prefix, suffix, false, false, Lists.newArrayList(body), 0, 3);
         changeScoreboardScore(p, body, objective, score);
     }

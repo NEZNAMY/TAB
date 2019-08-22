@@ -22,6 +22,9 @@ public class Animation {
 		this.messages = list.toArray(new String[0]);
 		this.interval = interval;
 	}
+	public String[] getAllMessages() {
+		return messages;
+	}
 	public String getMessage(){
 		return messages[(int) ((System.currentTimeMillis()%(messages.length*interval))/interval)];
 	}

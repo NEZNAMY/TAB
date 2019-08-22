@@ -3,26 +3,20 @@ package me.neznamy.tab.shared.packets;
 import me.neznamy.tab.bukkit.packets.EnumConstant;
 import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.Shared.ServerType;
 import net.md_5.bungee.protocol.packet.Chat;
 
 public class PacketPlayOutChat extends UniversalPacketPlayOut{
 
-	private Object component;
+	private String json;
 	private ChatMessageType type;
 	
 	public PacketPlayOutChat(String json) {
-		if (json == null) return;
-		component = Shared.servertype == ServerType.BUKKIT ? MethodAPI.getInstance().ICBC_fromString(json) : json;
+		this.json = json;
 		this.type = ChatMessageType.CHAT;
 	}
-	public PacketPlayOutChat(String message, ChatMessageType type) {
-		component = Shared.mainClass.createComponent(message);
-		this.type = type;
-	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		if (component == null) return null;
+		if (json == null) return null;
+		Object component = MethodAPI.getInstance().ICBC_fromString(json);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
 		} else {
@@ -30,8 +24,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		if (component == null) return null;
-		return new Chat((String) component, type.toByte());
+		return new Chat(json, type.toByte());
 	}
 	
 	public enum ChatMessageType{

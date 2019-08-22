@@ -43,10 +43,10 @@ public class PlaceholderAPIExpansion{
 
 				for (String property : properties) {
 					if (identifier.equals(property)) {
-						return me.neznamy.tab.shared.Placeholders.replace(p.getActiveProperty(property), p);
+						return p.getProperty(property).get();
 					}
 					if (identifier.equals(property + "_raw")) {
-						return p.getActiveProperty(property);
+						return p.getProperty(property).getRaw();
 					}
 				}
 				return null;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.bukkit.NameTagLineManager;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.shared.Shared.Feature;
 
 public class TabCommand{
@@ -80,7 +80,7 @@ public class TabCommand{
 				} else sendMessage(sender, Configs.no_perm);
 			} else if (args[0].equalsIgnoreCase("parse")) {
 				if (sender != null) {
-					String replaced = Placeholders.replace(args[1], sender);
+					String replaced = Placeholders.replaceAllPlaceholders(args[1], sender);
 					sendMessage(sender, "§6Attempting to parse string §e" + args[1] + "§6 for player §e" + sender.getName());
 					sendMessage(sender, "§6Result: §r" + replaced + " §r(" + replaced.replace("§", "&") + ")");
 				}
@@ -199,18 +199,18 @@ public class TabCommand{
 			boolean sorting = Configs.unlimitedTags || NameTag16.enable;
 			sendMessage(sender, "§eTeam name: §a" + (!sorting? "§cSORTING IS DISABLED" : analyzed.getTeamName().replace("§", "&")));
 			if (Shared.mainClass.listNames()) {
-				sendMessage(sender, "§9tabprefix: §b" + analyzed.getActiveProperty("tabprefix"));
-				sendMessage(sender, "§9tabsuffix: §b" + analyzed.getActiveProperty("tabsuffix"));
-				sendMessage(sender, "§9tabname: §b" + analyzed.getActiveProperty("customtabname"));
+				sendMessage(sender, "§9tabprefix: §b" + analyzed.getProperty("tabprefix").getRaw());
+				sendMessage(sender, "§9tabsuffix: §b" + analyzed.getProperty("tabsuffix").getRaw());
+				sendMessage(sender, "§9tabname: §b" + analyzed.getProperty("customtabname").getRaw());
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
-				sendMessage(sender, "§9tagprefix: §b" + analyzed.getActiveProperty("tagprefix"));
-				sendMessage(sender, "§9tagsuffix: §b" + analyzed.getActiveProperty("tagsuffix"));
+				sendMessage(sender, "§9tagprefix: §b" + analyzed.getProperty("tagprefix").getRaw());
+				sendMessage(sender, "§9tagsuffix: §b" + analyzed.getProperty("tagsuffix").getRaw());
 			}
 			if (Configs.unlimitedTags) {
-				sendMessage(sender, "§9abovename: §b" + analyzed.getActiveProperty("abovename"));
-				sendMessage(sender, "§9belowname: §b" + analyzed.getActiveProperty("belowname"));
-				sendMessage(sender, "§9tagname: §b" + analyzed.getActiveProperty("customtagname"));
+				sendMessage(sender, "§9abovename: §b" + analyzed.getProperty("abovename").getRaw());
+				sendMessage(sender, "§9belowname: §b" + analyzed.getProperty("belowname").getRaw());
+				sendMessage(sender, "§9tagname: §b" + analyzed.getProperty("customtagname").getRaw());
 			}
 		}
 	}

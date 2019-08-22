@@ -15,5 +15,4 @@ public interface MainClass {
 	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
 	public void loadBossbar() throws Exception;
-	public String setPlaceholders(ITabPlayer p, String text);
 }

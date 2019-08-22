@@ -23,20 +23,11 @@ public class DataWatcher{
 	public DataWatcher(Object entity) {
 		this.entity = entity;
 	}
-	public Map<Integer, Item> getDataValues(){
-		return dataValues;
-	}
 	public void setValue(DataWatcherObject type, Object value){
 		dataValues.put(type.getPosition(), new Item(type, value));
 	}
 	public Item getItem(int position) {
 		return dataValues.get(position);
-	}
-	public Item getItem(DataWatcherObject type){
-		return dataValues.get(type.getPosition());
-	}
-	public Object getValue(DataWatcherObject type){
-		return getItem(type).getValue();
 	}
 	public List<Item> getObjectsThatNeedUpdate(){
 		ArrayList<Item> arraylist = Lists.newArrayList();

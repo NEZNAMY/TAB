@@ -6,88 +6,45 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 public class TabObjective{
 
 	public static TabObjectiveType type;
-	public static String customValue;
-	
+	public static String rawValue;
+
 	public static void load() {
 		if (type == TabObjectiveType.NONE) return;
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			if (type == TabObjectiveType.HEARTS) {
-				PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.HEARTS);
-			} else {
-				PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.INTEGER);
-			}
+			PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, type.getDisplay());
 		}
-		int refresh = 500;
-		if (type == TabObjectiveType.PING) refresh = 2050;
-		if (type == TabObjectiveType.HEARTS) refresh = 100;
-		Shared.scheduleRepeatingTask(refresh, "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
-	        public void run(){
-	        	for (ITabPlayer p : Shared.getPlayers()){
-	        		if (p.disabledTablistObjective) continue;
-	        		final int value;
-	        		if (type == TabObjectiveType.PING) 			value = (int) p.getPing();
-	        		else if (type == TabObjectiveType.HEARTS) 	value = p.getHealth();
-	        		else if (type == TabObjectiveType.CUSTOM)	value = getCustomValue(p);
-	        		else value = -1;
-	        		if (p.getLastTabObjectiveValue() != value) {
-	        			p.setLastTabObjectiveValue(value);
-	        			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", value);
-	        		}
+		Shared.scheduleRepeatingTask(type.getRefresh(), "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
+			public void run(){
+				for (ITabPlayer p : Shared.getPlayers()){
+					if (p.disabledTablistObjective) continue;
+					if (p.getProperty("tablist-objective").isUpdateNeeded()) {
+						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
+					}
 				}
-	        }
+			}
 		});
 	}
 	public static void playerJoin(ITabPlayer p) {
 		if (type == TabObjectiveType.NONE || p.disabledTablistObjective) return;
-		if (type == TabObjectiveType.HEARTS){
-			PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.HEARTS);
-		} else {
-			PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, EnumScoreboardHealthDisplay.INTEGER);
+		PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, type.getDisplay());
+		for (ITabPlayer all : Shared.getPlayers()){
+			PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
+			PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", getValue(p));
 		}
-		if (type == TabObjectiveType.PING) {
-			for (ITabPlayer all : Shared.getPlayers()){
-				PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", (int) p.getPing());
-				PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", (int) all.getPing());
-			}
-		} 
-		if (type == TabObjectiveType.HEARTS){
-			for (ITabPlayer all : Shared.getPlayers()){
-				PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", p.getHealth());
-				PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", all.getHealth());
-			}
-		}
-		if (type == TabObjectiveType.CUSTOM) {
-			for (ITabPlayer all : Shared.getPlayers()){
-				PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getCustomValue(p));
-				PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", getCustomValue(all));
-			}
-		} 
 	}
 	public static void unload() {
 		if (type == TabObjectiveType.NONE) return;
-		if (type == TabObjectiveType.HEARTS) {
-			for (ITabPlayer p : Shared.getPlayers()){
-				if (p.disabledTablistObjective) continue;
-				PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.HEARTS);
-			}
-		} else {
-			for (ITabPlayer p : Shared.getPlayers()){
-				if (p.disabledTablistObjective) continue;
-				PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.INTEGER);
-			}
+		for (ITabPlayer p : Shared.getPlayers()){
+			if (p.disabledTablistObjective) continue;
+			PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", type.getDisplay());
 		}
 	}
 	public static void unload(ITabPlayer p) {
-		if (type == TabObjectiveType.NONE) return;
-		if (type == TabObjectiveType.HEARTS) {
-			PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.HEARTS);
-		} else {
-			PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", EnumScoreboardHealthDisplay.INTEGER);
-		}
+		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", type.getDisplay());
 	}
-	public static int getCustomValue(ITabPlayer p) {
-		String replaced = Placeholders.replace(customValue, p);
+	public static int getValue(ITabPlayer p) {
+		String replaced = p.getProperty("tablist-objective").get();
 		try {
 			return Integer.parseInt(replaced);
 		} catch (Throwable e) {
@@ -96,6 +53,24 @@ public class TabObjective{
 		}
 	}
 	public enum TabObjectiveType{
-		PING, HEARTS, CUSTOM, NONE;
+
+		PING(1000, EnumScoreboardHealthDisplay.INTEGER), 
+		HEARTS(100, EnumScoreboardHealthDisplay.HEARTS), 
+		CUSTOM(500, EnumScoreboardHealthDisplay.INTEGER), 
+		NONE(0, null);
+
+		private int refresh;
+		private EnumScoreboardHealthDisplay display;
+
+		TabObjectiveType(int refresh, EnumScoreboardHealthDisplay display){
+			this.refresh = refresh;
+			this.display = display;
+		}
+		public EnumScoreboardHealthDisplay getDisplay() {
+			return display;
+		}
+		public int getRefresh() {
+			return refresh;
+		}
 	}
 }

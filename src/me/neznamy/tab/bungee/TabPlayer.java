@@ -109,4 +109,7 @@ public class TabPlayer extends ITabPlayer{
 			Shared.error("Failed to get channel of " + getName(), e);
 		}
 	}
+	public boolean hasInvisibility() {
+		return false;
+	}
 }

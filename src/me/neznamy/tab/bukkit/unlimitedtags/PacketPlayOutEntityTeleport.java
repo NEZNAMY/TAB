@@ -1,4 +1,4 @@
-package me.neznamy.tab.bukkit.packets;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
+import me.neznamy.tab.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 

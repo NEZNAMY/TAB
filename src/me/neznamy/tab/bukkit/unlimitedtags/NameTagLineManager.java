@@ -1,9 +1,7 @@
-package me.neznamy.tab.bukkit;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.bukkit.packets.ArmorStand;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.ITabPlayer;
 
 public class NameTagLineManager {

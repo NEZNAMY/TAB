@@ -1,7 +1,8 @@
-package me.neznamy.tab.bukkit.packets;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.bukkit.packets.NMSClass;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -47,7 +48,6 @@ public class NameTagXPacket {
 		ENTITY_TELEPORT, //teleporting armor stand
 		ENTITY_MOVE, //teleporting armor stand
 		MOUNT, //1.9+ mount detection
-		@Deprecated
 		ATTACH_ENTITY; //1.8.x mount detection
 	}
 	

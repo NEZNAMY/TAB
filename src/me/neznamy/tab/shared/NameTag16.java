@@ -1,10 +1,6 @@
 package me.neznamy.tab.shared;
 
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
-
 import me.neznamy.tab.shared.Shared.Feature;
-import me.neznamy.tab.shared.Shared.ServerType;
 
 public class NameTag16 {
 
@@ -23,9 +19,9 @@ public class NameTag16 {
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug
-		if (Shared.servertype == ServerType.BUKKIT) Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAG, new Runnable() {
+		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAG, new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!((Player) p.getPlayer()).hasPotionEffect(PotionEffectType.INVISIBILITY));
+				for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
 			}
 		});
 	}

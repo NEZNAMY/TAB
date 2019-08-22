@@ -1,14 +1,15 @@
 package me.neznamy.tab.premium;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class Scoreboard {
@@ -18,7 +19,7 @@ public class Scoreboard {
 	private boolean permissionRequired;
 	private String childBoard;
 	private HashMap<Integer, Score> scores = new HashMap<Integer, Score>();
-	private ConcurrentHashMap<ITabPlayer, String> players = new ConcurrentHashMap<ITabPlayer, String>();
+	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private String objectiveName;
 
 	public Scoreboard(String name, String title, List<String> lines, boolean permissionRequired, String childBoard) {
@@ -47,25 +48,27 @@ public class Scoreboard {
 		return "§" + id.toCharArray()[0] + "§" + id.toCharArray()[1] + "§r";
 	}
 	public void register(ITabPlayer p) {
-		if (!players.containsKey(p)) {
-			String replacedTitle = Placeholders.replace(title, p);
+		if (!players.contains(p)) {
+			p.getProperty("scoreboard-title").changeRawValue(title);
+			String replacedTitle = p.getProperty("scoreboard-title").get();
+			PacketAPI.unregisterScoreboardObjective(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores.values()) {
 				s.register(p);
 			}
-			players.put(p, replacedTitle);
+			players.add(p);
 		}
 	}
 	public void unregister() {
-		for (ITabPlayer all : players.keySet()) {
+		for (ITabPlayer all : players) {
 			unregister(all);
 		}
 		players.clear();
 		scores.clear();
 	}
 	public void unregister(ITabPlayer p) {
-		if (players.containsKey(p)) {
-			PacketAPI.unregisterScoreboardObjective(p, objectiveName, players.get(p), EnumScoreboardHealthDisplay.INTEGER);
+		if (players.contains(p)) {
+			PacketAPI.unregisterScoreboardObjective(p, objectiveName, p.getProperty("scoreboard-title").get(), EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores.values()) {
 				s.unregister(p);
 			}
@@ -73,11 +76,14 @@ public class Scoreboard {
 		}
 	}
 	public void refresh() {
-		for (ITabPlayer p : players.keySet()) {
-			String replacedTitle = Placeholders.replace(title, p);
-			if (replacedTitle.equals(players.get(p))) continue;
-			PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
-			players.put(p, replacedTitle);
+		for (ITabPlayer p : players) {
+			Property sb = p.getProperty("scoreboard-title");
+			if (sb.isUpdateNeeded()) {
+				String replacedTitle = p.getProperty("scoreboard-title").get();
+				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
+				players.add(p);
+			}
+			
 		}
 		for (Score s : scores.values()) {
 			s.updatePrefixSuffix();
@@ -89,7 +95,6 @@ public class Scoreboard {
 		private int score;
 		private String ID;
 		private String player;
-		private HashMap<ITabPlayer, String> lastReplacedText = new HashMap<ITabPlayer, String>();
 
 		public Score(String ID, String player, String rawtext, int score) {
 			this.ID = ID;
@@ -99,46 +104,50 @@ public class Scoreboard {
 		}
 		private List<String> replaceText(ITabPlayer p) {
 			try {
-				String replaced = Placeholders.replace(rawtext, p);
-				if (replaced.equals(lastReplacedText.get(p))) return null;
-				lastReplacedText.put(p, replaced);
-				if (replaced.length() > 16) {
-					String prefix = replaced.substring(0, 16);
-					String suffix = replaced.substring(16, replaced.length());
-					if (prefix.toCharArray()[15] == '§') {
-						prefix = prefix.substring(0, 15);
-						suffix = "§" + suffix;
+				Property scoreproperty = p.getProperty("sb-"+ID);
+				if (scoreproperty.isUpdateNeeded()) {
+					String replaced = scoreproperty.get();
+					if (replaced.length() > 16) {
+						String prefix = replaced.substring(0, 16);
+						String suffix = replaced.substring(16, replaced.length());
+						if (prefix.toCharArray()[15] == '§') {
+							prefix = prefix.substring(0, 15);
+							suffix = "§" + suffix;
+						}
+						suffix = Placeholders.getLastColors(prefix) + suffix;
+						return Lists.newArrayList(prefix, suffix);
+					} else {
+						return Lists.newArrayList(replaced, "");
 					}
-					suffix = Placeholders.getLastColors(prefix) + suffix;
-					return Lists.newArrayList(prefix, suffix);
-				} else {
-					return Lists.newArrayList(replaced, "");
-				}
+				} else return null; //update not needed
 			} catch (Throwable e) {
 				e.printStackTrace();
 				return Lists.newArrayList("", "");
 			}
 		}
 		public void register(ITabPlayer p) {
-			lastReplacedText.put(p, "");
+			Property scoreproperty = p.getProperty("sb-"+ID);
+			if (scoreproperty == null) {
+				p.properties.add(new Property(p, "sb-"+ID, rawtext));
+			} else {
+				scoreproperty.changeRawValue(rawtext);
+			}
 			List<String> prefixsuffix = replaceText(p);
 			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
 			PacketAPI.registerScoreboardScore(p, ID, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
-			if (players.containsKey(p)) {
+			if (players.contains(p)) {
 				PacketAPI.removeScoreboardScore(p, player, ID);
-				lastReplacedText.remove(p);
 			}
 		}
 		public void unregister() {
-			for (ITabPlayer p : players.keySet()) {
+			for (ITabPlayer p : players) {
 				PacketAPI.removeScoreboardScore(p, player, ID);
-				lastReplacedText.remove(p);
 			}
 		}
 		public void updatePrefixSuffix() {
-			for (ITabPlayer p : players.keySet()) {
+			for (ITabPlayer p : players) {
 				List<String> prefixsuffix = replaceText(p);
 				if (prefixsuffix == null) continue;
 				PacketAPI.sendScoreboardTeamPacket(p, ID, prefixsuffix.get(0), prefixsuffix.get(1), false, false, null, 2, 69);

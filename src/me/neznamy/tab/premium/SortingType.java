@@ -29,10 +29,10 @@ public enum SortingType {
 			}
 			break;
 		case TABPREFIX_A_TO_Z:
-			teamName = p.getActiveProperty("tabprefix");
+			teamName = p.getProperty("tabprefix").getRaw();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
-			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
+			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			try {
 				Long.parseLong(teamName);
 			} catch (Throwable e) {
@@ -41,7 +41,7 @@ public enum SortingType {
 			while (teamName.length() < 10) teamName = "0" + teamName;
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
-			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
+			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			try {
 				long value = Long.parseLong(teamName);
 				teamName = (9999999999L-value)+"";
@@ -50,11 +50,11 @@ public enum SortingType {
 			}
 			break;
 		case PLACEHOLDER_A_TO_Z:
-			teamName = Placeholders.replace(Premium.sortingPlaceholder, p);
+			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		}
 		teamName += p.getName();
-		teamName = Placeholders.replace(teamName, p);
+		teamName = Placeholders.replaceAllPlaceholders(teamName, p);
 		if (teamName.length() > 15) {
 			teamName = teamName.substring(0, 15);
 		}

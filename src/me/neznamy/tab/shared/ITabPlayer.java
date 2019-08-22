@@ -10,8 +10,8 @@ import com.google.common.collect.Lists;
 import io.netty.channel.Channel;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.bukkit.NameTagLineManager;
-import me.neznamy.tab.bukkit.packets.ArmorStand;
+import me.neznamy.tab.bukkit.unlimitedtags.ArmorStand;
+import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.ScoreboardManager;
@@ -22,21 +22,13 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 public abstract class ITabPlayer{
 
 	public Object player;
-	public HashMap<Object, String> originalproperties = new HashMap<Object, String>();
-	public HashMap<Object, String> temporaryproperties = new HashMap<Object, String>();
-
+	public List<Property> properties = new ArrayList<Property>();
 	private String group;
 	private long lastRefreshGroup;
-	private int lastTabObjectiveValue;
 	public String teamName;
-	private String rawHeader;
-	private String rawFooter;
-	private String lastReplacedHeader = "";
-	private String lastReplacedFooter = "";
 	private String rank;
-	public String replacedTabFormat = "";
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
-	public ProtocolVersion version = ProtocolVersion.UNKNOWN; //preventing errors before this is loaded
+	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors before this is loaded
 	public Channel channel;
 	public String ipAddress = "-";
 	public boolean nameTagVisible = true;
@@ -61,6 +53,7 @@ public abstract class ITabPlayer{
 	public abstract void setTeamVisible(boolean p0);
 	public abstract int getHealth();
 	public abstract String getNickname();
+	public abstract boolean hasInvisibility();
 
 	//per-type
 	public abstract void setPlayerListName();
@@ -83,21 +76,28 @@ public abstract class ITabPlayer{
 		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 	}
+	public Property getProperty(String identifier) {
+		for (Property p : properties) {
+			if (p.getIdentifier().equals(identifier)) return p;
+		}
+		return null;
+	}
+	public void setProperty(String identifier, String rawValue) {
+		Property p = getProperty(identifier);
+		if (p == null) {
+			properties.add(new Property(this, identifier, rawValue));
+		} else {
+			p.changeRawValue(rawValue);
+		}
+	}
 	public void updatePlayerListName(boolean force) {
 		getGroup();
-		String newFormat = getTabFormat();
-		if (newFormat.equals(getName())) {
-			newFormat = "§f" + getName();
-		} else {
-			newFormat = Placeholders.replace(newFormat, this);
-		}
-		if (force || replacedTabFormat == null || !newFormat.equals(replacedTabFormat) || newFormat.contains("%rel_")) {
-			replacedTabFormat = newFormat;
+		if (getProperty("tabprefix").isUpdateNeeded() || getProperty("customtabname").isUpdateNeeded() || getProperty("tabsuffix").isUpdateNeeded() || force) {
 			setPlayerListName();
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
-		String format = replacedTabFormat;
+		String format = getReplacedTabFormat();
 		if (Placeholders.placeholderAPI) {
 			return PlaceholderAPI.setRelationalPlaceholders((Player) player, (Player)other.getPlayer(), format);
 		}
@@ -115,7 +115,7 @@ public abstract class ITabPlayer{
 		}
 		if (Configs.unlimitedTags) {
 			for (ArmorStand as : armorStands) {
-				as.setNameFormat(getActiveProperty(as.getID()));
+				as.setNameFormat(getProperty(as.getID()).getRaw());
 			}
 			NameTagLineManager.refreshNames(this);
 		}
@@ -155,36 +155,30 @@ public abstract class ITabPlayer{
 			updateAll();
 		}
 	}
-	public String getTabFormat() {
-		return getActiveProperty("tabprefix") + getActiveProperty("customtabname") + getActiveProperty("tabsuffix");
+	public String getRawTabFormat() {
+		return getProperty("tabprefix").getRaw() + getProperty("customtabname").getRaw() + getProperty("tabsuffix").getRaw();
 	}
-	public String getTagFormat() {
-		return getActiveProperty("tagprefix") + getActiveProperty("customtagname") + getActiveProperty("tagsuffix");
+	public String getReplacedTabFormat() {
+		return getProperty("tabprefix").get() + getProperty("customtabname").get() + getProperty("tabsuffix").get();
 	}
-	public String getOriginalProperty(Object line) {
-		return originalproperties.get(line);
-	}
-	public String getActiveProperty(Object line) {
-		if (line.equals("nametag")) return getTagFormat();
-		String value = getTemporaryProperty(line) != null ? getTemporaryProperty(line) : getOriginalProperty(line);
-		if ((line+"").contains("custom") && (value == null || value.length() == 0)) return getName();
-		return value;
-	}
-	public String getTemporaryProperty(Object line) {
-		return temporaryproperties.get(line);
+	public String getRawTagFormat() {
+		return getProperty("tagprefix").getRaw() + getProperty("customtagname").getRaw() + getProperty("tagsuffix").getRaw();
 	}
 	public void updateAll() {
-		originalproperties.put("tabprefix", getValue("tabprefix"));
-		originalproperties.put("tagprefix", getValue("tagprefix"));
-		originalproperties.put("tabsuffix", getValue("tabsuffix"));
-		originalproperties.put("tagsuffix", getValue("tagsuffix"));
-		originalproperties.put("customtabname", getValue("customtabname"));
-		originalproperties.put("customtagname", getValue("customtagname"));
-		for (Object property : Premium.dynamicLines) {
-			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
+		properties.add(new Property(this, "scoreboard-title", "-"));
+		properties.add(new Property(this, "tablist-objective", TabObjective.rawValue));
+		properties.add(new Property(this, "tabprefix", getValue("tabprefix")));
+		properties.add(new Property(this, "tagprefix", getValue("tagprefix")));
+		properties.add(new Property(this, "tabsuffix", getValue("tabsuffix")));
+		properties.add(new Property(this, "tagsuffix", getValue("tagsuffix")));
+		properties.add(new Property(this, "customtabname", getValue("customtabname"), getName()));
+		properties.add(new Property(this, "customtagname", getValue("customtagname"), getName()));
+	
+		for (String property : Premium.dynamicLines) {
+			if (!property.equals("nametag")) properties.add(new Property(this, property, getValue(property)));
 		}
 		for (String property : Premium.staticLines.keySet()) {
-			if (!property.equals("nametag")) originalproperties.put(property, getValue(property));
+			if (!property.equals("nametag")) properties.add(new Property(this, property, getValue(property)));
 		}
 		rank = (String) Configs.rankAliases.get("_OTHER_");
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
@@ -222,30 +216,6 @@ public abstract class ITabPlayer{
 		if (rank == null) return "§7No Rank";
 		return rank;
 	}
-	public int getLastTabObjectiveValue() {
-		return lastTabObjectiveValue;
-	}
-	public void setLastTabObjectiveValue(int value) {
-		lastTabObjectiveValue = value;
-	}
-	public String getRawHeader() {
-		return rawHeader;
-	}
-	public String getRawFooter() {
-		return rawFooter;
-	}
-	public String getLastHeader() {
-		return lastReplacedHeader;
-	}
-	public String getLastFooter() {
-		return lastReplacedFooter;
-	}
-	public void setLastHeader(String header) {
-		lastReplacedHeader = header;
-	}
-	public void setLastFooter(String footer) {
-		lastReplacedFooter = footer;
-	}
 	public boolean isStaff() {
 		return hasPermission("tab.staff");
 	}
@@ -253,8 +223,8 @@ public abstract class ITabPlayer{
 		return Configs.collision;
 	}
 	public void updateRawHeaderAndFooter() {
-		rawHeader = "";
-		rawFooter = "";
+		String rawHeader = "";
+		String rawFooter = "";
 		List<Object> h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
 		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
 		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".header");
@@ -279,6 +249,8 @@ public abstract class ITabPlayer{
 			if (++i > 1) rawFooter += "\n§r";
 			rawFooter += footerLine;
 		}
+		setProperty("header", rawHeader);
+		setProperty("footer", rawFooter);
 	}
 	public String buildTeamName() {
 		if (Premium.is()) {
@@ -303,18 +275,18 @@ public abstract class ITabPlayer{
 			}
 			if (name == null) {
 				if (Shared.mainClass.listNames()) {
-					name = getActiveProperty("tabprefix");
+					name = getProperty("tabprefix").get();
 				} else {
 					if (!NameTag16.enable && !Configs.unlimitedTags) {
 						return getName();
 					}
-					name = getActiveProperty("tagprefix");
+					name = getProperty("tagprefix").get();
 				}
 			}
 			if (name == null || name.equals("")) {
 				name = "§f";
 			} else {
-				name = Placeholders.replace(name, this);
+				name = Placeholders.replaceAllPlaceholders(name, this);
 			}
 			if (name.length() > 12) {
 				name = name.substring(0, 12);
@@ -345,23 +317,25 @@ public abstract class ITabPlayer{
 	}
 	public void updateTeamPrefixSuffix() {
 		if (disabledNametag) return;
-		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
 		for (ITabPlayer all : Shared.getPlayers()) {
-			String replacedPrefix = replaced[0];
-			String replacedSuffix = replaced[1];
-			if (Placeholders.placeholderAPI) {
-				replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
-				replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
+			Property tagprefix = getProperty("tagprefix");
+			Property tagsuffix = getProperty("tagsuffix");
+			if (tagprefix.isUpdateNeeded() || tagsuffix.isUpdateNeeded()) {
+				String replacedPrefix = tagprefix.get();
+				String replacedSuffix = tagsuffix.get();
+				if (Placeholders.placeholderAPI) {
+					replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
+					replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
+				}
+				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush());
 			}
-			PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush());
 		}
 	}
 	public void registerTeam() {
 		if (disabledNametag) return;
 		unregisterTeam();
-		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
-		String replacedPrefix = replaced[0];
-		String replacedSuffix = replaced[1];
+		String replacedPrefix = getProperty("tagprefix").get();
+		String replacedSuffix = getProperty("tagsuffix").get();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (Placeholders.placeholderAPI) {
 				replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
@@ -373,9 +347,8 @@ public abstract class ITabPlayer{
 	public void registerTeam(ITabPlayer to) {
 		if (disabledNametag) return;
 		unregisterTeam(to);
-		String[] replaced = Placeholders.replaceMultiple(this, getActiveProperty("tagprefix"), getActiveProperty("tagsuffix"));
-		String replacedPrefix = replaced[0];
-		String replacedSuffix = replaced[1];
+		String replacedPrefix = getProperty("tagprefix").get();
+		String replacedSuffix = getProperty("tagsuffix").get();
 		if (Placeholders.placeholderAPI) {
 			replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedPrefix);
 			replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedSuffix);

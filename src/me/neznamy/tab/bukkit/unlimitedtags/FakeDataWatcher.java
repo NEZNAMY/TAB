@@ -1,7 +1,10 @@
-package me.neznamy.tab.bukkit.packets;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import java.util.Optional;
 
+import me.neznamy.tab.bukkit.packets.DataWatcher;
+import me.neznamy.tab.bukkit.packets.DataWatcherObject;
+import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 

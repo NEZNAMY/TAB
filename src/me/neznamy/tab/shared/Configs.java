@@ -31,6 +31,12 @@ public class Configs {
 	public static String timeFormat;
 	public static double timeOffset;
 	public static List<String> removeStrings = new ArrayList<String>();
+	public static String noFaction;
+	public static String yesFaction;
+	public static String noTag;
+	public static String yesTag;
+	public static String noAfk;
+	public static String yesAfk;
 	
 	
 	public static ConfigurationFile animation;

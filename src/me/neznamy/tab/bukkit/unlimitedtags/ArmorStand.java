@@ -1,4 +1,4 @@
-package me.neznamy.tab.bukkit.packets;
+package me.neznamy.tab.bukkit.unlimitedtags;
 
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -8,12 +8,15 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.bukkit.packets.DataWatcher;
+import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -23,8 +26,6 @@ public class ArmorStand{
 	private Player player;
 	private double yOffset;
 	private String ID;
-	private String rawFormat;
-	private String lastReplacedFormat = "";
 
 	private int entityId = Shared.getNextEntityId();
 	private UUID uuid = UUID.randomUUID();
@@ -42,26 +43,27 @@ public class ArmorStand{
 		player = (Player) owner.getPlayer();
 		this.ID = ID;
 		this.yOffset = yOffset;
-		rawFormat = format;
 		datawatcher = new FakeDataWatcher();
 		refreshName();
 		updateLocation();
+		Property p = owner.getProperty("armorstand:" + ID);
+		if (p != null) p.changeRawValue(format);
+		else owner.properties.add(new Property(owner, "armorstand:" + ID, format));
 	}
 	public String getID() {
 		return ID;
 	}
 	public void setNameFormat(String format) {
-		rawFormat = format;
+		owner.getProperty("armorstand:" + ID);
 	}
 	public void refreshName() {
-		String newFormat = Placeholders.replace(rawFormat, owner);
-		if (newFormat.equals(lastReplacedFormat) && !newFormat.contains("%rel_")) return;
-		lastReplacedFormat = newFormat;
-		updateMetadata(false);
+		if (owner.getProperty("armorstand:" + ID).isUpdateNeeded()) {
+			updateMetadata(false);
+		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
-		String name = lastReplacedFormat;
+		String name = owner.getProperty("armorstand:" + ID).get();
 		if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
 		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 		DataWatcher w = datawatcher.create(name);
@@ -95,7 +97,7 @@ public class ArmorStand{
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
-		if ((!player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR) == invisible) {
+		if ((!owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR) == invisible) {
 			invisible = !invisible;
 			updateMetadata(true);
 		}
@@ -104,7 +106,7 @@ public class ArmorStand{
 		for (Entry<ITabPlayer, String> entry : registeredTo.entrySet()) {
 			ITabPlayer all = entry.getKey();
 			String lastName = entry.getValue();
-			String name = lastReplacedFormat;
+			String name = owner.getProperty("armorstand:" + ID).get();
 			if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
 			datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 			DataWatcher w = datawatcher.create(name);
