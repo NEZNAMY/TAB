@@ -103,27 +103,22 @@ public class Scoreboard {
 			this.score = score;
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force) {
-			try {
-				Property scoreproperty = p.getProperty("sb-"+ID);
-				if (scoreproperty.isUpdateNeeded() || force) {
-					String replaced = scoreproperty.get();
-					if (replaced.length() > 16) {
-						String prefix = replaced.substring(0, 16);
-						String suffix = replaced.substring(16, replaced.length());
-						if (prefix.toCharArray()[15] == '§') {
-							prefix = prefix.substring(0, 15);
-							suffix = "§" + suffix;
-						}
-						suffix = Placeholders.getLastColors(prefix) + suffix;
-						return Lists.newArrayList(prefix, suffix);
-					} else {
-						return Lists.newArrayList(replaced, "");
+			Property scoreproperty = p.getProperty("sb-"+ID);
+			if (scoreproperty.isUpdateNeeded() || force) {
+				String replaced = scoreproperty.get();
+				if (replaced.length() > 16) {
+					String prefix = replaced.substring(0, 16);
+					String suffix = replaced.substring(16, replaced.length());
+					if (prefix.toCharArray()[15] == '§') {
+						prefix = prefix.substring(0, 15);
+						suffix = "§" + suffix;
 					}
-				} else return null; //update not needed
-			} catch (Throwable e) {
-				e.printStackTrace();
-				return Lists.newArrayList("", "");
-			}
+					suffix = Placeholders.getLastColors(prefix) + suffix;
+					return Lists.newArrayList(prefix, suffix);
+				} else {
+					return Lists.newArrayList(replaced, "");
+				}
+			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
 			p.setProperty("sb-"+ID, rawtext);
