@@ -268,14 +268,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						long time = System.nanoTime();
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							//nametag anti-override
-							if (!player.disabledNametag) {
-								if ((NameTag16.enable || NameTagX.enable) && instance.killPacket(packet)) {
-									Shared.cpu(Feature.NAMETAG, System.nanoTime()-time);
-									return;
-								}
+							if ((NameTag16.enable || NameTagX.enable) && instance.killPacket(packet)) {
+								Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
+								return;
 							}
 						}
-						Shared.cpu(Feature.NAMETAG, System.nanoTime()-time);
+						Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
 
 						if (NameTagX.enable && !player.disabledNametag) {
 							time = System.nanoTime();
@@ -291,9 +289,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 							Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
 						}
+						PacketPlayOut p = null;
 
 						time = System.nanoTime();
-						PacketPlayOut p = null;
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
 							//preventing pets from having owner's nametag properties if feature is enabled
 							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
@@ -310,6 +308,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								packet = p.toNMS();
 							}
 						}
+						Shared.cpu(Feature.PETFIX, System.nanoTime()-time);
+						time = System.nanoTime();
 						if (Playerlist.enable) {
 							//correcting name, spectators if enabled, changing npc names if enabled
 							if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
@@ -383,7 +383,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			for (ITabPlayer p : Shared.getPlayers()) {
-				if (players.contains(p.getName())) return true;
+				if (players.contains(p.getName()) && !p.disabledNametag) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -436,15 +438,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
 		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Lists.newArrayList("ignoredworld", "spawn"));
-		Configs.sortByNickname = Configs.advancedconfig.getBoolean("sort-players-by-nickname", false);
 		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
-	}
-	public void loadBossbar() throws Exception {
-		Configs.bossbar = new ConfigurationFile("bukkitbossbar.yml", "bossbar.yml");
-		BossBar.refresh = (Configs.bossbar.getInt("refresh-interval", 20)*50);
 	}
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
@@ -459,11 +456,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.register();
 		Main.pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
-		
+
 		Placeholders.list = new ArrayList<Placeholder>();
-		
+
 		Shared.registerUniversalPlaceholders();
-		
+
 		Placeholders.list.add(new Placeholder("%xPos%") {
 			public String set(String string, ITabPlayer p) {
 				return string.replace(identifier, ((Player) p.getPlayer()).getLocation().getBlockX()+"");
@@ -580,7 +577,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			Placeholders.list.add(new Placeholder("%afk%") {
-				
+
 				private Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
 				public String set(String string, ITabPlayer p) {
@@ -612,7 +609,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
 			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
 			private Chat chat = rsp != null ? rsp.getProvider() : null;
-			
+
 			public String set(String string, ITabPlayer p) {
 				if (chat != null) {
 					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
@@ -626,7 +623,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
 			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
 			private Chat chat = rsp != null ? rsp.getProvider() : null;
-			
+
 			public String set(String string, ITabPlayer p) {
 				if (chat != null) {
 					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());

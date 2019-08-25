@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.Shared.Feature;
 
 public class TabCommand{
 
 	private static final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
 	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
-	
-	public static void execute(ITabPlayer sender, String[] args){
+
+	public static void execute(final ITabPlayer sender, String[] args){
+		//TODO make work for players
 		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				Shared.mainClass.reload(sender);
@@ -21,7 +23,51 @@ public class TabCommand{
 			}
 			return;
 		}
-		if (args.length >= 3){
+		if (args.length == 4 && args[0].equalsIgnoreCase("announce")) {
+			//tab announce bar <name> <length>
+			String type = args[1];
+			if (type.equalsIgnoreCase("bar")) {
+				if (can(sender, "announce.bar")) {
+					final String barname = args[2];
+					int duration;
+					try {
+						duration = Integer.parseInt(args[3]);
+						final int d2 = duration;
+						Shared.exe.submit(new Runnable() {
+
+							public void run() {
+								try {
+									BossBarLine bar = BossBar.getLine(barname);
+									if (bar == null) {
+										sender.sendMessage("Bar not found");
+										return;
+									}
+									BossBar.announcements.add(barname);
+									for (ITabPlayer all : Shared.getPlayers()) {
+										PacketAPI.createBossBar(all, bar);
+									}
+//									List<String> animationFrames = //maybe later
+									for (int i=0; i<(float)d2*1000/BossBar.refresh; i++) {
+										Thread.sleep(BossBar.refresh);
+									}
+									for (ITabPlayer all : Shared.getPlayers()) {
+										PacketAPI.removeBossBar(all, bar);
+									}
+									BossBar.announcements.remove(barname);
+								} catch (Exception e) {
+
+								}
+							}
+						});
+
+					} catch (Exception e) {
+						sender.sendMessage(args[3] + " is not a number!");
+					}
+				} else {
+					sendMessage(sender, Configs.no_perm);
+				}
+			}
+		} else if (args.length >= 3){
 			//tab object <name> type [value]
 			//tab object <name> remove
 			String type = args[2].toLowerCase();
@@ -62,7 +108,10 @@ public class TabCommand{
 						Configs.config.set("Users." + args[1], null);
 						Configs.config.save();
 						ITabPlayer pl = Shared.getPlayer(args[1]);
-						if (pl != null) recalculatePlayer(pl);
+						if (pl != null) {
+							pl.updateAll();
+							if (Configs.unlimitedTags) pl.restartArmorStands();
+						}
 					} else help(sender);
 					sendMessage(sender, Configs.data_removed.replace("%category%", args[0]).replace("%value%", args[1]));
 				}
@@ -220,11 +269,14 @@ public class TabCommand{
 		}
 	}
 	public static void savePlayer(ITabPlayer p, String player, String type, String value){
+		ITabPlayer pl = Shared.getPlayer(player);
+		if (pl != null) {
+			p.setProperty(type, value);
+			if (Configs.unlimitedTags) pl.restartArmorStands();
+		}
 		if (value.equals("")) value = null;
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
-		ITabPlayer pl = Shared.getPlayer(player);
-		if (pl != null) recalculatePlayer(pl);
 		if (value != null){
 			sendMessage(p, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("§", "§"));
 		} else {
@@ -232,24 +284,19 @@ public class TabCommand{
 		}
 	}
 	public static void saveGroup(ITabPlayer p, String group, String type, String value){
+		for (ITabPlayer pl : Shared.getPlayers()) {
+			if (pl.getGroup() != null && pl.getGroup().equals(group)){
+				p.setProperty(type, value);
+				if (Configs.unlimitedTags) pl.restartArmorStands();
+			}
+		}
 		if (value.equals("")) value = null;
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
-		for (ITabPlayer pl : Shared.getPlayers()) {
-			if (pl.getGroup() != null && pl.getGroup().equals(group)){
-				recalculatePlayer(pl);
-			}
-		}
 		if (value != null){
 			sendMessage(p, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("§", "§"));
 		} else {
 			sendMessage(p, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
-	}
-	private static void recalculatePlayer(ITabPlayer pl) {
-		pl.updateAll();
-		if (NameTag16.enable || Configs.unlimitedTags) pl.updateTeam();
-		if (Shared.mainClass.listNames()) pl.updatePlayerListName(true);
-		if (Configs.unlimitedTags) pl.restartArmorStands();
 	}
 }

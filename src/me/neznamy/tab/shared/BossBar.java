@@ -2,38 +2,77 @@ package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import me.neznamy.tab.shared.PacketAPI.BossBAR;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
 public class BossBar{
 
-	public static boolean enable;
+	public static List<String> defaultBars = Lists.newArrayList();
+	public static Map<String, List<String>> perWorld = Maps.newConcurrentMap();
 	public static List<BossBarLine> lines = new ArrayList<BossBarLine>();
 	public static int refresh;
+	public static String toggleCommand;
+	public static List<String> announcements = new ArrayList<String>();
 	
 	public static void load() {
-		if (!enable) return;
-		for (BossBarLine l : lines) {
-			for (ITabPlayer p : Shared.getPlayers()) sendBar(p, l);
+		for (ITabPlayer p : Shared.getPlayers()) {
+			p.detectBossBarsAndSend();
 		}
 		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 			public void run() {
-				for (BossBarLine line : lines) line.update();
+				for (ITabPlayer p : Shared.getPlayers()) {
+					if (!p.bossbarVisible) continue;
+					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
+						if (bar.hasPermission(p)) {
+							PacketAPI.updateBossBar(p, bar);
+						} else {
+							PacketAPI.removeBossBar(p, bar);
+							p.getActiveBossBars().remove(bar);
+						}
+					}
+					for (String name : defaultBars) {
+						BossBarLine bar = getLine(name);
+						if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
+							p.getActiveBossBars().add(bar);
+							PacketAPI.createBossBar(p, bar);
+						}
+					}
+					if (BossBar.perWorld.get(p.getWorldName()) != null)
+						for (String worldbar : BossBar.perWorld.get(p.getWorldName())) {
+							BossBarLine bar = BossBar.getLine(worldbar);
+							if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
+								PacketAPI.createBossBar(p, bar);
+								p.activeBossBars.add(bar);
+							}
+						}
+				}
 			}
 		});
 	}
+	public static BossBarLine getLine(String name) {
+		for (BossBarLine l : lines) {
+			if (l.getName().equalsIgnoreCase(name)) return l;
+		}
+		return null;
+	}
 	public static boolean onChat(final ITabPlayer sender, String message) {
-		if (!enable) return false;
-		if (message.equalsIgnoreCase(Configs.bossbarToggleCommand)) {
+		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.bossbarVisible = !sender.bossbarVisible;
 			if (sender.bossbarVisible) {
-				for (BossBarLine line : lines) sendBar(sender, line);
+				sender.detectBossBarsAndSend();
 				sender.sendMessage(Configs.bossbar_on);
 			} else {
-				for (BossBarLine line : lines) PacketAPI.removeBossBar(sender, line.getBossBar());
+				for (BossBarLine line : sender.getActiveBossBars()) {
+					PacketAPI.removeBossBar(sender, line);
+				}
+				sender.getActiveBossBars().clear();
 				sender.sendMessage(Configs.bossbar_off);
 			}
 			return true;
@@ -41,105 +80,82 @@ public class BossBar{
 		return false;
 	}
 	public static void playerJoin(ITabPlayer p) {
-		if (enable) for (BossBarLine line : lines) sendBar(p, line);
+		p.detectBossBarsAndSend();
 	}
 	public static void unload() {
-		if (!enable) return;
-		for (BossBarLine l : lines) {
-			for (ITabPlayer p : Shared.getPlayers()) PacketAPI.removeBossBar(p, l.getBossBar());
+		for (ITabPlayer p : Shared.getPlayers()) {
+			for (BossBarLine line : p.getActiveBossBars()) {
+				PacketAPI.removeBossBar(p, line);
+			}
+			p.getActiveBossBars().clear();
 		}
 		lines.clear();
 	}
-	public static void sendBar(ITabPlayer p, BossBarLine l) {
-		if (!p.bossbarVisible || p.disabledBossbar) return;
-		String message = Placeholders.replaceAllPlaceholders(l.getCurrentFrame().getMessage(), p); //TODO
-		String progress0 = Placeholders.replaceAllPlaceholders(l.getCurrentFrame().getProgress(), p);
-		float progress;
-		try {
-			progress = Float.parseFloat(progress0);
-		} catch(Throwable e) {
-			progress = 100;
-			Shared.error("Invalid Bossbar progress: " + progress0);
-		}
-		PacketAPI.sendBossBar(p, l.getBossBar(), (float)progress/100, message);
-	}
 	public static class BossBarLine{
 		
+		private String name;
+		private boolean permissionRequired;
+		private UUID uuid; //1.9+
+		private int entityId; //1.8.x
 		private int refresh;
-		private BossBarFrame[] frames;
-		private BossBAR bossBar;
+		public String style;
+		public String color;
+		public String text;
+		public String progress;
 		
-		public BossBarLine(int refresh, List<BossBarFrame> frames) {
+		public BossBarLine(String name, boolean permissionRequired, int refresh, String color, String style, String text, String progress) {
+			this.name = name;
+			this.permissionRequired = permissionRequired;
 			if (refresh == 0) {
 				Shared.startupWarn("One of the BossBars has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
 				refresh = 1000;
 			}
+			this.uuid = UUID.randomUUID();
+			this.entityId = Shared.getNextEntityId();
 			this.refresh = refresh;
-			this.frames = frames.toArray(new BossBarFrame[0]);
-			BossBarFrame f = frames.get(0);
-			bossBar = new BossBAR(f.getStyle(), f.getColor());
+			this.color = color;
+			this.style = style;
+			this.text = text;
+			this.progress = progress;
+		}
+		public boolean hasPermission(ITabPlayer p) {
+			return !permissionRequired || p.hasPermission("tab.bossbar." + name);
+		}
+		public String getName() {
+			return name;
 		}
 		public int getRefresh() {
 			return refresh;
 		}
-		private BossBarFrame getCurrentFrame() {
-			return frames[(int) ((System.currentTimeMillis()%(frames.length*refresh))/refresh)];
+		public int getEntityId() {
+			return entityId;
 		}
-		public BossBAR getBossBar() {
-			return bossBar;
+		public UUID getUniqueId() {
+			return uuid;
 		}
-		public void update() {
-			BossBarFrame f = getCurrentFrame();
-			for (ITabPlayer all : Shared.getPlayers()) {
-				if (all.disabledBossbar) continue;
-				String message = Placeholders.replaceAllPlaceholders(f.getMessage(), all);
-				String progress0 = Placeholders.replaceAllPlaceholders(f.getProgress(), all);
-				float progress;
-				try {
-					progress = Float.parseFloat(progress0);
-				} catch(Throwable e) {
-					progress = 100;
-					Shared.error("Invalid Bossbar progress: " + progress0);
-				}
-				PacketAPI.updateBossBar(all, bossBar, f.getColor(), f.getStyle(), (float)progress/100, message);
-			}
-		}
-	}
-	
-	public static class BossBarFrame{
-		
-		private BarStyle style;
-		private BarColor color;
-		private String progress;
-		private String message;
-		
-		public BossBarFrame(String style, String color, String progress, String message) {
+		public BarColor parseColor(String color) {
 			try {
-				this.color = BarColor.valueOf(color);
-			} catch (Throwable e) {
-				this.color = BarColor.PURPLE;
-				Shared.startupWarn("\"" + color + "\" is not a valid boss bar color!");
+				return BarColor.valueOf(color);
+			} catch (Exception e) {
+				Shared.error("\"" + color + "\" is not a valid boss bar color");
+				return BarColor.WHITE;
 			}
+		}
+		public BarStyle parseStyle(String style) {
 			try {
-				this.style = BarStyle.valueOf(style);
-			} catch (Throwable e) {
-				this.style = BarStyle.PROGRESS;
-				Shared.startupWarn("\"" + style + "\" is not a valid boss bar style!");
+				return BarStyle.valueOf(style);
+			} catch (Exception e) {
+				Shared.error("\"" + color + "\" is not a valid boss bar color");
+				return BarStyle.PROGRESS;
 			}
-			this.progress = progress;
-			this.message = message;
 		}
-		public BarStyle getStyle() {
-			return style;
-		}
-		public BarColor getColor() {
-			return color;
-		}
-		public String getProgress() {
-			return progress;
-		}
-		public String getMessage() {
-			return message;
+		public float parseProgress(String progress) {
+			try {
+				return Integer.parseInt(progress);
+			} catch (Exception e) {
+				Shared.error("\"" + progress + "\" is not a valid number");
+				return 100;
+			}
 		}
 	}
 }

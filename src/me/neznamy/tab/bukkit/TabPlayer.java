@@ -22,6 +22,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import protocolsupport.api.ProtocolSupportAPI;
@@ -171,13 +172,15 @@ public class TabPlayer extends ITabPlayer{
 	public void loadArmorStands() {
 		float height = -0.22F;
 		for (String line : Premium.dynamicLines) {
-			String value = getProperty(line).getRaw();
-			if (value == null || value.length() == 0) continue;
+			Property p = getProperty(line);
+			if (p == null || p.get().length() == 0) continue;
+			String value = p.getRaw();
 			NameTagLineManager.bindLine(this, value, height+=0.22F, line+"");
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
-			String value = getProperty(line.getKey()).getRaw();
-			if (value == null || value.length() == 0) continue;
+			Property p = getProperty(line.getKey());
+			if (p == null || p.get().length() == 0) continue;
+			String value = p.getRaw();
 			NameTagLineManager.bindLine(this, value, Double.parseDouble(line.getValue()+""), line.getKey());
 		}
 	}
@@ -207,7 +210,7 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		try {
 			MethodAPI.getInstance().sendPacket(getPlayer(), nmsPacket);
-			System.out.println(getName() + " - " + nmsPacket.getClass().getSimpleName());
+//			System.out.println(getName() + " - " + nmsPacket.getClass().getSimpleName());
 		} catch (NullPointerException e) {
 			queuedPackets.add(nmsPacket);
 		}

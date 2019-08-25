@@ -9,9 +9,6 @@ ignore-pwp-in-worlds:
  - ignoredworld
  - spawn
 
- #sorting players only by their username (or essentials nickname if set)
-sort-players-by-nickname: false
-
  #sorting by permissions. Permission node is "tab.sort.<group>" and priorities can be set in config
 sort-players-by-permissions: false
 

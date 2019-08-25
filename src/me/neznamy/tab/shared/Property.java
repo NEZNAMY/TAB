@@ -3,8 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 public class Property {
 
 	private ITabPlayer owner;
@@ -23,14 +21,15 @@ public class Property {
 		this.identifier = identifier;
 		this.rawValue = rawValue;
 		this.ifEmpty = ifEmpty;
-		placeholders = detectPlaceholders(rawValue);
+		if (rawValue.length() == 0 && ifEmpty != null) this.rawValue = ifEmpty;
+		placeholders = Placeholders.detect(rawValue);
 	}
 	public String getIdentifier() {
 		return identifier;
 	}
 	public void setTemporaryValue(String temporaryValue) {
 		this.temporaryValue = temporaryValue;
-		placeholders = detectPlaceholders(temporaryValue);
+		placeholders = Placeholders.detect(temporaryValue);
 	}
 	public void removeTemporaryValue() {
 		setTemporaryValue(null);
@@ -38,31 +37,7 @@ public class Property {
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
-		if (temporaryValue == null) placeholders = detectPlaceholders(rawValue);
-	}
-	public List<Placeholder> detectPlaceholders(String rawValue) {
-		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
-		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		String testString = rawValue;
-		boolean changed;
-		for (int i=0; i<10; i++) { //detecting placeholder chains
-			changed = false;
-			for (Placeholder pl : Placeholders.list) {
-				if (testString.contains(pl.getIdentifier())) {
-					testString = pl.set(testString, owner);
-					if (!placeholdersTotal.contains(pl)) placeholdersTotal.add(pl);
-					changed = true;
-					for (String child : pl.getChilds()) {
-						List<Placeholder> placeholders = detectPlaceholders(child);
-						for (Placeholder p : placeholders) {
-							if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
-						}
-					}
-				}
-			}
-			if (!changed) break; //no more placeholders found
-		}
-		return placeholdersTotal;
+		if (temporaryValue == null) placeholders = Placeholders.detect(rawValue);
 	}
 	public String get() {
 		if (lastReplacedValue == null) isUpdateNeeded();

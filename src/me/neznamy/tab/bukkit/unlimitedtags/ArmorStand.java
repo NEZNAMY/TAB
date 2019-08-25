@@ -16,7 +16,6 @@ import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -44,26 +43,24 @@ public class ArmorStand{
 		this.ID = ID;
 		this.yOffset = yOffset;
 		datawatcher = new FakeDataWatcher();
+		owner.setProperty(ID, format);
 		refreshName();
 		updateLocation();
-		Property p = owner.getProperty("armorstand:" + ID);
-		if (p != null) p.changeRawValue(format);
-		else owner.properties.add(new Property(owner, "armorstand:" + ID, format));
 	}
 	public String getID() {
 		return ID;
 	}
 	public void setNameFormat(String format) {
-		owner.getProperty("armorstand:" + ID);
+		owner.getProperty(ID);
 	}
 	public void refreshName() {
-		if (owner.getProperty("armorstand:" + ID).isUpdateNeeded()) {
+		if (owner.getProperty(ID).isUpdateNeeded()) {
 			updateMetadata(false);
 		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
-		String name = owner.getProperty("armorstand:" + ID).get();
+		String name = owner.getProperty(ID).get();
 		if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
 		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 		DataWatcher w = datawatcher.create(name);
@@ -89,7 +86,7 @@ public class ArmorStand{
 		for (ITabPlayer all : registeredTo.keySet()) {
 			if (all == owner) continue;
 			getDestroyPacket(all, false).send(all);
-			getSpawnPacket(all, false).send(all);
+			if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) getSpawnPacket(all, false).send(all);
 		}
 	}
 	public void destroy() {
@@ -106,7 +103,7 @@ public class ArmorStand{
 		for (Entry<ITabPlayer, String> entry : registeredTo.entrySet()) {
 			ITabPlayer all = entry.getKey();
 			String lastName = entry.getValue();
-			String name = owner.getProperty("armorstand:" + ID).get();
+			String name = owner.getProperty(ID).get();
 			if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
 			datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 			DataWatcher w = datawatcher.create(name);

@@ -153,3 +153,24 @@ animations:
       - "&f&lAdm &e"
       - "&f&lAdmi &e"
       - "&f&lAdmin &e"
+  barcolors:
+    change-interval: 1000
+    texts:
+      - "RED"
+      - "BLUE"
+      - "GREEN"
+      - "YELLOW"
+  test:
+    change-interval: 100
+    texts:
+      - "100"
+      - "90"
+      - "80"
+      - "70"
+      - "60"
+      - "50"
+      - "40"
+      - "30"
+      - "20"
+      - "10"
+      - "0"

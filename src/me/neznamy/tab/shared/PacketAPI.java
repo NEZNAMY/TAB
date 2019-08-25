@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -15,10 +14,9 @@ import me.neznamy.tab.bukkit.packets.DataWatcherObject;
 import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.bukkit.unlimitedtags.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -72,84 +70,58 @@ public class PacketAPI{
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
         new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2).send(p);
     }
-	public static void sendBossBar(ITabPlayer to, BossBAR bar, float progress, String message) {
+	public static void createBossBar(ITabPlayer to, BossBarLine bar) {
+		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
+		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);
+		to.setProperty("bossbar-color-"+bar.getName(), bar.color);
+		to.setProperty("bossbar-style-"+bar.getName(), bar.style);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
-			new PacketPlayOutBoss(bar.getUniqueId(), message, progress, bar.getColor(), bar.getStyle()).send(to);
+			new PacketPlayOutBoss(bar.getUniqueId(), 
+					to.getProperty("bossbar-text-"+bar.getName()).get(), 
+					(float)bar.parseProgress(to.getProperty("bossbar-progress-"+bar.getName()).get())/100, 
+					bar.parseColor(to.getProperty("bossbar-color-"+bar.getName()).get()), 
+					bar.parseStyle(to.getProperty("bossbar-style-"+bar.getName()).get())).send(to);
 		} else {
 			Location l = ((Player) to.getPlayer()).getEyeLocation().add(((Player) to.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
 			if (l.getY() < 1) l.setY(1);
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
-			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), message);
-			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)300*progress);
+			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.getProperty("bossbar-text-"+bar.getName()).get());
+			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.getProperty("bossbar-progress-"+bar.getName()).get()));
 			packet.setDataWatcher(w);
 			packet.send(to);
 		}
 	}
-	public static void removeBossBar(ITabPlayer to, BossBAR bar) {
+	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId()).send(to);
 		} else {
-			new PacketPlayOutEntityDestroy(bar.getEntityId()).send(to);
+			MethodAPI.getInstance().sendPacket((Player) to.getPlayer(), MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
 		}
 	}
-	public static void updateBossBar(ITabPlayer to, BossBAR bar, BarColor color, BarStyle style, float progress, String message) {
+	public static void updateBossBar(ITabPlayer to, BossBarLine bar) {
+		Property progress = to.getProperty("bossbar-progress-"+bar.getName());
+		Property text = to.getProperty("bossbar-text-"+bar.getName());
+		if (text == null) return; //not registered yet
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
-			boolean updateStyle = false;
-			if (bar.getColor() != color) {
-				bar.setColor(color);
-				updateStyle = true;
+			Property color = to.getProperty("bossbar-color-"+bar.getName());
+			Property style = to.getProperty("bossbar-style-"+bar.getName());
+			if (color.isUpdateNeeded() || style.isUpdateNeeded()) {
+				new PacketPlayOutBoss(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())).send(to);
 			}
-			if (bar.getStyle() != style) {
-				bar.setStyle(style);
-				updateStyle = true;
+			if (progress.isUpdateNeeded()) {
+				new PacketPlayOutBoss(bar.getUniqueId(), (float)bar.parseProgress(progress.get())/100).send(to);
 			}
-			if (updateStyle) {
-				PacketPlayOutBoss styleColorPacket = new PacketPlayOutBoss(bar.getUniqueId(), bar.getColor(), bar.getStyle());
-				for (ITabPlayer all : Shared.getPlayers()) {
-					styleColorPacket.send(all);
-				}
+			if (text.isUpdateNeeded()) {
+				new PacketPlayOutBoss(bar.getUniqueId(), text.get()).send(to);
 			}
-			new PacketPlayOutBoss(bar.getUniqueId(), progress).send(to);
-			new PacketPlayOutBoss(bar.getUniqueId(), message).send(to);
 		} else {
 			DataWatcher w = new DataWatcher(null);
-			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), message);
-			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)300*progress);
+			if (text.isUpdateNeeded()) w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), text.get());
+			if (progress.isUpdateNeeded()) w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(progress.get()));
+			if (w.getAllObjects().isEmpty()) return;
 			new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).send(to);
-		}
-	}
-	public static class BossBAR{
-
-		private UUID uuid;
-		private int entityId; //1.8.x
-		private BarColor color;
-		private BarStyle style;
-
-		public BossBAR(BarStyle style, BarColor color) {
-			this.uuid = UUID.randomUUID();
-			this.entityId = Shared.getNextEntityId();
-			this.color = color;
-			this.style = style;
-		}
-		public UUID getUniqueId() {
-			return uuid;
-		}
-		public int getEntityId() {
-			return entityId;
-		}
-		public BarColor getColor() {
-			return color;
-		}
-		public BarStyle getStyle() {
-			return style;
-		}
-		public void setColor(BarColor color) {
-			this.color = color;
-		}
-		public void setStyle(BarStyle style) {
-			this.style = style;
 		}
 	}
 }

@@ -174,7 +174,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						Playerlist.modifyPacket((PlayerListItem) packet, player);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
-						if (!player.disabledNametag && killPacket(packet)) return;
+						if (killPacket(packet)) return;
 					}
 				} catch (Throwable e){
 					Shared.error("An error occured when analyzing packets", e);
@@ -216,7 +216,9 @@ public class Main extends Plugin implements Listener, MainClass{
 			if (players == null) return false;
 			for (ITabPlayer p : Shared.getPlayers()) {
 				for (String player : players) {
-					if (player.equals(p.getName())) return true;
+					if (player.equals(p.getName()) && !p.disabledNametag) {
+						return true;
+					}
 				}
 			}
 		}
@@ -234,10 +236,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
-	}
-	public void loadBossbar() throws Exception {
-		Configs.bossbar = new ConfigurationFile("bungeebossbar.yml", "bossbar.yml");
-		BossBar.refresh = Configs.bossbar.getInt("refresh-interval", 1000);
 	}
 	public static void registerPlaceholders() {
 		Placeholders.list = new ArrayList<Placeholder>();

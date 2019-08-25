@@ -24,8 +24,8 @@ public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
-	private static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final boolean consoleErrors = true;
+	public static final ExecutorService exe = Executors.newCachedThreadPool();
+	public static final boolean consoleErrors = false;
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -89,7 +89,7 @@ public class Shared {
 		return new DecimalFormat("#.##").format(value);
 	}
 	public static void startCPUTask() {
-		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.OTHER, new Runnable() {
+		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.CPU, new Runnable() {
 
 			public void run() {
 				cpuHistory.add(new CPUSample(cpuLastSecond));
@@ -123,7 +123,7 @@ public class Shared {
 		}
 	}
 	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final Feature feature, final Runnable r) {
-		if (delayMilliseconds == 0) return;
+		if (delayMilliseconds <= 0) return;
 		tasks.add(exe.submit(new Runnable() {
 
 			public void run() {
@@ -315,12 +315,15 @@ public class Shared {
 	public static enum Feature{
 		
 		NAMETAG("Name tags"),
+		NAMETAGAO("Name tag anti-override"),
 		PLAYERLIST("Tablist names"),
 		BOSSBAR("Boss Bar"),
 		SCOREBOARD("Scoreboard"),
 		HEADERFOOTER("Header/Footer"),
 		TABLISTOBJECTIVE("Tablist objective"),
 		NAMETAGX("Unlimited nametag mode"),
+		PETFIX("Fixing pet names"),
+		CPU("Calculating cpu usage"),
 		OTHER("Other");
 		
 		private String string;

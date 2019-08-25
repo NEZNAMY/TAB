@@ -1,11 +1,14 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import com.google.common.collect.Lists;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
@@ -74,7 +77,10 @@ public class Placeholders {
 		return result;
 	}
 	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		for (Placeholder pl : list) {
+		return set(string, list, p);
+	}
+	public static String set(String string, List<Placeholder> placeholders, ITabPlayer p) {
+		for (Placeholder pl : placeholders) {
 			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
 		}
 		string = setPlaceholderAPIPlaceholders(string, p);
@@ -98,5 +104,30 @@ public class Placeholders {
 			} //else now we know why it failed
 		}
 		return s;
+	}
+	public static List<Placeholder> detect(String rawValue) {
+		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
+		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
+		String testString = rawValue;
+		boolean changed;
+		for (int i=0; i<10; i++) { //detecting placeholder chains
+			changed = false;
+			for (Placeholder pl : Placeholders.list) {
+				if (testString.contains(pl.getIdentifier())) {
+//					testString = pl.set(testString, owner);
+					if (!placeholdersTotal.contains(pl)) placeholdersTotal.add(pl);
+					changed = true;
+					for (String child : pl.getChilds()) {
+						List<Placeholder> placeholders = detect(child);
+						for (Placeholder p : placeholders) {
+							if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
+							changed = true;
+						}
+					}
+				}
+			}
+			if (!changed) break; //no more placeholders found
+		}
+		return placeholdersTotal;
 	}
 }

@@ -49,7 +49,7 @@ public class Scoreboard {
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
-			p.getProperty("scoreboard-title").changeRawValue(title);
+			p.setProperty("scoreboard-title", title);
 			String replacedTitle = p.getProperty("scoreboard-title").get();
 			PacketAPI.unregisterScoreboardObjective(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
@@ -60,7 +60,7 @@ public class Scoreboard {
 		}
 	}
 	public void unregister() {
-		for (ITabPlayer all : players) {
+		for (ITabPlayer all : players.toArray(new ITabPlayer[0])) {
 			unregister(all);
 		}
 		players.clear();
@@ -76,7 +76,7 @@ public class Scoreboard {
 		}
 	}
 	public void refresh() {
-		for (ITabPlayer p : players) {
+		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 			Property sb = p.getProperty("scoreboard-title");
 			if (sb.isUpdateNeeded()) {
 				String replacedTitle = p.getProperty("scoreboard-title").get();
@@ -102,10 +102,10 @@ public class Scoreboard {
 			this.rawtext = rawtext;
 			this.score = score;
 		}
-		private List<String> replaceText(ITabPlayer p) {
+		private List<String> replaceText(ITabPlayer p, boolean force) {
 			try {
 				Property scoreproperty = p.getProperty("sb-"+ID);
-				if (scoreproperty.isUpdateNeeded()) {
+				if (scoreproperty.isUpdateNeeded() || force) {
 					String replaced = scoreproperty.get();
 					if (replaced.length() > 16) {
 						String prefix = replaced.substring(0, 16);
@@ -126,13 +126,8 @@ public class Scoreboard {
 			}
 		}
 		public void register(ITabPlayer p) {
-			Property scoreproperty = p.getProperty("sb-"+ID);
-			if (scoreproperty == null) {
-				p.properties.add(new Property(p, "sb-"+ID, rawtext));
-			} else {
-				scoreproperty.changeRawValue(rawtext);
-			}
-			List<String> prefixsuffix = replaceText(p);
+			p.setProperty("sb-"+ID, rawtext);
+			List<String> prefixsuffix = replaceText(p, true);
 			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
 			PacketAPI.registerScoreboardScore(p, ID, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
@@ -147,8 +142,8 @@ public class Scoreboard {
 			}
 		}
 		public void updatePrefixSuffix() {
-			for (ITabPlayer p : players) {
-				List<String> prefixsuffix = replaceText(p);
+			for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
+				List<String> prefixsuffix = replaceText(p, false);
 				if (prefixsuffix == null) continue;
 				PacketAPI.sendScoreboardTeamPacket(p, ID, prefixsuffix.get(0), prefixsuffix.get(1), false, false, null, 2, 69);
 			}

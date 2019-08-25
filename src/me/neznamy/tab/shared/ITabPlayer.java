@@ -39,10 +39,12 @@ public abstract class ITabPlayer{
 	public boolean disabledNametag;
 	public boolean disabledTablistObjective;
 	public boolean disabledBossbar;
-	
+
 	public Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
 	public boolean previewingNametag;
+
+	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 
 
 	//bukkit only
@@ -82,13 +84,14 @@ public abstract class ITabPlayer{
 		}
 		return null;
 	}
-	public void setProperty(String identifier, String rawValue) {
+	public String setProperty(String identifier, String rawValue) {
 		Property p = getProperty(identifier);
 		if (p == null) {
 			properties.add(new Property(this, identifier, rawValue));
 		} else {
 			p.changeRawValue(rawValue);
 		}
+		return rawValue;
 	}
 	public void updatePlayerListName(boolean force) {
 		getGroup();
@@ -107,7 +110,7 @@ public abstract class ITabPlayer{
 		if (disabledNametag) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
-			updateTeamPrefixSuffix();
+			if (!Configs.unlimitedTags) updateTeamPrefixSuffix();
 		} else {
 			unregisterTeam();
 			teamName = newName;
@@ -147,7 +150,7 @@ public abstract class ITabPlayer{
 							}
 						}
 					}
-				if (newGroup == null) newGroup = playerGroups[0];
+			if (newGroup == null) newGroup = playerGroups[0];
 			}
 		}
 		if (newGroup != null && (group == null || !group.equals(newGroup))) {
@@ -165,7 +168,16 @@ public abstract class ITabPlayer{
 		return getProperty("tagprefix").getRaw() + getProperty("customtagname").getRaw() + getProperty("tagsuffix").getRaw();
 	}
 	public void updateAll() {
-		properties.add(new Property(this, "scoreboard-title", "-"));
+		setProperty("tablist-objective", TabObjective.rawValue);
+		setProperty("tabprefix", getValue("tabprefix"));
+		setProperty("tagprefix", getValue("tagprefix"));
+		setProperty("tabsuffix", getValue("tabsuffix"));
+		setProperty("tagsuffix", getValue("tagsuffix"));
+		String temp;
+		setProperty("customtabname", (temp = getValue("customtabname")).length() == 0 ? getName() : temp);
+		setProperty("customtagname", (temp = getValue("customtagname")).length() == 0 ? getName() : temp);
+		setProperty("nametag", getRawTagFormat());
+		
 		properties.add(new Property(this, "tablist-objective", TabObjective.rawValue));
 		properties.add(new Property(this, "tabprefix", getValue("tabprefix")));
 		properties.add(new Property(this, "tagprefix", getValue("tagprefix")));
@@ -173,7 +185,8 @@ public abstract class ITabPlayer{
 		properties.add(new Property(this, "tagsuffix", getValue("tagsuffix")));
 		properties.add(new Property(this, "customtabname", getValue("customtabname"), getName()));
 		properties.add(new Property(this, "customtagname", getValue("customtagname"), getName()));
-	
+		properties.add(new Property(this, "nametag", getRawTagFormat()));
+
 		for (String property : Premium.dynamicLines) {
 			if (!property.equals("nametag")) properties.add(new Property(this, property, getValue(property)));
 		}
@@ -257,44 +270,40 @@ public abstract class ITabPlayer{
 			return Premium.sortingType.getTeamName(this);
 		}
 		String name = null;
-		if (!Configs.sortByNickname) {
-			if (Configs.sortByPermissions) {
-				for (String group : Configs.sortedGroups.keySet()) {
-					if (hasPermission("tab.sort." + group)) {
-						name = Configs.sortedGroups.get(group);
-						break;
-					}
-				}
-			} else {
-				for (String group : Configs.sortedGroups.keySet()) {
-					if (group.equalsIgnoreCase(this.group)) {
-						name = Configs.sortedGroups.get(group);
-						break;
-					}
+		if (Configs.sortByPermissions) {
+			for (String group : Configs.sortedGroups.keySet()) {
+				if (hasPermission("tab.sort." + group)) {
+					name = Configs.sortedGroups.get(group);
+					break;
 				}
 			}
-			if (name == null) {
-				if (Shared.mainClass.listNames()) {
-					name = getProperty("tabprefix").get();
-				} else {
-					if (!NameTag16.enable && !Configs.unlimitedTags) {
-						return getName();
-					}
-					name = getProperty("tagprefix").get();
-				}
-			}
-			if (name == null || name.equals("")) {
-				name = "§f";
-			} else {
-				name = Placeholders.replaceAllPlaceholders(name, this);
-			}
-			if (name.length() > 12) {
-				name = name.substring(0, 12);
-			}
-			name += getName();
 		} else {
-			name = getNickname();
+			for (String group : Configs.sortedGroups.keySet()) {
+				if (group.equalsIgnoreCase(this.group)) {
+					name = Configs.sortedGroups.get(group);
+					break;
+				}
+			}
 		}
+		if (name == null) {
+			if (Shared.mainClass.listNames()) {
+				name = getProperty("tabprefix").get();
+			} else {
+				if (!NameTag16.enable && !Configs.unlimitedTags) {
+					return getName();
+				}
+				name = getProperty("tagprefix").get();
+			}
+		}
+		if (name == null || name.equals("")) {
+			name = "§f";
+		} else {
+			name = Placeholders.replaceAllPlaceholders(name, this);
+		}
+		if (name.length() > 12) {
+			name = name.substring(0, 12);
+		}
+		name += getName();
 		if (name.length() > 15) {
 			name = name.substring(0, 15);
 		}
@@ -373,14 +382,15 @@ public abstract class ITabPlayer{
 		disabledBossbar = Configs.disabledBossbar.contains(to);
 		updateGroupIfNeeded();
 		updateAll();
-		if (BossBar.enable) {
-			if (disabledBossbar) {
-				for (BossBarLine line : BossBar.lines) PacketAPI.removeBossBar(this, line.getBossBar());
-			}
-			if (!disabledBossbar && Configs.disabledBossbar.contains(from)) {
-				for (BossBarLine line : BossBar.lines) BossBar.sendBar(this, line);
+		if (disabledBossbar) {
+			for (BossBarLine line : BossBar.lines)
+				PacketAPI.removeBossBar(this, line);
+		} else for (BossBarLine active : getActiveBossBars()) {
+			if (!BossBar.defaultBars.contains(active.getName())) { //per-world bar from previous world
+				PacketAPI.removeBossBar(this, active);
 			}
 		}
+		detectBossBarsAndSend();
 		if (HeaderFooter.enable) {
 			if (disabledHeaderFooter) {
 				new PacketPlayOutPlayerListHeaderFooter("","").send(this);
@@ -395,7 +405,7 @@ public abstract class ITabPlayer{
 				registerTeam();
 			}
 		}
-		if (Shared.mainClass.listNames()) updatePlayerListName(false);
+		if (Shared.mainClass.listNames()) updatePlayerListName(true);
 		if (TabObjective.type != TabObjectiveType.NONE) {
 			if (disabledTablistObjective && !Configs.disabledTablistObjective.contains(from)) {
 				TabObjective.unload(this);
@@ -414,5 +424,33 @@ public abstract class ITabPlayer{
 	}
 	public Scoreboard getActiveScoreboard() {
 		return activeScoreboard;
+	}
+	public List<BossBarLine> getActiveBossBars(){
+		return activeBossBars;
+	}
+	public void detectBossBarsAndSend() {
+		activeBossBars.clear();
+		if (disabledBossbar || !bossbarVisible) return;
+		for (String defaultBar : BossBar.defaultBars) {
+			BossBarLine bar = BossBar.getLine(defaultBar);
+			if (bar != null && bar.hasPermission(this)) {
+				PacketAPI.createBossBar(this, bar);
+				activeBossBars.add(bar);
+			}
+		}
+		for (String announcement : BossBar.announcements) {
+			BossBarLine bar = BossBar.getLine(announcement);
+			if (bar != null && bar.hasPermission(this)) {
+				PacketAPI.createBossBar(this, bar);
+			}
+		}
+		if (BossBar.perWorld.get(getWorldName()) != null)
+			for (String worldbar : BossBar.perWorld.get(getWorldName())) {
+				BossBarLine bar = BossBar.getLine(worldbar);
+				if (bar != null && bar.hasPermission(this)) {
+					PacketAPI.createBossBar(this, bar);
+					activeBossBars.add(bar);
+				}
+			}
 	}
 }

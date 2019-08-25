@@ -96,6 +96,9 @@ public class ConfigurationFile{
 	public int getInt(String path, int defaultValue) {
 		return Integer.parseInt(get(path, defaultValue)+"");
 	}
+	public int getInt(String path) {
+		return Integer.parseInt(get(path, 0)+"");
+	}
 	public boolean getBoolean(String path) {
 		return Boolean.parseBoolean(get(path, null)+"");
 	}

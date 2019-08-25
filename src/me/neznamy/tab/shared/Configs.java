@@ -10,7 +10,6 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.BossBar.BossBarFrame;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 
 public class Configs {
@@ -37,16 +36,15 @@ public class Configs {
 	public static String yesTag;
 	public static String noAfk;
 	public static String yesAfk;
-	
-	
+
+
 	public static ConfigurationFile animation;
 	public static List<Animation> animations;
-	
-	
+
+
 	public static ConfigurationFile bossbar;
-	public static String bossbarToggleCommand;
-	
-	
+
+
 	public static ConfigurationFile translation;
 	public static String no_perm;
 	public static String unlimited_nametag_mode_not_enabled;
@@ -61,15 +59,14 @@ public class Configs {
 	public static String bossbar_on;
 	public static String preview_off;
 	public static String preview_on;
-	
+
 	public static ConfigurationFile advancedconfig;
-	public static boolean sortByNickname = false;
 	public static boolean sortByPermissions = false;
 	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
 	public static List<? extends Object> primaryGroupFindingList = Lists.newArrayList("Owner", "Admin", "Helper", "default");
-	
-	
+
+
 	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
 
 	public static void loadFiles() throws Exception {
@@ -84,7 +81,7 @@ public class Configs {
 		loadTranslation();
 		if (Premium.is()) Premium.loadPremiumConfig();
 	}
-	
+
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
 		HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
@@ -133,22 +130,27 @@ public class Configs {
 				animations.add(new Animation(s, animation.getList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 1000)));
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public static void loadBossbar() throws Exception {
-		Shared.mainClass.loadBossbar();
-		BossBar.enable = bossbar.getBoolean("enabled", false);
-		bossbarToggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
+		bossbar = new ConfigurationFile("bossbar.yml");
+		if (bossbar.get("enabled") != null) {
+			Shared.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
+			return;
+		}
+		BossBar.refresh = Configs.bossbar.getInt("refresh-interval-milliseconds", 1000);
+		BossBar.toggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
+		BossBar.defaultBars = bossbar.getStringList("default-bars");
+		BossBar.perWorld = (Map<String, List<String>>) bossbar.get("per-world");
 		BossBar.lines.clear();
 		if (bossbar.getConfigurationSection("bars") != null) {
 			for (String bar : bossbar.getConfigurationSection("bars").keySet()){
-				List<BossBarFrame> frames = new ArrayList<BossBarFrame>();
-				for (String frame : bossbar.getConfigurationSection("bars." + bar + ".frames").keySet()){
-					String style = bossbar.getString("bars." + bar + ".frames." + frame + ".style");
-					String color = bossbar.getString("bars." + bar + ".frames." + frame + ".color");
-					String progress = bossbar.getString("bars." + bar + ".frames." + frame + ".progress");
-					String message = bossbar.getString("bars." + bar + ".frames." + frame + ".text");
-					frames.add(new BossBarFrame(style, color, progress, message));
-				}
-				if (!frames.isEmpty()) BossBar.lines.add(new BossBarLine(bossbar.getInt("bars." + bar + ".refresh", 1000), frames));
+				boolean permissionRequired = bossbar.getBoolean("bars." + bar + ".permission-required");
+				int refresh = bossbar.getInt("bars." + bar + ".refresh");
+				String style = bossbar.getString("bars." + bar + ".style");
+				String color = bossbar.getString("bars." + bar + ".color");
+				String progress = bossbar.getString("bars." + bar + ".progress");
+				String text = bossbar.getString("bars." + bar + ".text");
+				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress));
 			}
 		}
 	}

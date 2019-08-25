@@ -19,17 +19,16 @@ import me.neznamy.tab.shared.Shared.Feature;
 public class BossBar1_8 implements Listener {
 
 	public static void load() {
-		if (!BossBar.enable) return;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
 			Bukkit.getPluginManager().registerEvents(new BossBar1_8(), Main.instance);
-			Shared.scheduleRepeatingTask(500, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
+			Shared.scheduleRepeatingTask(200, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 
 				
 				public void run() {
 					for (BossBarLine l : BossBar.lines) {
 						for (ITabPlayer all : Shared.getPlayers()) {
 							Location to = ((Player) all.getPlayer()).getEyeLocation().add(((Player) all.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
-							new PacketPlayOutEntityTeleport(l.getBossBar().getEntityId(), to).send(all);
+							new PacketPlayOutEntityTeleport(l.getEntityId(), to).send(all);
 						};
 					}
 				}
@@ -38,18 +37,16 @@ public class BossBar1_8 implements Listener {
 	}
 	@EventHandler
 	public void a(PlayerChangedWorldEvent e) {
-		if (!BossBar.enable) return;
 		long time = System.nanoTime();
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		for (BossBarLine line : BossBar.lines) BossBar.sendBar(p, line);
+		if (p == null) return; //teleport in early login event or what
+		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
 		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
-		if (!BossBar.enable) return;
 		long time = System.nanoTime();
-		for (BossBarLine line : BossBar.lines) BossBar.sendBar(Shared.getPlayer(e.getPlayer().getUniqueId()), line);
+		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
 		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 }
