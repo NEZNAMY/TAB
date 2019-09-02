@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import com.earth2me.essentials.api.Economy;
-import com.github.cheesesoftware.PowerfulPermsAPI.Group;
 
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
@@ -37,22 +36,12 @@ public class TabPlayer extends ITabPlayer{
 	private List<Object> queuedPackets = new ArrayList<Object>();
 
 	public TabPlayer(Player p) {
-		super(p);
+		this.player = p;
 	}
-	public void onJoin() throws Exception {
-		this.version = ProtocolVersion.SERVER_VERSION;
-		try {
-			int version;
-			if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")){
-				version = Via.getAPI().getPlayerVersion(getUniqueId());
-				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
-			} else if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
-				version = ProtocolSupportAPI.getProtocolVersion(getPlayer()).getId();
-				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
-			}
-		} catch (Throwable e) {
-			Shared.error("An error occured when getting version of " + getName(), e);
-		}
+	public void onJoin() {
+		updateGroupIfNeeded();
+		updateAll();
+		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
 		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());
@@ -77,13 +66,13 @@ public class TabPlayer extends ITabPlayer{
 		PerWorldPlayerlist.trigger(getPlayer());
 		for (Object packet : queuedPackets) sendPacket(packet);
 		queuedPackets.clear();
+		fullyLoaded = true;
 	}
 	public String getGroupFromPermPlugin() {
 		try {
 			if (Main.luckPerms) return LuckPerms.getApi().getUser(getPlayer().getUniqueId()).getPrimaryGroup();
 			if (Main.pex) return PermissionsEx.getUser(getPlayer()).getGroupNames()[0];
 			if (Main.groupManager != null) return Main.groupManager.getWorldsHolder().getWorldPermissions(getPlayer()).getGroup(getName());
-			if (Main.powerfulPerms != null) return Main.powerfulPerms.getPermissionManager().getPermissionPlayer(getPlayer().getUniqueId()).getPrimaryGroup().getName();
 			try {
 				if (Main.perm != null) return Main.perm.getPrimaryGroup(getPlayer());
 			} catch (UnsupportedOperationException e) {
@@ -103,11 +92,6 @@ public class TabPlayer extends ITabPlayer{
 			}
 			if (Main.pex) return PermissionsEx.getUser(getPlayer()).getGroupNames();
 			if (Main.groupManager != null) return Main.groupManager.getWorldsHolder().getWorldPermissions(getPlayer()).getGroups(getName());
-			if (Main.powerfulPerms != null) {
-				List<String> groups = new ArrayList<String>();
-				for (Group g : Main.powerfulPerms.getPermissionManager().getPermissionPlayer(getPlayer().getUniqueId()).getGroups()) groups.add(g.getName());
-				return groups.toArray(new String[0]);
-			}
 			try {
 				if (Main.perm != null) return Main.perm.getPlayerGroups(getPlayer());
 			} catch (UnsupportedOperationException e) {
@@ -231,5 +215,21 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public boolean hasInvisibility() {
 		return getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY);
+	}
+	public void loadVersion() {
+		try {
+			int version;
+			if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
+				version = ProtocolSupportAPI.getProtocolVersion(getPlayer()).getId();
+//				System.out.println("PS returned " + version);
+				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
+			} else if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")){
+				version = Via.getAPI().getPlayerVersion(getUniqueId());
+//				System.out.println("Via returned " + version);
+				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
+			}
+		} catch (Throwable e) {
+			Shared.error("An error occured when getting version of " + getName(), e);
+		}
 	}
 }

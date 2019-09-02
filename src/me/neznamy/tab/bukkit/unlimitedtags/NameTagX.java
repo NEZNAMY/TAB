@@ -73,10 +73,13 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(final PlayerToggleSneakEvent e) {
+		final ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) {
+			Shared.error("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
+			return;
+		}
 		Shared.runTask("processing sprint toggle", Feature.NAMETAGX, new Runnable() {
-
 			public void run() {
-				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				NameTagLineManager.sneak(p, e.isSneaking());
 			}
 		});

@@ -16,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 
 import com.earth2me.essentials.Essentials;
-import com.github.cheesesoftware.PowerfulPermsAPI.PowerfulPermsPlugin;
 import com.google.common.collect.Lists;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.entity.MPlayer;
@@ -44,7 +43,6 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
-	public static PowerfulPermsPlugin powerfulPerms;
 	public static GroupManager groupManager;
 	public static boolean luckPerms;
 	public static boolean pex;
@@ -97,11 +95,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) {
-				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported - too old! Disabling...");
-			} else {
-				sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported ! Please update the plugin.");
-			}
+			sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 	}
@@ -149,7 +143,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
-				if(inject) inject(t);
+				((TabPlayer) t).loadVersion();
+				if (inject) inject(t);
 				t.onJoin();
 			}
 			for (ITabPlayer p : Shared.getPlayers()) p.updatePlayerListName(false);
@@ -190,11 +185,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			inject(p);
-			p.onJoin();
+			((TabPlayer) p).loadVersion();
 			final ITabPlayer pl = p;
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
+					pl.onJoin();
 					Placeholders.recalculateOnlineVersions();
 					HeaderFooter.playerJoin(pl);
 					TabObjective.playerJoin(pl);
@@ -213,6 +209,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			if (disabled) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+			if (disconnectedPlayer == null) {
+				Shared.error("Data of " + disconnectedPlayer + " did not exist when player left");
+				return;
+			}
 			Placeholders.recalculateOnlineVersions();
 			NameTag16.playerQuit(disconnectedPlayer);
 			NameTagX.playerQuit(disconnectedPlayer);
@@ -275,17 +275,20 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						}
 						Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
 
-						if (NameTagX.enable && !player.disabledNametag) {
+						if (NameTagX.enable) {
 							time = System.nanoTime();
 							NameTagXPacket pack = null;
 							if ((pack = NameTagXPacket.fromNMS(packet)) != null) {
-								//sending packets outside of the packet reader or protocollib will cause problems
-								final NameTagXPacket p = pack;
-								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
-									public void run() {
-										NameTagX.processPacketOUT(p, player);
-									}
-								});
+								ITabPlayer packetPlayer = Shared.getPlayer(pack.getEntityId());
+								if (packetPlayer == null || !packetPlayer.disabledNametag) {
+									//sending packets outside of the packet reader or protocollib will cause problems
+									final NameTagXPacket p = pack;
+									Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
+										public void run() {
+											NameTagX.processPacketOUT(p, player);
+										}
+									});
+								}
 							}
 							Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
 						}
@@ -363,7 +366,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (pex) return "PermissionsEx";
 		if (groupManager != null) return "GroupManager";
 		if (luckPerms) return "LuckPerms";
-		if (powerfulPerms != null) return "PowerfulPerms";
+
 		if (perm != null) return perm.getName() + " (detected by Vault)";
 		return "Unknown/None";
 	}
@@ -451,7 +454,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (rsp2 != null) Main.perm = rsp2.getProvider();
 		}
 		Main.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
-		Main.powerfulPerms = (PowerfulPermsPlugin) Bukkit.getPluginManager().getPlugin("PowerfulPerms");
 		Main.groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
 		Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.register();
@@ -567,15 +569,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return string.replace(identifier, afk?Configs.yesAfk:Configs.noAfk);
 				}
 			});
-		}
-		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
+		} else if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			Placeholders.list.add(new Placeholder("%afk%") {
 				public String set(String string, ITabPlayer p) {
 					return string.replace(identifier, xAntiAFKAPI.isAfk((Player) p.getPlayer())?Configs.yesAfk:Configs.noAfk);
 				}
 			});
-		}
-		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			Placeholders.list.add(new Placeholder("%afk%") {
 
 				private Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
@@ -583,6 +583,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				public String set(String string, ITabPlayer p) {
 					boolean afk = (essentials.getUser(p.getUniqueId()) != null && essentials.getUser(p.getUniqueId()).isAfk());
 					return string.replace(identifier, afk?Configs.yesAfk:Configs.noAfk);
+				}
+			});
+		} else {
+			Placeholders.list.add(new Placeholder("%afk%") {
+				public String set(String string, ITabPlayer p) {
+					return string.replace(identifier, "");
 				}
 			});
 		}

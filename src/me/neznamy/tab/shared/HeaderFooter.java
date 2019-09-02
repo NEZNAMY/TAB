@@ -27,7 +27,9 @@ public class HeaderFooter {
 	}
 	public static void refreshHeaderFooter(ITabPlayer p) {
 		if (p.disabledHeaderFooter) return;
-		if (p.getProperty("header").isUpdateNeeded() || p.getProperty("footer").isUpdateNeeded()) {
+		boolean header = p.getProperty("header").isUpdateNeeded();
+		boolean footer = p.getProperty("footer").isUpdateNeeded();
+		if (header || footer) {
 			new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").get(), p.getProperty("footer").get()).send(p);
 		}
 	}

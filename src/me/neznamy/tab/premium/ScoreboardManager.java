@@ -17,6 +17,7 @@ public class ScoreboardManager {
 	public static int refresh;
 	public static Map<String, String> perWorld;
 	public static Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
+	public static boolean useNumbers;
 
 	public static String scoreboard_on;
 	public static String scoreboard_off;
@@ -29,6 +30,7 @@ public class ScoreboardManager {
 		Shared.scheduleRepeatingTask(refresh*50, "refreshing scoreboard", Feature.SCOREBOARD, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
+					if (!p.fullyLoaded) continue;
 					Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? null : board.getName();
 					String highest = getHighestScoreboard(p);

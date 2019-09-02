@@ -1,7 +1,6 @@
 package me.neznamy.tab.premium;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -10,6 +9,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class Scoreboard {
@@ -18,7 +18,7 @@ public class Scoreboard {
 	private String title;
 	private boolean permissionRequired;
 	private String childBoard;
-	private HashMap<Integer, Score> scores = new HashMap<Integer, Score>();
+	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private String objectiveName;
 
@@ -30,7 +30,7 @@ public class Scoreboard {
 		objectiveName = Math.random()*1000000+"";
 		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
 		for (int i=0; i<lines.size(); i++) {
-			scores.put(i, new Score("TABSBTM"+i, getLineName(i),  lines.get(i), 0));
+			scores.add(new Score(lines.size()-i, "TABSBTM"+i, getLineName(i),  lines.get(i)));
 		}
 	}
 	public String getName() {
@@ -53,7 +53,7 @@ public class Scoreboard {
 			String replacedTitle = p.getProperty("scoreboard-title").get();
 			PacketAPI.unregisterScoreboardObjective(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
-			for (Score s : scores.values()) {
+			for (Score s : scores) {
 				s.register(p);
 			}
 			players.add(p);
@@ -69,7 +69,7 @@ public class Scoreboard {
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
 			PacketAPI.unregisterScoreboardObjective(p, objectiveName, p.getProperty("scoreboard-title").get(), EnumScoreboardHealthDisplay.INTEGER);
-			for (Score s : scores.values()) {
+			for (Score s : scores) {
 				s.unregister(p);
 			}
 			players.remove(p);
@@ -77,30 +77,28 @@ public class Scoreboard {
 	}
 	public void refresh() {
 		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
-			Property sb = p.getProperty("scoreboard-title");
-			if (sb.isUpdateNeeded()) {
-				String replacedTitle = p.getProperty("scoreboard-title").get();
+			Property title = p.getProperty("scoreboard-title");
+			if (title.isUpdateNeeded()) {
+				String replacedTitle = title.get();
 				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
-				players.add(p);
 			}
-			
 		}
-		for (Score s : scores.values()) {
+		for (Score s : scores) {
 			s.updatePrefixSuffix();
 		}
 	}
 	public class Score{
 
-		private String rawtext;
 		private int score;
+		private String rawtext;
 		private String ID;
 		private String player;
 
-		public Score(String ID, String player, String rawtext, int score) {
+		public Score(int score, String ID, String player, String rawtext) {
+			this.score = score;
 			this.ID = ID;
 			this.player = player;
 			this.rawtext = rawtext;
-			this.score = score;
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force) {
 			Property scoreproperty = p.getProperty("sb-"+ID);
@@ -124,6 +122,7 @@ public class Scoreboard {
 			p.setProperty("sb-"+ID, rawtext);
 			List<String> prefixsuffix = replaceText(p, true);
 			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
+			int score = (p.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber() || ScoreboardManager.useNumbers) ? this.score : 0;
 			PacketAPI.registerScoreboardScore(p, ID, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {

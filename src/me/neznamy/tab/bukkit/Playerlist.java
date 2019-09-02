@@ -45,14 +45,14 @@ public class Playerlist {
 			if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
-			if (packetPlayer == null || packetPlayer.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8_x.getNumber()) return;
+			if (packetPlayer == null || packetPlayer.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber()) return;
 			String format = packetPlayer.getTabFormat(receiver);
 			playerInfoData.setPlayerListName(format);
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.ADD_PLAYER) {
 			if (packetPlayer != null) {
 				//player
-				if (!packetPlayer.disabledTablistNames && receiver.getVersion().getNumber() >= ProtocolVersion.v1_8_x.getNumber()) {
+				if (!packetPlayer.disabledTablistNames && receiver.getVersion().getNumber() >= ProtocolVersion.v1_8.getNumber()) {
 					String format = packetPlayer.getTabFormat(receiver);
 					playerInfoData.setPlayerListName(format);
 				}

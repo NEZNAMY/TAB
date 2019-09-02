@@ -42,6 +42,7 @@ public class Premium {
 		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
 		ScoreboardManager.enabled = premiumconfig.getBoolean("scoreboard.enabled", false);
 		ScoreboardManager.toggleCommand = premiumconfig.getString("scoreboard.toggle-command", "/sb");
+		ScoreboardManager.useNumbers = premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		ScoreboardManager.disabledWorlds = premiumconfig.getList("scoreboard.disable-in-worlds", Lists.newArrayList("disabledworld"));
 		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1);

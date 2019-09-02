@@ -6,6 +6,7 @@ import java.util.UUID;
 import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.alpenblock.bungeeperms.BungeePerms;
@@ -24,7 +25,10 @@ public class TabPlayer extends ITabPlayer{
 	public Server server;
 
 	public TabPlayer(ProxiedPlayer p) {
-		super(p);
+		this.player = p;
+		updateGroupIfNeeded();
+		updateAll();
+		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 		version = ProtocolVersion.fromNumber(getPlayer().getPendingConnection().getVersion());
 		ipAddress = p.getAddress().getAddress().getHostAddress();
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());

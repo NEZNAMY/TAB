@@ -37,6 +37,7 @@ public class Property {
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
+		lastReplacedValue = null;
 		if (temporaryValue == null) placeholders = Placeholders.detect(rawValue);
 	}
 	public String get() {

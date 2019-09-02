@@ -30,7 +30,7 @@ public class TabObjective{
 		PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, type.getDisplay());
 		for (ITabPlayer all : Shared.getPlayers()){
 			PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
-			PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", getValue(p));
+			PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", getValue(all));
 		}
 	}
 	public static void unload() {

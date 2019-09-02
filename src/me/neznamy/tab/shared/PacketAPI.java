@@ -107,7 +107,9 @@ public class PacketAPI{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			Property color = to.getProperty("bossbar-color-"+bar.getName());
 			Property style = to.getProperty("bossbar-style-"+bar.getName());
-			if (color.isUpdateNeeded() || style.isUpdateNeeded()) {
+			boolean colorUpdate = color.isUpdateNeeded();
+			boolean styleUpdate = style.isUpdateNeeded();
+			if (colorUpdate || styleUpdate) {
 				new PacketPlayOutBoss(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())).send(to);
 			}
 			if (progress.isUpdateNeeded()) {

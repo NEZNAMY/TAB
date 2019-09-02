@@ -5,12 +5,12 @@ public enum ProtocolVersion {
 	UNKNOWN		(-1,  "Unknown", 	0,   0,  0),
 	v1_7_2to5	(4,   "1.7.2-5", 	7,  14, 10),
 	v1_7_6to10	(5,   "1.7.6-10", 	7,  14, 10),
-	v1_8_x		(47,  "1.8.x", 		8,  14, 10),
+	v1_8		(47,  "1.8.x", 		8,  14, 10),
 	v1_9		(107, "1.9", 		9,  14, 10),
 	v1_9_1		(108, "1.9.1", 		9,  14, 10),
 	v1_9_2		(109, "1.9.2", 		9,  14, 10),
 	v1_9_3and4	(110, "1.9.3/4", 	9,  14, 10),
-	v1_10_x		(210, "1.10.x", 	10, 14, 11),
+	v1_10		(210, "1.10.x", 	10, 14, 11),
 	v1_11		(315, "1.11",		11, 14, 11),
 	v1_11_1and2	(316, "1.11.1/2",	11, 14, 11),
 	v1_12		(335, "1.12", 		12, 14, 11),
@@ -68,8 +68,8 @@ public enum ProtocolVersion {
 		return markerPosition;
 	}
 	public static ProtocolVersion fromServerString(String s) {
-		if (s.startsWith("1.8")) return v1_8_x;
-		if (s.startsWith("1.10")) return v1_10_x;
+		if (s.startsWith("1.8")) return v1_8;
+		if (s.startsWith("1.10")) return v1_10;
 		if (s.equals("1.9.3") || s.equals("1.9.4")) return v1_9_3and4;
 		if (s.equals("1.11.1") || s.equals("1.11.2")) return v1_11_1and2;
 		try {

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -37,7 +38,7 @@ public class Playerlist {
 			if (Configs.doNotMoveSpectators && playerInfoData.getGamemode() == 3 && uuid != receiver.getUniqueId()) playerInfoData.setGamemode(1);
 		}
 		if (packet.getAction() == Action.UPDATE_DISPLAY_NAME || packet.getAction() == Action.ADD_PLAYER) {
-			if (player == null || player.disabledTablistNames) return;
+			if (player == null || player.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber()) return;
 			String format = player.getTabFormat(receiver);
 			playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(format));
 		}

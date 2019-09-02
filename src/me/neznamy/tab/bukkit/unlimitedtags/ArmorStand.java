@@ -51,7 +51,7 @@ public class ArmorStand{
 		return ID;
 	}
 	public void setNameFormat(String format) {
-		owner.getProperty(ID);
+		owner.setProperty(ID, format);
 	}
 	public void refreshName() {
 		if (owner.getProperty(ID).isUpdateNeeded()) {

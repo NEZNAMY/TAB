@@ -268,25 +268,25 @@ public class TabCommand{
 			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
 		}
 	}
-	public static void savePlayer(ITabPlayer p, String player, String type, String value){
+	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
 		ITabPlayer pl = Shared.getPlayer(player);
 		if (pl != null) {
-			p.setProperty(type, value);
+			pl.setProperty(type, value);
 			if (Configs.unlimitedTags) pl.restartArmorStands();
 		}
 		if (value.equals("")) value = null;
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(p, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("§", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("§", "§"));
 		} else {
-			sendMessage(p, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
+			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
 	}
-	public static void saveGroup(ITabPlayer p, String group, String type, String value){
+	public static void saveGroup(ITabPlayer sender, String group, String type, String value){
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup() != null && pl.getGroup().equals(group)){
-				p.setProperty(type, value);
+				pl.setProperty(type, value);
 				if (Configs.unlimitedTags) pl.restartArmorStands();
 			}
 		}
@@ -294,9 +294,9 @@ public class TabCommand{
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(p, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("§", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("§", "§"));
 		} else {
-			sendMessage(p, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
+			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
 	}
 }

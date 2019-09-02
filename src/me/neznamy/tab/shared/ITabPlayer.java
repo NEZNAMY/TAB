@@ -45,12 +45,14 @@ public abstract class ITabPlayer{
 	public boolean previewingNametag;
 
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
+	
+	public boolean fullyLoaded;
 
 
 	//bukkit only
 	public abstract Integer getEntityId();
 	public abstract void restartArmorStands();
-	public abstract void onJoin() throws Exception;
+	public abstract void onJoin();
 	public abstract String getMoney();
 	public abstract void setTeamVisible(boolean p0);
 	public abstract int getHealth();
@@ -71,13 +73,6 @@ public abstract class ITabPlayer{
 	public abstract void sendMessage(String message);
 	protected abstract void loadChannel();
 
-
-	public ITabPlayer(Object player) {
-		this.player = player;
-		updateGroupIfNeeded();
-		updateAll();
-		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
-	}
 	public Property getProperty(String identifier) {
 		for (Property p : properties) {
 			if (p.getIdentifier().equals(identifier)) return p;
@@ -95,7 +90,10 @@ public abstract class ITabPlayer{
 	}
 	public void updatePlayerListName(boolean force) {
 		getGroup();
-		if (getProperty("tabprefix").isUpdateNeeded() || getProperty("customtabname").isUpdateNeeded() || getProperty("tabsuffix").isUpdateNeeded() || force) {
+		boolean tabprefix = getProperty("tabprefix").isUpdateNeeded();
+		boolean customtabname = getProperty("customtabname").isUpdateNeeded();
+		boolean tabsuffix = getProperty("tabsuffix").isUpdateNeeded();
+		if (tabprefix || customtabname || tabsuffix || force) {
 			setPlayerListName();
 		}
 	}
@@ -110,7 +108,7 @@ public abstract class ITabPlayer{
 		if (disabledNametag) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
-			if (!Configs.unlimitedTags) updateTeamPrefixSuffix();
+			updateTeamPrefixSuffix();
 		} else {
 			unregisterTeam();
 			teamName = newName;
@@ -177,21 +175,12 @@ public abstract class ITabPlayer{
 		setProperty("customtabname", (temp = getValue("customtabname")).length() == 0 ? getName() : temp);
 		setProperty("customtagname", (temp = getValue("customtagname")).length() == 0 ? getName() : temp);
 		setProperty("nametag", getRawTagFormat());
-		
-		properties.add(new Property(this, "tablist-objective", TabObjective.rawValue));
-		properties.add(new Property(this, "tabprefix", getValue("tabprefix")));
-		properties.add(new Property(this, "tagprefix", getValue("tagprefix")));
-		properties.add(new Property(this, "tabsuffix", getValue("tabsuffix")));
-		properties.add(new Property(this, "tagsuffix", getValue("tagsuffix")));
-		properties.add(new Property(this, "customtabname", getValue("customtabname"), getName()));
-		properties.add(new Property(this, "customtagname", getValue("customtagname"), getName()));
-		properties.add(new Property(this, "nametag", getRawTagFormat()));
 
 		for (String property : Premium.dynamicLines) {
-			if (!property.equals("nametag")) properties.add(new Property(this, property, getValue(property)));
+			if (!property.equals("nametag")) setProperty(property, getValue(property));
 		}
 		for (String property : Premium.staticLines.keySet()) {
-			if (!property.equals("nametag")) properties.add(new Property(this, property, getValue(property)));
+			if (!property.equals("nametag")) setProperty(property, getValue(property));
 		}
 		rank = (String) Configs.rankAliases.get("_OTHER_");
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
@@ -329,7 +318,10 @@ public abstract class ITabPlayer{
 		for (ITabPlayer all : Shared.getPlayers()) {
 			Property tagprefix = getProperty("tagprefix");
 			Property tagsuffix = getProperty("tagsuffix");
-			if (tagprefix.isUpdateNeeded() || tagsuffix.isUpdateNeeded()) {
+			boolean tagprefixUpdate = tagprefix.isUpdateNeeded();
+			boolean tagsuffixUpdate = tagsuffix.isUpdateNeeded();
+			if (tagprefixUpdate || tagsuffixUpdate) {
+				if (Configs.unlimitedTags && all.getVersion().getNumber() >= ProtocolVersion.v1_8.getNumber()) continue;
 				String replacedPrefix = tagprefix.get();
 				String replacedSuffix = tagsuffix.get();
 				if (Placeholders.placeholderAPI) {
@@ -382,6 +374,7 @@ public abstract class ITabPlayer{
 		disabledBossbar = Configs.disabledBossbar.contains(to);
 		updateGroupIfNeeded();
 		updateAll();
+		restartArmorStands();
 		if (disabledBossbar) {
 			for (BossBarLine line : BossBar.lines)
 				PacketAPI.removeBossBar(this, line);

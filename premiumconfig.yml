@@ -39,6 +39,8 @@ unlimited-nametag-mode-static-lines:
 scoreboard:
   enabled: false
   toggle-command: /sb
+  #using 1-15 instead of 0s everywhere
+  use-numbers: false
   disable-in-worlds: 
     - disabledworld
   #set to NONE to have no default scoreboard
