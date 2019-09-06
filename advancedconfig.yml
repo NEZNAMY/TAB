@@ -1,15 +1,15 @@
- #players will only see in tablist those who are in the same world
+#players will only see in tablist those who are in the same world
 per-world-playerlist: false
 
- #allow players with tab.bypass permission to see every player in tablist even if the setting above is enabled
+#allow players with tab.bypass permission to see every player in tablist even if the setting above is enabled
 allow-pwp-bypass-permission: false
 
- #even if per-world-playerlist is enabled, people in these worlds will see everyone on server in tablist
+#even if per-world-playerlist is enabled, people in these worlds will see everyone on server in tablist
 ignore-pwp-in-worlds:
  - ignoredworld
  - spawn
 
- #sorting by permissions. Permission node is "tab.sort.<group>" and priorities can be set in config
+#sorting by permissions. Permission node is "tab.sort.<group>" and priorities can be set in config
 sort-players-by-permissions: false
 
 #an option to remove minecraft vanilla feature since 1.9 making named pets have same prefix as their owner (and being invisible when unlimited nametag mode is enabled)

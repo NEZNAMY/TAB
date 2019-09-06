@@ -25,7 +25,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final boolean consoleErrors = false;
+	public static final boolean consoleErrors = true;
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -89,7 +89,7 @@ public class Shared {
 		return new DecimalFormat("#.##").format(value);
 	}
 	public static void startCPUTask() {
-		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.CPU, new Runnable() {
+		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.OTHER, new Runnable() {
 
 			public void run() {
 				cpuHistory.add(new CPUSample(cpuLastSecond));
@@ -187,31 +187,30 @@ public class Shared {
 	}
 	public static void registerUniversalPlaceholders() {
 		Placeholders.list.add(new Placeholder("%money%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getMoney());
+			public String get(ITabPlayer p) {
+				return p.getMoney();
 			}
 		});
 		Placeholders.list.add(new Placeholder("%rank%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getRank());
+			public String get(ITabPlayer p) {
+				return p.getRank();
 			}
 			@Override
 			public String[] getChilds(){
 				return Configs.rankAliases.values().toArray(new String[0]);
 			}
 		});
-		Placeholders.list.add(new Placeholder("%version-group") {
-			public String set(String string, ITabPlayer p) {
-				for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
-					string = string.replace("%version-group:" + entry.getKey()+ "%", entry.getValue()+"");
+		for (final Entry<String, Integer> entry : Placeholders.online.entrySet()){
+			Placeholders.list.add(new Placeholder("%version-group:" + entry.getKey()+ "%") {
+				public String get(ITabPlayer p) {
+					return Placeholders.online.get(entry.getKey())+"";
 				}
-				return string;
-			}
-		});
+			});
+		}
 		for (final Animation a : Configs.animations) {
 			Placeholders.list.add(new Placeholder("%animation:" + a.getName() + "%") {
-				public String set(String string, ITabPlayer p) {
-					return string.replace(identifier, a.getMessage());
+				public String get(ITabPlayer p) {
+					return a.getMessage();
 				}
 				@Override
 				public String[] getChilds(){
@@ -219,8 +218,8 @@ public class Shared {
 				}
 			});
 			Placeholders.list.add(new Placeholder("{animation:" + a.getName() + "}") {
-				public String set(String string, ITabPlayer p) {
-					return string.replace(identifier, a.getMessage());
+				public String get(ITabPlayer p) {
+					return a.getMessage();
 				}
 				@Override
 				public String[] getChilds(){
@@ -229,86 +228,76 @@ public class Shared {
 			});
 		}
 		Placeholders.list.add(new Placeholder("%staffonline%") {
-			public String set(String string, ITabPlayer p) {
+			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
 					if (all.isStaff()) var++;
 				}
-				return string.replace(identifier, var+"");
+				return var+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%"+Shared.mainClass.getSeparatorType()+"%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getWorldName());
+			public String get(ITabPlayer p) {
+				return p.getWorldName();
 			}
 		});
 		Placeholders.list.add(new Placeholder("%"+Shared.mainClass.getSeparatorType()+"online%") {
-			public String set(String string, ITabPlayer p) {
+			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
 					if (p.getWorldName().equals(all.getWorldName())) var++;
 				}
-				return string.replace(identifier, var+"");
+				return var+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%memory-used%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + ""));
+			public String get(ITabPlayer p) {
+				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
 		Placeholders.list.add(new Placeholder("%memory-max%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"");
+			public String get(ITabPlayer p) {
+				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%memory-used-gb%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, (Shared.round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + ""));
+			public String get(ITabPlayer p) {
+				return (Shared.round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
 		Placeholders.list.add(new Placeholder("%memory-max-gb%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, (Shared.round((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"");
+			public String get(ITabPlayer p) {
+				return (Shared.round((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%nick%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getName());
+			public String get(ITabPlayer p) {
+				return p.getName();
 			}
 		});
 		Placeholders.list.add(new Placeholder("%time%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000)));
+			public String get(ITabPlayer p) {
+				return new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
 		Placeholders.list.add(new Placeholder("%date%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, new SimpleDateFormat(Configs.dateFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000)));
-			}
-		});
-		Placeholders.list.add(new Placeholder("%IP%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getIPAddress());
-			}
-		});
-		Placeholders.list.add(new Placeholder("%ip%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getIPAddress());
+			public String get(ITabPlayer p) {
+				return new SimpleDateFormat(Configs.dateFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
 		Placeholders.list.add(new Placeholder("%online%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, Shared.getPlayers().size()+"");
+			public String get(ITabPlayer p) {
+				return Shared.getPlayers().size()+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%ping%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getPing()+"");
+			public String get(ITabPlayer p) {
+				return p.getPing()+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%player-version%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, p.getVersion().getFriendlyName());
+			public String get(ITabPlayer p) {
+				return p.getVersion().getFriendlyName();
 			}
 		});
 	}
@@ -316,14 +305,13 @@ public class Shared {
 		
 		NAMETAG("Name tags"),
 		NAMETAGAO("Name tag anti-override"),
-		PLAYERLIST("Tablist names"),
+		PLAYERLIST_1("Tablist names 1"),
+		PLAYERLIST_2("Tablist names 2"),
 		BOSSBAR("Boss Bar"),
 		SCOREBOARD("Scoreboard"),
 		HEADERFOOTER("Header/Footer"),
 		TABLISTOBJECTIVE("Tablist objective"),
 		NAMETAGX("Unlimited nametag mode"),
-		PETFIX("Fixing pet names"),
-		CPU("Calculating cpu usage"),
 		OTHER("Other");
 		
 		private String string;

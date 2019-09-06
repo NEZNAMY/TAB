@@ -2,9 +2,14 @@ package me.neznamy.tab.shared;
 
 public enum ProtocolVersion {
 
-	UNKNOWN		(-1,  "Unknown", 	0,   0,  0),
-	v1_7_2to5	(4,   "1.7.2-5", 	7,  14, 10),
-	v1_7_6to10	(5,   "1.7.6-10", 	7,  14, 10),
+	UNKNOWN		(-1,  "Unknown", 	0,  0,  0),
+	v1_5_1		(60,  "1.5.1",		5,	0,	0),
+	v1_5_2		(61,  "1.5.2",		5,	0,	0),
+	v1_6_1		(73,  "1.6.1",		6,	0,	0),
+	v1_6_2		(74,  "1.6.2",		6,	0,	0),
+	v1_6_4		(78,  "1.6.4",		6,	0,	0),
+	v1_7_2to5	(4,   "1.7.2-5", 	7,  0, 	0),
+	v1_7_6to10	(5,   "1.7.6-10", 	7,  0, 	0),
 	v1_8		(47,  "1.8.x", 		8,  14, 10),
 	v1_9		(107, "1.9", 		9,  14, 10),
 	v1_9_1		(108, "1.9.1", 		9,  14, 10),
@@ -23,7 +28,8 @@ public enum ProtocolVersion {
 	v1_14_1		(480, "1.14.1",		14, 16, 13),
 	v1_14_2		(485, "1.14.2",		14, 16, 13),
 	v1_14_3		(490, "1.14.3",		14, 16, 13),
-	v1_14_4		(498, "1.14.4",		14, 16, 13);
+	v1_14_4		(498, "1.14.4",		14, 16, 13),
+	FUTURE		(999, "Future",		0,	0,	0);
 	
 	public static ProtocolVersion SERVER_VERSION;
 	public static String packageName;
@@ -81,6 +87,9 @@ public enum ProtocolVersion {
 	public static ProtocolVersion fromNumber(int number) {
 		for (ProtocolVersion v : values()) {
 			if (number == v.getNumber()) return v;
+		}
+		if (number > v1_14_4.getNumber()) {
+			return FUTURE;
 		}
 		return UNKNOWN;
 	}

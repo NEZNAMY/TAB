@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 public abstract class ITabPlayer{
 
 	public Object player;
-	public List<Property> properties = new ArrayList<Property>();
+	public HashMap<String, Property> properties = new HashMap<String, Property>();
 	private String group;
 	private long lastRefreshGroup;
 	public String teamName;
@@ -30,7 +30,6 @@ public abstract class ITabPlayer{
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors before this is loaded
 	public Channel channel;
-	public String ipAddress = "-";
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
 
@@ -40,26 +39,26 @@ public abstract class ITabPlayer{
 	public boolean disabledTablistObjective;
 	public boolean disabledBossbar;
 
-	public Scoreboard activeScoreboard;
+	private Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
 	public boolean previewingNametag;
 
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
-	
+
 	public boolean fullyLoaded;
 
 
 	//bukkit only
-	public abstract Integer getEntityId();
-	public abstract void restartArmorStands();
-	public abstract void onJoin();
-	public abstract String getMoney();
-	public abstract void setTeamVisible(boolean p0);
-	public abstract int getHealth();
-	public abstract String getNickname();
-	public abstract boolean hasInvisibility();
+	public String getNickname() {return getName();}
+	public String getMoney() {return "-";}
+	public void setTeamVisible(boolean p0) {}
+	public void restartArmorStands() {}
+	public Integer getEntityId() {return 0;}
+	public int getHealth() {return 0;}
+	public boolean hasInvisibility() {return false;}
 
 	//per-type
+	public abstract void onJoin();
 	public abstract void setPlayerListName();
 	public abstract String getGroupFromPermPlugin();
 	public abstract String[] getGroupsFromPermPlugin();
@@ -73,39 +72,34 @@ public abstract class ITabPlayer{
 	public abstract void sendMessage(String message);
 	protected abstract void loadChannel();
 
-	public Property getProperty(String identifier) {
-		for (Property p : properties) {
-			if (p.getIdentifier().equals(identifier)) return p;
-		}
-		return null;
-	}
 	public String setProperty(String identifier, String rawValue) {
-		Property p = getProperty(identifier);
+		Property p = properties.get(identifier);
 		if (p == null) {
-			properties.add(new Property(this, identifier, rawValue));
+			properties.put(identifier, new Property(this, rawValue));
 		} else {
 			p.changeRawValue(rawValue);
 		}
 		return rawValue;
 	}
 	public void updatePlayerListName(boolean force) {
+		if (!fullyLoaded) return;
 		getGroup();
-		boolean tabprefix = getProperty("tabprefix").isUpdateNeeded();
-		boolean customtabname = getProperty("customtabname").isUpdateNeeded();
-		boolean tabsuffix = getProperty("tabsuffix").isUpdateNeeded();
+		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
+		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
+		boolean tabsuffix = properties.get("tabsuffix").isUpdateNeeded();
 		if (tabprefix || customtabname || tabsuffix || force) {
 			setPlayerListName();
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
-		String format = getReplacedTabFormat();
+		String format = properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get();
 		if (Placeholders.placeholderAPI) {
 			return PlaceholderAPI.setRelationalPlaceholders((Player) player, (Player)other.getPlayer(), format);
 		}
 		return format;
 	}
 	public void updateTeam() {
-		if (disabledNametag) return;
+		if (disabledNametag || !fullyLoaded) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
 			updateTeamPrefixSuffix();
@@ -116,12 +110,12 @@ public abstract class ITabPlayer{
 		}
 		if (Configs.unlimitedTags) {
 			for (ArmorStand as : armorStands) {
-				as.setNameFormat(getProperty(as.getID()).getRaw());
+				as.setNameFormat(properties.get(as.getID()).getCurrentRawValue());
 			}
 			NameTagLineManager.refreshNames(this);
 		}
 	}
-	public boolean getTeamVisibility() {
+	private boolean getTeamVisibility() {
 		if (TABAPI.hasHiddenNametag(getUniqueId())) return false;
 		return !Configs.unlimitedTags && nameTagVisible;
 	}
@@ -148,22 +142,13 @@ public abstract class ITabPlayer{
 							}
 						}
 					}
-			if (newGroup == null) newGroup = playerGroups[0];
+				if (newGroup == null) newGroup = playerGroups[0];
 			}
 		}
 		if (newGroup != null && (group == null || !group.equals(newGroup))) {
 			group = newGroup;
 			updateAll();
 		}
-	}
-	public String getRawTabFormat() {
-		return getProperty("tabprefix").getRaw() + getProperty("customtabname").getRaw() + getProperty("tabsuffix").getRaw();
-	}
-	public String getReplacedTabFormat() {
-		return getProperty("tabprefix").get() + getProperty("customtabname").get() + getProperty("tabsuffix").get();
-	}
-	public String getRawTagFormat() {
-		return getProperty("tagprefix").getRaw() + getProperty("customtagname").getRaw() + getProperty("tagsuffix").getRaw();
 	}
 	public void updateAll() {
 		setProperty("tablist-objective", TabObjective.rawValue);
@@ -174,7 +159,7 @@ public abstract class ITabPlayer{
 		String temp;
 		setProperty("customtabname", (temp = getValue("customtabname")).length() == 0 ? getName() : temp);
 		setProperty("customtagname", (temp = getValue("customtagname")).length() == 0 ? getName() : temp);
-		setProperty("nametag", getRawTagFormat());
+		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue());
 
 		for (String property : Premium.dynamicLines) {
 			if (!property.equals("nametag")) setProperty(property, getValue(property));
@@ -189,9 +174,6 @@ public abstract class ITabPlayer{
 				break;
 			}
 		}
-		if (rank == null || rank.length() == 0) {
-			rank = group;
-		}
 		updateRawHeaderAndFooter();
 	}
 	private String getValue(Object property) {
@@ -204,12 +186,6 @@ public abstract class ITabPlayer{
 		if ((value = Configs.config.getString("Groups." + group + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
-	}
-	private void unregisterTeam(ITabPlayer to) {
-		PacketAPI.unregisterScoreboardTeam(to, teamName);
-	}
-	public void unregisterTeam() {
-		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
 	public String getTeamName() {
 		return teamName;
@@ -224,7 +200,7 @@ public abstract class ITabPlayer{
 	private boolean getTeamPush() {
 		return Configs.collision;
 	}
-	public void updateRawHeaderAndFooter() {
+	private void updateRawHeaderAndFooter() {
 		String rawHeader = "";
 		String rawFooter = "";
 		List<Object> h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
@@ -276,12 +252,12 @@ public abstract class ITabPlayer{
 		}
 		if (name == null) {
 			if (Shared.mainClass.listNames()) {
-				name = getProperty("tabprefix").get();
+				name = properties.get("tabprefix").get();
 			} else {
 				if (!NameTag16.enable && !Configs.unlimitedTags) {
 					return getName();
 				}
-				name = getProperty("tagprefix").get();
+				name = properties.get("tagprefix").get();
 			}
 		}
 		if (name == null || name.equals("")) {
@@ -315,18 +291,17 @@ public abstract class ITabPlayer{
 	}
 	public void updateTeamPrefixSuffix() {
 		if (disabledNametag) return;
-		for (ITabPlayer all : Shared.getPlayers()) {
-			Property tagprefix = getProperty("tagprefix");
-			Property tagsuffix = getProperty("tagsuffix");
-			boolean tagprefixUpdate = tagprefix.isUpdateNeeded();
-			boolean tagsuffixUpdate = tagsuffix.isUpdateNeeded();
-			if (tagprefixUpdate || tagsuffixUpdate) {
-				if (Configs.unlimitedTags && all.getVersion().getNumber() >= ProtocolVersion.v1_8.getNumber()) continue;
-				String replacedPrefix = tagprefix.get();
-				String replacedSuffix = tagsuffix.get();
+		Property tagprefix = properties.get("tagprefix");
+		Property tagsuffix = properties.get("tagsuffix");
+		boolean tagprefixUpdate = tagprefix.isUpdateNeeded();
+		boolean tagsuffixUpdate = tagsuffix.isUpdateNeeded();
+		if (tagprefixUpdate || tagsuffixUpdate) {
+			String replacedPrefix = tagprefix.get();
+			String replacedSuffix = tagsuffix.get();
+			for (ITabPlayer all : Shared.getPlayers()) {
 				if (Placeholders.placeholderAPI) {
-					replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
-					replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
+					if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
+					if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
 				}
 				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush());
 			}
@@ -334,27 +309,35 @@ public abstract class ITabPlayer{
 	}
 	public void registerTeam() {
 		if (disabledNametag) return;
-		unregisterTeam();
-		String replacedPrefix = getProperty("tagprefix").get();
-		String replacedSuffix = getProperty("tagsuffix").get();
+		Property tagprefix = properties.get("tagprefix");
+		Property tagsuffix = properties.get("tagsuffix");
+		String replacedPrefix = tagprefix.get();
+		String replacedSuffix = tagsuffix.get();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (Placeholders.placeholderAPI) {
-				replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
-				replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
+				if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedPrefix);
+				if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)all.getPlayer(), (Player) getPlayer(), replacedSuffix);
 			}
 			PacketAPI.registerScoreboardTeam(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
 		}
 	}
 	public void registerTeam(ITabPlayer to) {
 		if (disabledNametag) return;
-		unregisterTeam(to);
-		String replacedPrefix = getProperty("tagprefix").get();
-		String replacedSuffix = getProperty("tagsuffix").get();
+		Property tagprefix = properties.get("tagprefix");
+		Property tagsuffix = properties.get("tagsuffix");
+		String replacedPrefix = tagprefix.get();
+		String replacedSuffix = tagsuffix.get();
 		if (Placeholders.placeholderAPI) {
-			replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedPrefix);
-			replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedSuffix);
+			if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedPrefix);
+			if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PlaceholderAPI.setRelationalPlaceholders((Player)to.getPlayer(), (Player) getPlayer(), replacedSuffix);
 		}
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
+	}
+	private void unregisterTeam(ITabPlayer to) {
+		PacketAPI.unregisterScoreboardTeam(to, teamName);
+	}
+	public void unregisterTeam() {
+		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
 	public ProtocolVersion getVersion() {
 		return version;
@@ -362,9 +345,6 @@ public abstract class ITabPlayer{
 	public Channel getChannel() {
 		if (channel == null) loadChannel();
 		return channel;
-	}
-	public String getIPAddress() {
-		return ipAddress;
 	}
 	public void onWorldChange(String from, String to) {
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(to);
@@ -394,7 +374,7 @@ public abstract class ITabPlayer{
 		if (NameTag16.enable || Configs.unlimitedTags) {
 			if (disabledNametag) {
 				unregisterTeam();
-			} else {
+			} else if (Configs.disabledNametag.contains(from)){
 				registerTeam();
 			}
 		}

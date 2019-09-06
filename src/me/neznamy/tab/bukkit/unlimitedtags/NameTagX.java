@@ -66,7 +66,10 @@ public class NameTagX implements Listener{
 	public static void playerJoin(ITabPlayer p) {
 		if (!enable) return;
 		p.registerTeam();
-		for (ITabPlayer all : Shared.getPlayers()) all.registerTeam(p);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all == p) continue; //already registered 2 lines above
+			all.registerTeam(p);
+		}
 	}
 	public static void playerQuit(ITabPlayer p) {
 		if (enable) p.unregisterTeam();

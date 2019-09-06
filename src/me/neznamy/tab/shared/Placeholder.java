@@ -10,7 +10,10 @@ public abstract class Placeholder {
 	public String getIdentifier() {
 		return identifier;
 	}
-	public abstract String set(String s, ITabPlayer p);
+	public String set(String s, ITabPlayer p) {
+		return s.replace(identifier, get(p));
+	}
+	public abstract String get(ITabPlayer p);
 	
 	public String[] getChilds(){
 		return new String[0];

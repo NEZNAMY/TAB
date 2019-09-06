@@ -77,18 +77,18 @@ public class PacketAPI{
 		to.setProperty("bossbar-style-"+bar.getName(), bar.style);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId(), 
-					to.getProperty("bossbar-text-"+bar.getName()).get(), 
-					(float)bar.parseProgress(to.getProperty("bossbar-progress-"+bar.getName()).get())/100, 
-					bar.parseColor(to.getProperty("bossbar-color-"+bar.getName()).get()), 
-					bar.parseStyle(to.getProperty("bossbar-style-"+bar.getName()).get())).send(to);
+					to.properties.get("bossbar-text-"+bar.getName()).get(), 
+					(float)bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get())/100, 
+					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
+					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())).send(to);
 		} else {
 			Location l = ((Player) to.getPlayer()).getEyeLocation().add(((Player) to.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
 			if (l.getY() < 1) l.setY(1);
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
-			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.getProperty("bossbar-text-"+bar.getName()).get());
-			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.getProperty("bossbar-progress-"+bar.getName()).get()));
+			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
+			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get()));
 			packet.setDataWatcher(w);
 			packet.send(to);
 		}
@@ -101,12 +101,12 @@ public class PacketAPI{
 		}
 	}
 	public static void updateBossBar(ITabPlayer to, BossBarLine bar) {
-		Property progress = to.getProperty("bossbar-progress-"+bar.getName());
-		Property text = to.getProperty("bossbar-text-"+bar.getName());
+		Property progress = to.properties.get("bossbar-progress-"+bar.getName());
+		Property text = to.properties.get("bossbar-text-"+bar.getName());
 		if (text == null) return; //not registered yet
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
-			Property color = to.getProperty("bossbar-color-"+bar.getName());
-			Property style = to.getProperty("bossbar-style-"+bar.getName());
+			Property color = to.properties.get("bossbar-color-"+bar.getName());
+			Property style = to.properties.get("bossbar-style-"+bar.getName());
 			boolean colorUpdate = color.isUpdateNeeded();
 			boolean styleUpdate = style.isUpdateNeeded();
 			if (colorUpdate || styleUpdate) {

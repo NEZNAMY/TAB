@@ -43,10 +43,10 @@ public class PlaceholderAPIExpansion{
 
 				for (String property : properties) {
 					if (identifier.equals(property)) {
-						return p.getProperty(property).get();
+						return p.properties.get(property).get();
 					}
 					if (identifier.equals(property + "_raw")) {
-						return p.getProperty(property).getRaw();
+						return p.properties.get(property).getCurrentRawValue();
 					}
 				}
 				return null;

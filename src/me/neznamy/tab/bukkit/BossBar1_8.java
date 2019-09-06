@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.bukkit.unlimitedtags.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -22,14 +21,12 @@ public class BossBar1_8 implements Listener {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
 			Bukkit.getPluginManager().registerEvents(new BossBar1_8(), Main.instance);
 			Shared.scheduleRepeatingTask(200, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
-
-				
 				public void run() {
-					for (BossBarLine l : BossBar.lines) {
-						for (ITabPlayer all : Shared.getPlayers()) {
+					for (ITabPlayer all : Shared.getPlayers()) {
+						for (BossBarLine l : all.activeBossBars) {
 							Location to = ((Player) all.getPlayer()).getEyeLocation().add(((Player) all.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
 							new PacketPlayOutEntityTeleport(l.getEntityId(), to).send(all);
-						};
+						}
 					}
 				}
 			});

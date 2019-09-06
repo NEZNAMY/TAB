@@ -29,7 +29,7 @@ public enum SortingType {
 			}
 			break;
 		case TABPREFIX_A_TO_Z:
-			teamName = p.getProperty("tabprefix").getRaw();
+			teamName = p.properties.get("tabprefix").getCurrentRawValue();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
 			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);

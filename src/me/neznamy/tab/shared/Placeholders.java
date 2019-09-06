@@ -1,14 +1,11 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import com.google.common.collect.Lists;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
@@ -19,31 +16,15 @@ public class Placeholders {
 	public static boolean placeholderAPI;
 
 	public static void recalculateOnlineVersions() {
-		online.put("1-14-x", 0);
-		online.put("1-13-x", 0);
-		online.put("1-12-x", 0);
-		online.put("1-11-x", 0);
-		online.put("1-10-x", 0);
-		online.put("1-9-x", 0);
-		online.put("1-8-x", 0);
-		online.put("1-7-x", 0);
-		online.put("1-6-x", 0);
-		online.put("1-5-x", 0);
 		online.put("other", 0);
+		for (int i=5; i<=14; i++) online.put("1-" + i + "-x", 0);
 		for (ITabPlayer p : Shared.getPlayers()){
-			int version = p.getVersion().getNumber();
-			if (version == 60 || version == 61) online.put("1-5-x", online.get("1-5-x")+1);
-			else if (version >= 73 && version <= 78) online.put("1-6-x", online.get("1-6-x")+1);
-			else if (version <= 0) online.put("other", online.get("other")+1);
-			else if (version <= 5) online.put("1-7-x", online.get("1-7-x")+1);
-			else if (version <= 47) online.put("1-8-x", online.get("1-8-x")+1);
-			else if (version <= 110) online.put("1-9-x", online.get("1-9-x")+1);
-			else if (version <= 210) online.put("1-10-x", online.get("1-10-x")+1);
-			else if (version <= 316) online.put("1-11-x", online.get("1-11-x")+1);
-			else if (version <= 340) online.put("1-12-x", online.get("1-12-x")+1);
-			else if (version <= 404) online.put("1-13-x", online.get("1-13-x")+1);
-			else if (version <= 498) online.put("1-14-x", online.get("1-14-x")+1);
-			else online.put("1-14-x", online.get("1-14-x")+1); //current newest one
+			String group = "1-"+p.getVersion().getMinorVersion()+"-x";
+			if (online.containsKey(group)) {
+				online.put(group, online.get(group)+1);
+			} else {
+				online.put("other", online.get("other")+1);
+			}
 		}
 	}
 	//code taken from bukkit, so it can work on bungee too
@@ -77,7 +58,7 @@ public class Placeholders {
 		return result;
 	}
 	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		return set(string, list, p);
+		return set(string, Property.detectPlaceholders(string), p);
 	}
 	public static String set(String string, List<Placeholder> placeholders, ITabPlayer p) {
 		for (Placeholder pl : placeholders) {
@@ -101,33 +82,11 @@ public class Placeholders {
 				Shared.error("PlaceholderAPI version: " + papi.getDescription().getVersion());
 				Shared.error("String to parse: " + s);
 				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", t);
-			} //else now we know why it failed
+			} else {
+				//papi unloaded meanwhile
+				Placeholders.placeholderAPI = false;
+			}
 		}
 		return s;
-	}
-	public static List<Placeholder> detect(String rawValue) {
-		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
-		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		String testString = rawValue;
-		boolean changed;
-		for (int i=0; i<10; i++) { //detecting placeholder chains
-			changed = false;
-			for (Placeholder pl : Placeholders.list) {
-				if (testString.contains(pl.getIdentifier())) {
-//					testString = pl.set(testString, owner);
-					if (!placeholdersTotal.contains(pl)) placeholdersTotal.add(pl);
-					changed = true;
-					for (String child : pl.getChilds()) {
-						List<Placeholder> placeholders = detect(child);
-						for (Placeholder p : placeholders) {
-							if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
-							changed = true;
-						}
-					}
-				}
-			}
-			if (!changed) break; //no more placeholders found
-		}
-		return placeholdersTotal;
 	}
 }

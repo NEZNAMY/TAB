@@ -47,7 +47,6 @@ public class TabPlayer extends ITabPlayer{
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
 		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
-		ipAddress = getPlayer().getAddress().getAddress().getHostAddress();
 		if (Shared.mainClass.listNames()) updatePlayerListName(false);
 		if (NameTagX.enable || NameTag16.enable) {
 			nameTagVisible = !getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY);
@@ -156,15 +155,15 @@ public class TabPlayer extends ITabPlayer{
 	public void loadArmorStands() {
 		float height = -0.22F;
 		for (String line : Premium.dynamicLines) {
-			Property p = getProperty(line);
+			Property p = properties.get(line);
 			if (p == null || p.get().length() == 0) continue;
-			String value = p.getRaw();
+			String value = p.getCurrentRawValue();
 			NameTagLineManager.bindLine(this, value, height+=0.22F, line+"");
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
-			Property p = getProperty(line.getKey());
+			Property p = properties.get(line.getKey());
 			if (p == null || p.get().length() == 0) continue;
-			String value = p.getRaw();
+			String value = p.getCurrentRawValue();
 			NameTagLineManager.bindLine(this, value, Double.parseDouble(line.getValue()+""), line.getKey());
 		}
 	}
@@ -189,7 +188,7 @@ public class TabPlayer extends ITabPlayer{
 		return ping;
 	}
 	public int getHealth() {
-		return (int) getPlayer().getHealth();
+		return (int) Math.round(getPlayer().getHealth());
 	}
 	public void sendPacket(Object nmsPacket) {
 		try {
@@ -221,11 +220,9 @@ public class TabPlayer extends ITabPlayer{
 			int version;
 			if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 				version = ProtocolSupportAPI.getProtocolVersion(getPlayer()).getId();
-//				System.out.println("PS returned " + version);
 				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 			} else if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")){
 				version = Via.getAPI().getPlayerVersion(getUniqueId());
-//				System.out.println("Via returned " + version);
 				if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 			}
 		} catch (Throwable e) {

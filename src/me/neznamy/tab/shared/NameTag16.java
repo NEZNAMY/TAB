@@ -18,7 +18,7 @@ public class NameTag16 {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		//fixing a 1.8.x client-sided vanilla bug
+		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
 		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAG, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
@@ -28,7 +28,10 @@ public class NameTag16 {
 	public static void playerJoin(ITabPlayer p) {
 		if (!enable) return;
 		p.registerTeam();
-		for (ITabPlayer all : Shared.getPlayers()) all.registerTeam(p);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all == p) continue; //already registered 2 lines above
+			all.registerTeam(p);
+		}
 	}
 	public static void playerQuit(ITabPlayer p) {
 		if (enable) p.unregisterTeam();

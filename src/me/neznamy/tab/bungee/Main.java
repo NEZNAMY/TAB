@@ -83,6 +83,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		try {
 			disabled = false;
 			long time = System.currentTimeMillis();
+			Shared.startupWarns = 0;
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -117,6 +118,45 @@ public class Main extends Plugin implements Listener, MainClass{
 		ScoreboardManager.unregister(disconnectedPlayer);
 		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
+/*	@EventHandler
+	public void a(PostLoginEvent e) {
+		if (disabled) return;
+		System.out.println("------------------------------");
+		System.out.println(e.getClass().getSimpleName());
+		System.out.println("------------------------------");
+		ITabPlayer p = new TabPlayer(e.getPlayer());
+		Shared.data.put(e.getPlayer().getUniqueId(), p);
+		inject(p);
+	}
+	@EventHandler
+	public void a(final ServerSwitchEvent e){
+		if (disabled) return;
+		System.out.println("------------------------------");
+		System.out.println(e.getClass().getSimpleName());
+		System.out.println("------------------------------");
+		try{
+			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+			if (((ProxiedPlayer)p.getPlayer()).getServer() == null) {
+				System.out.println("server change");
+				String from = p.getWorldName();
+				String to = e.getPlayer().getServer().getInfo().getName();
+				((TabPlayer)p).server = e.getPlayer().getServer();
+				p.onWorldChange(from, to);
+			} else {
+				System.out.println("new join");
+				p.onJoin();
+				p.updatePlayerListName(false);
+				Placeholders.recalculateOnlineVersions();
+				NameTag16.playerJoin(p);
+				HeaderFooter.playerJoin(p);
+				TabObjective.playerJoin(p);
+				BossBar.playerJoin(p);
+				ScoreboardManager.register(p);
+			}
+		} catch (Throwable ex){
+			Shared.error("An error occured when player joined/changed server", ex);
+		}
+	}*/
 	@EventHandler
 	public void a(final ServerSwitchEvent e){
 		try{
@@ -134,13 +174,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				ScoreboardManager.register(p);
 				final ITabPlayer pl = p;
 				NameTag16.playerJoin(pl);
-/*				Shared.runTask("processing join", Feature.OTHER, new Runnable() {
-
-					public void run() {
-						Thread.sleep(1000);
-						NameTag16.playerJoin(pl);
-					}				
-				});*/
 			} else {
 				String from = p.getWorldName();
 				String to = e.getPlayer().getServer().getInfo().getName();
@@ -241,14 +274,14 @@ public class Main extends Plugin implements Listener, MainClass{
 		Placeholders.list = new ArrayList<Placeholder>();
 		Shared.registerUniversalPlaceholders();
 		Placeholders.list.add(new Placeholder("%maxplayers%") {
-			public String set(String string, ITabPlayer p) {
-				return string.replace(identifier, ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"");
+			public String get(ITabPlayer p) {
+				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (final Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
 			Placeholders.list.add(new Placeholder("%online_" + server.getKey() + "%") {
-				public String set(String string, ITabPlayer p) {
-					return string.replace(identifier, server.getValue().getPlayers().size()+"");
+				public String get(ITabPlayer p) {
+					return server.getValue().getPlayers().size()+"";
 				}
 			});
 		}

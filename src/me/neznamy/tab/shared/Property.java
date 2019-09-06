@@ -3,33 +3,56 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class Property {
 
 	private ITabPlayer owner;
-	private String identifier;
 	private String rawValue;
 	private String lastReplacedValue;
 	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
 	private String temporaryValue;
 	private String ifEmpty;
+	private boolean hasRelationalPlaceholders;
+	private long lastUpdate;
+	private boolean Static;
 
-	public Property(ITabPlayer owner, String identifier, String rawValue) {
-		this(owner, identifier, rawValue, null);
+	public Property(ITabPlayer owner, String rawValue) {
+		this(owner, rawValue, null);
 	}
-	public Property(ITabPlayer owner, String identifier, String rawValue, String ifEmpty) {
+	public Property(ITabPlayer owner, String rawValue, String ifEmpty) {
 		this.owner = owner;
-		this.identifier = identifier;
 		this.rawValue = rawValue;
 		this.ifEmpty = ifEmpty;
 		if (rawValue.length() == 0 && ifEmpty != null) this.rawValue = ifEmpty;
-		placeholders = Placeholders.detect(rawValue);
+		analyze(rawValue);
 	}
-	public String getIdentifier() {
-		return identifier;
+	private void analyze(String value) {
+		placeholders = detectPlaceholders(value);
+		hasRelationalPlaceholders = value.contains("%rel_");
+		if (value.length() == 0) {
+			lastReplacedValue = "";
+			Static = true;
+		} else if (!value.contains("%") && !value.contains("&")){
+			for (String removed : Configs.removeStrings) {
+				if (value.contains(removed)) {
+					Static = false;
+					return;
+				}
+			}
+			lastReplacedValue = rawValue;
+			Static = true;
+		}
 	}
 	public void setTemporaryValue(String temporaryValue) {
 		this.temporaryValue = temporaryValue;
-		placeholders = Placeholders.detect(temporaryValue);
+		if (temporaryValue != null) {
+			//assigning value
+			analyze(temporaryValue);
+		} else {
+			//removing temporary value
+			analyze(rawValue);
+		}
 	}
 	public void removeTemporaryValue() {
 		setTemporaryValue(null);
@@ -37,8 +60,10 @@ public class Property {
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
-		lastReplacedValue = null;
-		if (temporaryValue == null) placeholders = Placeholders.detect(rawValue);
+		if (temporaryValue == null) {
+			analyze(rawValue);
+			lastReplacedValue = null;
+		}
 	}
 	public String get() {
 		if (lastReplacedValue == null) isUpdateNeeded();
@@ -46,7 +71,7 @@ public class Property {
 		if (Return.length() == 0 && ifEmpty != null) Return = ifEmpty;
 		return Return;
 	}
-	public String getRaw() {
+	public String getCurrentRawValue() {
 		return temporaryValue != null ? temporaryValue : rawValue;
 	}
 	public String getTemporaryValue() {
@@ -56,20 +81,51 @@ public class Property {
 		return rawValue;
 	}
 	public boolean isUpdateNeeded() {
-		String string = getRaw();
+		if (Static) return false;
+		String string = getCurrentRawValue();
 		for (Placeholder pl : placeholders) {
 			string = pl.set(string, owner);
 		}
-		string = Placeholders.setPlaceholderAPIPlaceholders(string, owner);
+		if (Placeholders.placeholderAPI) string = Placeholders.setPlaceholderAPIPlaceholders(string, owner);
 		string = Placeholders.color(string);
 		for (String removed : Configs.removeStrings) {
-			string = string.replace(removed, "");
+			if (string.contains(removed)) string = string.replace(removed, "");
 		}
-		if (lastReplacedValue != null && string.equals(lastReplacedValue) && !string.contains("%rel_")) {
-			return false;
-		} else {
+		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > 30000)) {
 			lastReplacedValue = string;
+			lastUpdate = System.currentTimeMillis();
 			return true;
+		} else {
+			return false;
 		}
+	}
+	public boolean hasRelationalPlaceholders() {
+		return hasRelationalPlaceholders && Placeholders.placeholderAPI;
+	}
+	public boolean isStatic() {
+		return Static;
+	}
+	public static List<Placeholder> detectPlaceholders(String rawValue) {
+		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
+		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
+		boolean changed;
+		for (int i=0; i<10; i++) { //detecting placeholder chains
+			changed = false;
+			for (Placeholder placeholder : Placeholders.list) {
+				if (rawValue.contains(placeholder.getIdentifier())) {
+					if (!placeholdersTotal.contains(placeholder)) placeholdersTotal.add(placeholder);
+					changed = true;
+					for (String child : placeholder.getChilds()) {
+						List<Placeholder> placeholders = detectPlaceholders(child);
+						for (Placeholder p : placeholders) {
+							if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
+							changed = true;
+						}
+					}
+				}
+			}
+			if (!changed) break; //no more placeholders found
+		}
+		return placeholdersTotal;
 	}
 }

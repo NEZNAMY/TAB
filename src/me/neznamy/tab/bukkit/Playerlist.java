@@ -24,7 +24,7 @@ public class Playerlist {
 	public static void load() {
 		if (enable) {
 			for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(true);
-			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST, new Runnable() {
+			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST_1, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(false);
 				}
@@ -46,15 +46,13 @@ public class Playerlist {
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
 			if (packetPlayer == null || packetPlayer.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber()) return;
-			String format = packetPlayer.getTabFormat(receiver);
-			playerInfoData.setPlayerListName(format);
+			playerInfoData.setPlayerListName(packetPlayer.getTabFormat(receiver));
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.ADD_PLAYER) {
 			if (packetPlayer != null) {
 				//player
 				if (!packetPlayer.disabledTablistNames && receiver.getVersion().getNumber() >= ProtocolVersion.v1_8.getNumber()) {
-					String format = packetPlayer.getTabFormat(receiver);
-					playerInfoData.setPlayerListName(format);
+					playerInfoData.setPlayerListName(packetPlayer.getTabFormat(receiver));
 				}
 			} else {
 				//NPC

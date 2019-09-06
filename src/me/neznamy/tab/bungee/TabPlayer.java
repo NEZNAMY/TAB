@@ -26,16 +26,18 @@ public class TabPlayer extends ITabPlayer{
 
 	public TabPlayer(ProxiedPlayer p) {
 		this.player = p;
+	}
+	public void onJoin() {
 		updateGroupIfNeeded();
 		updateAll();
-		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
+		if (NameTag16.enable) teamName = buildTeamName();
 		version = ProtocolVersion.fromNumber(getPlayer().getPendingConnection().getVersion());
-		ipAddress = p.getAddress().getAddress().getHostAddress();
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
 		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
 		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
+		fullyLoaded = true;
 	}
 	public String getGroupFromPermPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
@@ -71,24 +73,7 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
 	}
-	public String getNickname() {
-		return getName();
-	}
-	public void onJoin() {
-	}
-	public String getMoney() {
-		return "-";
-	}
-	public void setTeamVisible(boolean p0) {
-	}
-	public void restartArmorStands() {
-	}
-	public Integer getEntityId() {
-		return 0;
-	}
-	public int getHealth() {
-		return 0;
-	}
+	
 	public void setPlayerListName() {
 		Item playerInfoData = new Item();
 		playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(getName()));
@@ -112,8 +97,5 @@ public class TabPlayer extends ITabPlayer{
 		} catch (Throwable e) {
 			Shared.error("Failed to get channel of " + getName(), e);
 		}
-	}
-	public boolean hasInvisibility() {
-		return false;
 	}
 }

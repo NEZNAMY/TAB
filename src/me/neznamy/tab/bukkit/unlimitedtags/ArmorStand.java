@@ -1,8 +1,9 @@
 package me.neznamy.tab.bukkit.unlimitedtags;
 
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,6 +17,7 @@ import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -32,8 +34,9 @@ public class ArmorStand{
 	private boolean sneaking;
 	private boolean invisible;
 
-	private ConcurrentHashMap<ITabPlayer, String> registeredTo = new ConcurrentHashMap<ITabPlayer, String>();
+	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	private FakeDataWatcher datawatcher;
+	private Property property;
 
 	private long lastLocationRefresh = 0;
 
@@ -44,6 +47,7 @@ public class ArmorStand{
 		this.yOffset = yOffset;
 		datawatcher = new FakeDataWatcher();
 		owner.setProperty(ID, format);
+		property = owner.properties.get(ID);
 		refreshName();
 		updateLocation();
 	}
@@ -54,17 +58,17 @@ public class ArmorStand{
 		owner.setProperty(ID, format);
 	}
 	public void refreshName() {
-		if (owner.getProperty(ID).isUpdateNeeded()) {
-			updateMetadata(false);
+		if (property.isUpdateNeeded()) {
+			updateMetadata();
 		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
-		String name = owner.getProperty(ID).get();
+		String name = owner.properties.get(ID).get();
 		if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
 		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
 		DataWatcher w = datawatcher.create(name);
-		if (!registeredTo.contains(to) && addToRegistered) registeredTo.put(to, name);
+		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(w);
 	}
 	public PacketPlayOutEntityTeleport getTeleportPacket() {
@@ -77,39 +81,53 @@ public class ArmorStand{
 	}
 	public void teleport() {
 		PacketPlayOutEntityTeleport packet = getTeleportPacket();
-		for (ITabPlayer all : registeredTo.keySet()) packet.send(all);
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) packet.send(all);
+		}
 	}
 	public void sneak(boolean sneaking) {
 		datawatcher.setSneaking(sneaking);
 		this.sneaking = sneaking;
 		updateLocation();
-		for (ITabPlayer all : registeredTo.keySet()) {
-			if (all == owner) continue;
-			getDestroyPacket(all, false).send(all);
-			if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) getSpawnPacket(all, false).send(all);
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) {
+				if (all == owner) continue;
+				getDestroyPacket(all, false).send(all);
+				if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) getSpawnPacket(all, false).send(all);
+			}
 		}
 	}
 	public void destroy() {
-		for (ITabPlayer all : registeredTo.keySet()) getDestroyPacket(all, false).send(all);
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) getDestroyPacket(all, false).send(all);
+		}
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
 		if ((!owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR) == invisible) {
 			invisible = !invisible;
-			updateMetadata(true);
+			updateMetadata();
 		}
 	}
-	private void updateMetadata(boolean force) {
-		for (Entry<ITabPlayer, String> entry : registeredTo.entrySet()) {
-			ITabPlayer all = entry.getKey();
-			String lastName = entry.getValue();
-			String name = owner.getProperty(ID).get();
-			if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
-			datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
-			DataWatcher w = datawatcher.create(name);
-			if (lastName.equals(name) && !force) continue;
-			registeredTo.put(all, name);
-			new PacketPlayOutEntityMetadata(entityId, w, true).send(all);
+	private void updateMetadata() {
+		synchronized (registeredTo) {
+			Property line = owner.properties.get(ID);
+			String name = line.get();
+			if (Placeholders.placeholderAPI && line.hasRelationalPlaceholders()) {
+				for (ITabPlayer all : registeredTo) {
+					name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
+					datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
+					DataWatcher w = datawatcher.create(name);
+					new PacketPlayOutEntityMetadata(entityId, w, true).send(all);
+				}
+			} else {
+				datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
+				DataWatcher w = datawatcher.create(name);
+				PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(entityId, w, true);
+				for (ITabPlayer all : registeredTo) {
+					packet.send(all);
+				}
+			}
 		}
 	}
 	private void updateLocation() {

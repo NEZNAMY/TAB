@@ -17,8 +17,8 @@ public class TabObjective{
 		Shared.scheduleRepeatingTask(type.getRefresh(), "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
-					if (p.disabledTablistObjective) continue;
-					if (p.getProperty("tablist-objective").isUpdateNeeded()) {
+					if (p.disabledTablistObjective || !p.fullyLoaded) continue;
+					if (p.properties.get("tablist-objective").isUpdateNeeded()) {
 						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
 					}
 				}
@@ -44,7 +44,7 @@ public class TabObjective{
 		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", type.getDisplay());
 	}
 	public static int getValue(ITabPlayer p) {
-		String replaced = p.getProperty("tablist-objective").get();
+		String replaced = p.properties.get("tablist-objective").get();
 		try {
 			return Integer.parseInt(replaced);
 		} catch (Throwable e) {
@@ -55,7 +55,7 @@ public class TabObjective{
 	public enum TabObjectiveType{
 
 		PING(1000, EnumScoreboardHealthDisplay.INTEGER), 
-		HEARTS(100, EnumScoreboardHealthDisplay.HEARTS), 
+		HEARTS(500, EnumScoreboardHealthDisplay.HEARTS), 
 		CUSTOM(500, EnumScoreboardHealthDisplay.INTEGER), 
 		NONE(0, null);
 

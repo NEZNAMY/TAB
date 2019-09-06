@@ -50,7 +50,7 @@ public class Scoreboard {
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title);
-			String replacedTitle = p.getProperty("scoreboard-title").get();
+			String replacedTitle = p.properties.get("scoreboard-title").get();
 			PacketAPI.unregisterScoreboardObjective(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
@@ -68,7 +68,7 @@ public class Scoreboard {
 	}
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
-			PacketAPI.unregisterScoreboardObjective(p, objectiveName, p.getProperty("scoreboard-title").get(), EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.unregisterScoreboardObjective(p, objectiveName, p.properties.get("scoreboard-title").get(), EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
 				s.unregister(p);
 			}
@@ -77,7 +77,7 @@ public class Scoreboard {
 	}
 	public void refresh() {
 		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
-			Property title = p.getProperty("scoreboard-title");
+			Property title = p.properties.get("scoreboard-title");
 			if (title.isUpdateNeeded()) {
 				String replacedTitle = title.get();
 				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
@@ -101,7 +101,7 @@ public class Scoreboard {
 			this.rawtext = rawtext;
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force) {
-			Property scoreproperty = p.getProperty("sb-"+ID);
+			Property scoreproperty = p.properties.get("sb-"+ID);
 			if (scoreproperty.isUpdateNeeded() || force) {
 				String replaced = scoreproperty.get();
 				if (replaced.length() > 16) {

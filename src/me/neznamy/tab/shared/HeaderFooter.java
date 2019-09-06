@@ -12,7 +12,7 @@ public class HeaderFooter {
 		if (!enable) return;
 		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", Feature.HEADERFOOTER, new Runnable(){
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p);
+				for (ITabPlayer p : Shared.getPlayers()) if (p.fullyLoaded) refreshHeaderFooter(p);
 			}
 		});
 	}
@@ -27,10 +27,10 @@ public class HeaderFooter {
 	}
 	public static void refreshHeaderFooter(ITabPlayer p) {
 		if (p.disabledHeaderFooter) return;
-		boolean header = p.getProperty("header").isUpdateNeeded();
-		boolean footer = p.getProperty("footer").isUpdateNeeded();
+		boolean header = p.properties.get("header").isUpdateNeeded();
+		boolean footer = p.properties.get("footer").isUpdateNeeded();
 		if (header || footer) {
-			new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").get(), p.getProperty("footer").get()).send(p);
+			new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()).send(p);
 		}
 	}
 }

@@ -248,18 +248,18 @@ public class TabCommand{
 			boolean sorting = Configs.unlimitedTags || NameTag16.enable;
 			sendMessage(sender, "§eTeam name: §a" + (!sorting? "§cSORTING IS DISABLED" : analyzed.getTeamName().replace("§", "&")));
 			if (Shared.mainClass.listNames()) {
-				sendMessage(sender, "§9tabprefix: §b" + analyzed.getProperty("tabprefix").getRaw());
-				sendMessage(sender, "§9tabsuffix: §b" + analyzed.getProperty("tabsuffix").getRaw());
-				sendMessage(sender, "§9tabname: §b" + analyzed.getProperty("customtabname").getRaw());
+				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue());
+				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue());
+				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue());
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
-				sendMessage(sender, "§9tagprefix: §b" + analyzed.getProperty("tagprefix").getRaw());
-				sendMessage(sender, "§9tagsuffix: §b" + analyzed.getProperty("tagsuffix").getRaw());
+				sendMessage(sender, "§9tagprefix: §b" + analyzed.properties.get("tagprefix").getCurrentRawValue());
+				sendMessage(sender, "§9tagsuffix: §b" + analyzed.properties.get("tagsuffix").getCurrentRawValue());
 			}
 			if (Configs.unlimitedTags) {
-				sendMessage(sender, "§9abovename: §b" + analyzed.getProperty("abovename").getRaw());
-				sendMessage(sender, "§9belowname: §b" + analyzed.getProperty("belowname").getRaw());
-				sendMessage(sender, "§9tagname: §b" + analyzed.getProperty("customtagname").getRaw());
+				sendMessage(sender, "§9abovename: §b" + analyzed.properties.get("abovename").getCurrentRawValue());
+				sendMessage(sender, "§9belowname: §b" + analyzed.properties.get("belowname").getCurrentRawValue());
+				sendMessage(sender, "§9tagname: §b" + analyzed.properties.get("customtagname").getCurrentRawValue());
 			}
 		}
 	}

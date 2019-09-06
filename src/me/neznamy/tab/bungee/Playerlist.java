@@ -19,8 +19,7 @@ public class Playerlist {
 	public static void load() {
 		if (enable) {
 			for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(true);
-			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST, new Runnable() {
-
+			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST_1, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(false);
 				}
@@ -39,8 +38,7 @@ public class Playerlist {
 		}
 		if (packet.getAction() == Action.UPDATE_DISPLAY_NAME || packet.getAction() == Action.ADD_PLAYER) {
 			if (player == null || player.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber()) return;
-			String format = player.getTabFormat(receiver);
-			playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(format));
+			playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(player.getTabFormat(receiver)));
 		}
 	}
 }
