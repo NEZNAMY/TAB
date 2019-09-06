@@ -29,7 +29,7 @@ public enum ProtocolVersion {
 	v1_14_2		(485, "1.14.2",		14, 16, 13),
 	v1_14_3		(490, "1.14.3",		14, 16, 13),
 	v1_14_4		(498, "1.14.4",		14, 16, 13),
-	FUTURE		(999, "Future",		0,	0,	0);
+	FUTURE		(999, "Future",		15,	0,	0);
 	
 	public static ProtocolVersion SERVER_VERSION;
 	public static String packageName;
