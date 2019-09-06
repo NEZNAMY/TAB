@@ -376,6 +376,8 @@ public abstract class ITabPlayer{
 				unregisterTeam();
 			} else if (Configs.disabledNametag.contains(from)){
 				registerTeam();
+			} else {
+				updateTeam();
 			}
 		}
 		if (Shared.mainClass.listNames()) updatePlayerListName(true);
