@@ -61,8 +61,8 @@ public class Property {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
 		if (temporaryValue == null) {
-			analyze(rawValue);
-			lastReplacedValue = null;
+			analyze(newValue);
+			lastReplacedValue = Static ? newValue : null;
 		}
 	}
 	public String get() {
