@@ -144,10 +144,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
 				((TabPlayer) t).loadVersion();
-				if (inject) inject(t);
+				if (inject) inject(t.getUniqueId());
 				t.onJoin();
 			}
-			for (ITabPlayer p : Shared.getPlayers()) p.updatePlayerListName(false);
 			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
 			BossBar1_8.load();
@@ -184,7 +183,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			inject(p);
+			inject(p.getUniqueId());
 			((TabPlayer) p).loadVersion();
 			final ITabPlayer pl = p;
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
@@ -252,9 +251,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	public static void inject(final ITabPlayer player) {
+	public static void inject(final UUID uuid) {
 		try {
-			player.getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+			Shared.getPlayer(uuid).getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					super.channelRead(context, packet);
@@ -265,6 +264,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						return;
 					}
 					try{
+						final ITabPlayer player = Shared.getPlayer(uuid);
+						if (player == null) {
+							//wtf
+							super.write(context, packet, channelPromise);
+							return;
+						}
 						long time = System.nanoTime();
 						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							//nametag anti-override
@@ -329,8 +334,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} catch (IllegalArgumentException e) {
-			player.getChannel().pipeline().remove(Shared.DECODER_NAME);
-			inject(player);
+			Shared.getPlayer(uuid).getChannel().pipeline().remove(Shared.DECODER_NAME);
+			inject(uuid);
 		}
 	}
 	@SuppressWarnings("rawtypes")

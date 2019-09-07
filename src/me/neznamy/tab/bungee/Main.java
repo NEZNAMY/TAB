@@ -2,6 +2,7 @@ package me.neznamy.tab.bungee;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -90,9 +91,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			for (ProxiedPlayer p : getProxy().getPlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
-				if (inject) inject(t);
+				if (inject) inject(t.getUniqueId());
 			}
-			for (ITabPlayer p : Shared.getPlayers()) p.updatePlayerListName(false);
 			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
 			NameTag16.load();
@@ -164,9 +164,10 @@ public class Main extends Plugin implements Listener, MainClass{
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) {
 				p = new TabPlayer(e.getPlayer());
-				inject(p);
-				p.updatePlayerListName(false);
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
+				inject(p.getUniqueId());
+				p.updatePlayerListName(false);
+				((TabPlayer)p).server = e.getPlayer().getServer();
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);
@@ -195,14 +196,20 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	private void inject(final ITabPlayer player) {
-		player.getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+	private void inject(final UUID uuid) {
+		Shared.getPlayer(uuid).getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
+					final ITabPlayer player = Shared.getPlayer(uuid);
+					if (player == null) {
+						//wtf
+						super.write(context, packet, channelPromise);
+						return;
+					}
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
 						Playerlist.modifyPacket((PlayerListItem) packet, player);
 					}
