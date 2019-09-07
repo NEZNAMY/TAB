@@ -61,7 +61,6 @@ public class TabPlayer extends ITabPlayer{
 		return getPlayer().getUniqueId();
 	}
 	public String getWorldName() {
-		if (server == null) server = getPlayer().getServer(); //no other effective way to initialize
 		return server.getInfo().getName();
 	}
 	public boolean hasPermission(String permission) {
