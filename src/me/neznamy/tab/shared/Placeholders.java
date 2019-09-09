@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.bukkit.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.TabPlayer;
 
 public class Placeholders {
 

@@ -20,12 +20,12 @@ public class TABAPI {
 		return Configs.unlimitedTags;
 	}
 	public static void enableUnlimitedNameTagModePermanently() {
-		if (Shared.mainClass instanceof me.neznamy.tab.bukkit.Main) {
+		if (Shared.mainClass instanceof me.neznamy.tab.platforms.bukkit.Main) {
 			Configs.config.set("change-nametag-prefix-suffix", true);
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 			Configs.config.save();
-			me.neznamy.tab.bukkit.Main.instance.unload();
-			me.neznamy.tab.bukkit.Main.instance.load(false, false);
+			me.neznamy.tab.platforms.bukkit.Main.instance.unload();
+			me.neznamy.tab.platforms.bukkit.Main.instance.load(false, false);
 		} else throw new IllegalStateException();
 	}
 	

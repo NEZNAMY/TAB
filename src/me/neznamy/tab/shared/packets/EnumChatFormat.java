@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
 
 public enum EnumChatFormat{
 

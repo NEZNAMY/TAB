@@ -6,7 +6,7 @@ import java.util.Collections;
 
 import org.bukkit.ChatColor;
 
-import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.Team;

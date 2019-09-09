@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 
-import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.kyori.text.Component;

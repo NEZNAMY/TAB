@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.bukkit.packets.EnumConstant;
-import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Chat;
 

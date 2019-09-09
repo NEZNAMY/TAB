@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import me.neznamy.tab.bukkit.packets.EnumConstant;
-import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.BossBar;

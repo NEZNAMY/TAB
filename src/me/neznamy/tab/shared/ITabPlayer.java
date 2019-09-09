@@ -8,9 +8,9 @@ import com.google.common.collect.Lists;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.bukkit.unlimitedtags.ArmorStand;
-import me.neznamy.tab.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
+import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.ScoreboardManager;

@@ -8,13 +8,13 @@ import org.bukkit.entity.EntityType;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.bukkit.TabPlayer;
-import me.neznamy.tab.bukkit.packets.DataWatcher;
-import me.neznamy.tab.bukkit.packets.DataWatcherObject;
-import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
