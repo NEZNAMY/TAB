@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.bukkit.ChatColor;
 
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.Team;
@@ -36,13 +36,14 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		this.chatFormat = format == null ? EnumChatFormat.RESET : format;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
+		if (team == null || team.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		String prefix = this.prefix;
 		String suffix = this.suffix;
 		if (clientVersion.getMinorVersion() < 13) {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
 			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
 		}
-		Object packet = newPacketPlayOutScoreboardTeam.newInstance();
+		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		PacketPlayOutScoreboardTeam_NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(packet, Shared.mainClass.createComponent(team));
@@ -83,9 +84,11 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		}
 		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		return null;
+	}
 
 	public static Class<?> PacketPlayOutScoreboardTeam;
-	private static Constructor<?> newPacketPlayOutScoreboardTeam;
 	private static Field PacketPlayOutScoreboardTeam_NAME;
 	private static Field PacketPlayOutScoreboardTeam_DISPLAYNAME;
 	private static Field PacketPlayOutScoreboardTeam_PREFIX;
@@ -101,7 +104,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
-				newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor();
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 					(PacketPlayOutScoreboardTeam_PUSH = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
 					PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h");

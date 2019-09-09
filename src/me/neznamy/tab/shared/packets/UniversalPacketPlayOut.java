@@ -10,6 +10,7 @@ public abstract class UniversalPacketPlayOut{
 
 	public abstract Object toNMS(ProtocolVersion clientVersion) throws Exception;
 	public abstract Object toBungee(ProtocolVersion clientVersion);
+	public abstract Object toVelocity(ProtocolVersion clientVersion);
 	
 	public static Class<?> getNMSClass(String name) throws Exception{
 		return Class.forName("net.minecraft.server." + ProtocolVersion.packageName + "." + name);

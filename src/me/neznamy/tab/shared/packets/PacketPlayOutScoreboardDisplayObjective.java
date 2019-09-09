@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
@@ -17,7 +17,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
         this.objectiveName = objectiveName;
     }
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = newPacketPlayOutScoreboardDisplayObjective.newInstance();
+		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardDisplayObjective();
 		PacketPlayOutScoreboardDisplayObjective_POSITION.set(packet, position);
 		PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.set(packet, objectiveName);
 		return packet;
@@ -25,9 +25,11 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardDisplay((byte)position, objectiveName);
 	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		return null;
+	}
 	
 	private static Class<?> PacketPlayOutScoreboardDisplayObjective;
-	private static Constructor<?> newPacketPlayOutScoreboardDisplayObjective;
 	private static Field PacketPlayOutScoreboardDisplayObjective_POSITION;
 	private static Field PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME;
 
@@ -35,7 +37,6 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective");
-				newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
 				(PacketPlayOutScoreboardDisplayObjective_POSITION = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("b")).setAccessible(true);
 			}

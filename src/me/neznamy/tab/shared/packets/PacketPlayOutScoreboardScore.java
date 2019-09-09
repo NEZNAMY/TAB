@@ -41,6 +41,9 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		return null;
+	}
 	public enum Action{
 		
         CHANGE((byte) 0, EnumConstant.PacketPlayOutScoreboardScore_Action_CHANGE),

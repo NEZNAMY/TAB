@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
@@ -29,7 +29,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (clientVersion.getMinorVersion() < 13) {
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}
-		Object packet = newPacketPlayOutScoreboardObjective.newInstance();
+		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		PacketPlayOutScoreboardObjective_OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			PacketPlayOutScoreboardObjective_TITLE.set(packet, Shared.mainClass.createComponent(title));
@@ -48,6 +48,9 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}
 		return new ScoreboardObjective(objectiveName, title, displayType.toBungee(), (byte)action);
+	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		return null;
 	}
 	public enum EnumScoreboardHealthDisplay{
 		
@@ -68,7 +71,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 
 	private static Class<?> PacketPlayOutScoreboardObjective;
-	private static Constructor<?> newPacketPlayOutScoreboardObjective;
 	private static Field PacketPlayOutScoreboardObjective_OBJECTIVENAME;
 	private static Field PacketPlayOutScoreboardObjective_TITLE;
 	private static Field PacketPlayOutScoreboardObjective_DISPLAYTYPE;
@@ -78,7 +80,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
-				newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
 				(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutScoreboardObjective_TITLE = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutScoreboardObjective_DISPLAYTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
