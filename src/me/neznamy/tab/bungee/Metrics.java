@@ -12,7 +12,6 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -31,7 +30,6 @@ import java.util.zip.GZIPOutputStream;
  * <p>
  * Check out https://bStats.org/ to learn more about bStats!
  */
-@SuppressWarnings({"unused"})
 public class Metrics {
 
 	static {
@@ -433,20 +431,10 @@ public class Metrics {
 		return outputStream.toByteArray();
 	}
 
-
-	/**
-	 * Represents a custom chart.
-	 */
 	public static abstract class CustomChart {
 
-		// The id of the chart
 		private final String chartId;
-
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 */
+		
 		CustomChart(String chartId) {
 			if (chartId == null || chartId.isEmpty()) {
 				throw new IllegalArgumentException("ChartId cannot be null or empty!");
@@ -460,7 +448,6 @@ public class Metrics {
 			try {
 				JsonObject data = getChartData();
 				if (data == null) {
-					// If the data is null we don't send the chart.
 					return null;
 				}
 				chart.add("data", data);
@@ -477,19 +464,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom simple pie.
-	 */
 	public static class SimplePie extends CustomChart {
 
 		private final Callable<String> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SimplePie(String chartId, Callable<String> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -500,7 +478,6 @@ public class Metrics {
 			JsonObject data = new JsonObject();
 			String value = callable.call();
 			if (value == null || value.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			data.addProperty("value", value);
@@ -508,19 +485,10 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Represents a custom advanced pie.
-	 */
 	public static class AdvancedPie extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public AdvancedPie(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -532,19 +500,17 @@ public class Metrics {
 			JsonObject values = new JsonObject();
 			Map<String, Integer> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean allSkipped = true;
 			for (Map.Entry<String, Integer> entry : map.entrySet()) {
 				if (entry.getValue() == 0) {
-					continue; // Skip this invalid
+					continue;
 				}
 				allSkipped = false;
 				values.addProperty(entry.getKey(), entry.getValue());
 			}
 			if (allSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.add("values", values);
@@ -552,19 +518,10 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Represents a custom drilldown pie.
-	 */
 	public static class DrilldownPie extends CustomChart {
 
 		private final Callable<Map<String, Map<String, Integer>>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public DrilldownPie(String chartId, Callable<Map<String, Map<String, Integer>>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -608,12 +565,6 @@ public class Metrics {
 
 		private final Callable<Integer> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SingleLineChart(String chartId, Callable<Integer> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -633,19 +584,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom multi line chart.
-	 */
 	public static class MultiLineChart extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public MultiLineChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -657,7 +599,6 @@ public class Metrics {
 			JsonObject values = new JsonObject();
 			Map<String, Integer> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean allSkipped = true;
@@ -669,7 +610,6 @@ public class Metrics {
 				values.addProperty(entry.getKey(), entry.getValue());
 			}
 			if (allSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.add("values", values);
@@ -678,19 +618,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom simple bar chart.
-	 */
 	public static class SimpleBarChart extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -716,19 +647,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom advanced bar chart.
-	 */
 	public static class AdvancedBarChart extends CustomChart {
 
 		private final Callable<Map<String, int[]>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public AdvancedBarChart(String chartId, Callable<Map<String, int[]>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -762,7 +684,5 @@ public class Metrics {
 			data.add("values", values);
 			return data;
 		}
-
 	}
-
 }

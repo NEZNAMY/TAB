@@ -1,7 +1,7 @@
 package me.neznamy.tab.bukkit.unlimitedtags;
 
-import org.bukkit.entity.Player;
-
+import me.neznamy.tab.bukkit.TabPlayer;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 
 public class NameTagLineManager {
@@ -25,17 +25,17 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.destroy();
 	}
 	public static void destroy(ITabPlayer armorStandOwner, ITabPlayer packetReceiver){
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getDestroyPacket(packetReceiver, true).send(packetReceiver);
+		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSDestroyPacket(packetReceiver));
 	}
 	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean addToRegistered) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getSpawnPacket(packetReceiver, addToRegistered).send(packetReceiver);
+		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
 	}
 	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.getTeleportPacket().send(packetReceiver);
+		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket());
 	}
 	public static void teleportOwner(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		if (armorStandOwner.getName().equals(packetReceiver.getName())) return; //avoiding buggy movement when riding entities
-		new PacketPlayOutEntityTeleport((Player)armorStandOwner.getPlayer()).send(packetReceiver);
+		packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(((TabPlayer)armorStandOwner).player));
 	}
 	public static void refreshNames(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.refreshName();

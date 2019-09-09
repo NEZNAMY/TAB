@@ -80,11 +80,6 @@ public class Metrics {
 	// A list with all custom charts
 	private final List<CustomChart> charts = new ArrayList<CustomChart>();
 
-	/**
-	 * Class constructor.
-	 *
-	 * @param plugin The plugin which stats should be submitted.
-	 */
 	public Metrics(Plugin plugin) {
 		if (plugin == null) {
 			throw new IllegalArgumentException("Plugin cannot be null!");
@@ -95,22 +90,12 @@ public class Metrics {
 		File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
 		File configFile = new File(bStatsFolder, "config.yml");
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-
-		// Check if the config file exists
 		if (!config.isSet("serverUuid")) {
-
-			// Add default values
 			config.addDefault("enabled", true);
-			// Every server gets it's unique random id.
 			config.addDefault("serverUuid", UUID.randomUUID().toString());
-			// Should failed request be logged?
 			config.addDefault("logFailedRequests", false);
-			// Should the sent data be logged?
 			config.addDefault("logSentData", false);
-			// Should the response text be logged?
 			config.addDefault("logResponseStatusText", false);
-
-			// Inform the server owners about bStats
 			config.options().header(
 					"bStats collects some data for plugin authors like how many servers are using their plugins.\n" +
 							"To honor their work, you should not disable it.\n" +
@@ -303,13 +288,6 @@ public class Metrics {
 		}).start();
 	}
 
-	/**
-	 * Sends the data to the bStats server.
-	 *
-	 * @param plugin Any plugin. It's just used to get a logger instance.
-	 * @param data The data to send.
-	 * @throws Exception If the request failed.
-	 */
 	private static void sendData(Plugin plugin, JSONObject data) throws Exception {
 		if (data == null) {
 			throw new IllegalArgumentException("Data cannot be null!");
@@ -355,13 +333,6 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Gzips the given String.
-	 *
-	 * @param str The string to gzip.
-	 * @return The gzipped String.
-	 * @throws IOException If the compression failed.
-	 */
 	private static byte[] compress(final String str) throws IOException {
 		if (str == null) {
 			return null;
@@ -373,19 +344,10 @@ public class Metrics {
 		return outputStream.toByteArray();
 	}
 
-	/**
-	 * Represents a custom chart.
-	 */
 	public static abstract class CustomChart {
 
-		// The id of the chart
 		final String chartId;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 */
 		CustomChart(String chartId) {
 			if (chartId == null || chartId.isEmpty()) {
 				throw new IllegalArgumentException("ChartId cannot be null or empty!");
@@ -399,7 +361,6 @@ public class Metrics {
 			try {
 				JSONObject data = getChartData();
 				if (data == null) {
-					// If the data is null we don't send the chart.
 					return null;
 				}
 				chart.put("data", data);
@@ -416,19 +377,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom simple pie.
-	 */
 	public static class SimplePie extends CustomChart {
 
 		private final Callable<String> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SimplePie(String chartId, Callable<String> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -447,19 +399,10 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Represents a custom advanced pie.
-	 */
 	public static class AdvancedPie extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public AdvancedPie(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -471,19 +414,17 @@ public class Metrics {
 			JSONObject values = new JSONObject();
 			Map<String, Integer> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean allSkipped = true;
 			for (Map.Entry<String, Integer> entry : map.entrySet()) {
 				if (entry.getValue() == 0) {
-					continue; // Skip this invalid
+					continue;
 				}
 				allSkipped = false;
 				values.put(entry.getKey(), entry.getValue());
 			}
 			if (allSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.put("values", values);
@@ -491,19 +432,10 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Represents a custom drilldown pie.
-	 */
 	public static class DrilldownPie extends CustomChart {
 
 		private final Callable<Map<String, Map<String, Integer>>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public DrilldownPie(String chartId, Callable<Map<String, Map<String, Integer>>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -515,7 +447,6 @@ public class Metrics {
 			JSONObject values = new JSONObject();
 			Map<String, Map<String, Integer>> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean reallyAllSkipped = true;
@@ -532,7 +463,6 @@ public class Metrics {
 				}
 			}
 			if (reallyAllSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.put("values", values);
@@ -540,19 +470,10 @@ public class Metrics {
 		}
 	}
 
-	/**
-	 * Represents a custom single line chart.
-	 */
 	public static class SingleLineChart extends CustomChart {
 
 		private final Callable<Integer> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SingleLineChart(String chartId, Callable<Integer> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -572,19 +493,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom multi line chart.
-	 */
 	public static class MultiLineChart extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public MultiLineChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -596,40 +508,28 @@ public class Metrics {
 			JSONObject values = new JSONObject();
 			Map<String, Integer> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean allSkipped = true;
 			for (Map.Entry<String, Integer> entry : map.entrySet()) {
 				if (entry.getValue() == 0) {
-					continue; // Skip this invalid
+					continue;
 				}
 				allSkipped = false;
 				values.put(entry.getKey(), entry.getValue());
 			}
 			if (allSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.put("values", values);
 			return data;
 		}
-
 	}
 
-	/**
-	 * Represents a custom simple bar chart.
-	 */
 	public static class SimpleBarChart extends CustomChart {
 
 		private final Callable<Map<String, Integer>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -641,7 +541,6 @@ public class Metrics {
 			JSONObject values = new JSONObject();
 			Map<String, Integer> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			for (Map.Entry<String, Integer> entry : map.entrySet()) {
@@ -655,19 +554,10 @@ public class Metrics {
 
 	}
 
-	/**
-	 * Represents a custom advanced bar chart.
-	 */
 	public static class AdvancedBarChart extends CustomChart {
 
 		private final Callable<Map<String, int[]>> callable;
 
-		/**
-		 * Class constructor.
-		 *
-		 * @param chartId The id of the chart.
-		 * @param callable The callable which is used to request the chart data.
-		 */
 		public AdvancedBarChart(String chartId, Callable<Map<String, int[]>> callable) {
 			super(chartId);
 			this.callable = callable;
@@ -679,13 +569,12 @@ public class Metrics {
 			JSONObject values = new JSONObject();
 			Map<String, int[]> map = callable.call();
 			if (map == null || map.isEmpty()) {
-				// Null = skip the chart
 				return null;
 			}
 			boolean allSkipped = true;
 			for (Map.Entry<String, int[]> entry : map.entrySet()) {
 				if (entry.getValue().length == 0) {
-					continue; // Skip this invalid
+					continue;
 				}
 				allSkipped = false;
 				JSONArray categoryValues = new JSONArray();
@@ -695,7 +584,6 @@ public class Metrics {
 				values.put(entry.getKey(), categoryValues);
 			}
 			if (allSkipped) {
-				// Null = skip the chart
 				return null;
 			}
 			data.put("values", values);

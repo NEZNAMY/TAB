@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.Main;
+import me.neznamy.tab.bukkit.TabPlayer;
 import me.neznamy.tab.bukkit.unlimitedtags.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -37,12 +38,12 @@ public class NameTagX implements Listener{
 			NameTagLineManager.destroy(p);
 		}
 	}
-	public static void load() {
+	public static void load(){
 		if (!enable) return;
 		Bukkit.getPluginManager().registerEvents(new NameTagX(), Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.registerTeam();
-			for (Player w : ((Player) all.getPlayer()).getWorld().getPlayers()) {
+			for (Player w : (((TabPlayer)all).player).getWorld().getPlayers()) {
 				ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
 				if (wPlayer == null) {
 					Shared.error("Data of " + w.getName() + " don't exist ?");
@@ -105,7 +106,7 @@ public class NameTagX implements Listener{
 				ITabPlayer pl = Shared.getPlayer(id);
 				if (pl != null) {
 					//player moved
-					if (((Player) pl.getPlayer()).isFlying() && !teleportPacket) {
+					if (((TabPlayer)pl).player.isFlying() && !teleportPacket) {
 						//fixing a client-sided bug
 						NameTagLineManager.teleportOwner(pl, packetReceiver);
 					} else {

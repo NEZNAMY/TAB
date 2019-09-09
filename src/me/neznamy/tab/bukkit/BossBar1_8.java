@@ -2,13 +2,12 @@ package me.neznamy.tab.bukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import me.neznamy.tab.bukkit.unlimitedtags.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -24,8 +23,8 @@ public class BossBar1_8 implements Listener {
 				public void run() {
 					for (ITabPlayer all : Shared.getPlayers()) {
 						for (BossBarLine l : all.activeBossBars) {
-							Location to = ((Player) all.getPlayer()).getEyeLocation().add(((Player) all.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
-							new PacketPlayOutEntityTeleport(l.getEntityId(), to).send(all);
+							Location to = (((TabPlayer)all).player).getEyeLocation().add((((TabPlayer)all).player).getEyeLocation().getDirection().normalize().multiply(25));
+							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), to));
 						}
 					}
 				}

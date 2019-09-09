@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
@@ -96,6 +97,7 @@ public class BossBar{
 		private String name;
 		private boolean permissionRequired;
 		private UUID uuid; //1.9+
+		private Object nmsEntity; //1.8.x
 		private int entityId; //1.8.x
 		private int refresh;
 		public String style;
@@ -111,7 +113,10 @@ public class BossBar{
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
-			this.entityId = Shared.getNextEntityId();
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
+				nmsEntity = MethodAPI.getInstance().newEntityWither();
+				entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
+			}
 			this.refresh = refresh;
 			this.color = color;
 			this.style = style;
@@ -126,6 +131,9 @@ public class BossBar{
 		}
 		public int getRefresh() {
 			return refresh;
+		}
+		public Object getEntity() {
+			return nmsEntity;
 		}
 		public int getEntityId() {
 			return entityId;

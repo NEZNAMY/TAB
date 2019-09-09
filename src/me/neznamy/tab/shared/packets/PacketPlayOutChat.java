@@ -14,7 +14,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		this.json = json;
 		this.type = ChatMessageType.CHAT;
 	}
-	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
+	public Object toNMS(ProtocolVersion clientVersion) {
 		if (json == null) return null;
 		Object component = MethodAPI.getInstance().ICBC_fromString(json);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
@@ -25,6 +25,9 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new Chat(json, type.toByte());
+	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		return new com.velocitypowered.proxy.protocol.packet.Chat(json, type.toByte());
 	}
 	
 	public enum ChatMessageType{

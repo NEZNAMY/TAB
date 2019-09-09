@@ -74,7 +74,7 @@ public class EnumConstant {
 	static {
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				Class<?> EnumChatFormat = NMSClass.get("EnumChatFormat");
+				Class<?> EnumChatFormat = NMSClass.getClass("EnumChatFormat");
 				EnumChatFormat_BLACK = EnumChatFormat.getDeclaredField("BLACK").get(null);
 				EnumChatFormat_DARK_BLUE = EnumChatFormat.getDeclaredField("DARK_BLUE").get(null);
 				EnumChatFormat_DARK_GREEN = EnumChatFormat.getDeclaredField("DARK_GREEN").get(null);
@@ -101,10 +101,10 @@ public class EnumConstant {
 				Class<?> EnumGamemode;
 				try{
 					//1.8.R1, 1.10+
-					EnumGamemode = NMSClass.get("EnumGamemode");
+					EnumGamemode = NMSClass.getClass("EnumGamemode");
 				} catch (Throwable e) {
 					//1.8.R2, 1.8.R3, 1.9.R1, 1.9.R2
-					EnumGamemode = NMSClass.get("WorldSettings$EnumGamemode");
+					EnumGamemode = NMSClass.getClass("WorldSettings$EnumGamemode");
 				}
 				EnumGamemode_ADVENTURE = EnumGamemode.getDeclaredField("ADVENTURE").get(null);
 				EnumGamemode_CREATIVE = EnumGamemode.getDeclaredField("CREATIVE").get(null);
@@ -116,11 +116,11 @@ public class EnumConstant {
 				Class<?> EnumPlayerInfoAction;
 				try{
 					//1.8.R1
-					EnumScoreboardHealthDisplay = NMSClass.get("EnumScoreboardHealthDisplay");
-					EnumPlayerInfoAction = NMSClass.get("EnumPlayerInfoAction");
+					EnumScoreboardHealthDisplay = NMSClass.getClass("EnumScoreboardHealthDisplay");
+					EnumPlayerInfoAction = NMSClass.getClass("EnumPlayerInfoAction");
 				} catch (Throwable e) {
-					EnumScoreboardHealthDisplay = NMSClass.get("IScoreboardCriteria$EnumScoreboardHealthDisplay");
-					EnumPlayerInfoAction = NMSClass.get("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+					EnumScoreboardHealthDisplay = NMSClass.getClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
+					EnumPlayerInfoAction = NMSClass.getClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 				}
 
 				EnumScoreboardHealthDisplay_INTEGER = EnumScoreboardHealthDisplay.getDeclaredField("INTEGER").get(null);
@@ -134,19 +134,19 @@ public class EnumConstant {
 
 				Class<?> PacketPlayOutScoreboardScore_Action;
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-					PacketPlayOutScoreboardScore_Action = NMSClass.get("ScoreboardServer$Action");
+					PacketPlayOutScoreboardScore_Action = NMSClass.getClass("ScoreboardServer$Action");
 				} else {
 					try {
-						PacketPlayOutScoreboardScore_Action = NMSClass.get("EnumScoreboardAction");
+						PacketPlayOutScoreboardScore_Action = NMSClass.getClass("EnumScoreboardAction");
 					} catch (Throwable e) {
-						PacketPlayOutScoreboardScore_Action = NMSClass.get("PacketPlayOutScoreboardScore$EnumScoreboardAction");
+						PacketPlayOutScoreboardScore_Action = NMSClass.getClass("PacketPlayOutScoreboardScore$EnumScoreboardAction");
 					}
 				}
 				PacketPlayOutScoreboardScore_Action_CHANGE = PacketPlayOutScoreboardScore_Action.getDeclaredField("CHANGE").get(null);
 				PacketPlayOutScoreboardScore_Action_REMOVE = PacketPlayOutScoreboardScore_Action.getDeclaredField("REMOVE").get(null);
 
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-					Class<?> BarColor = NMSClass.get("BossBattle$BarColor");
+					Class<?> BarColor = NMSClass.getClass("BossBattle$BarColor");
 					BarColor_since_1_9_R1_BLUE = BarColor.getDeclaredField("BLUE").get(null);
 					BarColor_since_1_9_R1_GREEN = BarColor.getDeclaredField("GREEN").get(null);
 					BarColor_since_1_9_R1_PINK = BarColor.getDeclaredField("PINK").get(null);
@@ -155,14 +155,14 @@ public class EnumConstant {
 					BarColor_since_1_9_R1_WHITE = BarColor.getDeclaredField("WHITE").get(null);
 					BarColor_since_1_9_R1_YELLOW = BarColor.getDeclaredField("YELLOW").get(null);
 
-					Class<?> BarStyle = NMSClass.get("BossBattle$BarStyle");
+					Class<?> BarStyle = NMSClass.getClass("BossBattle$BarStyle");
 					BarStyle_since_1_9_R1_NOTCHED_6 = BarStyle.getDeclaredField("NOTCHED_6").get(null);
 					BarStyle_since_1_9_R1_NOTCHED_10 = BarStyle.getDeclaredField("NOTCHED_10").get(null);
 					BarStyle_since_1_9_R1_NOTCHED_12 = BarStyle.getDeclaredField("NOTCHED_12").get(null);
 					BarStyle_since_1_9_R1_NOTCHED_20 = BarStyle.getDeclaredField("NOTCHED_20").get(null);
 					BarStyle_since_1_9_R1_PROGRESS = BarStyle.getDeclaredField("PROGRESS").get(null);
 
-					Class<?> PacketPlayOutBoss_Action = NMSClass.get("PacketPlayOutBoss$Action");
+					Class<?> PacketPlayOutBoss_Action = NMSClass.getClass("PacketPlayOutBoss$Action");
 					PacketPlayOutBoss_Action_since_1_9_R1_ADD = PacketPlayOutBoss_Action.getDeclaredField("ADD").get(null);
 					PacketPlayOutBoss_Action_since_1_9_R1_REMOVE = PacketPlayOutBoss_Action.getDeclaredField("REMOVE").get(null);
 					PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_NAME = PacketPlayOutBoss_Action.getDeclaredField("UPDATE_NAME").get(null);
@@ -171,7 +171,7 @@ public class EnumConstant {
 					PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_STYLE = PacketPlayOutBoss_Action.getDeclaredField("UPDATE_STYLE").get(null);
 				}
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-					Class<?> ChatMessageType = NMSClass.get("ChatMessageType");
+					Class<?> ChatMessageType = NMSClass.getClass("ChatMessageType");
 					ChatMessageType_since_1_12_R1_CHAT = ChatMessageType.getDeclaredField("CHAT").get(null);
 					ChatMessageType_since_1_12_R1_SYSTEM = ChatMessageType.getDeclaredField("SYSTEM").get(null);
 					ChatMessageType_since_1_12_R1_GAME_INFO = ChatMessageType.getDeclaredField("GAME_INFO").get(null);

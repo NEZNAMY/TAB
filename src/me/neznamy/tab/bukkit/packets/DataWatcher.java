@@ -1,8 +1,6 @@
 package me.neznamy.tab.bukkit.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -74,17 +73,9 @@ public class DataWatcher{
 		public boolean needsUpdate(){
 			return needsUpdate;
 		}
-		public Object toNMS() throws Exception{
-			Object nmsObject;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				nmsObject = newItem.newInstance(type.toNMS(), value);
-			} else {
-				nmsObject = newItem.newInstance(type.getClassType(), type.getPosition(), value);
-			}
-			Item_NEEDSUPDATE.set(nmsObject, needsUpdate);
-			return nmsObject;
+		public Object toNMS(){
+			return MethodAPI.getInstance().newDataWatcherItem(type, value, needsUpdate);
 		}
-
 		public static Item fromNMS(Object nmsObject) throws Exception{
 			Object value = Item_VALUE.get(nmsObject);
 			boolean needsUpdate = Item_NEEDSUPDATE.getBoolean(nmsObject);
@@ -100,7 +91,6 @@ public class DataWatcher{
 		}
 
 		private static Class<?> Item;
-		private static Constructor<?> newItem;
 		private static Field Item_CLASSTYPE;
 		private static Field Item_POSITION;
 		private static Field Item_VALUE;
@@ -109,33 +99,28 @@ public class DataWatcher{
 		static {
 			try {
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-					Item = NMSClass.get("DataWatcher$Item");
-					newItem = NMSClass.getConstructor(Item, 2);
-					(Item_CLASSTYPE = Item.getDeclaredField("a")).setAccessible(true);
+					Item = NMSClass.getClass("DataWatcher$Item");
 					(Item_VALUE = Item.getDeclaredField("b")).setAccessible(true);
 					(Item_NEEDSUPDATE = Item.getDeclaredField("c")).setAccessible(true);
 				} else {
 					if (ProtocolVersion.packageName.equals("v1_8_R1")) {
-						Item = NMSClass.get("WatchableObject");
+						Item = NMSClass.getClass("WatchableObject");
 					} else {
-						Item = NMSClass.get("DataWatcher$WatchableObject");
+						Item = NMSClass.getClass("DataWatcher$WatchableObject");
 					}
-					newItem = NMSClass.getConstructor(Item, 3);
-					(Item_CLASSTYPE = Item.getDeclaredField("a")).setAccessible(true);
 					(Item_POSITION = Item.getDeclaredField("b")).setAccessible(true);
 					(Item_VALUE = Item.getDeclaredField("c")).setAccessible(true);
 					(Item_NEEDSUPDATE = Item.getDeclaredField("d")).setAccessible(true);
 				}
+				(Item_CLASSTYPE = Item.getDeclaredField("a")).setAccessible(true);
 			} catch (Throwable e) {
 				Shared.error("Failed to initialize DataWatcherItem class", e);
 			}
 		}
 	}
-	public Object toNMS() throws Exception{
-		Object nmsWatcher = newDataWatcher.newInstance(entity);
-		for (Item item : dataValues.values()) {
-			DataWatcher_register.invoke(nmsWatcher, item.getType().getNMSKey(), item.getValue());
-		}
+	public Object toNMS(){
+		Object nmsWatcher = MethodAPI.getInstance().newDataWatcher(entity);
+		for (Item item : dataValues.values()) MethodAPI.getInstance().DataWatcher_register(nmsWatcher, item.getType(), item.getValue());
 		return nmsWatcher;
 	}
 	@SuppressWarnings("unchecked")
@@ -158,17 +143,13 @@ public class DataWatcher{
 	}
 
 	private static Class<?> DataWatcher;
-	private static Constructor<?> newDataWatcher;
 	private static Field DataWatcher_ENTITY;
 	private static Field DataWatcher_DATAVALUES;
-	private static Method DataWatcher_register;
 
 	static {
 		try {
-			DataWatcher = NMSClass.get("DataWatcher");
-			newDataWatcher = NMSClass.getConstructor(DataWatcher, 1);
+			DataWatcher = NMSClass.getClass("DataWatcher");
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				DataWatcher_register = DataWatcher.getMethod("register", DataWatcherObject.DataWatcherObject, Object.class);
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
 					//1.10+
 					try {
@@ -187,7 +168,6 @@ public class DataWatcher{
 				}
 			} else {
 				//1.8.x
-				DataWatcher_register = DataWatcher.getMethod("a", int.class, Object.class);
 				(DataWatcher_ENTITY = DataWatcher.getDeclaredField("a")).setAccessible(true);
 				(DataWatcher_DATAVALUES = DataWatcher.getDeclaredField("dataValues")).setAccessible(true);
 			}

@@ -28,7 +28,7 @@ public class DataWatcherSerializer {
 	static {
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				Class<?> DWR = NMSClass.get("DataWatcherRegistry");
+				Class<?> DWR = NMSClass.getClass("DataWatcherRegistry");
 				Byte = DWR.getDeclaredField("a").get(null);
 				Integer = DWR.getDeclaredField("b").get(null);
 				Float = DWR.getDeclaredField("c").get(null);

@@ -12,7 +12,7 @@ public class HeaderFooter {
 		if (!enable) return;
 		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", Feature.HEADERFOOTER, new Runnable(){
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) if (p.fullyLoaded) refreshHeaderFooter(p);
+				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p);
 			}
 		});
 	}

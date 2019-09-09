@@ -32,7 +32,7 @@ public class Playerlist {
 	public static void modifyPacket(PlayerListItem packet, ITabPlayer receiver){
 		Item playerInfoData = packet.getItems()[0];
 		UUID uuid = playerInfoData.getUuid();
-		ITabPlayer player = Shared.getPlayer(uuid);
+		ITabPlayer player = Shared.getPlayerByOfflineUUID(uuid);
 		if (packet.getAction() == Action.UPDATE_GAMEMODE || packet.getAction() == Action.ADD_PLAYER) {
 			if (Configs.doNotMoveSpectators && playerInfoData.getGamemode() == 3 && uuid != receiver.getUniqueId()) playerInfoData.setGamemode(1);
 		}

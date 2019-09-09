@@ -3,6 +3,7 @@ package me.neznamy.tab.bukkit.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -10,11 +11,14 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.bukkit.TabPlayer;
 import me.neznamy.tab.bukkit.packets.DataWatcher;
+import me.neznamy.tab.bukkit.packets.DataWatcherObject;
+import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Property;
@@ -27,25 +31,26 @@ public class ArmorStand{
 	private Player player;
 	private double yOffset;
 	private String ID;
+	private Object nmsEntity;
 
-	private int entityId = Shared.getNextEntityId();
+	private int entityId;
 	private UUID uuid = UUID.randomUUID();
 	private Location location;
 	private boolean sneaking;
-	private boolean invisible;
+	private boolean visible;
 
 	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
-	private FakeDataWatcher datawatcher;
 	private Property property;
 
 	private long lastLocationRefresh = 0;
 
 	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID) {
 		this.owner = owner;
-		player = (Player) owner.getPlayer();
+		player = ((TabPlayer)owner).player;
 		this.ID = ID;
 		this.yOffset = yOffset;
-		datawatcher = new FakeDataWatcher();
+		nmsEntity = MethodAPI.getInstance().newEntityArmorStand();
+		entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 		owner.setProperty(ID, format);
 		property = owner.properties.get(ID);
 		refreshName();
@@ -58,77 +63,70 @@ public class ArmorStand{
 		owner.setProperty(ID, format);
 	}
 	public void refreshName() {
-		if (property.isUpdateNeeded()) {
-			updateMetadata();
-		}
+		if (property.isUpdateNeeded()) updateMetadata();
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
-		String name = owner.properties.get(ID).get();
-		if (Placeholders.placeholderAPI) name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) to.getPlayer(), name);
-		datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
-		DataWatcher w = datawatcher.create(name);
+		String name = property.get();
+		if (Placeholders.placeholderAPI) name = Placeholders.setRelational(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(w);
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(createDataWatcher(name));
 	}
-	public PacketPlayOutEntityTeleport getTeleportPacket() {
+	public Object getNMSTeleportPacket() {
 		updateLocation();
-		return new PacketPlayOutEntityTeleport(entityId, location);
+		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, location);
 	}
-	public PacketPlayOutEntityDestroy getDestroyPacket(ITabPlayer to, boolean removeFromRegistered) {
-		if (removeFromRegistered) removeFromRegistered(to);
-		return new PacketPlayOutEntityDestroy(entityId);
+	public Object getNMSDestroyPacket(ITabPlayer to) {
+		registeredTo.remove(to);
+		return MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
 	}
 	public void teleport() {
-		PacketPlayOutEntityTeleport packet = getTeleportPacket();
+		Object teleportPacket = getNMSTeleportPacket();
 		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) packet.send(all);
+			for (ITabPlayer all : registeredTo) all.sendPacket(teleportPacket);
 		}
 	}
 	public void sneak(boolean sneaking) {
-		datawatcher.setSneaking(sneaking);
 		this.sneaking = sneaking;
 		updateLocation();
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
 				if (all == owner) continue;
-				getDestroyPacket(all, false).send(all);
-				if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) getSpawnPacket(all, false).send(all);
+				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+				if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) all.sendCustomPacket(getSpawnPacket(all, false));
 			}
 		}
 	}
 	public void destroy() {
+		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
 		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) getDestroyPacket(all, false).send(all);
+			for (ITabPlayer all : registeredTo) all.sendPacket(destroyPacket);
 		}
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
-		if ((!owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR) == invisible) {
-			invisible = !invisible;
+		if (getVisibility() != visible) {
+			visible = !visible;
 			updateMetadata();
 		}
 	}
 	private void updateMetadata() {
 		synchronized (registeredTo) {
-			Property line = owner.properties.get(ID);
+			Property line = property;
 			String name = line.get();
 			if (Placeholders.placeholderAPI && line.hasRelationalPlaceholders()) {
 				for (ITabPlayer all : registeredTo) {
-					name = PlaceholderAPI.setRelationalPlaceholders(player, (Player) all.getPlayer(), name);
-					datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
-					DataWatcher w = datawatcher.create(name);
-					new PacketPlayOutEntityMetadata(entityId, w, true).send(all);
+					name = Placeholders.setRelational(owner, all, name);
+					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS());
 				}
 			} else {
-				datawatcher.setCustomNameVisible(!(invisible || name.length() == 0 || TABAPI.hasHiddenNametag(player.getUniqueId())));
-				DataWatcher w = datawatcher.create(name);
-				PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(entityId, w, true);
-				for (ITabPlayer all : registeredTo) {
-					packet.send(all);
-				}
+				Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS();
+				for (ITabPlayer all : registeredTo) all.sendPacket(packet);
 			}
 		}
+	}
+	public boolean getVisibility() {
+		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(player.getUniqueId()) && property.get().length() > 0;
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;
@@ -154,4 +152,24 @@ public class ArmorStand{
 	public void removeFromRegistered(ITabPlayer removed) {
 		registeredTo.remove(removed);
 	}
+	public DataWatcher createDataWatcher(String name) {
+		byte flag = 0;
+		if (sneaking) flag += (byte)2;
+		flag += (byte)32;
+		DataWatcher datawatcher = new DataWatcher(null);
+		if (name == null || name.length() == 0) name = "§r";
+		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(Shared.mainClass.createComponent(name)));
+		} else {
+			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
+		} else {
+			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
+		}
+		datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
+		return datawatcher;
+    }
 }

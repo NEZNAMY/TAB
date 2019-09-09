@@ -30,7 +30,6 @@ public class Shared {
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
 	public static List<CPUSample> cpuHistory = new ArrayList<CPUSample>();
-	private static int nextEntityId = 2000000000;
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static String pluginVersion;
 	public static int startupWarns = 0;
@@ -57,6 +56,12 @@ public class Shared {
 	}
 	public static ITabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);
+	}
+	public static ITabPlayer getPlayerByOfflineUUID(UUID offlineId) {
+		for (ITabPlayer p : data.values()) {
+			if (p.getOfflineId() == offlineId) return p;
+		}
+		return null;
 	}
 	public static void error(String message) {
 		error(message, null);
@@ -100,9 +105,6 @@ public class Shared {
 	}
 	private static String ERROR_PREFIX() {
 		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
-	}
-	public static int getNextEntityId() {
-		return nextEntityId++;
 	}
 	public static void startupWarn(String message) {
 		print("§c", message);

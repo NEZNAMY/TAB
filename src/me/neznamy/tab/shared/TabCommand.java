@@ -14,8 +14,8 @@ public class TabCommand{
 	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
 
 	public static void execute(final ITabPlayer sender, String[] args){
-		//TODO make work for players
 		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
+			//TODO make work for players
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				Shared.mainClass.reload(sender);
 			} else {

@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.bukkit.TabPlayer;
 
 public class Placeholders {
 
@@ -74,7 +74,7 @@ public class Placeholders {
 	public static String setPlaceholderAPIPlaceholders(String s, ITabPlayer p) {
 		try {
 			if (!placeholderAPI) return s;
-			return PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), s);
+			return PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
@@ -88,5 +88,8 @@ public class Placeholders {
 			}
 		}
 		return s;
+	}
+	public static String setRelational(ITabPlayer one, ITabPlayer two, String format) {
+		return PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, format);
 	}
 }

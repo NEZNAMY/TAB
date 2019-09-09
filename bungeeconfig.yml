@@ -1,28 +1,11 @@
-#some placeholders
-# %online%       = online count
-# %maxplayers%   = amount of slots on server
-# %ping%         = ping of player
-# %nick%         = nickname of player
-# %IP%           = IP of player
-# %time%         = for example 20:30:00
-# %server%       = name of server of player
-# %serveronline% = amount of online players on server where he is
-# %date%         = current date, configurable format
-# %staffonline%  = amount of staffs online
-
-change-nametag-prefix-suffix: true #Warning! Disabling will break sorting of players in tablist!
+change-nametag-prefix-suffix: true
 change-tablist-prefix-suffix: true
 enable-header-footer: true
 
-#if you want to use animated prefix/suffix, you need to decrease this to 50 or 100 (depending on fastest animation) to make them work
 nametag-refresh-interval-milliseconds: 1000
 tablist-refresh-interval-milliseconds: 1000
+header-footer-refresh-interval-milliseconds: 100
 
-#using very low interval to allow animations to work as expected
-#if you aren't using any animations, increase this to save cpu
-header-footer-refresh-interval-milliseconds: 50
-
-#default header/footer for all servers
 header:
   - "%animation:ServerName%"
   - "&6&lRank: %rank%"
@@ -41,19 +24,11 @@ footer:
   - ""
   - "&7Visit our webpage %animation:web%"
   
-#PLAYERS 1.9+
-#this plugin overrides any other attemps to change collision rule, so it needs to be configured here
-enable-collision: true
-
 #the yellow number in tablist
 #set to "" to disable
 tablist-objective-value: "%ping%"
 
-#preventing players in spectator gamemode from appearing at the bottom of tablist
-#the spectator will still see himself incorrectly, but will look correctly to others
-#disabled by default so you don't think it's obvious and every plugin has this
-do-not-move-spectators: false
-
+#NOT case sensitive
 group-sorting-priority-list:
   - "Owner"
   - "Admin"
@@ -64,29 +39,7 @@ group-sorting-priority-list:
   - "Player"
   - "default"
 
-#better showing of %rank% value
-rank-aliases:
-  Admin: "&4&lADMIN"
-  Mod: "&b&lMOD"
-  Premium: "&6&lPREMIUM"
-  Ultra: "&b&lULTRA"
-  Legend: "&a&lLEGEND"
-  Titan: "&c&lTITAN"
-  Youtuber: "&c&lYOUTUBE"
-
-
-# - list of options
-#tabprefix = prefix in tablist with no known limit of characters
-#tagprefix = prefix above player's character (16 char limit on <1.13 clients)
-#tabsuffix = suffix in tablist with no known limit of characters
-#tagsuffix = suffix above player's character (16 char limit on <1.13 clients)
-#header = per player or per group header
-#footer = per player or per group footer
-#customtabname = change a display name of player in tablist
-
-#you don't need to use all of these values, you can delete the empty values to not have this config full of "spam"
-#if no personal (or per group) header/footer is set, the default one from above will be used
-
+#properties: tabprefix, tabsuffix, tagprefix (in name tag), tagsuffix, customtabname (modifying the name itself), header, footer
 Groups:
   Owner:
     tabprefix: "&0&l[&a&lOwner&0&l] &a"
@@ -111,12 +64,16 @@ Groups:
 
 #personal settings, override group settings
 Users:
-  md_5:
-    tabprefix: "&6&lSpigot &a"
-    tagprefix: "&6&lDev &a"
-    tabsuffix: ""
-    tagsuffix: ""
-    customtabname: "MessageDigest5"
+  _NEZNAMY_:
+    tabprefix: "&6&lTAB Author &a"
+    tagprefix: "&6&lTAB &r&a"
+    
+
+#players 1.9+
+enable-collision: true
+
+#preventing players in spectator gamemode from appearing at the bottom of tablist with transparent name FOR OTHER PLAYERS
+do-not-move-spectators: false
  
 #list of worlds with different settings than default, other worlds will use settings from above
 per-server-settings:
@@ -166,6 +123,18 @@ placeholders:
   #if time doesn't show correctly, you can change the time it shows
   #setting to -1 will make it show 1 hours less than it does currently, 1 makes it show one hour more than currently, 0 does nothing
   time-offset: 0
+  
+#better showing of %rank% value
+rank-aliases:
+  Admin: "&4&lADMIN"
+  Mod: "&b&lMOD"
+  Premium: "&6&lPREMIUM"
+  Ultra: "&b&lULTRA"
+  Legend: "&a&lLEGEND"
+  Titan: "&c&lTITAN"
+  Youtuber: "&c&lYOUTUBE"
+  #any group not defined above
+  _OTHER_: "&7No Rank"
   
 disable-features-in-servers:
   header-footer:

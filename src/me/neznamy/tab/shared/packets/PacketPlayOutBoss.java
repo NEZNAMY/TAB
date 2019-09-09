@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
 import me.neznamy.tab.bukkit.packets.EnumConstant;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.BossBar;
@@ -64,7 +64,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = newPacketPlayOutBoss.newInstance();
+		Object packet = MethodAPI.getInstance().newPacketPlayOutBoss();
 		PacketPlayOutBoss_UUID.set(packet, uuid);
 		PacketPlayOutBoss_ACTION.set(packet, action.toNMS());
 		if (action == Action.ADD) {
@@ -112,6 +112,33 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		if (action == Action.UPDATE_STYLE) {
 			packet.setColor(color.toBungee());
 			packet.setDivision(style.toBungee());
+		}
+		if (action == Action.UPDATE_PROPERTIES) {
+			packet.setFlags(getFlags());
+		}
+		return packet;
+	}
+	public Object toVelocity(ProtocolVersion clientVersion) {
+		if (clientVersion.getMinorVersion() < 9) return null;
+		com.velocitypowered.proxy.protocol.packet.BossBar packet = new com.velocitypowered.proxy.protocol.packet.BossBar();
+		packet.setUuid(uuid);
+		packet.setAction(action.toBungee());
+		if (action == Action.ADD) {
+			packet.setName(title);
+			packet.setPercent(progress);
+			packet.setColor(color.toBungee());
+			packet.setOverlay(style.toBungee());
+			packet.setFlags(getFlags());
+		}
+		if (action == Action.UPDATE_PCT) {
+			packet.setPercent(progress);
+		}
+		if (action == Action.UPDATE_NAME) {
+			packet.setName(title);
+		}
+		if (action == Action.UPDATE_STYLE) {
+			packet.setColor(color.toBungee());
+			packet.setOverlay(style.toBungee());
 		}
 		if (action == Action.UPDATE_PROPERTIES) {
 			packet.setFlags(getFlags());
@@ -197,7 +224,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 
 	private static Class<?> PacketPlayOutBoss;
-	private static Constructor<?> newPacketPlayOutBoss;
 	private static Field PacketPlayOutBoss_UUID;
 	private static Field PacketPlayOutBoss_ACTION;
 	private static Field PacketPlayOutBoss_NAME;
@@ -212,7 +238,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
-				newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
 				(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutBoss_NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);

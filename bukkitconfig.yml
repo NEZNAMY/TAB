@@ -1,4 +1,4 @@
-change-nametag-prefix-suffix: true #Warning! Disabling will break sorting of players in tablist!
+change-nametag-prefix-suffix: true
 change-tablist-prefix-suffix: true
 enable-header-footer: true
 
@@ -80,7 +80,7 @@ Users:
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
     
-#servers 1.9+
+#servers and clients 1.9+
 enable-collision: true
     
 #preventing players in spectator gamemode from appearing at the bottom of tablist with transparent name FOR OTHER PLAYERS
@@ -152,6 +152,7 @@ rank-aliases:
   Legend: "&a&lLEGEND"
   Titan: "&c&lTITAN"
   Youtuber: "&c&lYOUTUBE"
+  #any group not defined above
   _OTHER_: "&7No Rank"
   
 disable-features-in-worlds:

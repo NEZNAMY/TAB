@@ -49,8 +49,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		load(false, true);
 		Metrics metrics = new Metrics(this);
 		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-
-			public String call() throws Exception {
+			public String call() {
 				return getPermissionPlugin();
 			}
 		}));
@@ -167,7 +166,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				p.updatePlayerListName(false);
-				((TabPlayer)p).server = e.getPlayer().getServer();
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);

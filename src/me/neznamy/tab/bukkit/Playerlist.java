@@ -1,10 +1,11 @@
 package me.neznamy.tab.bukkit;
 
-import java.lang.reflect.Field;
+import java.util.Map.Entry;
 
 import org.bukkit.GameMode;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.bukkit.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -34,7 +35,7 @@ public class Playerlist {
 	public static void unload() {
 		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
 	}
-	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver) throws Exception{
+	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
 		if (packet.getPlayers().isEmpty()) return; //yes some plugins send packets like that
 		
 		PlayerInfoData playerInfoData = packet.getPlayers().get(0);
@@ -65,26 +66,12 @@ public class Playerlist {
 							name = gameProfile.getName() + " ";
 						}
 						GameProfile clone = new GameProfile(gameProfile.getId(), name);
-						GameProfile_properties.set(clone, gameProfile.getProperties());
-						GameProfile_legacy.set(clone, gameProfile.isLegacy());
+						for (Entry<String, Property> e : gameProfile.getProperties().entries()) {
+							clone.getProperties().put(e.getKey(), e.getValue());
+						}
 						playerInfoData.setGameProfile(clone);
-						packet.getPlayers().set(0, playerInfoData);
 					}
 				}
-			}
-		}
-	}
-	
-	public static Field GameProfile_properties;
-	public static Field GameProfile_legacy;
-	
-	static{
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			try {
-				(GameProfile_properties = GameProfile.class.getDeclaredField("properties")).setAccessible(true);
-				(GameProfile_legacy = GameProfile.class.getDeclaredField("legacy")).setAccessible(true);
-			} catch (Throwable e) {
-				Shared.error("Failed to initialize Playerlist class", e);
 			}
 		}
 	}

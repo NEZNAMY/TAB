@@ -10,7 +10,6 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -21,6 +20,7 @@ import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.entity.MPlayer;
 
 import ch.soolz.xantiafk.xAntiAFKAPI;
+import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -51,7 +51,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Essentials essentials;
 	public static Economy economy;
 	public static Permission perm;
-	public static PlaceholderAPIExpansion expansion;
+	public static boolean libsdisguises;
+	public static DisguiseAPI idisguise;
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
@@ -70,23 +71,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			load(false, true);
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
-				public String call() throws Exception {
+				public String call() {
 					return Configs.unlimitedTags ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
-				public String call() throws Exception {
+				public String call() {
 					return Placeholders.placeholderAPI ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-				public String call() throws Exception {
+				public String call() {
 					if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
 					return getPermissionPlugin();
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
-				public String call() throws Exception {
+				public String call() {
 					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ViaVersion + ProtocolSupport";
 					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) return "ViaVersion";
 					if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ProtocolSupport";
@@ -126,7 +127,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			BossBar.unload();
 			ScoreboardManager.unload();
 			Shared.data.clear();
-			if (expansion != null) PlaceholderAPIExpansion.unregister();
+			if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.unregister();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			Shared.error("Failed to unload the plugin", e);
@@ -143,9 +144,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
-				((TabPlayer) t).loadVersion();
 				if (inject) inject(t.getUniqueId());
-				t.onJoin();
 			}
 			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
@@ -166,30 +165,17 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			disabled = true;
 		}
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void a(PlayerLoginEvent e) {
-		try {
-			if (disabled) return;
-			if (e.getResult() == Result.ALLOWED) {
-				Player p = e.getPlayer();
-				Shared.data.put(p.getUniqueId(), new TabPlayer(p));
-			}
-		} catch (Throwable ex) {
-			Shared.error("An error occured when player attempted to join the server", ex);
-		}
-	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerJoinEvent e) {
 		try {
 			if (disabled) return;
-			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			inject(p.getUniqueId());
-			((TabPlayer) p).loadVersion();
+			ITabPlayer p = new TabPlayer(e.getPlayer());
+			Shared.data.put(e.getPlayer().getUniqueId(), p);
+			inject(e.getPlayer().getUniqueId());
 			final ITabPlayer pl = p;
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
-					pl.onJoin();
 					Placeholders.recalculateOnlineVersions();
 					HeaderFooter.playerJoin(pl);
 					TabObjective.playerJoin(pl);
@@ -461,11 +447,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			RegisteredServiceProvider<Permission> rsp2 = Bukkit.getServicesManager().getRegistration(Permission.class);
 			if (rsp2 != null) perm = rsp2.getProvider();
 		}
+		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
+			idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
+		}
 		luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
 		Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.register();
 		pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
+		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
 		Placeholders.list = new ArrayList<Placeholder>();
@@ -474,27 +464,27 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		Placeholders.list.add(new Placeholder("%xPos%") {
 			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockX()+"";
+				return (((TabPlayer)p).player).getLocation().getBlockX()+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%yPos%") {
 			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockY()+"";
+				return (((TabPlayer)p).player).getLocation().getBlockY()+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%zPos%") {
 			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockZ()+"";
+				return (((TabPlayer)p).player).getLocation().getBlockZ()+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%displayname%") {
 			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getDisplayName();
+				return (((TabPlayer)p).player).getDisplayName();
 			}
 		});
 		Placeholders.list.add(new Placeholder("%deaths%") {
 			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"";
+				return (((TabPlayer)p).player).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
 		Placeholders.list.add(new Placeholder("%essentialsnick%") {
@@ -510,7 +500,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
 			Placeholders.list.add(new Placeholder("%deluxetag%") {
 				public String get(ITabPlayer p) {
-					String tag = DeluxeTag.getPlayerDisplayTag((Player) p.getPlayer());
+					String tag = DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
 					if (tag == null || tag.equals("")) {
 						return Configs.noTag;
 					}
@@ -542,8 +532,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					}
 					String name = null;
 					if (factionsType == null) return Configs.noFaction;
-					if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer((Player) p.getPlayer()).getFaction().getTag();
-					if (factionsType.equals("MCore")) name = MPlayer.get(p.getPlayer()).getFactionName();
+					if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
+					if (factionsType.equals("MCore")) name = MPlayer.get(((TabPlayer)p).player).getFactionName();
 					if (name == null || name.length() == 0 || name.contains("Wilderness")) {
 						return Configs.noFaction;
 					}
@@ -578,7 +568,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					boolean afk = false;
 					try {
 						me.prunt.autoafk.Main m = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
-						if (((HashMap<Player, Object>) PacketAPI.getField(m, "afkList")).containsKey(p.getPlayer())) afk = true;
+						if (((HashMap<Player, Object>) PacketAPI.getField(m, "afkList")).containsKey(((TabPlayer)p).player)) afk = true;
 					} catch (Throwable e) {
 						Shared.error("An error occured when getting AFK status of " + p.getName(), e);
 						afk = false;
@@ -593,7 +583,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		} else if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			Placeholders.list.add(new Placeholder("%afk%") {
 				public String get(ITabPlayer p) {
-					return xAntiAFKAPI.isAfk((Player) p.getPlayer())?Configs.yesAfk:Configs.noAfk;
+					return xAntiAFKAPI.isAfk(((TabPlayer)p).player)?Configs.yesAfk:Configs.noAfk;
 				}
 				@Override
 				public String[] getChilds(){
@@ -629,7 +619,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
-					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+					if ((((TabPlayer)p).player).canSee(((TabPlayer)all).player)) var++;
 				}
 				return var+"";
 			}
@@ -638,7 +628,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
-					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+					if (all.isStaff() && (((TabPlayer)p).player).canSee(((TabPlayer)all).player)) var++;
 				}
 				return var+"";
 			}
@@ -651,7 +641,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 			public String get(ITabPlayer p) {
 				if (chat != null) {
-					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
+					String prefix = chat.getPlayerPrefix(((TabPlayer)p).player);
 					return prefix != null ? prefix : "";
 				}
 				return "";
@@ -665,7 +655,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 			public String get(ITabPlayer p) {
 				if (chat != null) {
-					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
+					String prefix = chat.getPlayerPrefix(((TabPlayer)p).player);
 					return prefix != null ? prefix : "";
 				}
 				return "";

@@ -55,6 +55,6 @@ public class PlaceholderAPIExpansion{
 		exp.register();
 	}
 	public static void unregister() {
-		PlaceholderAPI.unregisterExpansion(exp);
+		if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
 	}
 }

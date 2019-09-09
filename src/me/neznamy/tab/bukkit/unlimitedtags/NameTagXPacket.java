@@ -76,27 +76,27 @@ public class NameTagXPacket {
 	static {
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
-				PacketPlayOutAttachEntity = NMSClass.get("PacketPlayOutAttachEntity");
+				PacketPlayOutAttachEntity = NMSClass.getClass("PacketPlayOutAttachEntity");
 				(PacketPlayOutAttachEntity_A = PacketPlayOutAttachEntity.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutAttachEntity_PASSENGER = PacketPlayOutAttachEntity.getDeclaredField("b")).setAccessible(true);
 				(PacketPlayOutAttachEntity_VEHICLE = PacketPlayOutAttachEntity.getDeclaredField("c")).setAccessible(true);
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				(PacketPlayOutNamedEntitySpawn_ENTITYID = (PacketPlayOutNamedEntitySpawn = NMSClass.get("PacketPlayOutNamedEntitySpawn")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutEntityDestroy_ENTITIES = (PacketPlayOutEntityDestroy = NMSClass.get("PacketPlayOutEntityDestroy")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutEntityTeleport_ENTITYID = (NMSClass.get("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutEntity_ENTITYID = (NMSClass.get("PacketPlayOutEntity")).getDeclaredField("a")).setAccessible(true);
+				(PacketPlayOutNamedEntitySpawn_ENTITYID = (PacketPlayOutNamedEntitySpawn = NMSClass.getClass("PacketPlayOutNamedEntitySpawn")).getDeclaredField("a")).setAccessible(true);
+				(PacketPlayOutEntityDestroy_ENTITIES = (PacketPlayOutEntityDestroy = NMSClass.getClass("PacketPlayOutEntityDestroy")).getDeclaredField("a")).setAccessible(true);
+				(PacketPlayOutEntityTeleport_ENTITYID = (NMSClass.getClass("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
+				(PacketPlayOutEntity_ENTITYID = (NMSClass.getClass("PacketPlayOutEntity")).getDeclaredField("a")).setAccessible(true);
 				if (ProtocolVersion.packageName.equals("v1_8_R1")) {
-					PacketPlayOutRelEntityMove = NMSClass.get("PacketPlayOutRelEntityMove");
-					PacketPlayOutRelEntityMoveLook = NMSClass.get("PacketPlayOutRelEntityMoveLook");
+					PacketPlayOutRelEntityMove = NMSClass.getClass("PacketPlayOutRelEntityMove");
+					PacketPlayOutRelEntityMoveLook = NMSClass.getClass("PacketPlayOutRelEntityMoveLook");
 				} else {
-					PacketPlayOutRelEntityMove = NMSClass.get("PacketPlayOutEntity$PacketPlayOutRelEntityMove");
-					PacketPlayOutRelEntityMoveLook = NMSClass.get("PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
+					PacketPlayOutRelEntityMove = NMSClass.getClass("PacketPlayOutEntity$PacketPlayOutRelEntityMove");
+					PacketPlayOutRelEntityMoveLook = NMSClass.getClass("PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
 				}
-				(PacketPlayOutEntityTeleport_ENTITYID = (PacketPlayOutEntityTeleport = NMSClass.get("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
+				(PacketPlayOutEntityTeleport_ENTITYID = (PacketPlayOutEntityTeleport = NMSClass.getClass("PacketPlayOutEntityTeleport")).getDeclaredField("a")).setAccessible(true);
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				PacketPlayOutMount = NMSClass.get("PacketPlayOutMount");
+				PacketPlayOutMount = NMSClass.getClass("PacketPlayOutMount");
 				(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutMount_PASSENGERS = PacketPlayOutMount.getDeclaredField("b")).setAccessible(true);
 			}

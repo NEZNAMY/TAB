@@ -5,10 +5,10 @@ import java.util.Collection;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.bukkit.TabPlayer;
 import me.neznamy.tab.bukkit.packets.DataWatcher;
 import me.neznamy.tab.bukkit.packets.DataWatcherObject;
 import me.neznamy.tab.bukkit.packets.DataWatcherSerializer;
@@ -70,7 +70,7 @@ public class PacketAPI{
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
         new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2).send(p);
     }
-	public static void createBossBar(ITabPlayer to, BossBarLine bar) {
+	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
 		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);
 		to.setProperty("bossbar-color-"+bar.getName(), bar.color);
@@ -82,7 +82,7 @@ public class PacketAPI{
 					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
 					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())).send(to);
 		} else {
-			Location l = ((Player) to.getPlayer()).getEyeLocation().add(((Player) to.getPlayer()).getEyeLocation().getDirection().normalize().multiply(25));
+			Location l = (((TabPlayer)to).player).getEyeLocation().add(((TabPlayer)to).player.getEyeLocation().getDirection().normalize().multiply(25));
 			if (l.getY() < 1) l.setY(1);
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
 			DataWatcher w = new DataWatcher(null);
@@ -90,14 +90,14 @@ public class PacketAPI{
 			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
 			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get()));
 			packet.setDataWatcher(w);
-			packet.send(to);
+			to.sendCustomPacket(packet);
 		}
 	}
 	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
 			new PacketPlayOutBoss(bar.getUniqueId()).send(to);
 		} else {
-			MethodAPI.getInstance().sendPacket((Player) to.getPlayer(), MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
+			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
 		}
 	}
 	public static void updateBossBar(ITabPlayer to, BossBarLine bar) {
@@ -121,9 +121,13 @@ public class PacketAPI{
 		} else {
 			DataWatcher w = new DataWatcher(null);
 			if (text.isUpdateNeeded()) w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), text.get());
-			if (progress.isUpdateNeeded()) w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(progress.get()));
+			if (progress.isUpdateNeeded()) {
+				float health = (float)3*bar.parseProgress(progress.get());
+				if (health == 0) health = 1;
+				w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
+			}
 			if (w.getAllObjects().isEmpty()) return;
-			new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).send(to);
+			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS());
 		}
 	}
 }

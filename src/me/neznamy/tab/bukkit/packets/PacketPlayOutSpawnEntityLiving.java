@@ -1,6 +1,5 @@
 package me.neznamy.tab.bukkit.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import org.bukkit.entity.EntityType;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -28,14 +28,13 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private int motZ;
 	private float yaw;
 	private float pitch;
-	private float a;
+	private float l;
 	private DataWatcher dataWatcher;
 	private List<Item> watchableObjects;
 
 	public PacketPlayOutSpawnEntityLiving() {
 		dataWatcher = new DataWatcher(null);
 	}
-
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location loc) {
 		this(entityId, uuid, entityIds.get(entityType), loc);
 	}
@@ -62,20 +61,12 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		this.motZ = motZ;
 		return this;
 	}
-	public PacketPlayOutSpawnEntityLiving setYaw(float yaw) {
-		this.yaw = yaw;
-		return this;
-	}
-	public PacketPlayOutSpawnEntityLiving setPitch(float pitch) {
-		this.pitch = pitch;
-		return this;
-	}
 	public PacketPlayOutSpawnEntityLiving setDataWatcher(DataWatcher dataWatcher) {
 		this.dataWatcher = dataWatcher;
 		return this;
 	}
-	public PacketPlayOutSpawnEntityLiving setA(float a) {
-		this.a = a;
+	public PacketPlayOutSpawnEntityLiving setL(float l) {
+		this.l = l;
 		return this;
 	}
 	public PacketPlayOutSpawnEntityLiving setItems(List<Item> watchableObjects) {
@@ -89,7 +80,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		return dataWatcher;
 	}
 	public Object toNMS() throws Exception {
-		Object packet = newPacketPlayOutSpawnEntityLiving.newInstance();
+		Object packet = MethodAPI.getInstance().newPacketPlayOutSpawnEntityLiving();
 		PacketPlayOutSpawnEntityLiving_ENTITYID.set(packet, entityId);
 		PacketPlayOutSpawnEntityLiving_ENTITYTYPE.set(packet, entityType);
 		if (motX != 0) PacketPlayOutSpawnEntityLiving_MOTX.set(packet, motX);
@@ -97,7 +88,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		if (motZ != 0) PacketPlayOutSpawnEntityLiving_MOTZ.set(packet, motZ);
 		if (yaw != 0) PacketPlayOutSpawnEntityLiving_YAW.set(packet, (byte)(yaw * 256.0f / 360.0f));
 		if (pitch != 0) PacketPlayOutSpawnEntityLiving_PITCH.set(packet, (byte)(pitch * 256.0f / 360.0f));
-		if (a != 0) PacketPlayOutSpawnEntityLiving_A.set(packet, (byte)(a * 256.0f / 360.0f));
+		if (l != 0) PacketPlayOutSpawnEntityLiving_L.set(packet, (byte)(l * 256.0f / 360.0f));
 		PacketPlayOutSpawnEntityLiving_DATAWATCHER.set(packet, dataWatcher.toNMS());
 		if (watchableObjects != null) {
 			List<Object> list = Lists.newArrayList();
@@ -132,7 +123,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		int motZ = PacketPlayOutSpawnEntityLiving_MOTZ.getInt(nmsPacket);
 		float yaw = (float) (PacketPlayOutSpawnEntityLiving_YAW.getByte(nmsPacket) / 256f * 360f);
 		float pitch = (float) (PacketPlayOutSpawnEntityLiving_PITCH.getByte(nmsPacket) / 256f * 360f);
-		float a = (float) (PacketPlayOutSpawnEntityLiving_A.getByte(nmsPacket) / 256f * 360f);
+		float l = (float) (PacketPlayOutSpawnEntityLiving_L.getByte(nmsPacket) / 256f * 360f);
 		DataWatcher dataWatcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(nmsPacket));
 		List<Item> list = Lists.newArrayList();
 		List<Object> items = (List<Object>)PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS.get(nmsPacket);
@@ -150,7 +141,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			y = (double)(PacketPlayOutSpawnEntityLiving_Y.getInt(nmsPacket)) / 32;
 			z = (double)(PacketPlayOutSpawnEntityLiving_Z.getInt(nmsPacket)) / 32;
 		}
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, typeInt, new Location(null, x,y,z,yaw,pitch)).setMotX(motX).setMotY(motY).setMotZ(motZ).setA(a).setDataWatcher(dataWatcher).setItems(list);
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, typeInt, new Location(null, x,y,z,yaw,pitch)).setMotX(motX).setMotY(motY).setMotZ(motZ).setL(l).setDataWatcher(dataWatcher).setItems(list);
 	}
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;
@@ -160,7 +151,6 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static HashMap<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
 	private static Class<?> PacketPlayOutSpawnEntityLiving;
-	private static Constructor<?> newPacketPlayOutSpawnEntityLiving;
 	private static Field PacketPlayOutSpawnEntityLiving_ENTITYID;
 	private static Field PacketPlayOutSpawnEntityLiving_UUID;
 	private static Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE;
@@ -172,7 +162,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static Field PacketPlayOutSpawnEntityLiving_MOTZ;
 	private static Field PacketPlayOutSpawnEntityLiving_YAW;
 	private static Field PacketPlayOutSpawnEntityLiving_PITCH;
-	private static Field PacketPlayOutSpawnEntityLiving_A;
+	private static Field PacketPlayOutSpawnEntityLiving_L;
 	private static Field PacketPlayOutSpawnEntityLiving_DATAWATCHER;
 	private static Field PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS;
 
@@ -186,8 +176,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 				entityIds.put(EntityType.WITHER, 64);
 			}
 
-			PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
-			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
+			PacketPlayOutSpawnEntityLiving = getClass("PacketPlayOutSpawnEntityLiving");
 			(PacketPlayOutSpawnEntityLiving_ENTITYID = PacketPlayOutSpawnEntityLiving.getDeclaredField("a")).setAccessible(true);
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				(PacketPlayOutSpawnEntityLiving_UUID = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
@@ -200,7 +189,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 				(PacketPlayOutSpawnEntityLiving_MOTZ = PacketPlayOutSpawnEntityLiving.getDeclaredField("i")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
-				(PacketPlayOutSpawnEntityLiving_A = PacketPlayOutSpawnEntityLiving.getDeclaredField("l")).setAccessible(true);
+				(PacketPlayOutSpawnEntityLiving_L = PacketPlayOutSpawnEntityLiving.getDeclaredField("l")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHER = PacketPlayOutSpawnEntityLiving.getDeclaredField("m")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS = PacketPlayOutSpawnEntityLiving.getDeclaredField("n")).setAccessible(true);
 			} else {
@@ -213,7 +202,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 				(PacketPlayOutSpawnEntityLiving_MOTZ = PacketPlayOutSpawnEntityLiving.getDeclaredField("h")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("i")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
-				(PacketPlayOutSpawnEntityLiving_A = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
+				(PacketPlayOutSpawnEntityLiving_L = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHER = PacketPlayOutSpawnEntityLiving.getDeclaredField("l")).setAccessible(true);
 				(PacketPlayOutSpawnEntityLiving_DATAWATCHERITEMS = PacketPlayOutSpawnEntityLiving.getDeclaredField("m")).setAccessible(true);
 			}

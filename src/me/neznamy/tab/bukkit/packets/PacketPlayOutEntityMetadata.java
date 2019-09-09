@@ -32,11 +32,9 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 	public List<Item> getList() {
 		return list;
 	}
-	public Object toNMS() throws Exception{
+	public Object toNMS(){
 		DataWatcher w = new DataWatcher(null);
-		for (Item item : list) {
-			w.setValue(item.getType(), item.getValue());
-		}
+		for (Item item : list) w.setValue(item.getType(), item.getValue());
 		return MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, w.toNMS(), true);
 	}
 
@@ -59,7 +57,7 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 
 	static {
 		try {
-			PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
+			PacketPlayOutEntityMetadata = getClass("PacketPlayOutEntityMetadata");
 			(PacketPlayOutEntityMetadata_ENTITYID = PacketPlayOutEntityMetadata.getDeclaredField("a")).setAccessible(true);
 			(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
 		} catch (Throwable e) {

@@ -1,6 +1,5 @@
 package me.neznamy.tab.bukkit.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -139,14 +138,8 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 		public String getPlayerListName() {
 			return playerListName;
 		}
-		public Object toNMS(Object packet) throws Exception{
-			Object data;
-			if (newPlayerInfoData.getParameterCount() == 5) {
-				data = newPlayerInfoData.newInstance(packet, profile, ping, EnumGamemode.fromBukkit(gamemode).toNMS(), playerListName==null?null:Shared.mainClass.createComponent(playerListName));
-			} else {
-				data = newPlayerInfoData.newInstance(profile, ping, EnumGamemode.fromBukkit(gamemode).toNMS(), playerListName==null?null:Shared.mainClass.createComponent(playerListName));
-			}
-			return data;
+		public Object toNMS(Object packet){
+			return MethodAPI.getInstance().newPlayerInfoData(packet, profile, ping, EnumGamemode.fromBukkit(gamemode).toNMS(), playerListName==null?null:Shared.mainClass.createComponent(playerListName));
 		}
 		public static PlayerInfoData fromNMS(Object nmsData) throws Exception{
 			int ping = PlayerInfoData_PING.getInt(nmsData);
@@ -164,8 +157,7 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 	}
 
 	public Object toNMS() throws Exception{
-		Object packet = newPacketPlayOutPlayerInfo.newInstance();
-		PacketPlayOutPlayerInfo_ACTION.set(packet, action.toNMS());
+		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
 		List<Object> list2 = Lists.newArrayList();
 		for (PlayerInfoData data : list) {
 			list2.add(data.toNMS(packet));
@@ -187,9 +179,7 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 	
 	
 	private static Class<?> PacketPlayOutPlayerInfo;
-	private static Constructor<?> newPacketPlayOutPlayerInfo;
 	private static Class<?> _PlayerInfoData;
-	private static Constructor<?> newPlayerInfoData;
 	private static Field PacketPlayOutPlayerInfo_ACTION;
 	private static Field PacketPlayOutPlayerInfo_PLAYERS;
 	private static Field PlayerInfoData_PING;
@@ -199,16 +189,14 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 	
 	static {
 		try {
-			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
+			PacketPlayOutPlayerInfo = getClass("PacketPlayOutPlayerInfo");
 			if (ProtocolVersion.packageName.equals("v1_8_R1")) {
-				_PlayerInfoData = getNMSClass("PlayerInfoData");
+				_PlayerInfoData = getClass("PlayerInfoData");
 			} else {
-				_PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
+				_PlayerInfoData = getClass("PacketPlayOutPlayerInfo$PlayerInfoData");
 			}
 			(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
 			(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
-			newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor();
-			newPlayerInfoData = _PlayerInfoData.getDeclaredConstructors()[0];
 			(PlayerInfoData_PING = _PlayerInfoData.getDeclaredField("b")).setAccessible(true);
 			(PlayerInfoData_GAMEMODE = _PlayerInfoData.getDeclaredField("c")).setAccessible(true);
 			(PlayerInfoData_PROFILE = _PlayerInfoData.getDeclaredField("d")).setAccessible(true);

@@ -17,7 +17,7 @@ public class TabObjective{
 		Shared.scheduleRepeatingTask(type.getRefresh(), "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
-					if (p.disabledTablistObjective || !p.fullyLoaded) continue;
+					if (p.disabledTablistObjective) continue;
 					if (p.properties.get("tablist-objective").isUpdateNeeded()) {
 						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
 					}
