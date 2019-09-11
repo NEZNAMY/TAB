@@ -577,15 +577,4 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			return new Player[0];
 		}
 	}
-	public static int getOnlinePlayersCount() {
-		try {
-			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
-			return onlinePlayersMethod.getReturnType().equals(Collection.class)
-					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
-						: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
-		} catch (Exception e) {
-			Shared.error("Failed to get player count", e);
-			return 0;
-		}
-	}
 }

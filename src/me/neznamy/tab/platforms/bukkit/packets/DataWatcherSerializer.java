@@ -32,7 +32,7 @@ public class DataWatcherSerializer {
 	static {
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				Map<String, Field> fields = PacketPlayOut.getStaticFields(MethodAPI.DataWatcherRegistry);
+				Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcherRegistry);
 				Byte = fields.get("a").get(null);
 				Integer = fields.get("b").get(null);
 				Float = fields.get("c").get(null);
