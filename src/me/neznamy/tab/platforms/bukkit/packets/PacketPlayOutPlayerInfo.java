@@ -2,31 +2,29 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
-import com.mojang.authlib.GameProfile;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 
 	private EnumPlayerInfoAction action;
 	private List<PlayerInfoData> list = Lists.newArrayList();
 
-	public PacketPlayOutPlayerInfo() {
-	}
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action) {
 		this.action = action;
 	}
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, Player... players) {
 		this.action = action;
 		for (Player player : players) {
-			list.add(new PlayerInfoData(MethodAPI.getInstance().getProfile(player), MethodAPI.getInstance().getPing(player), player.getGameMode(), player.getPlayerListName()));
+			list.add(new PlayerInfoData(MethodAPI.getInstance().getProfile(player), MethodAPI.getInstance().getPing(player), EnumGamemode.valueOf(player.getGameMode().toString()), player.getPlayerListName()));
 		}
 	}
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> players) {
@@ -49,103 +47,67 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 	}
 
 	public enum EnumPlayerInfoAction{
-		
-		ADD_PLAYER(EnumConstant.EnumPlayerInfoAction_ADD_PLAYER),
-		REMOVE_PLAYER(EnumConstant.EnumPlayerInfoAction_REMOVE_PLAYER),
-		UPDATE_DISPLAY_NAME(EnumConstant.EnumPlayerInfoAction_UPDATE_DISPLAY_NAME),
-		UPDATE_GAME_MODE(EnumConstant.EnumPlayerInfoAction_UPDATE_GAME_MODE),
-		UPDATE_LATENCY(EnumConstant.EnumPlayerInfoAction_UPDATE_LATENCY);
-		
+
+		ADD_PLAYER,
+		REMOVE_PLAYER,
+		UPDATE_DISPLAY_NAME,
+		UPDATE_GAME_MODE,
+		UPDATE_LATENCY;
+
 		private Object nmsEquivalent;
-		
-		private EnumPlayerInfoAction(Object nmsEquivalent) {
-			this.nmsEquivalent = nmsEquivalent;
+
+		private EnumPlayerInfoAction() {
+			nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumPlayerInfoAction, toString());
 		}
-		public static EnumPlayerInfoAction fromNMS(Object nmsCommand) {
-			return EnumPlayerInfoAction.valueOf(nmsCommand.toString());
-	    }
-	    public Object toNMS() {
-	    	return nmsEquivalent;
-	    }
+		public static EnumPlayerInfoAction fromNMS(Object nms) {
+			return EnumPlayerInfoAction.valueOf(nms.toString());
+		}
+		public Object toNMS() {
+			return nmsEquivalent;
+		}
 	}
 	public enum EnumGamemode{
 
-		NOT_SET(EnumConstant.EnumGamemode_NOT_SET), 
-		SURVIVAL(EnumConstant.EnumGamemode_SURVIVAL), 
-		CREATIVE(EnumConstant.EnumGamemode_CREATIVE), 
-		ADVENTURE(EnumConstant.EnumGamemode_ADVENTURE), 
-		SPECTATOR(EnumConstant.EnumGamemode_SPECTATOR);
+		NOT_SET, 
+		SURVIVAL, 
+		CREATIVE, 
+		ADVENTURE, 
+		SPECTATOR;
 
 		private Object nmsEquivalent;
-		
-		private EnumGamemode(Object nmsEquivalent) {
-			this.nmsEquivalent = nmsEquivalent;
+
+		private EnumGamemode() {
+			nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumGamemode, toString());
 		}
-		public static EnumGamemode fromNMS(Object nmsCommand) {
-			return EnumGamemode.valueOf(nmsCommand.toString());
-	    }
-		public static EnumGamemode fromBukkit(GameMode gamemode) {
-			if (gamemode == null) return EnumGamemode.NOT_SET;
-			return EnumGamemode.valueOf(gamemode.toString());
-	    }
-	    public Object toNMS() {
-	    	return nmsEquivalent;
-	    }
-	    public GameMode toBukkit() {
-	    	if (this == NOT_SET) return GameMode.SURVIVAL;
-	    	return GameMode.valueOf(toString());
-	    }
+		public static EnumGamemode fromNMS(Object nms) {
+			return EnumGamemode.valueOf(nms.toString());
+		}
+		public Object toNMS() {
+			return nmsEquivalent;
+		}
 	}
 
 	public static class PlayerInfoData{
-		
-		private int ping;
-		private GameMode gamemode;
-		private GameProfile profile;
-		private String playerListName;
 
-		public PlayerInfoData(GameProfile profile, int ping, GameMode gamemode, String playerListName) {
+		public int ping;
+		public EnumGamemode gamemode;
+		public Object profile;
+		public String playerListName;
+
+		public PlayerInfoData(Object profile, int ping, EnumGamemode gamemode, String playerListName) {
 			this.profile = profile;
 			this.ping = ping;
 			this.gamemode = gamemode;
 			this.playerListName = playerListName;
-		}
-		public PlayerInfoData setGameProfile(GameProfile profile) {
-			this.profile = profile;
-			return this;
-		}
-		public PlayerInfoData setPing(int ping) {
-			this.ping = ping;
-			return this;
-		}
-		public PlayerInfoData setGameMode(GameMode gamemode) {
-			this.gamemode = gamemode;
-			return this;
-		}
-		public PlayerInfoData setPlayerListName(String playerListName) {
-			this.playerListName = playerListName;
-			return this;
-		}
-		public GameProfile getGameProfile() {
-			return profile;
-		}
-		public int getPing() {
-			return ping;
-		}
-		public GameMode getGameMode() {
-			return gamemode;
-		}
-		public String getPlayerListName() {
-			return playerListName;
 		}
 		public Object toNMS(Object packet){
-			return MethodAPI.getInstance().newPlayerInfoData(packet, profile, ping, EnumGamemode.fromBukkit(gamemode).toNMS(), playerListName==null?null:Shared.mainClass.createComponent(playerListName));
+			return MethodAPI.getInstance().newPlayerInfoData(packet, profile, ping, gamemode.toNMS(), playerListName==null?null:Shared.mainClass.createComponent(playerListName));
 		}
 		public static PlayerInfoData fromNMS(Object nmsData) throws Exception{
-			int ping = PlayerInfoData_PING.getInt(nmsData);
-			GameMode gamemode = EnumGamemode.fromNMS(PlayerInfoData_GAMEMODE.get(nmsData)).toBukkit();
-			GameProfile profile = (GameProfile) PlayerInfoData_PROFILE.get(nmsData);
-			Object nmsComponent = PlayerInfoData_LISTNAME.get(nmsData);
+			int ping = PING.getInt(nmsData);
+			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
+			Object profile = PROFILE.get(nmsData);
+			Object nmsComponent = LISTNAME.get(nmsData);
 			String listName;
 			if (nmsComponent == null) {
 				listName = null;
@@ -156,20 +118,19 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 		}
 	}
 
-	public Object toNMS() throws Exception{
+	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
 		List<Object> list2 = Lists.newArrayList();
 		for (PlayerInfoData data : list) {
 			list2.add(data.toNMS(packet));
 		}
-		PacketPlayOutPlayerInfo_PLAYERS.set(packet, list2);
+		PLAYERS.set(packet, list2);
 		return packet;
 	}
-	@SuppressWarnings("unchecked")
 	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
-		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
-		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromNMS(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket));
-		List<Object> players = (List<Object>) PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket);
+		if (!MethodAPI.PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
+		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromNMS(ACTION.get(nmsPacket));
+		List<Object> players = (List<Object>) PLAYERS.get(nmsPacket);
 		List<PlayerInfoData> listData = Lists.newArrayList();
 		for (Object p : players) {
 			listData.add(PlayerInfoData.fromNMS(p));
@@ -177,32 +138,13 @@ public class PacketPlayOutPlayerInfo extends PacketPlayOut{
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
 	
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerInfo);
+	private static Field ACTION = fields.get("a");
+	private static Field PLAYERS = fields.get("b");
 	
-	private static Class<?> PacketPlayOutPlayerInfo;
-	private static Class<?> _PlayerInfoData;
-	private static Field PacketPlayOutPlayerInfo_ACTION;
-	private static Field PacketPlayOutPlayerInfo_PLAYERS;
-	private static Field PlayerInfoData_PING;
-	private static Field PlayerInfoData_GAMEMODE;
-	private static Field PlayerInfoData_PROFILE;
-	private static Field PlayerInfoData_LISTNAME;
-	
-	static {
-		try {
-			PacketPlayOutPlayerInfo = getClass("PacketPlayOutPlayerInfo");
-			if (ProtocolVersion.packageName.equals("v1_8_R1")) {
-				_PlayerInfoData = getClass("PlayerInfoData");
-			} else {
-				_PlayerInfoData = getClass("PacketPlayOutPlayerInfo$PlayerInfoData");
-			}
-			(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
-			(PlayerInfoData_PING = _PlayerInfoData.getDeclaredField("b")).setAccessible(true);
-			(PlayerInfoData_GAMEMODE = _PlayerInfoData.getDeclaredField("c")).setAccessible(true);
-			(PlayerInfoData_PROFILE = _PlayerInfoData.getDeclaredField("d")).setAccessible(true);
-			(PlayerInfoData_LISTNAME = _PlayerInfoData.getDeclaredField("e")).setAccessible(true);
-		} catch (Throwable e) {
-			Shared.error("Failed to initialize PacketPlayOutPlayerInfo class", e);
-		}
-	}
+	private static Map<String, Field> infodata = getFields(MethodAPI.PlayerInfoData);
+	private static Field PING = infodata.get("b");
+	private static Field GAMEMODE = infodata.get("c");
+	private static Field PROFILE = infodata.get("d");
+	private static Field LISTNAME = infodata.get("e");
 }

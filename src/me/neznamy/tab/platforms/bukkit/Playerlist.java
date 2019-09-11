@@ -2,12 +2,11 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.util.Map.Entry;
 
-import org.bukkit.GameMode;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
@@ -39,21 +38,21 @@ public class Playerlist {
 		if (packet.getPlayers().isEmpty()) return; //yes some plugins send packets like that
 		
 		PlayerInfoData playerInfoData = packet.getPlayers().get(0);
-		GameProfile gameProfile = playerInfoData.getGameProfile();
+		GameProfile gameProfile = (GameProfile) playerInfoData.profile;
 		ITabPlayer packetPlayer = Shared.getPlayer(gameProfile.getId());
 
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.getAction() == EnumPlayerInfoAction.ADD_PLAYER) {
-			if (Configs.doNotMoveSpectators && playerInfoData.getGameMode() == GameMode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.setGameMode(GameMode.CREATIVE);
+			if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && gameProfile.getId() != receiver.getUniqueId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
 			if (packetPlayer == null || packetPlayer.disabledTablistNames || receiver.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber()) return;
-			playerInfoData.setPlayerListName(packetPlayer.getTabFormat(receiver));
+			playerInfoData.playerListName = packetPlayer.getTabFormat(receiver);
 		}
 		if (packet.getAction() == EnumPlayerInfoAction.ADD_PLAYER) {
 			if (packetPlayer != null) {
 				//player
 				if (!packetPlayer.disabledTablistNames && receiver.getVersion().getNumber() >= ProtocolVersion.v1_8.getNumber()) {
-					playerInfoData.setPlayerListName(packetPlayer.getTabFormat(receiver));
+					playerInfoData.playerListName = packetPlayer.getTabFormat(receiver);
 				}
 			} else {
 				//NPC
@@ -69,7 +68,7 @@ public class Playerlist {
 						for (Entry<String, Property> e : gameProfile.getProperties().entries()) {
 							clone.getProperties().put(e.getKey(), e.getValue());
 						}
-						playerInfoData.setGameProfile(clone);
+						playerInfoData.profile = clone;
 					}
 				}
 			}

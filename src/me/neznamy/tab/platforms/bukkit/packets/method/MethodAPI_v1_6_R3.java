@@ -1,110 +1,97 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R1.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import com.mojang.authlib.GameProfile;
 
-import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import net.minecraft.server.v1_8_R1.*;
+import net.minecraft.server.v1_6_R3.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class MethodAPI_v1_8_R1 extends MethodAPI {
+public class MethodAPI_v1_6_R3 extends MethodAPI {
 
-	private static Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("i");
-	
-	public MethodAPI_v1_8_R1() {
+	public MethodAPI_v1_6_R3() {
 		DataWatcher = DataWatcher.class;
 		DataWatcherItem = WatchableObject.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
-		EnumPlayerInfoAction = EnumPlayerInfoAction.class;
-		EnumScoreboardAction = EnumScoreboardAction.class;
-		EnumScoreboardHealthDisplay = EnumScoreboardHealthDisplay.class;
-		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
-		PacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.class;
-		PacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.class;
-		PacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.class;
-		PacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore.class;
-		PacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.class;
-		PacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.class;
-		PacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.class;
-		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
-		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
-		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
-		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
-		PacketPlayOutRelEntityMove = PacketPlayOutRelEntityMove.class;
-		PacketPlayOutRelEntityMoveLook = PacketPlayOutRelEntityMoveLook.class;
-		PacketPlayOutEntity = PacketPlayOutEntity.class;
-		PlayerInfoData = PlayerInfoData.class;
+		PacketPlayOutPlayerInfo = Packet201PlayerInfo.class;
+		PacketPlayOutScoreboardDisplayObjective = Packet208SetScoreboardDisplayObjective.class;
+		PacketPlayOutScoreboardObjective = Packet206SetScoreboardObjective.class;
+		PacketPlayOutScoreboardScore = Packet207SetScoreboardScore.class;
+		PacketPlayOutScoreboardTeam = Packet209SetScoreboardTeam.class;
+		PacketPlayOutEntityMetadata = Packet40EntityMetadata.class;
+		PacketPlayOutSpawnEntityLiving = Packet24MobSpawn.class;
+		PacketPlayOutAttachEntity = Packet39AttachEntity.class;
+		PacketPlayOutNamedEntitySpawn = Packet20NamedEntitySpawn.class;
+		PacketPlayOutEntityDestroy = Packet29DestroyEntity.class;
+		PacketPlayOutEntityTeleport = Packet34EntityTeleport.class;
+		PacketPlayOutRelEntityMove = Packet31RelEntityMove.class;
+		PacketPlayOutRelEntityMoveLook = Packet13PlayerLookMove.class;
+		PacketPlayOutEntity = Packet30Entity.class;
 	}
-	public GameProfile getProfile(Player p) {
-		return ((CraftPlayer)p).getHandle().getProfile();
+	public Object getProfile(Player p) {
+		return null;
 	}
 	public Object ICBC_fromString(String string) {
-		return ChatSerializer.a(string);
+		return ChatMessage.d(string);
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {
-		return CraftChatMessage.fromComponent((IChatBaseComponent) ichatbasecomponent);
+		return null; //not needed
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;
 	}
-	public Channel getChannel(Player p) throws Exception {
-		return (Channel) CHANNEL.get(((CraftPlayer)p).getHandle().playerConnection.networkManager);
+	public Object getChannel(Player p) throws Exception {
+		return null;
 	}
 	public double[] getRecentTps() {
-		return ((CraftServer)Bukkit.getServer()).getServer().recentTps;
+		return new double[]{MinecraftServer.currentTPS};
 	}
 	public void sendPacket(Player p, Object nmsPacket) {
 		((CraftPlayer)p).getHandle().playerConnection.sendPacket((Packet) nmsPacket);
 	}
 	public Object newPacketPlayOutEntityDestroy(int... ids) {
-		return new PacketPlayOutEntityDestroy(ids);
+		return new Packet29DestroyEntity(ids);
 	}
 	public Object newPacketPlayOutChat(Object chatComponent, Object position) {
-		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, (Byte) position);
+		return new Packet3Chat((ChatMessage) chatComponent);
 	}
 	public Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force) {
-		return new PacketPlayOutEntityMetadata(entityId, (DataWatcher) dataWatcher, force);
+		return new Packet40EntityMetadata(entityId, (DataWatcher) dataWatcher, force);
 	}
 	public Object newPacketPlayOutEntityTeleport() {
-		return new PacketPlayOutEntityTeleport();
+		return new Packet34EntityTeleport();
 	}
 	public Object newPacketPlayOutSpawnEntityLiving() {
-		return new PacketPlayOutSpawnEntityLiving();
+		return new Packet24MobSpawn();
 	}
 	public Object newPacketPlayOutPlayerInfo(Object action) {
-		return new PacketPlayOutPlayerInfo((EnumPlayerInfoAction)action);
+		return null;
 	}
 	public Object newPacketPlayOutBoss() {
 		return null;
 	}
 	public Object newPacketPlayOutPlayerListHeaderFooter() {
-		return new PacketPlayOutPlayerListHeaderFooter();
+		return null;
 	}
 	public Object newPacketPlayOutScoreboardDisplayObjective() {
-		return new PacketPlayOutScoreboardDisplayObjective();
+		return new Packet208SetScoreboardDisplayObjective();
 	}
 	public Object newPacketPlayOutScoreboardObjective() {
-		return new PacketPlayOutScoreboardObjective();
+		return new Packet206SetScoreboardObjective();
 	}
 	public Object newPacketPlayOutScoreboardTeam() {
-		return new PacketPlayOutScoreboardTeam();
+		return new Packet209SetScoreboardTeam();
 	}
 	public Object newDataWatcher(Object entity) {
-		return new DataWatcher((Entity) entity);
+		return new DataWatcher();
 	}
 	public Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName) {
-		return new PlayerInfoData((PacketPlayOutPlayerInfo) packetPlayOutPlayerInfo, (GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+		return null;
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
 		WatchableObject item = new WatchableObject((int) type.getClassType(), type.getPosition(), value);
@@ -115,10 +102,10 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 		((DataWatcher)dataWatcher).a(type.getPosition(), value);
 	}
 	public Object newEntityArmorStand() {
-		return new EntityArmorStand(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
+		return null;
 	}
 	public int getEntityId(Object entityliving) {
-		return ((EntityLiving)entityliving).getId();
+		return ((EntityLiving)entityliving).id;
 	}
 	public Object newPacketPlayOutEntityTeleport(Object entityliving, Location loc) {
 		EntityLiving entity = (EntityLiving) entityliving;
@@ -127,19 +114,19 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 		entity.locZ = loc.getZ();
 		entity.yaw = loc.getYaw();
 		entity.pitch = loc.getPitch();
-		return new PacketPlayOutEntityTeleport(entity);
+		return new Packet34EntityTeleport(entity);
 	}
 	public Object newPacketPlayOutEntityTeleport(Player p) {
-		return new PacketPlayOutEntityTeleport(((CraftPlayer)p).getHandle());
+		return new Packet34EntityTeleport(((CraftPlayer)p).getHandle());
 	}
 	public Object newEntityWither() {
 		return new EntityWither(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
 	}
 	public Object newPacketPlayOutScoreboardScore() {
-		return new PacketPlayOutScoreboardScore();
+		return new Packet207SetScoreboardScore();
 	}
 	public Object newPacketPlayOutScoreboardScore_legacy(String removedPlayer) {
-		return new PacketPlayOutScoreboardScore(removedPlayer);
+		return new Packet207SetScoreboardScore(removedPlayer);
 	}
 	public Object newPacketPlayOutScoreboardScore_1_13(Object action, String objectiveName, String player, int score) {
 		return null;

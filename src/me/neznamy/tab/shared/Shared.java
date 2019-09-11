@@ -25,7 +25,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final boolean consoleErrors = true;
+	public static final boolean consoleErrors = false;
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -69,6 +69,7 @@ public class Shared {
 	public static void error(String message, Throwable t) {
 		try {
 			if (!Configs.errorFile.exists()) Configs.errorFile.createNewFile();
+			if (Configs.errorFile.length() > 1000000) return; //not going over 1 MB
 			BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 			if (message != null) {
 				buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
@@ -185,7 +186,7 @@ public class Shared {
 		FancyMessage message = new FancyMessage();
 		message.add(new Extra("§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
 		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
-		new PacketPlayOutChat(message.toString()).send(to);
+		to.sendCustomPacket(new PacketPlayOutChat(message.toString()));
 	}
 	public static void registerUniversalPlaceholders() {
 		Placeholders.list.add(new Placeholder("%money%") {

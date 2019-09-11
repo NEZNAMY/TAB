@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
-import io.netty.channel.Channel;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
@@ -17,12 +16,14 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public abstract class ITabPlayer{
 
 	public String name;
 	public UUID uniqueId;
 	public UUID offlineId;
+	public String world;
 	
 	public HashMap<String, Property> properties = new HashMap<String, Property>();
 	private String group;
@@ -30,8 +31,8 @@ public abstract class ITabPlayer{
 	public String teamName;
 	private String rank;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
-	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors before this is loaded
-	public Channel channel;
+	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors
+	public Object channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
 
@@ -77,11 +78,9 @@ public abstract class ITabPlayer{
 	public abstract String getGroupFromPermPlugin();
 	public abstract String[] getGroupsFromPermPlugin();
 	public abstract boolean hasPermission(String permission);
-	public abstract String getWorldName();
 	public abstract long getPing();
 	public abstract void sendPacket(Object nmsPacket);
 	public abstract void sendMessage(String message);
-	protected abstract void loadChannel();
 	public abstract boolean getTeamPush();
 
 	public String getName() {
@@ -361,8 +360,7 @@ public abstract class ITabPlayer{
 	public ProtocolVersion getVersion() {
 		return version;
 	}
-	public Channel getChannel() {
-		if (channel == null) loadChannel();
+	public Object getChannel() {
 		return channel;
 	}
 	public void onWorldChange(String from, String to) {
@@ -385,7 +383,7 @@ public abstract class ITabPlayer{
 		detectBossBarsAndSend();
 		if (HeaderFooter.enable) {
 			if (disabledHeaderFooter) {
-				new PacketPlayOutPlayerListHeaderFooter("","").send(this);
+				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 			} else {
 				HeaderFooter.refreshHeaderFooter(this);
 			}
@@ -422,6 +420,9 @@ public abstract class ITabPlayer{
 	public List<BossBarLine> getActiveBossBars(){
 		return activeBossBars;
 	}
+	public String getWorldName() {
+		return world;
+	}
 	public void detectBossBarsAndSend() {
 		activeBossBars.clear();
 		if (disabledBossbar || !bossbarVisible) return;
@@ -447,11 +448,17 @@ public abstract class ITabPlayer{
 				}
 			}
 	}
-	
+	public void sendCustomPacket(UniversalPacketPlayOut packet) {
+		try {
+			sendPacket(Shared.mainClass.toNMS(packet, version));
+		} catch (Exception e) {
+			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
+		}
+	}
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
-			sendPacket(packet.toNMS());
-		} catch (Throwable e) {
+			sendPacket(packet.toNMS(version));
+		} catch (Exception e) {
 			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
 		}
 	}

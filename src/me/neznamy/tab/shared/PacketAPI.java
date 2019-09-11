@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.bukkit.Location;
@@ -27,16 +26,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class PacketAPI{
 
-	public static Object getField(Object object, String name) throws Exception {
-		Field field = object.getClass().getDeclaredField(name);
-		field.setAccessible(true);
-		return field.get(object);
-	}
 	public static void changeScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
-		new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue).send(to);
+		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue));
 	}
 	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
-		unregisterScoreboardTeam(to, teamName);
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, players, 0, 69);
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
@@ -46,41 +39,40 @@ public class PacketAPI{
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
 	}
 	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
-		new PacketPlayOutChat(message.toString()).send(to);
+		to.sendCustomPacket(new PacketPlayOutChat(message.toString()));
 	}
 	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
-		new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0).send(to);
-		new PacketPlayOutScoreboardDisplayObjective(position, objectiveName).send(to);
+		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
+		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
-		new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 1).send(to);
+		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 1));
 	}
 	public static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
-		new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null).send(to);
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null));
 	}
 	public static void registerScoreboardScore(ITabPlayer p, String team, String body, String prefix, String suffix, String objective, int score) {
-		unregisterScoreboardTeam(p, team);
         sendScoreboardTeamPacket(p, team, prefix, suffix, false, false, Lists.newArrayList(body), 0, 3);
         changeScoreboardScore(p, body, objective, score);
     }
     public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
-        new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0).send(p);
+    	p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0));
         sendScoreboardTeamPacket(p, ID, null, null, false, false, null, 1, 69);
     }
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
-        new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2).send(p);
+    	p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));
     }
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
 		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);
 		to.setProperty("bossbar-color-"+bar.getName(), bar.color);
 		to.setProperty("bossbar-style-"+bar.getName(), bar.style);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
-			new PacketPlayOutBoss(bar.getUniqueId(), 
+		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), 
 					to.properties.get("bossbar-text-"+bar.getName()).get(), 
 					(float)bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get())/100, 
 					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
-					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())).send(to);
+					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())));
 		} else {
 			Location l = (((TabPlayer)to).player).getEyeLocation().add(((TabPlayer)to).player.getEyeLocation().getDirection().normalize().multiply(25));
 			if (l.getY() < 1) l.setY(1);
@@ -88,14 +80,15 @@ public class PacketAPI{
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
 			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) w.setValue(new DataWatcherObject(10, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
 			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get()));
 			packet.setDataWatcher(w);
 			to.sendCustomPacket(packet);
 		}
 	}
 	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
-			new PacketPlayOutBoss(bar.getUniqueId()).send(to);
+		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId()));
 		} else {
 			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
 		}
@@ -104,30 +97,33 @@ public class PacketAPI{
 		Property progress = to.properties.get("bossbar-progress-"+bar.getName());
 		Property text = to.properties.get("bossbar-text-"+bar.getName());
 		if (text == null) return; //not registered yet
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 8) {
+		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			Property color = to.properties.get("bossbar-color-"+bar.getName());
 			Property style = to.properties.get("bossbar-style-"+bar.getName());
 			boolean colorUpdate = color.isUpdateNeeded();
 			boolean styleUpdate = style.isUpdateNeeded();
 			if (colorUpdate || styleUpdate) {
-				new PacketPlayOutBoss(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())).send(to);
+				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())));
 			}
 			if (progress.isUpdateNeeded()) {
-				new PacketPlayOutBoss(bar.getUniqueId(), (float)bar.parseProgress(progress.get())/100).send(to);
+				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), (float)bar.parseProgress(progress.get())/100));
 			}
 			if (text.isUpdateNeeded()) {
-				new PacketPlayOutBoss(bar.getUniqueId(), text.get()).send(to);
+				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), text.get()));
 			}
 		} else {
 			DataWatcher w = new DataWatcher(null);
-			if (text.isUpdateNeeded()) w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), text.get());
+			if (text.isUpdateNeeded()) {
+				w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), text.get());
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) w.setValue(new DataWatcherObject(10, DataWatcherSerializer.String), text.get());
+			}
 			if (progress.isUpdateNeeded()) {
 				float health = (float)3*bar.parseProgress(progress.get());
 				if (health == 0) health = 1;
 				w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
 			}
 			if (w.getAllObjects().isEmpty()) return;
-			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS());
+			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS(null));
 		}
 	}
 }

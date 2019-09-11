@@ -17,7 +17,7 @@ public class HeaderFooter {
 		});
 	}
 	public static void clearHeaderFooter(ITabPlayer p) {
-		if (!p.disabledHeaderFooter) new PacketPlayOutPlayerListHeaderFooter("","").send(p);
+		if (!p.disabledHeaderFooter) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));;
 	}
 	public static void unload() {
 		if (enable) for (ITabPlayer p : Shared.getPlayers()) clearHeaderFooter(p);
@@ -30,7 +30,7 @@ public class HeaderFooter {
 		boolean header = p.properties.get("header").isUpdateNeeded();
 		boolean footer = p.properties.get("footer").isUpdateNeeded();
 		if (header || footer) {
-			new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()).send(p);
+			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
 		}
 	}
 }

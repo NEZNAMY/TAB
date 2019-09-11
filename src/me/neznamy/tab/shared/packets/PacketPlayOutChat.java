@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Chat;
@@ -32,16 +31,17 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	
 	public enum ChatMessageType{
 
-		CHAT((byte)0, EnumConstant.ChatMessageType_since_1_12_R1_CHAT), 
-		SYSTEM((byte)1, EnumConstant.ChatMessageType_since_1_12_R1_SYSTEM), 
-		GAME_INFO((byte)2, EnumConstant.ChatMessageType_since_1_12_R1_GAME_INFO);
+		CHAT((byte)0), 
+		SYSTEM((byte)1), 
+		GAME_INFO((byte)2);
 
 		private byte byteEquivalent;
 		private Object nmsEquivalent;
 
-		private ChatMessageType(byte byteEquivalent, Object nmsEquivalent) {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private ChatMessageType(byte byteEquivalent) {
 			this.byteEquivalent = byteEquivalent;
-			this.nmsEquivalent = nmsEquivalent;
+			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.ChatMessageType, toString());
 		}
 		public byte toByte() {
 			return byteEquivalent;

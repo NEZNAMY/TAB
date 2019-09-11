@@ -84,7 +84,8 @@ public class Configs {
 
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
-		HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
+		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8)
+			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);

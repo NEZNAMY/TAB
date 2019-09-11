@@ -1,4 +1,4 @@
 name: TAB
-main: me.neznamy.tab.bungee.Main
-version: 2.5.2-pre12
+main: me.neznamy.tab.platforms.bungee.Main
+version: 2.5.2-pre14
 author: NEZNAMY

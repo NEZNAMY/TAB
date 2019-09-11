@@ -23,13 +23,15 @@ import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.channel.Channel;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.2-pre12", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.5.2-pre14", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -47,18 +49,18 @@ public class Main implements MainClass{
 		long time = System.currentTimeMillis();
 		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.UNKNOWN;
-		Shared.init(this, "2.5.2-pre12");
-		server.getCommandManager().register(new Command() {
+		Shared.init(this, "2.5.2-pre14");
+		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUsername()) : null, args);
 			}
-		}, "btab");
+		});
 		load(false, true);
 		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
 		if (!disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) p.getChannel().pipeline().remove(Shared.DECODER_NAME);
+			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}
@@ -140,10 +142,9 @@ public class Main implements MainClass{
 			} else {
 				String from = p.getWorldName();
 				String to = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
-				((TabPlayer)p).server = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
+				p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
 				p.onWorldChange(from, to);
 			}
-
 		} catch (Throwable ex){
 			Shared.error("An error occured when player joined/changed server", ex);
 		}
@@ -159,7 +160,7 @@ public class Main implements MainClass{
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
 	}
 	private void inject(final UUID uuid) {
-		Shared.getPlayer(uuid).getChannel().pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);
@@ -231,6 +232,7 @@ public class Main implements MainClass{
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
+		TabObjective.type = TabObjectiveType.NONE;
 	}
 	public static void registerPlaceholders() {
 		Placeholders.list = new ArrayList<Placeholder>();

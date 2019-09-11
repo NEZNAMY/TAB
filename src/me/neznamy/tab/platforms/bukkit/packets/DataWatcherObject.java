@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 
 public class DataWatcherObject{
-	
+
 	private int position;
 	private Object classType;
 
@@ -25,20 +26,15 @@ public class DataWatcherObject{
 		Object classType = DataWatcherObject_CLASSTYPE.get(nmsObject);
 		return new DataWatcherObject(position, classType);
 	}
-	
-	public static Class<?> DataWatcherObject;
+
 	private static Field DataWatcherObject_POSITION;
 	private static Field DataWatcherObject_CLASSTYPE;
-	
+
 	static {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				DataWatcherObject = NMSClass.getClass("DataWatcherObject");
-				(DataWatcherObject_POSITION = DataWatcherObject.getDeclaredField("a")).setAccessible(true);
-				(DataWatcherObject_CLASSTYPE = DataWatcherObject.getDeclaredField("b")).setAccessible(true);
-			}
-		} catch (Throwable e) {
-			Shared.error("Failed to initialize DataWatcherObject class", e);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcherObject);
+			DataWatcherObject_POSITION = fields.get("a");
+			DataWatcherObject_CLASSTYPE = fields.get("b");
 		}
 	}
 }

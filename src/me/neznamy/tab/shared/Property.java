@@ -21,6 +21,7 @@ public class Property {
 		this(owner, rawValue, null);
 	}
 	public Property(ITabPlayer owner, String rawValue, String ifEmpty) {
+		if (rawValue == null) rawValue = "";
 		this.owner = owner;
 		this.rawValue = rawValue;
 		this.ifEmpty = ifEmpty;

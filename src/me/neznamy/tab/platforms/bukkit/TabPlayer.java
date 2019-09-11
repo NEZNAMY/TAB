@@ -9,8 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import com.earth2me.essentials.api.Economy;
-
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
@@ -35,8 +33,10 @@ public class TabPlayer extends ITabPlayer{
 	private String money = "-";
 	private long lastRefreshMoney;
 
-	public TabPlayer(Player p) {
+	public TabPlayer(Player p) throws Exception {
 		player = p;
+		world = p.getWorld().getName();
+		channel = MethodAPI.getInstance().getChannel((Player) player);
 		init(p.getName(), p.getUniqueId());
 		try {
 			int version;
@@ -71,11 +71,7 @@ public class TabPlayer extends ITabPlayer{
 			if (Main.luckPerms) return LuckPerms.getApi().getUser(player.getUniqueId()).getPrimaryGroup();
 			if (Main.pex) return PermissionsEx.getUser(player).getGroupNames()[0];
 			if (Main.groupManager != null) return Main.groupManager.getWorldsHolder().getWorldPermissions(player).getGroup(getName());
-			try {
-				if (Main.perm != null) return Main.perm.getPrimaryGroup(player);
-			} catch (UnsupportedOperationException e) {
-				// "SuperPerms no group permissions."
-			}
+			if (Main.perm != null && !Main.perm.getName().equals("SuperPerms")) return Main.perm.getPrimaryGroup(player);
 		} catch (Throwable ex) {
 			Shared.error("Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
@@ -90,11 +86,7 @@ public class TabPlayer extends ITabPlayer{
 			}
 			if (Main.pex) return PermissionsEx.getUser(player).getGroupNames();
 			if (Main.groupManager != null) return Main.groupManager.getWorldsHolder().getWorldPermissions(player).getGroups(getName());
-			try {
-				if (Main.perm != null) return Main.perm.getPlayerGroups(player);
-			} catch (UnsupportedOperationException e) {
-				// "SuperPerms no group permissions."
-			}
+			if (Main.perm != null && !Main.perm.getName().equals("SuperPerms")) return Main.perm.getPlayerGroups(player);
 		} catch (Throwable ex) {
 			Shared.error("Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
@@ -103,21 +95,10 @@ public class TabPlayer extends ITabPlayer{
 	public String getMoney() {
 		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
 			lastRefreshMoney = System.currentTimeMillis();
-			money = refreshMoney();
+			if (Main.essentials != null) money = Shared.round(Main.essentials.getUser(player).getMoney().doubleValue());
+			if (Main.economy != null) money = Shared.round(Main.economy.getBalance(player));
 		}
 		return money;
-	}
-	private String refreshMoney() {
-		try {
-			String money = null;
-			if (Main.essentials != null) money = Shared.round(Economy.getMoneyExact(getName()).doubleValue());
-			if (Main.economy != null) money = Shared.round(Main.economy.getBalance(player));
-			if (money == null) money = "-";
-			return money;
-		} catch (Throwable e) {
-			Shared.error("Failed to get money of " + getName(), e);
-			return "-";
-		}
 	}
 	public void setTeamVisible(boolean visible) {
 		if (nameTagVisible != visible) {
@@ -163,9 +144,6 @@ public class TabPlayer extends ITabPlayer{
 			NameTagLineManager.bindLine(this, value, Double.parseDouble(line.getValue()+""), line.getKey());
 		}
 	}
-	public String getWorldName() {
-		return player.getWorld().getName();
-	}
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
@@ -178,10 +156,10 @@ public class TabPlayer extends ITabPlayer{
 		return ping;
 	}
 	public int getHealth() {
-		return (int) Math.round(player.getHealth());
+		return (int) Math.ceil(player.getHealth());
 	}
 	public void sendPacket(Object nmsPacket) {
-		MethodAPI.getInstance().sendPacket(player, nmsPacket);
+		if (nmsPacket != null) MethodAPI.getInstance().sendPacket(player, nmsPacket);
 	}
 	public void setPlayerListName() {
 		player.setPlayerListName(player.getPlayerListName());
@@ -189,13 +167,6 @@ public class TabPlayer extends ITabPlayer{
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(message);
-	}
-	protected void loadChannel() {
-		try {
-			channel = MethodAPI.getInstance().getChannel((Player) player);
-		} catch (Throwable e) {
-			Shared.error("Failed to get channel of " + getName(), e);
-		}
 	}
 	public boolean hasInvisibility() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);

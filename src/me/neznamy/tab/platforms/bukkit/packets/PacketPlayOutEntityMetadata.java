@@ -2,12 +2,13 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.ProtocolVersion;
 
 public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 
@@ -32,18 +33,17 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 	public List<Item> getList() {
 		return list;
 	}
-	public Object toNMS(){
+	public Object toNMS(ProtocolVersion clientVersion){
 		DataWatcher w = new DataWatcher(null);
-		for (Item item : list) w.setValue(item.getType(), item.getValue());
+		for (Item item : list) w.setValue(item.type, item.value);
 		return MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, w.toNMS(), true);
 	}
-
 	@SuppressWarnings("unchecked")
 	public static PacketPlayOutEntityMetadata fromNMS(Object nmsPacket) throws Exception{
-		if (!PacketPlayOutEntityMetadata.isInstance(nmsPacket)) return null;
-		int entityId = PacketPlayOutEntityMetadata_ENTITYID.getInt(nmsPacket);
+		if (!MethodAPI.PacketPlayOutEntityMetadata.isInstance(nmsPacket)) return null;
+		int entityId = ENTITYID.getInt(nmsPacket);
 		List<Item> list = Lists.newArrayList();
-		List<Object> items = (List<Object>)PacketPlayOutEntityMetadata_LIST.get(nmsPacket);
+		List<Object> items = (List<Object>)LIST.get(nmsPacket);
 		if (items != null) 
 			for (Object o : items) {
 				list.add(Item.fromNMS(o));
@@ -51,17 +51,7 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 		return new PacketPlayOutEntityMetadata(entityId, list);
 	}
 
-	private static Class<?> PacketPlayOutEntityMetadata;
-	private static Field PacketPlayOutEntityMetadata_ENTITYID;
-	private static Field PacketPlayOutEntityMetadata_LIST;
-
-	static {
-		try {
-			PacketPlayOutEntityMetadata = getClass("PacketPlayOutEntityMetadata");
-			(PacketPlayOutEntityMetadata_ENTITYID = PacketPlayOutEntityMetadata.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
-		} catch (Throwable e) {
-			Shared.error("Failed to initialize PacketPlayOutEntityMetadata class", e);
-		}
-	}
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutEntityMetadata);
+	private static Field ENTITYID = fields.get("a");
+	private static Field LIST = fields.get("b");
 }

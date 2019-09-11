@@ -2,7 +2,7 @@ package me.neznamy.tab.shared;
 
 public enum ProtocolVersion {
 
-	UNKNOWN		(-1,  "Unknown", 	0,  0,  0),
+	UNKNOWN		(-1,  "Unknown",   -1,	0,  0),
 	v1_5_1		(60,  "1.5.1",		5,	0,	0),
 	v1_5_2		(61,  "1.5.2",		5,	0,	0),
 	v1_6_1		(73,  "1.6.1",		6,	0,	0),
@@ -10,7 +10,7 @@ public enum ProtocolVersion {
 	v1_6_4		(78,  "1.6.4",		6,	0,	0),
 	v1_7_2to5	(4,   "1.7.2-5", 	7,  0, 	0),
 	v1_7_6to10	(5,   "1.7.6-10", 	7,  0, 	0),
-	v1_8		(47,  "1.8.x", 		8,  14, 10),
+	v1_8		(47,  "1.8.x", 		8,  0, 	10),
 	v1_9		(107, "1.9", 		9,  14, 10),
 	v1_9_1		(108, "1.9.1", 		9,  14, 10),
 	v1_9_2		(109, "1.9.2", 		9,  14, 10),
@@ -29,7 +29,7 @@ public enum ProtocolVersion {
 	v1_14_2		(485, "1.14.2",		14, 16, 13),
 	v1_14_3		(490, "1.14.3",		14, 16, 13),
 	v1_14_4		(498, "1.14.4",		14, 16, 13),
-	FUTURE		(999, "Future",		15,	0,	0);
+	FUTURE		(999, "Future",		-1,	-1,	-1);
 	
 	public static ProtocolVersion SERVER_VERSION;
 	public static String packageName;
@@ -57,7 +57,7 @@ public enum ProtocolVersion {
 		return minorVersion;
 	}
 	public boolean isSupported() {
-		return minorVersion >= 8;
+		return minorVersion >= 6 && this != UNKNOWN;
 	}
 	public ProtocolVersion friendlyName(String name) {
 		friendlyName = name;
@@ -78,6 +78,10 @@ public enum ProtocolVersion {
 		if (s.startsWith("1.10")) return v1_10;
 		if (s.equals("1.9.3") || s.equals("1.9.4")) return v1_9_3and4;
 		if (s.equals("1.11.1") || s.equals("1.11.2")) return v1_11_1and2;
+		if (s.startsWith("1.7")) {
+			if (Integer.parseInt(s.split("\\.")[2]) >= 6) return v1_7_6to10;
+			else return v1_7_2to5;
+		}
 		try {
 			return valueOf("v" + s.replace(".", "_"));
 		} catch (Throwable e) {

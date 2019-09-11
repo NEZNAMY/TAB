@@ -217,7 +217,7 @@ public class Metrics {
 	 */
 	private JSONObject getServerData() {
 		// Minecraft specific data
-		int playerAmount = Bukkit.getOnlinePlayers().size();
+		int playerAmount = Main.getOnlinePlayersCount();
 		int onlineMode = Bukkit.getOnlineMode() ? 1 : 0;
 		String bukkitVersion = Bukkit.getVersion();
 

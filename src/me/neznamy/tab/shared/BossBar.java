@@ -113,7 +113,7 @@ public class BossBar{
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7 || ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
 				nmsEntity = MethodAPI.getInstance().newEntityWither();
 				entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 			}

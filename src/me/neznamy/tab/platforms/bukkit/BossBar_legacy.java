@@ -14,11 +14,11 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
 
-public class BossBar1_8 implements Listener {
+public class BossBar_legacy implements Listener {
 
 	public static void load() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
-			Bukkit.getPluginManager().registerEvents(new BossBar1_8(), Main.instance);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
+			Bukkit.getPluginManager().registerEvents(new BossBar_legacy(), Main.instance);
 			Shared.scheduleRepeatingTask(200, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 				public void run() {
 					for (ITabPlayer all : Shared.getPlayers()) {

@@ -1,5 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
@@ -28,39 +32,39 @@ public class DataWatcherSerializer {
 	static {
 		try {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				Class<?> DWR = NMSClass.getClass("DataWatcherRegistry");
-				Byte = DWR.getDeclaredField("a").get(null);
-				Integer = DWR.getDeclaredField("b").get(null);
-				Float = DWR.getDeclaredField("c").get(null);
-				String = DWR.getDeclaredField("d").get(null);
-				IChatBaseComponent = DWR.getDeclaredField("e").get(null);
+				Map<String, Field> fields = PacketPlayOut.getStaticFields(MethodAPI.DataWatcherRegistry);
+				Byte = fields.get("a").get(null);
+				Integer = fields.get("b").get(null);
+				Float = fields.get("c").get(null);
+				String = fields.get("d").get(null);
+				IChatBaseComponent = fields.get("e").get(null);
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-					Optional_IChatBaseComponent = DWR.getDeclaredField("f").get(null);
-					ItemStack = DWR.getDeclaredField("g").get(null);
-					Optional_IBlockData = DWR.getDeclaredField("h").get(null);
-					Boolean = DWR.getDeclaredField("i").get(null);
-					ParticleParam = DWR.getDeclaredField("j").get(null);
-					Vector3f = DWR.getDeclaredField("k").get(null);
-					BlockPosition = DWR.getDeclaredField("l").get(null);
-					Optional_BlockPosition = DWR.getDeclaredField("m").get(null);
-					EnumDirection = DWR.getDeclaredField("n").get(null);
-					Optional_UUID = DWR.getDeclaredField("o").get(null);
-					NBTTagCompound = DWR.getDeclaredField("p").get(null);
+					Optional_IChatBaseComponent = fields.get("f").get(null);
+					ItemStack = fields.get("g").get(null);
+					Optional_IBlockData = fields.get("h").get(null);
+					Boolean = fields.get("i").get(null);
+					ParticleParam = fields.get("j").get(null);
+					Vector3f = fields.get("k").get(null);
+					BlockPosition = fields.get("l").get(null);
+					Optional_BlockPosition = fields.get("m").get(null);
+					EnumDirection = fields.get("n").get(null);
+					Optional_UUID = fields.get("o").get(null);
+					NBTTagCompound = fields.get("p").get(null);
 				} else {
-					Optional_IBlockData = DWR.getDeclaredField("g").get(null);
-					Boolean = DWR.getDeclaredField("h").get(null);
-					Vector3f = DWR.getDeclaredField("i").get(null);
-					BlockPosition = DWR.getDeclaredField("j").get(null);
-					Optional_BlockPosition = DWR.getDeclaredField("k").get(null);
-					EnumDirection = DWR.getDeclaredField("l").get(null);
-					Optional_UUID = DWR.getDeclaredField("m").get(null);
+					Optional_IBlockData = fields.get("g").get(null);
+					Boolean = fields.get("h").get(null);
+					Vector3f = fields.get("i").get(null);
+					BlockPosition = fields.get("j").get(null);
+					Optional_BlockPosition = fields.get("k").get(null);
+					EnumDirection = fields.get("l").get(null);
+					Optional_UUID = fields.get("m").get(null);
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-						NBTTagCompound = DWR.getDeclaredField("n").get(null);
+						NBTTagCompound = fields.get("n").get(null);
 					}
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
-						ItemStack = DWR.getDeclaredField("f").get(null);
+						ItemStack = fields.get("f").get(null);
 					} else {
-						Optional_ItemStack = DWR.getDeclaredField("f").get(null);
+						Optional_ItemStack = fields.get("f").get(null);
 					}
 				}
 			} else {
@@ -73,8 +77,8 @@ public class DataWatcherSerializer {
 				BlockPosition = 6;
 				Vector3f = 7;
 			}
-		} catch (Throwable e) {
-			Shared.error("Failed to initialize DataWatcherSerializer class", e);
+		} catch (Exception e) {
+			Shared.error("Failed to initialize class ", e);
 		}
 	}
 }

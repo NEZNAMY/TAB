@@ -70,7 +70,7 @@ public class ArmorStand{
 		String name = property.get();
 		if (Placeholders.placeholderAPI) name = Placeholders.setRelational(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(createDataWatcher(name));
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name));
 	}
 	public Object getNMSTeleportPacket() {
 		updateLocation();
@@ -117,16 +117,16 @@ public class ArmorStand{
 			if (Placeholders.placeholderAPI && line.hasRelationalPlaceholders()) {
 				for (ITabPlayer all : registeredTo) {
 					name = Placeholders.setRelational(owner, all, name);
-					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS());
+					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null));
 				}
 			} else {
-				Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS();
+				Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null);
 				for (ITabPlayer all : registeredTo) all.sendPacket(packet);
 			}
 		}
 	}
 	public boolean getVisibility() {
-		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(player.getUniqueId()) && property.get().length() > 0;
+		return !owner.hasInvisibility() && player.getGameMode() != GameMode.valueOf("SPECTATOR") && !TABAPI.hasHiddenNametag(player.getUniqueId()) && property.get().length() > 0;
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;

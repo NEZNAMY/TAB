@@ -5,9 +5,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
+import io.netty.channel.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
@@ -41,7 +39,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		Shared.init(this, getDescription().getVersion());
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
-
 			public void execute(CommandSender sender, String[] args) {
 				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(sender.getName()) : null, args);
 			}
@@ -57,7 +54,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void onDisable() {
 		if (!disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) p.getChannel().pipeline().remove(Shared.DECODER_NAME);
+			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}
@@ -176,7 +173,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			} else {
 				String from = p.getWorldName();
 				String to = e.getPlayer().getServer().getInfo().getName();
-				((TabPlayer)p).server = e.getPlayer().getServer();
+				p.world = e.getPlayer().getServer().getInfo().getName();
 				p.onWorldChange(from, to);
 			}
 			
@@ -195,7 +192,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 	private void inject(final UUID uuid) {
-		Shared.getPlayer(uuid).getChannel().pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);

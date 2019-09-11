@@ -99,91 +99,87 @@ public class NameTagX implements Listener{
 		});
 	}
 	public static void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
-		try {
-			boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
-			if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
-				int id = packet.getEntityId();
-				ITabPlayer pl = Shared.getPlayer(id);
-				if (pl != null) {
-					//player moved
-					if (((TabPlayer)pl).player.isFlying() && !teleportPacket) {
-						//fixing a client-sided bug
-						NameTagLineManager.teleportOwner(pl, packetReceiver);
-					} else {
-						NameTagLineManager.teleportArmorStand(pl, packetReceiver);
-					}
-				} else if (vehicles.containsKey(id)){
-					//a vehicle carrying something moved
-					for (Integer entity : vehicles.get(id)) {
-						ITabPlayer passenger = Shared.getPlayer(entity);
-						if (passenger != null) {
-							NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
-							
-							//activating this code will fix desync on boats
-							//however, boat movement will be extremely laggy
-							//seems to only work for 1.8.x servers idk why
-/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
+		boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
+		if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
+			int id = packet.getEntityId();
+			ITabPlayer pl = Shared.getPlayer(id);
+			if (pl != null) {
+				//player moved
+				if (((TabPlayer)pl).player.isFlying() && !teleportPacket) {
+					//fixing a client-sided bug
+					NameTagLineManager.teleportOwner(pl, packetReceiver);
+				} else {
+					NameTagLineManager.teleportArmorStand(pl, packetReceiver);
+				}
+			} else if (vehicles.containsKey(id)){
+				//a vehicle carrying something moved
+				for (Integer entity : vehicles.get(id)) {
+					ITabPlayer passenger = Shared.getPlayer(entity);
+					if (passenger != null) {
+						NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
+
+						//activating this code will fix desync on boats
+						//however, boat movement will be extremely laggy
+						//seems to only work for 1.8.x servers idk why
+						/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
 								if (packetReceiver == passenger) continue;
 								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
 								new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);
 							}*/
-						}
 					}
 				}
 			}
-			if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
-				ITabPlayer spawnedPlayer = Shared.getPlayer(packet.getEntityId());
-				if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
+		}
+		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
+			ITabPlayer spawnedPlayer = Shared.getPlayer(packet.getEntityId());
+			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
+		}
+		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
+			int[] ids = packet.getEntityArray();
+			for (int id : ids) {
+				ITabPlayer despawnedPlayer = Shared.getPlayer(id);
+				if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
 			}
-			if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
-				int[] ids = packet.getEntityArray();
-				for (int id : ids) {
-					ITabPlayer despawnedPlayer = Shared.getPlayer(id);
-					if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
-				}
+		}
+		if (packet.getPacketType() == PacketType.MOUNT) {
+			//1.9+ mount detection
+			int vehicle = packet.getEntityId();
+			int[] passg = packet.getEntityArray();
+			Integer[] passengers = new Integer[passg.length];
+			for (int i=0; i<passg.length; i++) {
+				passengers[i] = passg[i];
 			}
-			if (packet.getPacketType() == PacketType.MOUNT) {
-				//1.9+ mount detection
+			if (passengers.length == 0) {
+				//detach
+				vehicles.remove(vehicle);
+			} else {
+				//attach
+				vehicles.put(vehicle, Arrays.asList(passengers));
+			}
+			for (int entity : passengers) {
+				ITabPlayer pass = Shared.getPlayer(entity);
+				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
+			}
+		}
+		if (packet.getPacketType() == PacketType.ATTACH_ENTITY) {
+			//1.8.x mount detection
+			if (packet.getExtra() == 0) {
 				int vehicle = packet.getEntityId();
-				int[] passg = packet.getEntityArray();
-				Integer[] passengers = new Integer[passg.length];
-				for (int i=0; i<passg.length; i++) {
-					passengers[i] = passg[i];
-				}
-				if (passengers.length == 0) {
-					//detach
-					vehicles.remove(vehicle);
-				} else {
+				int passenger = packet.getEntityArray()[0];
+				if (vehicle != -1) {
 					//attach
-					vehicles.put(vehicle, Arrays.asList(passengers));
-				}
-				for (int entity : passengers) {
-					ITabPlayer pass = Shared.getPlayer(entity);
-					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
-				}
-			}
-			if (packet.getPacketType() == PacketType.ATTACH_ENTITY) {
-				//1.8.x mount detection
-				if (packet.getExtra() == 0) {
-					int vehicle = packet.getEntityId();
-					int passenger = packet.getEntityArray()[0];
-					if (vehicle != -1) {
-						//attach
-						vehicles.put(vehicle, Lists.newArrayList(passenger));
-					} else {
-						//detach
-						for (Entry<Integer, List<Integer>> entry : vehicles.entrySet()) {
-							if (entry.getValue().contains(passenger)) {
-								vehicles.remove(entry.getKey());
-							}
+					vehicles.put(vehicle, Lists.newArrayList(passenger));
+				} else {
+					//detach
+					for (Entry<Integer, List<Integer>> entry : vehicles.entrySet()) {
+						if (entry.getValue().contains(passenger)) {
+							vehicles.remove(entry.getKey());
 						}
 					}
-					ITabPlayer pass = Shared.getPlayer(passenger);
-					if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 				}
+				ITabPlayer pass = Shared.getPlayer(passenger);
+				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 			}
-		} catch (Throwable e) {
-			Shared.error("An error occured when processing packetOUT:", e);
 		}
 	}
 	@SuppressWarnings("deprecation")

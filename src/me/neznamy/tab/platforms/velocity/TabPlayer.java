@@ -16,11 +16,11 @@ import net.kyori.text.TextComponent;
 public class TabPlayer extends ITabPlayer{
 
 	public Player player;
-	public String server;
 
 	public TabPlayer(Player p, String server) {
 		player = p;
-		this.server = server;
+		world = server;
+		channel = ((ConnectedPlayer)player).getConnection().getChannel();
 		init(p.getUsername(), p.getUniqueId());
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
 	}
@@ -31,9 +31,6 @@ public class TabPlayer extends ITabPlayer{
 	public String[] getGroupsFromPermPlugin() {
 		return new String[] {getGroupFromPermPlugin()};
 	}
-	public String getWorldName() {
-		return server;
-	}
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
@@ -41,7 +38,7 @@ public class TabPlayer extends ITabPlayer{
 		return player.getPing();
 	}
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null) ((ConnectedPlayer)player).getMinecraftConnection().write(nmsPacket);
+		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
 	}
 	public void setPlayerListName() {
 		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getOfflineId()).setDisplayName((Component) Shared.mainClass.createComponent(getName())).setName(getName());
@@ -51,9 +48,6 @@ public class TabPlayer extends ITabPlayer{
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(message));
-	}
-	protected void loadChannel() {
-		channel = ((ConnectedPlayer)player).getMinecraftConnection().getChannel();
 	}
 	public boolean getTeamPush() {
 		return Configs.collision;

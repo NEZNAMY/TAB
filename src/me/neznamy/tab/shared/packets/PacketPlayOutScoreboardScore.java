@@ -1,39 +1,38 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
-	
-    private String player;
-    private String objectiveName;
-    private int score;
-    private Action action;
-    
-    public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
-        this.player = player;
-        this.objectiveName = objectiveName;
-        this.score = score;
-        this.action = action;
-    }
+
+	private Action action;
+	private String objectiveName;
+	private String player;
+	private int score;
+
+	public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
+		this.action = action;
+		this.objectiveName = objectiveName;
+		this.player = player;
+		this.score = score;
+	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			return newPacketPlayOutScoreboardScore_4.newInstance(action.toNMS(), objectiveName, player, score);
+			return MethodAPI.getInstance().newPacketPlayOutScoreboardScore_1_13(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
-				return newPacketPlayOutScoreboardScore_1.newInstance(player);
+				return MethodAPI.getInstance().newPacketPlayOutScoreboardScore_legacy(player);
 			} else {
-				packet = newPacketPlayOutScoreboardScore_0.newInstance();
-				PacketPlayOutScoreboardScore_PLAYER.set(packet, player);
-				PacketPlayOutScoreboardScore_OBJECTIVENAME.set(packet, objectiveName);
-				PacketPlayOutScoreboardScore_SCORE.set(packet, score);
-				PacketPlayOutScoreboardScore_ACTION.set(packet, action.toNMS());
+				packet = MethodAPI.getInstance().newPacketPlayOutScoreboardScore();
+				PLAYER.set(packet, player);
+				OBJECTIVENAME.set(packet, objectiveName);
+				SCORE.set(packet, score);
+				ACTION.set(packet, action.toNMS());
 			}
 		}
 		return packet;
@@ -45,51 +44,32 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		return null;
 	}
 	public enum Action{
-		
-        CHANGE((byte) 0, EnumConstant.PacketPlayOutScoreboardScore_Action_CHANGE),
-        REMOVE((byte) 1, EnumConstant.PacketPlayOutScoreboardScore_Action_REMOVE);
-        
-		private byte bungeeEquivalent;
+
+		CHANGE((byte) 0),
+		REMOVE((byte) 1);
+
+		private byte ordinal;
 		private Object nmsEquivalent;
-		
-		private Action(byte bungeeEquivalent, Object nmsEquivalent) {
-			this.bungeeEquivalent = bungeeEquivalent;
-			this.nmsEquivalent = nmsEquivalent;
-		}
-	    public Object toNMS() {
-	    	return nmsEquivalent;
-	    }
-	    public byte toBungee() {
-	    	return bungeeEquivalent;
-	    }
-    }
-	
-	private static Class<?> PacketPlayOutScoreboardScore;
-	private static Constructor<?> newPacketPlayOutScoreboardScore_0;
-	private static Constructor<?> newPacketPlayOutScoreboardScore_1;
-	private static Constructor<?> newPacketPlayOutScoreboardScore_4;
-	private static Field PacketPlayOutScoreboardScore_PLAYER;
-	private static Field PacketPlayOutScoreboardScore_OBJECTIVENAME;
-	private static Field PacketPlayOutScoreboardScore_SCORE;
-	private static Field PacketPlayOutScoreboardScore_ACTION;
-	
-	static {
-		try {
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private Action(byte ordinal) {
+			this.ordinal = ordinal;
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
-				newPacketPlayOutScoreboardScore_0 = getConstructor(PacketPlayOutScoreboardScore, 0);
-				(PacketPlayOutScoreboardScore_PLAYER = PacketPlayOutScoreboardScore.getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutScoreboardScore_OBJECTIVENAME = PacketPlayOutScoreboardScore.getDeclaredField("b")).setAccessible(true);
-				(PacketPlayOutScoreboardScore_SCORE = PacketPlayOutScoreboardScore.getDeclaredField("c")).setAccessible(true);
-				(PacketPlayOutScoreboardScore_ACTION = PacketPlayOutScoreboardScore.getDeclaredField("d")).setAccessible(true);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-					newPacketPlayOutScoreboardScore_4 = getConstructor(PacketPlayOutScoreboardScore, 4);
-				} else {
-					newPacketPlayOutScoreboardScore_1 = PacketPlayOutScoreboardScore.getConstructor(String.class);
-				}
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardAction, toString());
+			} else {
+				nmsEquivalent = ordinal;
 			}
-		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutScoreboardScore", e);
+		}
+		public Object toNMS() {
+			return nmsEquivalent;
+		}
+		public byte toBungee() {
+			return ordinal;
 		}
 	}
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardScore);
+	private static Field PLAYER = fields.get("a");
+	private static Field OBJECTIVENAME = fields.get("b");
+	private static Field SCORE = fields.get("c");
+	private static Field ACTION = fields.get("d");
 }

@@ -1,35 +1,29 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R2.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import com.mojang.authlib.GameProfile;
-
-import io.netty.channel.Channel;
-import net.minecraft.server.v1_8_R2.*;
-import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_8_R2.WorldSettings.EnumGamemode;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import net.minecraft.server.v1_7_R1.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class MethodAPI_v1_8_R2 extends MethodAPI {
+public class MethodAPI_v1_7_R1 extends MethodAPI {
 
-	public MethodAPI_v1_8_R2() {
+	private static Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("k");
+	
+	public MethodAPI_v1_7_R1() {
 		DataWatcher = DataWatcher.class;
-		DataWatcherItem = DataWatcher.WatchableObject.class;
+		DataWatcherItem = WatchableObject.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
-		EnumPlayerInfoAction = EnumPlayerInfoAction.class;
-		EnumScoreboardAction = PacketPlayOutScoreboardScore.EnumScoreboardAction.class;
-		EnumScoreboardHealthDisplay = IScoreboardCriteria.EnumScoreboardHealthDisplay.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
-		PacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.class;
 		PacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.class;
 		PacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.class;
 		PacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore.class;
@@ -40,37 +34,37 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
 		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
-		PacketPlayOutRelEntityMove = PacketPlayOutEntity.PacketPlayOutRelEntityMove.class;
-		PacketPlayOutRelEntityMoveLook = PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook.class;
+		PacketPlayOutRelEntityMove = PacketPlayOutRelEntityMove.class;
+		PacketPlayOutRelEntityMoveLook = PacketPlayOutRelEntityMoveLook.class;
 		PacketPlayOutEntity = PacketPlayOutEntity.class;
-		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
-	public GameProfile getProfile(Player p) {
+	public Object getProfile(Player p) {
 		return ((CraftPlayer)p).getHandle().getProfile();
 	}
 	public Object ICBC_fromString(String string) {
-		return IChatBaseComponent.ChatSerializer.a(string);
+		return ChatSerializer.a(string);
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {
-		return CraftChatMessage.fromComponent((IChatBaseComponent) ichatbasecomponent);
+		IChatBaseComponent component = (IChatBaseComponent) ichatbasecomponent;
+		return component.c();
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;
 	}
-	public Channel getChannel(Player p) {
-		return ((CraftPlayer)p).getHandle().playerConnection.networkManager.k;
+	public Object getChannel(Player p) throws Exception {
+		return CHANNEL.get(((CraftPlayer)p).getHandle().playerConnection.networkManager);
 	}
 	public double[] getRecentTps() {
 		return ((CraftServer)Bukkit.getServer()).getServer().recentTps;
 	}
 	public void sendPacket(Player p, Object nmsPacket) {
-		((CraftPlayer)p).getHandle().playerConnection.sendPacket((Packet<?>) nmsPacket);
+		((CraftPlayer)p).getHandle().playerConnection.sendPacket((Packet) nmsPacket);
 	}
 	public Object newPacketPlayOutEntityDestroy(int... ids) {
 		return new PacketPlayOutEntityDestroy(ids);
 	}
 	public Object newPacketPlayOutChat(Object chatComponent, Object position) {
-		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, (Byte) position);
+		return new PacketPlayOutChat((IChatBaseComponent) chatComponent);
 	}
 	public Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force) {
 		return new PacketPlayOutEntityMetadata(entityId, (DataWatcher) dataWatcher, force);
@@ -82,13 +76,13 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		return new PacketPlayOutSpawnEntityLiving();
 	}
 	public Object newPacketPlayOutPlayerInfo(Object action) {
-		return new PacketPlayOutPlayerInfo((EnumPlayerInfoAction)action);
+		return null;
 	}
 	public Object newPacketPlayOutBoss() {
 		return null;
 	}
 	public Object newPacketPlayOutPlayerListHeaderFooter() {
-		return new PacketPlayOutPlayerListHeaderFooter();
+		return null;
 	}
 	public Object newPacketPlayOutScoreboardDisplayObjective() {
 		return new PacketPlayOutScoreboardDisplayObjective();
@@ -103,10 +97,10 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		return new DataWatcher((Entity) entity);
 	}
 	public Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName) {
-		return ((PacketPlayOutPlayerInfo)packetPlayOutPlayerInfo).new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+		return null;
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
-		DataWatcher.WatchableObject item = new DataWatcher.WatchableObject((int) type.getClassType(), type.getPosition(), value);
+		WatchableObject item = new WatchableObject((int) type.getClassType(), type.getPosition(), value);
 		item.a(needsUpdate);
 		return item;
 	}
@@ -114,7 +108,7 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		((DataWatcher)dataWatcher).a(type.getPosition(), value);
 	}
 	public Object newEntityArmorStand() {
-		return new EntityArmorStand(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
+		return null;
 	}
 	public int getEntityId(Object entityliving) {
 		return ((EntityLiving)entityliving).getId();
@@ -147,7 +141,7 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		return ((DataWatcher)dataWatcher).c();
 	}
 	public me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item readDataWatcherItem(Object nmsItem) {
-		DataWatcher.WatchableObject i = (DataWatcher.WatchableObject) nmsItem;
+		WatchableObject i = (WatchableObject) nmsItem;
 		int position = i.a();
 		Object classType = i.c();
 		Object value = i.b();

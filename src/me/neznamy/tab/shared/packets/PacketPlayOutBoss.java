@@ -1,14 +1,17 @@
 package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.UUID;
 
-import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import net.kyori.text.Component;
+import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.protocol.packet.BossBar;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 	private UUID uuid;
@@ -65,55 +68,39 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutBoss();
-		PacketPlayOutBoss_UUID.set(packet, uuid);
-		PacketPlayOutBoss_ACTION.set(packet, action.toNMS());
-		if (action == Action.ADD) {
-			PacketPlayOutBoss_NAME.set(packet, Shared.mainClass.createComponent(title));
-			PacketPlayOutBoss_PROGRESS.set(packet, progress);
-			PacketPlayOutBoss_COLOR.set(packet, color.toNMS());
-			PacketPlayOutBoss_STYLE.set(packet, style.toNMS());
-			PacketPlayOutBoss_DARKEN_SKY.set(packet, darkenSky);
-			PacketPlayOutBoss_PLAY_MUSIC.set(packet, playMusic);
-			PacketPlayOutBoss_CREATE_FOG.set(packet, createFog);
+		UUID.set(packet, uuid);
+		ACTION.set(packet, action.toNMS());
+		if (action == Action.UPDATE_PCT || action == Action.ADD) {
+			PROGRESS.set(packet, progress);
 		}
-		if (action == Action.UPDATE_PCT) {
-			PacketPlayOutBoss_PROGRESS.set(packet, progress);
+		if (action == Action.UPDATE_NAME || action == Action.ADD) {
+			NAME.set(packet, Shared.mainClass.createComponent(title));
 		}
-		if (action == Action.UPDATE_NAME) {
-			PacketPlayOutBoss_NAME.set(packet, Shared.mainClass.createComponent(title));
+		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
+			COLOR.set(packet, color.toNMS());
+			STYLE.set(packet, style.toNMS());
 		}
-		if (action == Action.UPDATE_STYLE) {
-			PacketPlayOutBoss_COLOR.set(packet, color.toNMS());
-			PacketPlayOutBoss_STYLE.set(packet, style.toNMS());
-		}
-		if (action == Action.UPDATE_PROPERTIES) {
-			PacketPlayOutBoss_DARKEN_SKY.set(packet, darkenSky);
-			PacketPlayOutBoss_PLAY_MUSIC.set(packet, playMusic);
-			PacketPlayOutBoss_CREATE_FOG.set(packet, createFog);
+		if (action == Action.UPDATE_PROPERTIES || action == Action.ADD) {
+			DARKEN_SKY.set(packet, darkenSky);
+			PLAY_MUSIC.set(packet, playMusic);
+			CREATE_FOG.set(packet, createFog);
 		}
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
 		BossBar packet = new BossBar(uuid, action.toBungee());
-		if (action == Action.ADD) {
-			packet.setTitle((String) Shared.mainClass.createComponent(title));
-			packet.setHealth(progress);
-			packet.setColor(color.toBungee());
-			packet.setDivision(style.toBungee());
-			packet.setFlags(getFlags());
-		}
-		if (action == Action.UPDATE_PCT) {
+		if (action == Action.UPDATE_PCT || action == Action.ADD) {
 			packet.setHealth(progress);
 		}
-		if (action == Action.UPDATE_NAME) {
+		if (action == Action.UPDATE_NAME || action == Action.ADD) {
 			packet.setTitle((String) Shared.mainClass.createComponent(title));
 		}
-		if (action == Action.UPDATE_STYLE) {
+		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());
 			packet.setDivision(style.toBungee());
 		}
-		if (action == Action.UPDATE_PROPERTIES) {
+		if (action == Action.UPDATE_PROPERTIES || action == Action.ADD) {
 			packet.setFlags(getFlags());
 		}
 		return packet;
@@ -123,24 +110,17 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		com.velocitypowered.proxy.protocol.packet.BossBar packet = new com.velocitypowered.proxy.protocol.packet.BossBar();
 		packet.setUuid(uuid);
 		packet.setAction(action.toBungee());
-		if (action == Action.ADD) {
-			packet.setName(title);
-			packet.setPercent(progress);
-			packet.setColor(color.toBungee());
-			packet.setOverlay(style.toBungee());
-			packet.setFlags(getFlags());
-		}
-		if (action == Action.UPDATE_PCT) {
+		if (action == Action.UPDATE_PCT || action == Action.ADD) {
 			packet.setPercent(progress);
 		}
-		if (action == Action.UPDATE_NAME) {
-			packet.setName(title);
+		if (action == Action.UPDATE_NAME || action == Action.ADD) {
+			packet.setName(GsonComponentSerializer.INSTANCE.serialize((Component) Shared.mainClass.createComponent(title)));
 		}
-		if (action == Action.UPDATE_STYLE) {
+		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());
 			packet.setOverlay(style.toBungee());
 		}
-		if (action == Action.UPDATE_PROPERTIES) {
+		if (action == Action.UPDATE_PROPERTIES || action == Action.ADD) {
 			packet.setFlags(getFlags());
 		}
 		return packet;
@@ -155,19 +135,19 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 	public enum Action {
 
-		ADD(0, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_ADD),
-		REMOVE(1, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_REMOVE),
-		UPDATE_PCT(2, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PCT),
-		UPDATE_NAME(3, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_NAME),
-		UPDATE_STYLE(4, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_STYLE),
-		UPDATE_PROPERTIES(5, EnumConstant.PacketPlayOutBoss_Action_since_1_9_R1_UPDATE_PROPERTIES);
+		ADD(0),
+		REMOVE(1),
+		UPDATE_PCT(2),
+		UPDATE_NAME(3),
+		UPDATE_STYLE(4),
+		UPDATE_PROPERTIES(5);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;
 
-		private Action(int bungeeEquivalent, Object nmsEquivalent) {
+		private Action(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			this.nmsEquivalent = nmsEquivalent;
+			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.PacketPlayOutBoss_Action, toString());
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -178,20 +158,20 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 	public enum BarColor {
 
-		PINK(0, EnumConstant.BarColor_since_1_9_R1_PINK),
-		BLUE(1, EnumConstant.BarColor_since_1_9_R1_BLUE),
-		RED(2, EnumConstant.BarColor_since_1_9_R1_RED),
-		GREEN(3, EnumConstant.BarColor_since_1_9_R1_GREEN),
-		YELLOW(4, EnumConstant.BarColor_since_1_9_R1_YELLOW),
-		PURPLE(5, EnumConstant.BarColor_since_1_9_R1_PURPLE),
-		WHITE(6, EnumConstant.BarColor_since_1_9_R1_WHITE);
+		PINK(0),
+		BLUE(1),
+		RED(2),
+		GREEN(3),
+		YELLOW(4),
+		PURPLE(5),
+		WHITE(6);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;
 
-		private BarColor(int bungeeEquivalent, Object nmsEquivalent) {
+		private BarColor(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			this.nmsEquivalent = nmsEquivalent;
+			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarColor, toString());
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -202,18 +182,18 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 	public enum BarStyle {
 
-		PROGRESS(0, EnumConstant.BarStyle_since_1_9_R1_PROGRESS),
-		NOTCHED_6(1, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_6),
-		NOTCHED_10(2, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_10),
-		NOTCHED_12(3, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_12),
-		NOTCHED_20(4, EnumConstant.BarStyle_since_1_9_R1_NOTCHED_20);
+		PROGRESS(0),
+		NOTCHED_6(1),
+		NOTCHED_10(2),
+		NOTCHED_12(3),
+		NOTCHED_20(4);
 
 		private int bungeeEquivalent;
 		private Object nmsEquivalent;
 
-		private BarStyle(int bungeeEquivalent, Object nmsEquivalent) {
+		private BarStyle(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			this.nmsEquivalent = nmsEquivalent;
+			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarStyle, toString());
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -222,34 +202,14 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			return bungeeEquivalent;
 		}
 	}
-
-	private static Class<?> PacketPlayOutBoss;
-	private static Field PacketPlayOutBoss_UUID;
-	private static Field PacketPlayOutBoss_ACTION;
-	private static Field PacketPlayOutBoss_NAME;
-	private static Field PacketPlayOutBoss_PROGRESS;
-	private static Field PacketPlayOutBoss_COLOR;
-	private static Field PacketPlayOutBoss_STYLE;
-	private static Field PacketPlayOutBoss_DARKEN_SKY;
-	private static Field PacketPlayOutBoss_PLAY_MUSIC;
-	private static Field PacketPlayOutBoss_CREATE_FOG;
-
-	static {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
-				(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
-				(PacketPlayOutBoss_NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
-				(PacketPlayOutBoss_PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
-				(PacketPlayOutBoss_COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
-				(PacketPlayOutBoss_STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
-				(PacketPlayOutBoss_DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
-				(PacketPlayOutBoss_PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
-				(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
-			}
-		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutBoss", e);
-		}
-	}
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutBoss);
+	private static Field UUID = fields.get("a");
+	private static Field ACTION = fields.get("b");
+	private static Field NAME = fields.get("c");
+	private static Field PROGRESS = fields.get("d");
+	private static Field COLOR = fields.get("e");
+	private static Field STYLE = fields.get("f");
+	private static Field DARKEN_SKY = fields.get("g");
+	private static Field PLAY_MUSIC = fields.get("h");
+	private static Field CREATE_FOG = fields.get("i");
 }

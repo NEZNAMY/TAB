@@ -1,7 +1,7 @@
 name: TAB
-version: 2.5.2-pre12
+version: 2.5.2-pre14
 author: NEZNAMY
-main: me.neznamy.tab.bukkit.Main
+main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, ViaVersion, ProtocolSupport, Vault, Factions, UltraPermissions, LuckPerms, PowerfulPerms, GroupManager, PermissionsEx, DeluxeTags, Essentials]
 website: "https://www.spigotmc.org/resources/57806/"

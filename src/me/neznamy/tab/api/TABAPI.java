@@ -234,13 +234,13 @@ public class TABAPI {
 	}
 	
 	public static void sendHeaderFooter(UUID uniqueId, String header, String footer) {
-		new PacketPlayOutPlayerListHeaderFooter(header, footer).send(Shared.getPlayer(uniqueId));
+		Shared.getPlayer(uniqueId).sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
 	}
 	public static void refreshHeaderFooter(UUID uniqueId) {
 		HeaderFooter.refreshHeaderFooter(Shared.getPlayer(uniqueId));
 	}
 	public static void clearHeaderFooter(UUID uniqueId) {
-		new PacketPlayOutPlayerListHeaderFooter("","").send(Shared.getPlayer(uniqueId));
+		Shared.getPlayer(uniqueId).sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 	}
 	
 	public static void hideNametag(UUID uniqueId) {

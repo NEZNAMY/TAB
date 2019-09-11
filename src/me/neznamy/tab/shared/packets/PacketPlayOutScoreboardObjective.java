@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.EnumConstant;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -16,8 +16,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	private EnumScoreboardHealthDisplay displayType;
 	private int action;
 
-	public PacketPlayOutScoreboardObjective() {
-	}
 	public PacketPlayOutScoreboardObjective(String objectiveName, String title, EnumScoreboardHealthDisplay displayType, int action) {
 		this.objectiveName = objectiveName;
 		this.title = title;
@@ -30,14 +28,14 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
-		PacketPlayOutScoreboardObjective_OBJECTIVENAME.set(packet, objectiveName);
+		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			PacketPlayOutScoreboardObjective_TITLE.set(packet, Shared.mainClass.createComponent(title));
+			TITLE.set(packet, Shared.mainClass.createComponent(title));
 		} else {
-			PacketPlayOutScoreboardObjective_TITLE.set(packet, title);
+			TITLE.set(packet, title);
 		}
-		if (displayType != null) PacketPlayOutScoreboardObjective_DISPLAYTYPE.set(packet, displayType.toNMS());
-		if (action != 0) PacketPlayOutScoreboardObjective_ACTION.set(packet, action);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && displayType != null) DISPLAYTYPE.set(packet, displayType.toNMS());
+		ACTION.set(packet, action);
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
@@ -53,14 +51,18 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		return null;
 	}
 	public enum EnumScoreboardHealthDisplay{
-		
-		INTEGER(EnumConstant.EnumScoreboardHealthDisplay_INTEGER),
-		HEARTS(EnumConstant.EnumScoreboardHealthDisplay_HEARTS);
+
+		INTEGER, HEARTS;
 
 		private Object nmsEquivalent;
 
-		private EnumScoreboardHealthDisplay(Object nmsEquivalent) {
-			this.nmsEquivalent = nmsEquivalent;
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private EnumScoreboardHealthDisplay() {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
+			} else {
+				nmsEquivalent = ordinal();
+			}
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -69,24 +71,18 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 			return HealthDisplay.valueOf(toString());
 		}
 	}
-
-	private static Class<?> PacketPlayOutScoreboardObjective;
-	private static Field PacketPlayOutScoreboardObjective_OBJECTIVENAME;
-	private static Field PacketPlayOutScoreboardObjective_TITLE;
-	private static Field PacketPlayOutScoreboardObjective_DISPLAYTYPE;
-	private static Field PacketPlayOutScoreboardObjective_ACTION;
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
+	private static Field OBJECTIVENAME = fields.get("a");
+	private static Field TITLE = fields.get("b");
+	private static Field DISPLAYTYPE = fields.get("c");
+	private static Field ACTION = fields.get("d");
 	
 	static {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
-				(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutScoreboardObjective_TITLE = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
-				(PacketPlayOutScoreboardObjective_DISPLAYTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
-				(PacketPlayOutScoreboardObjective_ACTION = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
-			}
-		} catch (Exception e) {
-			Shared.error("Failed to initialize PacketPlayOutScoreboardObjective", e);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			DISPLAYTYPE = fields.get("c");
+			ACTION = fields.get("d");
+		} else {
+			ACTION = fields.get("c");
 		}
 	}
 }

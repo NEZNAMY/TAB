@@ -1,15 +1,27 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -21,20 +33,27 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.robingrether.idisguise.api.DisguiseAPI;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
 import me.clip.deluxetags.DeluxeTag;
-import me.neznamy.tab.platforms.bukkit.packets.*;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.TabObjective.*;
+import me.neznamy.tab.shared.Animation;
+import me.neznamy.tab.shared.BossBar;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ConfigurationFile;
+import me.neznamy.tab.shared.HeaderFooter;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.MainClass;
+import me.neznamy.tab.shared.NameTag16;
+import me.neznamy.tab.shared.Placeholder;
+import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
+import me.neznamy.tab.shared.TabCommand;
+import me.neznamy.tab.shared.TabObjective;
+import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.milkbowl.vault.chat.Chat;
@@ -57,10 +76,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		Shared.init(this, getDescription().getVersion());
+		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + ProtocolVersion.packageName + ")");
 		if (ProtocolVersion.SERVER_VERSION.isSupported()){
 			long total = System.currentTimeMillis();
 			instance = this;
-			Shared.init(this, getDescription().getVersion());
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
@@ -103,10 +123,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void onDisable() {
 		if (!disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) {
-				try {
-					p.getChannel().pipeline().remove(Shared.DECODER_NAME);
-				} catch (NoSuchElementException e) {
-
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 7) {
+					Injector.uninject(p.getUniqueId());
+				} else {
+					Injector1_7.uninject(p.getUniqueId());
 				}
 			}
 			unload();
@@ -141,14 +161,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
-			for (Player p : Bukkit.getOnlinePlayers()) {
+			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
 				if (inject) inject(t.getUniqueId());
 			}
 			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
-			BossBar1_8.load();
+			BossBar_legacy.load();
 			NameTagX.load();
 			NameTag16.load();
 			Playerlist.load();
@@ -185,6 +205,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					ScoreboardManager.register(pl);
 				}
 			});
+		} catch (NoSuchElementException ignored) {
+			Shared.error("Failed to inject player " + e.getPlayer().getName() + " (online=" + e.getPlayer().isOnline() + ") - " + ignored.getClass().getSimpleName() +": " + ignored.getMessage());
 		} catch (Throwable ex) {
 			Shared.error("An error occured when player joined the server", ex);
 		}
@@ -220,6 +242,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			PerWorldPlayerlist.trigger(e.getPlayer());
 			String from = e.getFrom().getName();
 			String to = p.getWorldName();
+			p.world = e.getPlayer().getWorld().getName();
 			p.onWorldChange(from, to);
 		} catch (Throwable ex) {
 			Shared.error("An error occured when processing PlayerChangedWorldEvent", ex);
@@ -237,108 +260,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	public static void inject(final UUID uuid) {
-		try {
-			Shared.getPlayer(uuid).getChannel().pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
-
-				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-					super.channelRead(context, packet);
-				}
-				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					if (disabled) {
-						super.write(context, packet, channelPromise);
-						return;
-					}
-					try{
-						final ITabPlayer player = Shared.getPlayer(uuid);
-						if (player == null) {
-							//wtf
-							super.write(context, packet, channelPromise);
-							return;
-						}
-						long time = System.nanoTime();
-						if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-							//nametag anti-override
-							if ((NameTag16.enable || NameTagX.enable) && instance.killPacket(packet)) {
-								Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
-								return;
-							}
-						}
-						Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
-
-						if (NameTagX.enable) {
-							time = System.nanoTime();
-							NameTagXPacket pack = null;
-							if ((pack = NameTagXPacket.fromNMS(packet)) != null) {
-								ITabPlayer packetPlayer = Shared.getPlayer(pack.getEntityId());
-								if (packetPlayer == null || !packetPlayer.disabledNametag) {
-									//sending packets outside of the packet reader or protocollib will cause problems
-									final NameTagXPacket p = pack;
-									Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
-										public void run() {
-											NameTagX.processPacketOUT(p, player);
-										}
-									});
-								}
-							}
-							Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
-						}
-						PacketPlayOut p = null;
-
-						time = System.nanoTime();
-						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
-							//preventing pets from having owner's nametag properties if feature is enabled
-							if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
-								List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
-								for (Item petOwner : items) {
-									if (petOwner.getType().getPosition() == (ProtocolVersion.SERVER_VERSION.getPetOwnerPosition())) modifyDataWatcherItem(petOwner);
-								}
-								packet = p.toNMS();
-							}
-							if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
-								DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
-								Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
-								if (petOwner != null) modifyDataWatcherItem(petOwner);
-								packet = p.toNMS();
-							}
-						}
-						Shared.cpu(Feature.OTHER, System.nanoTime()-time);
-						if (Playerlist.enable) {
-							//correcting name, spectators if enabled, changing npc names if enabled
-							time = System.nanoTime();
-							if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
-								Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
-								packet = p.toNMS();
-							}
-							Shared.cpu(Feature.PLAYERLIST_2, System.nanoTime()-time);
-						}
-						
-					} catch (Throwable e){
-						Shared.error("An error occured when reading packets", e);
-					}
-					super.write(context, packet, channelPromise);
-				}
-			});
-		} catch (IllegalArgumentException e) {
-			Shared.getPlayer(uuid).getChannel().pipeline().remove(Shared.DECODER_NAME);
-			inject(uuid);
-		}
-	}
-	@SuppressWarnings("rawtypes")
-	private static void modifyDataWatcherItem(Item petOwner) {
-		//1.12-
-		if (petOwner.getValue() instanceof com.google.common.base.Optional) {
-			com.google.common.base.Optional o = (com.google.common.base.Optional) petOwner.getValue();
-			if (o.isPresent() && o.get() instanceof UUID) {
-				petOwner.setValue(com.google.common.base.Optional.of(UUID.randomUUID()));
-			}
-		}
-		//1.13+
-		if (petOwner.getValue() instanceof java.util.Optional) {
-			java.util.Optional o = (java.util.Optional) petOwner.getValue();
-			if (o.isPresent() && o.get() instanceof UUID) {
-				petOwner.setValue(java.util.Optional.of(UUID.randomUUID()));
-			}
+	private static void inject(UUID player) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 7) {
+			Injector.inject(player);
+		} else {
+			Injector1_7.inject(player);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -375,15 +301,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@SuppressWarnings("unchecked")
 	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
-		if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
-			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
+			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
 			for (ITabPlayer p : Shared.getPlayers()) {
 				if (players.contains(p.getName()) && !p.disabledNametag) {
 					return true;
 				}
 			}
 		} else {
-			PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam_SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
+			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}
@@ -393,7 +319,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml");
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
+		Playerlist.enable = ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
 		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
 		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
@@ -404,7 +330,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		NameTag16.enable = false;
 		if (changeNameTag) {
 			Configs.unlimitedTags = unlimitedTags;
-			if (unlimitedTags) {
+			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				NameTagX.enable = true;
 			} else {
 				NameTag16.enable = true;
@@ -482,7 +408,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return (((TabPlayer)p).player).getDisplayName();
 			}
 		});
-		Placeholders.list.add(new Placeholder("%deaths%") {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.list.add(new Placeholder("%deaths%") {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getStatistic(Statistic.DEATHS)+"";
 			}
@@ -518,33 +444,25 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			public boolean factionsInitialized;
 
 			public String get(ITabPlayer p) {
-				try {
-					if (!factionsInitialized) {
-						try {
-							Class.forName("com.massivecraft.factions.FPlayers");
-							factionsType = "UUID";
-						} catch (Throwable e) {}
-						try {
-							Class.forName("com.massivecraft.factions.entity.MPlayer");
-							factionsType = "MCore";
-						} catch (Throwable e) {}
-						factionsInitialized = true;
-					}
-					String name = null;
-					if (factionsType == null) return Configs.noFaction;
-					if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
-					if (factionsType.equals("MCore")) name = MPlayer.get(((TabPlayer)p).player).getFactionName();
-					if (name == null || name.length() == 0 || name.contains("Wilderness")) {
-						return Configs.noFaction;
-					}
-					return Configs.yesFaction.replace("%value%", name);
-				} catch (IllegalStateException e) {
-					Shared.error("An error occured when getting faction of a player, was server just /reloaded ?", e);
-					return Configs.noFaction;
-				} catch (Throwable e) {
-					Shared.error("An error occured when getting faction of " + p.getName(), e);
+				if (!factionsInitialized) {
+					try {
+						Class.forName("com.massivecraft.factions.FPlayers");
+						factionsType = "UUID";
+					} catch (Throwable e) {}
+					try {
+						Class.forName("com.massivecraft.factions.entity.MPlayer");
+						factionsType = "MCore";
+					} catch (Throwable e) {}
+					factionsInitialized = true;
+				}
+				if (factionsType == null) return Configs.noFaction;
+				String name = null;
+				if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
+				if (factionsType.equals("MCore")) name = MPlayer.get(((TabPlayer)p).player).getFactionName();
+				if (name == null || name.length() == 0 || name.contains("Wilderness")) {
 					return Configs.noFaction;
 				}
+				return Configs.yesFaction.replace("%value%", name);
 			}
 			@Override
 			public String[] getChilds(){
@@ -561,26 +479,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return Shared.round(Math.min(MethodAPI.getInstance().getTPS(), 20));
 			}
 		});
-		if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
-			Placeholders.list.add(new Placeholder("%afk%") {
-				@SuppressWarnings("unchecked")
-				public String get(ITabPlayer p) {
-					boolean afk = false;
-					try {
-						me.prunt.autoafk.Main m = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
-						if (((HashMap<Player, Object>) PacketAPI.getField(m, "afkList")).containsKey(((TabPlayer)p).player)) afk = true;
-					} catch (Throwable e) {
-						Shared.error("An error occured when getting AFK status of " + p.getName(), e);
-						afk = false;
-					}
-					return afk?Configs.yesAfk:Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
-		} else if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
+		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			Placeholders.list.add(new Placeholder("%afk%") {
 				public String get(ITabPlayer p) {
 					return xAntiAFKAPI.isAfk(((TabPlayer)p).player)?Configs.yesAfk:Configs.noAfk;
@@ -666,5 +565,27 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return Bukkit.getMaxPlayers()+"";
 			}
 		});
+	}
+	public static Player[] getOnlinePlayers() {
+		try {
+			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
+			return onlinePlayersMethod.getReturnType().equals(Collection.class)
+					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).toArray(new Player[0])
+						: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer()));
+		} catch (Exception e) {
+			Shared.error("Failed to get players", e);
+			return new Player[0];
+		}
+	}
+	public static int getOnlinePlayersCount() {
+		try {
+			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
+			return onlinePlayersMethod.getReturnType().equals(Collection.class)
+					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
+						: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
+		} catch (Exception e) {
+			Shared.error("Failed to get player count", e);
+			return 0;
+		}
 	}
 }
