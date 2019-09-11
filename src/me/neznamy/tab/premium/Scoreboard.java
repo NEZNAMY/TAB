@@ -51,7 +51,6 @@ public class Scoreboard {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title);
 			String replacedTitle = p.properties.get("scoreboard-title").get();
-			PacketAPI.unregisterScoreboardObjective(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
 				s.register(p);

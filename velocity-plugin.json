@@ -1,1 +1,1 @@
-{"id":"tab","version":"2.5.2-pre14","description":"Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more","authors":["NEZNAMY"],"dependencies":[],"main":"me.neznamy.tab.platforms.velocity.Main"}
+{"id":"tab","version":"2.5.2-pre15","description":"Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more","authors":["NEZNAMY"],"dependencies":[],"main":"me.neznamy.tab.platforms.velocity.Main"}
