@@ -73,8 +73,7 @@ public class Placeholders {
 	}
 	public static String setPlaceholderAPIPlaceholders(String s, ITabPlayer p) {
 		try {
-			if (!placeholderAPI) return s;
-			return PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
+			if (placeholderAPI) return PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
