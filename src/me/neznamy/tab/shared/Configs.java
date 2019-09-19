@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
@@ -84,8 +85,10 @@ public class Configs {
 
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
-		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8)
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
+			Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
+		}
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
@@ -142,6 +145,7 @@ public class Configs {
 		BossBar.toggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
 		BossBar.defaultBars = bossbar.getStringList("default-bars");
 		BossBar.perWorld = (Map<String, List<String>>) bossbar.get("per-world");
+		if (BossBar.perWorld == null) BossBar.perWorld = Maps.newConcurrentMap();
 		BossBar.lines.clear();
 		if (bossbar.getConfigurationSection("bars") != null) {
 			for (String bar : bossbar.getConfigurationSection("bars").keySet()){

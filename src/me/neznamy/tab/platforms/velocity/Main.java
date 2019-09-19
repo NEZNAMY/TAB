@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.slf4j.Logger;
+import org.yaml.snakeyaml.parser.ParserException;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
@@ -27,11 +28,12 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.2-pre14", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.5.2-pre19", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -48,8 +50,8 @@ public class Main implements MainClass{
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		long time = System.currentTimeMillis();
 		instance = this;
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.UNKNOWN;
-		Shared.init(this, "2.5.2-pre14");
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
+		Shared.init(this, "2.5.2-pre20");
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUsername()) : null, args);
@@ -105,10 +107,15 @@ public class Main implements MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e1) {
-			Shared.print("§c", "Did not enable.");
-			e1.printStackTrace();
-			Shared.error(null, e1);
+		} catch (ParserException e) {
+			Shared.print("§c", "Did not enable due to a broken configuration file.");
+			disabled = true;
+		} catch (Throwable e) {
+			Shared.print("§c", "Failed to enable");
+			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
+			for (StackTraceElement ste : e.getStackTrace()) {
+				sendConsoleMessage("§c       at " + ste.toString());
+			}
 			disabled = true;
 		}
 	}
@@ -123,7 +130,7 @@ public class Main implements MainClass{
 		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@Subscribe
-	public void a(final ServerConnectedEvent e){
+	public void a(ServerConnectedEvent e){
 		try{
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
@@ -137,7 +144,7 @@ public class Main implements MainClass{
 				TabObjective.playerJoin(p);
 				BossBar.playerJoin(p);
 				ScoreboardManager.register(p);
-				final ITabPlayer pl = p;
+				ITabPlayer pl = p;
 				NameTag16.playerJoin(pl);
 			} else {
 				String from = p.getWorldName();
@@ -159,7 +166,7 @@ public class Main implements MainClass{
 		if (BossBar.onChat(sender, e.getMessage())) e.setResult(ChatResult.denied());
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
 	}
-	private void inject(final UUID uuid) {
+	private void inject(UUID uuid) {
 		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
@@ -167,14 +174,16 @@ public class Main implements MainClass{
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
-					final ITabPlayer player = Shared.getPlayer(uuid);
+					ITabPlayer player = Shared.getPlayer(uuid);
 					if (player == null) {
 						//wtf
 						super.write(context, packet, channelPromise);
 						return;
 					}
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
-						Playerlist.modifyPacket((PlayerListItem) packet, player);
+						PacketPlayOutPlayerInfo p = PacketPlayOutPlayerInfo.fromVelocity(packet);
+						Playerlist.modifyPacket(p, player);
+						packet = p.toVelocity(null);
 					}
 /*					if (packet instanceof Team && NameTag16.enable) {
 						if (killPacket(packet)) return;
@@ -187,13 +196,11 @@ public class Main implements MainClass{
 		});
 	}
 	public Component createComponent(String text) {
+		if (text == null) return null;
 		return TextComponent.of(text);
 	}
 	public void sendConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(createComponent(message));
-	}
-	public boolean listNames() {
-		return Playerlist.enable;
 	}
 	public String getPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
@@ -230,7 +237,6 @@ public class Main implements MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml");
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 		TabObjective.type = TabObjectiveType.NONE;
 	}
@@ -242,7 +248,7 @@ public class Main implements MainClass{
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
-		for (final Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
+		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
 			Placeholders.list.add(new Placeholder("%online_" + servers.getKey() + "%") {
 				public String get(ITabPlayer p) {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";

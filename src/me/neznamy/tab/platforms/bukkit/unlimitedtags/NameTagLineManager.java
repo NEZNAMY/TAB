@@ -16,7 +16,7 @@ public class NameTagLineManager {
 		return as;
 	}
 	public static void updateVisibility(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.updateVisibility();
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) as.updateVisibility();
 	}
 	public static void sneak(ITabPlayer armorStandOwner, boolean sneaking) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(sneaking);
@@ -28,7 +28,7 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSDestroyPacket(packetReceiver));
 	}
 	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean addToRegistered) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
 	}
 	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket());

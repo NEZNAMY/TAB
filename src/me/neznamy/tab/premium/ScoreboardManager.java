@@ -86,7 +86,7 @@ public class ScoreboardManager {
 		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 		p.setActiveScoreboard(null);
 	}
-	public static boolean onCommand(final ITabPlayer sender, String message) {
+	public static boolean onCommand(ITabPlayer sender, String message) {
 		if (!enabled) return false;
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {

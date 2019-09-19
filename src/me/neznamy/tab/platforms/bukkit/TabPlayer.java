@@ -36,7 +36,8 @@ public class TabPlayer extends ITabPlayer{
 	public TabPlayer(Player p) throws Exception {
 		player = p;
 		world = p.getWorld().getName();
-		channel = MethodAPI.getInstance().getChannel((Player) player);
+		channel = MethodAPI.getInstance().getChannel(player);
+		tablistId = p.getUniqueId();
 		init(p.getName(), p.getUniqueId());
 		try {
 			int version;

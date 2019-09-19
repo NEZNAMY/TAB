@@ -5,10 +5,13 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import org.yaml.snakeyaml.parser.ParserException;
+
 import io.netty.channel.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -35,7 +38,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void onEnable(){
 		long time = System.currentTimeMillis();
 		instance = this;
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.UNKNOWN;
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
 		Shared.init(this, getDescription().getVersion());
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
@@ -99,8 +102,15 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e1) {
-			Shared.print("§c", "Did not enable.");
+		} catch (ParserException e) {
+			Shared.print("§c", "Did not enable due to a broken configuration file.");
+			disabled = true;
+		} catch (Throwable e) {
+			Shared.print("§c", "Failed to enable");
+			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
+			for (StackTraceElement ste : e.getStackTrace()) {
+				sendConsoleMessage("§c       at " + ste.toString());
+			}
 			disabled = true;
 		}
 	}
@@ -125,7 +135,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		inject(p);
 	}
 	@EventHandler
-	public void a(final ServerSwitchEvent e){
+	public void a(ServerSwitchEvent e){
 		if (disabled) return;
 		System.out.println("------------------------------");
 		System.out.println(e.getClass().getSimpleName());
@@ -154,7 +164,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 	}*/
 	@EventHandler
-	public void a(final ServerSwitchEvent e){
+	public void a(ServerSwitchEvent e){
 		try{
 			if (disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
@@ -168,7 +178,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				TabObjective.playerJoin(p);
 				BossBar.playerJoin(p);
 				ScoreboardManager.register(p);
-				final ITabPlayer pl = p;
+				ITabPlayer pl = p;
 				NameTag16.playerJoin(pl);
 			} else {
 				String from = p.getWorldName();
@@ -191,7 +201,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	private void inject(final UUID uuid) {
+	private void inject(UUID uuid) {
 		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
@@ -199,14 +209,16 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
-					final ITabPlayer player = Shared.getPlayer(uuid);
+					ITabPlayer player = Shared.getPlayer(uuid);
 					if (player == null) {
 						//wtf
 						super.write(context, packet, channelPromise);
 						return;
 					}
 					if (packet instanceof PlayerListItem && Playerlist.enable) {
-						Playerlist.modifyPacket((PlayerListItem) packet, player);
+						PacketPlayOutPlayerInfo p = PacketPlayOutPlayerInfo.fromBungee(packet);
+						Playerlist.modifyPacket(p, player);
+						packet = p.toBungee(null);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
 						if (killPacket(packet)) return;
@@ -219,15 +231,13 @@ public class Main extends Plugin implements Listener, MainClass{
 		});
 	}
 	public String createComponent(String text) {
-		if (text == null || text.length() == 0) return "{\"translate\":\"\"}";
+		if (text == null) return null;
+		if (text.length() == 0) return "{\"translate\":\"\"}";
 		return ComponentSerializer.toString(new TextComponent(text));
 	}
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
 		ProxyServer.getInstance().getConsole().sendMessage(message);
-	}
-	public boolean listNames() {
-		return Playerlist.enable;
 	}
 	public String getPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
@@ -267,7 +277,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
@@ -280,7 +289,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
-		for (final Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
+		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
 			Placeholders.list.add(new Placeholder("%online_" + server.getKey() + "%") {
 				public String get(ITabPlayer p) {
 					return server.getValue().getPlayers().size()+"";

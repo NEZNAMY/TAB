@@ -19,13 +19,14 @@ import me.neznamy.tab.shared.FancyMessage.ClickAction;
 import me.neznamy.tab.shared.FancyMessage.Extra;
 import me.neznamy.tab.shared.FancyMessage.HoverAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 
 public class Shared {
 
-	private static final String newline = System.getProperty("line.separator");
-	public static final String DECODER_NAME = "TABReader";
-	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final boolean consoleErrors = false;
+	private static String newline = System.getProperty("line.separator");
+	public static String DECODER_NAME = "TABReader";
+	public static ExecutorService exe = Executors.newCachedThreadPool();
+	public static boolean consoleErrors = false;
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -57,9 +58,11 @@ public class Shared {
 	public static ITabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);
 	}
-	public static ITabPlayer getPlayerByOfflineUUID(UUID offlineId) {
+	public static ITabPlayer getPlayerByTablistUUID(UUID tablistId) {
 		for (ITabPlayer p : data.values()) {
-			if (p.getOfflineId() == offlineId) return p;
+			if (p.getTablistId().toString().equals(tablistId.toString())) {
+				return p;
+			}
 		}
 		return null;
 	}
@@ -125,7 +128,7 @@ public class Shared {
 			cpuLastSecond.put(feature, value);
 		}
 	}
-	public static void scheduleRepeatingTask(final int delayMilliseconds, final String description, final Feature feature, final Runnable r) {
+	public static void scheduleRepeatingTask(int delayMilliseconds, String description, Feature feature, Runnable r) {
 		if (delayMilliseconds <= 0) return;
 		tasks.add(exe.submit(new Runnable() {
 
@@ -145,7 +148,7 @@ public class Shared {
 			}
 		}));
 	}
-	public static void runTask(final String description, final Feature feature, final Runnable r) {
+	public static void runTask(String description, Feature feature, Runnable r) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -159,8 +162,8 @@ public class Shared {
 			}
 		});
 	}
-	public static void runTaskLater(final int delayMilliseconds, final String description, final Feature feature, final Runnable r) {
-		final Future<?>[] array = new Future[1];
+	public static void runTaskLater(int delayMilliseconds, String description, Feature feature, Runnable r) {
+		Future<?>[] array = new Future[1];
 		array[0] = exe.submit(new Runnable() {
 
 
@@ -186,7 +189,7 @@ public class Shared {
 		FancyMessage message = new FancyMessage();
 		message.add(new Extra("§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
 		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
-		to.sendCustomPacket(new PacketPlayOutChat(message.toString()));
+		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	public static void registerUniversalPlaceholders() {
 		Placeholders.list.add(new Placeholder("%money%") {
@@ -203,14 +206,14 @@ public class Shared {
 				return Configs.rankAliases.values().toArray(new String[0]);
 			}
 		});
-		for (final Entry<String, Integer> entry : Placeholders.online.entrySet()){
+		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
 			Placeholders.list.add(new Placeholder("%version-group:" + entry.getKey()+ "%") {
 				public String get(ITabPlayer p) {
 					return Placeholders.online.get(entry.getKey())+"";
 				}
 			});
 		}
-		for (final Animation a : Configs.animations) {
+		for (Animation a : Configs.animations) {
 			Placeholders.list.add(new Placeholder("%animation:" + a.getName() + "%") {
 				public String get(ITabPlayer p) {
 					return a.getMessage();

@@ -1,5 +1,8 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.UUID;
+
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
@@ -21,6 +24,7 @@ public class TabPlayer extends ITabPlayer{
 		player = p;
 		world = server;
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
+		tablistId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + p.getUsername()).getBytes(Charsets.UTF_8));
 		init(p.getUsername(), p.getUniqueId());
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
 	}
@@ -41,7 +45,7 @@ public class TabPlayer extends ITabPlayer{
 		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
 	}
 	public void setPlayerListName() {
-		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getOfflineId()).setDisplayName((Component) Shared.mainClass.createComponent(getName())).setName(getName());
+		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getTablistId()).setDisplayName((Component) Shared.mainClass.createComponent(getName())).setName(getName());
 		PlayerListItem packet = new PlayerListItem(3, Lists.newArrayList(playerInfoData));
 		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(packet);
 	}

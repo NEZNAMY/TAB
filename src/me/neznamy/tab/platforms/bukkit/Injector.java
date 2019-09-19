@@ -10,7 +10,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -19,15 +18,16 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.NameTag16;
+import me.neznamy.tab.shared.Playerlist;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.Shared.Feature;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 public class Injector {
 
-	public static void inject(final UUID uuid) {
+	public static void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
-		if (channel == null) return; //1.6.x
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
@@ -40,7 +40,7 @@ public class Injector {
 					return;
 				}
 				try{
-					final ITabPlayer player = Shared.getPlayer(uuid);
+					ITabPlayer player = Shared.getPlayer(uuid);
 					if (player == null) {
 						//wtf
 						super.write(context, packet, channelPromise);
@@ -63,7 +63,7 @@ public class Injector {
 							ITabPlayer packetPlayer = Shared.getPlayer(pack.getEntityId());
 							if (packetPlayer == null || !packetPlayer.disabledNametag) {
 								//sending packets outside of the packet reader or protocollib will cause problems
-								final NameTagXPacket p = pack;
+								NameTagXPacket p = pack;
 								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(p, player);
@@ -76,7 +76,7 @@ public class Injector {
 					PacketPlayOut p = null;
 
 					time = System.nanoTime();
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8 && Configs.fixPetNames) {
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
 						//preventing pets from having owner's nametag properties if feature is enabled
 						if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
 							List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
@@ -110,9 +110,8 @@ public class Injector {
 			}
 		});
 	}
-	public static void uninject(final UUID uuid) {
+	public static void uninject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
-		if (channel == null) return; //1.6.x
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 	}
 	@SuppressWarnings({ "rawtypes" })

@@ -1,30 +1,20 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.*;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
+import org.yaml.snakeyaml.parser.ParserException;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
@@ -38,21 +28,8 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.Animation;
-import me.neznamy.tab.shared.BossBar;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ConfigurationFile;
-import me.neznamy.tab.shared.HeaderFooter;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.MainClass;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.Placeholder;
-import me.neznamy.tab.shared.Placeholders;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.Shared.Feature;
-import me.neznamy.tab.shared.TabCommand;
-import me.neznamy.tab.shared.TabObjective;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -114,6 +91,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return "None";
 				}
 			}));
+			metrics.addCustomChart(new Metrics.SimplePie("server_version", new Callable<String>() {
+				public String call() {
+					return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
+				}
+			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported. Disabling..");
@@ -123,9 +105,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void onDisable() {
 		if (!disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) {
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 7) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 					Injector.uninject(p.getUniqueId());
-				} else {
+				} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) {
 					Injector1_7.uninject(p.getUniqueId());
 				}
 			}
@@ -179,9 +161,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e1) {
-			Shared.print("§c", "Did not enable. Check errors.txt for more info.");
-			Shared.error("Failed to load plugin", e1);
+		} catch (ParserException e) {
+			Shared.print("§c", "Did not enable due to a broken configuration file.");
+			disabled = true;
+		} catch (Throwable e) {
+			Shared.print("§c", "Failed to enable");
+			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
+			for (StackTraceElement ste : e.getStackTrace()) {
+				sendConsoleMessage("§c       at " + ste.toString());
+			}
 			disabled = true;
 		}
 	}
@@ -192,7 +180,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
-			final ITabPlayer pl = p;
+			ITabPlayer pl = p;
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
@@ -261,15 +249,16 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 	private static void inject(UUID player) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() != 7) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
-		} else {
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) {
 			Injector1_7.inject(player);
 		}
 	}
 	@SuppressWarnings("unchecked")
 	public Object createComponent(String text) {
-		if (text == null || text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
+		if (text == null) return null;
+		if (text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
 		JSONObject object = new JSONObject();
 		object.put("text", text);
 		return MethodAPI.getInstance().ICBC_fromString(object.toString());
@@ -277,14 +266,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(message);
 	}
-	public boolean listNames() {
-		return Playerlist.enable;
-	}
 	public String getPermissionPlugin() {
 		if (pex) return "PermissionsEx";
 		if (groupManager != null) return "GroupManager";
 		if (luckPerms) return "LuckPerms";
-
 		if (perm != null) return perm.getName() + " (detected by Vault)";
 		return "Unknown/None";
 	}
@@ -319,7 +304,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml");
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		Playerlist.enable = ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true);
 		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
 		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
 		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
@@ -328,6 +312,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
 		NameTagX.enable = false;
 		NameTag16.enable = false;
+		Configs.unlimitedTags = false;
 		if (changeNameTag) {
 			Configs.unlimitedTags = unlimitedTags;
 			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {

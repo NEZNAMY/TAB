@@ -39,7 +39,7 @@ public class ConfigurationFile{
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 		} catch (Exception e) {
-			if (input != null) input.close();
+			input.close();
 			Shared.startupWarn("File " + destination + " has broken formatting.");
 			Shared.print("§6", "Error message: " + e.getMessage());
 			throw e;

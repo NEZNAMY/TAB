@@ -5,6 +5,7 @@ import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 
 public class NameTagXPacket {
 
@@ -38,7 +39,7 @@ public class NameTagXPacket {
 		if (MethodAPI.PacketPlayOutRelEntityMove.isInstance(nmsPacket)) return new NameTagXPacket(PacketType.ENTITY_MOVE, PacketPlayOutEntity_ENTITYID.getInt(nmsPacket), null, -1);
 		if (MethodAPI.PacketPlayOutRelEntityMoveLook.isInstance(nmsPacket)) return new NameTagXPacket(PacketType.ENTITY_MOVE, PacketPlayOutEntity_ENTITYID.getInt(nmsPacket), null, -1);
 		if (MethodAPI.PacketPlayOutMount != null && MethodAPI.PacketPlayOutMount.isInstance(nmsPacket)) return new NameTagXPacket(PacketType.MOUNT, PacketPlayOutMount_VEHICLE.getInt(nmsPacket), (int[]) PacketPlayOutMount_PASSENGERS.get(nmsPacket), -1);
-		if (MethodAPI.PacketPlayOutAttachEntity != null && MethodAPI.PacketPlayOutAttachEntity.isInstance(nmsPacket)) return new NameTagXPacket(PacketType.ATTACH_ENTITY, PacketPlayOutAttachEntity_VEHICLE.getInt(nmsPacket), new int[] {PacketPlayOutAttachEntity_PASSENGER.getInt(nmsPacket)}, PacketPlayOutAttachEntity_A.getInt(nmsPacket));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && MethodAPI.PacketPlayOutAttachEntity.isInstance(nmsPacket)) return new NameTagXPacket(PacketType.ATTACH_ENTITY, PacketPlayOutAttachEntity_VEHICLE.getInt(nmsPacket), new int[] {PacketPlayOutAttachEntity_PASSENGER.getInt(nmsPacket)}, PacketPlayOutAttachEntity_A.getInt(nmsPacket));
 		return null;
 	}
 
@@ -59,7 +60,7 @@ public class NameTagXPacket {
 	
 	private static Field PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
 	
-	private static Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutAttachEntity);
+	private static Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutMount);
 	private static Field PacketPlayOutMount_VEHICLE = mount.get("a");
 	private static Field PacketPlayOutMount_PASSENGERS = mount.get("b");
 	

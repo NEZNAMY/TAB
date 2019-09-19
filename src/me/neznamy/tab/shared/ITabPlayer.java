@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.*;
 import java.util.Map.Entry;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TABAPI;
@@ -22,14 +21,14 @@ public abstract class ITabPlayer{
 
 	public String name;
 	public UUID uniqueId;
-	public UUID offlineId;
+	public UUID tablistId;
 	public String world;
+	private String permissionGroup;
+	public String teamName;
+	private String rank = "§7No Rank";
 	
 	public HashMap<String, Property> properties = new HashMap<String, Property>();
-	private String group;
 	private long lastRefreshGroup;
-	public String teamName;
-	private String rank;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors
 	public Object channel;
@@ -45,15 +44,12 @@ public abstract class ITabPlayer{
 	private Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
 	public boolean previewingNametag;
-
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
-
 	public boolean lastCollision;
 
 	public void init(String name, UUID uniqueId) {
 		this.name = name;
 		this.uniqueId = uniqueId;
-		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
 		updateGroupIfNeeded();
 		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
@@ -89,8 +85,38 @@ public abstract class ITabPlayer{
 	public UUID getUniqueId() {
 		return uniqueId;
 	}
-	public UUID getOfflineId(){
-		return offlineId;
+	public UUID getTablistId(){
+		return tablistId;
+	}
+	public ProtocolVersion getVersion() {
+		return version;
+	}
+	public Object getChannel() {
+		return channel;
+	}
+	public String getTeamName() {
+		return teamName;
+	}
+	public String getRank() {
+		return rank;
+	}
+	public boolean isStaff() {
+		return hasPermission("tab.staff");
+	}
+	public void setActiveScoreboard(Scoreboard board) {
+		activeScoreboard = board;
+	}
+	public Scoreboard getActiveScoreboard() {
+		return activeScoreboard;
+	}
+	public List<BossBarLine> getActiveBossBars(){
+		return activeBossBars;
+	}
+	public String getWorldName() {
+		return world;
+	}
+	public List<ArmorStand> getArmorStands() {
+		return armorStands;
 	}
 	public String setProperty(String identifier, String rawValue) {
 		Property p = properties.get(identifier);
@@ -111,11 +137,7 @@ public abstract class ITabPlayer{
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
-		String format = properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get();
-		if (Placeholders.placeholderAPI) {
-			return Placeholders.setRelational(this, other, format);
-		}
-		return format;
+		return Placeholders.setRelational(this, other, properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get());
 	}
 	public void updateTeam() {
 		if (disabledNametag) return;
@@ -143,7 +165,7 @@ public abstract class ITabPlayer{
 			lastRefreshGroup = System.currentTimeMillis();
 			updateGroupIfNeeded();
 		}
-		return group;
+		return permissionGroup;
 	}
 	public void updateGroupIfNeeded() {
 		String newGroup = null;
@@ -164,8 +186,8 @@ public abstract class ITabPlayer{
 				if (newGroup == null) newGroup = playerGroups[0];
 			}
 		}
-		if (newGroup != null && (group == null || !group.equals(newGroup))) {
-			group = newGroup;
+		if (newGroup != null && (permissionGroup == null || !permissionGroup.equals(newGroup))) {
+			permissionGroup = newGroup;
 			updateAll();
 		}
 	}
@@ -188,7 +210,7 @@ public abstract class ITabPlayer{
 		}
 		rank = (String) Configs.rankAliases.get("_OTHER_");
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(group)) {
+			if (entry.getKey().equalsIgnoreCase(permissionGroup)) {
 				rank = (String) entry.getValue();
 				break;
 			}
@@ -200,37 +222,27 @@ public abstract class ITabPlayer{
 		String value;
 		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Users." + getName() + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups." + group + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups." + permissionGroup + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups._OTHER_." + property)) != null) return value;
-		if ((value = Configs.config.getString("Groups." + group + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("Groups." + permissionGroup + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
-	}
-	public String getTeamName() {
-		return teamName;
-	}
-	public String getRank() {
-		if (rank == null) return "§7No Rank";
-		return rank;
-	}
-	public boolean isStaff() {
-		return hasPermission("tab.staff");
 	}
 	private void updateRawHeaderAndFooter() {
 		String rawHeader = "";
 		String rawFooter = "";
 		List<Object> h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
 		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".header");
+		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".header");
 		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".header");
-		if (h == null) h = Configs.config.getList("Groups." + group + ".header");
+		if (h == null) h = Configs.config.getList("Groups." + permissionGroup + ".header");
 		if (h == null) h = Configs.config.getList("header");
 		if (h == null) h = new ArrayList<Object>();
 		List<Object> f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".footer");
 		if (f == null) f = Configs.config.getList("Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + group + ".footer");
+		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".footer");
 		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".footer");
-		if (f == null) f = Configs.config.getList("Groups." + group + ".footer");
+		if (f == null) f = Configs.config.getList("Groups." + permissionGroup + ".footer");
 		if (f == null) f = Configs.config.getList("footer");
 		if (f == null) f = new ArrayList<Object>();
 		int i = 0;
@@ -252,22 +264,22 @@ public abstract class ITabPlayer{
 		}
 		String name = null;
 		if (Configs.sortByPermissions) {
-			for (String group : Configs.sortedGroups.keySet()) {
-				if (hasPermission("tab.sort." + group)) {
-					name = Configs.sortedGroups.get(group);
+			for (String permissionGroup : Configs.sortedGroups.keySet()) {
+				if (hasPermission("tab.sort." + permissionGroup)) {
+					name = Configs.sortedGroups.get(permissionGroup);
 					break;
 				}
 			}
 		} else {
-			for (String group : Configs.sortedGroups.keySet()) {
-				if (group.equalsIgnoreCase(this.group)) {
-					name = Configs.sortedGroups.get(group);
+			for (String permissionGroup : Configs.sortedGroups.keySet()) {
+				if (permissionGroup.equalsIgnoreCase(this.permissionGroup)) {
+					name = Configs.sortedGroups.get(permissionGroup);
 					break;
 				}
 			}
 		}
 		if (name == null) {
-			if (Shared.mainClass.listNames()) {
+			if (Playerlist.enable) {
 				name = properties.get("tabprefix").get();
 			} else {
 				if (!NameTag16.enable && !Configs.unlimitedTags) {
@@ -301,9 +313,6 @@ public abstract class ITabPlayer{
 			}
 		}
 		return getName();
-	}
-	public List<ArmorStand> getArmorStands() {
-		return armorStands;
 	}
 	public void updateTeamPrefixSuffix() {
 		if (disabledNametag) return;
@@ -357,12 +366,6 @@ public abstract class ITabPlayer{
 	public void unregisterTeam() {
 		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
-	public ProtocolVersion getVersion() {
-		return version;
-	}
-	public Object getChannel() {
-		return channel;
-	}
 	public void onWorldChange(String from, String to) {
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(to);
 		disabledTablistNames = Configs.disabledTablistNames.contains(to);
@@ -397,7 +400,7 @@ public abstract class ITabPlayer{
 				updateTeam();
 			}
 		}
-		if (Shared.mainClass.listNames()) updatePlayerListName(true);
+		if (Playerlist.enable) updatePlayerListName(true);
 		if (TabObjective.type != TabObjectiveType.NONE) {
 			if (disabledTablistObjective && !Configs.disabledTablistObjective.contains(from)) {
 				TabObjective.unload(this);
@@ -410,18 +413,6 @@ public abstract class ITabPlayer{
 			ScoreboardManager.unregister(this);
 			ScoreboardManager.register(this);
 		}
-	}
-	public void setActiveScoreboard(Scoreboard board) {
-		activeScoreboard = board;
-	}
-	public Scoreboard getActiveScoreboard() {
-		return activeScoreboard;
-	}
-	public List<BossBarLine> getActiveBossBars(){
-		return activeBossBars;
-	}
-	public String getWorldName() {
-		return world;
 	}
 	public void detectBossBarsAndSend() {
 		activeBossBars.clear();

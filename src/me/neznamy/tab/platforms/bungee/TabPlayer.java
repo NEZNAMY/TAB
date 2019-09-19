@@ -26,6 +26,7 @@ public class TabPlayer extends ITabPlayer{
 		player = p;
 		world = p.getServer().getInfo().getName();
 		channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
+		tablistId = p.getUniqueId();
 		init(p.getName(), p.getUniqueId());
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 	}
@@ -50,7 +51,7 @@ public class TabPlayer extends ITabPlayer{
 		Item playerInfoData = new Item();
 		playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(getName()));
 		playerInfoData.setUsername(getName());
-		playerInfoData.setUuid(getOfflineId());
+		playerInfoData.setUuid(getTablistId());
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction(Action.UPDATE_DISPLAY_NAME);
 		packet.setItems(new Item[] {playerInfoData});

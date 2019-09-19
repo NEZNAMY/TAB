@@ -15,7 +15,7 @@ import net.minecraft.util.io.netty.channel.ChannelPromise;
 
 public class Injector1_7 {
 
-	public static void inject(final UUID uuid) {
+	public static void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
@@ -29,7 +29,7 @@ public class Injector1_7 {
 					return;
 				}
 				try{
-					final ITabPlayer player = Shared.getPlayer(uuid);
+					ITabPlayer player = Shared.getPlayer(uuid);
 					if (player == null) {
 						//wtf
 						super.write(context, packet, channelPromise);
@@ -51,7 +51,7 @@ public class Injector1_7 {
 			}
 		});
 	}
-	public static void uninject(final UUID uuid) {
+	public static void uninject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 	}

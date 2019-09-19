@@ -63,7 +63,7 @@ public class BossBar{
 		}
 		return null;
 	}
-	public static boolean onChat(final ITabPlayer sender, String message) {
+	public static boolean onChat(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.bossbarVisible = !sender.bossbarVisible;
 			if (sender.bossbarVisible) {
@@ -113,7 +113,7 @@ public class BossBar{
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7 || ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
 				nmsEntity = MethodAPI.getInstance().newEntityWither();
 				entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 			}

@@ -3,6 +3,9 @@ package me.neznamy.tab.shared;
 public enum ProtocolVersion {
 
 	UNKNOWN		(-1,  "Unknown",   -1,	0,  0),
+	v1_4_6		(51,  "1.4.6",		4,	0,	0),
+	v1_4_7		(51,  "1.4.7",		4,	0,	0),
+	v1_5		(60,  "1.5",		5,	0,	0),
 	v1_5_1		(60,  "1.5.1",		5,	0,	0),
 	v1_5_2		(61,  "1.5.2",		5,	0,	0),
 	v1_6_1		(73,  "1.6.1",		6,	0,	0),
@@ -14,10 +17,14 @@ public enum ProtocolVersion {
 	v1_9		(107, "1.9", 		9,  14, 10),
 	v1_9_1		(108, "1.9.1", 		9,  14, 10),
 	v1_9_2		(109, "1.9.2", 		9,  14, 10),
-	v1_9_3and4	(110, "1.9.3/4", 	9,  14, 10),
-	v1_10		(210, "1.10.x", 	10, 14, 11),
+	v1_9_3		(110, "1.9.3", 		9,  14, 10),
+	v1_9_4		(110, "1.9.4", 		9,  14, 10),
+	v1_10		(210, "1.10", 		10, 14, 11),
+	v1_10_1		(210, "1.10.1", 	10, 14, 11),
+	v1_10_2		(210, "1.10.2", 	10, 14, 11),
 	v1_11		(315, "1.11",		11, 14, 11),
-	v1_11_1and2	(316, "1.11.1/2",	11, 14, 11),
+	v1_11_1		(316, "1.11.1",		11, 14, 11),
+	v1_11_2		(316, "1.11.2",		11, 14, 11),
 	v1_12		(335, "1.12", 		12, 14, 11),
 	v1_12_1		(338, "1.12.1", 	12, 14, 11),
 	v1_12_2		(340, "1.12.2", 	12, 14, 11),
@@ -29,6 +36,7 @@ public enum ProtocolVersion {
 	v1_14_2		(485, "1.14.2",		14, 16, 13),
 	v1_14_3		(490, "1.14.3",		14, 16, 13),
 	v1_14_4		(498, "1.14.4",		14, 16, 13),
+	BUNGEE		(999, "Bungee",		14,	0,	0),
 	FUTURE		(999, "Future",		-1,	-1,	-1);
 	
 	public static ProtocolVersion SERVER_VERSION;
@@ -47,7 +55,7 @@ public enum ProtocolVersion {
 		this.petOwnerPosition = petOwnerPosition;
 		this.markerPosition = markerPosition;
 	}
-	public int getNumber() {
+	public int getProtocolNumber() {
 		return number;
 	}
 	public String getFriendlyName() {
@@ -57,7 +65,7 @@ public enum ProtocolVersion {
 		return minorVersion;
 	}
 	public boolean isSupported() {
-		return minorVersion >= 6 && this != UNKNOWN;
+		return minorVersion >= 5 && this != UNKNOWN;
 	}
 	public ProtocolVersion friendlyName(String name) {
 		friendlyName = name;
@@ -75,9 +83,6 @@ public enum ProtocolVersion {
 	}
 	public static ProtocolVersion fromServerString(String s) {
 		if (s.startsWith("1.8")) return v1_8;
-		if (s.startsWith("1.10")) return v1_10;
-		if (s.equals("1.9.3") || s.equals("1.9.4")) return v1_9_3and4;
-		if (s.equals("1.11.1") || s.equals("1.11.2")) return v1_11_1and2;
 		if (s.startsWith("1.7")) {
 			if (Integer.parseInt(s.split("\\.")[2]) >= 6) return v1_7_6to10;
 			else return v1_7_2to5;
@@ -90,9 +95,9 @@ public enum ProtocolVersion {
 	}
 	public static ProtocolVersion fromNumber(int number) {
 		for (ProtocolVersion v : values()) {
-			if (number == v.getNumber()) return v;
+			if (number == v.getProtocolNumber()) return v;
 		}
-		if (number > v1_14_4.getNumber()) {
+		if (number > v1_14_4.getProtocolNumber()) {
 			return FUTURE;
 		}
 		return UNKNOWN;

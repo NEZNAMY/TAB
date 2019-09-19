@@ -76,8 +76,8 @@ public class NameTagX implements Listener{
 		if (enable) p.unregisterTeam();
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void a(final PlayerToggleSneakEvent e) {
-		final ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+	public void a(PlayerToggleSneakEvent e) {
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
 			Shared.error("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
 			return;
@@ -90,7 +90,7 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
-		final ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
 
 			public void run() {
@@ -121,7 +121,7 @@ public class NameTagX implements Listener{
 						//activating this code will fix desync on boats
 						//however, boat movement will be extremely laggy
 						//seems to only work for 1.8.x servers idk why
-						/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
+/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
 								if (packetReceiver == passenger) continue;
 								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
 								new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);

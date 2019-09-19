@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class Scoreboard {
@@ -121,7 +120,7 @@ public class Scoreboard {
 			p.setProperty("sb-"+ID, rawtext);
 			List<String> prefixsuffix = replaceText(p, true);
 			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
-			int score = (p.getVersion().getNumber() < ProtocolVersion.v1_8.getNumber() || ScoreboardManager.useNumbers) ? this.score : 0;
+			int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
 			PacketAPI.registerScoreboardScore(p, ID, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {

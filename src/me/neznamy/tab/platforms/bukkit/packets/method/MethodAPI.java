@@ -18,8 +18,6 @@ public abstract class MethodAPI {
 	public static Class<?> BarStyle;
 	public static Class<?> ChatMessageType;
 	public static Class<?> DataWatcher;
-	public static Class<?> DataWatcherItem;
-	public static Class<?> DataWatcherObject;
 	public static Class<?> DataWatcherRegistry;
 	public static Class<?> EnumChatFormat;
 	public static Class<?> EnumGamemode;
@@ -68,7 +66,7 @@ public abstract class MethodAPI {
 	public abstract Object newPacketPlayOutScoreboardObjective();
 	public abstract Object newPacketPlayOutScoreboardTeam();
 	public abstract Object newDataWatcher(Object entity);
-	public abstract Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName);
+	public abstract Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName);
 	public abstract Object newDataWatcherItem(DataWatcherObject type, Object value, boolean needsUpdate);
 	public abstract void DataWatcher_register(Object dataWatcher, DataWatcherObject type, Object value);
 	public abstract Object newEntityArmorStand();

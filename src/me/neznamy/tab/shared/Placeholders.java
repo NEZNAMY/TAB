@@ -84,12 +84,12 @@ public class Placeholders {
 				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", t);
 			} else {
 				//papi unloaded meanwhile
-				Placeholders.placeholderAPI = false;
+				placeholderAPI = false;
 			}
 		}
 		return s;
 	}
 	public static String setRelational(ITabPlayer one, ITabPlayer two, String format) {
-		return PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, format);
+		return placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, format) : format;
 	}
 }

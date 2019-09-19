@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.Shared.Feature;
 
@@ -13,7 +14,7 @@ public class TabCommand{
 	private static final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
 	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
 
-	public static void execute(final ITabPlayer sender, String[] args){
+	public static void execute(ITabPlayer sender, String[] args){
 		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
 			//TODO make work for players
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
@@ -28,11 +29,11 @@ public class TabCommand{
 			String type = args[1];
 			if (type.equalsIgnoreCase("bar")) {
 				if (can(sender, "announce.bar")) {
-					final String barname = args[2];
+					String barname = args[2];
 					int duration;
 					try {
 						duration = Integer.parseInt(args[3]);
-						final int d2 = duration;
+						int d2 = duration;
 						Shared.exe.submit(new Runnable() {
 
 							public void run() {
@@ -46,7 +47,7 @@ public class TabCommand{
 									for (ITabPlayer all : Shared.getPlayers()) {
 										PacketAPI.createBossBar(all, bar);
 									}
-//									List<String> animationFrames = //maybe later
+									//									List<String> animationFrames = //maybe later
 									for (int i=0; i<(float)d2*1000/BossBar.refresh; i++) {
 										Thread.sleep(BossBar.refresh);
 									}
@@ -236,6 +237,28 @@ public class TabCommand{
 		} else {
 			sendMessage(sender, "§6Permission group choice logic: §8§mPrimary group§r§8/§aChoose from list");
 		}
+		boolean sorting = Configs.unlimitedTags || NameTag16.enable;
+		String sortingType;
+
+		if (sorting) {
+			if (Premium.is()) {
+				sortingType = Premium.sortingType.toString();
+				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + Premium.sortingPlaceholder;
+			} else {
+				if (Configs.sortedGroups.isEmpty()) {
+					sortingType = "Tabprefix";
+				} else {
+					if (Configs.sortByPermissions) {
+						sortingType = "Permissions (ENABLED BY USER, DISABLED BY DEFAULT!)";
+					} else {
+						sortingType = "Groups";
+					}
+				}
+			}
+		} else {
+			sortingType = "§cDISABLED";
+		}
+		sendMessage(sender, "§6Sorting system: §a" + sortingType);
 		sendMessage(sender, "§7§m>-------------------------------<");
 		if (analyzed != null) {
 			sendMessage(sender, "§ePlayer: §a" + analyzed.getName());
@@ -245,9 +268,8 @@ public class TabCommand{
 				sendMessage(sender, "§eFull permission group list: §a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
 				sendMessage(sender, "§eChosen group: §a" + analyzed.getGroup());
 			}
-			boolean sorting = Configs.unlimitedTags || NameTag16.enable;
-			sendMessage(sender, "§eTeam name: §a" + (!sorting? "§cSORTING IS DISABLED" : analyzed.getTeamName().replace("§", "&")));
-			if (Shared.mainClass.listNames()) {
+			if (sorting) sendMessage(sender, "§eTeam name: §a" +analyzed.getTeamName().replace("§", "&"));
+			if (Playerlist.enable) {
 				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue());
 				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue());
 				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue());

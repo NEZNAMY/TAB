@@ -68,7 +68,7 @@ public class ArmorStand{
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
 		String name = property.get();
-		if (Placeholders.placeholderAPI) name = Placeholders.setRelational(owner, to, name);
+		name = Placeholders.setRelational(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name));
 	}
@@ -91,9 +91,10 @@ public class ArmorStand{
 		updateLocation();
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
-				if (all == owner) continue;
+				if (all == owner) continue; //should never be anyway
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-				if (!(sneaking && all.getVersion().getNumber() >= ProtocolVersion.v1_14.getNumber())) all.sendCustomPacket(getSpawnPacket(all, false));
+				if (sneaking && all.getVersion().getProtocolNumber() >= ProtocolVersion.v1_14.getProtocolNumber()) continue; //not spawning for 1.14+ players
+				all.sendCustomPacket(getSpawnPacket(all, false));
 			}
 		}
 	}
@@ -112,9 +113,8 @@ public class ArmorStand{
 	}
 	private void updateMetadata() {
 		synchronized (registeredTo) {
-			Property line = property;
-			String name = line.get();
-			if (Placeholders.placeholderAPI && line.hasRelationalPlaceholders()) {
+			String name = property.get();
+			if (property.hasRelationalPlaceholders()) {
 				for (ITabPlayer all : registeredTo) {
 					name = Placeholders.setRelational(owner, all, name);
 					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null));
