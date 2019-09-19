@@ -25,8 +25,6 @@ public class MethodAPI_v1_14_R1 extends MethodAPI {
 		BarStyle = BossBattle.BarStyle.class;
 		ChatMessageType = ChatMessageType.class;
 		DataWatcher = DataWatcher.class;
-		DataWatcherItem = DataWatcher.Item.class;
-		DataWatcherObject = DataWatcherObject.class;
 		DataWatcherRegistry = DataWatcherRegistry.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
@@ -110,8 +108,8 @@ public class MethodAPI_v1_14_R1 extends MethodAPI {
 	public Object newDataWatcher(Object entity) {
 		return new DataWatcher((Entity) entity);
 	}
-	public Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName) {
-		return ((PacketPlayOutPlayerInfo)packetPlayOutPlayerInfo).new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
+		return new PacketPlayOutPlayerInfo().new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
 		DataWatcher.Item item = new DataWatcher.Item(new DataWatcherObject(type.getPosition(), (DataWatcherSerializer) type.getClassType()), value);

@@ -23,7 +23,6 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 	
 	public MethodAPI_v1_8_R1() {
 		DataWatcher = DataWatcher.class;
-		DataWatcherItem = WatchableObject.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		EnumPlayerInfoAction = EnumPlayerInfoAction.class;
@@ -103,8 +102,8 @@ public class MethodAPI_v1_8_R1 extends MethodAPI {
 	public Object newDataWatcher(Object entity) {
 		return new DataWatcher((Entity) entity);
 	}
-	public Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName) {
-		return new PlayerInfoData((PacketPlayOutPlayerInfo) packetPlayOutPlayerInfo, (GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
+		return new PlayerInfoData(new PacketPlayOutPlayerInfo(), (GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
 		WatchableObject item = new WatchableObject((int) type.getClassType(), type.getPosition(), value);

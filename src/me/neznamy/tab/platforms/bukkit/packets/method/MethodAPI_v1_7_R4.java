@@ -20,7 +20,6 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 	
 	public MethodAPI_v1_7_R4() {
 		DataWatcher = DataWatcher.class;
-		DataWatcherItem = WatchableObject.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
@@ -64,7 +63,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		return new PacketPlayOutEntityDestroy(ids);
 	}
 	public Object newPacketPlayOutChat(Object chatComponent, Object position) {
-		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, (int) position);
+		return new PacketPlayOutChat((IChatBaseComponent) chatComponent, Integer.parseInt(position+""));
 	}
 	public Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force) {
 		return new PacketPlayOutEntityMetadata(entityId, (DataWatcher) dataWatcher, force);
@@ -96,7 +95,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 	public Object newDataWatcher(Object entity) {
 		return new DataWatcher((Entity) entity);
 	}
-	public Object newPlayerInfoData(Object packetPlayOutPlayerInfo, Object profile, int ping, Object enumGamemode, Object listName) {
+	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
 		return null;
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
