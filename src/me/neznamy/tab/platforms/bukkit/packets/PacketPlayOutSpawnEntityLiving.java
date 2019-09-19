@@ -202,8 +202,13 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			YAW = fields.get("i");
 			PITCH = fields.get("j");
 			L = fields.get("k");
-			DATAWATCHER = fields.get("l");
-			DATAWATCHERITEMS = fields.get("m");
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+				DATAWATCHER = fields.get("l");
+				DATAWATCHERITEMS = fields.get("m");
+			} else {
+				DATAWATCHER = fields.get("t");
+				DATAWATCHERITEMS = fields.get("u");
+			}
 		}
 	}
 }

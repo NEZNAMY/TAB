@@ -17,6 +17,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -39,7 +40,7 @@ public class PacketAPI{
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
 	}
 	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
-		to.sendCustomPacket(new PacketPlayOutChat(message.toString()));
+		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
@@ -62,12 +63,13 @@ public class PacketAPI{
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
     	p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));
     }
+    private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
 		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);
 		to.setProperty("bossbar-color-"+bar.getName(), bar.color);
 		to.setProperty("bossbar-style-"+bar.getName(), bar.style);
-		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), 
 					to.properties.get("bossbar-text-"+bar.getName()).get(), 
 					(float)bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get())/100, 
@@ -79,15 +81,20 @@ public class PacketAPI{
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
-			w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) w.setValue(new DataWatcherObject(10, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
-			w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get()));
+			w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
+			float health = (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get());
+			if (health == 0) health = 1;
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
+				w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
+			} else {
+				w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
+			}
 			packet.setDataWatcher(w);
 			to.sendCustomPacket(packet);
 		}
 	}
 	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {
-		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId()));
 		} else {
 			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
@@ -97,7 +104,7 @@ public class PacketAPI{
 		Property progress = to.properties.get("bossbar-progress-"+bar.getName());
 		Property text = to.properties.get("bossbar-text-"+bar.getName());
 		if (text == null) return; //not registered yet
-		if (ProtocolVersion.packageName == null || ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			Property color = to.properties.get("bossbar-color-"+bar.getName());
 			Property style = to.properties.get("bossbar-style-"+bar.getName());
 			boolean colorUpdate = color.isUpdateNeeded();
@@ -114,13 +121,16 @@ public class PacketAPI{
 		} else {
 			DataWatcher w = new DataWatcher(null);
 			if (text.isUpdateNeeded()) {
-				w.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), text.get());
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) w.setValue(new DataWatcherObject(10, DataWatcherSerializer.String), text.get());
+				w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), text.get());
 			}
 			if (progress.isUpdateNeeded()) {
 				float health = (float)3*bar.parseProgress(progress.get());
 				if (health == 0) health = 1;
-				w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
+					w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
+				} else {
+					w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
+				}
 			}
 			if (w.getAllObjects().isEmpty()) return;
 			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS(null));

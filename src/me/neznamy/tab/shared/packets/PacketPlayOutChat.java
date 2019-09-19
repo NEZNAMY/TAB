@@ -9,17 +9,17 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	private String json;
 	private ChatMessageType type;
 	
-	public PacketPlayOutChat(String json) {
+	public PacketPlayOutChat(String json, ChatMessageType type) {
 		this.json = json;
-		this.type = ChatMessageType.CHAT;
+		this.type = type;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) {
-		if (json == null) return null;
-		Object component = MethodAPI.getInstance().ICBC_fromString(json);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toNMS());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(json), type.toNMS());
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(json), type.toByte());
 		} else {
-			return MethodAPI.getInstance().newPacketPlayOutChat(component, type.toByte());
+			return MethodAPI.getInstance().newPacketPlayOutChat(json, type.toByte());
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
@@ -41,7 +41,9 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private ChatMessageType(byte byteEquivalent) {
 			this.byteEquivalent = byteEquivalent;
-			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.ChatMessageType, toString());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.ChatMessageType, toString());
+			}
 		}
 		public byte toByte() {
 			return byteEquivalent;

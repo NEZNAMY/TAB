@@ -35,7 +35,7 @@ public enum EnumChatFormat{
 	private EnumChatFormat(int bungeeEquivalent, char character) {
 		this.bungeeEquivalent = bungeeEquivalent;
 		this.character = character;
-		this.nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumChatFormat, toString());
+		if (MethodAPI.getInstance() != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumChatFormat, toString());
 	}
 	public static EnumChatFormat getByCharacter(char c) {
 		for (EnumChatFormat e : values()) {

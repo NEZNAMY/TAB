@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_6_R3.*;
+import net.minecraft.server.v1_5_R1.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class MethodAPI_v1_6_R3 extends MethodAPI {
+public class MethodAPI_v1_5_R1 extends MethodAPI {
 
-	public MethodAPI_v1_6_R3() {
+	public MethodAPI_v1_5_R1() {
 		DataWatcher = DataWatcher.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
@@ -36,7 +36,7 @@ public class MethodAPI_v1_6_R3 extends MethodAPI {
 		return null;
 	}
 	public Object ICBC_fromString(String string) {
-		return ChatMessage.d(string);
+		return null;
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {
 		return null;

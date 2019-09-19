@@ -1,14 +1,15 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+@SuppressWarnings("unchecked")
 public class FancyMessage {
 
-	private List<Extra> extras = Lists.newArrayList();
+	private List<Extra> extras = new ArrayList<Extra>();
 	
 	public FancyMessage() {
 	}
@@ -16,17 +17,30 @@ public class FancyMessage {
 		extras.add(c);
 	}
 	public String toString() {
-		if (ProtocolVersion.packageName != null && ProtocolVersion.packageName.equals("v1_8_R1")) return null;
-		JsonObject main = new JsonObject();
-		main.addProperty("text", "");
-		if (!extras.isEmpty()) {
-			JsonArray list = new JsonArray();
-			for (Extra c : extras) {
-				list.add(c.toJSON());
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+			JSONObject main = new JSONObject();
+			main.put("text", "");
+			if (!extras.isEmpty()) {
+				JSONArray list = new JSONArray();
+				for (Extra c : extras) {
+					list.add(c.toJSON());
+				}
+				main.put("extra", list);
 			}
-			main.add("extra", list);
+			return main.toString();
+		} else {
+			String text = "";
+			if (!extras.isEmpty()) {
+				for (Extra c : extras) {
+					text += c.text;
+				}
+			}
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
+				return "{\"text\":\"" + text + "\"}";
+			} else {
+				return text;
+			}
 		}
-		return main.toString();
 	}
 	public static class Extra {
 		
@@ -64,20 +78,20 @@ public class FancyMessage {
 			this.clickValue = txt;
 			return this;
 		}
-		public JsonObject toJSON() {
-			JsonObject obj = new JsonObject();
-			obj.addProperty("text", text);
+		public JSONObject toJSON() {
+			JSONObject obj = new JSONObject();
+			obj.put("text", text);
 			if (hover != null) {
-				JsonObject o = new JsonObject();
-				o.addProperty("action", hover.toString());
-				o.addProperty("value", hoverValue);
-				obj.add("hoverEvent", o);
+				JSONObject o = new JSONObject();
+				o.put("action", hover.toString());
+				o.put("value", hoverValue);
+				obj.put("hoverEvent", o);
 			}
 			if (click != null) {
-				JsonObject o = new JsonObject();
-				o.addProperty("action", click.toString());
-				o.addProperty("value", clickValue);
-				obj.add("clickEvent", o);
+				JSONObject o = new JSONObject();
+				o.put("action", click.toString());
+				o.put("value", clickValue);
+				obj.put("clickEvent", o);
 			}
 			return obj;
 		}
