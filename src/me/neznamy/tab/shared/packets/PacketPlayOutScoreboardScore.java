@@ -54,7 +54,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private Action(byte ordinal) {
 			this.ordinal = ordinal;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardAction, toString());
 			} else {
 				nmsEquivalent = ordinal;

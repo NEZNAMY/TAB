@@ -62,9 +62,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			if (prefix != null) PREFIX.set(packet, prefix);
 			if (suffix != null) SUFFIX.set(packet, suffix);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			PUSH.set(packet, teamPush);
-		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) PUSH.set(packet, teamPush);
 		PLAYERS.set(packet, entities);
 		ACTION.set(packet, action);
 		SIGNATURE.set(packet, signature);
