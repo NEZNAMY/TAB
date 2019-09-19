@@ -5,7 +5,6 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 public interface MainClass {
 
 	public void sendConsoleMessage(String message);
-	public boolean listNames();
 	public String getPermissionPlugin();
 	public String getSeparatorType();
 	public boolean isDisabled();
