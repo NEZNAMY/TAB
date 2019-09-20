@@ -36,6 +36,7 @@ public class NameTagX implements Listener{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.unregisterTeam();
 			NameTagLineManager.destroy(p);
+			if (p.previewingNametag) NameTagLineManager.destroy(p, p);
 		}
 	}
 	public static void load(){
