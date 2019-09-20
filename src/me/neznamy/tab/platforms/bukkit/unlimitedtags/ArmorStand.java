@@ -116,8 +116,8 @@ public class ArmorStand{
 			String name = property.get();
 			if (property.hasRelationalPlaceholders()) {
 				for (ITabPlayer all : registeredTo) {
-					name = Placeholders.setRelational(owner, all, name);
-					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null));
+					String currentName = Placeholders.setRelational(owner, all, name);
+					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
 				}
 			} else {
 				Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null);

@@ -326,9 +326,9 @@ public abstract class ITabPlayer{
 			String replacedSuffix = tagsuffix.get();
 			lastCollision = collision;
 			for (ITabPlayer all : Shared.getPlayers()) {
-				if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = Placeholders.setRelational(this, all, replacedPrefix);
-				if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = Placeholders.setRelational(this, all, replacedSuffix);
-				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush());
+				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedPrefix) : replacedPrefix;
+				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedSuffix) : replacedSuffix;
+				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, currentPrefix, currentSuffix, getTeamVisibility(), getTeamPush());
 			}
 		}
 	}
@@ -339,9 +339,9 @@ public abstract class ITabPlayer{
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = Placeholders.setRelational(this, all, replacedPrefix);
-			if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = Placeholders.setRelational(this, all, replacedSuffix);
-			PacketAPI.registerScoreboardTeam(all, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
+			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedPrefix) : replacedPrefix;
+			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedSuffix) : replacedSuffix;
+			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
 		}
 	}
 	public void registerTeam(ITabPlayer to) {
@@ -369,15 +369,17 @@ public abstract class ITabPlayer{
 		updateGroupIfNeeded();
 		updateAll();
 		restartArmorStands();
-		if (disabledBossbar) {
-			for (BossBarLine line : BossBar.lines)
-				PacketAPI.removeBossBar(this, line);
-		} else for (BossBarLine active : getActiveBossBars()) {
-			if (!BossBar.defaultBars.contains(active.getName())) { //per-world bar from previous world
-				PacketAPI.removeBossBar(this, active);
+		if (BossBar.enabled) {
+			if (disabledBossbar) {
+				for (BossBarLine line : BossBar.lines)
+					PacketAPI.removeBossBar(this, line);
+			} else for (BossBarLine active : getActiveBossBars()) {
+				if (!BossBar.defaultBars.contains(active.getName())) { //per-world bar from previous world
+					PacketAPI.removeBossBar(this, active);
+				}
 			}
+			detectBossBarsAndSend();
 		}
-		detectBossBarsAndSend();
 		if (HeaderFooter.enable) {
 			if (disabledHeaderFooter) {
 				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
