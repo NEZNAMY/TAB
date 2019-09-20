@@ -43,6 +43,7 @@ public class PacketAPI{
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
+		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) unregisterScoreboardObjective(to, objectiveName, title, displayType);
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
