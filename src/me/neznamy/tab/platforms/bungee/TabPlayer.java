@@ -55,7 +55,9 @@ public class TabPlayer extends ITabPlayer{
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction(Action.UPDATE_DISPLAY_NAME);
 		packet.setItems(new Item[] {playerInfoData});
-		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(packet);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendPacket(packet);
+		}
 	}
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {

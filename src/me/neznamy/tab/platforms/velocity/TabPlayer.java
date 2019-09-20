@@ -47,7 +47,9 @@ public class TabPlayer extends ITabPlayer{
 	public void setPlayerListName() {
 		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getTablistId()).setDisplayName((Component) Shared.mainClass.createComponent(getName())).setName(getName());
 		PlayerListItem packet = new PlayerListItem(3, Lists.newArrayList(playerInfoData));
-		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(packet);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendPacket(packet);
+		}
 	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
