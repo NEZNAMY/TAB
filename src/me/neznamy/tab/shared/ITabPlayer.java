@@ -128,7 +128,7 @@ public abstract class ITabPlayer{
 		return rawValue;
 	}
 	public void updatePlayerListName(boolean force) {
-		if (!Playerlist.enable) return;
+		if (!Playerlist.enable || disabledTablistNames) return;
 		getGroup();
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
