@@ -93,7 +93,7 @@ public class ArmorStand{
 			for (ITabPlayer all : registeredTo) {
 				if (all == owner) continue; //should never be anyway
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-				if (sneaking && all.getVersion().getProtocolNumber() >= ProtocolVersion.v1_14.getProtocolNumber()) continue; //not spawning for 1.14+ players
+				if (sneaking && all.getVersion().getNetworkId() >= ProtocolVersion.v1_14.getNetworkId()) continue; //not spawning for 1.14+ players
 				all.sendCustomPacket(getSpawnPacket(all, false));
 			}
 		}

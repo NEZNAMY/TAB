@@ -25,7 +25,7 @@ public class Playerlist {
 		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
 	}
 	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
-		if (receiver.getVersion().getProtocolNumber() < ProtocolVersion.v1_8.getProtocolNumber()) return;
+		if (receiver.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;
 		for (PlayerInfoData playerInfoData : packet.players) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packet.action == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {

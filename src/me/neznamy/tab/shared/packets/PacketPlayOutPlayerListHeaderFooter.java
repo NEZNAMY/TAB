@@ -41,7 +41,7 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 
 	static {
 		Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter);
-		if (ProtocolVersion.SERVER_VERSION.getProtocolNumber() >= ProtocolVersion.v1_13_1.getProtocolNumber()) {
+		if (ProtocolVersion.SERVER_VERSION.getNetworkId() >= ProtocolVersion.v1_13_1.getNetworkId()) {
 			HEADER = fields.get("header");
 			FOOTER = fields.get("footer");
 		} else {

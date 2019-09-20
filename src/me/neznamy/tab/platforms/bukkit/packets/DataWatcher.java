@@ -80,7 +80,7 @@ public class DataWatcher{
 
 	static {
 		Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcher);
-		if (ProtocolVersion.SERVER_VERSION.getProtocolNumber() >= ProtocolVersion.v1_14_4.getProtocolNumber()) {
+		if (ProtocolVersion.SERVER_VERSION.getNetworkId() >= ProtocolVersion.v1_14_4.getNetworkId()) {
 			//1.14.4+
 			ENTITY = fields.get("entity");
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
