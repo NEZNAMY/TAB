@@ -27,7 +27,7 @@ public class Shared {
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
 	public static final boolean consoleErrors = false;
-	public static final String pluginVersion = "2.5.2";
+	public static final String pluginVersion = "2.5.3-pre1";
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
