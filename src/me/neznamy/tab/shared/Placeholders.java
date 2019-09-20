@@ -77,12 +77,11 @@ public class Placeholders {
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.error("PlaceholderAPI replace task failed.");
-				Shared.error("PlaceholderAPI version: " + papi.getDescription().getVersion());
-				Shared.error("String to parse: " + s);
+				Shared.error("PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion());
+				Shared.error("String to replace: " + s);
 				Shared.error("Please send this error to the FIRST author whose name or plugin name you see here:", t);
 			} else {
-				//papi unloaded meanwhile
+				//thats why it failed
 				placeholderAPI = false;
 			}
 		}

@@ -35,7 +35,8 @@ public class ScoreboardManager {
 					String highest = getHighestScoreboard(p);
 					if (current == null && highest == null) continue;
 					if ((current == null && highest != null) || (current != null && highest == null) || (!current.equals(highest))) {
-						unregister(p);
+						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
+						p.setActiveScoreboard(null);
 						register(p);
 					}
 				}

@@ -51,7 +51,7 @@ public class Main implements MainClass{
 		long time = System.currentTimeMillis();
 		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
-		Shared.init(this, "2.5.2-pre20");
+		Shared.init(this);
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUsername()) : null, args);

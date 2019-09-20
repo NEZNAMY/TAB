@@ -39,7 +39,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		long time = System.currentTimeMillis();
 		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
-		Shared.init(this, getDescription().getVersion());
+		Shared.init(this);
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {

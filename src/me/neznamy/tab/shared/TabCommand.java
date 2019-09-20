@@ -47,7 +47,7 @@ public class TabCommand{
 									for (ITabPlayer all : Shared.getPlayers()) {
 										PacketAPI.createBossBar(all, bar);
 									}
-									//									List<String> animationFrames = //maybe later
+//									List<String> animationFrames = //maybe later
 									for (int i=0; i<(float)d2*1000/BossBar.refresh; i++) {
 										Thread.sleep(BossBar.refresh);
 									}
@@ -60,7 +60,6 @@ public class TabCommand{
 								}
 							}
 						});
-
 					} catch (Exception e) {
 						sender.sendMessage(args[3] + " is not a number!");
 					}
@@ -263,7 +262,7 @@ public class TabCommand{
 		if (analyzed != null) {
 			sendMessage(sender, "§ePlayer: §a" + analyzed.getName());
 			if (Configs.usePrimaryGroup) {
-				sendMessage(sender, "§ePrimary permission group: §a" + analyzed.getGroupFromPermPlugin());
+				sendMessage(sender, "§ePrimary permission group: §a" + analyzed.getGroup());
 			} else {
 				sendMessage(sender, "§eFull permission group list: §a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
 				sendMessage(sender, "§eChosen group: §a" + analyzed.getGroup());

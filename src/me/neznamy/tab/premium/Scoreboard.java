@@ -77,8 +77,7 @@ public class Scoreboard {
 		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 			Property title = p.properties.get("scoreboard-title");
 			if (title.isUpdateNeeded()) {
-				String replacedTitle = title.get();
-				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, replacedTitle, EnumScoreboardHealthDisplay.INTEGER);
+				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER);
 			}
 		}
 		for (Score s : scores) {

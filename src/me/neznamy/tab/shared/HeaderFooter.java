@@ -29,8 +29,6 @@ public class HeaderFooter {
 		if (p.disabledHeaderFooter) return;
 		boolean header = p.properties.get("header").isUpdateNeeded();
 		boolean footer = p.properties.get("footer").isUpdateNeeded();
-		if (header || footer) {
-			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
-		}
+		if (header || footer) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
 	}
 }

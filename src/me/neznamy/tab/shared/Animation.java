@@ -18,7 +18,6 @@ public class Animation {
 			interval -= interval%50;
 			if (interval == 0) interval = 50;
 			Shared.startupWarn("Animation \"" + name + "\" has a refresh interval of §e" + oldInterval + "ms§c which is not divisible by 50! Animations can't refresh faster than every tick ( = 50 milliseconds). §bUsing " + interval + " for now.");
-			
 		}
 		this.name = name;
 		this.messages = list.toArray(new String[0]);

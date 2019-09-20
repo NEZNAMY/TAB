@@ -23,22 +23,21 @@ import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 
 public class Shared {
 
-	private static String newline = System.getProperty("line.separator");
-	public static String DECODER_NAME = "TABReader";
-	public static ExecutorService exe = Executors.newCachedThreadPool();
-	public static boolean consoleErrors = false;
+	private static final String newline = System.getProperty("line.separator");
+	public static final String DECODER_NAME = "TABReader";
+	public static final ExecutorService exe = Executors.newCachedThreadPool();
+	public static final boolean consoleErrors = false;
+	public static final String pluginVersion = "2.5.2";
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
 	public static List<CPUSample> cpuHistory = new ArrayList<CPUSample>();
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
-	public static String pluginVersion;
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
 
-	public static void init(MainClass mainClass, String pluginVersion) {
+	public static void init(MainClass mainClass) {
 		Shared.mainClass = mainClass;
-		Shared.pluginVersion = pluginVersion;
 	}
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
@@ -192,11 +191,6 @@ public class Shared {
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	public static void registerUniversalPlaceholders() {
-		Placeholders.list.add(new Placeholder("%money%") {
-			public String get(ITabPlayer p) {
-				return p.getMoney();
-			}
-		});
 		Placeholders.list.add(new Placeholder("%rank%") {
 			public String get(ITabPlayer p) {
 				return p.getRank();
