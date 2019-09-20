@@ -53,7 +53,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-		Shared.init(this, getDescription().getVersion());
+		Shared.init(this);
 		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + ProtocolVersion.packageName + ")");
 		if (ProtocolVersion.SERVER_VERSION.isSupported()){
 			long total = System.currentTimeMillis();
@@ -179,7 +179,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (disabled) return;
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
-			inject(e.getPlayer().getUniqueId());
+			try {
+				inject(e.getPlayer().getUniqueId());
+			} catch (NoSuchElementException ignored) {
+				Shared.error("Failed to inject player " + e.getPlayer().getName() + " (online=" + e.getPlayer().isOnline() + ") - " + ignored.getClass().getSimpleName() +": " + ignored.getMessage());
+			}
 			ITabPlayer pl = p;
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
@@ -193,8 +197,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					ScoreboardManager.register(pl);
 				}
 			});
-		} catch (NoSuchElementException ignored) {
-			Shared.error("Failed to inject player " + e.getPlayer().getName() + " (online=" + e.getPlayer().isOnline() + ") - " + ignored.getClass().getSimpleName() +": " + ignored.getMessage());
 		} catch (Throwable ex) {
 			Shared.error("An error occured when player joined the server", ex);
 		}
@@ -373,6 +375,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		Shared.registerUniversalPlaceholders();
 
+		Placeholders.list.add(new Placeholder("%money%") {
+			public String get(ITabPlayer p) {
+				return p.getMoney();
+			}
+		});
 		Placeholders.list.add(new Placeholder("%xPos%") {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockX()+"";
@@ -401,11 +408,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.list.add(new Placeholder("%essentialsnick%") {
 			public String get(ITabPlayer p) {
 				return p.getNickname();
-			}
-		});
-		Placeholders.list.add(new Placeholder("%money%") {
-			public String get(ITabPlayer p) {
-				return p.getMoney();
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
@@ -556,7 +558,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
 			return onlinePlayersMethod.getReturnType().equals(Collection.class)
 					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).toArray(new Player[0])
-						: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer()));
+							: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer()));
 		} catch (Exception e) {
 			Shared.error("Failed to get players", e);
 			return new Player[0];
