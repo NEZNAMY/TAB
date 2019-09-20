@@ -87,7 +87,7 @@ public class Configs {
 		Shared.mainClass.loadConfig();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
-			Playerlist.enable = Configs.config.getBoolean("change-tablist-prefix-suffix", true);
+			Playerlist.enable = config.getBoolean("change-tablist-prefix-suffix", true);
 		}
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]");
@@ -141,7 +141,8 @@ public class Configs {
 			Shared.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
 		}
-		BossBar.refresh = Configs.bossbar.getInt("refresh-interval-milliseconds", 1000);
+		BossBar.enabled = bossbar.getBoolean("bossbar-enabled", false);
+		BossBar.refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
 		BossBar.toggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
 		BossBar.defaultBars = bossbar.getStringList("default-bars");
 		BossBar.perWorld = (Map<String, List<String>>) bossbar.get("per-world");

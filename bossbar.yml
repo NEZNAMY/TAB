@@ -11,6 +11,7 @@
 
 #you can also announce a message using /tab announce bar <bar name> <duration in seconds> (does not support animations yet)
 
+bossbar-enabled: false
 refresh-interval-milliseconds: 1000
 bossbar-toggle-command: /bossbar
 #to have no default bars, set it to 

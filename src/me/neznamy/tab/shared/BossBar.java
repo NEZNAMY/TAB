@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
 public class BossBar{
 
+	public static boolean enabled;
 	public static List<String> defaultBars = Lists.newArrayList();
 	public static Map<String, List<String>> perWorld = Maps.newConcurrentMap();
 	public static List<BossBarLine> lines = new ArrayList<BossBarLine>();
@@ -23,6 +24,7 @@ public class BossBar{
 	public static List<String> announcements = new ArrayList<String>();
 	
 	public static void load() {
+		if (!enabled) return;
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.detectBossBarsAndSend();
 		}
@@ -64,6 +66,7 @@ public class BossBar{
 		return null;
 	}
 	public static boolean onChat(ITabPlayer sender, String message) {
+		if (!enabled) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.bossbarVisible = !sender.bossbarVisible;
 			if (sender.bossbarVisible) {
@@ -81,9 +84,10 @@ public class BossBar{
 		return false;
 	}
 	public static void playerJoin(ITabPlayer p) {
-		p.detectBossBarsAndSend();
+		if (enabled) p.detectBossBarsAndSend();
 	}
 	public static void unload() {
+		if (!enabled) return;
 		for (ITabPlayer p : Shared.getPlayers()) {
 			for (BossBarLine line : p.getActiveBossBars()) {
 				PacketAPI.removeBossBar(p, line);

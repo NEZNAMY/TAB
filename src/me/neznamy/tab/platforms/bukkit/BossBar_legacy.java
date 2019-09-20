@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -17,7 +18,7 @@ import me.neznamy.tab.shared.Shared.Feature;
 public class BossBar_legacy implements Listener {
 
 	public static void load() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
+		if (BossBar.enabled && ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
 			Bukkit.getPluginManager().registerEvents(new BossBar_legacy(), Main.instance);
 			Shared.scheduleRepeatingTask(200, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 				public void run() {
@@ -33,6 +34,7 @@ public class BossBar_legacy implements Listener {
 	}
 	@EventHandler
 	public void a(PlayerChangedWorldEvent e) {
+		if (!BossBar.enabled) return;
 		long time = System.nanoTime();
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return; //teleport in early login event or what
@@ -41,6 +43,7 @@ public class BossBar_legacy implements Listener {
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
+		if (!BossBar.enabled) return;
 		long time = System.nanoTime();
 		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
 		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
