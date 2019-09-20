@@ -30,6 +30,6 @@ The TAB wiki aims to explain all of TABS functionality, configuration options as
 [spigot]: https://www.spigotmc.org/resources/tab-1-8-x-1-14-4-reborn.57806/
 [spigot-download]: https://www.spigotmc.org/resources/tab-1-8-x-1-14-4-reborn.57806/updates
 [discord]: https://discord.gg/yx4THeU
-[version-badge]: https://img.shields.io/badge/Version-2.5.1-green.svg
+[version-badge]: https://img.shields.io/badge/Version-2.5.2-green.svg
 [minecraft-badge]: https://img.shields.io/badge/Minecraft-1.8.0%20--%201.14.4-blue.svg
 [discord-badge]: https://img.shields.io/discord/464328633239207938.svg?label=Discord
