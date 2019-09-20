@@ -236,6 +236,15 @@ public class Shared {
 				return var+"";
 			}
 		});
+		Placeholders.list.add(new Placeholder("%nonstaffonline%") {
+			public String get(ITabPlayer p) {
+				int var = Shared.getPlayers().size();
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (all.isStaff()) var--;
+				}
+				return var+"";
+			}
+		});
 		Placeholders.list.add(new Placeholder("%"+Shared.mainClass.getSeparatorType()+"%") {
 			public String get(ITabPlayer p) {
 				return p.getWorldName();
