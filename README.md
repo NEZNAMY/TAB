@@ -5,18 +5,6 @@
 
 TAB is a simple yet intuitive plugin that creates a highly customizable TAB screen, replacing the standard players list on Minecraft.
 
-## Supported platforms
-
-* [Bukkit](https://bukkit.org/)
-  * [Spigot](https://www.spigotmc.org/)
-    * [PaperSpigot](https://papermc.io/)
-    * [TacoSpigot](https://tacospigot.github.io/)
-* [BungeeCord](https://www.spigotmc.org/wiki/bungeecord/)
-  * [Waterfall](https://github.com/PaperMC/Waterfall)
-    * [Travertine](https://github.com/PaperMC/Travertine)
-  * [Hexacord](https://github.com/CronixMC/HexaCord)
-  
-  
 * [Wiki](https://github.com/NEZNAMY/TAB/wiki)
 
 [spigot]: https://www.spigotmc.org/resources/tab-1-8-x-1-14-4-reborn.57806/
