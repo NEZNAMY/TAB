@@ -71,7 +71,7 @@ public class Placeholders {
 		return result;
 	}
 	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		return set(string, Property.detectPlaceholders(string, p), p);
+		return set(string, Property.detectPlaceholders(string, true), p);
 	}
 	public static String set(String string, List<Placeholder> placeholders, ITabPlayer p) {
 		for (Placeholder pl : placeholders) {

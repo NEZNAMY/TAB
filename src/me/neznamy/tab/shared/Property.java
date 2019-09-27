@@ -9,9 +9,11 @@ public class Property {
 
 	private ITabPlayer owner;
 	private String rawValue;
-	private String lastReplacedValue;
-	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
 	private String temporaryValue;
+	private String lastReplacedValue;
+
+	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	private boolean placeholderapiPlaceholdersPresent;
 	private boolean hasRelationalPlaceholders;
 	private long lastUpdate;
 	private boolean Static;
@@ -23,32 +25,29 @@ public class Property {
 		analyze(rawValue);
 	}
 	private void analyze(String value) {
-		Static = false;
-		placeholders = detectPlaceholders(value, owner);
+		placeholders = detectPlaceholders(value, owner != null);
 		hasRelationalPlaceholders = value.contains("%rel_");
-		if (placeholders.isEmpty()) {
-			if (value.length() == 0) {
-				lastReplacedValue = value;
-				Static = true;
-			} else if (!value.contains("%")) { //not killing placeholderapi
-				for (String removed : Configs.removeStrings) {
-					if (value.contains(removed)) {
-						Static = false;
-						return;
-					}
+		placeholderapiPlaceholdersPresent = value.indexOf("%") != value.lastIndexOf("%"); //two or more %
+		if (placeholders.isEmpty() && !placeholderapiPlaceholdersPresent) {
+			//no placeholders, this is a static string
+			//performing final changes before saving it
+			for (String removed : Configs.removeStrings) {
+				if (value.contains(removed)) {
+					value = value.replace(removed, "");
 				}
-				lastReplacedValue = Placeholders.color(value);
-				Static = true;
 			}
+			lastReplacedValue = Placeholders.color(value);
+			Static = true;
+		} else {
+			lastReplacedValue = null;
+			Static = false;
 		}
 	}
 	public void setTemporaryValue(String temporaryValue) {
 		this.temporaryValue = temporaryValue;
 		if (temporaryValue != null) {
-			//assigning value
 			analyze(temporaryValue);
 		} else {
-			//removing temporary value
 			analyze(rawValue);
 		}
 	}
@@ -57,7 +56,6 @@ public class Property {
 		rawValue = newValue;
 		if (temporaryValue == null) {
 			analyze(newValue);
-			lastReplacedValue = Static ? Placeholders.color(newValue) : null;
 		}
 	}
 	public String get() {
@@ -76,14 +74,24 @@ public class Property {
 	public boolean isUpdateNeeded() {
 		if (Static) return false;
 		String string = getCurrentRawValue();
+
+		//own placeholders
 		for (Placeholder pl : placeholders) {
 			string = pl.set(string, owner);
 		}
-		if (Placeholders.placeholderAPI) string = Placeholders.setPlaceholderAPIPlaceholders(string, owner);
+		//placeholderapi
+		if (placeholderapiPlaceholdersPresent && Placeholders.placeholderAPI) {
+			string = Placeholders.setPlaceholderAPIPlaceholders(string, owner);
+		}
+
+		//removing strings
 		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}
+
+		//colors
 		string = Placeholders.color(string);
+
 		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > 30000)) {
 			lastReplacedValue = string;
 			lastUpdate = System.currentTimeMillis();
@@ -95,24 +103,18 @@ public class Property {
 	public boolean hasRelationalPlaceholders() {
 		return hasRelationalPlaceholders && Placeholders.placeholderAPI;
 	}
-	public static List<Placeholder> detectPlaceholders(String rawValue, ITabPlayer player) {
+	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
 		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		for (int i=0; i<10; i++) { //detecting placeholder chains
-			boolean changed = false;
-			for (Placeholder placeholder : player == null ? Placeholders.serverPlaceholders : Placeholders.getAll()) {
-				if (rawValue.contains(placeholder.getIdentifier())) {
-					if (!placeholdersTotal.contains(placeholder)) placeholdersTotal.add(placeholder);
-					changed = true;
-					for (String child : placeholder.getChilds()) {
-						for (Placeholder p : detectPlaceholders(child, player)) {
-							if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
-							changed = true;
-						}
+		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
+			if (rawValue.contains(placeholder.getIdentifier())) {
+				if (!placeholdersTotal.contains(placeholder)) placeholdersTotal.add(placeholder);
+				for (String child : placeholder.getChilds()) {
+					for (Placeholder p : detectPlaceholders(child, playerPlaceholders)) {
+						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
 					}
 				}
 			}
-			if (!changed) break; //no more placeholders found
 		}
 		return placeholdersTotal;
 	}
