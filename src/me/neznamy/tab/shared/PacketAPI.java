@@ -27,10 +27,11 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class PacketAPI{
 
-	public static void changeScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
+	public static void setScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
 		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue));
 	}
 	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
+		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) unregisterScoreboardTeam(to, teamName);
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, players, 0, 69);
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
@@ -54,12 +55,12 @@ public class PacketAPI{
 		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null));
 	}
 	public static void registerScoreboardScore(ITabPlayer p, String team, String body, String prefix, String suffix, String objective, int score) {
-        sendScoreboardTeamPacket(p, team, prefix, suffix, false, false, Lists.newArrayList(body), 0, 3);
-        changeScoreboardScore(p, body, objective, score);
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Lists.newArrayList(body));
+        setScoreboardScore(p, body, objective, score);
     }
     public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
     	p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0));
-        sendScoreboardTeamPacket(p, ID, null, null, false, false, null, 1, 69);
+    	unregisterScoreboardTeam(p, ID);
     }
     public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
     	p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));

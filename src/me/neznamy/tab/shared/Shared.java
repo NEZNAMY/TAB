@@ -27,7 +27,7 @@ public class Shared {
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
 	public static final boolean consoleErrors = false;
-	public static final String pluginVersion = "2.5.3-pre1";
+	public static final String pluginVersion = "2.5.3-pre13";
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -138,7 +138,7 @@ public class Shared {
 						r.run();
 						cpu(feature, System.nanoTime()-time);
 						Thread.sleep(delayMilliseconds);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException pluginDisabled) {
 						break;
 					} catch (Throwable t) {
 						error("An error occured when " + description, t);
@@ -161,37 +161,17 @@ public class Shared {
 			}
 		});
 	}
-	public static void runTaskLater(int delayMilliseconds, String description, Feature feature, Runnable r) {
-		Future<?>[] array = new Future[1];
-		array[0] = exe.submit(new Runnable() {
-
-
-			public void run() {
-				try {
-					Thread.sleep(delayMilliseconds);
-					long time = System.nanoTime();
-					r.run();
-					cpu(feature, System.nanoTime()-time);
-				} catch (InterruptedException e) {
-				} catch (Throwable e) {
-					error("An error occured when " + description, e);
-				}
-				tasks.remove(array[0]);
-			}
-		});
-		tasks.add(array[0]);
-	}
 	public static void cancelAllTasks() {
 		for (Future<?> f : tasks) f.cancel(true);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		FancyMessage message = new FancyMessage();
-		message.add(new Extra("§3TAB v" + Shared.pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
+		message.add(new Extra("§3TAB v" + pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
 		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	public static void registerUniversalPlaceholders() {
-		Placeholders.list.add(new Placeholder("%rank%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%rank%") {
 			public String get(ITabPlayer p) {
 				return p.getRank();
 			}
@@ -201,14 +181,14 @@ public class Shared {
 			}
 		});
 		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
-			Placeholders.list.add(new Placeholder("%version-group:" + entry.getKey()+ "%") {
+			Placeholders.serverPlaceholders.add(new Placeholder("%version-group:" + entry.getKey()+ "%") {
 				public String get(ITabPlayer p) {
 					return Placeholders.online.get(entry.getKey())+"";
 				}
 			});
 		}
 		for (Animation a : Configs.animations) {
-			Placeholders.list.add(new Placeholder("%animation:" + a.getName() + "%") {
+			Placeholders.serverPlaceholders.add(new Placeholder("%animation:" + a.getName() + "%") {
 				public String get(ITabPlayer p) {
 					return a.getMessage();
 				}
@@ -217,7 +197,7 @@ public class Shared {
 					return a.getAllMessages();
 				}
 			});
-			Placeholders.list.add(new Placeholder("{animation:" + a.getName() + "}") {
+			Placeholders.serverPlaceholders.add(new Placeholder("{animation:" + a.getName() + "}") {
 				public String get(ITabPlayer p) {
 					return a.getMessage();
 				}
@@ -227,84 +207,84 @@ public class Shared {
 				}
 			});
 		}
-		Placeholders.list.add(new Placeholder("%staffonline%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%staffonline%") {
 			public String get(ITabPlayer p) {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (ITabPlayer all : getPlayers()){
 					if (all.isStaff()) var++;
 				}
 				return var+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%nonstaffonline%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%nonstaffonline%") {
 			public String get(ITabPlayer p) {
-				int var = Shared.getPlayers().size();
-				for (ITabPlayer all : Shared.getPlayers()){
+				int var = getPlayers().size();
+				for (ITabPlayer all : getPlayers()){
 					if (all.isStaff()) var--;
 				}
 				return var+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%"+Shared.mainClass.getSeparatorType()+"%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%"+mainClass.getSeparatorType()+"%") {
 			public String get(ITabPlayer p) {
 				return p.getWorldName();
 			}
 		});
-		Placeholders.list.add(new Placeholder("%"+Shared.mainClass.getSeparatorType()+"online%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%"+mainClass.getSeparatorType()+"online%") {
 			public String get(ITabPlayer p) {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (ITabPlayer all : getPlayers()){
 					if (p.getWorldName().equals(all.getWorldName())) var++;
 				}
 				return var+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%memory-used%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%memory-used%") {
 			public String get(ITabPlayer p) {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		Placeholders.list.add(new Placeholder("%memory-max%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%memory-max%") {
 			public String get(ITabPlayer p) {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%memory-used-gb%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%memory-used-gb%") {
 			public String get(ITabPlayer p) {
-				return (Shared.round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
+				return (round((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		Placeholders.list.add(new Placeholder("%memory-max-gb%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%memory-max-gb%") {
 			public String get(ITabPlayer p) {
-				return (Shared.round((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
+				return (round((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%nick%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%nick%") {
 			public String get(ITabPlayer p) {
 				return p.getName();
 			}
 		});
-		Placeholders.list.add(new Placeholder("%time%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%time%") {
 			public String get(ITabPlayer p) {
 				return new SimpleDateFormat(Configs.timeFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		Placeholders.list.add(new Placeholder("%date%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%date%") {
 			public String get(ITabPlayer p) {
 				return new SimpleDateFormat(Configs.dateFormat).format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		Placeholders.list.add(new Placeholder("%online%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%online%") {
 			public String get(ITabPlayer p) {
-				return Shared.getPlayers().size()+"";
+				return getPlayers().size()+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%ping%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%ping%") {
 			public String get(ITabPlayer p) {
 				return p.getPing()+"";
 			}
 		});
-		Placeholders.list.add(new Placeholder("%player-version%") {
+		Placeholders.playerPlaceholders.add(new Placeholder("%player-version%") {
 			public String get(ITabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}
@@ -321,6 +301,7 @@ public class Shared {
 		HEADERFOOTER("Header/Footer"),
 		TABLISTOBJECTIVE("Tablist objective"),
 		NAMETAGX("Unlimited nametag mode"),
+		BELOWNAME("Belowname"),
 		OTHER("Other");
 		
 		private String string;

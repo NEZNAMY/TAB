@@ -155,7 +155,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			String name;
 			try {
 				name = (String) ((JSONObject) new JSONParser().parse(item.getDisplayName())).get("text");
-			} catch (ParseException e) {
+			} catch (ParseException | NullPointerException e) {
 				name = null;
 			}
 			return new PlayerInfoData(item.getUsername(), item.getUuid(), item.getProperties(), item.getPing(), EnumGamemode.fromId(item.getGamemode()), item.getDisplayName() == null ? null : name);

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,10 +12,21 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 
 public class Placeholders {
 
-	public static List<Placeholder> list;
+	public static List<Placeholder> playerPlaceholders;
+	public static List<Placeholder> serverPlaceholders;
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 	public static boolean placeholderAPI;
 
+	static {
+		online.put("other", 0);
+		for (int i=5; i<=14; i++) online.put("1-" + i + "-x", 0);
+	}
+	public static List<Placeholder> getAll(){
+		List<Placeholder> list = new ArrayList<Placeholder>();
+		list.addAll(playerPlaceholders);
+		list.addAll(serverPlaceholders);
+		return list;
+	}
 	public static void recalculateOnlineVersions() {
 		online.put("other", 0);
 		for (int i=5; i<=14; i++) online.put("1-" + i + "-x", 0);
@@ -29,6 +41,7 @@ public class Placeholders {
 	}
 	//code taken from bukkit, so it can work on bungee too
 	public static String color(String textToTranslate){
+		if (textToTranslate == null) return null;
 		if (!textToTranslate.contains("&")) return textToTranslate;
 		char[] b = textToTranslate.toCharArray();
 		for (int i = 0; i < b.length - 1; i++) {
@@ -58,17 +71,17 @@ public class Placeholders {
 		return result;
 	}
 	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		return set(string, Property.detectPlaceholders(string), p);
+		return set(string, Property.detectPlaceholders(string, p), p);
 	}
 	public static String set(String string, List<Placeholder> placeholders, ITabPlayer p) {
 		for (Placeholder pl : placeholders) {
 			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
 		}
 		string = setPlaceholderAPIPlaceholders(string, p);
-		string = color(string);
 		for (String removed : Configs.removeStrings) {
 			string = string.replace(removed, "");
 		}
+		string = color(string);
 		return string;
 	}
 	public static String setPlaceholderAPIPlaceholders(String s, ITabPlayer p) {

@@ -4,13 +4,13 @@ import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 public class PlaceholderAPIExpansion{
 
 	private static PlaceholderExpansion exp;
-	private static final String[] properties = {"tabprefix", "tagprefix", "tabsuffix", "tagsuffix", "abovename", "belowname", "customtabname", "customtagname"};
 
 	public static void register() {
 		exp = new PlaceholderExpansion() {
@@ -41,12 +41,12 @@ public class PlaceholderAPIExpansion{
 				ITabPlayer p = Shared.getPlayer(player.getUniqueId());
 				if (p == null) return "";
 
-				for (String property : properties) {
-					if (identifier.equals(property)) {
-						return p.properties.get(property).get();
+				for (EnumProperty property : EnumProperty.values()) {
+					if (identifier.equals(property.toString())) {
+						return p.properties.get(property.toString()).get();
 					}
-					if (identifier.equals(property + "_raw")) {
-						return p.properties.get(property).getCurrentRawValue();
+					if (identifier.equals(property.toString() + "_raw")) {
+						return p.properties.get(property.toString()).getCurrentRawValue();
 					}
 				}
 				return null;
@@ -55,6 +55,10 @@ public class PlaceholderAPIExpansion{
 		exp.register();
 	}
 	public static void unregister() {
-		if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
+		try {
+			if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
+		} catch (Exception ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread) {
+			Shared.error("Failed to unregister expansion for PlaceholderAPI", ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread);
+		}
 	}
 }

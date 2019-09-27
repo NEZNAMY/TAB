@@ -117,6 +117,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void restartArmorStands() {
 		NameTagLineManager.destroy(this);
+		if (previewingNametag) NameTagLineManager.destroy(this, this);
 		armorStands.clear();
 		loadArmorStands();
 		for (Player w : player.getWorld().getPlayers()) {
@@ -129,6 +130,7 @@ public class TabPlayer extends ITabPlayer{
 			if (w.getName().equals(getName())) continue;
 			NameTagLineManager.spawnArmorStand(this, wPlayer, true);
 		}
+		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this, false);
 	}
 	public void loadArmorStands() {
 		float height = -0.22F;

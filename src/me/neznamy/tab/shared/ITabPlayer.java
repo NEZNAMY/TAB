@@ -40,17 +40,19 @@ public abstract class ITabPlayer{
 	public boolean disabledNametag;
 	public boolean disabledTablistObjective;
 	public boolean disabledBossbar;
+	public boolean disabledBelowname;
 
 	private Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
 	public boolean previewingNametag;
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 	public boolean lastCollision;
+	public boolean lastVisibility;
 
 	public void init(String name, UUID uniqueId) {
 		this.name = name;
 		this.uniqueId = uniqueId;
-		updateGroupIfNeeded();
+		updateGroupIfNeeded(false);
 		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
@@ -58,6 +60,7 @@ public abstract class ITabPlayer{
 		disabledNametag = Configs.disabledNametag.contains(getWorldName());
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
 		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
+		disabledBelowname = Configs.disabledBelowname.contains(getWorldName());
 	}
 
 	//bukkit only
@@ -128,7 +131,7 @@ public abstract class ITabPlayer{
 		return rawValue;
 	}
 	public void updatePlayerListName(boolean force) {
-		if (!Playerlist.enable || disabledTablistNames) return;
+		if (!Playerlist.enable) return;
 		getGroup();
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
@@ -144,16 +147,13 @@ public abstract class ITabPlayer{
 		if (disabledNametag) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
-			updateTeamPrefixSuffix();
+			updateTeamData();
 		} else {
 			unregisterTeam();
 			teamName = newName;
 			registerTeam();
 		}
 		if (Configs.unlimitedTags) {
-			for (ArmorStand as : armorStands) {
-				as.setNameFormat(properties.get(as.getID()).getCurrentRawValue());
-			}
 			NameTagLineManager.refreshNames(this);
 		}
 	}
@@ -164,11 +164,11 @@ public abstract class ITabPlayer{
 	public String getGroup() {
 		if (System.currentTimeMillis() - lastRefreshGroup > 1000L) {
 			lastRefreshGroup = System.currentTimeMillis();
-			updateGroupIfNeeded();
+			updateGroupIfNeeded(true);
 		}
 		return permissionGroup;
 	}
-	public void updateGroupIfNeeded() {
+	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
 		String newGroup = null;
 		if (Configs.usePrimaryGroup) {
 			newGroup = getGroupFromPermPlugin();
@@ -189,11 +189,16 @@ public abstract class ITabPlayer{
 		}
 		if (newGroup != null && (permissionGroup == null || !permissionGroup.equals(newGroup))) {
 			permissionGroup = newGroup;
-			updateAll();
+			if (updateDataIfChanged) {
+				updateAll();
+				forceUpdateDisplay();
+			}
 		}
 	}
 	public void updateAll() {
 		setProperty("tablist-objective", TabObjective.rawValue);
+		setProperty("belowname-number", BelowName.number);
+		setProperty("belowname-text", BelowName.text);
 		setProperty("tabprefix", getValue("tabprefix"));
 		setProperty("tagprefix", getValue("tagprefix"));
 		setProperty("tabsuffix", getValue("tabsuffix"));
@@ -202,7 +207,6 @@ public abstract class ITabPlayer{
 		setProperty("customtabname", (temp = getValue("customtabname")).length() == 0 ? getName() : temp);
 		setProperty("customtagname", (temp = getValue("customtagname")).length() == 0 ? getName() : temp);
 		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue());
-
 		for (String property : Premium.dynamicLines) {
 			if (!property.equals("nametag")) setProperty(property, getValue(property));
 		}
@@ -315,21 +319,23 @@ public abstract class ITabPlayer{
 		}
 		return getName();
 	}
-	public void updateTeamPrefixSuffix() {
+	public void updateTeamData() {
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
 		boolean tagprefixUpdate = tagprefix.isUpdateNeeded();
 		boolean tagsuffixUpdate = tagsuffix.isUpdateNeeded();
 		boolean collision = getTeamPush();
-		if (tagprefixUpdate || tagsuffixUpdate || lastCollision != collision) {
+		boolean visible = getTeamVisibility();
+		if (tagprefixUpdate || tagsuffixUpdate || lastCollision != collision || lastVisibility != visible) {
 			String replacedPrefix = tagprefix.get();
 			String replacedSuffix = tagsuffix.get();
 			lastCollision = collision;
+			lastVisibility = visible;
 			for (ITabPlayer all : Shared.getPlayers()) {
 				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedPrefix) : replacedPrefix;
 				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedSuffix) : replacedSuffix;
-				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, currentPrefix, currentSuffix, getTeamVisibility(), getTeamPush());
+				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, currentPrefix, currentSuffix, visible, collision);
 			}
 		}
 	}
@@ -367,7 +373,8 @@ public abstract class ITabPlayer{
 		disabledNametag = Configs.disabledNametag.contains(to);
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(to);
 		disabledBossbar = Configs.disabledBossbar.contains(to);
-		updateGroupIfNeeded();
+		disabledBelowname = Configs.disabledBelowname.contains(to);
+		updateGroupIfNeeded(false);
 		updateAll();
 		restartArmorStands();
 		if (BossBar.enabled) {
@@ -385,7 +392,7 @@ public abstract class ITabPlayer{
 			if (disabledHeaderFooter) {
 				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 			} else {
-				HeaderFooter.refreshHeaderFooter(this);
+				HeaderFooter.refreshHeaderFooter(this, true);
 			}
 		}
 		if (NameTag16.enable || Configs.unlimitedTags) {
@@ -404,6 +411,14 @@ public abstract class ITabPlayer{
 			}
 			if (!disabledTablistObjective && Configs.disabledTablistObjective.contains(from)) {
 				TabObjective.playerJoin(this);
+			}
+		}
+		if (BelowName.enable){
+			if (disabledBelowname && !Configs.disabledBelowname.contains(from)) {
+				BelowName.unload(this);
+			}
+			if (!disabledBelowname && Configs.disabledBelowname.contains(from)) {
+				BelowName.playerJoin(this);
 			}
 		}
 		if (ScoreboardManager.enabled) {
@@ -449,5 +464,13 @@ public abstract class ITabPlayer{
 		} catch (Exception e) {
 			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
 		}
+	}
+	public void forceUpdateDisplay() {
+		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName(true);
+		if ((NameTag16.enable || Configs.unlimitedTags) && !disabledNametag) {
+			unregisterTeam();
+			registerTeam();
+		}
+		if (Configs.unlimitedTags && !disabledNametag) restartArmorStands();
 	}
 }

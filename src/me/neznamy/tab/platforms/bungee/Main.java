@@ -182,8 +182,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				NameTag16.playerJoin(pl);
 			} else {
 				String from = p.getWorldName();
-				String to = e.getPlayer().getServer().getInfo().getName();
-				p.world = e.getPlayer().getServer().getInfo().getName();
+				String to = p.world = e.getPlayer().getServer().getInfo().getName();
 				p.onWorldChange(from, to);
 			}
 			
@@ -273,24 +272,29 @@ public class Main extends Plugin implements Listener, MainClass{
 		return packet.toBungee(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml");
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
+		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
+		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
+		BelowName.number = Configs.config.getString("belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 	}
 	public static void registerPlaceholders() {
-		Placeholders.list = new ArrayList<Placeholder>();
+		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
+		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.list.add(new Placeholder("%maxplayers%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%maxplayers%") {
 			public String get(ITabPlayer p) {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			Placeholders.list.add(new Placeholder("%online_" + server.getKey() + "%") {
+			Placeholders.serverPlaceholders.add(new Placeholder("%online_" + server.getKey() + "%") {
 				public String get(ITabPlayer p) {
 					return server.getValue().getPlayers().size()+"";
 				}

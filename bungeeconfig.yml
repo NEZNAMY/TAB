@@ -67,7 +67,12 @@ Users:
   _NEZNAMY_:
     tabprefix: "&6&lTAB Author &a"
     tagprefix: "&6&lTAB &r&a"
-    
+
+belowname:
+  enabled: true
+  refresh-interval: 200
+  number: "%ping%"
+  text: "&aPing"
 
 #players 1.9+
 enable-collision: true
@@ -146,4 +151,6 @@ disable-features-in-servers:
   tablist-objective:
     - disabledserver
   bossbar:
+    - disabledserver
+  belowname:
     - disabledserver

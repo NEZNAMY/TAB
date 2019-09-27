@@ -22,10 +22,10 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.sneak(sneaking);
 	}
 	public static void destroy(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.destroy();
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) as.destroy();
 	}
 	public static void destroy(ITabPlayer armorStandOwner, ITabPlayer packetReceiver){
-		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSDestroyPacket(packetReceiver));
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) as.destroy(packetReceiver);
 	}
 	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean addToRegistered) {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
@@ -34,14 +34,10 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket());
 	}
 	public static void teleportOwner(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
-		if (armorStandOwner.getName().equals(packetReceiver.getName())) return; //avoiding buggy movement when riding entities
+		if (armorStandOwner == packetReceiver) return; //avoiding buggy movement when riding entities
 		packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(((TabPlayer)armorStandOwner).player));
 	}
 	public static void refreshNames(ITabPlayer armorStandOwner) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.refreshName();
-	}
-	public static boolean isArmorStandID(ITabPlayer p, int id) {
-		for (ArmorStand as : p.getArmorStands()) if (as.getEntityId() == id) return true;
-		return false;
 	}
 }

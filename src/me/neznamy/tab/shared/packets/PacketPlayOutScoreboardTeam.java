@@ -116,7 +116,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			ACTION = fields.get("h");
 			SIGNATURE = fields.get("i");
 		} else {
-			//1.7.x
+			//1.5.x - 1.7.x
 			PLAYERS = fields.get("e");
 			ACTION = fields.get("f");
 			SIGNATURE = fields.get("g");

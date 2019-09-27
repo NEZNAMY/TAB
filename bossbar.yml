@@ -5,7 +5,6 @@
 #BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW
 
 #IF YOU ARE USING SERVER 1.8.X
-#ignore style and color sections, these are for 1.9+
 #the entity will be slightly visible when progress is less than ~50% (client-sided bug)
 #only 1 line can be displayed at a time
 

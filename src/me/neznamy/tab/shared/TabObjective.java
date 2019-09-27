@@ -7,19 +7,21 @@ public class TabObjective{
 
 	public static TabObjectiveType type;
 	public static String rawValue;
+	private static final String objectivename = "TabObjective";
+	private static final String title = "ms";
 
 	public static void load() {
 		if (type == TabObjectiveType.NONE) return;
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, type.getDisplay());
+			PacketAPI.registerScoreboardObjective(p, objectivename, title, 0, type.getDisplay());
 		}
 		Shared.scheduleRepeatingTask(type.getRefresh(), "refreshing tablist objective", Feature.TABLISTOBJECTIVE, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
 					if (p.properties.get("tablist-objective").isUpdateNeeded()) {
-						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
+						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
 					}
 				}
 			}
@@ -27,21 +29,21 @@ public class TabObjective{
 	}
 	public static void playerJoin(ITabPlayer p) {
 		if (type == TabObjectiveType.NONE || p.disabledTablistObjective) return;
-		PacketAPI.registerScoreboardObjective(p, "TabObjective", "ms", 0, type.getDisplay());
+		PacketAPI.registerScoreboardObjective(p, objectivename, title, 0, type.getDisplay());
 		for (ITabPlayer all : Shared.getPlayers()){
-			PacketAPI.changeScoreboardScore(all, p.getName(), "TabObjective", getValue(p));
-			PacketAPI.changeScoreboardScore(p, all.getName(), "TabObjective", getValue(all));
+			PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
+			PacketAPI.setScoreboardScore(p, all.getName(), objectivename, getValue(all));
 		}
 	}
 	public static void unload() {
 		if (type == TabObjectiveType.NONE) return;
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", type.getDisplay());
+			PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
 		}
 	}
 	public static void unload(ITabPlayer p) {
-		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, "TabObjective", "ms", type.getDisplay());
+		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
 	}
 	public static int getValue(ITabPlayer p) {
 		String replaced = p.properties.get("tablist-objective").get();

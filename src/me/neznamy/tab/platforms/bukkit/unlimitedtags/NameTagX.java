@@ -78,12 +78,13 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {
+		if (Main.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
 			Shared.error("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
 			return;
 		}
-		Shared.runTask("processing sprint toggle", Feature.NAMETAGX, new Runnable() {
+		Shared.runTask("processing sneak toggle", Feature.NAMETAGX, new Runnable() {
 			public void run() {
 				NameTagLineManager.sneak(p, e.isSneaking());
 			}
@@ -91,6 +92,7 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
+		if (Main.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
 
@@ -136,8 +138,7 @@ public class NameTagX implements Listener{
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
-			int[] ids = packet.getEntityArray();
-			for (int id : ids) {
+			for (int id : packet.getEntityArray()) {
 				ITabPlayer despawnedPlayer = Shared.getPlayer(id);
 				if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
 			}

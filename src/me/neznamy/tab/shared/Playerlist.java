@@ -31,17 +31,12 @@ public class Playerlist {
 			if (packet.action == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && playerInfoData.uniqueId != receiver.getUniqueId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
 			}
-			if (packet.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME) {
+			if (packet.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer == null || packetPlayer.disabledTablistNames) return;
 				playerInfoData.listName = packetPlayer.getTabFormat(receiver);
 			}
 			if (packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer != null) {
-					//player
-					if (!packetPlayer.disabledTablistNames) {
-						playerInfoData.listName = packetPlayer.getTabFormat(receiver);
-					}
-				} else {
+				if (packetPlayer == null) {
 					//NPC on bukkit
 					if (Configs.unlimitedTags && Configs.modifyNPCnames) {
 						if (playerInfoData.name.length() <= 15) {

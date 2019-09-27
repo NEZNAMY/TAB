@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.unlimitedtags;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,37 +29,27 @@ public class ArmorStand{
 	private ITabPlayer owner;
 	private Player player;
 	private double yOffset;
-	private String ID;
-	private Object nmsEntity;
-
-	private int entityId;
+	private Object nmsEntity = MethodAPI.getInstance().newEntityArmorStand();
+	private int entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 	private UUID uuid = UUID.randomUUID();
 	private Location location;
 	private boolean sneaking;
 	private boolean visible;
 
-	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
+	private List<ITabPlayer> registeredTo = new ArrayList<ITabPlayer>();
 	private Property property;
 
 	private long lastLocationRefresh = 0;
-
+	
 	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID) {
 		this.owner = owner;
 		player = ((TabPlayer)owner).player;
-		this.ID = ID;
 		this.yOffset = yOffset;
-		nmsEntity = MethodAPI.getInstance().newEntityArmorStand();
-		entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 		owner.setProperty(ID, format);
 		property = owner.properties.get(ID);
+		visible = getVisibility();
 		refreshName();
 		updateLocation();
-	}
-	public String getID() {
-		return ID;
-	}
-	public void setNameFormat(String format) {
-		owner.setProperty(ID, format);
 	}
 	public void refreshName() {
 		if (property.isUpdateNeeded()) updateMetadata();
@@ -76,33 +65,36 @@ public class ArmorStand{
 		updateLocation();
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, location);
 	}
-	public Object getNMSDestroyPacket(ITabPlayer to) {
+	public void destroy(ITabPlayer to) {
 		registeredTo.remove(to);
-		return MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
+		to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
 		Object teleportPacket = getNMSTeleportPacket();
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) all.sendPacket(teleportPacket);
-		}
+		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(teleportPacket);
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
 		updateLocation();
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) {
-				if (all == owner) continue; //should never be anyway
+		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
+			if (all == owner) continue; //should never be anyway
+			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_14.getNetworkId()) {
+				//sneaking feature was removed in 1.14, so despawning completely now
+				if (sneaking) {
+					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+				} else {
+					all.sendCustomPacket(getSpawnPacket(all, false));
+				}
+			} else {
+				//respawning so there's no animation and it's instant
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-				if (sneaking && all.getVersion().getNetworkId() >= ProtocolVersion.v1_14.getNetworkId()) continue; //not spawning for 1.14+ players
 				all.sendCustomPacket(getSpawnPacket(all, false));
 			}
 		}
 	}
 	public void destroy() {
 		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) all.sendPacket(destroyPacket);
-		}
+		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(destroyPacket);
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
@@ -112,17 +104,20 @@ public class ArmorStand{
 		}
 	}
 	private void updateMetadata() {
-		synchronized (registeredTo) {
-			String name = property.get();
-			if (property.hasRelationalPlaceholders()) {
-				for (ITabPlayer all : registeredTo) {
-					String currentName = Placeholders.setRelational(owner, all, name);
-					all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
-				}
-			} else {
-				Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null);
-				for (ITabPlayer all : registeredTo) all.sendPacket(packet);
+		String name = property.get();
+		if (property.hasRelationalPlaceholders()) {
+			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
+				String currentName = Placeholders.setRelational(owner, all, name);
+				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
 			}
+			if (owner.previewingNametag) {
+				String currentName = Placeholders.setRelational(owner, owner, name);
+				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
+			}
+		} else {
+			Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null);
+			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(packet);
+			if (owner.previewingNametag) owner.sendPacket(packet);
 		}
 	}
 	public boolean getVisibility() {
@@ -132,15 +127,15 @@ public class ArmorStand{
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;
 		lastLocationRefresh = System.currentTimeMillis();
 		double x = player.getLocation().getX();
-		double y;
+		double y = player.getLocation().getY() + yOffset;
 		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
-			y = player.getLocation().getY() + yOffset - 1.76;
+			y -= 1.76;
 		} else {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				y = player.getLocation().getY() + yOffset - (sneaking ? 0.45 : 0.18);
+				y -= (sneaking ? 0.45 : 0.18);
 			} else {
-				y = player.getLocation().getY() + yOffset - (sneaking ? 0.30 : 0.18);
+				y -= (sneaking ? 0.30 : 0.18);
 			}
 		}
 		y += 2;
@@ -157,13 +152,14 @@ public class ArmorStand{
 		if (sneaking) flag += (byte)2;
 		flag += (byte)32;
 		DataWatcher datawatcher = new DataWatcher(null);
-		if (name == null || name.length() == 0) name = "§r";
+		if (name == null) name = "";
 		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(Shared.mainClass.createComponent(name)));
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
+		boolean visible = (name.length() == 0) ? false : this.visible;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
 		} else {
@@ -171,5 +167,5 @@ public class ArmorStand{
 		}
 		datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
-    }
+	}
 }

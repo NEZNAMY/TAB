@@ -285,6 +285,7 @@ public class TabCommand{
 		}
 	}
 	public static void help(ITabPlayer sender){
+		if (sender == null) Shared.mainClass.sendConsoleMessage("§3TAB v" + Shared.pluginVersion);
 		if (isAdmin(sender) && !Shared.mainClass.isDisabled()) {
 			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
 		}
@@ -293,7 +294,7 @@ public class TabCommand{
 		ITabPlayer pl = Shared.getPlayer(player);
 		if (pl != null) {
 			pl.setProperty(type, value);
-			if (Configs.unlimitedTags) pl.restartArmorStands();
+			pl.forceUpdateDisplay();
 		}
 		if (value.equals("")) value = null;
 		Configs.config.set("Users." + player + "." + type, value);
@@ -308,7 +309,7 @@ public class TabCommand{
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup() != null && pl.getGroup().equals(group)){
 				pl.setProperty(type, value);
-				if (Configs.unlimitedTags) pl.restartArmorStands();
+				pl.forceUpdateDisplay();
 			}
 		}
 		if (value.equals("")) value = null;

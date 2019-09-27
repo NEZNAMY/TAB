@@ -33,7 +33,7 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.2-pre19", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.5.2", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -148,8 +148,7 @@ public class Main implements MainClass{
 				NameTag16.playerJoin(pl);
 			} else {
 				String from = p.getWorldName();
-				String to = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
-				p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
+				String to = p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
 				p.onWorldChange(from, to);
 			}
 		} catch (Throwable ex){
@@ -235,21 +234,22 @@ public class Main implements MainClass{
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml");
+		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml", Configs.configComments);
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 		TabObjective.type = TabObjectiveType.NONE;
 	}
 	public static void registerPlaceholders() {
-		Placeholders.list = new ArrayList<Placeholder>();
+		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
+		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.list.add(new Placeholder("%maxplayers%") {
+		Placeholders.serverPlaceholders.add(new Placeholder("%maxplayers%") {
 			public String get(ITabPlayer p) {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			Placeholders.list.add(new Placeholder("%online_" + servers.getKey() + "%") {
+			Placeholders.serverPlaceholders.add(new Placeholder("%online_" + servers.getKey() + "%") {
 				public String get(ITabPlayer p) {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
 				}

@@ -79,7 +79,12 @@ Users:
     tagprefix: "&6&lTAB &r&a"
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
-    
+
+belowname:
+  enabled: true
+  refresh-interval-ticks: 5
+  number: "%health%"
+  text: "Health"
 #servers and clients 1.9+
 enable-collision: true
     
@@ -93,7 +98,7 @@ unlimited-nametag-prefix-suffix-mode:
   
   #modifying names of NPCs to avoid empty names on NPCs of online players
   #this blocks any other attemps to change the name visibility or anything, so you need to disable it if you are using some citizens addon that changes their name
-  #needs a relog to see the change
+  #needs relog to see the change
   modify-npc-names: false
 
 
@@ -143,7 +148,7 @@ placeholders:
     - "[] "
     - "< > "
   
-#better showing of %rank% value
+#better showing of %rank% placeholder
 rank-aliases:
   Admin: "&4&lADMIN"
   Mod: "&b&lMOD"
@@ -165,4 +170,6 @@ disable-features-in-worlds:
   tablist-objective:
     - disabledworld
   bossbar:
+    - disabledworld
+  belowname:
     - disabledworld
