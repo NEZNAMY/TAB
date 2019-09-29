@@ -53,7 +53,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 				if (last != null && last.length() > 0) {
 					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
 				}
-				if (!entities.toArray(new String[0])[0].contains("§")) CHATFORMAT.set(packet, chatFormat.toNMS());
+				if (chatFormat != null) CHATFORMAT.set(packet, chatFormat.toNMS());
 			}
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
 		} else {
