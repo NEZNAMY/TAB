@@ -68,6 +68,8 @@ Users:
     tabprefix: "&6&lTAB Author &a"
     tagprefix: "&6&lTAB &r&a"
 
+#the vanilla belowname feature
+#doesn't support player placeholders (rank, prefix), only server placeholders (time, date, animations) and static text
 belowname:
   enabled: true
   refresh-interval: 200

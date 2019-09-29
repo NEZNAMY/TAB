@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
@@ -27,13 +28,14 @@ import io.netty.channel.ChannelPromise;
 import io.netty.channel.Channel;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.2", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.5.3", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -89,6 +91,7 @@ public class Main implements MainClass{
 			disabled = false;
 			long time = System.currentTimeMillis();
 			Shared.startupWarns = 0;
+			Shared.cpuHistory = new ArrayList<CPUSample>();
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -107,7 +110,7 @@ public class Main implements MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (ParserException e) {
+		} catch (ParserException | ScannerException e) {
 			Shared.print("§c", "Did not enable due to a broken configuration file.");
 			disabled = true;
 		} catch (Throwable e) {

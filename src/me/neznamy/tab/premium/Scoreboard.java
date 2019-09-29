@@ -80,7 +80,7 @@ public class Scoreboard {
 				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER);
 			}
 		}
-		for (Score s : scores) {
+		for (Score s : scores.toArray(new Score[0])) {
 			s.updatePrefixSuffix();
 		}
 	}
@@ -88,17 +88,17 @@ public class Scoreboard {
 
 		private int score;
 		private String rawtext;
-		private String ID;
+		private String teamname;
 		private String player;
 
-		public Score(int score, String ID, String player, String rawtext) {
+		public Score(int score, String teamname, String player, String rawtext) {
 			this.score = score;
-			this.ID = ID;
+			this.teamname = teamname;
 			this.player = player;
 			this.rawtext = rawtext;
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force) {
-			Property scoreproperty = p.properties.get("sb-"+ID);
+			Property scoreproperty = p.properties.get("sb-"+teamname);
 			if (scoreproperty.isUpdateNeeded() || force) {
 				String replaced = scoreproperty.get();
 				if (replaced.length() > 16) {
@@ -116,27 +116,27 @@ public class Scoreboard {
 			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
-			p.setProperty("sb-"+ID, rawtext);
+			p.setProperty("sb-"+teamname, rawtext);
 			List<String> prefixsuffix = replaceText(p, true);
 			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
 			int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
-			PacketAPI.registerScoreboardScore(p, ID, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
+			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
 			if (players.contains(p)) {
-				PacketAPI.removeScoreboardScore(p, player, ID);
+				PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
 		public void unregister() {
 			for (ITabPlayer p : players) {
-				PacketAPI.removeScoreboardScore(p, player, ID);
+				PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
 		public void updatePrefixSuffix() {
 			for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 				List<String> prefixsuffix = replaceText(p, false);
 				if (prefixsuffix == null) continue;
-				PacketAPI.sendScoreboardTeamPacket(p, ID, prefixsuffix.get(0), prefixsuffix.get(1), false, false, null, 2, 69);
+				PacketAPI.updateScoreboardTeamPrefixSuffix(p, teamname, prefixsuffix.get(0), prefixsuffix.get(1), false, false);
 			}
 		}
 	}

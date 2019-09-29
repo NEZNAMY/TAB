@@ -27,45 +27,69 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class PacketAPI{
 
-	public static void setScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue));
+	public static void debug(ITabPlayer p, String message) {
+		System.out.println("[TAB DEBUG] [" + p.getName() + "] " + message);
 	}
+
+	//scoreboard team
 	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
-		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) unregisterScoreboardTeam(to, teamName);
+		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
+//			debug(to, "The action below is for safety and should not be needed");
+			unregisterScoreboardTeam(to, teamName);
+		}
+//		debug(to, "Registering team " + teamName);
+//		new Exception().printStackTrace();
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, players, 0, 69);
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
+//		debug(to, "Unregistering team " + teamName);
 		sendScoreboardTeamPacket(to, teamName, null, null, true, true, null, 1, 69);
 	}
 	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
 	}
-	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
-		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
+	private static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null));
 	}
+
+	//scoreboard objective
 	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
-		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) unregisterScoreboardObjective(to, objectiveName, title, displayType);
+		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
+//			debug(to, "The action below is for safety and should not be needed");
+			unregisterScoreboardObjective(to, objectiveName, title, displayType);
+		}
+//		debug(to, "Registering objective " + objectiveName);
+//		new Exception().printStackTrace();
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
+//		debug(to, "Unregistering objective " + objectiveName);
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 1));
 	}
-	public static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null));
+	public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));
 	}
-	public static void registerScoreboardScore(ITabPlayer p, String team, String body, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Lists.newArrayList(body));
-        setScoreboardScore(p, body, objective, score);
-    }
-    public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
-    	p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0));
-    	unregisterScoreboardTeam(p, ID);
-    }
-    public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
-    	p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));
-    }
-    private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
+
+	//scoreboard score
+	public static void registerScoreboardScore(ITabPlayer p, String team, String player, String prefix, String suffix, String objective, int score) {
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Lists.newArrayList(player));
+		setScoreboardScore(p, player, objective, score);
+	}
+	public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0));
+		unregisterScoreboardTeam(p, ID);
+	}
+	public static void setScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
+		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue));
+	}
+	
+	
+	
+	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
+		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
+	}
+	private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
 		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);

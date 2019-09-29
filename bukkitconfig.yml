@@ -80,11 +80,15 @@ Users:
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
 
+#the vanilla belowname feature
+#doesn't support player placeholders (faction, prefix), only server placeholders (time, date, animations) and static text
 belowname:
   enabled: true
   refresh-interval-ticks: 5
   number: "%health%"
   text: "Health"
+  
+  
 #servers and clients 1.9+
 enable-collision: true
     

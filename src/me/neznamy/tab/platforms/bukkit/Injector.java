@@ -102,7 +102,6 @@ public class Injector {
 						}
 						Shared.cpu(Feature.PLAYERLIST_2, System.nanoTime()-time);
 					}
-
 				} catch (Throwable e){
 					Shared.error("An error occured when reading packets", e);
 				}

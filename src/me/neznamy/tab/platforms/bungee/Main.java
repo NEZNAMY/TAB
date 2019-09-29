@@ -6,10 +6,12 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import io.netty.channel.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -84,6 +86,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			disabled = false;
 			long time = System.currentTimeMillis();
 			Shared.startupWarns = 0;
+			Shared.cpuHistory = new ArrayList<CPUSample>();
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -102,7 +105,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.startCPUTask();
 			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (ParserException e) {
+		} catch (ParserException | ScannerException e) {
 			Shared.print("§c", "Did not enable due to a broken configuration file.");
 			disabled = true;
 		} catch (Throwable e) {

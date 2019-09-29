@@ -70,15 +70,13 @@ public class ScoreboardManager {
 		scoreboards.clear();
 	}
 	public static void register(ITabPlayer p) {
-		if (!enabled) return;
-		if (disabledWorlds.contains(p.getWorldName())) return;
-		if (p.hiddenScoreboard) return;
+		if (!enabled || disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
 		String scoreboard = getHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
 			if (board != null) {
-				board.register(p);
 				p.setActiveScoreboard(board);
+				board.register(p);
 			}
 		}
 	}

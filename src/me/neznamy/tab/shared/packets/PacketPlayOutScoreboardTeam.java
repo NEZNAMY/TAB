@@ -5,9 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
-
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.Team;
@@ -50,11 +49,11 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			DISPLAYNAME.set(packet, Shared.mainClass.createComponent(team));
 			if (prefix != null && prefix.length() > 0) {
 				PREFIX.set(packet, Shared.mainClass.createComponent(prefix));
-				String last = ChatColor.getLastColors(prefix);
+				String last = Placeholders.getLastColors(prefix);
 				if (last != null && last.length() > 0) {
 					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
 				}
-				CHATFORMAT.set(packet, chatFormat.toNMS());
+				if (!entities.toArray(new String[0])[0].contains("§")) CHATFORMAT.set(packet, chatFormat.toNMS());
 			}
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
 		} else {

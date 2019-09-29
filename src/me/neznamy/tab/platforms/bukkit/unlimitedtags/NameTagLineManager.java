@@ -38,6 +38,6 @@ public class NameTagLineManager {
 		packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(((TabPlayer)armorStandOwner).player));
 	}
 	public static void refreshNames(ITabPlayer armorStandOwner) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) as.refreshName();
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) as.refreshName();
 	}
 }

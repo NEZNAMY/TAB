@@ -32,8 +32,7 @@ public class Playerlist {
 				if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && playerInfoData.uniqueId != receiver.getUniqueId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
 			}
 			if (packet.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer == null || packetPlayer.disabledTablistNames) return;
-				playerInfoData.listName = packetPlayer.getTabFormat(receiver);
+				if (packetPlayer != null && !packetPlayer.disabledTablistNames) playerInfoData.listName = packetPlayer.getTabFormat(receiver);
 			}
 			if (packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer == null) {
@@ -41,9 +40,9 @@ public class Playerlist {
 					if (Configs.unlimitedTags && Configs.modifyNPCnames) {
 						if (playerInfoData.name.length() <= 15) {
 							if (playerInfoData.name.length() <= 14) {
-								playerInfoData.name = playerInfoData.name + "§r";
+								playerInfoData.name += "§r";
 							} else {
-								playerInfoData.name = playerInfoData.name + " ";
+								playerInfoData.name += " ";
 							}
 						}
 					}

@@ -95,6 +95,7 @@ public class Configs {
 		configComments.put("  remove-strings:", Lists.newArrayList("  #remove these strings from everywhere. Typically an empty output when using some clan/faction related plugin but player isn't in any", "  #so players won't have empty brackets before their names"));
 		configComments.put("rank-aliases:", Lists.newArrayList("", "#better showing of %rank% placeholder"));
 		configComments.put("disable-features", Lists.newArrayList(""));
+		configComments.put("belowname:", Lists.newArrayList("", "#the vanilla belowname feature", "#doesn't support player placeholders (faction, prefix), only server placeholders (time, date, animations) and static text"));
 		bossbarComments = new HashMap<String, List<String>>();
 		bossbarComments.put("bossbar-enabled:", Lists.newArrayList("#styles (SERVER 1.9+)", "#NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20, PROGRESS", "", "#colors (SERVER 1.9+)", "#BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW", "", "#IF YOU ARE USING SERVER 1.8.X", "#the entity will be slightly visible when progress is less than ~50% (client-sided bug)", "#only 1 line can be displayed at a time", "", "#you can also announce a message using /tab announce bar <bar name> <duration in seconds> (does not support animations yet)", ""));
 		bossbarComments.put("default-bars:", Lists.newArrayList("#to have no default bars, set it to ", "#default-bars: []"));
