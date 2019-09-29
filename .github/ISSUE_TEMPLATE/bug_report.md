@@ -16,7 +16,7 @@ assignees: ''
 **Describe the bug**
 
 
-**How to teproduce**
+**How to reproduce**
 
 
 **Expected behavior**
