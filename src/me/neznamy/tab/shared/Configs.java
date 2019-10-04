@@ -39,7 +39,7 @@ public class Configs {
 	public static String yesTag;
 	public static String noAfk;
 	public static String yesAfk;
-	public static final double NTX_SPACE = 0.22;
+	public static double SECRET_NTX_space;
 	public static int SECRET_relational_placeholders_refresh;
 
 
@@ -120,6 +120,7 @@ public class Configs {
 		}
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
+		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();

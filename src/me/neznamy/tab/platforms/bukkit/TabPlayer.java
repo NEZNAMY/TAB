@@ -118,12 +118,12 @@ public class TabPlayer extends ITabPlayer{
 		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this, false);
 	}
 	public void loadArmorStands() {
-		double height = -Configs.NTX_SPACE;
+		double height = -Configs.SECRET_NTX_space;
 		for (String line : Premium.dynamicLines) {
 			Property p = properties.get(line);
 			if (p == null || p.get().length() == 0) continue;
 			String value = p.getCurrentRawValue();
-			NameTagLineManager.bindLine(this, value, height+=Configs.NTX_SPACE, line);
+			NameTagLineManager.bindLine(this, value, height+=Configs.SECRET_NTX_space, line);
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			Property p = properties.get(line.getKey());

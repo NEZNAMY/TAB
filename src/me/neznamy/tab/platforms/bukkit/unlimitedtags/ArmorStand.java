@@ -63,7 +63,7 @@ public class ArmorStand{
 		String name = property.get();
 		name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name));
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name, to));
 	}
 	public Object getNMSTeleportPacket() {
 		updateLocation();
@@ -112,16 +112,17 @@ public class ArmorStand{
 		if (property.hasRelationalPlaceholders()) {
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
-				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
+				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all), true).toNMS(null));
 			}
 			if (owner.previewingNametag) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
-				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
+				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner), true).toNMS(null));
 			}
 		} else {
-			Object packet = new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name), true).toNMS(null);
-			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(packet);
-			if (owner.previewingNametag) owner.sendPacket(packet);
+			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
+				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all), true).toNMS(null));
+			}
+			if (owner.previewingNametag) owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner), true).toNMS(null));
 		}
 	}
 	public boolean getVisibility() {
@@ -151,7 +152,7 @@ public class ArmorStand{
 	public void removeFromRegistered(ITabPlayer removed) {
 		registeredTo.remove(removed);
 	}
-	public DataWatcher createDataWatcher(String name) {
+	public DataWatcher createDataWatcher(String name, ITabPlayer other) {
 		byte flag = 0;
 		if (sneaking) flag += (byte)2;
 		flag += (byte)32;
@@ -163,7 +164,7 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
-		boolean visible = (name.length() == 0) ? false : this.visible;
+		boolean visible = (name.length() == 0 || !((TabPlayer)other).player.canSee(player)) ? false : this.visible;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
 		} else {
