@@ -36,6 +36,7 @@ public class MethodAPI_v1_6_R2 extends MethodAPI {
 		return null;
 	}
 	public Object ICBC_fromString(String string) {
+		if (string == null) return null;
 		return ChatMessage.d(string);
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {

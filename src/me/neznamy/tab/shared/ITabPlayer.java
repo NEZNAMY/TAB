@@ -136,12 +136,10 @@ public abstract class ITabPlayer{
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
 		boolean tabsuffix = properties.get("tabsuffix").isUpdateNeeded();
-		if (tabprefix || customtabname || tabsuffix || force) {
-			setPlayerListName();
-		}
+		if (tabprefix || customtabname || tabsuffix || force) setPlayerListName();
 	}
 	public String getTabFormat(ITabPlayer other) {
-		return Placeholders.setRelational(this, other, properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get());
+		return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get());
 	}
 	public void updateTeam() {
 		if (disabledNametag) return;
@@ -220,6 +218,7 @@ public abstract class ITabPlayer{
 				break;
 			}
 		}
+		if (rank == null) rank = permissionGroup;
 		updateRawHeaderAndFooter();
 	}
 	private String getValue(Object property) {
@@ -293,7 +292,7 @@ public abstract class ITabPlayer{
 				name = properties.get("tagprefix").get();
 			}
 		}
-		if (name == null || name.equals("")) {
+		if (name == null || name.length() == 0) {
 			name = "§f";
 		} else {
 			name = Placeholders.replaceAllPlaceholders(name, this);
@@ -333,8 +332,8 @@ public abstract class ITabPlayer{
 			lastCollision = collision;
 			lastVisibility = visible;
 			for (ITabPlayer all : Shared.getPlayers()) {
-				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedPrefix) : replacedPrefix;
-				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedSuffix) : replacedSuffix;
+				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
+				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
 				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, currentPrefix, currentSuffix, visible, collision);
 			}
 		}
@@ -346,8 +345,8 @@ public abstract class ITabPlayer{
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedPrefix) : replacedPrefix;
-			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? Placeholders.setRelational(this, all, replacedSuffix) : replacedSuffix;
+			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
+			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
 			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
 		}
 	}
@@ -357,8 +356,8 @@ public abstract class ITabPlayer{
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
-		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = Placeholders.setRelational(this, to, replacedPrefix);
-		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = Placeholders.setRelational(this, to, replacedSuffix);
+		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
+		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
 	}
 	private void unregisterTeam(ITabPlayer to) {
@@ -455,14 +454,14 @@ public abstract class ITabPlayer{
 		try {
 			sendPacket(Shared.mainClass.toNMS(packet, version));
 		} catch (Exception e) {
-			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
+			Shared.error(null, "An error occured when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
 		} catch (Exception e) {
-			Shared.error("An error occured when creating " + getClass().getSimpleName(), e);
+			Shared.error(null, "An error occured when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void forceUpdateDisplay() {

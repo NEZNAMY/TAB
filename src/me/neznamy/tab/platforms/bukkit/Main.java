@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -13,18 +12,13 @@ import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.entity.MPlayer;
 
-import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.robingrether.idisguise.api.DisguiseAPI;
-import me.clip.deluxetags.DeluxeTag;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
@@ -41,23 +35,14 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
-	public static GroupManager groupManager;
-	public static boolean luckPerms;
-	public static boolean pex;
 	public static Main instance;
-	public static boolean disabled = false;
-	public static Essentials essentials;
-	public static Economy economy;
-	public static Permission perm;
-	public static boolean libsdisguises;
-	public static DisguiseAPI idisguise;
+	public static boolean disabled;
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
-		ProtocolVersion.packageName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-		Shared.init(this);
-		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + ProtocolVersion.packageName + ")");
-		if (ProtocolVersion.SERVER_VERSION.isSupported()){
+		Shared.mainClass = this;
+		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
+		if (MethodAPI.getInstance() != null){
 			long total = System.currentTimeMillis();
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
@@ -76,7 +61,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
 				public String call() {
-					return Placeholders.placeholderAPI ? "Yes" : "No";
+					return PluginHooks.placeholderAPI ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
@@ -100,7 +85,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
-			sendConsoleMessage("§c[TAB] Your server version (" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + ") is not supported. Disabling..");
+			sendConsoleMessage("§c[TAB] Your server version is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 	}
@@ -132,10 +117,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			BossBar.unload();
 			ScoreboardManager.unload();
 			Shared.data.clear();
-			if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.unregister();
+			if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
-			Shared.error("Failed to unload the plugin", e);
+			Shared.error(null, "Failed to unload the plugin", e);
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -187,7 +172,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			try {
 				inject(e.getPlayer().getUniqueId());
 			} catch (NoSuchElementException ignored) {
-				Shared.error("Failed to inject player " + e.getPlayer().getName() + " (online=" + e.getPlayer().isOnline() + ") - " + ignored.getClass().getSimpleName() +": " + ignored.getMessage());
+				Shared.error(null, "Failed to inject player " + e.getPlayer().getName() + " (online=" + e.getPlayer().isOnline() + ") - " + ignored.getClass().getSimpleName() +": " + ignored.getMessage());
 			}
 			ITabPlayer pl = p;
 			PerWorldPlayerlist.trigger(e.getPlayer());
@@ -205,7 +190,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} catch (Throwable ex) {
-			Shared.error("An error occured when player joined the server", ex);
+			Shared.error(null, "An error occured when player joined the server", ex);
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -214,7 +199,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (disabled) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) {
-				Shared.error("Data of " + disconnectedPlayer + " did not exist when player left");
+				Shared.error(null, "Data of " + disconnectedPlayer + " did not exist when player left");
 				return;
 			}
 			Placeholders.recalculateOnlineVersions();
@@ -227,7 +212,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			NameTagLineManager.destroy(disconnectedPlayer);
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
-			Shared.error("An error occured when player left server", t);
+			Shared.error(null, "An error occured when player left server", t);
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -241,7 +226,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			String to = p.world = e.getPlayer().getWorld().getName();
 			p.onWorldChange(from, to);
 		} catch (Throwable ex) {
-			Shared.error("An error occured when processing PlayerChangedWorldEvent", ex);
+			Shared.error(null, "An error occured when processing PlayerChangedWorldEvent", ex);
 		}
 	}
 	@EventHandler
@@ -263,22 +248,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Injector1_7.inject(player);
 		}
 	}
-	@SuppressWarnings("unchecked")
-	public Object createComponent(String text) {
-		if (text == null) return null;
-		if (text.length() == 0) return MethodAPI.getInstance().ICBC_fromString("{\"translate\":\"\"}");
-		JSONObject object = new JSONObject();
-		object.put("text", text);
-		return MethodAPI.getInstance().ICBC_fromString(object.toString());
-	}
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(message);
 	}
 	public String getPermissionPlugin() {
-		if (pex) return "PermissionsEx";
-		if (groupManager != null) return "GroupManager";
-		if (luckPerms) return "LuckPerms";
-		if (perm != null) return perm.getName() + " (detected by Vault)";
+		if (PluginHooks.permissionsEx) return "PermissionsEx";
+		if (PluginHooks.groupManager != null) return "GroupManager";
+		if (PluginHooks.luckPerms) return "LuckPerms";
+		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_permission.getName() + " (detected by Vault)";
 		return "Unknown/None";
 	}
 	public String getSeparatorType() {
@@ -362,20 +339,20 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
 			RegisteredServiceProvider<Economy> rsp1 = Bukkit.getServicesManager().getRegistration(Economy.class);
-			if (rsp1 != null) economy = rsp1.getProvider();
+			if (rsp1 != null) PluginHooks.Vault_economy = rsp1.getProvider();
 			RegisteredServiceProvider<Permission> rsp2 = Bukkit.getServicesManager().getRegistration(Permission.class);
-			if (rsp2 != null) perm = rsp2.getProvider();
+			if (rsp2 != null) PluginHooks.Vault_permission = rsp2.getProvider();
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
+			PluginHooks.idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
 		}
-		luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
-		groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
-		Placeholders.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		if (Placeholders.placeholderAPI) PlaceholderAPIExpansion.register();
-		pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
-		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
-		essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
+		PluginHooks.groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
+		PluginHooks.placeholderAPI= Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+		if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.register();
+		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
+		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
+		PluginHooks.essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
 		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
 		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
@@ -420,8 +397,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
 			Placeholders.playerPlaceholders.add(new Placeholder("%deluxetag%") {
 				public String get(ITabPlayer p) {
-					String tag = DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
-					if (tag == null || tag.equals("")) {
+					String tag = PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
+					if (tag == null || tag.length() == 0) {
 						return Configs.noTag;
 					}
 					return Configs.yesTag.replace("%value%", tag);
@@ -451,8 +428,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 				if (factionsType == null) return Configs.noFaction;
 				String name = null;
-				if (factionsType.equals("UUID")) name = FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
-				if (factionsType.equals("MCore")) name = MPlayer.get(((TabPlayer)p).player).getFactionName();
+				if (factionsType.equals("UUID")) name = PluginHooks.FactionsUUID_getFactionTag(p);
+				if (factionsType.equals("MCore")) name = PluginHooks.FactionsMCore_getFactionName(p);
 				if (name == null || name.length() == 0 || name.contains("Wilderness")) {
 					return Configs.noFaction;
 				}
@@ -476,7 +453,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			Placeholders.playerPlaceholders.add(new Placeholder("%afk%") {
 				public String get(ITabPlayer p) {
-					return xAntiAFKAPI.isAfk(((TabPlayer)p).player)?Configs.yesAfk:Configs.noAfk;
+					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
 				}
 				@Override
 				public String[] getChilds(){
@@ -486,10 +463,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			Placeholders.playerPlaceholders.add(new Placeholder("%afk%") {
 
-				private Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-
 				public String get(ITabPlayer p) {
-					boolean afk = (essentials.getUser(p.getUniqueId()) != null && essentials.getUser(p.getUniqueId()).isAfk());
+					boolean afk = (PluginHooks.essentials.getUser(p.getUniqueId()) != null && PluginHooks.essentials.getUser(p.getUniqueId()).isAfk());
 					return afk?Configs.yesAfk:Configs.noAfk;
 				}
 				@Override
@@ -560,15 +535,25 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 	}
-	public static Player[] getOnlinePlayers() {
+/*	public static Player[] getOnlinePlayers() {
 		try {
 			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
 			return onlinePlayersMethod.getReturnType().equals(Collection.class)
 					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).toArray(new Player[0])
 							: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer()));
 		} catch (Exception e) {
-			Shared.error("Failed to get players", e);
-			return new Player[0];
+			return Shared.error(new Player[0], "Failed to get players", e);
+		}
+	}*/
+	@SuppressWarnings("unchecked")
+	public static Player[] getOnlinePlayers() {
+		Object players = Bukkit.getOnlinePlayers();
+		if (players instanceof Player[]) {
+			//1.5.x - 1.7.x
+			return (Player[]) players;
+		} else {
+			//1.8+
+			return ((Collection<Player>)players).toArray(new Player[0]); 
 		}
 	}
 }

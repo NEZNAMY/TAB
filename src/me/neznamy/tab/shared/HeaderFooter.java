@@ -10,6 +10,7 @@ public class HeaderFooter {
 
 	public static void load() {
 		if (!enable) return;
+		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
 		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", Feature.HEADERFOOTER, new Runnable(){
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, false);
@@ -30,8 +31,6 @@ public class HeaderFooter {
 		if (p.disabledHeaderFooter || p.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;
 		boolean header = p.properties.get("header").isUpdateNeeded();
 		boolean footer = p.properties.get("footer").isUpdateNeeded();
-		if (header || footer || force) {
-			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
-		}
+		if (header || footer || force) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
 	}
 }

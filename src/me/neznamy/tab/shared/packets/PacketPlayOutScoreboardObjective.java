@@ -30,7 +30,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			TITLE.set(packet, Shared.mainClass.createComponent(title));
+			TITLE.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(title)));
 		} else {
 			TITLE.set(packet, title);
 		}
@@ -41,7 +41,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String title = this.title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = (String) Shared.mainClass.createComponent(title);
+			title = Shared.jsonFromText(title);
 		} else {
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}
@@ -58,10 +58,15 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private EnumScoreboardHealthDisplay() {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
-			} else {
-				nmsEquivalent = ordinal();
+			try {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+					nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
+				} else {
+					nmsEquivalent = ordinal();
+				}
+			} catch (Exception e) {
+				Shared.print("§4", "Failed to initialize EnumScoreboardHealthDisplay class");
+				e.printStackTrace();
 			}
 		}
 		public Object toNMS() {

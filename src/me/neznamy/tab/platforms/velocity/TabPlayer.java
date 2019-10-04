@@ -8,12 +8,11 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
-import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
 public class TabPlayer extends ITabPlayer{
@@ -29,7 +28,7 @@ public class TabPlayer extends ITabPlayer{
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
 	}
 	public String getGroupFromPermPlugin() {
-		if (Main.server.getPluginManager().getPlugin("LuckPerms").isPresent()) return LuckPerms.getApi().getUser(player.getUniqueId()).getPrimaryGroup();
+		if (Main.server.getPluginManager().getPlugin("LuckPerms").isPresent()) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 		return null;
 	}
 	public String[] getGroupsFromPermPlugin() {
@@ -45,7 +44,7 @@ public class TabPlayer extends ITabPlayer{
 		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
 	}
 	public void setPlayerListName() {
-		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getTablistId()).setDisplayName((Component) Shared.mainClass.createComponent(getName())).setName(getName());
+		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getTablistId()).setDisplayName(TextComponent.of(getName())).setName(getName());
 		PlayerListItem packet = new PlayerListItem(3, Lists.newArrayList(playerInfoData));
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendPacket(packet);

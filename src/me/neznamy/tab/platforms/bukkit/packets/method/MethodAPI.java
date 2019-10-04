@@ -2,12 +2,12 @@ package me.neznamy.tab.platforms.bukkit.packets.method;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject;
-import me.neznamy.tab.shared.ProtocolVersion;
 
 public abstract class MethodAPI {
 
@@ -87,7 +87,7 @@ public abstract class MethodAPI {
 
 	static {
 		try {
-			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + ProtocolVersion.packageName).getConstructor().newInstance();
+			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]).getConstructor().newInstance();
 			try {
 				Class.forName("org.spigotmc.SpigotConfig");
 				spigot = true;
@@ -95,6 +95,7 @@ public abstract class MethodAPI {
 				spigot = false;
 			}
 		} catch (Throwable e) {
+			e.printStackTrace();
 			//bungee or velocity
 		}
 	}

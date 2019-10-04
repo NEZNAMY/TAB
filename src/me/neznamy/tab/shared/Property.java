@@ -28,7 +28,7 @@ public class Property {
 		placeholders = detectPlaceholders(value, owner != null);
 		hasRelationalPlaceholders = value.contains("%rel_");
 		placeholderapiPlaceholdersPresent = value.indexOf("%") != value.lastIndexOf("%"); //two or more %
-		if (placeholders.isEmpty() && !placeholderapiPlaceholdersPresent) {
+		if (placeholders.isEmpty() && !placeholderapiPlaceholdersPresent && !hasRelationalPlaceholders) {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
 			for (String removed : Configs.removeStrings) {
@@ -80,8 +80,8 @@ public class Property {
 			string = pl.set(string, owner);
 		}
 		//placeholderapi
-		if (placeholderapiPlaceholdersPresent && Placeholders.placeholderAPI) {
-			string = Placeholders.setPlaceholderAPIPlaceholders(string, owner);
+		if (placeholderapiPlaceholdersPresent && PluginHooks.placeholderAPI) {
+			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string);
 		}
 
 		//removing strings
@@ -92,7 +92,7 @@ public class Property {
 		//colors
 		string = Placeholders.color(string);
 
-		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > 30000)) {
+		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > Configs.SECRET_relational_placeholders_refresh *1000)) {
 			lastReplacedValue = string;
 			lastUpdate = System.currentTimeMillis();
 			return true;
@@ -101,7 +101,10 @@ public class Property {
 		}
 	}
 	public boolean hasRelationalPlaceholders() {
-		return hasRelationalPlaceholders && Placeholders.placeholderAPI;
+		return hasRelationalPlaceholders && PluginHooks.placeholderAPI;
+	}
+	public boolean isStatic() {
+		return Static;
 	}
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
 		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();

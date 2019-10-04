@@ -59,7 +59,6 @@ public enum ProtocolVersion {
 	UNKNOWN		(-1,  "Unknown",   -1,	0,  0);
 	
 	public static ProtocolVersion SERVER_VERSION;
-	public static String packageName;
 	
 	private int networkId;
 	private String friendlyName;
@@ -82,9 +81,6 @@ public enum ProtocolVersion {
 	}
 	public int getMinorVersion() {
 		return minorVersion;
-	}
-	public boolean isSupported() {
-		return minorVersion >= 5 && this != UNKNOWN;
 	}
 	public ProtocolVersion friendlyName(String name) {
 		friendlyName = name;

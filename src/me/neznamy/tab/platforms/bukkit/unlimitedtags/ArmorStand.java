@@ -19,7 +19,7 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Placeholders;
+import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -52,12 +52,16 @@ public class ArmorStand{
 		updateLocation();
 	}
 	public void refreshName() {
-		if (property.isUpdateNeeded()) updateMetadata();
+		if (property.isUpdateNeeded()) {
+			visible = getVisibility();
+			updateMetadata();
+		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		updateLocation();
+		visible = getVisibility();
 		String name = property.get();
-		name = Placeholders.setRelational(owner, to, name);
+		name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name));
 	}
@@ -107,11 +111,11 @@ public class ArmorStand{
 		String name = property.get();
 		if (property.hasRelationalPlaceholders()) {
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
-				String currentName = Placeholders.setRelational(owner, all, name);
+				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
 				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
 			}
 			if (owner.previewingNametag) {
-				String currentName = Placeholders.setRelational(owner, owner, name);
+				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
 				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName), true).toNMS(null));
 			}
 		} else {
@@ -155,7 +159,7 @@ public class ArmorStand{
 		if (name == null) name = "";
 		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(Shared.mainClass.createComponent(name)));
+			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(name))));
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}

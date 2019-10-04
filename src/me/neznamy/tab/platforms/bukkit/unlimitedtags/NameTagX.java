@@ -47,7 +47,7 @@ public class NameTagX implements Listener{
 			for (Player w : (((TabPlayer)all).player).getWorld().getPlayers()) {
 				ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
 				if (wPlayer == null) {
-					Shared.error("Data of " + w.getName() + " don't exist ?");
+					Shared.error(null, "Data of " + w.getName() + " don't exist ?");
 					continue;
 				}
 				if (all == wPlayer) continue;
@@ -81,7 +81,7 @@ public class NameTagX implements Listener{
 		if (Main.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
-			Shared.error("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
+			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
 			return;
 		}
 		Shared.runTask("processing sneak toggle", Feature.NAMETAGX, new Runnable() {

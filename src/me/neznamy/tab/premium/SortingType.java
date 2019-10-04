@@ -36,7 +36,7 @@ public enum SortingType {
 			try {
 				Long.parseLong(teamName);
 			} catch (Throwable e) {
-				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
+				Shared.error(null, teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			while (teamName.length() < 10) teamName = "0" + teamName;
 			break;
@@ -46,7 +46,7 @@ public enum SortingType {
 				long value = Long.parseLong(teamName);
 				teamName = (9999999999L-value)+"";
 			} catch (Throwable e) {
-				Shared.error(teamName + " is not a number! Did you forget to download an expansion ?");
+				Shared.error(null, teamName + " is not a number! Did you forget to download an expansion ?");
 			}
 			break;
 		case PLACEHOLDER_A_TO_Z:

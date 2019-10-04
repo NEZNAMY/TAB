@@ -40,8 +40,7 @@ public class Main implements MainClass{
 
 	public static ProxyServer server;
 	public static Logger logger;
-	public static Main instance;
-	public static boolean disabled = false;
+	public static boolean disabled;
 
 	@Inject
 	public Main(ProxyServer server, Logger logger) {
@@ -51,9 +50,8 @@ public class Main implements MainClass{
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		long time = System.currentTimeMillis();
-		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
-		Shared.init(this);
+		Shared.mainClass = this;
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUsername()) : null, args);
@@ -83,7 +81,7 @@ public class Main implements MainClass{
 			Shared.data.clear();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
-			Shared.error("Failed to unload the plugin", e);
+			Shared.error(null, "Failed to unload the plugin", e);
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -155,7 +153,7 @@ public class Main implements MainClass{
 				p.onWorldChange(from, to);
 			}
 		} catch (Throwable ex){
-			Shared.error("An error occured when player joined/changed server", ex);
+			Shared.error(null, "An error occured when player joined/changed server", ex);
 		}
 	}
 	@Subscribe
@@ -191,18 +189,14 @@ public class Main implements MainClass{
 						if (killPacket(packet)) return;
 					}*/
 				} catch (Throwable e){
-					Shared.error("An error occured when analyzing packets", e);
+					Shared.error(null, "An error occured when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}
 		});
 	}
-	public Component createComponent(String text) {
-		if (text == null) return null;
-		return TextComponent.of(text);
-	}
 	public void sendConsoleMessage(String message) {
-		server.getConsoleCommandSource().sendMessage(createComponent(message));
+		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
 	}
 	public String getPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
@@ -220,17 +214,6 @@ public class Main implements MainClass{
 		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
 	public boolean killPacket(Object packetPlayOutScoreboardTeam){
-/*		if (((Team) packetPlayOutScoreboardTeam).getFriendlyFire() != 69) {
-			String[] players = ((Team) packetPlayOutScoreboardTeam).getPlayers();
-			if (players == null) return false;
-			for (ITabPlayer p : Shared.getPlayers()) {
-				for (String player : players) {
-					if (player.equals(p.getName()) && !p.disabledNametag) {
-						return true;
-					}
-				}
-			}
-		}*/
 		return false;
 	}
 	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
@@ -241,6 +224,16 @@ public class Main implements MainClass{
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 		TabObjective.type = TabObjectiveType.NONE;
+	}
+	//java class loader is retarded and throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
+	//making it return Object and then casting fixes it
+	public static Object componentFromText(String text) {
+		if (text == null) return null;
+		return TextComponent.of(text);
+	}
+	public static String textFromComponent(Component component) {
+		if (component == null) return null;
+		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
 		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();

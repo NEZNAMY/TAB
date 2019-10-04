@@ -7,8 +7,6 @@ import java.util.UUID;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.kyori.text.Component;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -74,7 +72,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			PROGRESS.set(packet, progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			NAME.set(packet, Shared.mainClass.createComponent(title));
+			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(title)));
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			COLOR.set(packet, color.toNMS());
@@ -94,7 +92,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setHealth(progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			packet.setTitle((String) Shared.mainClass.createComponent(title));
+			packet.setTitle(Shared.jsonFromText(title));
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());
@@ -114,7 +112,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setPercent(progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			packet.setName(GsonComponentSerializer.INSTANCE.serialize((Component) Shared.mainClass.createComponent(title)));
+			packet.setName(Shared.jsonFromText(title));
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());
@@ -147,7 +145,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private Action(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.PacketPlayOutBoss_Action, toString());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.PacketPlayOutBoss_Action, toString());
+			}
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -171,7 +171,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarColor(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarColor, toString());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarColor, toString());
+			}
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
@@ -193,7 +195,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarStyle(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.getInstance() != null) nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarStyle, toString());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarStyle, toString());
+			}
 		}
 		public Object toNMS() {
 			return nmsEquivalent;

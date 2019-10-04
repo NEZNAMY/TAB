@@ -14,8 +14,7 @@ public abstract class Placeholder {
 		try {
 			return s.replace(identifier, get(p));
 		} catch (Throwable t) {
-			Shared.error("An error occured when setting placeholder \"" + identifier + "\" for " + p.getName(), t);
-			return s;
+			return Shared.error(s, "An error occured when setting placeholder \"" + identifier + "\" for " + p.getName(), t);
 		}
 	}
 	public abstract String get(ITabPlayer p);

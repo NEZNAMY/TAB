@@ -9,7 +9,7 @@ public interface MainClass {
 	public String getSeparatorType();
 	public boolean isDisabled();
 	public void reload(ITabPlayer sender);
-	public Object createComponent(String text);
+//	public Object createComponent(String text);
 	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception;
 	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;

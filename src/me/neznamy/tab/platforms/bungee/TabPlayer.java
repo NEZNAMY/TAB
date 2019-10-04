@@ -2,13 +2,12 @@ package me.neznamy.tab.platforms.bungee;
 
 import java.lang.reflect.Field;
 
-import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.alpenblock.bungeeperms.BungeePerms;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -31,8 +30,12 @@ public class TabPlayer extends ITabPlayer{
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 	}
 	public String getGroupFromPermPlugin() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return LuckPerms.getApi().getUser(player.getUniqueId()).getPrimaryGroup();
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(player.getUniqueId())).getName();
+		try {
+			if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return PluginHooks.LuckPerms_getPrimaryGroup(this);
+			if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
+		} catch (Throwable ex) {
+			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
+		}
 		return player.getGroups().toArray(new String[0])[0];
 	}
 	public String[] getGroupsFromPermPlugin() {
@@ -49,7 +52,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void setPlayerListName() {
 		Item playerInfoData = new Item();
-		playerInfoData.setDisplayName((String) Shared.mainClass.createComponent(getName()));
+		playerInfoData.setDisplayName(Shared.jsonFromText(getName()));
 		playerInfoData.setUsername(getName());
 		playerInfoData.setUuid(getTablistId());
 		PlayerListItem packet = new PlayerListItem();

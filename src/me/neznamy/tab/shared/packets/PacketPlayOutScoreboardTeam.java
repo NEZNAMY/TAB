@@ -46,16 +46,16 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, Shared.mainClass.createComponent(team));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(team)));
 			if (prefix != null && prefix.length() > 0) {
-				PREFIX.set(packet, Shared.mainClass.createComponent(prefix));
+				PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(prefix)));
 				String last = Placeholders.getLastColors(prefix);
 				if (last != null && last.length() > 0) {
 					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
 				}
 				if (chatFormat != null) CHATFORMAT.set(packet, chatFormat.toNMS());
 			}
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, Shared.mainClass.createComponent(suffix));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(suffix)));
 		} else {
 			DISPLAYNAME.set(packet, team);
 			if (prefix != null) PREFIX.set(packet, prefix);
@@ -72,9 +72,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		String teamDisplay = team;
 		int color = 0;
 		if (clientVersion.getMinorVersion() >= 13) {
-			if (prefix != null) prefix = (String) Shared.mainClass.createComponent(prefix);
-			if (prefix != null) suffix = (String) Shared.mainClass.createComponent(suffix);
-			teamDisplay = (String) Shared.mainClass.createComponent(team);
+			prefix = Shared.jsonFromText(prefix);
+			suffix = Shared.jsonFromText(suffix);
+			teamDisplay = Shared.jsonFromText(team);
 			color = chatFormat.toBungee();
 		} else {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);

@@ -101,8 +101,8 @@ public class BossBar{
 		private String name;
 		private boolean permissionRequired;
 		private UUID uuid; //1.9+
-		private Object nmsEntity; //1.8.x
-		private int entityId; //1.8.x
+		private Object nmsEntity; // <1.9
+		private int entityId; // <1.9
 		private int refresh;
 		public String style;
 		public String color;
@@ -113,7 +113,7 @@ public class BossBar{
 			this.name = name;
 			this.permissionRequired = permissionRequired;
 			if (refresh == 0) {
-				Shared.startupWarn("One of the BossBars has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
+				Shared.startupWarn("Bossbar \"" + name + "\" has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
@@ -149,24 +149,21 @@ public class BossBar{
 			try {
 				return BarColor.valueOf(color);
 			} catch (Exception e) {
-				Shared.error("\"" + color + "\" is not a valid boss bar color");
-				return BarColor.WHITE;
+				return Shared.error(BarColor.WHITE, "\"" + color + "\" is not a valid boss bar color");
 			}
 		}
 		public BarStyle parseStyle(String style) {
 			try {
 				return BarStyle.valueOf(style);
 			} catch (Exception e) {
-				Shared.error("\"" + color + "\" is not a valid boss bar color");
-				return BarStyle.PROGRESS;
+				return Shared.error(BarStyle.PROGRESS, "\"" + style + "\" is not a valid boss bar color");
 			}
 		}
 		public float parseProgress(String progress) {
 			try {
 				return Integer.parseInt(progress);
 			} catch (Exception e) {
-				Shared.error("\"" + progress + "\" is not a valid number");
-				return 100;
+				return Shared.error(100, "\"" + progress + "\" is not a valid number");
 			}
 		}
 	}

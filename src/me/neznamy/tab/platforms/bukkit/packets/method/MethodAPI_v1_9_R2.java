@@ -54,6 +54,7 @@ public class MethodAPI_v1_9_R2 extends MethodAPI {
 		return ((CraftPlayer)p).getHandle().getProfile();
 	}
 	public Object ICBC_fromString(String string) {
+		if (string == null) return null;
 		return IChatBaseComponent.ChatSerializer.a(string);
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {

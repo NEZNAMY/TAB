@@ -50,8 +50,7 @@ public class TabObjective{
 		try {
 			return Integer.parseInt(replaced);
 		} catch (Throwable e) {
-			Shared.error("Value \"" + replaced + "\" is not a valid number for tablist objective! Did you forget to download an expansion ?");
-			return 0;
+			return Shared.error(0, "Value \"" + replaced + "\" is not a valid number for tablist objective! Did you forget to download an expansion ?");
 		}
 	}
 	public enum TabObjectiveType{

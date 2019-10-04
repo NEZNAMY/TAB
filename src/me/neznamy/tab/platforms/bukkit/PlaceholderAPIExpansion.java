@@ -15,27 +15,21 @@ public class PlaceholderAPIExpansion{
 	public static void register() {
 		exp = new PlaceholderExpansion() {
 
-			@Override
 			public boolean persist(){
 				return true;
 			}
-			@Override
 			public boolean canRegister(){
 				return true;
 			}
-			@Override
 			public String getAuthor(){
 				return Main.instance.getDescription().getAuthors().toString();
 			}
-			@Override
 			public String getIdentifier(){
 				return "tab";
 			}
-			@Override
 			public String getVersion(){
 				return Main.instance.getDescription().getVersion();
 			}
-			@Override
 			public String onPlaceholderRequest(Player player, String identifier){
 				if (player == null) return "";
 				ITabPlayer p = Shared.getPlayer(player.getUniqueId());
@@ -58,7 +52,7 @@ public class PlaceholderAPIExpansion{
 		try {
 			if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
 		} catch (Exception ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread) {
-			Shared.error("Failed to unregister expansion for PlaceholderAPI", ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread);
+			Shared.error(null, "Failed to unregister expansion for PlaceholderAPI", ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread);
 		}
 	}
 }

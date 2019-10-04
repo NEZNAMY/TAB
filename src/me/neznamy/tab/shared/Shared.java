@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.json.simple.JSONObject;
+
 import me.neznamy.tab.shared.FancyMessage.ClickAction;
 import me.neznamy.tab.shared.FancyMessage.Extra;
 import me.neznamy.tab.shared.FancyMessage.HoverAction;
@@ -27,7 +29,7 @@ public class Shared {
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
 	public static final boolean consoleErrors = false;
-	public static final String pluginVersion = "2.5.3";
+	public static final String pluginVersion = "2.5.4-pre1";
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
@@ -36,9 +38,6 @@ public class Shared {
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
 
-	public static void init(MainClass mainClass) {
-		Shared.mainClass = mainClass;
-	}
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
 	}
@@ -65,33 +64,35 @@ public class Shared {
 		}
 		return null;
 	}
-	public static void error(String message) {
-		error(message, null);
+	public static <T> T error(T defaultValue, String message) {
+		return error(defaultValue, message, null);
 	}
-	public static void error(String message, Throwable t) {
+	public static <T> T error(T defaultValue, String message, Throwable t) {
 		try {
 			if (!Configs.errorFile.exists()) Configs.errorFile.createNewFile();
-			if (Configs.errorFile.length() > 1000000) return; //not going over 1 MB
-			BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
-			if (message != null) {
-				buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-				if (consoleErrors) print("§c", message);
-			}
-			if (t != null) {
-				buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-				if (consoleErrors) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
-				for (StackTraceElement ste : t.getStackTrace()) {
-					buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-					if (consoleErrors) printClean("§c       at " + ste.toString());
+			if (Configs.errorFile.length() < 1000000) { //not going over 1 MB
+				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
+				if (message != null) {
+					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
+					if (consoleErrors) print("§c", message);
 				}
+				if (t != null) {
+					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
+					if (consoleErrors) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
+					for (StackTraceElement ste : t.getStackTrace()) {
+						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
+						if (consoleErrors) printClean("§c       at " + ste.toString());
+					}
+				}
+				buf.close();
 			}
-			buf.close();
 		} catch (Throwable ex) {
 			print("§c", "An error occured when generating error message");
 			ex.printStackTrace();
 			print("§c", "Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
+		return defaultValue;
 	}
 	public static String round(double value) {
 		return new DecimalFormat("#.##").format(value);
@@ -141,7 +142,7 @@ public class Shared {
 					} catch (InterruptedException pluginDisabled) {
 						break;
 					} catch (Throwable t) {
-						error("An error occured when " + description, t);
+						error(null, "An error occured when " + description, t);
 					}
 				}
 			}
@@ -156,7 +157,7 @@ public class Shared {
 					r.run();
 					cpu(feature, System.nanoTime()-time);
 				} catch (Throwable t) {
-					error("An error occured when " + description, t);
+					error(null, "An error occured when " + description, t);
 				}
 			}
 		});
@@ -169,6 +170,14 @@ public class Shared {
 		message.add(new Extra("§3TAB v" + pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
 		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
+	}
+	@SuppressWarnings("unchecked")
+	public static String jsonFromText(String text) {
+		if (text == null) return null;
+		if (text.length() == 0) return "{\"translate\":\"\"}";
+		JSONObject object = new JSONObject();
+		object.put("text", text);
+		return object.toString();
 	}
 	public static void registerUniversalPlaceholders() {
 		Placeholders.playerPlaceholders.add(new Placeholder("%rank%") {
@@ -291,7 +300,7 @@ public class Shared {
 		});
 	}
 	public static enum Feature{
-		
+
 		NAMETAG("Name tags"),
 		NAMETAGAO("Name tag anti-override"),
 		PLAYERLIST_1("Tablist names 1"),
@@ -303,9 +312,9 @@ public class Shared {
 		NAMETAGX("Unlimited nametag mode"),
 		BELOWNAME("Belowname"),
 		OTHER("Other");
-		
+
 		private String string;
-		
+
 		Feature(String string) {
 			this.string = string;
 		}
@@ -314,9 +323,9 @@ public class Shared {
 		}
 	}
 	public static class CPUSample{
-		
+
 		private ConcurrentHashMap<Feature, Long> values;
-		
+
 		public CPUSample(ConcurrentHashMap<Feature, Long> cpuLastSecond) {
 			this.values = cpuLastSecond;
 		}

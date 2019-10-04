@@ -18,6 +18,7 @@ public class FancyMessage {
 	}
 	public String toString() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+			//1.7+
 			JSONObject main = new JSONObject();
 			main.put("text", "");
 			if (!extras.isEmpty()) {
@@ -29,6 +30,7 @@ public class FancyMessage {
 			}
 			return main.toString();
 		} else {
+			//1.5.x, 1.6.x
 			String text = "";
 			if (!extras.isEmpty()) {
 				for (Extra c : extras) {
@@ -36,8 +38,10 @@ public class FancyMessage {
 				}
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
+				//1.6.x
 				return "{\"text\":\"" + text + "\"}";
 			} else {
+				//1.5.x
 				return text;
 			}
 		}
@@ -106,7 +110,7 @@ public class FancyMessage {
 	}
 	public enum ClickAction{
 
-		OPEN_URL, OPEN_FILE, RUN_COMMAND, SUGGEST_COMMAND,CHANGE_PAGE;
+		OPEN_URL, OPEN_FILE, RUN_COMMAND, SUGGEST_COMMAND, CHANGE_PAGE;
 
 		public String toString() {
 			return super.toString().toLowerCase();

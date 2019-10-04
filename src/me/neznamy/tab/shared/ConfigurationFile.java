@@ -144,7 +144,7 @@ public class ConfigurationFile{
 			writer.close();
 			fixComments();
 		} catch (Throwable e) {
-			Shared.error("Failed to save yaml file " + file.getPath(), e);
+			Shared.error(null, "Failed to save yaml file " + file.getPath(), e);
 		}
 	}
 	public boolean hasComments() {
@@ -173,7 +173,7 @@ public class ConfigurationFile{
 			}
 			buf.close();
 		} catch (Exception ex) {
-			Shared.error("Failed to modify file " + file, ex);
+			Shared.error(null, "Failed to modify file " + file, ex);
 		}
 	}
 	private List<String> readFile(File file) {
@@ -189,7 +189,7 @@ public class ConfigurationFile{
 			}
 			br.close();
 		} catch (Exception ex) {
-			Shared.error("Failed to read file " + file, ex);
+			Shared.error(null, "Failed to read file " + file, ex);
 		}
 		return list;
 	}

@@ -229,7 +229,7 @@ public class TabCommand{
 		}
 		sendMessage(sender, "§3[TAB] §a§lShowing debug information");
 		sendMessage(sender, "§7§m>-------------------------------<");
-		sendMessage(sender, "§6PlaceholderAPI: §a" + Placeholders.placeholderAPI);
+		sendMessage(sender, "§6PlaceholderAPI: §a" + PluginHooks.placeholderAPI);
 		sendMessage(sender, "§6Found Permission system: §a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.usePrimaryGroup) {
 			sendMessage(sender, "§6Permission group choice logic: §aPrimary group§8/§r§8§mChoose from list");
@@ -269,18 +269,18 @@ public class TabCommand{
 			}
 			if (sorting) sendMessage(sender, "§eTeam name: §a" +analyzed.getTeamName().replace("§", "&"));
 			if (Playerlist.enable) {
-				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue());
-				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue());
-				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue());
+				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabprefix").isStatic() + ")");
+				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
+				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
-				sendMessage(sender, "§9tagprefix: §b" + analyzed.properties.get("tagprefix").getCurrentRawValue());
-				sendMessage(sender, "§9tagsuffix: §b" + analyzed.properties.get("tagsuffix").getCurrentRawValue());
+				sendMessage(sender, "§9tagprefix: §b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
+				sendMessage(sender, "§9tagsuffix: §b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
 			}
 			if (Configs.unlimitedTags) {
-				sendMessage(sender, "§9abovename: §b" + analyzed.properties.get("abovename").getCurrentRawValue());
-				sendMessage(sender, "§9belowname: §b" + analyzed.properties.get("belowname").getCurrentRawValue());
-				sendMessage(sender, "§9tagname: §b" + analyzed.properties.get("customtagname").getCurrentRawValue());
+				sendMessage(sender, "§9abovename: §b" + analyzed.properties.get("abovename").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("abovename").isStatic() + ")");
+				sendMessage(sender, "§9belowname: §b" + analyzed.properties.get("belowname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("belowname").isStatic() + ")");
+				sendMessage(sender, "§9tagname: §b" + analyzed.properties.get("customtagname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtagname").isStatic() + ")");
 			}
 		}
 	}
@@ -296,7 +296,7 @@ public class TabCommand{
 			pl.setProperty(type, value);
 			pl.forceUpdateDisplay();
 		}
-		if (value.equals("")) value = null;
+		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
 		if (value != null){
@@ -312,7 +312,7 @@ public class TabCommand{
 				pl.forceUpdateDisplay();
 			}
 		}
-		if (value.equals("")) value = null;
+		if (value.length() == 0) value = null;
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
 		if (value != null){

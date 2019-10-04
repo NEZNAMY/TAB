@@ -39,6 +39,8 @@ public class Configs {
 	public static String yesTag;
 	public static String noAfk;
 	public static String yesAfk;
+	public static final double NTX_SPACE = 0.22;
+	public static int SECRET_relational_placeholders_refresh;
 
 
 	public static ConfigurationFile animation;
@@ -117,6 +119,7 @@ public class Configs {
 			}
 		}
 		loadConfig();
+		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
@@ -215,5 +218,16 @@ public class Configs {
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "§");
 		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.").replace("&", "§");
 		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.").replace("&", "§");
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T getSecretOption(String path, T defaultValue) {
+		Object value = config.get(path);
+		if (value == null) return defaultValue;
+		if (defaultValue instanceof Integer) return (T) (Object) Integer.parseInt(value+"");
+		if (defaultValue instanceof Float) return (T) (Object) Float.parseFloat(value+"");
+		if (defaultValue instanceof Double) return (T) (Object) Double.parseDouble(value+"");
+		if (defaultValue instanceof Long) return (T) (Object) Long.parseLong(value+"");
+		if (defaultValue instanceof String) return (T) (value+"");
+		return (T) value;
 	}
 }

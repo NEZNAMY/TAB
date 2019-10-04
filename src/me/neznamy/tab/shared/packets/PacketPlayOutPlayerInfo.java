@@ -18,7 +18,6 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
@@ -121,11 +120,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			GameProfile profile = new GameProfile(uniqueId, name);
 			profile.getProperties().clear();
 			profile.getProperties().putAll((Multimap<String, Property>) properties);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), Shared.mainClass.createComponent(listName));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(listName)));
 		}
 		public Object toBungee() {
 			Item item = new Item();
-			item.setDisplayName((String) Shared.mainClass.createComponent(listName));
+			item.setDisplayName(Shared.jsonFromText(listName));
 			item.setGamemode(gamemode.getNetworkId());
 			item.setPing(ping);
 			item.setProperties((String[][]) properties);
@@ -135,7 +134,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toVelocity() {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) Shared.mainClass.createComponent(listName));
+			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromText(listName));
 			item.setGameMode(gamemode.getNetworkId());
 			item.setLatency(ping);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) properties);
@@ -162,7 +161,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public static PlayerInfoData fromVelocity(Object nmsData){
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item) nmsData;
-			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()),(item.getDisplayName() == null ? null : ((TextComponent) item.getDisplayName()).content()));
+			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), me.neznamy.tab.platforms.velocity.Main.textFromComponent(item.getDisplayName()));
 		}
 	}
 

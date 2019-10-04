@@ -78,7 +78,7 @@ public class DataWatcherSerializer {
 				Vector3f = 7;
 			}
 		} catch (Exception e) {
-			Shared.error("Failed to initialize class ", e);
+			Shared.error(null, "Failed to initialize class ", e);
 		}
 	}
 }

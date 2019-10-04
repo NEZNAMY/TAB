@@ -8,14 +8,12 @@ import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.kyori.text.Component;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 
-	private String header;
-	private String footer;
+	public String header;
+	public String footer;
 
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
 		this.header = header;
@@ -23,17 +21,15 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerListHeaderFooter();
-		HEADER.set(packet, Shared.mainClass.createComponent(header));
-		FOOTER.set(packet, Shared.mainClass.createComponent(footer));
+		HEADER.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(header)));
+		FOOTER.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(footer)));
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new PlayerListHeaderFooter((String) Shared.mainClass.createComponent(header), (String) Shared.mainClass.createComponent(footer));
+		return new PlayerListHeaderFooter(Shared.jsonFromText(header), Shared.jsonFromText(footer));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		String header = (this.header == null || this.header.length() == 0) ? "{\"translate\":\"\"}" : GsonComponentSerializer.INSTANCE.serialize((Component) Shared.mainClass.createComponent(this.header));
-		String footer = (this.footer == null || this.footer.length() == 0) ? "{\"translate\":\"\"}" : GsonComponentSerializer.INSTANCE.serialize((Component) Shared.mainClass.createComponent(this.footer));
-		return new HeaderAndFooter(header, footer);
+		return new HeaderAndFooter(Shared.jsonFromText(header), Shared.jsonFromText(footer));
 	}
 
 	private static Field HEADER;

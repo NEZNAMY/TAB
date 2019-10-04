@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -26,7 +25,6 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -34,14 +32,12 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class Main extends Plugin implements Listener, MainClass{
 
-	public static Main instance;
-	public static boolean disabled = false;
+	public static boolean disabled;
 
 	public void onEnable(){
 		long time = System.currentTimeMillis();
-		instance = this;
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
-		Shared.init(this);
+		Shared.mainClass = this;
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
@@ -78,7 +74,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.data.clear();
 			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
-			Shared.error("Failed to unload the plugin", e);
+			Shared.error(null, "Failed to unload the plugin", e);
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -181,8 +177,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				TabObjective.playerJoin(p);
 				BossBar.playerJoin(p);
 				ScoreboardManager.register(p);
-				ITabPlayer pl = p;
-				NameTag16.playerJoin(pl);
+				NameTag16.playerJoin(p);
 			} else {
 				String from = p.getWorldName();
 				String to = p.world = e.getPlayer().getServer().getInfo().getName();
@@ -190,7 +185,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 			
 		} catch (Throwable ex){
-			Shared.error("An error occured when player joined/changed server", ex);
+			Shared.error(null, "An error occured when player joined/changed server", ex);
 		}
 	}
 	@EventHandler
@@ -226,16 +221,11 @@ public class Main extends Plugin implements Listener, MainClass{
 						if (killPacket(packet)) return;
 					}
 				} catch (Throwable e){
-					Shared.error("An error occured when analyzing packets", e);
+					Shared.error(null, "An error occured when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}
 		});
-	}
-	public String createComponent(String text) {
-		if (text == null) return null;
-		if (text.length() == 0) return "{\"translate\":\"\"}";
-		return ComponentSerializer.toString(new TextComponent(text));
 	}
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
