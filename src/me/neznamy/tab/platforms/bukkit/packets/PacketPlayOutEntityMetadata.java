@@ -1,10 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -42,7 +41,7 @@ public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 	public static PacketPlayOutEntityMetadata fromNMS(Object nmsPacket) throws Exception{
 		if (!MethodAPI.PacketPlayOutEntityMetadata.isInstance(nmsPacket)) return null;
 		int entityId = ENTITYID.getInt(nmsPacket);
-		List<Item> list = Lists.newArrayList();
+		List<Item> list = new ArrayList<Item>();
 		List<Object> items = (List<Object>)LIST.get(nmsPacket);
 		if (items != null) 
 			for (Object o : items) {

@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 
 public class DataWatcherSerializer {
 
@@ -30,55 +28,51 @@ public class DataWatcherSerializer {
 	public static Object NBTTagCompound;
 
 	static {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcherRegistry);
-				Byte = fields.get("a").get(null);
-				Integer = fields.get("b").get(null);
-				Float = fields.get("c").get(null);
-				String = fields.get("d").get(null);
-				IChatBaseComponent = fields.get("e").get(null);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-					Optional_IChatBaseComponent = fields.get("f").get(null);
-					ItemStack = fields.get("g").get(null);
-					Optional_IBlockData = fields.get("h").get(null);
-					Boolean = fields.get("i").get(null);
-					ParticleParam = fields.get("j").get(null);
-					Vector3f = fields.get("k").get(null);
-					BlockPosition = fields.get("l").get(null);
-					Optional_BlockPosition = fields.get("m").get(null);
-					EnumDirection = fields.get("n").get(null);
-					Optional_UUID = fields.get("o").get(null);
-					NBTTagCompound = fields.get("p").get(null);
-				} else {
-					Optional_IBlockData = fields.get("g").get(null);
-					Boolean = fields.get("h").get(null);
-					Vector3f = fields.get("i").get(null);
-					BlockPosition = fields.get("j").get(null);
-					Optional_BlockPosition = fields.get("k").get(null);
-					EnumDirection = fields.get("l").get(null);
-					Optional_UUID = fields.get("m").get(null);
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-						NBTTagCompound = fields.get("n").get(null);
-					}
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
-						ItemStack = fields.get("f").get(null);
-					} else {
-						Optional_ItemStack = fields.get("f").get(null);
-					}
-				}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			Map<String, Object> fields = PacketPlayOut.getStaticFields(MethodAPI.DataWatcherRegistry);
+			Byte = fields.get("a");
+			Integer = fields.get("b");
+			Float = fields.get("c");
+			String = fields.get("d");
+			IChatBaseComponent = fields.get("e");
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+				Optional_IChatBaseComponent = fields.get("f");
+				ItemStack = fields.get("g");
+				Optional_IBlockData = fields.get("h");
+				Boolean = fields.get("i");
+				ParticleParam = fields.get("j");
+				Vector3f = fields.get("k");
+				BlockPosition = fields.get("l");
+				Optional_BlockPosition = fields.get("m");
+				EnumDirection = fields.get("n");
+				Optional_UUID = fields.get("o");
+				NBTTagCompound = fields.get("p");
 			} else {
-				Byte = 0;
-				Short = 1;
-				Integer = 2;
-				Float = 3;
-				String = 4;
-				ItemStack = 5;
-				BlockPosition = 6;
-				Vector3f = 7;
+				Optional_IBlockData = fields.get("g");
+				Boolean = fields.get("h");
+				Vector3f = fields.get("i");
+				BlockPosition = fields.get("j");
+				Optional_BlockPosition = fields.get("k");
+				EnumDirection = fields.get("l");
+				Optional_UUID = fields.get("m");
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
+					NBTTagCompound = fields.get("n");
+				}
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
+					ItemStack = fields.get("f");
+				} else {
+					Optional_ItemStack = fields.get("f");
+				}
 			}
-		} catch (Exception e) {
-			Shared.error(null, "Failed to initialize class ", e);
+		} else {
+			Byte = 0;
+			Short = 1;
+			Integer = 2;
+			Float = 3;
+			String = 4;
+			ItemStack = 5;
+			BlockPosition = 6;
+			Vector3f = 7;
 		}
 	}
 }
