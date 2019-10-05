@@ -30,17 +30,26 @@ public class PluginHooks {
 	public static boolean luckPerms;
 	public static boolean permissionsEx;
 	public static boolean placeholderAPI;
-	public static Essentials essentials;
-	public static de.robingrether.idisguise.api.DisguiseAPI idisguise;
-	public static Economy Vault_economy;
-	public static GroupManager groupManager;
-	public static Permission Vault_permission;
+	public static Object essentials;
+	public static Object idisguise;
+	public static Object Vault_economy;
+	public static Object groupManager;
+	public static Object Vault_permission;
 
 	public static String BungeePerms_getMainGroup(ITabPlayer p) {
 		return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
 		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
+	}
+	public static double Essentials_getMoney(ITabPlayer p) {
+		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getMoney().doubleValue();
+	}
+	public static String Essentials_getNickname(ITabPlayer p) {
+		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getNickname();
+	}
+	public static boolean Essentials_isAFK(ITabPlayer p) {
+		return ((Essentials)essentials).getUser(p.getUniqueId()).isAfk();
 	}
 	public static String FactionsMCore_getFactionName(ITabPlayer p) {
 		return MPlayer.get(((TabPlayer)p).player).getFactionName();
@@ -49,13 +58,14 @@ public class PluginHooks {
 		return FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
 	}
 	public static String GroupManager_getGroup(ITabPlayer p) {
-		return groupManager.getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
+		return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
 	}
 	public static String[] GroupManager_getGroups(ITabPlayer p) {
-		return groupManager.getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
+		return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
-		return idisguise.isDisguised(((TabPlayer)p).player);
+		
+		return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
 		return me.libraryaddict.disguise.DisguiseAPI.isDisguised(((TabPlayer)p).player);
@@ -110,6 +120,18 @@ public class PluginHooks {
 		} catch (Throwable e) {
 			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occured when getting protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
+	}
+	public static String Vault_getPermissionPlugin() {
+		return ((Permission)Vault_permission).getName();
+	}
+	public static String[] Vault_getGroups(ITabPlayer p) {
+		return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
+	}
+	public static double Vault_getMoney(ITabPlayer p) {
+		return ((Economy)Vault_economy).getBalance(((TabPlayer)p).player);
+	}
+	public static String Vault_getPrimaryGroup(ITabPlayer p) {
+		return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
 	}
 	public static int ViaVersion_getPlayerVersion(ITabPlayer p){
 		try {

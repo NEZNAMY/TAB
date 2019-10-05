@@ -156,7 +156,7 @@ public abstract class ITabPlayer{
 		}
 	}
 	private boolean getTeamVisibility() {
-		if (TABAPI.hasHiddenNametag(getUniqueId())) return false;
+		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
 		return !Configs.unlimitedTags && nameTagVisible;
 	}
 	public String getGroup() {
@@ -347,7 +347,7 @@ public abstract class ITabPlayer{
 		for (ITabPlayer all : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
 			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
-			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
+			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Lists.newArrayList(getName()));
 		}
 	}
 	public void registerTeam(ITabPlayer to) {

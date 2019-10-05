@@ -62,7 +62,7 @@ public class TabPlayer extends ITabPlayer{
 			if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 			if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this)[0];
 			if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
-			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_permission.getName().equals("SuperPerms")) return PluginHooks.Vault_permission.getPrimaryGroup(player);
+			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		} catch (Throwable ex) {
 			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
@@ -73,7 +73,7 @@ public class TabPlayer extends ITabPlayer{
 			if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
 			if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
 			if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
-			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_permission.getName().equals("SuperPerms")) return PluginHooks.Vault_permission.getPlayerGroups(player);
+			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
 		} catch (Throwable ex) {
 			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
 		}
@@ -82,8 +82,8 @@ public class TabPlayer extends ITabPlayer{
 	public String getMoney() {
 		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
 			lastRefreshMoney = System.currentTimeMillis();
-			if (PluginHooks.essentials != null) money = Shared.round(PluginHooks.essentials.getUser(player).getMoney().doubleValue());
-			if (PluginHooks.Vault_economy != null) money = Shared.round(PluginHooks.Vault_economy.getBalance(player));
+			if (PluginHooks.essentials != null) money = Shared.round(PluginHooks.Essentials_getMoney(this));
+			if (PluginHooks.Vault_economy != null) money = Shared.round(PluginHooks.Vault_getMoney(this));
 		}
 		return money;
 	}
@@ -95,8 +95,8 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public String getNickname() {
 		String name = null;
-		if (PluginHooks.essentials != null && PluginHooks.essentials.getUser(player) != null) {
-			name = PluginHooks.essentials.getUser(player).getNickname();
+		if (PluginHooks.essentials != null) {
+			name = PluginHooks.Essentials_getNickname(this);
 		}
 		if (name == null || name.length() == 0) name = getName();
 		return name;

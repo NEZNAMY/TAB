@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.*;
@@ -15,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
-import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
@@ -255,7 +253,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.permissionsEx) return "PermissionsEx";
 		if (PluginHooks.groupManager != null) return "GroupManager";
 		if (PluginHooks.luckPerms) return "LuckPerms";
-		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_permission.getName() + " (detected by Vault)";
+		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}
 	public String getSeparatorType() {
@@ -347,12 +345,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			PluginHooks.idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
-		PluginHooks.groupManager = (GroupManager) Bukkit.getPluginManager().getPlugin("GroupManager");
+		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
 		PluginHooks.placeholderAPI= Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.register();
 		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
-		PluginHooks.essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 
 		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
 		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
@@ -464,8 +462,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Placeholders.playerPlaceholders.add(new Placeholder("%afk%") {
 
 				public String get(ITabPlayer p) {
-					boolean afk = (PluginHooks.essentials.getUser(p.getUniqueId()) != null && PluginHooks.essentials.getUser(p.getUniqueId()).isAfk());
-					return afk?Configs.yesAfk:Configs.noAfk;
+					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
 				}
 				@Override
 				public String[] getChilds(){

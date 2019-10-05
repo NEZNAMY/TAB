@@ -41,6 +41,7 @@ public class Configs {
 	public static String yesAfk;
 	public static double SECRET_NTX_space;
 	public static int SECRET_relational_placeholders_refresh;
+	public static boolean SECRET_invisible_nametags;
 
 
 	public static ConfigurationFile animation;
@@ -121,6 +122,7 @@ public class Configs {
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
+		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();

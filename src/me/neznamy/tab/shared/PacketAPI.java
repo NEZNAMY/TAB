@@ -32,7 +32,7 @@ public class PacketAPI{
 	}
 
 	//scoreboard team
-	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
+	public static synchronized void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
 		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
 //			debug(to, "The action below is for safety and should not be needed");
 			unregisterScoreboardTeam(to, teamName);
