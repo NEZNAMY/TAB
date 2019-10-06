@@ -246,35 +246,35 @@ public class TABAPI {
 	
 	@Deprecated
 	public static String getTemporaryCustomTabName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("customtabname").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.CUSTOMTABNAME);
 	}
 	@Deprecated
 	public static String getTemporaryCustomTagName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("customtagname").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.CUSTOMTAGNAME);
 	}
 	@Deprecated
 	public static String getTemporaryTabPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tabprefix").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.TABPREFIX);
 	}
 	@Deprecated
 	public static String getTemporaryTabSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tabsuffix").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.TABSUFFIX);
 	}
 	@Deprecated
 	public static String getTemporaryTagPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tagprefix").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.TAGPREFIX);
 	}
 	@Deprecated
 	public static String getTemporaryTagSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tagsuffix").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.TAGSUFFIX);
 	}
 	@Deprecated
 	public static String getTemporaryAboveName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("abovename").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.ABOVENAME);
 	}
 	@Deprecated
 	public static String getTemporaryBelowName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("belowname").getTemporaryValue();
+		return getTemporaryValue(uniqueId, EnumProperty.BELOWNAME);
 	}
 	
 	@Deprecated
@@ -345,35 +345,35 @@ public class TABAPI {
 	
 	@Deprecated
 	public static String getOriginalCustomTabName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("customtabname").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.CUSTOMTABNAME);
 	}
 	@Deprecated
 	public static String getOriginalCustomTagName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("customtagname").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.CUSTOMTAGNAME);
 	}
 	@Deprecated
 	public static String getOriginalTabPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tabprefix").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.TABPREFIX);
 	}
 	@Deprecated
 	public static String getOriginalTagPrefix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tagprefix").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.TAGPREFIX);
 	}
 	@Deprecated
 	public static String getOriginalTabSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tabsuffix").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.TABSUFFIX);
 	}
 	@Deprecated
 	public static String getOriginalTagSuffix(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("tagsuffix").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.TAGSUFFIX);
 	}
 	@Deprecated
 	public static String getOriginalAboveName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("abovename").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.ABOVENAME);
 	}
 	@Deprecated
 	public static String getOriginalBelowName(UUID uniqueId) {
-		return Shared.getPlayer(uniqueId).properties.get("belowname").getOriginalRawValue();
+		return getOriginalValue(uniqueId, EnumProperty.BELOWNAME);
 	}
 	
 }
