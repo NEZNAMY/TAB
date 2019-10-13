@@ -42,6 +42,7 @@ public class Configs {
 	public static double SECRET_NTX_space;
 	public static int SECRET_relational_placeholders_refresh;
 	public static boolean SECRET_invisible_nametags;
+	public static boolean SECRET_safe_register;
 
 
 	public static ConfigurationFile animation;
@@ -123,6 +124,7 @@ public class Configs {
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
+		SECRET_safe_register = getSecretOption("safe-team-register", true);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();

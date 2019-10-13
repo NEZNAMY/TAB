@@ -33,16 +33,12 @@ public class PacketAPI{
 
 	//scoreboard team
 	public static synchronized void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
-		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-//			debug(to, "The action below is for safety and should not be needed");
+		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId() && Configs.SECRET_safe_register) {
 			unregisterScoreboardTeam(to, teamName);
 		}
-//		debug(to, "Registering team " + teamName);
-//		new Exception().printStackTrace();
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, players, 0, 69);
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
-//		debug(to, "Unregistering team " + teamName);
 		sendScoreboardTeamPacket(to, teamName, null, null, true, true, null, 1, 69);
 	}
 	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
@@ -55,16 +51,12 @@ public class PacketAPI{
 	//scoreboard objective
 	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-//			debug(to, "The action below is for safety and should not be needed");
 			unregisterScoreboardObjective(to, objectiveName, title, displayType);
 		}
-//		debug(to, "Registering objective " + objectiveName);
-//		new Exception().printStackTrace();
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
-//		debug(to, "Unregistering objective " + objectiveName);
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 1));
 	}
 	public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
