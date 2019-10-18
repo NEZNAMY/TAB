@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;

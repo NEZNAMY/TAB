@@ -79,14 +79,14 @@ public class Injector {
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
 						//preventing pets from having owner's nametag properties if feature is enabled
 						if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
-							List<Item> items = ((PacketPlayOutEntityMetadata)p).getList();
+							List<Item> items = ((PacketPlayOutEntityMetadata)p).items;
 							for (Item petOwner : items) {
-								if (petOwner.type.getPosition() == (ProtocolVersion.SERVER_VERSION.getPetOwnerPosition())) modifyDataWatcherItem(petOwner);
+								if (petOwner.type.position == (ProtocolVersion.SERVER_VERSION.getPetOwnerPosition())) modifyDataWatcherItem(petOwner);
 							}
 							packet = p.toNMS(null);
 						}
 						if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
-							DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).getDataWatcher();
+							DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).dataWatcher;
 							Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
 							if (petOwner != null) modifyDataWatcherItem(petOwner);
 							packet = p.toNMS(null);

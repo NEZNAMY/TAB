@@ -93,13 +93,13 @@ public class MethodAPI_v1_6_R2 extends MethodAPI {
 	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
 		return null;
 	}
-	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
-		WatchableObject item = new WatchableObject((int) type.getClassType(), type.getPosition(), value);
+	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value, boolean needsUpdate) {
+		WatchableObject item = new WatchableObject((int) type.classType, type.position, value);
 		item.a(needsUpdate);
 		return item;
 	}
-	public void DataWatcher_register(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value) {
-		((DataWatcher)dataWatcher).a(type.getPosition(), value);
+	public void DataWatcher_register(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value) {
+		((DataWatcher)dataWatcher).a(type.position, value);
 	}
 	public Object newEntityArmorStand() {
 		return null;
@@ -140,7 +140,7 @@ public class MethodAPI_v1_6_R2 extends MethodAPI {
 		Object classType = i.c();
 		Object value = i.b();
 		boolean needsUpdate = i.d();
-		me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject(position, classType);
+		me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject(position, classType);
 		return new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item(key, value).setNeedsUpdate(needsUpdate);
 	}
 }

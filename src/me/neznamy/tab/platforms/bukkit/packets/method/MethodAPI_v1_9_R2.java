@@ -111,13 +111,13 @@ public class MethodAPI_v1_9_R2 extends MethodAPI {
 	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
 		return new PacketPlayOutPlayerInfo().new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
 	}
-	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value, boolean needsUpdate) {
-		DataWatcher.Item item = new DataWatcher.Item(new DataWatcherObject(type.getPosition(), (DataWatcherSerializer) type.getClassType()), value);
+	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value, boolean needsUpdate) {
+		DataWatcher.Item item = new DataWatcher.Item(new DataWatcherObject(type.position, (DataWatcherSerializer) type.classType), value);
 		item.a(needsUpdate);
 		return item;
 	}
-	public void DataWatcher_register(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject type, Object value) {
-		((DataWatcher)dataWatcher).register(new DataWatcherObject(type.getPosition(), (DataWatcherSerializer) type.getClassType()), value);
+	public void DataWatcher_register(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value) {
+		((DataWatcher)dataWatcher).register(new DataWatcherObject(type.position, (DataWatcherSerializer) type.classType), value);
 	}
 	public Object newEntityArmorStand() {
 		return new EntityArmorStand(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
@@ -158,7 +158,7 @@ public class MethodAPI_v1_9_R2 extends MethodAPI {
 		Object classType = i.a().b();
 		Object value = i.b();
 		boolean needsUpdate = i.c();
-		me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject(position, classType);
+		me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject(position, classType);
 		return new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item(key, value).setNeedsUpdate(needsUpdate);
 	}
 }

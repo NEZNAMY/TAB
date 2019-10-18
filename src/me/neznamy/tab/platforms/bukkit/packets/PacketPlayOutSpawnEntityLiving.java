@@ -29,12 +29,9 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private float yaw;
 	private float pitch;
 	private float l;
-	private DataWatcher dataWatcher;
+	public DataWatcher dataWatcher = new DataWatcher(null);
 	private List<Item> watchableObjects;
 
-	public PacketPlayOutSpawnEntityLiving() {
-		dataWatcher = new DataWatcher(null);
-	}
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location loc) {
 		this(entityId, uuid, entityIds.get(entityType), loc);
 	}
@@ -47,7 +44,6 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		this.z = loc.getZ();
 		this.yaw = loc.getYaw();
 		this.pitch = loc.getPitch();
-		dataWatcher = new DataWatcher(null);
 	}
 	public PacketPlayOutSpawnEntityLiving setMotX(int motX) {
 		this.motX = motX;
@@ -72,12 +68,6 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	public PacketPlayOutSpawnEntityLiving setItems(List<Item> watchableObjects) {
 		this.watchableObjects = watchableObjects;
 		return this;
-	}
-	public int getEntityId() {
-		return entityId;
-	}
-	public DataWatcher getDataWatcher() {
-		return dataWatcher;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutSpawnEntityLiving();
@@ -170,11 +160,11 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			entityIds.put(EntityType.valueOf("ARMOR_STAND"), 1);
 			entityIds.put(EntityType.WITHER, 83);
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
-			entityIds.put(EntityType.valueOf("ARMOR_STAND"), 30);
-			entityIds.put(EntityType.WITHER, 64);
 		} else {
 			entityIds.put(EntityType.WITHER, 64);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
+				entityIds.put(EntityType.valueOf("ARMOR_STAND"), 30);
+			}
 		}
 		ENTITYID = fields.get("a");
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {

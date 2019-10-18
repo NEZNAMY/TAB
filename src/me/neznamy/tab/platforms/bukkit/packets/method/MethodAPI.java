@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 
 public abstract class MethodAPI {
 

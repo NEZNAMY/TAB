@@ -11,30 +11,24 @@ import me.neznamy.tab.shared.ProtocolVersion;
 
 public class PacketPlayOutEntityMetadata extends PacketPlayOut{
 
-	private int entityId;
-	private List<Item> list;
+	public int entityId;
+	public List<Item> items;
 
 	public PacketPlayOutEntityMetadata(int entityId, List<Item> items) {
 		this.entityId = entityId;
-		list = items;
+		this.items = items;
 	}
 	public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher, boolean force){
 		this.entityId = entityId;
 		if (force) {
-			list = dataWatcher.getAllObjects();
+			items = dataWatcher.getAllObjects();
 		} else {
-			list = dataWatcher.getObjectsThatNeedUpdate();
+			items = dataWatcher.getObjectsThatNeedUpdate();
 		}
-	}
-	public int getEntityId() {
-		return entityId;
-	}
-	public List<Item> getList() {
-		return list;
 	}
 	public Object toNMS(ProtocolVersion clientVersion){
 		DataWatcher w = new DataWatcher(null);
-		for (Item item : list) w.setValue(item.type, item.value);
+		for (Item item : items) w.setValue(item.type, item.value);
 		return MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, w.toNMS(), true);
 	}
 	@SuppressWarnings("unchecked")

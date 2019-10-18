@@ -1,10 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -18,7 +15,7 @@ public class DataWatcher{
 		this.entity = entity;
 	}
 	public void setValue(DataWatcherObject type, Object value){
-		dataValues.put(type.getPosition(), new Item(type, value));
+		dataValues.put(type.position, new Item(type, value));
 	}
 	public Item getItem(int position) {
 		return dataValues.get(position);
@@ -74,6 +71,16 @@ public class DataWatcher{
 			watcher.setValue(w.type, w.value);
 		}
 		return watcher;
+	}
+	public static class DataWatcherObject{
+
+		public int position;
+		public Object classType;
+
+		public DataWatcherObject(int position, Object classType){
+			this.position = position;
+			this.classType = classType;
+		}
 	}
 
 	private static Field ENTITY;
