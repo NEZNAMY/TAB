@@ -18,7 +18,6 @@ import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
-import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -64,11 +63,10 @@ public class PluginHooks {
 		return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
-		
 		return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
-		return me.libraryaddict.disguise.DisguiseAPI.isDisguised(((TabPlayer)p).player);
+		return me.neznamy.tab.platforms.bukkit.Main.LibsDisguises_isDisguised(p); //preventing errors on bungee version
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
 		List<String> groups = new ArrayList<String>();
@@ -128,7 +126,7 @@ public class PluginHooks {
 		return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
-		return ((Economy)Vault_economy).getBalance(((TabPlayer)p).player);
+		return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
 	}
 	public static String Vault_getPrimaryGroup(ITabPlayer p) {
 		return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);

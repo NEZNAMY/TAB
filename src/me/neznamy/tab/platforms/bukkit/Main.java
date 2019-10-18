@@ -532,16 +532,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 	}
-/*	public static Player[] getOnlinePlayers() {
-		try {
-			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
-			return onlinePlayersMethod.getReturnType().equals(Collection.class)
-					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).toArray(new Player[0])
-							: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer()));
-		} catch (Exception e) {
-			return Shared.error(new Player[0], "Failed to get players", e);
-		}
-	}*/
 	@SuppressWarnings("unchecked")
 	public static Player[] getOnlinePlayers() {
 		Object players = Bukkit.getOnlinePlayers();
@@ -552,5 +542,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			//1.8+
 			return ((Collection<Player>)players).toArray(new Player[0]); 
 		}
+	}
+	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
+		return me.libraryaddict.disguise.DisguiseAPI.isDisguised(((TabPlayer)p).player);
+	}
+	public static double Vault_getMoney(ITabPlayer p) {
+		return ((Economy)PluginHooks.Vault_economy).getBalance(((TabPlayer)p).player);
 	}
 }
