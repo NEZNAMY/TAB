@@ -95,7 +95,6 @@ public abstract class MethodAPI {
 				spigot = false;
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
 			//bungee or velocity
 		}
 	}
