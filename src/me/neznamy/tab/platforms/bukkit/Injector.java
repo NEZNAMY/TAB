@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public class Injector {
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);
 			}
+			@SuppressWarnings("unchecked")
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				if (Main.disabled) {
 					super.write(context, packet, channelPromise);
@@ -78,18 +80,23 @@ public class Injector {
 					time = System.nanoTime();
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
 						//preventing pets from having owner's nametag properties if feature is enabled
-						if ((p = PacketPlayOutEntityMetadata.fromNMS(packet)) != null) {
-							List<Item> items = ((PacketPlayOutEntityMetadata)p).items;
-							for (Item petOwner : items) {
-								if (petOwner.type.position == (ProtocolVersion.SERVER_VERSION.getPetOwnerPosition())) modifyDataWatcherItem(petOwner);
+						if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
+							List<Object> items = (List<Object>) PacketPlayOutEntityMetadata.LIST.get(packet);
+							List<Object> newList = new ArrayList<Object>();
+							for (Object item : items) {
+								Item i = Item.fromNMS(item);
+								if (i.type.position == ProtocolVersion.SERVER_VERSION.getPetOwnerPosition()) {
+									modifyDataWatcherItem(i);
+								}
+								newList.add(i.toNMS());
 							}
-							packet = p.toNMS(null);
+							PacketPlayOutEntityMetadata.LIST.set(packet, newList);
 						}
-						if ((p = PacketPlayOutSpawnEntityLiving.fromNMS(packet)) != null) {
-							DataWatcher watcher = ((PacketPlayOutSpawnEntityLiving)p).dataWatcher;
+						if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet)) {
+							DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
 							Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
 							if (petOwner != null) modifyDataWatcherItem(petOwner);
-							packet = p.toNMS(null);
+							PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 						}
 					}
 					Shared.cpu(Feature.OTHER, System.nanoTime()-time);

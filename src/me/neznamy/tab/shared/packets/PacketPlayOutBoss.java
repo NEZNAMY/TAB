@@ -207,13 +207,13 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 		}
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutBoss);
-	private static Field UUID = fields.get("a");
-	private static Field ACTION = fields.get("b");
-	private static Field NAME = fields.get("c");
-	private static Field PROGRESS = fields.get("d");
-	private static Field COLOR = fields.get("e");
-	private static Field STYLE = fields.get("f");
-	private static Field DARKEN_SKY = fields.get("g");
-	private static Field PLAY_MUSIC = fields.get("h");
-	private static Field CREATE_FOG = fields.get("i");
+	private static final Field UUID = fields.get("a");
+	private static final Field ACTION = fields.get("b");
+	private static final Field NAME = fields.get("c");
+	private static final Field PROGRESS = fields.get("d");
+	private static final Field COLOR = fields.get("e");
+	private static final Field STYLE = fields.get("f");
+	private static final Field DARKEN_SKY = fields.get("g");
+	private static final Field PLAY_MUSIC = fields.get("h");
+	private static final Field CREATE_FOG = fields.get("i");
 }

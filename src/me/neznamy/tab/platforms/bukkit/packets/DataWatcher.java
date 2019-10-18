@@ -83,7 +83,7 @@ public class DataWatcher{
 		}
 	}
 
-	private static Field ENTITY;
+	private static final Field ENTITY;
 
 	static {
 		Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcher);

@@ -220,12 +220,12 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	}
 	
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerInfo);
-	private static Field ACTION = fields.get("a");
-	private static Field PLAYERS = fields.get("b");
+	private static final Field ACTION = fields.get("a");
+	private static final Field PLAYERS = fields.get("b");
 	
 	private static Map<String, Field> infodata = getFields(MethodAPI.PlayerInfoData);
-	private static Field PING = infodata.get("b");
-	private static Field GAMEMODE = infodata.get("c");
-	private static Field PROFILE = infodata.get("d");
-	private static Field LISTNAME = infodata.get("e");
+	private static final Field PING = infodata.get("b");
+	private static final Field GAMEMODE = infodata.get("c");
+	private static final Field PROFILE = infodata.get("d");
+	private static final Field LISTNAME = infodata.get("e");
 }

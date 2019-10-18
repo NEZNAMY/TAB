@@ -32,8 +32,8 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 		return new HeaderAndFooter(Shared.jsonFromText(header), Shared.jsonFromText(footer));
 	}
 
-	private static Field HEADER;
-	private static Field FOOTER;
+	private static final Field HEADER;
+	private static final Field FOOTER;
 
 	static {
 		Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter);

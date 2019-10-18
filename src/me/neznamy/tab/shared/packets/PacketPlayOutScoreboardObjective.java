@@ -58,15 +58,10 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private EnumScoreboardHealthDisplay() {
-			try {
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
-					nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
-				} else {
-					nmsEquivalent = ordinal();
-				}
-			} catch (Exception e) {
-				Shared.print("§4", "Failed to initialize EnumScoreboardHealthDisplay class");
-				e.printStackTrace();
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
+			} else {
+				nmsEquivalent = ordinal();
 			}
 		}
 		public Object toNMS() {
@@ -77,16 +72,17 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
-	private static Field OBJECTIVENAME = fields.get("a");
-	private static Field TITLE = fields.get("b");
-	private static Field DISPLAYTYPE = fields.get("c");
-	private static Field ACTION = fields.get("d");
-	
+	private static final Field OBJECTIVENAME = fields.get("a");
+	private static final Field TITLE = fields.get("b");
+	private static final Field DISPLAYTYPE;
+	private static final Field ACTION;
+
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			DISPLAYTYPE = fields.get("c");
 			ACTION = fields.get("d");
 		} else {
+			DISPLAYTYPE = null;
 			ACTION = fields.get("c");
 		}
 	}

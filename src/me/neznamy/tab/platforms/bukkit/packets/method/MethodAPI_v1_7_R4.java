@@ -16,7 +16,7 @@ import net.minecraft.server.v1_7_R4.*;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_7_R4 extends MethodAPI {
 
-	private static Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("m");
+	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("m");
 	
 	public MethodAPI_v1_7_R4() {
 		DataWatcher = DataWatcher.class;

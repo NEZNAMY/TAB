@@ -86,16 +86,16 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		return null;
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
-	private static Field NAME = fields.get("a");
-	private static Field DISPLAYNAME = fields.get("b");
-	private static Field PREFIX = fields.get("c");
-	private static Field SUFFIX = fields.get("d");
-	private static Field VISIBILITY;
-	private static Field CHATFORMAT;
-	private static Field PUSH;
-	public static Field PLAYERS;
-	private static Field ACTION;
-	public static Field SIGNATURE;
+	private static final Field NAME = fields.get("a");
+	private static final Field DISPLAYNAME = fields.get("b");
+	private static final Field PREFIX = fields.get("c");
+	private static final Field SUFFIX = fields.get("d");
+	private static final Field VISIBILITY;
+	private static final Field CHATFORMAT;
+	private static final Field PUSH;
+	public static final Field PLAYERS;
+	private static final Field ACTION;
+	public static final Field SIGNATURE;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
@@ -107,18 +107,25 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			SIGNATURE = fields.get("j");
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 				CHATFORMAT = fields.get("g");
+			} else {
+				CHATFORMAT = null;
 			}
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			//1.8.x
-			VISIBILITY = fields.get("e");
-			PLAYERS = fields.get("g");
-			ACTION = fields.get("h");
-			SIGNATURE = fields.get("i");
 		} else {
-			//1.5.x - 1.7.x
-			PLAYERS = fields.get("e");
-			ACTION = fields.get("f");
-			SIGNATURE = fields.get("g");
+			CHATFORMAT = null;
+			PUSH = null;
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				//1.8.x
+				VISIBILITY = fields.get("e");
+				PLAYERS = fields.get("g");
+				ACTION = fields.get("h");
+				SIGNATURE = fields.get("i");
+			} else {
+				//1.5.x - 1.7.x
+				VISIBILITY = null;
+				PLAYERS = fields.get("e");
+				ACTION = fields.get("f");
+				SIGNATURE = fields.get("g");
+			}
 		}
 	}
 }

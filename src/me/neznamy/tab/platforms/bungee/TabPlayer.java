@@ -70,5 +70,5 @@ public class TabPlayer extends ITabPlayer{
 	public boolean getTeamPush() {
 		return Configs.collision;
 	}
-	private static Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
+	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
 }

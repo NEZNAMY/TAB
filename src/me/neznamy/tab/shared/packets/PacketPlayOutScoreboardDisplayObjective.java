@@ -30,6 +30,6 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	}
 
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
-	private static Field POSITION = fields.get("a");
-	private static Field OBJECTIVENAME = fields.get("b");
+	private static final Field POSITION = fields.get("a");
+	private static final Field OBJECTIVENAME = fields.get("b");
 }

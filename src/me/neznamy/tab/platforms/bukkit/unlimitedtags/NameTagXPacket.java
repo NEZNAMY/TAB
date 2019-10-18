@@ -52,20 +52,20 @@ public class NameTagXPacket {
 		ATTACH_ENTITY; //1.8.x mount detection
 	}
 	
-	private static Field PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
+	private static final Field PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
 	
-	private static Field PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
+	private static final Field PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
 	
-	private static Field PacketPlayOutEntityTeleport_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityTeleport).get("a");
+	private static final Field PacketPlayOutEntityTeleport_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityTeleport).get("a");
 	
-	private static Field PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
+	private static final Field PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
 	
 	private static Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutMount);
-	private static Field PacketPlayOutMount_VEHICLE = mount.get("a");
-	private static Field PacketPlayOutMount_PASSENGERS = mount.get("b");
+	private static final Field PacketPlayOutMount_VEHICLE = mount.get("a");
+	private static final Field PacketPlayOutMount_PASSENGERS = mount.get("b");
 	
 	private static Map<String, Field> attachentity = PacketPlayOut.getFields(MethodAPI.PacketPlayOutAttachEntity);
-	private static Field PacketPlayOutAttachEntity_A = attachentity.get("a");
-	private static Field PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
-	private static Field PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
+	private static final Field PacketPlayOutAttachEntity_A = attachentity.get("a");
+	private static final Field PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
+	private static final Field PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
 }
