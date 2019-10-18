@@ -171,7 +171,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				p.updatePlayerListName(false);
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);

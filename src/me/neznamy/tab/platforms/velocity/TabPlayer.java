@@ -3,16 +3,10 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.UUID;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
-import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.*;
 import net.kyori.text.TextComponent;
 
 public class TabPlayer extends ITabPlayer{
@@ -43,18 +37,8 @@ public class TabPlayer extends ITabPlayer{
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
 	}
-	public void setPlayerListName() {
-		PlayerListItem.Item playerInfoData = new PlayerListItem.Item(getTablistId()).setDisplayName(TextComponent.of(getName())).setName(getName());
-		PlayerListItem packet = new PlayerListItem(3, Lists.newArrayList(playerInfoData));
-		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendPacket(packet);
-		}
-	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(message));
-	}
-	public boolean getTeamPush() {
-		return Configs.collision;
 	}
 }

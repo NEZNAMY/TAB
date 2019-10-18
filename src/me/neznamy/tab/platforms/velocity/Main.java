@@ -139,7 +139,6 @@ public class Main implements MainClass{
 				p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				p.updatePlayerListName(false);
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				TabObjective.playerJoin(p);

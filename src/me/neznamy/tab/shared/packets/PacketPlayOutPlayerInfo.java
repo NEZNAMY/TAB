@@ -119,7 +119,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			profile.getProperties().clear();
-			profile.getProperties().putAll((Multimap<String, Property>) properties);
+			if (properties != null) profile.getProperties().putAll((Multimap<String, Property>) properties);
 			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(listName)));
 		}
 		public Object toBungee() {

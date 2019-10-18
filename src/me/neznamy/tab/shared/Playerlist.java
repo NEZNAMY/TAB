@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -13,16 +16,30 @@ public class Playerlist {
 
 	public static void load() {
 		if (enable) {
-			for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(true);
+			updateNames(true);
 			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST_1, new Runnable() {
 				public void run() {
-					for (ITabPlayer p : Shared.getPlayers()) if (!p.disabledTablistNames) p.updatePlayerListName(false);
+					updateNames(false);
 				}
 			});
 		}
 	}
+	private static void updateNames(boolean force) {
+		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
+		for (ITabPlayer p : Shared.getPlayers()) {
+			if (!p.disabledTablistNames && (p.isListNameUpdateNeeded() || force)) updatedPlayers.add(p.getInfoData());
+		}
+		if (!updatedPlayers.isEmpty()) {
+			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendCustomPacket(packet);
+			}
+		}
+	}
 	public static void unload() {
-		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.setPlayerListName();
+		if (enable) {
+			updateNames(true);
+		}
 	}
 	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
 		if (receiver.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;

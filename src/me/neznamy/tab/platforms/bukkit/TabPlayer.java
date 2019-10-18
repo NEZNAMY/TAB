@@ -79,6 +79,7 @@ public class TabPlayer extends ITabPlayer{
 		}
 		return null;
 	}
+	@Override
 	public String getMoney() {
 		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
 			lastRefreshMoney = System.currentTimeMillis();
@@ -87,12 +88,14 @@ public class TabPlayer extends ITabPlayer{
 		}
 		return money;
 	}
+	@Override
 	public void setTeamVisible(boolean visible) {
 		if (nameTagVisible != visible) {
 			nameTagVisible = visible;
 			updateTeam();
 		}
 	}
+	@Override
 	public String getNickname() {
 		String name = null;
 		if (PluginHooks.essentials != null) {
@@ -101,6 +104,7 @@ public class TabPlayer extends ITabPlayer{
 		if (name == null || name.length() == 0) name = getName();
 		return name;
 	}
+	@Override
 	public void restartArmorStands() {
 		NameTagLineManager.destroy(this);
 		if (previewingNametag) NameTagLineManager.destroy(this, this);
@@ -135,6 +139,7 @@ public class TabPlayer extends ITabPlayer{
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
+	@Override
 	public Integer getEntityId() {
 		return player.getEntityId();
 	}
@@ -143,22 +148,22 @@ public class TabPlayer extends ITabPlayer{
 		if (ping > 10000 || ping < 0) ping = -1;
 		return ping;
 	}
+	@Override
 	public int getHealth() {
 		return (int) Math.ceil(player.getHealth());
 	}
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) MethodAPI.getInstance().sendPacket(player, nmsPacket);
 	}
-	public void setPlayerListName() {
-		player.setPlayerListName(player.getPlayerListName());
-	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(message);
 	}
+	@Override
 	public boolean hasInvisibility() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
+	@Override
 	public boolean getTeamPush() {
 		if (PluginHooks.libsDisguises && PluginHooks.LibsDisguises_isDisguised(this)) return false;
 		if (PluginHooks.idisguise != null && PluginHooks.iDisguise_isDisguised(this)) return false; 

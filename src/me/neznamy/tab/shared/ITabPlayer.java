@@ -14,6 +14,10 @@ import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -34,6 +38,7 @@ public abstract class ITabPlayer{
 	public Object channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible = true;
+	private PlayerInfoData infoData;
 
 	public boolean disabledHeaderFooter;
 	public boolean disabledTablistNames;
@@ -61,6 +66,7 @@ public abstract class ITabPlayer{
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
 		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 		disabledBelowname = Configs.disabledBelowname.contains(getWorldName());
+		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
 	}
 
 	//bukkit only
@@ -73,15 +79,16 @@ public abstract class ITabPlayer{
 	public boolean hasInvisibility() {return false;}
 
 	//per-type
-	public abstract void setPlayerListName();
 	public abstract String getGroupFromPermPlugin();
 	public abstract String[] getGroupsFromPermPlugin();
 	public abstract boolean hasPermission(String permission);
 	public abstract long getPing();
 	public abstract void sendPacket(Object nmsPacket);
 	public abstract void sendMessage(String message);
-	public abstract boolean getTeamPush();
-
+	
+	public boolean getTeamPush() {
+		return Configs.collision;
+	}
 	public String getName() {
 		return name;
 	}
@@ -121,6 +128,9 @@ public abstract class ITabPlayer{
 	public List<ArmorStand> getArmorStands() {
 		return armorStands;
 	}
+	public PlayerInfoData getInfoData() {
+		return infoData;
+	}
 	public String setProperty(String identifier, String rawValue) {
 		Property p = properties.get(identifier);
 		if (p == null) {
@@ -130,13 +140,21 @@ public abstract class ITabPlayer{
 		}
 		return rawValue;
 	}
-	public void updatePlayerListName(boolean force) {
-		if (!Playerlist.enable) return;
+	public boolean isListNameUpdateNeeded() {
+		if (!Playerlist.enable) return false;
 		getGroup();
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
 		boolean tabsuffix = properties.get("tabsuffix").isUpdateNeeded();
-		if (tabprefix || customtabname || tabsuffix || force) setPlayerListName();
+		return (tabprefix || customtabname || tabsuffix);
+	}
+	public void updatePlayerListName() {
+		isListNameUpdateNeeded(); //triggering updates to replaced values
+		List<PlayerInfoData> updatedPlayers = Lists.newArrayList(infoData);
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			all.sendCustomPacket(packet);
+		}
 	}
 	public String getTabFormat(ITabPlayer other) {
 		return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get());
@@ -403,7 +421,7 @@ public abstract class ITabPlayer{
 				updateTeam();
 			}
 		}
-		if (Playerlist.enable) updatePlayerListName(true);
+		if (Playerlist.enable) updatePlayerListName();
 		if (TabObjective.type != TabObjectiveType.NONE) {
 			if (disabledTablistObjective && !Configs.disabledTablistObjective.contains(from)) {
 				TabObjective.unload(this);
@@ -465,7 +483,7 @@ public abstract class ITabPlayer{
 		}
 	}
 	public void forceUpdateDisplay() {
-		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName(true);
+		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName();
 		if ((NameTag16.enable || Configs.unlimitedTags) && !disabledNametag) {
 			unregisterTeam();
 			registerTeam();
