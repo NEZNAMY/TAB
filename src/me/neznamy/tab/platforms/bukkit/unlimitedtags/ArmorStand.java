@@ -82,7 +82,7 @@ public class ArmorStand{
 		updateLocation();
 		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 			if (all == owner) continue; //should never be anyway
-			if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_14.getNetworkId()) {
+			if (all.getVersion().getMinorVersion() >= 14) {
 				//sneaking feature was removed in 1.14, so despawning completely now
 				if (sneaking) {
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
@@ -126,7 +126,7 @@ public class ArmorStand{
 		}
 	}
 	public boolean getVisibility() {
-		return !owner.hasInvisibility() && player.getGameMode() != GameMode.valueOf("SPECTATOR") && !TABAPI.hasHiddenNametag(player.getUniqueId()) && property.get().length() > 0;
+		return !owner.hasInvisibility() && player.getGameMode() != GameMode.valueOf("SPECTATOR") && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;

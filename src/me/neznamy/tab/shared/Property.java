@@ -3,8 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 public class Property {
 
 	private ITabPlayer owner;
@@ -107,7 +105,7 @@ public class Property {
 		return Static;
 	}
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
-		if (!rawValue.contains("%") && !rawValue.contains("{")) return Lists.newArrayList();
+		if (!rawValue.contains("%") && !rawValue.contains("{")) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
 			if (rawValue.contains(placeholder.getIdentifier())) {

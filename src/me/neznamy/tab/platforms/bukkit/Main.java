@@ -46,7 +46,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-					TabCommand.execute(sender instanceof Player ? Shared.getPlayer(sender.getName()) : null, args);
+					TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 					return false;
 				}
 			});
@@ -346,7 +346,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
-		PluginHooks.placeholderAPI= Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.register();
 		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
@@ -533,13 +533,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		});
 	}
 	@SuppressWarnings("unchecked")
-	public static Player[] getOnlinePlayers() {
-		Object players = Bukkit.getOnlinePlayers();
+	public static Player[] getOnlinePlayers() throws Exception {
+		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
 		if (players instanceof Player[]) {
-			//1.5.x - 1.7.x
+			//1.5.x - 1.6.x
 			return (Player[]) players;
 		} else {
-			//1.8+
+			//1.7+
 			return ((Collection<Player>)players).toArray(new Player[0]); 
 		}
 	}

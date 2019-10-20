@@ -18,7 +18,7 @@ public class HeaderFooter {
 		});
 	}
 	public static void clearHeaderFooter(ITabPlayer p) {
-		if (p.disabledHeaderFooter || p.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;
+		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 	}
 	public static void unload() {
@@ -28,7 +28,7 @@ public class HeaderFooter {
 		if (enable) refreshHeaderFooter(p, true);
 	}
 	public static void refreshHeaderFooter(ITabPlayer p, boolean force) {
-		if (p.disabledHeaderFooter || p.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;
+		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
 		boolean header = p.properties.get("header").isUpdateNeeded();
 		boolean footer = p.properties.get("footer").isUpdateNeeded();
 		if (header || footer || force) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));

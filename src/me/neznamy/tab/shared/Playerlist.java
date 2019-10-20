@@ -14,35 +14,39 @@ public class Playerlist {
 	public static boolean enable;
 	public static int refresh;
 
-	public static void load() {
+	public static void load() throws Exception {
 		if (enable) {
 			updateNames(true);
 			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST_1, new Runnable() {
 				public void run() {
-					updateNames(false);
+					try {
+						updateNames(false);
+					} catch (Exception e) {
+						Shared.error(null, null, e);
+					}
 				}
 			});
 		}
 	}
-	private static void updateNames(boolean force) {
+	private static void updateNames(boolean force) throws Exception {
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledTablistNames && (p.isListNameUpdateNeeded() || force)) updatedPlayers.add(p.getInfoData());
 		}
 		if (!updatedPlayers.isEmpty()) {
-			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers);
+			Object packet = Shared.mainClass.toNMS(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), null);
 			for (ITabPlayer all : Shared.getPlayers()) {
-				if (all.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) all.sendCustomPacket(packet);
+				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
 		}
 	}
-	public static void unload() {
+	public static void unload() throws Exception {
 		if (enable) {
 			updateNames(true);
 		}
 	}
 	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
-		if (receiver.getVersion().getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) return;
+		if (receiver.getVersion().getMinorVersion() < 8) return;
 		for (PlayerInfoData playerInfoData : packet.players) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packet.action == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {

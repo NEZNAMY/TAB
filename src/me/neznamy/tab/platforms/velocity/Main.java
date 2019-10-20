@@ -54,7 +54,7 @@ public class Main implements MainClass{
 		Shared.mainClass = this;
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
-				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUsername()) : null, args);
+				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
 		load(false, true);
@@ -179,7 +179,7 @@ public class Main implements MainClass{
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					if (packet instanceof PlayerListItem && Playerlist.enable) {
+					if (packet instanceof PlayerListItem && Playerlist.enable && player.getVersion().getMinorVersion() >= 8) {
 						PacketPlayOutPlayerInfo p = PacketPlayOutPlayerInfo.fromVelocity(packet);
 						Playerlist.modifyPacket(p, player);
 						packet = p.toVelocity(null);

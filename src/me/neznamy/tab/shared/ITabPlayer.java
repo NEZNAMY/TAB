@@ -66,7 +66,7 @@ public abstract class ITabPlayer{
 		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
 		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
 		disabledBelowname = Configs.disabledBelowname.contains(getWorldName());
-		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		if (Playerlist.enable) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
 	}
 
 	//bukkit only

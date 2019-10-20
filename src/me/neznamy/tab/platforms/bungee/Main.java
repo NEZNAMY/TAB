@@ -41,7 +41,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
-				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(sender.getName()) : null, args);
+				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 			}
 		});
 		load(false, true);
@@ -211,7 +211,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					if (packet instanceof PlayerListItem && Playerlist.enable && player.getVersion().getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
+					if (packet instanceof PlayerListItem && Playerlist.enable && player.getVersion().getMinorVersion() >= 8) {
 						PacketPlayOutPlayerInfo p = PacketPlayOutPlayerInfo.fromBungee(packet);
 						Playerlist.modifyPacket(p, player);
 						packet = p.toBungee(null);

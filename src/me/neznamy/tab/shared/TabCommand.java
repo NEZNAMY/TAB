@@ -225,7 +225,7 @@ public class TabCommand{
 	}
 	public static void debug(ITabPlayer sender, ITabPlayer analyzed) {
 		if (analyzed == null && sender != null) {
-			analyzed = Shared.getPlayer(sender.getName());
+			analyzed = Shared.getPlayer(sender.getUniqueId());
 		}
 		sendMessage(sender, "§3[TAB] §a§lShowing debug information");
 		sendMessage(sender, "§7§m>-------------------------------<");

@@ -1,12 +1,10 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Shared.Feature;
@@ -16,8 +14,8 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 public class BossBar{
 
 	public static boolean enabled;
-	public static List<String> defaultBars = Lists.newArrayList();
-	public static Map<String, List<String>> perWorld = Maps.newConcurrentMap();
+	public static List<String> defaultBars = new ArrayList<String>();
+	public static Map<String, List<String>> perWorld = new HashMap<String, List<String>>();
 	public static List<BossBarLine> lines = new ArrayList<BossBarLine>();
 	public static int refresh;
 	public static String toggleCommand;
