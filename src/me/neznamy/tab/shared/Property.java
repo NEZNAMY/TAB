@@ -3,6 +3,9 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+
 public class Property {
 
 	private ITabPlayer owner;

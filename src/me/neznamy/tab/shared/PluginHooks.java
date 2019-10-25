@@ -82,7 +82,12 @@ public class PluginHooks {
 	}
 	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s) {
 		try {
-			if (placeholderAPI) return PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
+			if (placeholderAPI) {
+				long startTime = System.nanoTime();
+				String value = PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
+				Shared.placeholderCpu("PlaceholderAPI", System.nanoTime()-startTime);
+				return value;
+			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
@@ -98,7 +103,12 @@ public class PluginHooks {
 	}
 	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String s) {
 		try {
-			if (placeholderAPI) return PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, s);
+			if (placeholderAPI) {
+				long startTime = System.nanoTime();
+				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, s);
+				Shared.placeholderCpu("PlaceholderAPI-Relational", System.nanoTime()-startTime);
+				return value;
+			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {

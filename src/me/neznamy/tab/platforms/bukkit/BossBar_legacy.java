@@ -39,13 +39,13 @@ public class BossBar_legacy implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return; //teleport in early login event or what
 		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
-		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
+		Shared.featureCPU(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
 		if (!BossBar.enabled) return;
 		long time = System.nanoTime();
 		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
-		Shared.cpu(Feature.BOSSBAR, System.nanoTime()-time);
+		Shared.featureCPU(Feature.BOSSBAR, System.nanoTime()-time);
 	}
 }

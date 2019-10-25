@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -9,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -25,11 +25,15 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public EnumPlayerInfoAction action;
-	public List<PlayerInfoData> players = Lists.newArrayList();
+	public PlayerInfoData[] players;
 
-	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> players) {
+	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... players) {
 		this.action = action;
 		this.players = players;
+	}
+	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> players) {
+		this.action = action;
+		this.players = players.toArray(new PlayerInfoData[0]);
 	}
 
 	public enum EnumPlayerInfoAction{
@@ -118,7 +122,6 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
-			profile.getProperties().clear();
 			if (properties != null) profile.getProperties().putAll((Multimap<String, Property>) properties);
 			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(listName)));
 		}
@@ -167,7 +170,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
-		List<Object> items = Lists.newArrayList();
+		List<Object> items = new ArrayList<Object>();
 		for (PlayerInfoData data : players) {
 			items.add(data.toNMS());
 		}
@@ -177,15 +180,15 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction(PlayerListItem.Action.valueOf(action.toString()));
-		List items = Lists.newArrayList();
-		for (PlayerInfoData data : players) {
-			items.add(data.toBungee());
+		Item[] items = new Item[players.length];
+		for (int i=0; i<players.length; i++) {
+			items[i] = (Item) players[i].toBungee();
 		}
-		packet.setItems((Item[]) items.toArray(new Item[0]));
+		packet.setItems(items);
 		return packet;
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		List items = Lists.newArrayList();
+		List items = new ArrayList();
 		for (PlayerInfoData data : players) {
 			items.add(data.toVelocity());
 		}
@@ -194,7 +197,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
 		if (!MethodAPI.PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromNMS(ACTION.get(nmsPacket));
-		List<PlayerInfoData> listData = Lists.newArrayList();
+		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Object p : (List) PLAYERS.get(nmsPacket)) {
 			listData.add(PlayerInfoData.fromNMS(p));
 		}
@@ -203,7 +206,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public static PacketPlayOutPlayerInfo fromBungee(Object bungeePacket){
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString());
-		List<PlayerInfoData> listData = Lists.newArrayList();
+		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Item i : item.getItems()) {
 			listData.add(PlayerInfoData.fromBungee(i));
 		}
@@ -212,7 +215,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public static PacketPlayOutPlayerInfo fromVelocity(Object velocityPacket){
 		com.velocitypowered.proxy.protocol.packet.PlayerListItem item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem) velocityPacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromId(item.getAction());
-		List<PlayerInfoData> listData = Lists.newArrayList();
+		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item i : item.getItems()) {
 			listData.add(PlayerInfoData.fromVelocity(i));
 		}

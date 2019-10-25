@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 
 public abstract class MethodAPI {
@@ -44,10 +46,11 @@ public abstract class MethodAPI {
 	public static Class<?> PacketPlayOutEntity;
 	public static Class<?> PlayerInfoData;
 	
+	public static Field PacketPlayOutEntityMetadata_LIST;
+	
 	public static MethodAPI getInstance() {
 		return instance;
 	}
-	public abstract Object getProfile(Player p);
 	public abstract Object ICBC_fromString(String string);
 	public abstract String CCM_fromComponent(Object ichatbasecomponent);
 	public abstract int getPing(Player p);
@@ -88,6 +91,7 @@ public abstract class MethodAPI {
 	static {
 		try {
 			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]).getConstructor().newInstance();
+			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 			try {
 				Class.forName("org.spigotmc.SpigotConfig");
 				spigot = true;

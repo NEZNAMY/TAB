@@ -32,9 +32,6 @@ public class MethodAPI_v1_5_R3 extends MethodAPI {
 		PacketPlayOutRelEntityMoveLook = Packet13PlayerLookMove.class;
 		PacketPlayOutEntity = Packet30Entity.class;
 	}
-	public Object getProfile(Player p) {
-		return null;
-	}
 	public Object ICBC_fromString(String string) {
 		return null;
 	}

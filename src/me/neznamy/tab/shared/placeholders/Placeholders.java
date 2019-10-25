@@ -1,13 +1,19 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.placeholders;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.Shared;
+
 public class Placeholders {
 
-	public static List<Placeholder> playerPlaceholders;
-	public static List<Placeholder> serverPlaceholders;
+	public static List<PlayerPlaceholder> playerPlaceholders;
+	public static List<ServerPlaceholder> serverPlaceholders;
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 
 	static {
@@ -39,7 +45,7 @@ public class Placeholders {
 		char[] b = textToTranslate.toCharArray();
 		for (int i = 0; i < b.length - 1; i++) {
 			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[(i + 1)]) > -1)){
-				b[i] = 'ยง';
+				b[i] = 'ง';
 				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
 			}
 		}
@@ -51,10 +57,10 @@ public class Placeholders {
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
-			if ((section == 'ยง') && (index < length - 1)){
+			if ((section == 'ง') && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
-					result = "ยง" + c + result;
+					result = "ง" + c + result;
 					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
 						break;
 					}

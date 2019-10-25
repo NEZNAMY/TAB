@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,8 +30,8 @@ public class Configs {
 	public static List<Object> disabledTablistObjective;
 	public static List<Object> disabledBossbar;
 	public static List<Object> disabledBelowname;
-	public static String dateFormat;
-	public static String timeFormat;
+	public static SimpleDateFormat dateFormat;
+	public static SimpleDateFormat timeFormat;
 	public static double timeOffset;
 	public static List<String> removeStrings = new ArrayList<String>();
 	public static String noFaction;
@@ -43,6 +44,8 @@ public class Configs {
 	public static int SECRET_relational_placeholders_refresh;
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_safe_register;
+	public static boolean SECRET_remove_ghost_players;
+	public static boolean SECRET_log_errors_into_console;
 
 
 	public static ConfigurationFile animation;
@@ -125,6 +128,8 @@ public class Configs {
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_safe_register = getSecretOption("safe-team-register", true);
+		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
+		SECRET_log_errors_into_console = getSecretOption("log-errors-into-console", false);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
@@ -138,9 +143,9 @@ public class Configs {
 			Playerlist.enable = config.getBoolean("change-tablist-prefix-suffix", true);
 		}
 		collision = config.getBoolean("enable-collision", true);
-		timeFormat = config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]");
+		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
-		dateFormat = config.getString("placeholders.date-format", "dd.MM.yyyy");
+		dateFormat = new SimpleDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"));
 		doNotMoveSpectators = config.getBoolean("do-not-move-spectators", false);
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;

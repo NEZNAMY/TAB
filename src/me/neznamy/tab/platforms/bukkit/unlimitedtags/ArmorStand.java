@@ -15,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -61,7 +60,7 @@ public class ArmorStand{
 		updateLocation();
 		visible = getVisibility();
 		String name = property.get();
-		name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
+		if (property.hasRelationalPlaceholders()) name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name, to));
 	}
@@ -112,17 +111,21 @@ public class ArmorStand{
 		if (property.hasRelationalPlaceholders()) {
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
-				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all), true).toNMS(null));
+				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
+//				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all), true).toNMS(null));
 			}
 			if (owner.previewingNametag) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
-				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner), true).toNMS(null));
+				owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
+//				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner), true).toNMS(null));
 			}
 		} else {
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
-				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all), true).toNMS(null));
+				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all).toNMS(), true));
+//				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all), true).toNMS(null));
 			}
-			if (owner.previewingNametag) owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner), true).toNMS(null));
+			if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner).toNMS(), true));
+//			if (owner.previewingNametag) owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner), true).toNMS(null));
 		}
 	}
 	public boolean getVisibility() {

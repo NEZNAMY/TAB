@@ -11,7 +11,6 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
@@ -151,7 +150,8 @@ public class PacketAPI{
 				}
 			}
 			if (w.getAllObjects().isEmpty()) return;
-			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS(null));
+			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(bar.getEntityId(), w.toNMS(), true));
+//			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS(null));
 		}
 	}
 }

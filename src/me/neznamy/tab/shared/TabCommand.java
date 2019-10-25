@@ -3,11 +3,13 @@ package me.neznamy.tab.shared;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.Shared.Feature;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class TabCommand{
 
@@ -16,7 +18,6 @@ public class TabCommand{
 
 	public static void execute(ITabPlayer sender, String[] args){
 		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
-			//TODO make work for players
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				Shared.mainClass.reload(sender);
 			} else {
@@ -164,10 +165,11 @@ public class TabCommand{
 				if (can(sender, "cpu")) {
 					sendMessage(sender, "§3[TAB] §a--------------------------------------");
 					sendMessage(sender, "§3[TAB] §6CPU from last 1m, 5m, 15m: §a" + getTotalCpu(60) + ", " + getTotalCpu(300) + ", " + getTotalCpu(900));
-					int history = 60;
-					if (Shared.cpuHistory.size() >= history) {
+					sendMessage(sender, "§3[TAB] §a--------------------------------------");
+					int minute = 60;
+					if (Shared.cpuHistory.size() >= minute) {
 						HashMap<Feature, Long> lastMinute = new HashMap<Feature, Long>();
-						for (int i=Shared.cpuHistory.size()-history; i<Shared.cpuHistory.size(); i++) {
+						for (int i=Shared.cpuHistory.size()-minute; i<Shared.cpuHistory.size(); i++) {
 							for (Entry<Feature, Long> entry : Shared.cpuHistory.get(i).getValues().entrySet()) {
 								Feature feature = entry.getKey();
 								if (!lastMinute.containsKey(feature)) lastMinute.put(feature, 0L);
@@ -176,10 +178,27 @@ public class TabCommand{
 						}
 						sendMessage(sender, "§3[TAB] §aFeature specific from the last minute:");
 						for (Entry<Feature, Long> entry : lastMinute.entrySet()) {
-							sendMessage(sender, "§3[TAB] §6" + entry.getKey().toString() + " - §a" + Shared.round((float)entry.getValue()/history/10000000) + "%");
+							sendMessage(sender, "§3[TAB] §6" + entry.getKey().toString() + " - §a" + Shared.decimal3.format((float)entry.getValue()/minute/10000000) + "%");
 						}
+						sendMessage(sender, "§3[TAB] §a--------------------------------------");
+						sendMessage(sender, "§3[TAB] §aPlaceholders from the last minute using over 0.01%:");
+						HashMap<String, Long> total = new HashMap<String, Long>();
+						for (ConcurrentHashMap<String, Long> sample : Shared.placeholderCpuHistory) {
+							for (Entry<String, Long> placeholder : sample.entrySet()) {
+								if (!total.containsKey(placeholder.getKey())) total.put(placeholder.getKey(), 0L);
+								total.put(placeholder.getKey(), total.get(placeholder.getKey()) + placeholder.getValue());
+							}
+						}
+						for (Entry<String, Long> entry : total.entrySet()) {
+							if (entry.getValue()/60 > 100000) sendMessage(sender, "§3[TAB] §6" + entry.getKey() + " - §a" + Shared.decimal3.format((float)entry.getValue()/minute/10000000) + "%");
+						}
+						long placeholdersTotal = 0;
+						for (Long time : total.values()) {
+							placeholdersTotal += time;
+						}
+						sendMessage(sender, "§3[TAB] §e§lPLACEHOLDERS TOTAL: §2§l" + Shared.decimal3.format((float)placeholdersTotal/minute/10000000) + "%");
+						sendMessage(sender, "§3[TAB] §a--------------------------------------");
 					}
-					sendMessage(sender, "§3[TAB] §a--------------------------------------");
 				} else sendMessage(sender, Configs.no_perm);
 			} else help(sender);
 		} else help(sender);
@@ -191,7 +210,7 @@ public class TabCommand{
 			for (int i=Shared.cpuHistory.size()-history; i<Shared.cpuHistory.size(); i++) {
 				var += Shared.cpuHistory.get(i).getTotalCpuTime();
 			}
-			cpu = Shared.round((float)var/history/10000000) + "%";
+			cpu = Shared.decimal3.format((float)var/history/10000000) + "%";
 		}
 		return cpu;
 	}

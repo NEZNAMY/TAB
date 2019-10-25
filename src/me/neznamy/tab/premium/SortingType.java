@@ -2,8 +2,8 @@ package me.neznamy.tab.premium;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum SortingType {
 	

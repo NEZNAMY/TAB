@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{

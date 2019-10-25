@@ -30,7 +30,6 @@ public class FancyMessage {
 			}
 			return main.toString();
 		} else {
-			//1.5.x, 1.6.x
 			String text = "";
 			if (!extras.isEmpty()) {
 				for (Extra c : extras) {

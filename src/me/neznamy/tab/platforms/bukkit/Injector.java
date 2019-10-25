@@ -10,7 +10,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -29,6 +28,10 @@ public class Injector {
 
 	public static void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		if (!channel.pipeline().names().contains("packet_handler")) {
+			Shared.error(null, "Failed to inject " + Shared.getPlayer(uuid).getName() + ", packet_handler does not exist");
+			return;
+		}
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
@@ -52,11 +55,11 @@ public class Injector {
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
 						if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
-							Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
+							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
 							return;
 						}
 					}
-					Shared.cpu(Feature.NAMETAGAO, System.nanoTime()-time);
+					Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
 
 					if (NameTagX.enable) {
 						time = System.nanoTime();
@@ -73,7 +76,7 @@ public class Injector {
 								});
 							}
 						}
-						Shared.cpu(Feature.NAMETAGX, System.nanoTime()-time);
+						Shared.featureCPU(Feature.NAMETAGX, System.nanoTime()-time);
 					}
 					PacketPlayOut p = null;
 
@@ -81,7 +84,7 @@ public class Injector {
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
 						//preventing pets from having owner's nametag properties if feature is enabled
 						if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
-							List<Object> items = (List<Object>) PacketPlayOutEntityMetadata.LIST.get(packet);
+							List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
 							List<Object> newList = new ArrayList<Object>();
 							for (Object item : items) {
 								Item i = Item.fromNMS(item);
@@ -90,7 +93,7 @@ public class Injector {
 								}
 								newList.add(i.toNMS());
 							}
-							PacketPlayOutEntityMetadata.LIST.set(packet, newList);
+							MethodAPI.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
 						}
 						if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet)) {
 							DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
@@ -99,7 +102,7 @@ public class Injector {
 							PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 						}
 					}
-					Shared.cpu(Feature.OTHER, System.nanoTime()-time);
+					Shared.featureCPU(Feature.OTHER, System.nanoTime()-time);
 					if (Playerlist.enable) {
 						//correcting name, spectators if enabled, changing npc names if enabled
 						time = System.nanoTime();
@@ -107,7 +110,7 @@ public class Injector {
 							Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
 							packet = p.toNMS(null);
 						}
-						Shared.cpu(Feature.PLAYERLIST_2, System.nanoTime()-time);
+						Shared.featureCPU(Feature.PLAYERLIST_2, System.nanoTime()-time);
 					}
 				} catch (Throwable e){
 					Shared.error(null, "An error occured when reading packets", e);

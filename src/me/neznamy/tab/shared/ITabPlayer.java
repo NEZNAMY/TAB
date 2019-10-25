@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -157,7 +158,11 @@ public abstract class ITabPlayer{
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
-		return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, properties.get("tabprefix").get() + properties.get("customtabname").get() + properties.get("tabsuffix").get());
+		Property prefix = properties.get("tabprefix");
+		Property name = properties.get("customtabname");
+		Property suffix = properties.get("tabsuffix");
+		String format = prefix.get() + name.get() + suffix.get();
+		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, format) : format;
 	}
 	public void updateTeam() {
 		if (disabledNametag) return;
@@ -470,7 +475,7 @@ public abstract class ITabPlayer{
 	}
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		try {
-			sendPacket(Shared.mainClass.toNMS(packet, version));
+			sendPacket(Shared.mainClass.buildPacket(packet, version));
 		} catch (Exception e) {
 			Shared.error(null, "An error occured when creating " + packet.getClass().getSimpleName(), e);
 		}

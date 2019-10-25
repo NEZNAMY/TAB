@@ -32,6 +32,10 @@ import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
@@ -129,6 +133,12 @@ public class Main implements MainClass{
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.unregister(disconnectedPlayer);
 		Shared.data.remove(e.getPlayer().getUniqueId());
+		if (Configs.SECRET_remove_ghost_players) {
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toVelocity(null);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				all.sendPacket(packet);
+			}
+		}
 	}
 	@Subscribe
 	public void a(ServerConnectedEvent e){
@@ -166,7 +176,9 @@ public class Main implements MainClass{
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
 	}
 	private void inject(UUID uuid) {
-		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
+		channel.pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);
@@ -186,7 +198,7 @@ public class Main implements MainClass{
 					}
 /*					if (packet instanceof Team && NameTag16.enable) {
 						if (killPacket(packet)) return;
-					}*/
+					}*/ //missing packets on velocity
 				} catch (Throwable e){
 					Shared.error(null, "An error occured when analyzing packets", e);
 				}
@@ -212,10 +224,7 @@ public class Main implements MainClass{
 		load(true, false);
 		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
-	public boolean killPacket(Object packetPlayOutScoreboardTeam){
-		return false;
-	}
-	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
+	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
@@ -224,7 +233,7 @@ public class Main implements MainClass{
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 		TabObjective.type = TabObjectiveType.NONE;
 	}
-	//java class loader is retarded and throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
+	//java class loader is `intelligent` and throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
 	//making it return Object and then casting fixes it
 	public static Object componentFromText(String text) {
 		if (text == null) return null;
@@ -235,17 +244,17 @@ public class Main implements MainClass{
 		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
-		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
-		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
+		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
+		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.serverPlaceholders.add(new Placeholder("%maxplayers%") {
-			public String get(ITabPlayer p) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%maxplayers%", 1000) {
+			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			Placeholders.serverPlaceholders.add(new Placeholder("%online_" + servers.getKey() + "%") {
-				public String get(ITabPlayer p) {
+			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
+				public String get() {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
 				}
 			});

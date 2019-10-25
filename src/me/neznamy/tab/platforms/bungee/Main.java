@@ -15,6 +15,10 @@ import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -122,6 +126,12 @@ public class Main extends Plugin implements Listener, MainClass{
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.unregister(disconnectedPlayer);
 		Shared.data.remove(e.getPlayer().getUniqueId());
+		if (Configs.SECRET_remove_ghost_players) {
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toBungee(null);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				all.sendPacket(packet);
+			}
+		}
 	}
 /*	@EventHandler
 	public void a(PostLoginEvent e) {
@@ -198,7 +208,9 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 	private void inject(UUID uuid) {
-		((Channel) Shared.getPlayer(uuid).getChannel()).pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
+		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
+		channel.pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				super.channelRead(context, packet);
@@ -260,7 +272,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public Object toNMS(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
+	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
 		return packet.toBungee(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
@@ -277,17 +289,17 @@ public class Main extends Plugin implements Listener, MainClass{
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 	}
 	public static void registerPlaceholders() {
-		Placeholders.serverPlaceholders = new ArrayList<Placeholder>();
-		Placeholders.playerPlaceholders = new ArrayList<Placeholder>();
+		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
+		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.serverPlaceholders.add(new Placeholder("%maxplayers%") {
-			public String get(ITabPlayer p) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%maxplayers%", 1000) {
+			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			Placeholders.serverPlaceholders.add(new Placeholder("%online_" + server.getKey() + "%") {
-				public String get(ITabPlayer p) {
+			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
+				public String get() {
 					return server.getValue().getPlayers().size()+"";
 				}
 			});

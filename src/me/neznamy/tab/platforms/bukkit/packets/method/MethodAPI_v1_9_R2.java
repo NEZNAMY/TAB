@@ -50,9 +50,6 @@ public class MethodAPI_v1_9_R2 extends MethodAPI {
 		PacketPlayOutEntity = PacketPlayOutEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
-	public GameProfile getProfile(Player p) {
-		return ((CraftPlayer)p).getHandle().getProfile();
-	}
 	public Object ICBC_fromString(String string) {
 		if (string == null) return null;
 		return IChatBaseComponent.ChatSerializer.a(string);

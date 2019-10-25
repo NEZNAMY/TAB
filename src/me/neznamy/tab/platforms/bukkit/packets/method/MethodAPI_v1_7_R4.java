@@ -37,9 +37,6 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		PacketPlayOutRelEntityMoveLook = PacketPlayOutRelEntityMoveLook.class;
 		PacketPlayOutEntity = PacketPlayOutEntity.class;
 	}
-	public Object getProfile(Player p) {
-		return ((CraftPlayer)p).getHandle().getProfile();
-	}
 	public Object ICBC_fromString(String string) {
 		if (string == null) return null;
 		return ChatSerializer.a(string);

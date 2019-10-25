@@ -7,9 +7,9 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.Placeholders;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard {
 

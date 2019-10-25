@@ -83,8 +83,8 @@ public class TabPlayer extends ITabPlayer{
 	public String getMoney() {
 		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
 			lastRefreshMoney = System.currentTimeMillis();
-			if (PluginHooks.essentials != null) money = Shared.round(PluginHooks.Essentials_getMoney(this));
-			if (PluginHooks.Vault_economy != null) money = Shared.round(PluginHooks.Vault_getMoney(this));
+			if (PluginHooks.essentials != null) money = Shared.decimal2.format(PluginHooks.Essentials_getMoney(this));
+			if (PluginHooks.Vault_economy != null) money = Shared.decimal2.format(PluginHooks.Vault_getMoney(this));
 		}
 		return money;
 	}

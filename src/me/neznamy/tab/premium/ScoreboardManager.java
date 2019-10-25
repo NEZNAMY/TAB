@@ -51,7 +51,7 @@ public class ScoreboardManager {
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
-			while (board.isPermissionRequired() && !p.hasPermission("tab.scoreboard." + board.getName())) {
+			while (board != null && board.isPermissionRequired() && !p.hasPermission("tab.scoreboard." + board.getName())) {
 				board = scoreboards.get(board.getChildScoreboard());
 				if (board == null) return null;
 				scoreboard = board.getName();

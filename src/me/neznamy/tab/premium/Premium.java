@@ -30,7 +30,7 @@ public class Premium {
 		try{
 			sortingType = SortingType.valueOf(type.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"Â§e" + type + "Â§c\" is not a valid type of sorting type. Valid options are: Â§eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z.");
+			Shared.startupWarn("\"§e" + type + "§c\" is not a valid type of sorting type. Valid options are: §eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z.");
 			sortingType = SortingType.GROUPS;
 		}
 		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
@@ -47,8 +47,8 @@ public class Premium {
 		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1);
 		ScoreboardManager.perWorld = (Map<String, String>) premiumconfig.get("scoreboard.per-world");
-		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled").replace("&", "Â§");
-		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "Â§");
+		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled").replace("&", "§");
+		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "§");
 		if (premiumconfig.get("scoreboards")!= null) 
 			for (String scoreboard : ((Map<String, Object>)premiumconfig.get("scoreboards")).keySet()) {
 				boolean permissionRequired = premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required");
