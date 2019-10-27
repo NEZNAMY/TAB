@@ -17,11 +17,13 @@ import java.util.concurrent.Future;
 
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.shared.FancyMessage.ClickAction;
 import me.neznamy.tab.shared.FancyMessage.Extra;
 import me.neznamy.tab.shared.FancyMessage.HoverAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
+import me.neznamy.tab.shared.placeholders.Constant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -31,7 +33,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.5.4-pre5";
+	public static final String pluginVersion = "2.5.4-pre6";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 
@@ -59,7 +61,7 @@ public class Shared {
 	}
 	public static ITabPlayer getPlayer(int entityId) {
 		for (ITabPlayer p : data.values()) {
-			if (p.getEntityId() == entityId) return p;
+			if (((TabPlayer)p).player.getEntityId() == entityId) return p;
 		}
 		return null;
 	}
@@ -84,22 +86,22 @@ public class Shared {
 				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 				if (message != null) {
 					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-					if (Configs.SECRET_log_errors_into_console) print("§c", message);
+					if (Configs.SECRET_log_errors_into_console) print("Â§c", message);
 				}
 				if (t != null) {
 					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_log_errors_into_console) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
+					if (Configs.SECRET_log_errors_into_console) printClean("Â§c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
 						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_log_errors_into_console) printClean("§c       at " + ste.toString());
+						if (Configs.SECRET_log_errors_into_console) printClean("Â§c       at " + ste.toString());
 					}
 				}
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			print("§c", "An error occured when generating error message");
+			print("Â§c", "An error occured when generating error message");
 			ex.printStackTrace();
-			print("§c", "Original error: " + message);
+			print("Â§c", "Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
 		return defaultValue;
@@ -122,7 +124,7 @@ public class Shared {
 		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
 	}
 	public static void startupWarn(String message) {
-		print("§c", message);
+		print("Â§c", message);
 		startupWarns++;
 	}
 	public static void print(String color, String message) {
@@ -186,8 +188,8 @@ public class Shared {
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		FancyMessage message = new FancyMessage();
-		message.add(new Extra("§3TAB v" + pluginVersion).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
-		message.add(new Extra(" §0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
+		message.add(new Extra("Â§3TAB v" + pluginVersion).onHover(HoverAction.SHOW_TEXT, "Â§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
+		message.add(new Extra(" Â§0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
 	@SuppressWarnings("unchecked")
@@ -198,23 +200,7 @@ public class Shared {
 		object.put("text", text);
 		return object.toString();
 	}
-	public static void registerUniversalPlaceholders() {
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%rank%") {
-			public String get(ITabPlayer p) {
-				return p.getRank();
-			}
-			@Override
-			public String[] getChilds(){
-				return Configs.rankAliases.values().toArray(new String[0]);
-			}
-		});
-		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%version-group:" + entry.getKey()+ "%", 5000) {
-				public String get() {
-					return Placeholders.online.get(entry.getKey())+"";
-				}
-			});
-		}
+	public static void registerAnimationPlaceholders() {
 		for (Animation a : Configs.animations) {
 			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
 				public String get() {
@@ -232,6 +218,24 @@ public class Shared {
 				@Override
 				public String[] getChilds(){
 					return a.getAllMessages();
+				}
+			});
+		}
+	}
+	public static void registerUniversalPlaceholders() {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%rank%") {
+			public String get(ITabPlayer p) {
+				return p.getRank();
+			}
+			@Override
+			public String[] getChilds(){
+				return Configs.rankAliases.values().toArray(new String[0]);
+			}
+		});
+		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
+			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%version-group:" + entry.getKey()+ "%", 5000) {
+				public String get() {
+					return Placeholders.online.get(entry.getKey())+"";
 				}
 			});
 		}
@@ -267,22 +271,22 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used%", 50) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used%", 200) {
 			public String get() {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-max%", 50) {
+		Placeholders.constants.add(new Constant("%memory-max%") {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used-gb%", 50) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used-gb%", 200) {
 			public String get() {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-max-gb%", 50) {
+		Placeholders.constants.add(new Constant("%memory-max-gb%") {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
@@ -292,7 +296,7 @@ public class Shared {
 				return p.getName();
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%time%", 1000) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}

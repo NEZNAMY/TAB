@@ -112,20 +112,16 @@ public class ArmorStand{
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
-//				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all), true).toNMS(null));
 			}
 			if (owner.previewingNametag) {
 				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
 				owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
-//				owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner), true).toNMS(null));
 			}
 		} else {
 			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all).toNMS(), true));
-//				all.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all), true).toNMS(null));
 			}
 			if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner).toNMS(), true));
-//			if (owner.previewingNametag) owner.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner), true).toNMS(null));
 		}
 	}
 	public boolean getVisibility() {

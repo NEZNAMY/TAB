@@ -18,8 +18,10 @@ public class TabPlayer extends ITabPlayer{
 		world = server;
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
 		tablistId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + p.getUsername()).getBytes(Charsets.UTF_8));
-		init(p.getUsername(), p.getUniqueId());
+		uniqueId = p.getUniqueId();
+		name = p.getUsername();
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
+		init();
 	}
 	public String getGroupFromPermPlugin() {
 		if (Main.server.getPluginManager().getPlugin("LuckPerms").isPresent()) return PluginHooks.LuckPerms_getPrimaryGroup(this);

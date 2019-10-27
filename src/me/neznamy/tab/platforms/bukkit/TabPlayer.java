@@ -32,7 +32,8 @@ public class TabPlayer extends ITabPlayer{
 		world = p.getWorld().getName();
 		channel = MethodAPI.getInstance().getChannel(player);
 		tablistId = p.getUniqueId();
-		init(p.getName(), p.getUniqueId());
+		uniqueId = p.getUniqueId();
+		name = p.getName();
 		int version;
 		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 			version = PluginHooks.ProtocolSupportAPI_getProtocolVersionId(this);
@@ -41,6 +42,7 @@ public class TabPlayer extends ITabPlayer{
 			version = PluginHooks.ViaVersion_getPlayerVersion(this);
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 		}
+		init();
 		if (NameTagX.enable || NameTag16.enable) {
 			nameTagVisible = !player.hasPotionEffect(PotionEffectType.INVISIBILITY);
 		}
@@ -139,18 +141,10 @@ public class TabPlayer extends ITabPlayer{
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
-	@Override
-	public Integer getEntityId() {
-		return player.getEntityId();
-	}
 	public long getPing() {
 		int ping = MethodAPI.getInstance().getPing(player);
 		if (ping > 10000 || ping < 0) ping = -1;
 		return ping;
-	}
-	@Override
-	public int getHealth() {
-		return (int) Math.ceil(player.getHealth());
 	}
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) MethodAPI.getInstance().sendPacket(player, nmsPacket);

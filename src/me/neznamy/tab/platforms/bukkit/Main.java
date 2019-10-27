@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.placeholders.Constant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -132,8 +133,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			disabled = false;
 			Shared.cpuHistory = new ArrayList<CPUSample>();
 			Shared.startupWarns = 0;
-			Configs.loadFiles();
 			registerPlaceholders();
+			Configs.loadFiles();
+			Shared.registerAnimationPlaceholders();
 			Shared.data.clear();
 			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -361,7 +363,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
 		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
-
+		Placeholders.constants = new ArrayList<Constant>();
 		Shared.registerUniversalPlaceholders();
 
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%money%") {
@@ -447,7 +449,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		});
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%health%") {
 			public String get(ITabPlayer p) {
-				return p.getHealth()+"";
+				return (int) Math.ceil(((TabPlayer)p).player.getHealth())+"";
 			}
 		});
 		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%tps%", 5000) {
@@ -533,7 +535,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return "";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%maxplayers%", 1000) {
+		Placeholders.constants.add(new Constant("%maxplayers%") {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
 			}

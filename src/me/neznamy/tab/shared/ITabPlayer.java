@@ -55,9 +55,7 @@ public abstract class ITabPlayer{
 	public boolean lastCollision;
 	public boolean lastVisibility;
 
-	public void init(String name, UUID uniqueId) {
-		this.name = name;
-		this.uniqueId = uniqueId;
+	public void init() {
 		updateGroupIfNeeded(false);
 		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
@@ -75,8 +73,6 @@ public abstract class ITabPlayer{
 	public String getMoney() {return "-";}
 	public void setTeamVisible(boolean p0) {}
 	public void restartArmorStands() {}
-	public Integer getEntityId() {return 0;}
-	public int getHealth() {return 0;}
 	public boolean hasInvisibility() {return false;}
 
 	//per-type

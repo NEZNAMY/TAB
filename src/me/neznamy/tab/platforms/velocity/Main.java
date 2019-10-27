@@ -33,6 +33,7 @@ import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.placeholders.Constant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -94,8 +95,9 @@ public class Main implements MainClass{
 			long time = System.currentTimeMillis();
 			Shared.startupWarns = 0;
 			Shared.cpuHistory = new ArrayList<CPUSample>();
-			Configs.loadFiles();
 			registerPlaceholders();
+			Configs.loadFiles();
+			Shared.registerAnimationPlaceholders();
 			Shared.data.clear();
 			for (Player p : server.getAllPlayers()) {
 				ITabPlayer t = new TabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
@@ -246,8 +248,9 @@ public class Main implements MainClass{
 	public static void registerPlaceholders() {
 		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
 		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
+		Placeholders.constants = new ArrayList<Constant>();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%maxplayers%", 1000) {
+		Placeholders.constants.add(new Constant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}

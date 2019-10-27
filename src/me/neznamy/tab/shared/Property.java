@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.shared.placeholders.Constant;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -13,8 +14,8 @@ public class Property {
 	private String temporaryValue;
 	private String lastReplacedValue;
 
-	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	private boolean placeholderapiPlaceholdersPresent;
+	private List<Placeholder> tabPlaceholders = new ArrayList<Placeholder>();
+	private String[] placeholderapiPlaceholders;
 	private boolean hasRelationalPlaceholders;
 	private long lastUpdate;
 	private boolean Static;
@@ -22,20 +23,33 @@ public class Property {
 	public Property(ITabPlayer owner, String rawValue) {
 		if (rawValue == null) rawValue = "";
 		this.owner = owner;
-		this.rawValue = rawValue;
-		analyze(rawValue);
+		this.rawValue = analyze(rawValue);
 	}
-	private void analyze(String value) {
-		placeholders = detectPlaceholders(value, owner != null);
+	private String analyze(String value) {
+		for (Constant c : Placeholders.constants) {
+			if (value.contains(c.getIdentifier())) {
+				value = value.replace(c.getIdentifier(), c.get());
+			}
+		}
+		tabPlaceholders = detectPlaceholders(value, owner != null);
 		hasRelationalPlaceholders = value.contains("%rel_");
-		placeholderapiPlaceholdersPresent = value.indexOf("%") != value.lastIndexOf("%"); //two or more %
-		if (placeholders.isEmpty() && !placeholderapiPlaceholdersPresent && !hasRelationalPlaceholders) {
+		List<String> allPlaceholders = detectPlaceholderAPIPlaceholders(value);
+		for (Placeholder p : tabPlaceholders) {
+			for (String child : p.getChilds()) {
+				for (String p2 : detectPlaceholderAPIPlaceholders(child)) {
+					if (!allPlaceholders.contains(p2)) allPlaceholders.add(p2);
+				}
+			}
+		}
+		for (Placeholder tab : tabPlaceholders) {
+			allPlaceholders.remove(tab.getIdentifier());
+		}
+		placeholderapiPlaceholders = allPlaceholders.toArray(new String[0]);
+		if (tabPlaceholders.isEmpty() && placeholderapiPlaceholders.length == 0 && !hasRelationalPlaceholders) {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
 			for (String removed : Configs.removeStrings) {
-				if (value.contains(removed)) {
-					value = value.replace(removed, "");
-				}
+				if (value.contains(removed)) value = value.replace(removed, "");
 			}
 			lastReplacedValue = Placeholders.color(value);
 			Static = true;
@@ -43,20 +57,21 @@ public class Property {
 			lastReplacedValue = null;
 			Static = false;
 		}
+		return value;
 	}
 	public void setTemporaryValue(String temporaryValue) {
 		this.temporaryValue = temporaryValue;
 		if (temporaryValue != null) {
-			analyze(temporaryValue);
+			temporaryValue = analyze(temporaryValue);
 		} else {
-			analyze(rawValue);
+			rawValue = analyze(rawValue);
 		}
 	}
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
 		if (temporaryValue == null) {
-			analyze(newValue);
+			rawValue = analyze(rawValue);
 		}
 	}
 	public String get() {
@@ -77,12 +92,12 @@ public class Property {
 		String string = getCurrentRawValue();
 
 		//own placeholders
-		for (Placeholder pl : placeholders) {
+		for (Placeholder pl : tabPlaceholders) {
 			string = pl.set(string, owner);
 		}
 		//placeholderapi
-		if (placeholderapiPlaceholdersPresent && PluginHooks.placeholderAPI) {
-			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string);
+		if (placeholderapiPlaceholders.length > 0 && PluginHooks.placeholderAPI) {
+			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string, placeholderapiPlaceholders);
 		}
 
 		//removing strings
@@ -121,5 +136,17 @@ public class Property {
 			}
 		}
 		return placeholdersTotal;
+	}
+	private static List<String> detectPlaceholderAPIPlaceholders(String s){
+		List<String> list = new ArrayList<String>();
+		while (s.contains("%")) {
+			s = s.substring(s.indexOf("%")+1, s.length());
+			if (s.contains("%")) {
+				String placeholder = s.substring(0, s.indexOf("%"));
+				s = s.substring(s.indexOf("%")+1, s.length());
+				list.add("%" + placeholder + "%");
+			}
+		}
+		return list;
 	}
 }

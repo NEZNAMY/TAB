@@ -114,7 +114,7 @@ public class PacketAPI{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId()));
 		} else {
-			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(new int[] {bar.getEntityId()}));
+			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(bar.getEntityId()));
 		}
 	}
 	public static void updateBossBar(ITabPlayer to, BossBarLine bar) {
@@ -151,7 +151,6 @@ public class PacketAPI{
 			}
 			if (w.getAllObjects().isEmpty()) return;
 			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(bar.getEntityId(), w.toNMS(), true));
-//			to.sendPacket(new PacketPlayOutEntityMetadata(bar.getEntityId(), w, true).toNMS(null));
 		}
 	}
 }

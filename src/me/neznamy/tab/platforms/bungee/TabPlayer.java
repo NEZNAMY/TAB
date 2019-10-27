@@ -19,8 +19,10 @@ public class TabPlayer extends ITabPlayer{
 		world = p.getServer().getInfo().getName();
 		channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
 		tablistId = p.getUniqueId();
-		init(p.getName(), p.getUniqueId());
+		uniqueId = p.getUniqueId();
+		name = p.getName();
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
+		init();
 	}
 	public String getGroupFromPermPlugin() {
 		try {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -80,19 +81,19 @@ public class PluginHooks {
 	public static String[] PermissionsEx_getGroupNames(ITabPlayer p) {
 		return PermissionsEx.getUser(((TabPlayer)p).player).getGroupNames();
 	}
-	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s) {
+	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders) {
 		try {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
 				String value = PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
-				Shared.placeholderCpu("PlaceholderAPI", System.nanoTime()-startTime);
+				Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion());
-				Shared.error(null, "String to replace: " + s);
+				Shared.error(null, "Placeholders to replace: " + Arrays.toString(placeholders));
 				Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
 			} else {
 				//thats why it failed
