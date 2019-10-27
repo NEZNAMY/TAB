@@ -78,7 +78,7 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {
-		if (Main.disabled || !enable) return;
+		if (Shared.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
 			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
@@ -92,7 +92,7 @@ public class NameTagX implements Listener{
 	}
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
-		if (Main.disabled || !enable) return;
+		if (Shared.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
 

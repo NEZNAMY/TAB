@@ -17,7 +17,7 @@ public class TabCommand{
 	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
 
 	public static void execute(ITabPlayer sender, String[] args){
-		if (Shared.mainClass.isDisabled() && isAdmin(sender)) {
+		if (Shared.disabled && isAdmin(sender)) {
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				Shared.mainClass.reload(sender);
 			} else {
@@ -305,7 +305,7 @@ public class TabCommand{
 	}
 	public static void help(ITabPlayer sender){
 		if (sender == null) Shared.mainClass.sendConsoleMessage("§3TAB v" + Shared.pluginVersion);
-		if (isAdmin(sender) && !Shared.mainClass.isDisabled()) {
+		if (isAdmin(sender) && !Shared.disabled) {
 			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
 		}
 	}

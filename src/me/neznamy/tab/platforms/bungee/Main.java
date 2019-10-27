@@ -37,8 +37,6 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class Main extends Plugin implements Listener, MainClass{
 
-	public static boolean disabled;
-
 	public void onEnable(){
 		long time = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
@@ -56,20 +54,20 @@ public class Main extends Plugin implements Listener, MainClass{
 				return getPermissionPlugin();
 			}
 		}));
-		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
-		if (!disabled) {
+		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}
 	public void unload() {
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			long time = System.currentTimeMillis();
 			Shared.cancelAllTasks();
-			Configs.animations = null;
+			Configs.animations = new ArrayList<Animation>();
 			HeaderFooter.unload();
 			TabObjective.unload();
 			Playerlist.unload();
@@ -84,7 +82,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void load(boolean broadcastTime, boolean inject) {
 		try {
-			disabled = false;
+			Shared.disabled = false;
 			long time = System.currentTimeMillis();
 			Shared.startupWarns = 0;
 			Shared.cpuHistory = new ArrayList<CPUSample>();
@@ -109,19 +107,19 @@ public class Main extends Plugin implements Listener, MainClass{
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			Shared.print("§c", "Did not enable due to a broken configuration file.");
-			disabled = true;
+			Shared.disabled = true;
 		} catch (Throwable e) {
 			Shared.print("§c", "Failed to enable");
 			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
 			for (StackTraceElement ste : e.getStackTrace()) {
 				sendConsoleMessage("§c       at " + ste.toString());
 			}
-			disabled = true;
+			Shared.disabled = true;
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerDisconnectEvent e){
-		if (disabled) return;
+		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
 		Placeholders.recalculateOnlineVersions();
@@ -177,7 +175,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	@EventHandler
 	public void a(ServerSwitchEvent e){
 		try{
-			if (disabled) return;
+			if (Shared.disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) {
 				p = new TabPlayer(e.getPlayer());
@@ -240,26 +238,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		});
 	}
-	@SuppressWarnings("deprecation")
-	public void sendConsoleMessage(String message) {
-		ProxyServer.getInstance().getConsole().sendMessage(message);
-	}
-	public String getPermissionPlugin() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
-		return "Unknown/None";
-	}
-	public String getSeparatorType() {
-		return "server";
-	}
-	public boolean isDisabled() {
-		return disabled;
-	}
-	public void reload(ITabPlayer sender) {
-		unload();
-		load(true, false);
-		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
-	}
 	public boolean killPacket(Object packetPlayOutScoreboardTeam){
 		if (((Team) packetPlayOutScoreboardTeam).getFriendlyFire() != 69) {
 			String[] players = ((Team) packetPlayOutScoreboardTeam).getPlayers();
@@ -273,22 +251,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		}
 		return false;
-	}
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
-		return packet.toBungee(protocolVersion);
-	}
-	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
-		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
-		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
-		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
-		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
-		BelowName.number = Configs.config.getString("belowname.number", "%health%");
-		BelowName.text = Configs.config.getString("belowname.text", "Health");
-		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 	}
 	public static void registerPlaceholders() {
 		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
@@ -307,5 +269,44 @@ public class Main extends Plugin implements Listener, MainClass{
 				}
 			});
 		}
+	}
+	
+	
+	/*
+	 *  Implementing MainClass
+	 */
+	
+	@SuppressWarnings("deprecation")
+	public void sendConsoleMessage(String message) {
+		ProxyServer.getInstance().getConsole().sendMessage(message);
+	}
+	public String getPermissionPlugin() {
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
+		return "Unknown/None";
+	}
+	public String getSeparatorType() {
+		return "server";
+	}
+	public void reload(ITabPlayer sender) {
+		unload();
+		load(true, false);
+		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
+	}
+	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
+		return packet.toBungee(protocolVersion);
+	}
+	public void loadConfig() throws Exception {
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
+		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
+		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
+		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
+		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
+		BelowName.number = Configs.config.getString("belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("belowname.text", "Health");
+		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
+		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 	}
 }

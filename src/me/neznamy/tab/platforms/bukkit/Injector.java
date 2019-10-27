@@ -40,7 +40,7 @@ public class Injector {
 			}
 			@SuppressWarnings("unchecked")
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				if (Main.disabled) {
+				if (Shared.disabled) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
@@ -54,7 +54,7 @@ public class Injector {
 					long time = System.nanoTime();
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
-						if ((NameTag16.enable || NameTagX.enable) && Main.instance.killPacket(packet)) {
+						if ((NameTag16.enable || NameTagX.enable) && Main.killPacket(packet)) {
 							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
 							return;
 						}

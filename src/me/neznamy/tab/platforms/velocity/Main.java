@@ -45,7 +45,6 @@ public class Main implements MainClass{
 
 	public static ProxyServer server;
 	public static Logger logger;
-	public static boolean disabled;
 
 	@Inject
 	public Main(ProxyServer server, Logger logger) {
@@ -63,20 +62,20 @@ public class Main implements MainClass{
 			}
 		});
 		load(false, true);
-		if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
-		if (!disabled) {
+		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			unload();
 		}
 	}
 	public void unload() {
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			long time = System.currentTimeMillis();
 			Shared.cancelAllTasks();
-			Configs.animations = null;
+			Configs.animations = new ArrayList<Animation>();
 			HeaderFooter.unload();
 			TabObjective.unload();
 			Playerlist.unload();
@@ -91,7 +90,7 @@ public class Main implements MainClass{
 	}
 	public void load(boolean broadcastTime, boolean inject) {
 		try {
-			disabled = false;
+			Shared.disabled = false;
 			long time = System.currentTimeMillis();
 			Shared.startupWarns = 0;
 			Shared.cpuHistory = new ArrayList<CPUSample>();
@@ -116,19 +115,19 @@ public class Main implements MainClass{
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			Shared.print("§c", "Did not enable due to a broken configuration file.");
-			disabled = true;
+			Shared.disabled = true;
 		} catch (Throwable e) {
 			Shared.print("§c", "Failed to enable");
 			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
 			for (StackTraceElement ste : e.getStackTrace()) {
 				sendConsoleMessage("§c       at " + ste.toString());
 			}
-			disabled = true;
+			Shared.disabled = true;
 		}
 	}
 	@Subscribe
 	public void a(DisconnectEvent e){
-		if (disabled) return;
+		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
 		Placeholders.recalculateOnlineVersions();
@@ -145,7 +144,7 @@ public class Main implements MainClass{
 	@Subscribe
 	public void a(ServerConnectedEvent e){
 		try{
-			if (disabled) return;
+			if (Shared.disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) {
 				p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
@@ -156,8 +155,7 @@ public class Main implements MainClass{
 				TabObjective.playerJoin(p);
 				BossBar.playerJoin(p);
 				ScoreboardManager.register(p);
-				ITabPlayer pl = p;
-				NameTag16.playerJoin(pl);
+				NameTag16.playerJoin(p);
 			} else {
 				String from = p.getWorldName();
 				String to = p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
@@ -208,33 +206,6 @@ public class Main implements MainClass{
 			}
 		});
 	}
-	public void sendConsoleMessage(String message) {
-		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
-	}
-	public String getPermissionPlugin() {
-		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
-		return "Unknown/None";
-	}
-	public String getSeparatorType() {
-		return "server";
-	}
-	public boolean isDisabled() {
-		return disabled;
-	}
-	public void reload(ITabPlayer sender) {
-		unload();
-		load(true, false);
-		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
-	}
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
-		return packet.toVelocity(protocolVersion);
-	}
-	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml", Configs.configComments);
-		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
-		TabObjective.type = TabObjectiveType.NONE;
-	}
 	//java class loader is `intelligent` and throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
 	//making it return Object and then casting fixes it
 	public static Object componentFromText(String text) {
@@ -262,5 +233,34 @@ public class Main implements MainClass{
 				}
 			});
 		}
+	}
+	
+	/*
+	 *  Implementing MainClass
+	 */
+	
+	public void sendConsoleMessage(String message) {
+		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
+	}
+	public String getPermissionPlugin() {
+		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
+		return "Unknown/None";
+	}
+	public String getSeparatorType() {
+		return "server";
+	}
+	public void reload(ITabPlayer sender) {
+		unload();
+		load(true, false);
+		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
+	}
+	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
+		return packet.toVelocity(protocolVersion);
+	}
+	public void loadConfig() throws Exception {
+		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml", Configs.configComments);
+		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
+		TabObjective.type = TabObjectiveType.NONE;
 	}
 }

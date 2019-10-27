@@ -40,7 +40,6 @@ import net.milkbowl.vault.permission.Permission;
 public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public static Main instance;
-	public static boolean disabled;
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
@@ -87,14 +86,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
 				}
 			}));
-			if (!disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
+			if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
 			sendConsoleMessage("§c[TAB] Your server version is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 	}
 	public void onDisable() {
-		if (!disabled) {
+		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) {
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 					Injector.uninject(p.getUniqueId());
@@ -107,7 +106,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void unload() {
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			long time = System.currentTimeMillis();
 			Shared.cancelAllTasks();
 			Configs.animations = new ArrayList<Animation>();
@@ -130,7 +129,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void load(boolean broadcastTime, boolean inject) {
 		try {
 			long time = System.currentTimeMillis();
-			disabled = false;
+			Shared.disabled = false;
 			Shared.cpuHistory = new ArrayList<CPUSample>();
 			Shared.startupWarns = 0;
 			registerPlaceholders();
@@ -158,20 +157,20 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			Shared.print("§c", "Did not enable due to a broken configuration file.");
-			disabled = true;
+			Shared.disabled = true;
 		} catch (Throwable e) {
 			Shared.print("§c", "Failed to enable");
 			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
 			for (StackTraceElement ste : e.getStackTrace()) {
 				sendConsoleMessage("§c       at " + ste.toString());
 			}
-			disabled = true;
+			Shared.disabled = true;
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerJoinEvent e) {
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
@@ -197,7 +196,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(PlayerQuitEvent e){
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) {
 				Shared.error(null, "Data of " + disconnectedPlayer + " did not exist when player left");
@@ -225,7 +224,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerChangedWorldEvent e){
 		try {
-			if (disabled) return;
+			if (Shared.disabled) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
 			PerWorldPlayerlist.trigger(e.getPlayer());
@@ -238,7 +237,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	@EventHandler
 	public void a(PlayerCommandPreprocessEvent e) {
-		if (disabled) return;
+		if (Shared.disabled) return;
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
@@ -255,29 +254,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Injector1_7.inject(player);
 		}
 	}
-	public void sendConsoleMessage(String message) {
-		Bukkit.getConsoleSender().sendMessage(message);
-	}
-	public String getPermissionPlugin() {
-		if (PluginHooks.permissionsEx) return "PermissionsEx";
-		if (PluginHooks.groupManager != null) return "GroupManager";
-		if (PluginHooks.luckPerms) return "LuckPerms";
-		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
-		return "Unknown/None";
-	}
-	public String getSeparatorType() {
-		return "world";
-	}
-	public boolean isDisabled() {
-		return disabled;
-	}
-	public void reload(ITabPlayer sender) {
-		unload();
-		load(true, false);
-		if (!disabled) TabCommand.sendMessage(sender, Configs.reloaded);
-	}
+	
 	@SuppressWarnings("unchecked")
-	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
+	public static boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
 		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
 			for (ITabPlayer p : Shared.getPlayers()) {
@@ -289,59 +268,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
-	}
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
-		return packet.toNMS(protocolVersion);
-	}
-	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
-		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
-		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
-		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
-		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
-		HeaderFooter.refresh = (Configs.config.getInt("header-footer-refresh-interval-ticks", 1)*50);
-		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
-		NameTagX.enable = false;
-		NameTag16.enable = false;
-		Configs.unlimitedTags = false;
-		if (changeNameTag) {
-			Configs.unlimitedTags = unlimitedTags;
-			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				NameTagX.enable = true;
-			} else {
-				NameTag16.enable = true;
-			}
-		}
-		String objective = Configs.config.getString("tablist-objective", "PING");
-		try{
-			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
-		} catch (Throwable e) {
-			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
-			TabObjective.type = TabObjectiveType.NONE;
-		}
-		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
-		if (TabObjective.type == TabObjectiveType.PING) TabObjective.rawValue = "%ping%";
-		if (TabObjective.type == TabObjectiveType.HEARTS) TabObjective.rawValue = "%health%";
-		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
-		BelowName.refresh = 50*Configs.config.getInt("belowname.refresh-interval-ticks", 5);
-		BelowName.number = Configs.config.getString("belowname.number", "%health%");
-		BelowName.text = Configs.config.getString("belowname.text", "Health");
-		Configs.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
-		Configs.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
-		Configs.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
-		Configs.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
-		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
-		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
-		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
-		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
-		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Lists.newArrayList("ignoredworld", "spawn"));
-		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
-		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
-		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
-		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
 	}
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
@@ -557,5 +483,81 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
 		return ((Economy)PluginHooks.Vault_economy).getBalance(((TabPlayer)p).player);
+	}
+	
+	/*
+	 *  Implementing MainClass
+	 */
+	
+	public void sendConsoleMessage(String message) {
+		Bukkit.getConsoleSender().sendMessage(message);
+	}
+	public String getPermissionPlugin() {
+		if (PluginHooks.permissionsEx) return "PermissionsEx";
+		if (PluginHooks.groupManager != null) return "GroupManager";
+		if (PluginHooks.luckPerms) return "LuckPerms";
+		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
+		return "Unknown/None";
+	}
+	public String getSeparatorType() {
+		return "world";
+	}
+	public void reload(ITabPlayer sender) {
+		unload();
+		load(true, false);
+		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
+	}
+	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
+		return packet.toNMS(protocolVersion);
+	}
+	public void loadConfig() throws Exception {
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
+		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
+		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
+		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
+		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
+		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
+		HeaderFooter.refresh = (Configs.config.getInt("header-footer-refresh-interval-ticks", 1)*50);
+		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
+		NameTagX.enable = false;
+		NameTag16.enable = false;
+		Configs.unlimitedTags = false;
+		if (changeNameTag) {
+			Configs.unlimitedTags = unlimitedTags;
+			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				NameTagX.enable = true;
+			} else {
+				NameTag16.enable = true;
+			}
+		}
+		String objective = Configs.config.getString("tablist-objective", "PING");
+		try{
+			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
+		} catch (Throwable e) {
+			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
+			TabObjective.type = TabObjectiveType.NONE;
+		}
+		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
+		if (TabObjective.type == TabObjectiveType.PING) TabObjective.rawValue = "%ping%";
+		if (TabObjective.type == TabObjectiveType.HEARTS) TabObjective.rawValue = "%health%";
+		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
+		BelowName.refresh = 50*Configs.config.getInt("belowname.refresh-interval-ticks", 5);
+		BelowName.number = Configs.config.getString("belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("belowname.text", "Health");
+		Configs.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
+		Configs.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
+		Configs.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
+		Configs.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
+		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
+		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
+		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
+		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
+		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
+		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Lists.newArrayList("ignoredworld", "spawn"));
+		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
+		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
+		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
+		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
 	}
 }

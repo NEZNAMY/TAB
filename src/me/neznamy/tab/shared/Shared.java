@@ -45,7 +45,7 @@ public class Shared {
 	public static ConcurrentHashMap<String, Long> placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
 	public static List<ConcurrentHashMap<String, Long>> placeholderCpuHistory = new ArrayList<ConcurrentHashMap<String, Long>>();
 
-
+	public static boolean disabled;
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static int startupWarns = 0;
 	public static MainClass mainClass;

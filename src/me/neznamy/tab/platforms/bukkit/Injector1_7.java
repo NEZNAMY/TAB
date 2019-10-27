@@ -22,7 +22,7 @@ public class Injector1_7 {
 				super.channelRead(context, packet);
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				if (Main.disabled) {
+				if (Shared.disabled) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
@@ -36,7 +36,7 @@ public class Injector1_7 {
 					long time = System.nanoTime();
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
-						if ((NameTag16.enable) && Main.instance.killPacket(packet)) {
+						if ((NameTag16.enable) && Main.killPacket(packet)) {
 							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
 							return;
 						}
