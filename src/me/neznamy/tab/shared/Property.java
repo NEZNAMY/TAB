@@ -144,7 +144,7 @@ public class Property {
 			if (s.contains("%")) {
 				String placeholder = s.substring(0, s.indexOf("%"));
 				s = s.substring(s.indexOf("%")+1, s.length());
-				list.add("%" + placeholder + "%");
+				if (!placeholder.startsWith("rel_")) list.add("%" + placeholder + "%");
 			}
 		}
 		return list;
