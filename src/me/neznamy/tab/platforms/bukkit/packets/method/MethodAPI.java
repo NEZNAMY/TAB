@@ -21,6 +21,7 @@ public abstract class MethodAPI {
 	public static Class<?> ChatMessageType;
 	public static Class<?> DataWatcher;
 	public static Class<?> DataWatcherRegistry;
+	public static Class<?> Entity;
 	public static Class<?> EnumChatFormat;
 	public static Class<?> EnumGamemode;
 	public static Class<?> EnumPlayerInfoAction;

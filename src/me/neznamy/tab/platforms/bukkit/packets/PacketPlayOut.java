@@ -2,7 +2,9 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -34,5 +36,14 @@ public abstract class PacketPlayOut{
 			}
 		}
 		return fields;
+	}
+	public static List<Field> getFields(Class<?> clazz, Class<?> type){
+		List<Field> list = new ArrayList<Field>();
+		if (clazz == null) return list;
+		for (Field field : clazz.getDeclaredFields()) {
+			field.setAccessible(true);
+			if (field.getType() == type) list.add(field);
+		}
+		return list;
 	}
 }

@@ -63,15 +63,20 @@ public class Injector {
 
 					if (NameTagX.enable) {
 						time = System.nanoTime();
-						NameTagXPacket pack = null;
-						if ((pack = NameTagXPacket.fromNMS(packet)) != null) {
-							ITabPlayer packetPlayer = Shared.getPlayer(pack.getEntityId());
+						NameTagXPacket pack = NameTagXPacket.fromNMS(packet);
+						if (pack != null) {
+							ITabPlayer packetPlayer = null;
+							if (pack.a != null && pack.a instanceof Integer) {
+								packetPlayer = Shared.getPlayer((int)pack.a);
+							}
+							if (packetPlayer == null && pack.b != null && pack.b instanceof Integer) {
+								packetPlayer = Shared.getPlayer((int)pack.b);
+							}
 							if (packetPlayer == null || !packetPlayer.disabledNametag) {
 								//sending packets outside of the packet reader or protocollib will cause problems
-								NameTagXPacket p = pack;
 								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
 									public void run() {
-										NameTagX.processPacketOUT(p, player);
+										NameTagX.processPacketOUT(pack, player);
 									}
 								});
 							}

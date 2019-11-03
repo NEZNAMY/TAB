@@ -104,7 +104,7 @@ public class NameTagX implements Listener{
 	public static void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
 		boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
 		if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
-			int id = packet.getEntityId();
+			int id = (int) packet.a;
 			ITabPlayer pl = Shared.getPlayer(id);
 			if (pl != null) {
 				//player moved
@@ -134,19 +134,19 @@ public class NameTagX implements Listener{
 			}
 		}
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
-			ITabPlayer spawnedPlayer = Shared.getPlayer(packet.getEntityId());
+			ITabPlayer spawnedPlayer = Shared.getPlayer((int)packet.a);
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
-			for (int id : packet.getEntityArray()) {
+			for (int id : (int[])packet.a) {
 				ITabPlayer despawnedPlayer = Shared.getPlayer(id);
 				if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
 			}
 		}
 		if (packet.getPacketType() == PacketType.MOUNT) {
 			//1.9+ mount detection
-			int vehicle = packet.getEntityId();
-			int[] passg = packet.getEntityArray();
+			int vehicle = (int) packet.a;
+			int[] passg = (int[]) packet.b;
 			Integer[] passengers = new Integer[passg.length];
 			for (int i=0; i<passg.length; i++) {
 				passengers[i] = passg[i];
@@ -165,9 +165,9 @@ public class NameTagX implements Listener{
 		}
 		if (packet.getPacketType() == PacketType.ATTACH_ENTITY) {
 			//1.8.x mount detection
-			if (packet.getExtra() == 0) {
-				int vehicle = packet.getEntityId();
-				int passenger = packet.getEntityArray()[0];
+			if ((int)packet.a == 0) {
+				int vehicle = (int) packet.c;
+				int passenger = (int) packet.b;
 				if (vehicle != -1) {
 					//attach
 					vehicles.put(vehicle, Lists.newArrayList(passenger));

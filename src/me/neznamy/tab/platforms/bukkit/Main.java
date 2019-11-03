@@ -44,6 +44,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
+		Shared.separatorType = "world";
 		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		if (MethodAPI.getInstance() != null){
 			long total = System.currentTimeMillis();
@@ -101,29 +102,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Injector1_7.uninject(p.getUniqueId());
 				}
 			}
-			unload();
-		}
-	}
-	public void unload() {
-		try {
-			if (Shared.disabled) return;
-			long time = System.currentTimeMillis();
-			Shared.cancelAllTasks();
-			Configs.animations = new ArrayList<Animation>();
-			PerWorldPlayerlist.unload();
-			HeaderFooter.unload();
-			TabObjective.unload();
-			BelowName.unload();
-			Playerlist.unload();
-			NameTag16.unload();
-			NameTagX.unload();
-			BossBar.unload();
-			ScoreboardManager.unload();
-			Shared.data.clear();
-			if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
-			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e) {
-			Shared.error(null, "Failed to unload the plugin", e);
+			Shared.unload();
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -174,19 +153,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
-			ITabPlayer pl = p;
 			PerWorldPlayerlist.trigger(e.getPlayer());
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
 				public void run() {
 					Placeholders.recalculateOnlineVersions();
-					HeaderFooter.playerJoin(pl);
-					TabObjective.playerJoin(pl);
-					BelowName.playerJoin(pl);
-					NameTag16.playerJoin(pl);
-					NameTagX.playerJoin(pl);
-					BossBar.playerJoin(pl);
-					ScoreboardManager.register(pl);
+					HeaderFooter.playerJoin(p);
+					TabObjective.playerJoin(p);
+					BelowName.playerJoin(p);
+					NameTag16.playerJoin(p);
+					NameTagX.playerJoin(p);
+					BossBar.playerJoin(p);
+					ScoreboardManager.register(p);
 				}
 			});
 		} catch (Throwable ex) {
@@ -305,6 +283,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%yPos%") {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockY()+"";
+			}
+		});
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%ytest%") {
+			public String get(ITabPlayer p) {
+				return (((TabPlayer)p).player).getLocation().getY()+"";
 			}
 		});
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%zPos%") {
@@ -499,11 +482,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}
-	public String getSeparatorType() {
-		return "world";
-	}
 	public void reload(ITabPlayer sender) {
-		unload();
+		Shared.unload();
 		load(true, false);
 		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}

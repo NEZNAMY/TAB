@@ -24,6 +24,7 @@ public class MethodAPI_v1_10_R1 extends MethodAPI {
 		BarStyle = BossBattle.BarStyle.class;
 		DataWatcher = DataWatcher.class;
 		DataWatcherRegistry = DataWatcherRegistry.class;
+		Entity = Entity.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		EnumPlayerInfoAction = EnumPlayerInfoAction.class;

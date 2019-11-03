@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,7 +47,7 @@ public class TabCommand{
 									for (ITabPlayer all : Shared.getPlayers()) {
 										PacketAPI.createBossBar(all, bar);
 									}
-//									List<String> animationFrames = //maybe later
+									//									List<String> animationFrames = //maybe later
 									for (int i=0; i<(float)d2*1000/BossBar.refresh; i++) {
 										Thread.sleep(BossBar.refresh);
 									}
@@ -131,8 +130,8 @@ public class TabCommand{
 			} else if (args[0].equalsIgnoreCase("parse")) {
 				if (sender != null) {
 					String replaced = Placeholders.replaceAllPlaceholders(args[1], sender);
-					sendMessage(sender, "§6Attempting to parse string §e" + args[1] + "§6 for player §e" + sender.getName());
-					sendMessage(sender, "§6Result: §r" + replaced + " §r(" + replaced.replace("§", "&") + ")");
+					sendMessage(sender, "Â§6Attempting to parse string Â§e" + args[1] + "Â§6 for player Â§e" + sender.getName());
+					sendMessage(sender, "Â§6Result: Â§r" + replaced + " Â§r(" + replaced.replace("Â§", "&") + ")");
 				}
 			}
 		} else if (args.length == 1){
@@ -163,56 +162,77 @@ public class TabCommand{
 				} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 			} else if (args[0].equalsIgnoreCase("cpu")){
 				if (can(sender, "cpu")) {
-					sendMessage(sender, "§3[TAB] §a--------------------------------------");
-					sendMessage(sender, "§3[TAB] §6CPU from last 1m, 5m, 15m: §a" + getTotalCpu(60) + ", " + getTotalCpu(300) + ", " + getTotalCpu(900));
-					sendMessage(sender, "§3[TAB] §a--------------------------------------");
-					int minute = 60;
-					if (Shared.cpuHistory.size() >= minute) {
-						HashMap<Feature, Long> lastMinute = new HashMap<Feature, Long>();
-						for (int i=Shared.cpuHistory.size()-minute; i<Shared.cpuHistory.size(); i++) {
-							for (Entry<Feature, Long> entry : Shared.cpuHistory.get(i).getValues().entrySet()) {
-								Feature feature = entry.getKey();
-								if (!lastMinute.containsKey(feature)) lastMinute.put(feature, 0L);
-								lastMinute.put(feature, lastMinute.get(feature)+entry.getValue());
-							}
-						}
-						sendMessage(sender, "§3[TAB] §aFeature specific from the last minute:");
-						for (Entry<Feature, Long> entry : lastMinute.entrySet()) {
-							sendMessage(sender, "§3[TAB] §6" + entry.getKey().toString() + " - §a" + Shared.decimal3.format((float)entry.getValue()/minute/10000000) + "%");
-						}
-						sendMessage(sender, "§3[TAB] §a--------------------------------------");
-						sendMessage(sender, "§3[TAB] §aPlaceholders from the last minute using over 0.01%:");
-						HashMap<String, Long> total = new HashMap<String, Long>();
-						for (ConcurrentHashMap<String, Long> sample : Shared.placeholderCpuHistory) {
-							for (Entry<String, Long> placeholder : sample.entrySet()) {
-								if (!total.containsKey(placeholder.getKey())) total.put(placeholder.getKey(), 0L);
-								total.put(placeholder.getKey(), total.get(placeholder.getKey()) + placeholder.getValue());
-							}
-						}
-						for (Entry<String, Long> entry : total.entrySet()) {
-							if (entry.getValue()/60 > 100000) sendMessage(sender, "§3[TAB] §6" + entry.getKey() + " - §a" + Shared.decimal3.format((float)entry.getValue()/minute/10000000) + "%");
-						}
-						long placeholdersTotal = 0;
-						for (Long time : total.values()) {
-							placeholdersTotal += time;
-						}
-						sendMessage(sender, "§3[TAB] §e§lPLACEHOLDERS TOTAL: §2§l" + Shared.decimal3.format((float)placeholdersTotal/minute/10000000) + "%");
-						sendMessage(sender, "§3[TAB] §a--------------------------------------");
+					int dataSize = Shared.cpuHistory.size();
+					sendMessage(sender, " ");
+					sendMessage(sender, "Â§8Â§lÂ§mâ•”             Â§rÂ§8Â§l[ Â§bTAB CPU Stats Â§8Â§l]Â§rÂ§8Â§lÂ§m             ");
+					sendMessage(sender, "Â§8Â§lâ•‘ Â§6TAB CPU STATS FROM THE LAST MINUTE");
+					sendMessage(sender, "Â§8Â§lÂ§mâ•                                        ");
+					sendMessage(sender, "Â§8Â§lâ•‘ Â§6Placeholders using over 0.01%:");
+					Map<String, Long> placeholders = sortByValue(getPlaceholderCpu(dataSize));
+					for (Entry<String, Long> entry : placeholders.entrySet()) {
+						if (entry.getValue()/dataSize > 100000) sendMessage(sender, "Â§8Â§lâ•‘ Â§7" + entry.getKey() + " - Â§a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
 					}
+					long placeholdersTotal = 0;
+					for (Long time : placeholders.values()) placeholdersTotal += time;
+					sendMessage(sender, "Â§8Â§lÂ§mâ•                                        ");
+					sendMessage(sender, "Â§8Â§lâ•‘ Â§6Feature specific:");
+					Map<Feature, Long> features = sortByValue(getFeatureCpu(dataSize));
+					for (Entry<Feature, Long> entry : features.entrySet()) {
+						sendMessage(sender, "Â§8Â§lâ•‘ Â§7" + entry.getKey().toString() + " - Â§a" + colorizeFeature(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
+					}
+					long featuresTotal = 0;
+					for (Long time : features.values()) featuresTotal += time;
+					sendMessage(sender, "Â§8Â§lÂ§mâ•                                        ");
+					sendMessage(sender, "Â§8Â§lâ•‘ Â§7Â§lPLACEHOLDERS TOTAL: Â§aÂ§l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
+					sendMessage(sender, "Â§8Â§lâ•‘ Â§7Â§lPLUGIN TOTAL: Â§eÂ§l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
+					sendMessage(sender, "Â§8Â§lÂ§mâ•š             Â§rÂ§8Â§l[ Â§bTAB CPU Stats Â§8Â§l]Â§rÂ§8Â§lÂ§m             ");
+					sendMessage(sender, " ");				
 				} else sendMessage(sender, Configs.no_perm);
 			} else help(sender);
 		} else help(sender);
 	}
-	private static String getTotalCpu(int history) {
-		String cpu = "-";
-		if (Shared.cpuHistory.size() >= history) {
-			long var = 0;
-			for (int i=Shared.cpuHistory.size()-history; i<Shared.cpuHistory.size(); i++) {
-				var += Shared.cpuHistory.get(i).getTotalCpuTime();
-			}
-			cpu = Shared.decimal3.format((float)var/history/10000000) + "%";
+	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+		List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
+		list.sort(Entry.comparingByValue());
+		Map<K, V> result = new LinkedHashMap<>();
+		for (int i=list.size()-1; i>=0; i--) {
+			Entry<K, V> entry = list.get(i);
+			result.put(entry.getKey(), entry.getValue());
 		}
-		return cpu;
+		return result;
+	}
+	private static HashMap<Feature, Long> getFeatureCpu(int history) {
+		HashMap<Feature, Long> values = new HashMap<Feature, Long>();
+		for (int i=0; i<Shared.cpuHistory.size(); i++) {
+			for (Entry<Feature, Long> entry : Shared.cpuHistory.get(i).getValues().entrySet()) {
+				Feature feature = entry.getKey();
+				if (!values.containsKey(feature)) values.put(feature, 0L);
+				values.put(feature, values.get(feature)+entry.getValue());
+			}
+		}
+		return values;
+	}
+	private static HashMap<String, Long> getPlaceholderCpu(int history) {
+		HashMap<String, Long> values = new HashMap<String, Long>();
+		for (ConcurrentHashMap<String, Long> sample : Shared.placeholderCpuHistory) {
+			for (Entry<String, Long> placeholder : sample.entrySet()) {
+				if (!values.containsKey(placeholder.getKey())) values.put(placeholder.getKey(), 0L);
+				values.put(placeholder.getKey(), values.get(placeholder.getKey()) + placeholder.getValue());
+			}
+		}
+		return values;
+	}
+	private static String colorizePlaceholder(String value) {
+		float f = Float.parseFloat(value);
+		if (f > 1) return "Â§c" + value;
+		if (f > 0.3) return "Â§e" + value;
+		return "Â§a" + value;
+	}
+	private static String colorizeFeature(String value) {
+		float f = Float.parseFloat(value);
+		if (f > 5) return "Â§c" + value;
+		if (f > 1) return "Â§e" + value;
+		return "Â§a" + value;
 	}
 	public static void save(ITabPlayer sender, String arg0, String arg1, String type, String value) {
 		if (arg0.equalsIgnoreCase("group")){
@@ -246,14 +266,14 @@ public class TabCommand{
 		if (analyzed == null && sender != null) {
 			analyzed = Shared.getPlayer(sender.getUniqueId());
 		}
-		sendMessage(sender, "§3[TAB] §a§lShowing debug information");
-		sendMessage(sender, "§7§m>-------------------------------<");
-		sendMessage(sender, "§6PlaceholderAPI: §a" + PluginHooks.placeholderAPI);
-		sendMessage(sender, "§6Found Permission system: §a" + Shared.mainClass.getPermissionPlugin());
+		sendMessage(sender, "Â§3[TAB] Â§aÂ§lShowing debug information");
+		sendMessage(sender, "Â§7Â§m>-------------------------------<");
+		sendMessage(sender, "Â§6PlaceholderAPI: Â§a" + PluginHooks.placeholderAPI);
+		sendMessage(sender, "Â§6Found Permission system: Â§a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.usePrimaryGroup) {
-			sendMessage(sender, "§6Permission group choice logic: §aPrimary group§8/§r§8§mChoose from list");
+			sendMessage(sender, "Â§6Permission group choice logic: Â§aPrimary groupÂ§8/Â§rÂ§8Â§mChoose from list");
 		} else {
-			sendMessage(sender, "§6Permission group choice logic: §8§mPrimary group§r§8/§aChoose from list");
+			sendMessage(sender, "Â§6Permission group choice logic: Â§8Â§mPrimary groupÂ§rÂ§8/Â§aChoose from list");
 		}
 		boolean sorting = Configs.unlimitedTags || NameTag16.enable;
 		String sortingType;
@@ -274,39 +294,39 @@ public class TabCommand{
 				}
 			}
 		} else {
-			sortingType = "§cDISABLED";
+			sortingType = "Â§cDISABLED";
 		}
-		sendMessage(sender, "§6Sorting system: §a" + sortingType);
-		sendMessage(sender, "§7§m>-------------------------------<");
+		sendMessage(sender, "Â§6Sorting system: Â§a" + sortingType);
+		sendMessage(sender, "Â§7Â§m>-------------------------------<");
 		if (analyzed != null) {
-			sendMessage(sender, "§ePlayer: §a" + analyzed.getName());
+			sendMessage(sender, "Â§ePlayer: Â§a" + analyzed.getName());
 			if (Configs.usePrimaryGroup) {
-				sendMessage(sender, "§ePrimary permission group: §a" + analyzed.getGroup());
+				sendMessage(sender, "Â§ePrimary permission group: Â§a" + analyzed.getGroup());
 			} else {
-				sendMessage(sender, "§eFull permission group list: §a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
-				sendMessage(sender, "§eChosen group: §a" + analyzed.getGroup());
+				sendMessage(sender, "Â§eFull permission group list: Â§a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
+				sendMessage(sender, "Â§eChosen group: Â§a" + analyzed.getGroup());
 			}
-			if (sorting) sendMessage(sender, "§eTeam name: §a" +analyzed.getTeamName().replace("§", "&"));
+			if (sorting) sendMessage(sender, "Â§eTeam name: Â§a" +analyzed.getTeamName().replace("Â§", "&"));
 			if (Playerlist.enable) {
-				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabprefix").isStatic() + ")");
-				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
-				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
+				sendMessage(sender, "Â§9tabprefix: Â§b" + analyzed.properties.get("tabprefix").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("tabprefix").isStatic() + ")");
+				sendMessage(sender, "Â§9tabsuffix: Â§b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
+				sendMessage(sender, "Â§9tabname: Â§b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
-				sendMessage(sender, "§9tagprefix: §b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
-				sendMessage(sender, "§9tagsuffix: §b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
+				sendMessage(sender, "Â§9tagprefix: Â§b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
+				sendMessage(sender, "Â§9tagsuffix: Â§b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
 			}
 			if (Configs.unlimitedTags) {
-				sendMessage(sender, "§9abovename: §b" + analyzed.properties.get("abovename").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("abovename").isStatic() + ")");
-				sendMessage(sender, "§9belowname: §b" + analyzed.properties.get("belowname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("belowname").isStatic() + ")");
-				sendMessage(sender, "§9tagname: §b" + analyzed.properties.get("customtagname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtagname").isStatic() + ")");
+				sendMessage(sender, "Â§9abovename: Â§b" + analyzed.properties.get("abovename").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("abovename").isStatic() + ")");
+				sendMessage(sender, "Â§9belowname: Â§b" + analyzed.properties.get("belowname").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("belowname").isStatic() + ")");
+				sendMessage(sender, "Â§9tagname: Â§b" + analyzed.properties.get("customtagname").getCurrentRawValue() + " Â§7(static=" + analyzed.properties.get("customtagname").isStatic() + ")");
 			}
 		}
 	}
 	public static void help(ITabPlayer sender){
-		if (sender == null) Shared.mainClass.sendConsoleMessage("§3TAB v" + Shared.pluginVersion);
+		if (sender == null) Shared.mainClass.sendConsoleMessage("Â§3TAB v" + Shared.pluginVersion);
 		if (isAdmin(sender) && !Shared.disabled) {
-			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
+			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "Â§"));
 		}
 	}
 	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
@@ -319,7 +339,7 @@ public class TabCommand{
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("§", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("Â§", "Â§"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
@@ -335,7 +355,7 @@ public class TabCommand{
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("§", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("Â§", "Â§"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}

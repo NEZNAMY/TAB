@@ -7,7 +7,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 
 	private int cooldown;
 	private long lastRefresh;
-	private String lastValue;
+	private String lastValue = "";
 
 	public ServerPlaceholder(String identifier, int cooldown) {
 		super(identifier);

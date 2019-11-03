@@ -41,6 +41,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		long time = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
 		Shared.mainClass = this;
+		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
@@ -59,25 +60,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void onDisable() {
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
-			unload();
-		}
-	}
-	public void unload() {
-		try {
-			if (Shared.disabled) return;
-			long time = System.currentTimeMillis();
-			Shared.cancelAllTasks();
-			Configs.animations = new ArrayList<Animation>();
-			HeaderFooter.unload();
-			TabObjective.unload();
-			Playerlist.unload();
-			NameTag16.unload();
-			BossBar.unload();
-			ScoreboardManager.unload();
-			Shared.data.clear();
-			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e) {
-			Shared.error(null, "Failed to unload the plugin", e);
+			Shared.unload();
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -133,45 +116,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		}
 	}
-/*	@EventHandler
-	public void a(PostLoginEvent e) {
-		if (disabled) return;
-		System.out.println("------------------------------");
-		System.out.println(e.getClass().getSimpleName());
-		System.out.println("------------------------------");
-		ITabPlayer p = new TabPlayer(e.getPlayer());
-		Shared.data.put(e.getPlayer().getUniqueId(), p);
-		inject(p);
-	}
-	@EventHandler
-	public void a(ServerSwitchEvent e){
-		if (disabled) return;
-		System.out.println("------------------------------");
-		System.out.println(e.getClass().getSimpleName());
-		System.out.println("------------------------------");
-		try{
-			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			if (((ProxiedPlayer)p.getPlayer()).getServer() == null) {
-				System.out.println("server change");
-				String from = p.getWorldName();
-				String to = e.getPlayer().getServer().getInfo().getName();
-				((TabPlayer)p).server = e.getPlayer().getServer();
-				p.onWorldChange(from, to);
-			} else {
-				System.out.println("new join");
-				p.onJoin();
-				p.updatePlayerListName(false);
-				Placeholders.recalculateOnlineVersions();
-				NameTag16.playerJoin(p);
-				HeaderFooter.playerJoin(p);
-				TabObjective.playerJoin(p);
-				BossBar.playerJoin(p);
-				ScoreboardManager.register(p);
-			}
-		} catch (Throwable ex){
-			Shared.error("An error occured when player joined/changed server", ex);
-		}
-	}*/
 	@EventHandler
 	public void a(ServerSwitchEvent e){
 		try{
@@ -285,11 +229,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
 		return "Unknown/None";
 	}
-	public String getSeparatorType() {
-		return "server";
-	}
 	public void reload(ITabPlayer sender) {
-		unload();
+		Shared.unload();
 		load(true, false);
 		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}

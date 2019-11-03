@@ -36,7 +36,7 @@ public class Injector1_7 {
 					long time = System.nanoTime();
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
-						if ((NameTag16.enable) && Main.killPacket(packet)) {
+						if (NameTag16.enable && Main.killPacket(packet)) {
 							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
 							return;
 						}

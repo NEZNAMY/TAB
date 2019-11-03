@@ -243,10 +243,10 @@ public abstract class ITabPlayer{
 	private String getValue(Object property) {
 		String w = getWorldName();
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Users." + getName() + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + w + ".Users." + getName() + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups." + permissionGroup + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.mainClass.getSeparatorType() + "-settings." + w + ".Groups._OTHER_." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + w + ".Groups." + permissionGroup + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + w + ".Groups._OTHER_." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups." + permissionGroup + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
@@ -254,17 +254,17 @@ public abstract class ITabPlayer{
 	private void updateRawHeaderAndFooter() {
 		String rawHeader = "";
 		String rawFooter = "";
-		List<Object> h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".header");
+		List<Object> h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".Users." + getName() + ".header");
 		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".header");
-		if (h == null) h = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".header");
+		if (h == null) h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".header");
+		if (h == null) h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".header");
 		if (h == null) h = Configs.config.getList("Groups." + permissionGroup + ".header");
 		if (h == null) h = Configs.config.getList("header");
 		if (h == null) h = new ArrayList<Object>();
-		List<Object> f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Users." + getName() + ".footer");
+		List<Object> f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".Users." + getName() + ".footer");
 		if (f == null) f = Configs.config.getList("Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".footer");
-		if (f == null) f = Configs.config.getList("per-" + Shared.mainClass.getSeparatorType() + "-settings." + getWorldName() + ".footer");
+		if (f == null) f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".Groups." + permissionGroup + ".footer");
+		if (f == null) f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + getWorldName() + ".footer");
 		if (f == null) f = Configs.config.getList("Groups." + permissionGroup + ".footer");
 		if (f == null) f = Configs.config.getList("footer");
 		if (f == null) f = new ArrayList<Object>();

@@ -22,6 +22,7 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 
 	public MethodAPI_v1_8_R2() {
 		DataWatcher = DataWatcher.class;
+		Entity = Entity.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		EnumPlayerInfoAction = EnumPlayerInfoAction.class;

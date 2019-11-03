@@ -57,12 +57,15 @@ public class ArmorStand{
 		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
+		if (to == null) {
+			return Shared.error(null, "Attempted to spawn armor stand for null player");
+		}
 		updateLocation();
 		visible = getVisibility();
 		String name = property.get();
 		if (property.hasRelationalPlaceholders()) name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.valueOf("ARMOR_STAND"), location).setDataWatcher(createDataWatcher(name, to));
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(createDataWatcher(name, to));
 	}
 	public Object getNMSTeleportPacket() {
 		updateLocation();
@@ -125,7 +128,7 @@ public class ArmorStand{
 		}
 	}
 	public boolean getVisibility() {
-		return !owner.hasInvisibility() && player.getGameMode() != GameMode.valueOf("SPECTATOR") && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
+		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;

@@ -32,7 +32,7 @@ public class TABAPI {
 			Configs.config.set("change-nametag-prefix-suffix", true);
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 			Configs.config.save();
-			me.neznamy.tab.platforms.bukkit.Main.instance.unload();
+			Shared.unload();
 			me.neznamy.tab.platforms.bukkit.Main.instance.load(false, false);
 		} else throw new IllegalStateException();
 	}

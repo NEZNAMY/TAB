@@ -15,6 +15,7 @@ public class MethodAPI_v1_5_R3 extends MethodAPI {
 
 	public MethodAPI_v1_5_R3() {
 		DataWatcher = DataWatcher.class;
+		Entity = Entity.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		PacketPlayOutPlayerInfo = Packet201PlayerInfo.class;

@@ -25,6 +25,7 @@ public class MethodAPI_v1_12_R1 extends MethodAPI {
 		ChatMessageType = ChatMessageType.class;
 		DataWatcher = DataWatcher.class;
 		DataWatcherRegistry = DataWatcherRegistry.class;
+		Entity = Entity.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		EnumPlayerInfoAction = EnumPlayerInfoAction.class;

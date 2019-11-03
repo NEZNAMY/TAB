@@ -99,12 +99,12 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	static {
 		Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			entityIds.put(EntityType.valueOf("ARMOR_STAND"), 1);
+			entityIds.put(EntityType.ARMOR_STAND, 1);
 			entityIds.put(EntityType.WITHER, 83);
 		} else {
 			entityIds.put(EntityType.WITHER, 64);
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
-				entityIds.put(EntityType.valueOf("ARMOR_STAND"), 30);
+				entityIds.put(EntityType.ARMOR_STAND, 30);
 			}
 		}
 		ENTITYID = fields.get("a");

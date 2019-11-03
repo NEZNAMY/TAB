@@ -17,23 +17,24 @@ import java.util.concurrent.Future;
 
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.platforms.bukkit.PerWorldPlayerlist;
+import me.neznamy.tab.platforms.bukkit.PlaceholderAPIExpansion;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.FancyMessage.ClickAction;
 import me.neznamy.tab.shared.FancyMessage.Extra;
 import me.neznamy.tab.shared.FancyMessage.HoverAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.shared.placeholders.Constant;
-import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import me.neznamy.tab.shared.placeholders.*;
 
 public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.5.4-pre6";
+	public static final String pluginVersion = "2.5.4-pre7";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 
@@ -49,6 +50,7 @@ public class Shared {
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
+	public static String separatorType;
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
@@ -112,7 +114,7 @@ public class Shared {
 			public void run() {
 				cpuHistory.add(new CPUSample(cpuLastSecond));
 				cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
-				if (cpuHistory.size() > 60*15) cpuHistory.remove(0); //15 minute history
+				if (cpuHistory.size() > 60) cpuHistory.remove(0);
 
 				placeholderCpuHistory.add(placeholderCpuLastSecond);
 				placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
@@ -200,6 +202,30 @@ public class Shared {
 		object.put("text", text);
 		return object.toString();
 	}
+	public static void unload() {
+		try {
+			if (disabled) return;
+			long time = System.currentTimeMillis();
+			cancelAllTasks();
+			Configs.animations = new ArrayList<Animation>();
+			HeaderFooter.unload();
+			TabObjective.unload();
+			BelowName.unload();
+			Playerlist.unload();
+			NameTag16.unload();
+			BossBar.unload();
+			ScoreboardManager.unload();
+			if (separatorType.equals("world")) {
+				NameTagX.unload();
+				PerWorldPlayerlist.unload();
+				if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
+			}
+			data.clear();
+			print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
+		} catch (Throwable e) {
+			error(null, "Failed to unload the plugin", e);
+		}
+	}
 	public static void registerAnimationPlaceholders() {
 		for (Animation a : Configs.animations) {
 			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
@@ -257,12 +283,12 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+mainClass.getSeparatorType()+"%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%") {
 			public String get(ITabPlayer p) {
 				return p.getWorldName();
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+mainClass.getSeparatorType()+"online%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%") {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : getPlayers()){

@@ -20,6 +20,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 	
 	public MethodAPI_v1_7_R4() {
 		DataWatcher = DataWatcher.class;
+		Entity = Entity.class;
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;

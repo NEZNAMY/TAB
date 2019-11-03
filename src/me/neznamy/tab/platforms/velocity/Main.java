@@ -56,6 +56,7 @@ public class Main implements MainClass{
 		long time = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
 		Shared.mainClass = this;
+		Shared.separatorType = "server";
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
@@ -67,25 +68,7 @@ public class Main implements MainClass{
 	public void onDisable() {
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
-			unload();
-		}
-	}
-	public void unload() {
-		try {
-			if (Shared.disabled) return;
-			long time = System.currentTimeMillis();
-			Shared.cancelAllTasks();
-			Configs.animations = new ArrayList<Animation>();
-			HeaderFooter.unload();
-			TabObjective.unload();
-			Playerlist.unload();
-			NameTag16.unload();
-			BossBar.unload();
-			ScoreboardManager.unload();
-			Shared.data.clear();
-			Shared.print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e) {
-			Shared.error(null, "Failed to unload the plugin", e);
+			Shared.unload();
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -246,11 +229,8 @@ public class Main implements MainClass{
 		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
 		return "Unknown/None";
 	}
-	public String getSeparatorType() {
-		return "server";
-	}
 	public void reload(ITabPlayer sender) {
-		unload();
+		Shared.unload();
 		load(true, false);
 		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}

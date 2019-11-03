@@ -173,12 +173,12 @@ public class Configs {
 			config.set("rank-aliases", rankAliases = map);
 			config.save();
 		}
-		disabledHeaderFooter = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.header-footer", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledTablistNames = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-names", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledNametag = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.nametag", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledTablistObjective = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.tablist-objective", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledBossbar = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.bossbar", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
-		disabledBelowname = config.getList("disable-features-in-"+Shared.mainClass.getSeparatorType()+"s.belowname", Lists.newArrayList("disabled" + Shared.mainClass.getSeparatorType()));
+		disabledHeaderFooter = config.getList("disable-features-in-"+Shared.separatorType+"s.header-footer", Lists.newArrayList("disabled" + Shared.separatorType));
+		disabledTablistNames = config.getList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Lists.newArrayList("disabled" + Shared.separatorType));
+		disabledNametag = config.getList("disable-features-in-"+Shared.separatorType+"s.nametag", Lists.newArrayList("disabled" + Shared.separatorType));
+		disabledTablistObjective = config.getList("disable-features-in-"+Shared.separatorType+"s.tablist-objective", Lists.newArrayList("disabled" + Shared.separatorType));
+		disabledBossbar = config.getList("disable-features-in-"+Shared.separatorType+"s.bossbar", Lists.newArrayList("disabled" + Shared.separatorType));
+		disabledBelowname = config.getList("disable-features-in-"+Shared.separatorType+"s.belowname", Lists.newArrayList("disabled" + Shared.separatorType));
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml", animationComments);

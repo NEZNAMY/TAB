@@ -4,10 +4,11 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcher{
 
+	private static final Field ENTITY = PacketPlayOut.getFields(MethodAPI.DataWatcher, MethodAPI.Entity).get(0);
+	
 	private Object entity;
 	private Map<Integer, Item> dataValues = new HashMap<Integer, Item>();
 
@@ -80,25 +81,6 @@ public class DataWatcher{
 		public DataWatcherObject(int position, Object classType){
 			this.position = position;
 			this.classType = classType;
-		}
-	}
-
-	private static final Field ENTITY;
-
-	static {
-		Map<String, Field> fields = PacketPlayOut.getFields(MethodAPI.DataWatcher);
-		if (ProtocolVersion.SERVER_VERSION.getNetworkId() >= ProtocolVersion.v1_14_4.getNetworkId()) {
-			//1.14.4+
-			ENTITY = fields.get("entity");
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
-			//1.10 - 1.14.3
-			ENTITY = fields.get("c");
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			//1.9.x
-			ENTITY = fields.get("b");
-		} else {
-			//1.7.x - 1.8.x
-			ENTITY = fields.get("a");
 		}
 	}
 }
