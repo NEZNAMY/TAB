@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class ArmorStand{
 
@@ -162,7 +163,7 @@ public class ArmorStand{
 		if (name == null) name = "";
 		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(name))));
+			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(name).toString())));
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}

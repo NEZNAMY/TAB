@@ -15,17 +15,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.json.simple.JSONObject;
-
 import me.neznamy.tab.platforms.bukkit.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.PlaceholderAPIExpansion;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.FancyMessage.ClickAction;
-import me.neznamy.tab.shared.FancyMessage.Extra;
-import me.neznamy.tab.shared.FancyMessage.HoverAction;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.IChatBaseComponent.ClickAction;
+import me.neznamy.tab.shared.packets.IChatBaseComponent.HoverAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.placeholders.*;
 
@@ -88,22 +87,22 @@ public class Shared {
 				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 				if (message != null) {
 					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-					if (Configs.SECRET_log_errors_into_console) print("Â§c", message);
+					if (Configs.SECRET_log_errors_into_console) print("§c", message);
 				}
 				if (t != null) {
 					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_log_errors_into_console) printClean("Â§c" + t.getClass().getName() +": " + t.getMessage());
+					if (Configs.SECRET_log_errors_into_console) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
 						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_log_errors_into_console) printClean("Â§c       at " + ste.toString());
+						if (Configs.SECRET_log_errors_into_console) printClean("§c       at " + ste.toString());
 					}
 				}
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			print("Â§c", "An error occured when generating error message");
+			print("§c", "An error occured when generating error message");
 			ex.printStackTrace();
-			print("Â§c", "Original error: " + message);
+			print("§c", "Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
 		return defaultValue;
@@ -126,7 +125,7 @@ public class Shared {
 		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
 	}
 	public static void startupWarn(String message) {
-		print("Â§c", message);
+		print("§c", message);
 		startupWarns++;
 	}
 	public static void print(String color, String message) {
@@ -189,18 +188,9 @@ public class Shared {
 		for (Future<?> f : tasks) f.cancel(true);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
-		FancyMessage message = new FancyMessage();
-		message.add(new Extra("Â§3TAB v" + pluginVersion).onHover(HoverAction.SHOW_TEXT, "Â§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/"));
-		message.add(new Extra(" Â§0by _NEZNAMY_ (discord: NEZNAMY#4659)"));
+		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHover(HoverAction.SHOW_TEXT, "§aClick to visit plugin's spigot page").onClick(ClickAction.OPEN_URL, "https://www.spigotmc.org/resources/57806/");
+		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
-	}
-	@SuppressWarnings("unchecked")
-	public static String jsonFromText(String text) {
-		if (text == null) return null;
-		if (text.length() == 0) return "{\"translate\":\"\"}";
-		JSONObject object = new JSONObject();
-		object.put("text", text);
-		return object.toString();
 	}
 	public static void unload() {
 		try {
@@ -221,7 +211,7 @@ public class Shared {
 				if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
 			}
 			data.clear();
-			print("Â§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
+			print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			error(null, "Failed to unload the plugin", e);
 		}

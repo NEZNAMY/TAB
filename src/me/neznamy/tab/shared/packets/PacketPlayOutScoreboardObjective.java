@@ -5,7 +5,6 @@ import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
@@ -30,7 +29,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			TITLE.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(title)));
+			TITLE.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(title).toString()));
 		} else {
 			TITLE.set(packet, title);
 		}
@@ -41,7 +40,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String title = this.title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = Shared.jsonFromText(title);
+			title = new IChatBaseComponent(title).toString();
 		} else {
 			if (title != null && title.length() > 32) title = title.substring(0, 32);
 		}

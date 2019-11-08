@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -72,7 +71,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			PROGRESS.set(packet, progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(title)));
+			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(title).toString()));
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			COLOR.set(packet, color.toNMS());
@@ -92,7 +91,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setHealth(progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			packet.setTitle(Shared.jsonFromText(title));
+			packet.setTitle(new IChatBaseComponent(title).toString());
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());
@@ -112,7 +111,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setPercent(progress);
 		}
 		if (action == Action.UPDATE_NAME || action == Action.ADD) {
-			packet.setName(Shared.jsonFromText(title));
+			packet.setName(new IChatBaseComponent(title).toString());
 		}
 		if (action == Action.UPDATE_STYLE || action == Action.ADD) {
 			packet.setColor(color.toBungee());

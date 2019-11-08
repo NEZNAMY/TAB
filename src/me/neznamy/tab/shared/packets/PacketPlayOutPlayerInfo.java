@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
@@ -16,7 +15,6 @@ import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import net.kyori.text.Component;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -123,11 +121,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (properties != null) profile.getProperties().putAll((Multimap<String, Property>) properties);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(listName)));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(listName).toString()));
 		}
 		public Object toBungee() {
 			Item item = new Item();
-			item.setDisplayName(Shared.jsonFromText(listName));
+			item.setDisplayName(new IChatBaseComponent(listName).toString());
 			item.setGamemode(gamemode.getNetworkId());
 			item.setPing(ping);
 			item.setProperties((String[][]) properties);

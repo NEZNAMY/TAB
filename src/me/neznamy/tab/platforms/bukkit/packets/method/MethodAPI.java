@@ -27,6 +27,7 @@ public abstract class MethodAPI {
 	public static Class<?> EnumPlayerInfoAction;
 	public static Class<?> EnumScoreboardAction;
 	public static Class<?> EnumScoreboardHealthDisplay;
+	public static Class<?> IChatBaseComponent;
 	public static Class<?> PacketPlayOutPlayerInfo;
 	public static Class<?> PacketPlayOutBoss;
 	public static Class<?> PacketPlayOutPlayerListHeaderFooter;

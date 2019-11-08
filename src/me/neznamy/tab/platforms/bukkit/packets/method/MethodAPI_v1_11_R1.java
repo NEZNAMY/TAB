@@ -14,6 +14,7 @@ import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -30,6 +31,7 @@ public class MethodAPI_v1_11_R1 extends MethodAPI {
 		EnumPlayerInfoAction = EnumPlayerInfoAction.class;
 		EnumScoreboardAction = PacketPlayOutScoreboardScore.EnumScoreboardAction.class;
 		EnumScoreboardHealthDisplay = IScoreboardCriteria.EnumScoreboardHealthDisplay.class;
+		IChatBaseComponent = IChatBaseComponent.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
 		PacketPlayOutBoss = PacketPlayOutBoss.class;
 		PacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.class;
@@ -52,7 +54,7 @@ public class MethodAPI_v1_11_R1 extends MethodAPI {
 	}
 	public Object ICBC_fromString(String string) {
 		if (string == null) return null;
-		return IChatBaseComponent.ChatSerializer.a(string);
+		return ChatSerializer.a(string);
 	}
 	public String CCM_fromComponent(Object ichatbasecomponent) {
 		return CraftChatMessage.fromComponent((IChatBaseComponent) ichatbasecomponent);

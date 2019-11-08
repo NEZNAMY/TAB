@@ -7,7 +7,6 @@ import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.protocol.packet.Team;
 
@@ -46,16 +45,16 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(team)));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(team).toString()));
 			if (prefix != null && prefix.length() > 0) {
-				PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(prefix)));
+				PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
 				String last = Placeholders.getLastColors(prefix);
 				if (last != null && last.length() > 0) {
 					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
 				}
 				if (chatFormat != null) CHATFORMAT.set(packet, chatFormat.toNMS());
 			}
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(Shared.jsonFromText(suffix)));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
 		} else {
 			DISPLAYNAME.set(packet, team);
 			if (prefix != null) PREFIX.set(packet, prefix);
@@ -72,9 +71,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		String teamDisplay = team;
 		int color = 0;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = Shared.jsonFromText(prefix);
-			suffix = Shared.jsonFromText(suffix);
-			teamDisplay = Shared.jsonFromText(team);
+			prefix = new IChatBaseComponent(prefix).toString();
+			suffix = new IChatBaseComponent(suffix).toString();
+			teamDisplay = new IChatBaseComponent(team).toString();
 			color = chatFormat.toBungee();
 		} else {
 			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
