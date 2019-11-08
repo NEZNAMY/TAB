@@ -14,8 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
-import com.google.common.collect.Lists;
-
 import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
@@ -42,12 +40,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 
 	public void onEnable(){
+		long total = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
 		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
-		if (MethodAPI.getInstance() != null){
-			long total = System.currentTimeMillis();
+		if (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN){
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
@@ -530,14 +528,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Lists.newArrayList("[] ", "< > "));
+		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
-		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Lists.newArrayList("ignoredworld", "spawn"));
+		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
 		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
-		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Lists.newArrayList("Owner", "Admin", "Helper", "default"));
+		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 	}
 }

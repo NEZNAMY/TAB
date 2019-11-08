@@ -3,8 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.*;
 import java.util.Map.Entry;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
@@ -147,10 +145,13 @@ public abstract class ITabPlayer{
 	}
 	public void updatePlayerListName() {
 		isListNameUpdateNeeded(); //triggering updates to replaced values
-		List<PlayerInfoData> updatedPlayers = Lists.newArrayList(infoData);
-		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers);
-		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendCustomPacket(packet);
+		try {
+			Object packet = Shared.mainClass.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, infoData), null);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
+			}
+		} catch (Exception e) {
+			Shared.error(null, "Failed to create PacketPlayOutPlayerInfo", e);
 		}
 	}
 	public String getTabFormat(ITabPlayer other) {
@@ -366,7 +367,7 @@ public abstract class ITabPlayer{
 		for (ITabPlayer all : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
 			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
-			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Lists.newArrayList(getName()));
+			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Arrays.asList(getName()));
 		}
 	}
 	public void registerTeam(ITabPlayer to) {
@@ -377,7 +378,7 @@ public abstract class ITabPlayer{
 		String replacedSuffix = tagsuffix.get();
 		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
 		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
-		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Lists.newArrayList(getName()));
+		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
 	private void unregisterTeam(ITabPlayer to) {
 		PacketAPI.unregisterScoreboardTeam(to, teamName);

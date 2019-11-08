@@ -34,7 +34,7 @@ public class TABAPI {
 			Configs.config.save();
 			Shared.unload();
 			me.neznamy.tab.platforms.bukkit.Main.instance.load(false, false);
-		} else throw new IllegalStateException();
+		} else throw new IllegalStateException("Unlimited nametag mode is only supported on bukkit");
 	}
 	
 	

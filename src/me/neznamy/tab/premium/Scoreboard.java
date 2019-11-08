@@ -1,9 +1,8 @@
 package me.neznamy.tab.premium;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -109,16 +108,16 @@ public class Scoreboard {
 						suffix = "§" + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
-					return Lists.newArrayList(prefix, suffix);
+					return Arrays.asList(prefix, suffix);
 				} else {
-					return Lists.newArrayList(replaced, "");
+					return Arrays.asList(replaced, "");
 				}
 			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
 			p.setProperty("sb-"+teamname, rawtext);
 			List<String> prefixsuffix = replaceText(p, true);
-			if (prefixsuffix == null) prefixsuffix = Lists.newArrayList("", "");
+			if (prefixsuffix == null) prefixsuffix = Arrays.asList("", "");
 			int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
 			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}

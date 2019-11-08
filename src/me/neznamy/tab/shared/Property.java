@@ -123,7 +123,7 @@ public class Property {
 		return Static;
 	}
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
-		if (!rawValue.contains("%") && !rawValue.contains("{")) return new ArrayList<Placeholder>();
+		if (rawValue == null || (!rawValue.contains("%") && !rawValue.contains("{"))) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
@@ -139,6 +139,7 @@ public class Property {
 	}
 	private static List<String> detectPlaceholderAPIPlaceholders(String s){
 		List<String> list = new ArrayList<String>();
+		if (s == null) return list;
 		while (s.contains("%")) {
 			s = s.substring(s.indexOf("%")+1, s.length());
 			if (s.contains("%")) {

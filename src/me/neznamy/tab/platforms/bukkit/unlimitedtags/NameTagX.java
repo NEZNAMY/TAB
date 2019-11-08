@@ -15,8 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket.PacketType;
@@ -170,7 +168,7 @@ public class NameTagX implements Listener{
 				int passenger = (int) packet.b;
 				if (vehicle != -1) {
 					//attach
-					vehicles.put(vehicle, Lists.newArrayList(passenger));
+					vehicles.put(vehicle, Arrays.asList(passenger));
 				} else {
 					//detach
 					for (Entry<Integer, List<Integer>> entry : vehicles.entrySet()) {

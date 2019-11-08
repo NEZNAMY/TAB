@@ -115,7 +115,7 @@ public class TabPlayer extends ITabPlayer{
 		for (Player w : player.getWorld().getPlayers()) {
 			ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
 			if (wPlayer == null) {
-				Shared.error(null, "Data of " + w.getName() + " don't exist ?");
+				Shared.error(null, "Data of " + w.getName() + " don't exist ? Returned as a member of world " + player.getWorld());
 				continue;
 			}
 			if (w == player) continue;
@@ -124,6 +124,7 @@ public class TabPlayer extends ITabPlayer{
 		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this, false);
 	}
 	public void loadArmorStands() {
+		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue());
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : Premium.dynamicLines) {
 			Property p = properties.get(line);

@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
-
-import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
@@ -15,8 +14,6 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -64,7 +61,7 @@ public class PacketAPI{
 
 	//scoreboard score
 	public static void registerScoreboardScore(ITabPlayer p, String team, String player, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Lists.newArrayList(player));
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(player));
 		setScoreboardScore(p, player, objective, score);
 	}
 	public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
@@ -77,9 +74,6 @@ public class PacketAPI{
 	
 	
 	
-	public static void sendFancyMessage(ITabPlayer to, FancyMessage message) {
-		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
-	}
 	private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
