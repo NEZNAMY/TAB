@@ -1,11 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
@@ -45,5 +41,12 @@ public abstract class PacketPlayOut{
 			if (field.getType() == type) list.add(field);
 		}
 		return list;
+	}
+	public static Field getObjectAt(List<Field> list, int index) {
+		try {
+			return list.get(index);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

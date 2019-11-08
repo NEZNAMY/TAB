@@ -31,17 +31,7 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 		return new HeaderAndFooter(new IChatBaseComponent(header).toString(), new IChatBaseComponent(footer).toString());
 	}
 
-	private static final Field HEADER;
-	private static final Field FOOTER;
-
-	static {
-		Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter);
-		if (ProtocolVersion.SERVER_VERSION.getNetworkId() >= ProtocolVersion.v1_13_1.getNetworkId()) {
-			HEADER = fields.get("header");
-			FOOTER = fields.get("footer");
-		} else {
-			HEADER = fields.get("a");
-			FOOTER = fields.get("b");
-		}
-	}
+	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
+	private static Field HEADER = getObjectAt(fields, 0);
+	private static Field FOOTER = getObjectAt(fields, 1);
 }

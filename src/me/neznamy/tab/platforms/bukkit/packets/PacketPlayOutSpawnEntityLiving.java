@@ -81,8 +81,9 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 
 	private static HashMap<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
-	private static final Field ENTITYID;
-	private static final Field UUID;
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
+	private static final Field ENTITYID = fields.get("a");
+	private static final Field UUID = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, UUID.class), 0);
 	private static final Field ENTITYTYPE;
 	private static final Field X;
 	private static final Field Y;
@@ -93,11 +94,10 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static final Field YAW;
 	private static final Field PITCH;
 	private static final Field L;
-	public static final Field DATAWATCHER;
-	private static final Field DATAWATCHERITEMS;
+	public static final Field DATAWATCHER = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, MethodAPI.DataWatcher).get(0);
+	private static final Field DATAWATCHERITEMS = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, List.class).get(0);
 
 	static {
-		Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			entityIds.put(EntityType.ARMOR_STAND, 1);
 			entityIds.put(EntityType.WITHER, 83);
@@ -107,9 +107,8 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 				entityIds.put(EntityType.ARMOR_STAND, 30);
 			}
 		}
-		ENTITYID = fields.get("a");
+		
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			UUID = fields.get("b");
 			ENTITYTYPE = fields.get("c");
 			X = fields.get("d");
 			Y = fields.get("e");
@@ -120,10 +119,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			YAW = fields.get("j");
 			PITCH = fields.get("k");
 			L = fields.get("l");
-			DATAWATCHER = fields.get("m");
-			DATAWATCHERITEMS = fields.get("n");
 		} else {
-			UUID = null;
 			ENTITYTYPE = fields.get("b");
 			X = fields.get("c");
 			Y = fields.get("d");
@@ -134,13 +130,6 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			YAW = fields.get("i");
 			PITCH = fields.get("j");
 			L = fields.get("k");
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
-				DATAWATCHER = fields.get("l");
-				DATAWATCHERITEMS = fields.get("m");
-			} else {
-				DATAWATCHER = fields.get("t");
-				DATAWATCHERITEMS = fields.get("u");
-			}
 		}
 	}
 }
