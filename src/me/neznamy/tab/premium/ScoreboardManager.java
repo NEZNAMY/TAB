@@ -99,6 +99,22 @@ public class ScoreboardManager {
 			}
 			return true;
 		}
+		if (message.equalsIgnoreCase(toggleCommand + " on")) {
+			if (sender.hiddenScoreboard) {
+				register(sender);
+				sender.sendMessage(scoreboard_on);
+				sender.hiddenScoreboard = false;
+			}
+			return true;
+		}
+		if (message.equalsIgnoreCase(toggleCommand + " off")) {
+			if (!sender.hiddenScoreboard) {
+				unregister(sender);
+				sender.sendMessage(scoreboard_off);
+				sender.hiddenScoreboard = true;
+			}
+			return true;
+		}
 		return false;
 	}
 }
