@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -102,8 +103,18 @@ public class MethodAPI_v1_8_R3 extends MethodAPI {
 	public Object newDataWatcher(Object entity) {
 		return new DataWatcher((Entity) entity);
 	}
+	
+	//for ySpigot compatibility
+	private static final Constructor<?> newPlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class.getConstructors()[0];
+	
 	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
-		return new PacketPlayOutPlayerInfo().new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+		try {
+			//ySpigot
+			return newPlayerInfoData.newInstance(profile, ping, enumGamemode, listName);
+		} catch (Throwable e) {
+			//not ySpigot
+			return new PacketPlayOutPlayerInfo().new PlayerInfoData((GameProfile) profile, ping, (EnumGamemode)enumGamemode, (IChatBaseComponent) listName);
+		}
 	}
 	public Object newDataWatcherItem(me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value, boolean needsUpdate) {
 		DataWatcher.WatchableObject item = new DataWatcher.WatchableObject((int) type.classType, type.position, value);
