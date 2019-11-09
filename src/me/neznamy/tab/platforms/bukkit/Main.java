@@ -386,13 +386,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%") {
-				public String get(ITabPlayer p) {
+			Placeholders.constants.add(new Constant("%afk%") {
+				public String get() {
 					return "";
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
 				}
 			});
 		}
