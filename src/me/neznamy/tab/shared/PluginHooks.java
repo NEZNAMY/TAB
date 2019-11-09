@@ -43,7 +43,11 @@ public class PluginHooks {
 		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
 	}
 	public static double Essentials_getMoney(ITabPlayer p) {
-		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getMoney().doubleValue();
+		try {
+			return ((Essentials)essentials).getUser(((TabPlayer)p).player).getMoney().doubleValue();
+		} catch (Throwable t) {
+			return Shared.error(0, "Failed to check money of " + p.getName() + " using Essentials", t);
+		}
 	}
 	public static String Essentials_getNickname(ITabPlayer p) {
 		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getNickname();
@@ -67,7 +71,11 @@ public class PluginHooks {
 		return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
-		return me.neznamy.tab.platforms.bukkit.Main.LibsDisguises_isDisguised(p); //preventing errors on bungee version
+		try {
+			return me.neznamy.tab.platforms.bukkit.Main.LibsDisguises_isDisguised(p); //preventing errors on bungee version
+		} catch (Throwable t) {
+			return Shared.error(false, "Failed to check if player " + p.getName() + " is disguised using LibsDisguises", t);
+		}
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
 		List<String> groups = new ArrayList<String>();
@@ -75,7 +83,11 @@ public class PluginHooks {
 		return groups.toArray(new String[0]);
 	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
-		return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
+		try {
+			return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
+		} catch (Throwable t) {
+			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
+		}
 	}
 	@SuppressWarnings("deprecation")
 	public static String[] PermissionsEx_getGroupNames(ITabPlayer p) {
