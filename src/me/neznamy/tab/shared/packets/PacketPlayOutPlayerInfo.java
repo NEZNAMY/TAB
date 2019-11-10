@@ -220,11 +220,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
 	
-	private static final Field ACTION = getFields(MethodAPI.PacketPlayOutPlayerInfo, MethodAPI.EnumPlayerInfoAction).get(0);
-	private static final Field PLAYERS = getFields(MethodAPI.PacketPlayOutPlayerInfo, List.class).get(0);
+	private static final Field ACTION = getObjectAt(getFields(MethodAPI.PacketPlayOutPlayerInfo, MethodAPI.EnumPlayerInfoAction), 0);
+	private static final Field PLAYERS = getObjectAt(getFields(MethodAPI.PacketPlayOutPlayerInfo, List.class), 0);
 	
-	private static final Field PING = getFields(MethodAPI.PlayerInfoData, int.class).get(0);
-	private static final Field GAMEMODE = getFields(MethodAPI.PlayerInfoData, MethodAPI.EnumGamemode).get(0);
-	private static final Field PROFILE = getFields(MethodAPI.PlayerInfoData, GameProfile.class).get(0);
-	private static final Field LISTNAME = getFields(MethodAPI.PlayerInfoData, MethodAPI.IChatBaseComponent).get(0);
+	private static final Field PING = getObjectAt(getFields(MethodAPI.PlayerInfoData, int.class), 0);
+	private static final Field GAMEMODE = getObjectAt(getFields(MethodAPI.PlayerInfoData, MethodAPI.EnumGamemode), 0);
+	private static final Field PROFILE = getObjectAt(getFields(MethodAPI.PlayerInfoData, GameProfile.class), 0);
+	private static final Field LISTNAME = getObjectAt(getFields(MethodAPI.PlayerInfoData, MethodAPI.IChatBaseComponent), 0);
 }
