@@ -226,7 +226,7 @@ public class Main implements MainClass{
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
 	}
 	public String getPermissionPlugin() {
-		if (server.getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
+		if (server.getPluginManager().getPlugin("LuckPerms").isPresent()) return "LuckPerms";
 		return "Unknown/None";
 	}
 	public void reload(ITabPlayer sender) {
