@@ -325,25 +325,24 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%faction%") {
 
-			public String factionsType;
-			public boolean factionsInitialized;
+			public int type;
 
+			{
+				try {
+					Class.forName("com.massivecraft.factions.FPlayers");
+					type = 1;
+				} catch (Throwable e) {}
+				try {
+					Class.forName("com.massivecraft.factions.entity.MPlayer");
+					type = 2;
+				} catch (Throwable e) {}
+			}
+			
 			public String get(ITabPlayer p) {
-				if (!factionsInitialized) {
-					try {
-						Class.forName("com.massivecraft.factions.FPlayers");
-						factionsType = "UUID";
-					} catch (Throwable e) {}
-					try {
-						Class.forName("com.massivecraft.factions.entity.MPlayer");
-						factionsType = "MCore";
-					} catch (Throwable e) {}
-					factionsInitialized = true;
-				}
-				if (factionsType == null) return Configs.noFaction;
+				if (type == 0) return Configs.noFaction;
 				String name = null;
-				if (factionsType.equals("UUID")) name = PluginHooks.FactionsUUID_getFactionTag(p);
-				if (factionsType.equals("MCore")) name = PluginHooks.FactionsMCore_getFactionName(p);
+				if (type == 1) name = PluginHooks.FactionsUUID_getFactionTag(p);
+				if (type == 2) name = PluginHooks.FactionsMCore_getFactionName(p);
 				if (name == null || name.length() == 0 || name.contains("Wilderness")) {
 					return Configs.noFaction;
 				}
