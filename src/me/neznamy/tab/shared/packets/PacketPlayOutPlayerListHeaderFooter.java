@@ -32,6 +32,6 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	}
 
 	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
-	private static Field HEADER = getObjectAt(fields, 0);
-	private static Field FOOTER = getObjectAt(fields, 1);
+	private static final Field HEADER = getObjectAt(fields, 0);
+	private static final Field FOOTER = getObjectAt(fields, 1);
 }
