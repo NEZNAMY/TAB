@@ -60,26 +60,18 @@ public class TabPlayer extends ITabPlayer{
 		PerWorldPlayerlist.trigger(player);
 	}
 	public String getGroupFromPermPlugin() {
-		try {
-			if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-			if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this)[0];
-			if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
-			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
-		} catch (Throwable ex) {
-			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
-		}
-		return null;
+		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
+		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this)[0];
+		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
+		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
+		return "null";
 	}
 	public String[] getGroupsFromPermPlugin() {
-		try {
-			if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
-			if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
-			if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
-			if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
-		} catch (Throwable ex) {
-			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
-		}
-		return null;
+		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
+		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
+		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
+		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
+		return new String[] {"null"};
 	}
 	@Override
 	public String getMoney() {

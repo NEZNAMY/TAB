@@ -26,7 +26,7 @@ public abstract class ITabPlayer{
 	public UUID uniqueId;
 	public UUID tablistId;
 	public String world;
-	private String permissionGroup;
+	private String permissionGroup = "null";
 	public String teamName;
 	private String rank = "§7No Rank";
 
@@ -80,7 +80,7 @@ public abstract class ITabPlayer{
 	public abstract long getPing();
 	public abstract void sendPacket(Object nmsPacket);
 	public abstract void sendMessage(String message);
-	
+
 	public boolean getTeamPush() {
 		return Configs.collision;
 	}
@@ -202,10 +202,10 @@ public abstract class ITabPlayer{
 							}
 						}
 					}
-			if (newGroup == null) newGroup = playerGroups[0];
+				if (newGroup == null) newGroup = playerGroups[0];
 			}
 		}
-		if (newGroup != null && (permissionGroup == null || !permissionGroup.equals(newGroup))) {
+		if (!permissionGroup.equals(newGroup)) {
 			permissionGroup = newGroup;
 			if (updateDataIfChanged) {
 				updateAll();

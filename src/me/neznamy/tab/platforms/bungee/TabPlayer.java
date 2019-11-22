@@ -25,12 +25,8 @@ public class TabPlayer extends ITabPlayer{
 		init();
 	}
 	public String getGroupFromPermPlugin() {
-		try {
-			if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-			if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
-		} catch (Throwable ex) {
-			Shared.error(null, "Failed to get permission group of " + player.getName() + " (permission plugin: " + Shared.mainClass.getPermissionPlugin() + ")", ex);
-		}
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return PluginHooks.LuckPerms_getPrimaryGroup(this);
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
 		return player.getGroups().toArray(new String[0])[0];
 	}
 	public String[] getGroupsFromPermPlugin() {

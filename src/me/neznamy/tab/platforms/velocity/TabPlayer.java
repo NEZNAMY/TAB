@@ -25,7 +25,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public String getGroupFromPermPlugin() {
 		if (Main.server.getPluginManager().getPlugin("LuckPerms").isPresent()) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-		return null;
+		return "null";
 	}
 	public String[] getGroupsFromPermPlugin() {
 		return new String[] {getGroupFromPermPlugin()};
