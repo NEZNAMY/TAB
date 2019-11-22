@@ -37,7 +37,11 @@ public class PluginHooks {
 	public static Object Vault_permission;
 
 	public static String BungeePerms_getMainGroup(ITabPlayer p) {
-		return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
+		try {
+			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
+		} catch (Throwable t) {
+			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
+		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
 		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
@@ -62,10 +66,18 @@ public class PluginHooks {
 		return FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
 	}
 	public static String GroupManager_getGroup(ITabPlayer p) {
-		return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
+		try {
+			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
+		} catch (Throwable t) {
+			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using GroupManager", t);
+		}
 	}
 	public static String[] GroupManager_getGroups(ITabPlayer p) {
-		return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
+		try {
+			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
+		} catch (Throwable t) {
+			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using GroupManager", t);
+		}
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
 		return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
@@ -78,9 +90,13 @@ public class PluginHooks {
 		}
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
-		List<String> groups = new ArrayList<String>();
-		for (LocalizedNode node : LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes()) if (node.isGroupNode()) groups.add(node.getGroupName());
-		return groups.toArray(new String[0]);
+		try {
+			List<String> groups = new ArrayList<String>();
+			for (LocalizedNode node : LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes()) if (node.isGroupNode()) groups.add(node.getGroupName());
+			return groups.toArray(new String[0]);
+		} catch (Throwable t) {
+			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
+		}
 	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
 		try {
@@ -91,7 +107,11 @@ public class PluginHooks {
 	}
 	@SuppressWarnings("deprecation")
 	public static String[] PermissionsEx_getGroupNames(ITabPlayer p) {
-		return PermissionsEx.getUser(((TabPlayer)p).player).getGroupNames();
+		try {
+			return PermissionsEx.getUser(((TabPlayer)p).player).getGroupNames();
+		} catch (Throwable t) {
+			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
+		}
 	}
 	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders) {
 		try {
@@ -146,13 +166,21 @@ public class PluginHooks {
 		return ((Permission)Vault_permission).getName();
 	}
 	public static String[] Vault_getGroups(ITabPlayer p) {
-		return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
+		try {
+			return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
+		} catch (Throwable e) {
+			return Shared.error(new String[] {"null"}, "An error occured when getting permission groups of " + p.getName() + " using Vault", e);
+		}
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
 		return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
 	}
 	public static String Vault_getPrimaryGroup(ITabPlayer p) {
-		return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
+		try {
+			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
+		} catch (Throwable e) {
+			return Shared.error("null", "An error occured when getting permission group of " + p.getName() + " using Vault", e);
+		}
 	}
 	public static int ViaVersion_getPlayerVersion(ITabPlayer p){
 		try {
