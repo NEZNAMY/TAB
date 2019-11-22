@@ -17,6 +17,7 @@ import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
@@ -85,7 +86,7 @@ public class ArmorStand{
 		updateLocation();
 		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
 			if (all == owner) continue; //should never be anyway
-			if (all.getVersion().getMinorVersion() >= 14) {
+			if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 				//sneaking feature was removed in 1.14, so despawning completely now
 				if (sneaking) {
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
@@ -129,6 +130,7 @@ public class ArmorStand{
 		}
 	}
 	public boolean getVisibility() {
+		if (Configs.SECRET_armorstands_always_visible) return true;
 		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
 	}
 	private void updateLocation() {
