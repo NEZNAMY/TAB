@@ -195,6 +195,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
 			Shared.error(null, "An error occured when player left server", t);
+			Shared.data.remove(e.getPlayer().getUniqueId());
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -409,34 +410,45 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-prefix%") {
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-prefix%") {
 
-			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
-			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
-			private Chat chat = rsp != null ? rsp.getProvider() : null;
+				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+				private Chat chat = rsp != null ? rsp.getProvider() : null;
 
-			public String get(ITabPlayer p) {
-				if (chat != null) {
-					String prefix = chat.getPlayerPrefix(((TabPlayer)p).player);
-					return prefix != null ? prefix : "";
+				public String get(ITabPlayer p) {
+					if (chat != null) {
+						String prefix = chat.getPlayerPrefix(((TabPlayer)p).player);
+						return prefix != null ? prefix : "";
+					}
+					return "";
 				}
-				return "";
-			}
-		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-suffix%") {
+			});
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-suffix%") {
 
-			private boolean vault = Bukkit.getPluginManager().isPluginEnabled("Vault");
-			private RegisteredServiceProvider<Chat> rsp = vault ? Bukkit.getServicesManager().getRegistration(Chat.class) : null;
-			private Chat chat = rsp != null ? rsp.getProvider() : null;
+				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+				private Chat chat = rsp != null ? rsp.getProvider() : null;
 
-			public String get(ITabPlayer p) {
-				if (chat != null) {
-					String suffix = chat.getPlayerSuffix(((TabPlayer)p).player);
-					return suffix != null ? suffix : "";
+				public String get(ITabPlayer p) {
+					if (chat != null) {
+						String suffix = chat.getPlayerSuffix(((TabPlayer)p).player);
+						return suffix != null ? suffix : "";
+					}
+					return "";
 				}
-				return "";
-			}
-		});
+			});
+		} else {
+			Placeholders.constants.add(new Constant("%vault-prefix%") {
+				public String get() {
+					return "";
+				}
+			});
+			Placeholders.constants.add(new Constant("%vault-suffix%") {
+				public String get() {
+					return "";
+				}
+			});
+		}
 		Placeholders.constants.add(new Constant("%maxplayers%") {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
