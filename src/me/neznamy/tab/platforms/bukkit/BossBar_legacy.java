@@ -17,9 +17,14 @@ import me.neznamy.tab.shared.Shared.Feature;
 
 public class BossBar_legacy implements Listener {
 
+	private static boolean EVENTS_REGISTERED = false;
+	
 	public static void load() {
 		if (BossBar.enabled && ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
-			Bukkit.getPluginManager().registerEvents(new BossBar_legacy(), Main.instance);
+			if (!EVENTS_REGISTERED) {
+				EVENTS_REGISTERED = true;
+				Bukkit.getPluginManager().registerEvents(new BossBar_legacy(), Main.instance);
+			}
 			Shared.scheduleRepeatingTask(200, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
 				public void run() {
 					for (ITabPlayer all : Shared.getPlayers()) {

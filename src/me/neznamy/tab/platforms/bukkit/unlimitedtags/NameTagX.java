@@ -28,6 +28,7 @@ public class NameTagX implements Listener{
 	public static boolean enable;
 	public static int refresh;
 	public static ConcurrentHashMap<Integer, List<Integer>> vehicles = new ConcurrentHashMap<Integer, List<Integer>>();
+	private static boolean EVENTS_REGISTERED = false;
 
 	public static void unload() {
 		if (!enable) return;
@@ -39,7 +40,10 @@ public class NameTagX implements Listener{
 	}
 	public static void load(){
 		if (!enable) return;
-		Bukkit.getPluginManager().registerEvents(new NameTagX(), Main.instance);
+		if (!EVENTS_REGISTERED) {
+			EVENTS_REGISTERED = true;
+			Bukkit.getPluginManager().registerEvents(new NameTagX(), Main.instance);
+		}
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.registerTeam();
 			for (Player w : (((TabPlayer)all).player).getWorld().getPlayers()) {
