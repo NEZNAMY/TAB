@@ -213,6 +213,14 @@ public class Configs {
 				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress));
 			}
 		}
+		List<String> toRemove = new ArrayList<String>();
+		for (String bar : BossBar.defaultBars) {
+			if (BossBar.getLine(bar) == null) {
+				Shared.startupWarn("BossBar \"" + bar + "\" is defined as default bar, but does not exist!");
+				toRemove.add(bar);
+			}
+		}
+		BossBar.defaultBars.removeAll(toRemove);
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());
