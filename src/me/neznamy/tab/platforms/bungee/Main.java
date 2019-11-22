@@ -104,17 +104,17 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void a(PlayerDisconnectEvent e){
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
+		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.unregister(disconnectedPlayer);
-		Shared.data.remove(e.getPlayer().getUniqueId());
 		if (Configs.SECRET_remove_ghost_players) {
 			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toBungee(null);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				all.sendPacket(packet);
 			}
 		}
+		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler
 	public void a(ServerSwitchEvent e){
