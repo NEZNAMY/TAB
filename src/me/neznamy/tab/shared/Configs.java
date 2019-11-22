@@ -44,6 +44,7 @@ public class Configs {
 	public static boolean SECRET_safe_register;
 	public static boolean SECRET_remove_ghost_players;
 	public static boolean SECRET_log_errors_into_console;
+	public static boolean SECRET_armorstands_always_visible;
 
 
 	public static ConfigurationFile animation;
@@ -128,6 +129,7 @@ public class Configs {
 		SECRET_safe_register = getSecretOption("safe-team-register", true);
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
 		SECRET_log_errors_into_console = getSecretOption("log-errors-into-console", false);
+		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
