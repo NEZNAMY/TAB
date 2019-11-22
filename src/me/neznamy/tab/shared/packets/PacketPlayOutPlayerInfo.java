@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
@@ -220,11 +221,21 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
 	
-	private static final Field ACTION = getObjectAt(getFields(MethodAPI.PacketPlayOutPlayerInfo, MethodAPI.EnumPlayerInfoAction), 0);
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerInfo);
+	private static final Field ACTION = fields.get("a");
+	private static final Field PLAYERS = fields.get("b");
+	
+	private static Map<String, Field> infodata = getFields(MethodAPI.PlayerInfoData);
+	private static final Field PING = infodata.get("b");
+	private static final Field GAMEMODE = infodata.get("c");
+	private static final Field PROFILE = infodata.get("d");
+	private static final Field LISTNAME = infodata.get("e");
+	
+/*	private static final Field ACTION = getObjectAt(getFields(MethodAPI.PacketPlayOutPlayerInfo, MethodAPI.EnumPlayerInfoAction), 0);
 	private static final Field PLAYERS = getObjectAt(getFields(MethodAPI.PacketPlayOutPlayerInfo, List.class), 0);
 	
 	private static final Field PING = getObjectAt(getFields(MethodAPI.PlayerInfoData, int.class), 0);
 	private static final Field GAMEMODE = getObjectAt(getFields(MethodAPI.PlayerInfoData, MethodAPI.EnumGamemode), 0);
 	private static final Field PROFILE = getObjectAt(getFields(MethodAPI.PlayerInfoData, GameProfile.class), 0);
-	private static final Field LISTNAME = getObjectAt(getFields(MethodAPI.PlayerInfoData, MethodAPI.IChatBaseComponent), 0);
+	private static final Field LISTNAME = getObjectAt(getFields(MethodAPI.PlayerInfoData, MethodAPI.IChatBaseComponent), 0);*/
 }
