@@ -13,8 +13,6 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
@@ -40,7 +38,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.3", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.5.5", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -148,7 +146,7 @@ public class Main implements MainClass{
 			Shared.error(null, "An error occured when player joined/changed server", ex);
 		}
 	}
-	@Subscribe
+/*	@Subscribe
 	public void a(PlayerChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
@@ -157,7 +155,7 @@ public class Main implements MainClass{
 		}
 		if (BossBar.onChat(sender, e.getMessage())) e.setResult(ChatResult.denied());
 		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
-	}
+	}*/
 	private void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
