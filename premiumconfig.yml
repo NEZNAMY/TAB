@@ -5,6 +5,8 @@
 #PLACEHOLDER_LOW_TO_HIGH = insert a numeric placeholder below, sorting from lowest value to highest
 #PLACEHOLDER_HIGH_TO_LOW = ^, highest to lowest, can be used for some kind of levelling system
 #PLACEHOLDER_A_TO_Z      = alphabetically by the placeholder
+#GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW = primary sorting by groups, secondary by numeric placeholder (high to low)
+#GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH = primary sorting by groups, secondary by numeric placeholder (low to high)
 sorting-type: GROUPS
 sorting-placeholder: "%some_level_maybe?%"
 

@@ -20,7 +20,7 @@ public class Premium {
 	public static Map<String, Double> staticLines = new HashMap<String, Double>();
 
 	public static boolean is() {
-		return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
