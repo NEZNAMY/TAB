@@ -198,6 +198,10 @@ public class Shared {
 			long time = System.currentTimeMillis();
 			cancelAllTasks();
 			Configs.animations = new ArrayList<Animation>();
+			cpuHistory = new ArrayList<CPUSample>();
+			cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
+			placeholderCpuHistory = new ArrayList<ConcurrentHashMap<String, Long>>();
+			placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
 			HeaderFooter.unload();
 			TabObjective.unload();
 			BelowName.unload();

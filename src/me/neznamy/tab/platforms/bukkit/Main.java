@@ -21,7 +21,6 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -108,7 +107,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
-			Shared.cpuHistory = new ArrayList<CPUSample>();
 			Shared.startupWarns = 0;
 			registerPlaceholders();
 			Configs.loadFiles();
