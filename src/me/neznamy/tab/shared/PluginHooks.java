@@ -19,6 +19,9 @@ import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LocalizedNode;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
+import net.lapismc.afkplus.AFKPlus;
+import net.lapismc.afkplus.api.AFKPlusAPI;
+import net.lapismc.afkplus.api.AFKPlusPlayerAPI;
 import net.milkbowl.vault.permission.Permission;
 import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -36,6 +39,27 @@ public class PluginHooks {
 	public static Object groupManager;
 	public static Object Vault_permission;
 
+		try {
+			Field f = AFKPlusAPI.class.getDeclaredField("plugin");
+			f.setAccessible(true);
+			AFKPlus plugin = (AFKPlus) f.get(null);
+			return plugin.getPlayer(p.getUniqueId()).isAFK();
+		} catch (Throwable t) {
+			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AFKPlus", t);
+		}
+	}
+	@SuppressWarnings("rawtypes")
+	public static boolean AutoAFK_isAFK(ITabPlayer p) {
+		try {
+			me.prunt.autoafk.Main plugin = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
+			Field f = plugin.getClass().getDeclaredField("afkList");
+			f.setAccessible(true);
+			HashMap map = (HashMap) f.get(plugin);
+			return map.containsKey(((TabPlayer)p).player);
+		} catch (Throwable t) {
+			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
+		}
+	}
 	public static String BungeePerms_getMainGroup(ITabPlayer p) {
 		try {
 			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
