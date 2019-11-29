@@ -83,6 +83,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			NameTag16.load();
 			Playerlist.load();
 			TabObjective.load();
+			BelowName.load();
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
