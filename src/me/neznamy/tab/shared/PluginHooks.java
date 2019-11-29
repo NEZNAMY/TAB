@@ -1,8 +1,9 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
@@ -16,17 +17,20 @@ import ch.soolz.xantiafk.xAntiAFKAPI;
 import me.clip.deluxetags.DeluxeTag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.LocalizedNode;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.lapismc.afkplus.AFKPlus;
 import net.lapismc.afkplus.api.AFKPlusAPI;
 import net.lapismc.afkplus.api.AFKPlusPlayerAPI;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.InheritanceNode;
 import net.milkbowl.vault.permission.Permission;
 import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.myles.ViaVersion.api.Via;
 
+@SuppressWarnings("unused")
 public class PluginHooks {
 
 	public static boolean libsDisguises;
@@ -115,16 +119,24 @@ public class PluginHooks {
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
 		try {
-			List<String> groups = new ArrayList<String>();
-			for (LocalizedNode node : LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes()) if (node.isGroupNode()) groups.add(node.getGroupName());
-			return groups.toArray(new String[0]);
+			//chosen people only
+//			try {
+//				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream() .filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+//			} catch (Throwable t) {
+				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+//			}
 		} catch (Throwable t) {
 			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
 		}
 	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
 		try {
-			return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
+			//chosen people only
+//			try {
+//				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getPrimaryGroup();
+//			} catch (Throwable t) {
+				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
+//			}
 		} catch (Throwable t) {
 			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
 		}
