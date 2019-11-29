@@ -43,6 +43,7 @@ public class PluginHooks {
 	public static Object groupManager;
 	public static Object Vault_permission;
 
+	public static boolean AFKPlus_isAFK(ITabPlayer p) {
 		try {
 			Field f = AFKPlusAPI.class.getDeclaredField("plugin");
 			f.setAccessible(true);
