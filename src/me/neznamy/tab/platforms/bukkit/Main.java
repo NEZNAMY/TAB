@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
@@ -112,6 +113,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			registerPlaceholders();
 			Configs.loadFiles();
 			Shared.registerAnimationPlaceholders();
+			registerCooldowns();
 			Shared.data.clear();
 			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -192,6 +194,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					all.sendPacket(packet);
 				}
 			}
+			for (PlayerPlaceholder pl : Placeholders.playerPlaceholders) {
+				pl.lastRefresh.remove(e.getPlayer().getName());
+				pl.lastValue.remove(e.getPlayer().getName());
+			}
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
 			Shared.error(null, "An error occured when player left server", t);
@@ -269,48 +275,43 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.constants = new ArrayList<Constant>();
 		Shared.registerUniversalPlaceholders();
 
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%money%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%money%", 3000) {
 			public String get(ITabPlayer p) {
 				return p.getMoney();
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%xPos%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%xPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockX()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%yPos%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%yPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockY()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%ytest%") {
-			public String get(ITabPlayer p) {
-				return (((TabPlayer)p).player).getLocation().getY()+"";
-			}
-		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%zPos%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%zPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockZ()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%displayname%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%displayname%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getDisplayName();
 			}
 		});
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deaths%") {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deaths%", 5000) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%essentialsnick%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%essentialsnick%", 3000) {
 			public String get(ITabPlayer p) {
 				return p.getNickname();
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deluxetag%") {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deluxetag%", 2000) {
 				public String get(ITabPlayer p) {
 					String tag = PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 					if (tag == null || tag.length() == 0) {
@@ -324,7 +325,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		}
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%faction%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%faction%", 3000) {
 
 			public int type;
 
@@ -354,7 +355,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return new String[] {Configs.yesFaction, Configs.noFaction};
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%health%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(((TabPlayer)p).player.getHealth())+"";
 			}
@@ -365,7 +366,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%") {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%", 1000) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
 				}
@@ -397,7 +398,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%") {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%", 1000) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
@@ -414,7 +415,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		}
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%canseeonline%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -423,7 +424,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%canseestaffonline%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -433,7 +434,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-prefix%") {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-prefix%", 1000) {
 
 				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
 				private Chat chat = rsp != null ? rsp.getProvider() : null;
@@ -446,7 +447,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return "";
 				}
 			});
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-suffix%") {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-suffix%", 1000) {
 
 				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
 				private Chat chat = rsp != null ? rsp.getProvider() : null;
@@ -476,6 +477,33 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return Bukkit.getMaxPlayers()+"";
 			}
 		});
+	}
+	@SuppressWarnings("unchecked")
+	public void registerCooldowns() {
+		Object serverPlaceholderCooldowns = Configs.config.get("papi-placeholder-cooldowns.server");
+		if (serverPlaceholderCooldowns != null) {
+			for (Entry<String, Integer> entry : ((Map<String,Integer>)serverPlaceholderCooldowns).entrySet()) {
+				String placeholder = "%" + entry.getKey() + "%";
+				int cooldown = entry.getValue();
+				Placeholders.serverPlaceholders.add(new ServerPlaceholder(placeholder, cooldown, "PlaceholderAPI[" + entry.getKey() + " - " + cooldown + "]") {
+					public String get() {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(null, placeholder, new String[] {placeholder}, false);
+					}
+				});
+			}
+		}
+		Object playerPlaceholderCooldowns = Configs.config.get("papi-placeholder-cooldowns.player");
+		if (playerPlaceholderCooldowns != null) {
+			for (Entry<String, Integer> entry : ((Map<String,Integer>)playerPlaceholderCooldowns).entrySet()) {
+				String placeholder = "%" + entry.getKey() + "%";
+				int cooldown = entry.getValue();
+				Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, cooldown, "PlaceholderAPI[" + entry.getKey() + " - " + cooldown + "]") {
+					public String get(ITabPlayer p) {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder, new String[] {placeholder}, false);
+					}
+				});
+			}
+		}
 	}
 	@SuppressWarnings("unchecked")
 	public static Player[] getOnlinePlayers() throws Exception {

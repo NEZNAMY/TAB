@@ -97,7 +97,7 @@ public class Property {
 		}
 		//placeholderapi
 		if (placeholderapiPlaceholders.length > 0 && PluginHooks.placeholderAPI) {
-			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string, placeholderapiPlaceholders);
+			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string, placeholderapiPlaceholders, true);
 		}
 
 		//removing strings

@@ -77,7 +77,7 @@ public class Placeholders {
 		for (Constant c : Placeholders.constants) {
 			if (string.contains(c.getIdentifier())) string = string.replace(c.getIdentifier(), c.get());
 		}
-		string = PluginHooks.PlaceholderAPI_setPlaceholders(p, string, new String[0]);
+		string = PluginHooks.PlaceholderAPI_setPlaceholders(p, string, new String[0], true);
 		for (String removed : Configs.removeStrings) {
 			string = string.replace(removed, "");
 		}

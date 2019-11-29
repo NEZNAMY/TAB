@@ -137,12 +137,12 @@ public class PluginHooks {
 			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders) {
+	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders, boolean logCpu) {
 		try {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setPlaceholders(((TabPlayer)p).player, s);
-				Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
+				String value = PlaceholderAPI.setPlaceholders(p == null ? null : ((TabPlayer)p).player, s);
+				if (logCpu) Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {

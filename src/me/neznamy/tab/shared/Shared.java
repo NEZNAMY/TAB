@@ -33,7 +33,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.5.5-pre4";
+	public static final String pluginVersion = "2.5.5-pre6";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 
@@ -239,7 +239,7 @@ public class Shared {
 		}
 	}
 	public static void registerUniversalPlaceholders() {
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%rank%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getRank();
 			}
@@ -273,12 +273,12 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%", 2000) {
 			public String get(ITabPlayer p) {
 				return p.getWorldName();
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : getPlayers()){
@@ -307,7 +307,7 @@ public class Shared {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%nick%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%nick%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getName();
 			}
@@ -327,12 +327,12 @@ public class Shared {
 				return getPlayers().size()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%ping%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%ping%", 2000) {
 			public String get(ITabPlayer p) {
 				return p.getPing()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%player-version%") {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%player-version%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}

@@ -5,30 +5,25 @@ import me.neznamy.tab.shared.Shared;
 
 public abstract class ServerPlaceholder extends Placeholder{
 
-	private int cooldown;
 	private long lastRefresh;
 	private String lastValue = "";
 
 	public ServerPlaceholder(String identifier, int cooldown) {
-		super(identifier);
-		this.cooldown = cooldown;
+		super(identifier, cooldown, identifier);
 	}
+	public ServerPlaceholder(String identifier, int cooldown, String cpuDisplay) {
+		super(identifier, cooldown, cpuDisplay);
+	}
+	public abstract String get();
+	
 	@Override
-	public String set(String s, ITabPlayer p) {
-		try {
-			return s.replace(identifier, getValue());
-		} catch (Throwable t) {
-			return Shared.error(s, "An error occured when setting placeholder \"" + identifier + "\" for " + p.getName(), t);
-		}
-	}
-	private String getValue() {
+	public String getValue(ITabPlayer p) {
 		long startTime = System.nanoTime();
 		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
 			lastRefresh = System.currentTimeMillis();
 			lastValue = get();
 		}
-		Shared.placeholderCpu(identifier, System.nanoTime()-startTime);
+		Shared.placeholderCpu(cpuDisplay, System.nanoTime()-startTime);
 		return lastValue;
 	}
-	public abstract String get();
 }
