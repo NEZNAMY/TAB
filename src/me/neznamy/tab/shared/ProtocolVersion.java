@@ -2,7 +2,7 @@ package me.neznamy.tab.shared;
 
 public enum ProtocolVersion {
 
-	FUTURE		(999, "Future",		14,	-1,	-1),
+	FUTURE		(999, "Future",		15,	-1,	-1),
 	BUNGEE		(999, "Bungee",		14,	0,	0),
 	v1_14_4		(498, "1.14.4",		14, 16, 13),
 	v1_14_3		(490, "1.14.3",		14, 16, 13),
