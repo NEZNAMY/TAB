@@ -60,16 +60,16 @@ public class PacketAPI{
 	}
 
 	//scoreboard score
-	public static void registerScoreboardScore(ITabPlayer p, String team, String player, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(player));
-		setScoreboardScore(p, player, objective, score);
+	public static void registerScoreboardScore(ITabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer));
+		setScoreboardScore(p, fakeplayer, objective, score);
 	}
-	public static void removeScoreboardScore(ITabPlayer p, String score, String ID) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ID, score, 0));
-		unregisterScoreboardTeam(p, ID);
+	public static void removeScoreboardScore(ITabPlayer p, String fakeplayer, String objective) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, objective, fakeplayer, 0));
+		unregisterScoreboardTeam(p, objective);
 	}
-	public static void setScoreboardScore(ITabPlayer to, String scoreName, String scoreboard, int scoreValue) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, scoreboard, scoreName, scoreValue));
+	public static void setScoreboardScore(ITabPlayer to, String fakeplayer, String objective, int score) {
+		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective, fakeplayer, score));
 	}
 	
 	
