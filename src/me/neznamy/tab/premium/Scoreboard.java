@@ -121,6 +121,8 @@ public class Scoreboard {
 						int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
 						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, objectiveName, score);
 						return null;
+					} else {
+						return Arrays.asList(prefix, suffix);
 					}
 				} else {
 					if (!suppressToggle) {
@@ -129,7 +131,6 @@ public class Scoreboard {
 					}
 					return null;
 				}
-				return Arrays.asList(prefix, suffix);
 			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
