@@ -96,44 +96,64 @@ public class Scoreboard {
 			this.player = player;
 			this.rawtext = rawtext;
 		}
-		private List<String> replaceText(ITabPlayer p, boolean force) {
+		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
 			Property scoreproperty = p.properties.get("sb-"+teamname);
+			boolean emptyBefore = scoreproperty.get().length() == 0;
 			if (scoreproperty.isUpdateNeeded() || force) {
 				String replaced = scoreproperty.get();
+				String prefix;
+				String suffix;
 				if (replaced.length() > 16) {
-					String prefix = replaced.substring(0, 16);
-					String suffix = replaced.substring(16, replaced.length());
+					prefix = replaced.substring(0, 16);
+					suffix = replaced.substring(16, replaced.length());
 					if (prefix.toCharArray()[15] == '§') {
 						prefix = prefix.substring(0, 15);
 						suffix = "§" + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
-					return Arrays.asList(prefix, suffix);
 				} else {
-					return Arrays.asList(replaced, "");
+					prefix = replaced;
+					suffix = "";
 				}
+				if (replaced.length() > 0) {
+					if (emptyBefore) {
+						//was "", now it is not
+						int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
+						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, objectiveName, score);
+						return null;
+					}
+				} else {
+					if (!suppressToggle) {
+						//new string is "", but before it was not
+						PacketAPI.removeScoreboardScore(p, player, teamname);
+					}
+					return null;
+				}
+				return Arrays.asList(prefix, suffix);
 			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
 			p.setProperty("sb-"+teamname, rawtext);
-			List<String> prefixsuffix = replaceText(p, true);
-			if (prefixsuffix == null) prefixsuffix = Arrays.asList("", "");
+			List<String> prefixsuffix = replaceText(p, true, true);
+			if (prefixsuffix == null) return;
 			int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
 			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
 			if (players.contains(p)) {
-				PacketAPI.removeScoreboardScore(p, player, teamname);
+				if (p.properties.get("sb-"+teamname).get().length() > 0)
+					PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
 		public void unregister() {
 			for (ITabPlayer p : players) {
-				PacketAPI.removeScoreboardScore(p, player, teamname);
+				if (p.properties.get("sb-"+teamname).get().length() > 0)
+					PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
 		public void updatePrefixSuffix() {
 			for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
-				List<String> prefixsuffix = replaceText(p, false);
+				List<String> prefixsuffix = replaceText(p, false, false);
 				if (prefixsuffix == null) continue;
 				PacketAPI.updateScoreboardTeamPrefixSuffix(p, teamname, prefixsuffix.get(0), prefixsuffix.get(1), false, false);
 			}
