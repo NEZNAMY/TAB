@@ -29,8 +29,10 @@ public class HeaderFooter {
 	}
 	public static void refreshHeaderFooter(ITabPlayer p, boolean force) {
 		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
-		boolean header = p.properties.get("header").isUpdateNeeded();
-		boolean footer = p.properties.get("footer").isUpdateNeeded();
-		if (header || footer || force) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").get(), p.properties.get("footer").get()));
+		Property headerp = p.properties.get("header");
+		Property footerp = p.properties.get("footer");
+		boolean header = headerp.isUpdateNeeded();
+		boolean footer = footerp.isUpdateNeeded();
+		if (header || footer || force) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(headerp.get(), footerp.get()));
 	}
 }
