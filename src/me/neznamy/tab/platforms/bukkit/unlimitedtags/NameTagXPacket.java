@@ -5,6 +5,7 @@ import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 
 public class NameTagXPacket {
 
@@ -38,10 +39,10 @@ public class NameTagXPacket {
 		if (MethodAPI.PacketPlayOutRelEntityMove.isInstance(nmsPacket) || MethodAPI.PacketPlayOutRelEntityMoveLook.isInstance(nmsPacket)) {
 			return new NameTagXPacket(PacketType.ENTITY_MOVE, PacketPlayOutEntity_ENTITYID.get(nmsPacket));
 		}
-		if (MethodAPI.PacketPlayOutMount != null && MethodAPI.PacketPlayOutMount.isInstance(nmsPacket)) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && MethodAPI.PacketPlayOutMount.isInstance(nmsPacket)) {
 			return new NameTagXPacket(PacketType.MOUNT, PacketPlayOutMount_VEHICLE.get(nmsPacket), PacketPlayOutMount_PASSENGERS.get(nmsPacket), null);
 		}
-		if (MethodAPI.PacketPlayOutAttachEntity != null && MethodAPI.PacketPlayOutAttachEntity.isInstance(nmsPacket)) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && MethodAPI.PacketPlayOutAttachEntity.isInstance(nmsPacket)) {
 			return new NameTagXPacket(PacketType.ATTACH_ENTITY, PacketPlayOutAttachEntity_A.get(nmsPacket), PacketPlayOutAttachEntity_PASSENGER.get(nmsPacket), PacketPlayOutAttachEntity_VEHICLE.get(nmsPacket));
 		}
 		return null;
