@@ -14,12 +14,13 @@ import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import net.minecraft.server.v1_7_R4.NetworkManager;
 import net.minecraft.server.v1_8_R1.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_8_R1 extends MethodAPI {
 
-	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("i");
+	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class, Channel.class).get(0);
 	
 	public MethodAPI_v1_8_R1() {
 		DataWatcher = DataWatcher.class;

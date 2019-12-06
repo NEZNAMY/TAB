@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
@@ -48,5 +49,18 @@ public abstract class PacketPlayOut{
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	public static Field getField(Map<String, Field> fields, String field) {
+		Field f = fields.get(field);
+		if (f == null) {
+			//modded server
+			for (Entry<String, Field> entry : fields.entrySet()) {
+				String localfield = entry.getKey().split("_")[2];
+				if (localfield.equals(field)) return entry.getValue();
+			}
+		} else {
+			return f;
+		}
+		return null;
 	}
 }

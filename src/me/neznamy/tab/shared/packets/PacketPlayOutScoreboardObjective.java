@@ -71,16 +71,18 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
-	private static Field OBJECTIVENAME;
-	private static Field TITLE = fields.get("b");
-	private static Field DISPLAYTYPE;
-	private static Field ACTION;
+	private static final Field OBJECTIVENAME = getField(fields, "a");
+	private static final Field TITLE = getField(fields, "b");
+	private static final Field DISPLAYTYPE;
+	private static final Field ACTION;
 
 	static {
-		if (MethodAPI.PacketPlayOutScoreboardObjective != null) {
-			OBJECTIVENAME = getFields(MethodAPI.PacketPlayOutScoreboardObjective, String.class).get(0);
-			DISPLAYTYPE = getObjectAt(getFields(MethodAPI.PacketPlayOutScoreboardObjective, MethodAPI.EnumScoreboardHealthDisplay), 0);
-			ACTION = getFields(MethodAPI.PacketPlayOutScoreboardObjective, int.class).get(0);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			DISPLAYTYPE = getField(fields, "c");
+			ACTION = getField(fields, "d");
+		} else {
+			DISPLAYTYPE = null;
+			ACTION = getField(fields, "c");
 		}
 	}
 }

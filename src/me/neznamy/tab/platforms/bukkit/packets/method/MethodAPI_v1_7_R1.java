@@ -12,11 +12,13 @@ import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import net.minecraft.server.v1_7_R1.*;
+import net.minecraft.server.v1_7_R4.NetworkManager;
+import net.minecraft.util.io.netty.channel.Channel;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_7_R1 extends MethodAPI {
 
-	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class).get("k");
+	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class, Channel.class).get(0);
 	
 	public MethodAPI_v1_7_R1() {
 		DataWatcher = DataWatcher.class;

@@ -68,8 +68,8 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		}
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardScore);
-	private static final Field PLAYER = fields.get("a");
-	private static final Field OBJECTIVENAME = fields.get("b");
-	private static final Field SCORE = fields.get("c");
-	private static final Field ACTION = fields.get("d");
+	private static Field PLAYER = getField(fields, "a");
+	private static Field OBJECTIVENAME = getField(fields, "b");
+	private static Field SCORE = getField(fields, "c");
+	private static Field ACTION = getField(fields, "d");
 }
