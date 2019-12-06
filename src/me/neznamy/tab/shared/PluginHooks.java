@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
 import com.massivecraft.factions.FPlayers;
@@ -20,17 +21,17 @@ import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.lapismc.afkplus.AFKPlus;
-import net.lapismc.afkplus.api.AFKPlusAPI;
-import net.lapismc.afkplus.api.AFKPlusPlayerAPI;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.myles.ViaVersion.api.Via;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"rawtypes"})
 public class PluginHooks {
 
 	public static boolean libsDisguises;
@@ -39,21 +40,14 @@ public class PluginHooks {
 	public static boolean placeholderAPI;
 	public static Object essentials;
 	public static Object idisguise;
-	public static Object Vault_economy;
 	public static Object groupManager;
+	public static Object Vault_economy;
 	public static Object Vault_permission;
+	public static Object Vault_chat;
 
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
-		try {
-			Field f = AFKPlusAPI.class.getDeclaredField("plugin");
-			f.setAccessible(true);
-			AFKPlus plugin = (AFKPlus) f.get(null);
-			return plugin.getPlayer(p.getUniqueId()).isAFK();
-		} catch (Throwable t) {
-			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AFKPlus", t);
-		}
+		return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
 	}
-	@SuppressWarnings("rawtypes")
 	public static boolean AutoAFK_isAFK(ITabPlayer p) {
 		try {
 			me.prunt.autoafk.Main plugin = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
@@ -220,6 +214,14 @@ public class PluginHooks {
 		} catch (Throwable e) {
 			return Shared.error("null", "An error occured when getting permission group of " + p.getName() + " using Vault", e);
 		}
+	}
+	public static void Vault_loadProviders() {
+		RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
+		if (rspEconomy != null) Vault_economy = rspEconomy.getProvider();
+		RegisteredServiceProvider<Permission> rspPermission = Bukkit.getServicesManager().getRegistration(Permission.class);
+		if (rspPermission != null) Vault_permission = rspPermission.getProvider();
+		RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
+		if (rspChat != null) Vault_chat = rspChat.getProvider();
 	}
 	public static int ViaVersion_getPlayerVersion(ITabPlayer p){
 		try {

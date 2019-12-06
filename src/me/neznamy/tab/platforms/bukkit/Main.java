@@ -23,17 +23,11 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.placeholders.Constant;
-import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.placeholders.*;
+import me.neznamy.tab.shared.packets.*;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
@@ -252,10 +246,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
-			RegisteredServiceProvider<Economy> rsp1 = Bukkit.getServicesManager().getRegistration(Economy.class);
-			if (rsp1 != null) PluginHooks.Vault_economy = rsp1.getProvider();
-			RegisteredServiceProvider<Permission> rsp2 = Bukkit.getServicesManager().getRegistration(Permission.class);
-			if (rsp2 != null) PluginHooks.Vault_permission = rsp2.getProvider();
+			PluginHooks.Vault_loadProviders();
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
 			PluginHooks.idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
@@ -358,9 +349,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return (int) Math.ceil(((TabPlayer)p).player.getHealth())+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%tps%", 5000) {
+		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
-				return Shared.decimal2.format(MethodAPI.getInstance().getTPS());
+				return Shared.decimal2.format(Math.min(20, MethodAPI.getInstance().getTPS()));
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
@@ -431,31 +422,19 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return var+"";
 			}
 		});
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && PluginHooks.Vault_chat != null) {
 			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-prefix%", 1000) {
 
-				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
-				private Chat chat = rsp != null ? rsp.getProvider() : null;
-
 				public String get(ITabPlayer p) {
-					if (chat != null) {
-						String prefix = chat.getPlayerPrefix(((TabPlayer)p).player);
-						return prefix != null ? prefix : "";
-					}
-					return "";
+					String prefix = ((Chat)PluginHooks.Vault_chat).getPlayerPrefix(((TabPlayer)p).player);
+					return prefix != null ? prefix : "";
 				}
 			});
 			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%vault-suffix%", 1000) {
 
-				private RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
-				private Chat chat = rsp != null ? rsp.getProvider() : null;
-
 				public String get(ITabPlayer p) {
-					if (chat != null) {
-						String suffix = chat.getPlayerSuffix(((TabPlayer)p).player);
-						return suffix != null ? suffix : "";
-					}
-					return "";
+					String suffix = ((Chat)PluginHooks.Vault_chat).getPlayerSuffix(((TabPlayer)p).player);
+					return suffix != null ? suffix : "";
 				}
 			});
 		} else {
