@@ -120,24 +120,26 @@ public class PluginHooks {
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
 		try {
-			//chosen people only
-//			try {
-//				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream() .filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
-//			} catch (Throwable t) {
+			try {
+				//LuckPerms API v5
+				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream() .filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+			} catch (Throwable t) {
+				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
-//			}
+			}
 		} catch (Throwable t) {
 			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
 		}
 	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
 		try {
-			//chosen people only
-//			try {
-//				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getPrimaryGroup();
-//			} catch (Throwable t) {
+			try {
+				//LuckPerms API v5
+				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getPrimaryGroup();
+			} catch (Throwable t) {
+				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
-//			}
+			}
 		} catch (Throwable t) {
 			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
 		}
