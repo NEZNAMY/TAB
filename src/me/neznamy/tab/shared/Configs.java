@@ -186,7 +186,7 @@ public class Configs {
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
 			for (String s : animation.getConfigurationSection("animations").keySet())
-				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 1000)));
+				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval")));
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -209,15 +209,19 @@ public class Configs {
 				int refresh = bossbar.getInt("bars." + bar + ".refresh");
 				String style = bossbar.getString("bars." + bar + ".style");
 				String color = bossbar.getString("bars." + bar + ".color");
-				String progress = bossbar.getString("bars." + bar + ".progress");
+				Object progress = bossbar.get("bars." + bar + ".progress");
 				String text = bossbar.getString("bars." + bar + ".text");
-				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress));
+				if (progress == null) {
+					Shared.startupWarn("BossBar \"§e" + bar + "\"§c is missing \"§eprogress§c\" attribute! §bUsing 100");
+					progress = 100;
+				}
+				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));
 			}
 		}
 		List<String> toRemove = new ArrayList<String>();
 		for (String bar : BossBar.defaultBars) {
 			if (BossBar.getLine(bar) == null) {
-				Shared.startupWarn("BossBar \"" + bar + "\" is defined as default bar, but does not exist!");
+				Shared.startupWarn("BossBar \"§e" + bar + "§c\" is defined as default bar, but does not exist! §bIgnoring.");
 				toRemove.add(bar);
 			}
 		}

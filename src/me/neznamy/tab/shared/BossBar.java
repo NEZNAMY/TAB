@@ -111,7 +111,7 @@ public class BossBar{
 			this.name = name;
 			this.permissionRequired = permissionRequired;
 			if (refresh == 0) {
-				Shared.startupWarn("Bossbar \"" + name + "\" has refresh interval of 0 milliseconds! Did you forget to configure it? Using 1000 to avoid issues.");
+				Shared.startupWarn("Bossbar \"§e" + name + "§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? §bUsing 1000.");
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
