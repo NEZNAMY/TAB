@@ -117,20 +117,10 @@ per-world-settings:
       Owner:
         tabprefix: "&0&l[&a&lOwner&0&l] &a"
         tagprefix: "&2&lOwner &a"
-        header:
-          - "ur server man"
-        footer:
-          - "welcome"
-      Admin:
-        tabprefix: "&2&lAdmin &1&l"
-        tagprefix: "&2&lAdmin &1&l"
-      Player:
-        tabprefix: "&5&lPlayer &3&l"
-        tagprefix: "&5&lPlayer &3&l"
-    Users:
-      Player1:
-        tabprefix: "Hi "
-
+  world2-world3:
+    header:
+      - "This is a shared header for"
+      - "world2 and world3"
 #setting output of some placeholders
 placeholders:
   deluxetag-yes: "< %value% >"

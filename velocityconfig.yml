@@ -58,14 +58,10 @@ per-server-settings:
     Groups:
       Owner:
         tabprefix: "&0&l[&a&lOwner&0&l] &a"
-        header:
-          - "ur server man"
-        footer:
-          - "welcome"
-      Admin:
-        tabprefix: "&2&lAdmin &1&l"
-      Player:
-        tabprefix: "&5&lPlayer &3&l"
+  server2-server3:
+    header:
+      - "This is a shared header for"
+      - "server2 and server3"
   paintball:
     header:
       - "Welcome to paintball"
@@ -76,10 +72,6 @@ per-server-settings:
       - "Welcome to our network!"
     footer:
       - "Choose a minigame and start playing!"
-    Users:
-      Player1:
-        tabprefix: ""
-        tabsuffix: ""
 
 #setting output of some placeholders        
 placeholders:
