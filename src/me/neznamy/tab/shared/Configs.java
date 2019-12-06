@@ -76,7 +76,7 @@ public class Configs {
 	public static boolean sortByPermissions = false;
 	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
-	public static List<? extends Object> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
+	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
 
 
 	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
@@ -149,11 +149,12 @@ public class Configs {
 		doNotMoveSpectators = config.getBoolean("do-not-move-spectators", false);
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
-		for (Object group : config.getList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
+		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
 			String sort = index+"";
 			while (sort.length()<4) {
 				sort = "0" + sort;
 			}
+			sortedGroups.put(group.toLowerCase()+"", sort);
 			sortedGroups.put(group+"", sort);
 			index++;
 		}

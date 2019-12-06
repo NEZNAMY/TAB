@@ -16,7 +16,7 @@ public enum SortingType {
 		String number;
 		switch(this){
 		case GROUPS:
-			teamName = Configs.sortedGroups.get(p.getGroup());
+			teamName = Configs.sortedGroups.get(p.getGroup().toLowerCase());
 			if (teamName == null) teamName = "";
 			break;
 		case GROUP_PERMISSIONS:
@@ -52,7 +52,7 @@ public enum SortingType {
 			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
-			group = Configs.sortedGroups.get(p.getGroup()); // 4 chars
+			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
 			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			try {
@@ -64,7 +64,7 @@ public enum SortingType {
 			teamName = group + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
-			group = Configs.sortedGroups.get(p.getGroup()); // 4 chars
+			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
 			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
 			try {
