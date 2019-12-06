@@ -80,7 +80,11 @@ public class PluginHooks {
 		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getNickname();
 	}
 	public static boolean Essentials_isAFK(ITabPlayer p) {
-		return ((Essentials)essentials).getUser(p.getUniqueId()).isAfk();
+		try {
+			return ((Essentials)essentials).getUser(((TabPlayer)p).player).isAfk();
+		} catch (Throwable t) {
+			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
+		}
 	}
 	public static String FactionsMCore_getFactionName(ITabPlayer p) {
 		return MPlayer.get(((TabPlayer)p).player).getFactionName();
