@@ -10,7 +10,6 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
@@ -546,7 +545,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try{
 			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §cfor disabling the feature.");
+			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §c(for disabling the feature). §bUsing NONE.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
@@ -570,6 +569,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
-		Configs.primaryGroupFindingList = Configs.advancedconfig.getList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 	}
 }
