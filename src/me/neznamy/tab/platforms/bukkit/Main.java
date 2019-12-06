@@ -175,7 +175,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Shared.disabled) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) {
-				Shared.error(null, "Data of " + disconnectedPlayer + " did not exist when player left");
+				Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player left");
 				return;
 			}
 			Placeholders.recalculateOnlineVersions();
