@@ -44,7 +44,7 @@ public class TabPlayer extends ITabPlayer{
 		}
 		init();
 		if (NameTagX.enable || NameTag16.enable) {
-			nameTagVisible = !player.hasPotionEffect(PotionEffectType.INVISIBILITY);
+			nameTagVisible = !hasInvisibility();
 		}
 		if (NameTagX.enable) {
 			if (player.getVehicle() != null) {
