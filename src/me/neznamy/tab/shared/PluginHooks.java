@@ -120,8 +120,8 @@ public class PluginHooks {
 		try {
 			try {
 				//LuckPerms API v5
-				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream() .filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
-			} catch (Throwable t) {
+				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			}
@@ -134,7 +134,7 @@ public class PluginHooks {
 			try {
 				//LuckPerms API v5
 				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getPrimaryGroup();
-			} catch (Throwable t) {
+			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
 			}
