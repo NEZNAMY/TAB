@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket;
 import me.neznamy.tab.shared.Configs;
@@ -36,6 +38,40 @@ public class Injector {
 		channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
+				if (Shared.disabled) {
+					super.channelRead(context, packet);
+					return;
+				}
+				try{
+					ITabPlayer player = Shared.getPlayer(uuid);
+					if (player == null) {
+						//wtf
+						super.channelRead(context, packet);
+						return;
+					}
+					if (Configs.unlimitedTags && player.getVersion().getMinorVersion() == 8) {
+						if (MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
+							Field a = MethodAPI.PacketPlayInUseEntity.getDeclaredField("a");
+							a.setAccessible(true);
+							int entityId = a.getInt(packet);
+							ITabPlayer attacked = null;
+							loop:
+							for (ITabPlayer all : Shared.getPlayers()) {
+								for (ArmorStand as : all.getArmorStands()) {
+									if (as.getEntityId() == entityId) {
+										attacked = all;
+										break loop;
+									}
+								}
+							}
+							if (attacked != null && attacked != player) {
+								a.set(packet, ((TabPlayer)attacked).player.getEntityId());
+							}
+						}
+					}
+				} catch (Throwable e){
+					Shared.error(null, "An error occured when reading packets", e);
+				}
 				super.channelRead(context, packet);
 			}
 			@SuppressWarnings("unchecked")

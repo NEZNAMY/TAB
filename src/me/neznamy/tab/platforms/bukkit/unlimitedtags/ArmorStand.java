@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.unlimitedtags;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class ArmorStand{
 	private boolean sneaking;
 	private boolean visible;
 
-	private List<ITabPlayer> registeredTo = new ArrayList<ITabPlayer>();
+	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	private Property property;
 
 	private long lastLocationRefresh = 0;
@@ -67,42 +68,53 @@ public class ArmorStand{
 		String name = property.get();
 		if (property.hasRelationalPlaceholders()) name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, location).setDataWatcher(createDataWatcher(name, to));
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(name, to));
 	}
-	public Object getNMSTeleportPacket() {
+	public Object getNMSTeleportPacket(ITabPlayer to) {
 		updateLocation();
-		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, location);
+		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(to));
+	}
+	private Location getArmorStandLocationFor(ITabPlayer to) {
+		return to.getVersion().getMinorVersion() == 8 ? location.clone().add(0,-2,0) : location;
 	}
 	public void destroy(ITabPlayer to) {
 		registeredTo.remove(to);
 		to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
-		Object teleportPacket = getNMSTeleportPacket();
-		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(teleportPacket);
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) {
+				Object teleportPacket = getNMSTeleportPacket(all);
+				all.sendPacket(teleportPacket);
+			}
+		}
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
 		updateLocation();
-		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
-			if (all == owner) continue; //should never be anyway
-			if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
-				//sneaking feature was removed in 1.14, so despawning completely now
-				if (sneaking) {
-					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) {
+				if (all == owner) continue; //should never be anyway
+				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
+					//sneaking feature was removed in 1.14, so despawning completely now
+					if (sneaking) {
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+					} else {
+						all.sendCustomPacket(getSpawnPacket(all, false));
+					}
 				} else {
+					//respawning so there's no animation and it's instant
+					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					all.sendCustomPacket(getSpawnPacket(all, false));
 				}
-			} else {
-				//respawning so there's no animation and it's instant
-				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-				all.sendCustomPacket(getSpawnPacket(all, false));
 			}
 		}
 	}
 	public void destroy() {
 		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
-		for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) all.sendPacket(destroyPacket);
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) all.sendPacket(destroyPacket);
+		}
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
@@ -112,21 +124,23 @@ public class ArmorStand{
 		}
 	}
 	private void updateMetadata() {
-		String name = property.get();
-		if (property.hasRelationalPlaceholders()) {
-			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
-				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
-				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
+		synchronized (registeredTo) {
+			String name = property.get();
+			if (property.hasRelationalPlaceholders()) {
+				for (ITabPlayer all : registeredTo) {
+					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
+					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
+				}
+				if (owner.previewingNametag) {
+					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
+					owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
+				}
+			} else {
+				for (ITabPlayer all : registeredTo) {
+					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all).toNMS(), true));
+				}
+				if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner).toNMS(), true));
 			}
-			if (owner.previewingNametag) {
-				String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
-				owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
-			}
-		} else {
-			for (ITabPlayer all : registeredTo.toArray(new ITabPlayer[0])) {
-				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all).toNMS(), true));
-			}
-			if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner).toNMS(), true));
 		}
 	}
 	public boolean getVisibility() {
@@ -175,7 +189,7 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
 		}
-		datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
+		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
 	}
 }

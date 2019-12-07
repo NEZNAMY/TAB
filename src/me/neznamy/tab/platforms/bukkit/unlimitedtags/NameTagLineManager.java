@@ -31,7 +31,7 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
 	}
 	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket());
+		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket(packetReceiver));
 	}
 	public static void teleportOwner(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		if (armorStandOwner == packetReceiver) return; //avoiding buggy movement when riding entities

@@ -30,6 +30,7 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		EnumScoreboardAction = PacketPlayOutScoreboardScore.EnumScoreboardAction.class;
 		EnumScoreboardHealthDisplay = IScoreboardCriteria.EnumScoreboardHealthDisplay.class;
 		IChatBaseComponent = IChatBaseComponent.class;
+		PacketPlayInUseEntity = PacketPlayInUseEntity.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
 		PacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.class;
 		PacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.class;

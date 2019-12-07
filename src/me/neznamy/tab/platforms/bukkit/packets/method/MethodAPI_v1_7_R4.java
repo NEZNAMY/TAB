@@ -25,6 +25,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		IChatBaseComponent = IChatBaseComponent.class;
+		PacketPlayInUseEntity = PacketPlayInUseEntity.class;
 		PacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.class;
 		PacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.class;
 		PacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.class;
