@@ -212,7 +212,7 @@ public class Configs {
 				Object progress = bossbar.get("bars." + bar + ".progress");
 				String text = bossbar.getString("bars." + bar + ".text");
 				if (progress == null) {
-					Shared.startupWarn("BossBar \"§e" + bar + "\"§c is missing \"§eprogress§c\" attribute! §bUsing 100");
+					Shared.startupWarn("BossBar \"§e" + bar + "§c\" is missing \"§eprogress§c\" attribute! §bUsing 100");
 					progress = 100;
 				}
 				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));

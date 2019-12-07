@@ -16,6 +16,10 @@ public class Animation {
 			Shared.startupWarn("Animation \"§e" + name + "§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? §bUsing 1000.");
 			interval = 1000;
 		}
+		if (interval < 0) {
+			Shared.startupWarn("Animation \"§e" + name + "§c\" has refresh interval of "+interval+". Refresh cannot be negative! §bUsing 1000.");
+			interval = 1000;
+		}
 		if (interval % 50 > 0) {
 			int oldInterval = interval;
 			interval -= interval%50;
