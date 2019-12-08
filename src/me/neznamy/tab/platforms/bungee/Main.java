@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
@@ -137,7 +138,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				String to = p.world = e.getPlayer().getServer().getInfo().getName();
 				p.onWorldChange(from, to);
 			}
-			
+
 		} catch (Throwable ex){
 			Shared.error(null, "An error occured when player joined/changed server", ex);
 		}
@@ -173,8 +174,16 @@ public class Main extends Plugin implements Listener, MainClass{
 						Playerlist.modifyPacket(p, player);
 						packet = p.toBungee(null);
 					}
-					if (packet instanceof Team && NameTag16.enable) {
-						if (killPacket(packet)) return;
+					if (packet instanceof ByteBuf && NameTag16.enable) {
+						ByteBuf buf = (ByteBuf) packet;
+						byte packetId = buf.readByte();
+						Team team = null;
+						if (packetId == player.getVersion().getPacketPlayOutScoreboardTeamId()) {
+							team = new Team();
+							team.read(buf, null, player.getVersion().getNetworkId());
+						}
+						buf.resetReaderIndex();
+						if (team != null && killPacket(team)) return;
 					}
 				} catch (Throwable e){
 					Shared.error(null, "An error occured when analyzing packets", e);
@@ -215,12 +224,12 @@ public class Main extends Plugin implements Listener, MainClass{
 			});
 		}
 	}
-	
-	
+
+
 	/*
 	 *  Implementing MainClass
 	 */
-	
+
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
 		ProxyServer.getInstance().getConsole().sendMessage(message);
