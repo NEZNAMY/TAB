@@ -23,6 +23,7 @@ public class IChatBaseComponent {
 			CraftItemStack_asNMSCopy = Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class);
 			ItemStack_save = Class.forName("net.minecraft.server." + pack + ".ItemStack").getMethod("save", NBTTagCompound);
 		} catch (Throwable t) {
+			serverVersion = 14;
 			//bungeecord, velocity
 		}
 	}
