@@ -37,7 +37,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
-		Shared.print("§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
+		Shared.print("Â§7", "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		if (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN){
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
@@ -78,9 +78,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
 				}
 			}));
-			if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
+			if (!Shared.disabled) Shared.print("Â§a", "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
-			sendConsoleMessage("§c[TAB] Your server version is not supported. Disabling..");
+			sendConsoleMessage("Â§c[TAB] Your server version is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 	}
@@ -123,16 +123,16 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			PerWorldPlayerlist.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
-			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
-			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			if (Shared.startupWarns > 0) Shared.print("Â§e", "There were " + Shared.startupWarns + " startup warnings.");
+			if (broadcastTime) Shared.print("Â§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
-			Shared.print("§c", "Did not enable due to a broken configuration file.");
+			Shared.print("Â§c", "Did not enable due to a broken configuration file.");
 			Shared.disabled = true;
 		} catch (Throwable e) {
-			Shared.print("§c", "Failed to enable");
-			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
+			Shared.print("Â§c", "Failed to enable");
+			sendConsoleMessage("Â§c" + e.getClass().getName() +": " + e.getMessage());
 			for (StackTraceElement ste : e.getStackTrace()) {
-				sendConsoleMessage("§c       at " + ste.toString());
+				sendConsoleMessage("Â§c       at " + ste.toString());
 			}
 			Shared.disabled = true;
 		}
@@ -545,7 +545,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try{
 			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"§e" + objective + "§c\" is not a valid type of tablist-objective. Valid options are: §ePING, HEARTS, CUSTOM §cand §eNONE §c(for disabling the feature). §bUsing NONE.");
+			Shared.startupWarn("\"Â§e" + objective + "Â§c\" is not a valid type of tablist-objective. Valid options are: Â§ePING, HEARTS, CUSTOM Â§cand Â§eNONE Â§cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");

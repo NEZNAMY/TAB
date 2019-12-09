@@ -64,7 +64,7 @@ public class Configs {
 	public static String reloaded;
 	public static String value_assigned;
 	public static String value_removed;
-	public static String plugin_disabled = "§c[TAB] Plugin is disabled because one of your configuration files is broken. Check console for more info.";
+	public static String plugin_disabled = "Â§c[TAB] Plugin is disabled because one of your configuration files is broken. Check console for more info.";
 	public static List<Object> help_menu = new ArrayList<Object>();
 	public static String bossbar_off;
 	public static String bossbar_on;
@@ -212,7 +212,7 @@ public class Configs {
 				Object progress = bossbar.get("bars." + bar + ".progress");
 				String text = bossbar.getString("bars." + bar + ".text");
 				if (progress == null) {
-					Shared.startupWarn("BossBar \"§e" + bar + "§c\" is missing \"§eprogress§c\" attribute! §bUsing 100");
+					Shared.startupWarn("BossBar \"Â§e" + bar + "Â§c\" is missing \"Â§eprogressÂ§c\" attribute! Â§bUsing 100");
 					progress = 100;
 				}
 				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));
@@ -221,7 +221,7 @@ public class Configs {
 		List<String> toRemove = new ArrayList<String>();
 		for (String bar : BossBar.defaultBars) {
 			if (BossBar.getLine(bar) == null) {
-				Shared.startupWarn("BossBar \"§e" + bar + "§c\" is defined as default bar, but does not exist! §bIgnoring.");
+				Shared.startupWarn("BossBar \"Â§e" + bar + "Â§c\" is defined as default bar, but does not exist! Â§bIgnoring.");
 				toRemove.add(bar);
 			}
 		}
@@ -229,18 +229,18 @@ public class Configs {
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());
-		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.").replace("&", "§");
-		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !").replace("&", "§");
-		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% §e%value%").replace("&", "§");
-		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !").replace("&", "§");
-		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded").replace("&", "§");
-		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%").replace("&", "§");
-		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%").replace("&", "§");
+		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.").replace("&", "Â§");
+		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !").replace("&", "Â§");
+		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% Â§e%value%").replace("&", "Â§");
+		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !").replace("&", "Â§");
+		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded").replace("&", "Â§");
+		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%").replace("&", "Â§");
+		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%").replace("&", "Â§");
 		help_menu = translation.getList("help_menu");
-		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace("&", "§");
-		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "§");
-		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.").replace("&", "§");
-		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.").replace("&", "§");
+		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace("&", "Â§");
+		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace("&", "Â§");
+		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.").replace("&", "Â§");
+		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.").replace("&", "Â§");
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {

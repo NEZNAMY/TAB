@@ -111,11 +111,11 @@ public class BossBar{
 			this.name = name;
 			this.permissionRequired = permissionRequired;
 			if (refresh == 0) {
-				Shared.startupWarn("Bossbar \"§e" + name + "§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? §bUsing 1000.");
+				Shared.startupWarn("Bossbar \"Â§e" + name + "Â§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? Â§bUsing 1000.");
 				refresh = 1000;
 			}
 			if (refresh < 0) {
-				Shared.startupWarn("Bossbar \"§e" + name + "§c\" has refresh interval of "+refresh+". Refresh cannot be negative! §bUsing 1000.");
+				Shared.startupWarn("Bossbar \"Â§e" + name + "Â§c\" has refresh interval of "+refresh+". Refresh cannot be negative! Â§bUsing 1000.");
 				refresh = 1000;
 			}
 			this.uuid = UUID.randomUUID();
