@@ -49,7 +49,7 @@ public class ConfigurationFile{
 		} catch (Exception e) {
 			input.close();
 			Shared.startupWarn("File " + destination + " has broken formatting.");
-			Shared.print("ง6", "Error message: " + e.getMessage());
+			Shared.print("ยง6", "Error message: " + e.getMessage());
 			throw e;
 		}
 	}
