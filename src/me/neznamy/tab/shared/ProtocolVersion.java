@@ -90,11 +90,11 @@ public enum ProtocolVersion {
 	public int getMinorVersion() {
 		return minorVersion;
 	}
-	public ProtocolVersion friendlyName(String name) {
+	private ProtocolVersion friendlyName(String name) {
 		friendlyName = name;
 		return this;
 	}
-	public ProtocolVersion minorVersion(int version) {
+	private ProtocolVersion minorVersion(int version) {
 		minorVersion = version;
 		return this;
 	}
@@ -119,7 +119,7 @@ public enum ProtocolVersion {
 		for (ProtocolVersion v : values()) {
 			if (number == v.getNetworkId()) return v;
 		}
-		if (number > v1_14_4.getNetworkId()) {
+		if (number > v1_15.getNetworkId()) {
 			return FUTURE;
 		}
 		return UNKNOWN;
