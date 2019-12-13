@@ -47,7 +47,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				return getPermissionPlugin();
 			}
 		}));
-		if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
@@ -78,16 +78,16 @@ public class Main extends Plugin implements Listener, MainClass{
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
-			if (Shared.startupWarns > 0) Shared.print("§e", "There were " + Shared.startupWarns + " startup warnings.");
-			if (broadcastTime) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
+			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
-			Shared.print("§c", "Did not enable due to a broken configuration file.");
+			Shared.print('c', "Did not enable due to a broken configuration file.");
 			Shared.disabled = true;
 		} catch (Throwable e) {
-			Shared.print("§c", "Failed to enable");
-			sendConsoleMessage("§c" + e.getClass().getName() +": " + e.getMessage());
+			Shared.print('c', "Failed to enable");
+			sendConsoleMessage("&c" + e.getClass().getName() +": " + e.getMessage());
 			for (StackTraceElement ste : e.getStackTrace()) {
-				sendConsoleMessage("§c       at " + ste.toString());
+				sendConsoleMessage("&c       at " + ste.toString());
 			}
 			Shared.disabled = true;
 		}
@@ -225,7 +225,7 @@ public class Main extends Plugin implements Listener, MainClass{
 
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
-		ProxyServer.getInstance().getConsole().sendMessage(message);
+		ProxyServer.getInstance().getConsole().sendMessage(message.replace('&', Shared.COLOR));
 	}
 	public String getPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";

@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -43,7 +44,7 @@ public class Scoreboard {
 	public String getLineName(int i) {
 		String id = i+"";
 		if (id.length() == 1) id = "0" + id;
-		return "§" + id.toCharArray()[0] + "§" + id.toCharArray()[1] + "§r";
+		return Shared.COLOR + id.toCharArray()[0] + Shared.COLOR + id.toCharArray()[1] + Shared.COLOR + "r";
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
@@ -106,9 +107,9 @@ public class Scoreboard {
 				if (replaced.length() > 16) {
 					prefix = replaced.substring(0, 16);
 					suffix = replaced.substring(16, replaced.length());
-					if (prefix.toCharArray()[15] == '§') {
+					if (prefix.toCharArray()[15] == Shared.COLOR) {
 						prefix = prefix.substring(0, 15);
-						suffix = "§" + suffix;
+						suffix = Shared.COLOR + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
 				} else {

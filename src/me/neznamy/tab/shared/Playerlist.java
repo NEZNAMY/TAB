@@ -61,7 +61,7 @@ public class Playerlist {
 					if (Configs.unlimitedTags && Configs.modifyNPCnames) {
 						if (playerInfoData.name.length() <= 15) {
 							if (playerInfoData.name.length() <= 14) {
-								playerInfoData.name += "§r";
+								playerInfoData.name += Shared.COLOR + "r";
 							} else {
 								playerInfoData.name += " ";
 							}

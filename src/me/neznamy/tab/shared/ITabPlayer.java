@@ -28,7 +28,7 @@ public abstract class ITabPlayer{
 	public String world;
 	private String permissionGroup = "null";
 	public String teamName;
-	private String rank = "§7No Rank";
+	private String rank = "&7No Rank";
 
 	public HashMap<String, Property> properties = new HashMap<String, Property>();
 	private long lastRefreshGroup;
@@ -272,12 +272,12 @@ public abstract class ITabPlayer{
 		if (f == null) f = new ArrayList<Object>();
 		int i = 0;
 		for (Object headerLine : h) {
-			if (++i > 1) rawHeader += "\n§r";
+			if (++i > 1) rawHeader += "\n" + Shared.COLOR + "r";
 			rawHeader += headerLine;
 		}
 		i = 0;
 		for (Object footerLine : f) {
-			if (++i > 1) rawFooter += "\n§r";
+			if (++i > 1) rawFooter += "\n" + Shared.COLOR + "r";
 			rawFooter += footerLine;
 		}
 		setProperty("header", rawHeader);
@@ -325,7 +325,7 @@ public abstract class ITabPlayer{
 			}
 		}
 		if (name == null || name.length() == 0) {
-			name = "§f";
+			name = "&f";
 		} else {
 			name = Placeholders.replaceAllPlaceholders(name, this);
 		}

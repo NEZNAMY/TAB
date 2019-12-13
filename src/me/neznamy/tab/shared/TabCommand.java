@@ -130,8 +130,8 @@ public class TabCommand{
 			} else if (args[0].equalsIgnoreCase("parse")) {
 				if (sender != null) {
 					String replaced = Placeholders.replaceAllPlaceholders(args[1], sender);
-					sendMessage(sender, "§6Attempting to parse string §e" + args[1] + "§6 for player §e" + sender.getName());
-					sendMessage(sender, "§6Result: §r" + replaced + " §r(" + replaced.replace("§", "&") + ")");
+					sendMessage(sender, "&6Attempting to parse string &e" + args[1] + "&6 for player &e" + sender.getName());
+					sendMessage(sender, "&6Result: &r" + replaced + " &r(" + replaced.replace("&", "&") + ")");
 				}
 			}
 		} else if (args.length == 1){
@@ -164,28 +164,28 @@ public class TabCommand{
 				if (can(sender, "cpu")) {
 					int dataSize = Shared.cpuHistory.size();
 					sendMessage(sender, " ");
-					sendMessage(sender, "§8§l§m╔             §r§8§l[ §bTAB CPU Stats §8§l]§r§8§l§m             ");
-					sendMessage(sender, "§8§l║ §6TAB CPU STATS FROM THE LAST MINUTE");
-					sendMessage(sender, "§8§l§m╠                                       ");
-					sendMessage(sender, "§8§l║ §6Placeholders using over 0.01%:");
+					sendMessage(sender, "&8&l&m╔             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+					sendMessage(sender, "&8&l║ &6TAB CPU STATS FROM THE LAST MINUTE");
+					sendMessage(sender, "&8&l&m╠                                       ");
+					sendMessage(sender, "&8&l║ &6Placeholders using over 0.01%:");
 					Map<String, Long> placeholders = sortByValue(getPlaceholderCpu(dataSize));
 					for (Entry<String, Long> entry : placeholders.entrySet()) {
-						if (entry.getValue()/dataSize > 100000) sendMessage(sender, "§8§l║ §7" + entry.getKey() + " - §a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
+						if (entry.getValue()/dataSize > 100000) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
 					}
 					long placeholdersTotal = 0;
 					for (Long time : placeholders.values()) placeholdersTotal += time;
-					sendMessage(sender, "§8§l§m╠                                       ");
-					sendMessage(sender, "§8§l║ §6Feature specific:");
+					sendMessage(sender, "&8&l&m╠                                       ");
+					sendMessage(sender, "&8&l║ &6Feature specific:");
 					Map<Feature, Long> features = sortByValue(getFeatureCpu(dataSize));
 					for (Entry<Feature, Long> entry : features.entrySet()) {
-						sendMessage(sender, "§8§l║ §7" + entry.getKey().toString() + " - §a" + colorizeFeature(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
+						sendMessage(sender, "&8&l║ &7" + entry.getKey().toString() + " - &a" + colorizeFeature(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
 					}
 					long featuresTotal = 0;
 					for (Long time : features.values()) featuresTotal += time;
-					sendMessage(sender, "§8§l§m╠                                       ");
-					sendMessage(sender, "§8§l║ §7§lPLACEHOLDERS TOTAL: §a§l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
-					sendMessage(sender, "§8§l║ §7§lPLUGIN TOTAL: §e§l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
-					sendMessage(sender, "§8§l§m╚             §r§8§l[ §bTAB CPU Stats §8§l]§r§8§l§m             ");
+					sendMessage(sender, "&8&l&m╠                                       ");
+					sendMessage(sender, "&8&l║ &7&lPLACEHOLDERS TOTAL: &a&l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
+					sendMessage(sender, "&8&l║ &7&lPLUGIN TOTAL: &e&l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
+					sendMessage(sender, "&8&l&m╚             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 					sendMessage(sender, " ");	
 				} else sendMessage(sender, Configs.no_perm);
 			} else help(sender);
@@ -224,15 +224,15 @@ public class TabCommand{
 	}
 	private static String colorizePlaceholder(String value) {
 		float f = Float.parseFloat(value.replace(",", "."));
-		if (f > 1) return "§c" + value;
-		if (f > 0.3) return "§e" + value;
-		return "§a" + value;
+		if (f > 1) return "&c" + value;
+		if (f > 0.3) return "&e" + value;
+		return "&a" + value;
 	}
 	private static String colorizeFeature(String value) {
 		float f = Float.parseFloat(value.replace(",", "."));
-		if (f > 5) return "§c" + value;
-		if (f > 1) return "§e" + value;
-		return "§a" + value;
+		if (f > 5) return "&c" + value;
+		if (f > 1) return "&e" + value;
+		return "&a" + value;
 	}
 	public static void save(ITabPlayer sender, String arg0, String arg1, String type, String value) {
 		if (arg0.equalsIgnoreCase("group")){
@@ -257,7 +257,7 @@ public class TabCommand{
 	}
 	public static void sendMessage(ITabPlayer sender, String message) {
 		if (sender != null) {
-			sender.sendMessage(message);
+			sender.sendMessage(message.replace('&', Shared.COLOR));
 		} else {
 			Shared.mainClass.sendConsoleMessage(message);
 		}
@@ -266,14 +266,14 @@ public class TabCommand{
 		if (analyzed == null && sender != null) {
 			analyzed = Shared.getPlayer(sender.getUniqueId());
 		}
-		sendMessage(sender, "§3[TAB] §a§lShowing debug information");
-		sendMessage(sender, "§7§m>-------------------------------<");
-		sendMessage(sender, "§6PlaceholderAPI: §a" + PluginHooks.placeholderAPI);
-		sendMessage(sender, "§6Found Permission system: §a" + Shared.mainClass.getPermissionPlugin());
+		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
+		sendMessage(sender, "&7&m>-------------------------------<");
+		sendMessage(sender, "&6PlaceholderAPI: &a" + PluginHooks.placeholderAPI);
+		sendMessage(sender, "&6Found Permission system: &a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.usePrimaryGroup) {
-			sendMessage(sender, "§6Permission group choice logic: §aPrimary group§8/§r§8§mChoose from list");
+			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8/&r&8&mChoose from list");
 		} else {
-			sendMessage(sender, "§6Permission group choice logic: §8§mPrimary group§r§8/§aChoose from list");
+			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8/&aChoose from list");
 		}
 		boolean sorting = Configs.unlimitedTags || NameTag16.enable;
 		String sortingType;
@@ -294,39 +294,39 @@ public class TabCommand{
 				}
 			}
 		} else {
-			sortingType = "§cDISABLED";
+			sortingType = "&cDISABLED";
 		}
-		sendMessage(sender, "§6Sorting system: §a" + sortingType);
-		sendMessage(sender, "§7§m>-------------------------------<");
+		sendMessage(sender, "&6Sorting system: &a" + sortingType);
+		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed != null) {
-			sendMessage(sender, "§ePlayer: §a" + analyzed.getName());
+			sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
 			if (Configs.usePrimaryGroup) {
-				sendMessage(sender, "§ePrimary permission group: §a" + analyzed.getGroup());
+				sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 			} else {
-				sendMessage(sender, "§eFull permission group list: §a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
-				sendMessage(sender, "§eChosen group: §a" + analyzed.getGroup());
+				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
+				sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
 			}
-			if (sorting) sendMessage(sender, "§eTeam name: §a" +analyzed.getTeamName().replace("§", "&"));
+			if (sorting) sendMessage(sender, "&eTeam name: &a" +analyzed.getTeamName().replace("&", "&"));
 			if (Playerlist.enable) {
-				sendMessage(sender, "§9tabprefix: §b" + analyzed.properties.get("tabprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabprefix").isStatic() + ")");
-				sendMessage(sender, "§9tabsuffix: §b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
-				sendMessage(sender, "§9tabname: §b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
+				sendMessage(sender, "&9tabprefix: &b" + analyzed.properties.get("tabprefix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tabprefix").isStatic() + ")");
+				sendMessage(sender, "&9tabsuffix: &b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
+				sendMessage(sender, "&9tabname: &b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
-				sendMessage(sender, "§9tagprefix: §b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
-				sendMessage(sender, "§9tagsuffix: §b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
+				sendMessage(sender, "&9tagprefix: &b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
+				sendMessage(sender, "&9tagsuffix: &b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
 			}
 			if (Configs.unlimitedTags) {
-				sendMessage(sender, "§9abovename: §b" + analyzed.properties.get("abovename").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("abovename").isStatic() + ")");
-				sendMessage(sender, "§9belowname: §b" + analyzed.properties.get("belowname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("belowname").isStatic() + ")");
-				sendMessage(sender, "§9tagname: §b" + analyzed.properties.get("customtagname").getCurrentRawValue() + " §7(static=" + analyzed.properties.get("customtagname").isStatic() + ")");
+				sendMessage(sender, "&9abovename: &b" + analyzed.properties.get("abovename").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("abovename").isStatic() + ")");
+				sendMessage(sender, "&9belowname: &b" + analyzed.properties.get("belowname").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("belowname").isStatic() + ")");
+				sendMessage(sender, "&9tagname: &b" + analyzed.properties.get("customtagname").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("customtagname").isStatic() + ")");
 			}
 		}
 	}
 	public static void help(ITabPlayer sender){
-		if (sender == null) Shared.mainClass.sendConsoleMessage("§3TAB v" + Shared.pluginVersion);
+		if (sender == null) Shared.mainClass.sendConsoleMessage("&3TAB v" + Shared.pluginVersion);
 		if (isAdmin(sender) && !Shared.disabled) {
-			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "§"));
+			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "&"));
 		}
 	}
 	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
@@ -339,7 +339,7 @@ public class TabCommand{
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("&", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("&", "&"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
@@ -355,7 +355,7 @@ public class TabCommand{
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("&", "§"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("&", "&"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}

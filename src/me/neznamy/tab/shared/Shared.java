@@ -34,6 +34,7 @@ public class Shared {
 	public static final String pluginVersion = "2.5.5-pre15";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
+	public static final char COLOR = '\u00a7';
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 
@@ -85,22 +86,22 @@ public class Shared {
 				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 				if (message != null) {
 					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-					if (Configs.SECRET_log_errors_into_console) print("§c", message);
+					if (Configs.SECRET_log_errors_into_console) print('c', message);
 				}
 				if (t != null) {
 					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_log_errors_into_console) printClean("§c" + t.getClass().getName() +": " + t.getMessage());
+					if (Configs.SECRET_log_errors_into_console) printClean("&c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
 						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_log_errors_into_console) printClean("§c       at " + ste.toString());
+						if (Configs.SECRET_log_errors_into_console) printClean("&c       at " + ste.toString());
 					}
 				}
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			print("§c", "An error occured when generating error message");
+			print('c', "An error occured when generating error message");
 			ex.printStackTrace();
-			print("§c", "Original error: " + message);
+			print('c', "Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
 		return defaultValue;
@@ -123,11 +124,11 @@ public class Shared {
 		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
 	}
 	public static void startupWarn(String message) {
-		print("§c", message);
+		print('c', message);
 		startupWarns++;
 	}
-	public static void print(String color, String message) {
-		mainClass.sendConsoleMessage(color + "[TAB] " + message);
+	public static void print(char color, String message) {
+		mainClass.sendConsoleMessage("&" + color + "[TAB] " + message);
 	}
 	public static void printClean(String message) {
 		mainClass.sendConsoleMessage(message);
@@ -186,7 +187,7 @@ public class Shared {
 		for (Future<?> f : tasks) f.cancel(true);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
-		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText("§aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(COLOR + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
@@ -213,7 +214,7 @@ public class Shared {
 				if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
 			}
 			data.clear();
-			print("§a", "Disabled in " + (System.currentTimeMillis()-time) + "ms");
+			print('a', "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			error(null, "Failed to unload the plugin", e);
 		}
