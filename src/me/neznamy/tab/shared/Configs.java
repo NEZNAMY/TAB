@@ -229,18 +229,18 @@ public class Configs {
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());
-		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.").replace('&', Shared.COLOR);
-		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !").replace('&', Shared.COLOR);
-		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%").replace('&', Shared.COLOR);
-		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !").replace('&', Shared.COLOR);
-		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded").replace('&', Shared.COLOR);
-		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%").replace('&', Shared.COLOR);
-		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%").replace('&', Shared.COLOR);
+		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
+		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
+		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");
+		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !");
+		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded");
+		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%");
+		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%");
 		help_menu = translation.getList("help_menu");
-		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible").replace('&', Shared.COLOR);
-		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!").replace('&', Shared.COLOR);
-		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.").replace('&', Shared.COLOR);
-		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.").replace('&', Shared.COLOR);
+		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible");
+		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
+		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.");
+		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.");
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {
