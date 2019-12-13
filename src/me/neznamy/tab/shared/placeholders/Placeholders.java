@@ -61,7 +61,7 @@ public class Placeholders {
 			if ((section == Shared.COLOR) && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
-					result = Shared.COLOR + c + result;
+					result = Shared.COLOR + "" + c + result;
 					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
 						break;
 					}

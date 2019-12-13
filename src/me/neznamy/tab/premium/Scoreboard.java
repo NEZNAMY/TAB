@@ -44,7 +44,7 @@ public class Scoreboard {
 	public String getLineName(int i) {
 		String id = i+"";
 		if (id.length() == 1) id = "0" + id;
-		return Shared.COLOR + id.toCharArray()[0] + Shared.COLOR + id.toCharArray()[1] + Shared.COLOR + "r";
+		return Shared.COLOR + String.valueOf(id.toCharArray()[0]) + Shared.COLOR + String.valueOf(id.toCharArray()[1]) + Shared.COLOR + "r";
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
