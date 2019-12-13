@@ -26,6 +26,9 @@ public class DataWatcherSerializer {
 	public static Object EnumDirection;
 	public static Object Optional_UUID;
 	public static Object NBTTagCompound;
+	public static Object VillagerData;
+	public static Object OptionalInt;
+	public static Object EntityPose;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
@@ -47,6 +50,11 @@ public class DataWatcherSerializer {
 				EnumDirection = fields.get("n");
 				Optional_UUID = fields.get("o");
 				NBTTagCompound = fields.get("p");
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+					VillagerData = fields.get("q");
+					OptionalInt = fields.get("r");
+					EntityPose = fields.get("s");
+				}
 			} else {
 				Optional_IBlockData = fields.get("g");
 				Boolean = fields.get("h");

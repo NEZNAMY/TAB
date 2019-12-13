@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.unlimitedtags;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 
 public class NameTagLineManager {
 
@@ -28,7 +29,12 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) as.destroy(packetReceiver);
 	}
 	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver, boolean addToRegistered) {
-		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
+			packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+				packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(as.property.get(), packetReceiver).toNMS(), true));
+			}
+		}
 	}
 	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket(packetReceiver));

@@ -39,7 +39,7 @@ public class ArmorStand{
 	private boolean visible;
 
 	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
-	private Property property;
+	public Property property;
 
 	private long lastLocationRefresh = 0;
 	

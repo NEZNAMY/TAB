@@ -19,7 +19,7 @@ public class Placeholders {
 
 	static {
 		online.put("other", 0);
-		for (int i=5; i<=14; i++) online.put("1-" + i + "-x", 0);
+		for (int i=5; i<=15; i++) online.put("1-" + i + "-x", 0);
 	}
 	public static List<Placeholder> getAll(){
 		List<Placeholder> list = new ArrayList<Placeholder>();
@@ -29,7 +29,7 @@ public class Placeholders {
 	}
 	public static void recalculateOnlineVersions() {
 		online.put("other", 0);
-		for (int i=5; i<=14; i++) online.put("1-" + i + "-x", 0);
+		for (int i=5; i<=15; i++) online.put("1-" + i + "-x", 0);
 		for (ITabPlayer p : Shared.getPlayers()){
 			String group = "1-"+p.getVersion().getMinorVersion()+"-x";
 			if (online.containsKey(group)) {

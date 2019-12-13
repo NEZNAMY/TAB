@@ -136,7 +136,7 @@ public class Injector {
 							}
 							MethodAPI.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
 						}
-						if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet)) {
+						if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
 							DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
 							Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
 							if (petOwner != null) modifyDataWatcherItem(petOwner);
