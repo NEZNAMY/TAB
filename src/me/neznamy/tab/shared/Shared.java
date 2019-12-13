@@ -99,7 +99,7 @@ public class Shared {
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			print('c', "An error occured when generating error message");
+			print('c', "An error occurred when generating error message");
 			ex.printStackTrace();
 			print('c', "Original error: " + message);
 			if (t != null) t.printStackTrace();
@@ -163,7 +163,7 @@ public class Shared {
 					} catch (InterruptedException pluginDisabled) {
 						break;
 					} catch (Throwable t) {
-						error(null, "An error occured when " + description, t);
+						error(null, "An error occurred when " + description, t);
 					}
 				}
 			}
@@ -178,7 +178,7 @@ public class Shared {
 					r.run();
 					featureCPU(feature, System.nanoTime()-time);
 				} catch (Throwable t) {
-					error(null, "An error occured when " + description, t);
+					error(null, "An error occurred when " + description, t);
 				}
 			}
 		});

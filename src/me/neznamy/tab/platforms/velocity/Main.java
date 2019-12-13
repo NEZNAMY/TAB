@@ -153,7 +153,7 @@ public class Main implements MainClass{
 				p.onWorldChange(from, to);
 			}
 		} catch (Throwable ex){
-			Shared.error(null, "An error occured when player joined/changed server", ex);
+			Shared.error(null, "An error occurred when player joined/changed server", ex);
 		}
 	}
 	/*	@Subscribe
@@ -191,7 +191,7 @@ public class Main implements MainClass{
 						if (killPacket((Team)packet)) return;
 					}
 				} catch (Throwable e){
-					Shared.error(null, "An error occured when analyzing packets", e);
+					Shared.error(null, "An error occurred when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}

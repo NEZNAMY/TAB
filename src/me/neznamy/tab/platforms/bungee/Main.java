@@ -131,7 +131,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 
 		} catch (Throwable ex){
-			Shared.error(null, "An error occured when player joined/changed server", ex);
+			Shared.error(null, "An error occurred when player joined/changed server", ex);
 		}
 	}
 	@EventHandler
@@ -179,7 +179,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						if (team != null && killPacket(team)) return;
 					}
 				} catch (Throwable e){
-					Shared.error(null, "An error occured when analyzing packets", e);
+					Shared.error(null, "An error occurred when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}

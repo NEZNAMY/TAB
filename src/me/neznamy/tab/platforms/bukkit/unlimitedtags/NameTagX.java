@@ -96,6 +96,10 @@ public class NameTagX implements Listener{
 	public void a(PlayerMoveEvent e) {
 		if (Shared.disabled || !enable) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) {
+			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player moved");
+			return;
+		}
 		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
 
 			public void run() {

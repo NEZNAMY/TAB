@@ -159,7 +159,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} catch (Throwable ex) {
-			Shared.error(null, "An error occured when player joined the server", ex);
+			Shared.error(null, "An error occurred when player joined the server", ex);
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -191,7 +191,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
-			Shared.error(null, "An error occured when player left server", t);
+			Shared.error(null, "An error occurred when player left server", t);
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		}
 	}
@@ -206,7 +206,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			String to = p.world = e.getPlayer().getWorld().getName();
 			p.onWorldChange(from, to);
 		} catch (Throwable ex) {
-			Shared.error(null, "An error occured when processing PlayerChangedWorldEvent", ex);
+			Shared.error(null, "An error occurred when processing PlayerChangedWorldEvent", ex);
 		}
 	}
 	@EventHandler
