@@ -1,8 +1,11 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.parser.ParserException;
@@ -15,26 +18,23 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.proxy.protocol.StateRegistry;
+import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
+import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.Channel;
+import io.netty.channel.*;
+import me.neznamy.tab.platforms.velocity.protocol.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.Shared.CPUSample;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.placeholders.Constant;
-import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
@@ -52,7 +52,7 @@ public class Main implements MainClass{
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		long time = System.currentTimeMillis();
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
+		me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.BUNGEE;
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
 		server.getCommandManager().register("btab", new Command() {
@@ -60,6 +60,7 @@ public class Main implements MainClass{
 				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
+		registerPackets();
 		load(false, true);
 		if (!Shared.disabled) Shared.print("§a", "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
@@ -71,10 +72,9 @@ public class Main implements MainClass{
 	}
 	public void load(boolean broadcastTime, boolean inject) {
 		try {
-			Shared.disabled = false;
 			long time = System.currentTimeMillis();
+			Shared.disabled = false;
 			Shared.startupWarns = 0;
-			Shared.cpuHistory = new ArrayList<CPUSample>();
 			registerPlaceholders();
 			Configs.loadFiles();
 			Shared.registerAnimationPlaceholders();
@@ -89,6 +89,7 @@ public class Main implements MainClass{
 			NameTag16.load();
 			Playerlist.load();
 			TabObjective.load();
+			BelowName.load();
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
@@ -110,17 +111,17 @@ public class Main implements MainClass{
 	public void a(DisconnectEvent e){
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore
+		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.unregister(disconnectedPlayer);
-		Shared.data.remove(e.getPlayer().getUniqueId());
 		if (Configs.SECRET_remove_ghost_players) {
 			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toVelocity(null);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				all.sendPacket(packet);
 			}
 		}
+		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@Subscribe
 	public void a(ServerConnectedEvent e){
@@ -133,10 +134,19 @@ public class Main implements MainClass{
 				inject(p.getUniqueId());
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
-				TabObjective.playerJoin(p);
 				BossBar.playerJoin(p);
-				ScoreboardManager.register(p);
-				NameTag16.playerJoin(p);
+				ITabPlayer pl = p;
+				//sending custom packets with a delay, it would not work otherwise
+				Executors.newCachedThreadPool().submit(new Runnable() {
+
+					@Override
+					public void run() {
+						NameTag16.playerJoin(pl);
+						ScoreboardManager.register(pl);
+						TabObjective.playerJoin(pl);
+						BelowName.playerJoin(pl);
+					}
+				});
 			} else {
 				String from = p.getWorldName();
 				String to = p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
@@ -146,7 +156,7 @@ public class Main implements MainClass{
 			Shared.error(null, "An error occured when player joined/changed server", ex);
 		}
 	}
-/*	@Subscribe
+	/*	@Subscribe
 	public void a(PlayerChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
@@ -177,15 +187,29 @@ public class Main implements MainClass{
 						Playerlist.modifyPacket(p, player);
 						packet = p.toVelocity(null);
 					}
-/*					if (packet instanceof Team && NameTag16.enable) {
-						if (killPacket(packet)) return;
-					}*/ //missing packets on velocity
+					if (packet instanceof Team && NameTag16.enable) {
+						if (killPacket((Team)packet)) return;
+					}
 				} catch (Throwable e){
 					Shared.error(null, "An error occured when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}
 		});
+	}
+	public boolean killPacket(Team packet){
+		if (packet.getFriendlyFire() != 69) {
+			String[] players = packet.getPlayers();
+			if (players == null) return false;
+			for (ITabPlayer p : Shared.getPlayers()) {
+				for (String player : players) {
+					if (player.equals(p.getName()) && !p.disabledNametag) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	//java class loader is `intelligent` and throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
 	//making it return Object and then casting fixes it
@@ -215,11 +239,74 @@ public class Main implements MainClass{
 			});
 		}
 	}
+	private static Method map;
 	
+	public static PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
+		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
+	}
+	public void registerPackets() {
+		try {
+			Method register = null;
+			for (Method m : PacketRegistry.class.getDeclaredMethods()) {
+				if (m.getName().equals("register")) register = m;
+			}
+			register.setAccessible(true);
+			map = StateRegistry.class.getDeclaredMethod("map", int.class, ProtocolVersion.class, boolean.class);
+			map.setAccessible(true);
+
+			Supplier<ScoreboardDisplay> display = ScoreboardDisplay::new;
+			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardDisplay.class, display, 
+					new PacketMapping[] {
+							map(0x3D, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x38, ProtocolVersion.MINECRAFT_1_9, false),
+							map(0x3A, ProtocolVersion.MINECRAFT_1_12, false),
+							map(0x3B, ProtocolVersion.MINECRAFT_1_12_1, false),
+							map(0x3E, ProtocolVersion.MINECRAFT_1_13, false),
+							map(0x42, ProtocolVersion.MINECRAFT_1_14, false),
+							map(0x43, ProtocolVersion.MINECRAFT_1_15, false)
+			});
+			Supplier<ScoreboardObjective> objective = ScoreboardObjective::new;
+			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardObjective.class, objective, 
+					new PacketMapping[] {
+							map(0x3B, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x3F, ProtocolVersion.MINECRAFT_1_9, false),
+							map(0x41, ProtocolVersion.MINECRAFT_1_12, false),
+							map(0x42, ProtocolVersion.MINECRAFT_1_12_1, false),
+							map(0x45, ProtocolVersion.MINECRAFT_1_13, false),
+							map(0x49, ProtocolVersion.MINECRAFT_1_14, false),
+							map(0x4A, ProtocolVersion.MINECRAFT_1_15, false)
+			});
+			Supplier<ScoreboardScore> score = ScoreboardScore::new;
+			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardScore.class, score, 
+					new PacketMapping[] {
+							map(0x3C, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x42, ProtocolVersion.MINECRAFT_1_9, false),
+							map(0x44, ProtocolVersion.MINECRAFT_1_12, false),
+							map(0x45, ProtocolVersion.MINECRAFT_1_12_1, false),
+							map(0x48, ProtocolVersion.MINECRAFT_1_13, false),
+							map(0x4C, ProtocolVersion.MINECRAFT_1_14, false),
+							map(0x4D, ProtocolVersion.MINECRAFT_1_15, false)
+			});
+			Supplier<Team> team = Team::new;
+			register.invoke(StateRegistry.PLAY.clientbound, Team.class, team, 
+					new PacketMapping[] {
+							map(0x3E, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x41, ProtocolVersion.MINECRAFT_1_9, false),
+							map(0x43, ProtocolVersion.MINECRAFT_1_12, false),
+							map(0x44, ProtocolVersion.MINECRAFT_1_12_1, false),
+							map(0x47, ProtocolVersion.MINECRAFT_1_13, false),
+							map(0x4B, ProtocolVersion.MINECRAFT_1_14, false),
+							map(0x4C, ProtocolVersion.MINECRAFT_1_15, false)
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/*
 	 *  Implementing MainClass
 	 */
-	
+
 	public void sendConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
 	}
@@ -232,13 +319,20 @@ public class Main implements MainClass{
 		load(true, false);
 		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
+	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("velocityconfig.yml", "config.yml", Configs.configComments);
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
+		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
+		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
+		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
+		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
+		BelowName.number = Configs.config.getString("belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
+		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
-		TabObjective.type = TabObjectiveType.NONE;
 	}
 }
