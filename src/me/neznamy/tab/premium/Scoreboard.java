@@ -43,7 +43,7 @@ public class Scoreboard {
 	public String getLineName(int i) {
 		String id = i+"";
 		if (id.length() == 1) id = "0" + id;
-		return "ง" + id.toCharArray()[0] + "ง" + id.toCharArray()[1] + "งr";
+		return "ยง" + id.toCharArray()[0] + "ยง" + id.toCharArray()[1] + "ยงr";
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
@@ -106,9 +106,9 @@ public class Scoreboard {
 				if (replaced.length() > 16) {
 					prefix = replaced.substring(0, 16);
 					suffix = replaced.substring(16, replaced.length());
-					if (prefix.toCharArray()[15] == 'ง') {
+					if (prefix.toCharArray()[15] == 'ยง') {
 						prefix = prefix.substring(0, 15);
-						suffix = "ง" + suffix;
+						suffix = "ยง" + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
 				} else {

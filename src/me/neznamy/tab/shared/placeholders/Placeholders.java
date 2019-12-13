@@ -46,7 +46,7 @@ public class Placeholders {
 		char[] b = textToTranslate.toCharArray();
 		for (int i = 0; i < b.length - 1; i++) {
 			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[(i + 1)]) > -1)){
-				b[i] = 'ง';
+				b[i] = 'ยง';
 				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
 			}
 		}
@@ -58,10 +58,10 @@ public class Placeholders {
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
-			if ((section == 'ง') && (index < length - 1)){
+			if ((section == 'ยง') && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
-					result = "ง" + c + result;
+					result = "ยง" + c + result;
 					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
 						break;
 					}

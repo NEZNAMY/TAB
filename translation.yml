@@ -18,6 +18,7 @@ help_menu:
   - "&3/tab &9group&3/&9player &3<name> &9customtagname &3<value...>"
   - "&4/tab group/player <name> remove - clears all data about player/group"
   - "&3/tab debug [player] &7- displays debug information about you [about requested player]"
+  - "&3/tab ntpreview &7- displays your nametag for your self, for testing purposes"
 bossbar-toggle-on: "&2Bossbar is now visible"
 bossbar-toggle-off: "&7Bossbar is no longer visible. Magic!"
 preview-on: "&7Preview mode &aactivated&7."

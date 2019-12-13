@@ -198,7 +198,7 @@ public class PluginHooks {
 		try {
 			return ProtocolSupportAPI.getProtocolVersion(((TabPlayer)p).player).getId();
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occured when getting protocol version of " + p.getName() + " using ProtocolSupport", e);
+			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occurred when getting protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
 	}
 	public static String Vault_getPermissionPlugin() {

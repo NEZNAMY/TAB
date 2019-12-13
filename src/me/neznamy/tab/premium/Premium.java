@@ -11,7 +11,6 @@ import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.Shared;
 
 public class Premium {
-
 	public static ConfigurationFile premiumconfig;
 	public static SortingType sortingType;
 	public static String sortingPlaceholder;
@@ -27,10 +26,10 @@ public class Premium {
 	public static void loadPremiumConfig() throws Exception {
 		premiumconfig = new ConfigurationFile("premiumconfig.yml", new HashMap<String, List<String>>());
 		String type = premiumconfig.getString("sorting-type", "GROUPS");
-		try{
+		try {
 			sortingType = SortingType.valueOf(type.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"§e" + type + "§c\" is not a valid type of sorting type. Valid options are: §eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z, GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW and GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH. §bUsing GROUPS");
+			Shared.startupWarn("\"Â§e" + type + "Â§c\" is not a valid type of sorting type. Valid options are: Â§eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z, GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW and GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH. Â§bUsing GROUPS");
 			sortingType = SortingType.GROUPS;
 		}
 		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
@@ -47,10 +46,10 @@ public class Premium {
 		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1);
 		ScoreboardManager.perWorld = (Map<String, String>) premiumconfig.get("scoreboard.per-world");
-		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled").replace("&", "§");
-		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "§");
-		if (premiumconfig.get("scoreboards")!= null) 
-			for (String scoreboard : ((Map<String, Object>)premiumconfig.get("scoreboards")).keySet()) {
+		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled").replace("&", "Â§");
+		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled").replace("&", "Â§");
+		if (premiumconfig.get("scoreboards") != null)
+			for (String scoreboard : ((Map<String, Object>) premiumconfig.get("scoreboards")).keySet()) {
 				boolean permissionRequired = premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required");
 				String childBoard = premiumconfig.getString("scoreboards." + scoreboard + ".if-permission-missing");
 				String title = premiumconfig.getString("scoreboards." + scoreboard + ".title");

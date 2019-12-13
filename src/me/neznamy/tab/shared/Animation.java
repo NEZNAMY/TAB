@@ -13,18 +13,18 @@ public class Animation {
 	
 	public Animation(String name, List<String> list, int interval){
 		if (interval == 0) {
-			Shared.startupWarn("Animation \"§e" + name + "§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? §bUsing 1000.");
+			Shared.startupWarn("Animation \"Â§e" + name + "Â§c\" has refresh interval of 0 milliseconds! Did you forget to configure it? Â§bUsing 1000.");
 			interval = 1000;
 		}
 		if (interval < 0) {
-			Shared.startupWarn("Animation \"§e" + name + "§c\" has refresh interval of "+interval+". Refresh cannot be negative! §bUsing 1000.");
+			Shared.startupWarn("Animation \"Â§e" + name + "Â§c\" has refresh interval of "+interval+". Refresh cannot be negative! Â§bUsing 1000.");
 			interval = 1000;
 		}
 		if (interval % 50 > 0) {
 			int oldInterval = interval;
 			interval -= interval%50;
 			if (interval == 0) interval = 50;
-			Shared.startupWarn("Animation \"§e" + name + "§c\" has a refresh interval of §e" + oldInterval + "ms§c which is not divisible by 50! Animations can't refresh faster than every tick ( = 50 milliseconds). §bUsing " + interval + ".");
+			Shared.startupWarn("Animation \"Â§e" + name + "Â§c\" has a refresh interval of Â§e" + oldInterval + "msÂ§c which is not divisible by 50! Animations can't refresh faster than every tick ( = 50 milliseconds). Â§bUsing " + interval + ".");
 		}
 		this.name = name;
 		this.messages = list.toArray(new String[0]);
