@@ -41,7 +41,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		return new ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return null;
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
 	public enum Action{
 

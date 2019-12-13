@@ -82,7 +82,18 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return null;
+		String teamDisplay = team;
+		int color = 0;
+		if (clientVersion.getMinorVersion() >= 13) {
+			prefix = new IChatBaseComponent(prefix).toString();
+			suffix = new IChatBaseComponent(suffix).toString();
+			teamDisplay = new IChatBaseComponent(team).toString();
+			color = chatFormat.toBungee();
+		} else {
+			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
+			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
+		}
+		return new me.neznamy.tab.platforms.velocity.protocol.Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
 	private static final Field NAME = getField(fields, "a");

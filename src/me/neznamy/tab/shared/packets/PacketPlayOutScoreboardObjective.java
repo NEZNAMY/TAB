@@ -47,7 +47,13 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		return new ScoreboardObjective(objectiveName, title, displayType.toBungee(), (byte)action);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return null;
+		String title = this.title;
+		if (clientVersion.getMinorVersion() >= 13) {
+			title = new IChatBaseComponent(title).toString();
+		} else {
+			if (title != null && title.length() > 32) title = title.substring(0, 32);
+		}
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, title, displayType.toVelocity(), (byte)action);
 	}
 	public enum EnumScoreboardHealthDisplay{
 
@@ -68,6 +74,9 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 		public HealthDisplay toBungee() {
 			return HealthDisplay.valueOf(toString());
+		}
+		public me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay toVelocity() {
+			return me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay.valueOf(toString());
 		}
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);

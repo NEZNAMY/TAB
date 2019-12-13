@@ -26,7 +26,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		return new ScoreboardDisplay((byte)position, objectiveName);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return null;
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay((byte)position, objectiveName);
 	}
 
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
