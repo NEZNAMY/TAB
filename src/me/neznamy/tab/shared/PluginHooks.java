@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -151,18 +152,19 @@ public class PluginHooks {
 		}
 	}
 	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders, boolean logCpu) {
+		Player player = (p == null ? null : ((TabPlayer)p).player);
 		try {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setPlaceholders(p == null ? null : ((TabPlayer)p).player, s);
+				String value = PlaceholderAPI.setPlaceholders(player, s);
 				if (logCpu) Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion());
-				Shared.error(null, "Placeholders to replace: " + Arrays.toString(placeholders));
+				Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion() + ". Placeholders to replace: " + Arrays.toString(placeholders));
+				Shared.error(null, "Input arguments: [Player = " + player + ", String = " + s + "]");
 				Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
 			} else {
 				//thats why it failed
