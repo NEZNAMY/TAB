@@ -20,7 +20,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public abstract class ITabPlayer{
+public abstract class ITabPlayer {
 
 	public String name;
 	public UUID uniqueId;
@@ -67,65 +67,97 @@ public abstract class ITabPlayer{
 	}
 
 	//bukkit only
-	public String getNickname() {return getName();}
-	public String getMoney() {return "-";}
-	public void setTeamVisible(boolean p0) {}
-	public void restartArmorStands() {}
-	public boolean hasInvisibility() {return false;}
+	public String getNickname() {
+		return getName();
+	}
+
+	public String getMoney() {
+		return "-";
+	}
+
+	public void setTeamVisible(boolean p0) {
+	}
+
+	public void restartArmorStands() {
+	}
+
+	public boolean hasInvisibility() {
+		return false;
+	}
 
 	//per-type
 	public abstract String getGroupFromPermPlugin();
+
 	public abstract String[] getGroupsFromPermPlugin();
+
 	public abstract boolean hasPermission(String permission);
+
 	public abstract long getPing();
+
 	public abstract void sendPacket(Object nmsPacket);
+
 	public abstract void sendMessage(String message);
 
 	public boolean getTeamPush() {
 		return Configs.collision;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public UUID getUniqueId() {
 		return uniqueId;
 	}
-	public UUID getTablistId(){
+
+	public UUID getTablistId() {
 		return tablistId;
 	}
+
 	public ProtocolVersion getVersion() {
 		return version;
 	}
+
 	public Object getChannel() {
 		return channel;
 	}
+
 	public String getTeamName() {
 		return teamName;
 	}
+
 	public String getRank() {
 		return rank;
 	}
+
 	public boolean isStaff() {
 		return hasPermission("tab.staff");
 	}
+
 	public void setActiveScoreboard(Scoreboard board) {
 		activeScoreboard = board;
 	}
+
 	public Scoreboard getActiveScoreboard() {
 		return activeScoreboard;
 	}
-	public List<BossBarLine> getActiveBossBars(){
+
+	public List<BossBarLine> getActiveBossBars() {
 		return activeBossBars;
 	}
+
 	public String getWorldName() {
 		return world;
 	}
+
 	public List<ArmorStand> getArmorStands() {
 		return armorStands;
 	}
+
 	public PlayerInfoData getInfoData() {
 		return infoData;
 	}
+
 	public String setProperty(String identifier, String rawValue) {
 		Property p = properties.get(identifier);
 		if (p == null) {
@@ -135,6 +167,7 @@ public abstract class ITabPlayer{
 		}
 		return rawValue;
 	}
+
 	public boolean isListNameUpdateNeeded() {
 		if (!Playerlist.enable) return false;
 		getGroup();
@@ -143,6 +176,7 @@ public abstract class ITabPlayer{
 		boolean tabsuffix = properties.get("tabsuffix").isUpdateNeeded();
 		return (tabprefix || customtabname || tabsuffix);
 	}
+
 	public void updatePlayerListName() {
 		isListNameUpdateNeeded(); //triggering updates to replaced values
 		try {
@@ -154,6 +188,7 @@ public abstract class ITabPlayer{
 			Shared.error(null, "Failed to create PacketPlayOutPlayerInfo", e);
 		}
 	}
+
 	public String getTabFormat(ITabPlayer other) {
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
@@ -161,6 +196,7 @@ public abstract class ITabPlayer{
 		String format = prefix.get() + name.get() + suffix.get();
 		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, format) : format;
 	}
+
 	public void updateTeam() {
 		if (disabledNametag) return;
 		String newName = buildTeamName();
@@ -175,10 +211,12 @@ public abstract class ITabPlayer{
 			NameTagLineManager.refreshNames(this);
 		}
 	}
+
 	private boolean getTeamVisibility() {
 		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
 		return !Configs.unlimitedTags && nameTagVisible;
 	}
+
 	public String getGroup() {
 		if (System.currentTimeMillis() - lastRefreshGroup > 1000L) {
 			lastRefreshGroup = System.currentTimeMillis();
@@ -186,6 +224,7 @@ public abstract class ITabPlayer{
 		}
 		return permissionGroup;
 	}
+
 	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
 		String newGroup = null;
 		if (Configs.usePrimaryGroup) {
@@ -196,7 +235,7 @@ public abstract class ITabPlayer{
 				loop:
 					for (Object entry : Configs.primaryGroupFindingList) {
 						for (String playerGroup : playerGroups) {
-							if (playerGroup.equalsIgnoreCase(entry+"")) {
+							if (playerGroup.equalsIgnoreCase(entry + "")) {
 								newGroup = playerGroup;
 								break loop;
 							}
@@ -213,6 +252,7 @@ public abstract class ITabPlayer{
 			}
 		}
 	}
+
 	public void updateAll() {
 		setProperty("tablist-objective", TabObjective.rawValue);
 		setProperty("belowname-number", BelowName.number);
@@ -241,59 +281,72 @@ public abstract class ITabPlayer{
 		if (rank == null) rank = permissionGroup;
 		updateRawHeaderAndFooter();
 	}
+
 	private String getValue(Object property) {
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null)
+			return value;
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + property)) != null)
+			return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null)
+			return value;
 		if ((value = Configs.config.getString("Groups." + permissionGroup + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
 	}
+
 	private void updateRawHeaderAndFooter() {
 		String worldGroup = getWorldGroupOf(getWorldName());
-		String rawHeader = "";
-		String rawFooter = "";
+		StringBuilder rawHeader = new StringBuilder();
+		StringBuilder rawFooter = new StringBuilder();
 		List<Object> h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + ".header");
 		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".header");
-		if (h == null) h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".header");
+		if (h == null)
+			h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".header");
+		if (h == null)
+			h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".header");
 		if (h == null) h = Configs.config.getList("Groups." + permissionGroup + ".header");
 		if (h == null) h = Configs.config.getList("header");
 		if (h == null) h = new ArrayList<Object>();
 		List<Object> f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + ".footer");
 		if (f == null) f = Configs.config.getList("Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".footer");
-		if (f == null) f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".footer");
+		if (f == null)
+			f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".footer");
+		if (f == null)
+			f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".footer");
 		if (f == null) f = Configs.config.getList("Groups." + permissionGroup + ".footer");
 		if (f == null) f = Configs.config.getList("footer");
 		if (f == null) f = new ArrayList<Object>();
 		int i = 0;
 		for (Object headerLine : h) {
-			if (++i > 1) rawHeader += "\n" + Shared.COLOR + "r";
-			rawHeader += headerLine;
+			if (++i > 1) rawHeader.append("\n" + Shared.COLOR + "r");
+			rawHeader.append(headerLine);
 		}
 		i = 0;
 		for (Object footerLine : f) {
-			if (++i > 1) rawFooter += "\n" + Shared.COLOR + "r";
-			rawFooter += footerLine;
+			if (++i > 1) rawFooter.append("\n" + Shared.COLOR + "r");
+			rawFooter.append(footerLine);
 		}
-		setProperty("header", rawHeader);
-		setProperty("footer", rawFooter);
+		setProperty("header", rawHeader.toString());
+		setProperty("footer", rawFooter.toString());
 	}
+
 	@SuppressWarnings("unchecked")
 	private String getWorldGroupOf(String world) {
-		Map<String, Object> worlds = (Map<String, Object>) Configs.config.get("per-" + Shared.separatorType + "-settings");
-		if (worlds == null || worlds.isEmpty()) return world;
+		Object rawWorlds = Configs.config.get("per-" + Shared.separatorType + "-settings");
+		if (!(rawWorlds instanceof Map)) return world;
+		Map<String, Object> worlds = (Map<String, Object>) rawWorlds;
+		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for(String localworld : worldGroup.split("-")) {
-				if (localworld.equalsIgnoreCase(world)) return worldGroup;
+			for (String localWorld : worldGroup.split("-")) {
+				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}
 		return world;
 	}
+
 	public String buildTeamName() {
 		if (Premium.is()) {
 			return Premium.sortingType.getTeamName(this);
@@ -337,7 +390,7 @@ public abstract class ITabPlayer{
 			name = name.substring(0, 15);
 		}
 		for (int i = 1; i <= 255; ++i) {
-			String name2 = name + (char)i;
+			String name2 = name + (char) i;
 			boolean nameUsed = false;
 			for (ITabPlayer d : Shared.getPlayers()) {
 				if (d.getTeamName() != null && d.getTeamName().equals(name2) && !d.getName().equals(getName())) {
@@ -350,6 +403,7 @@ public abstract class ITabPlayer{
 		}
 		return getName();
 	}
+
 	public void updateTeamData() {
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
@@ -370,6 +424,7 @@ public abstract class ITabPlayer{
 			}
 		}
 	}
+
 	public void registerTeam() {
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
@@ -382,22 +437,28 @@ public abstract class ITabPlayer{
 			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Arrays.asList(getName()));
 		}
 	}
+
 	public void registerTeam(ITabPlayer to) {
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
-		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
-		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
+		if (tagprefix.hasRelationalPlaceholders())
+			replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
+		if (tagsuffix.hasRelationalPlaceholders())
+			replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
+
 	private void unregisterTeam(ITabPlayer to) {
 		PacketAPI.unregisterScoreboardTeam(to, teamName);
 	}
+
 	public void unregisterTeam() {
 		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
+
 	public void onWorldChange(String from, String to) {
 		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(to);
 		disabledTablistNames = Configs.disabledTablistNames.contains(to);
@@ -421,7 +482,7 @@ public abstract class ITabPlayer{
 		}
 		if (HeaderFooter.enable) {
 			if (disabledHeaderFooter) {
-				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
+				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
 			} else {
 				HeaderFooter.refreshHeaderFooter(this, true);
 			}
@@ -429,7 +490,7 @@ public abstract class ITabPlayer{
 		if (NameTag16.enable || Configs.unlimitedTags) {
 			if (disabledNametag) {
 				unregisterTeam();
-			} else if (Configs.disabledNametag.contains(from)){
+			} else if (Configs.disabledNametag.contains(from)) {
 				registerTeam();
 			} else {
 				updateTeam();
@@ -444,7 +505,7 @@ public abstract class ITabPlayer{
 				TabObjective.playerJoin(this);
 			}
 		}
-		if (BelowName.enable){
+		if (BelowName.enable) {
 			if (disabledBelowname && !Configs.disabledBelowname.contains(from)) {
 				BelowName.unload(this);
 			}
@@ -457,6 +518,7 @@ public abstract class ITabPlayer{
 			ScoreboardManager.register(this);
 		}
 	}
+
 	public void detectBossBarsAndSend() {
 		activeBossBars.clear();
 		if (disabledBossbar || !bossbarVisible) return;
@@ -482,20 +544,23 @@ public abstract class ITabPlayer{
 				}
 			}
 	}
+
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		try {
 			sendPacket(Shared.mainClass.buildPacket(packet, version));
 		} catch (Exception e) {
-			Shared.error(null, "An error occured when creating " + packet.getClass().getSimpleName(), e);
+			Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
+
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
 		} catch (Exception e) {
-			Shared.error(null, "An error occured when creating " + packet.getClass().getSimpleName(), e);
+			Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
+
 	public void forceUpdateDisplay() {
 		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName();
 		if ((NameTag16.enable || Configs.unlimitedTags) && !disabledNametag) {

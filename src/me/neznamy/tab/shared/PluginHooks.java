@@ -208,7 +208,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error(new String[] {"null"}, "An error occured when getting permission groups of " + p.getName() + " using Vault", e);
+			return Shared.error(new String[] {"null"}, "An error occurred when getting permission groups of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
@@ -218,7 +218,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error("null", "An error occured when getting permission group of " + p.getName() + " using Vault", e);
+			return Shared.error("null", "An error occurred when getting permission group of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static void Vault_loadProviders() {
@@ -233,7 +233,7 @@ public class PluginHooks {
 		try {
 			return Via.getAPI().getPlayerVersion(p.getUniqueId());
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occured when getting protocol version of " + p.getName() + " using ViaVersion", e);
+			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occurred when getting protocol version of " + p.getName() + " using ViaVersion", e);
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
