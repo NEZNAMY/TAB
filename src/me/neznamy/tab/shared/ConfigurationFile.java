@@ -50,11 +50,15 @@ public class ConfigurationFile{
 			input.close();
 			Shared.startupWarn("File " + destination + " has broken formatting.");
 			Shared.print('6', "Error message: " + e.getMessage());
+			if (e.getMessage().contains("\\t(TAB)"))
 			throw e;
 		}
 	}
 	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments) throws Exception{
 		this(sourceAndDestination, sourceAndDestination, comments);
+	}
+	private suggestFix(Exception e) {
+		
 	}
 	public Object get(String path) {
 		return get(path, null);

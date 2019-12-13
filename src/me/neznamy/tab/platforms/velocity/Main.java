@@ -38,7 +38,7 @@ import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.5.5", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.6.0", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
