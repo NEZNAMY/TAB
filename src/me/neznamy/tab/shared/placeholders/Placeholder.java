@@ -22,7 +22,9 @@ public abstract class Placeholder {
 	}
 	public String set(String s, ITabPlayer p) {
 		try {
-			return s.replace(identifier, getValue(p));
+			String value = getValue(p);
+			if (value == null) value = "";
+			return s.replace(identifier, value);
 		} catch (Throwable t) {
 			return Shared.error(s, "An error occurred when setting placeholder \"" + identifier + "\"" + (p == null ? "" : " for " + p.getName()), t);
 		}
