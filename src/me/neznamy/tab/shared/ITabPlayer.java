@@ -226,7 +226,7 @@ public abstract class ITabPlayer {
 	}
 
 	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
-		String newGroup = null;
+		String newGroup = "null";
 		if (Configs.usePrimaryGroup) {
 			newGroup = getGroupFromPermPlugin();
 		} else {
@@ -241,7 +241,7 @@ public abstract class ITabPlayer {
 							}
 						}
 					}
-				if (newGroup == null) newGroup = playerGroups[0];
+				if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
 			}
 		}
 		if (!permissionGroup.equals(newGroup)) {
