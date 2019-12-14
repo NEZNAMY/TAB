@@ -152,14 +152,13 @@ public class PluginHooks {
 		}
 	}
 	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders, boolean logCpu) {
+		if (!placeholderAPI) return s;
 		Player player = (p == null ? null : ((TabPlayer)p).player);
 		try {
-			if (placeholderAPI) {
-				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setPlaceholders(player, s);
-				if (logCpu) Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
-				return value;
-			}
+			long startTime = System.nanoTime();
+			String value = PlaceholderAPI.setPlaceholders(player, s);
+			if (logCpu) Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
+			return value;
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
