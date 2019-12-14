@@ -452,10 +452,12 @@ public abstract class ITabPlayer {
 	}
 
 	private void unregisterTeam(ITabPlayer to) {
+		if (disabledNametag) return;
 		PacketAPI.unregisterScoreboardTeam(to, teamName);
 	}
 
 	public void unregisterTeam() {
+		if (disabledNametag) return;
 		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
 
