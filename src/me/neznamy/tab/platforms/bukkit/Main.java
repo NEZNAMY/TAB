@@ -482,14 +482,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 	}
 	@SuppressWarnings("unchecked")
-	public static Player[] getOnlinePlayers() throws Exception {
-		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-		if (players instanceof Player[]) {
-			//1.5.x - 1.6.x
-			return (Player[]) players;
-		} else {
-			//1.7+
-			return ((Collection<Player>)players).toArray(new Player[0]); 
+	public static Player[] getOnlinePlayers(){
+		try {
+			Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
+			if (players instanceof Player[]) {
+				//1.5.x - 1.6.x
+				return (Player[]) players;
+			} else {
+				//1.7+
+				return ((Collection<Player>)players).toArray(new Player[0]); 
+			}
+		} catch (Exception e) {
+			return Shared.error(new Player[0], "Failed to get online players");
 		}
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {

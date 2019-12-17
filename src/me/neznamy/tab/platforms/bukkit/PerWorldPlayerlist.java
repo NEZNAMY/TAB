@@ -11,22 +11,22 @@ public class PerWorldPlayerlist {
 	public static boolean allowBypass;
 	public static List<Object> ignoredWorlds;
 	
-	public static void load() throws Exception{
+	public static void load(){
 		if (!enabled) return;
 		for (Player p : Main.getOnlinePlayers()){
 			hidePlayer(p);
 			showInSameWorld(p);
 		}
 	}
-	public static void unload() throws Exception{
+	public static void unload(){
 		if (enabled) for (Player p : Main.getOnlinePlayers()) for (Player pl : Main.getOnlinePlayers()) p.showPlayer(pl);
 	}
-	public static void trigger(Player p) throws Exception{
+	public static void trigger(Player p){
 		if (!enabled) return;
 		hidePlayer(p);
 		showInSameWorld(p);
 	}
-	public static void showInSameWorld(Player p) throws Exception {
+	public static void showInSameWorld(Player p){
 		for (Player pl : Main.getOnlinePlayers()){
 			if (pl == p) continue;
 			if (p.getWorld() == pl.getWorld()) {
@@ -41,7 +41,7 @@ public class PerWorldPlayerlist {
 			}
 		}
 	}
-	public static void hidePlayer(Player p) throws Exception {
+	public static void hidePlayer(Player p){
 		for (Player pl : Main.getOnlinePlayers()){
 			if (pl == p) continue;
 			p.hidePlayer(pl);
