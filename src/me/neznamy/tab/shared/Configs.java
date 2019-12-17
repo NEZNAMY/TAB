@@ -65,7 +65,7 @@ public class Configs {
 	public static String value_assigned;
 	public static String value_removed;
 	public static String plugin_disabled = "&c[TAB] Plugin is disabled because one of your configuration files is broken. Check console for more info.";
-	public static List<Object> help_menu = new ArrayList<Object>();
+	public static List<String> help_menu = new ArrayList<String>();
 	public static String bossbar_off;
 	public static String bossbar_on;
 	public static String preview_off;
@@ -236,7 +236,7 @@ public class Configs {
 		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded");
 		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%");
 		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%");
-		help_menu = translation.getList("help_menu");
+		help_menu = translation.getStringList("help_menu");
 		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible");
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
 		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.");

@@ -349,7 +349,7 @@ public class TabCommand{
 	public static void help(ITabPlayer sender){
 		if (sender == null) Shared.mainClass.sendConsoleMessage("&3TAB v" + Shared.pluginVersion);
 		if (isAdmin(sender) && !Shared.disabled) {
-			for (Object msg : Configs.help_menu) sendMessage(sender, (msg+"").replace("&", "&"));
+			for (String msg : Configs.help_menu) sendMessage(sender, msg);
 		}
 	}
 	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
