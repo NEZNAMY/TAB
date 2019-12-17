@@ -148,25 +148,13 @@ public class BossBar{
 			return uuid;
 		}
 		public BarColor parseColor(String color) {
-			try {
-				return BarColor.valueOf(color);
-			} catch (Exception e) {
-				return Shared.error(BarColor.WHITE, "\"" + color + "\" is not a valid boss bar color");
-			}
+			return Shared.parseColor(color, BarColor.PURPLE, "bossbar color");
 		}
 		public BarStyle parseStyle(String style) {
-			try {
-				return BarStyle.valueOf(style);
-			} catch (Exception e) {
-				return Shared.error(BarStyle.PROGRESS, "\"" + style + "\" is not a valid boss bar color");
-			}
+			return Shared.parseStyle(style, BarStyle.PROGRESS, "bossbar style");
 		}
 		public float parseProgress(String progress) {
-			try {
-				return Integer.parseInt(progress);
-			} catch (Exception e) {
-				return Shared.error(100, "\"" + progress + "\" is not a valid number");
-			}
+			return Shared.parseFloat(progress, 100, "bossbar progress");
 		}
 	}
 }

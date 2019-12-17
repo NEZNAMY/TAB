@@ -23,6 +23,8 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.placeholders.*;
 
@@ -31,7 +33,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.0-pre17";
+	public static final String pluginVersion = "2.6.1-pre1";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';
@@ -219,6 +221,51 @@ public class Shared {
 			error(null, "Failed to unload the plugin", e);
 		}
 	}
+	public static int parseInteger(String string, int defaultValue, String place) {
+		try {
+			return Integer.parseInt(string);
+		} catch (Throwable e) {
+			if (string.contains("%")) {
+				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
+			} else {
+				return Shared.error(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
+			}
+		}
+	}
+	public static float parseFloat(String string, float defaultValue, String place) {
+		try {
+			return Float.parseFloat(string);
+		} catch (Throwable e) {
+			if (string.contains("%")) {
+				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
+			} else {
+				return Shared.error(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
+			}
+		}
+	}
+	public static BarColor parseColor(String string, BarColor defaultValue, String place) {
+		try {
+			return BarColor.valueOf(string);
+		} catch (Throwable e) {
+			if (string.contains("%")) {
+				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
+			} else {
+				return Shared.error(defaultValue, place + " only accepts one of the defined colors! (Attempted to use \"" + string + "\")");
+			}
+		}
+	}
+	public static BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
+		try {
+			return BarStyle.valueOf(string);
+		} catch (Throwable e) {
+			if (string.contains("%")) {
+				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
+			} else {
+				return Shared.error(defaultValue, place + " only accepts one of the defined styles! (Attempted to use \"" + string + "\")");
+			}
+		}
+	}
+	
 	public static void registerAnimationPlaceholders() {
 		for (Animation a : Configs.animations) {
 			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {

@@ -54,11 +54,6 @@ public class BelowName{
 		if (enable) PacketAPI.unregisterScoreboardObjective(p, objectivename, textProperty.get(), EnumScoreboardHealthDisplay.INTEGER);
 	}
 	public static int getNumber(ITabPlayer p) {
-		String replaced = p.properties.get("belowname-number").get();
-		try {
-			return Integer.parseInt(replaced);
-		} catch (Throwable e) {
-			return Shared.error(0, "Value \"" + replaced + "\" is not a valid number for belowname! Did you forget to download an expansion ?");
-		}
+		return Shared.parseInteger(p.properties.get("belowname-number").get(), 0, "belowname");
 	}
 }

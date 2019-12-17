@@ -46,12 +46,7 @@ public class TabObjective{
 		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
 	}
 	public static int getValue(ITabPlayer p) {
-		String replaced = p.properties.get("tablist-objective").get();
-		try {
-			return Integer.parseInt(replaced);
-		} catch (Throwable e) {
-			return Shared.error(0, "Value \"" + replaced + "\" is not a valid number for tablist objective! Did you forget to download an expansion ?");
-		}
+		return Shared.parseInteger(p.properties.get("tablist-objective").get(), 0, "tablist objective");
 	}
 	public enum TabObjectiveType{
 
