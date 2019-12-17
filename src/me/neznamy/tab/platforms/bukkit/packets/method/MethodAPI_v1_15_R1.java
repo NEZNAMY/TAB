@@ -129,7 +129,7 @@ public class MethodAPI_v1_15_R1 extends MethodAPI {
 	}
 	public Object newPacketPlayOutEntityTeleport(Object entityliving, Location loc) {
 		EntityLiving entity = (EntityLiving) entityliving;
-		entity.setPositionRaw(loc.getX(), loc.getY(), loc.getY());
+		entity.setPositionRaw(loc.getX(), loc.getY(), loc.getZ());
 		return new PacketPlayOutEntityTeleport(entity);
 	}
 	public Object newPacketPlayOutEntityTeleport(Player p) {

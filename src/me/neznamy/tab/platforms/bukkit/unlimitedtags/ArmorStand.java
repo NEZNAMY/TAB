@@ -101,11 +101,17 @@ public class ArmorStand{
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					} else {
 						all.sendCustomPacket(getSpawnPacket(all, false));
+						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(property.get(), all).toNMS(), true));
+						}
 					}
 				} else {
 					//respawning so there's no animation and it's instant
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					all.sendCustomPacket(getSpawnPacket(all, false));
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(property.get(), all).toNMS(), true));
+					}
 				}
 			}
 		}
