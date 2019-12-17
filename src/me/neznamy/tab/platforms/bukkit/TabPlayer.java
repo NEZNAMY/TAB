@@ -144,7 +144,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(message);
+		player.sendMessage(message.replace('&', Shared.COLOR));
 	}
 	@Override
 	public boolean hasInvisibility() {

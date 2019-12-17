@@ -44,7 +44,7 @@ public class TabPlayer extends ITabPlayer{
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(message);
+		player.sendMessage(message.replace('&', Shared.COLOR));
 	}
 	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
 }
