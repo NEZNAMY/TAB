@@ -7,9 +7,9 @@ TAB is a simple yet intuitive plugin that creates a highly customizable TAB scre
 
 [Wiki](https://github.com/NEZNAMY/TAB/wiki)
 
-[spigot]: https://www.spigotmc.org/resources/tab-1-8-x-1-14-4-reborn.57806/
-[spigot-download]: https://www.spigotmc.org/resources/tab-1-8-x-1-14-4-reborn.57806/updates
+[spigot]: https://www.spigotmc.org/resources/57806/
+[spigot-download]: https://www.spigotmc.org/resources/57806/updates
 [discord]: https://discord.gg/yx4THeU
-[version-badge]: https://img.shields.io/badge/Version-2.5.4-green.svg
-[minecraft-badge]: https://img.shields.io/badge/Minecraft-1.5.0%20--%201.14.4-blue.svg
+[version-badge]: https://img.shields.io/badge/Version-2.6.0-green.svg
+[minecraft-badge]: https://img.shields.io/badge/Minecraft-1.5.0%20--%201.15.0-blue.svg
 [discord-badge]: https://img.shields.io/discord/464328633239207938.svg?label=Discord
