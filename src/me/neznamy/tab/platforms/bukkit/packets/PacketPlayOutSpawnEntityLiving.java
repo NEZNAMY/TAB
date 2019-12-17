@@ -9,7 +9,6 @@ import org.bukkit.entity.EntityType;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 
@@ -104,43 +103,38 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static Field DATAWATCHERITEMS = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, List.class), 0);
 
 	static {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-				entityIds.put(EntityType.ARMOR_STAND, 1);
-				entityIds.put(EntityType.WITHER, 83);
-			} else {
-				entityIds.put(EntityType.WITHER, 64);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
-					entityIds.put(EntityType.ARMOR_STAND, 30);
-				}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			entityIds.put(EntityType.ARMOR_STAND, 1);
+			entityIds.put(EntityType.WITHER, 83);
+		} else {
+			entityIds.put(EntityType.WITHER, 64);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
+				entityIds.put(EntityType.ARMOR_STAND, 30);
 			}
-			
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				ENTITYTYPE = fields.get("c");
-				X = fields.get("d");
-				Y = fields.get("e");
-				Z = fields.get("f");
-				MOTX = fields.get("g");
-				MOTY = fields.get("h");
-				MOTZ = fields.get("i");
-				YAW = fields.get("j");
-				PITCH = fields.get("k");
-				L = fields.get("l");
-			} else {
-				ENTITYTYPE = fields.get("b");
-				X = fields.get("c");
-				Y = fields.get("d");
-				Z = fields.get("e");
-				MOTX = fields.get("f");
-				MOTY = fields.get("g");
-				MOTZ = fields.get("h");
-				YAW = fields.get("i");
-				PITCH = fields.get("j");
-				L = fields.get("k");
-			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			Shared.error(null, "Failed to initialize PacketPlayOutSpawnEntityLiving", e);
+		}
+
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			ENTITYTYPE = fields.get("c");
+			X = fields.get("d");
+			Y = fields.get("e");
+			Z = fields.get("f");
+			MOTX = fields.get("g");
+			MOTY = fields.get("h");
+			MOTZ = fields.get("i");
+			YAW = fields.get("j");
+			PITCH = fields.get("k");
+			L = fields.get("l");
+		} else {
+			ENTITYTYPE = fields.get("b");
+			X = fields.get("c");
+			Y = fields.get("d");
+			Z = fields.get("e");
+			MOTX = fields.get("f");
+			MOTY = fields.get("g");
+			MOTZ = fields.get("h");
+			YAW = fields.get("i");
+			PITCH = fields.get("j");
+			L = fields.get("k");
 		}
 	}
 }

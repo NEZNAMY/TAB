@@ -14,6 +14,7 @@ public enum SortingType {
 		String teamName = "";
 		String group;
 		String number;
+		int value;
 		switch(this){
 		case GROUPS:
 			teamName = Configs.sortedGroups.get(p.getGroup().toLowerCase());
@@ -32,21 +33,13 @@ public enum SortingType {
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
 			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
-			try {
-				Long.parseLong(teamName);
-			} catch (Throwable e) {
-				Shared.error(null, teamName + " is not a number! Did you forget to download an expansion ?");
-			}
+			Shared.parseInteger(teamName, 0, "numeric sorting placeholder");
 			while (teamName.length() < 10) teamName = "0" + teamName;
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
 			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
-			try {
-				long value = Long.parseLong(teamName);
-				teamName = (9999999999L-value)+"";
-			} catch (Throwable e) {
-				Shared.error(null, teamName + " is not a number! Did you forget to download an expansion ?");
-			}
+			value = Shared.parseInteger(teamName, 0, "numeric sorting placeholder");
+			teamName = (999999999-value)+"";
 			break;
 		case PLACEHOLDER_A_TO_Z:
 			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
@@ -55,23 +48,16 @@ public enum SortingType {
 			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
 			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
-			try {
-				long value = Long.parseLong(number);
-				number = (99999999L-value)+""; // 8 chars
-			} catch (Throwable e) {
-				Shared.error(null, number + " is not a number! Did you forget to download an expansion ?");
-			}
+			value = Shared.parseInteger(number, 0, "numeric sorting placeholder");
+			number = (999999999-value)+"";
 			teamName = group + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
 			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
 			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
-			try {
-				Long.parseLong(number);
-			} catch (Throwable e) {
-				Shared.error(null, number + " is not a number! Did you forget to download an expansion ?");
-			}
+			value = Shared.parseInteger(number, 0, "numeric sorting placeholder");
+			number = (999999999-value)+"";
 			while (number.length() < 8) number = "0" + number;
 			teamName = group + number;
 			break;
