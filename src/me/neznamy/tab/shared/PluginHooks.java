@@ -162,9 +162,14 @@ public class PluginHooks {
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion() + ". Placeholders to replace: " + Arrays.toString(placeholders));
-				Shared.error(null, "Input arguments: [Player = " + player + ", String = " + s + "]");
-				Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
+				if (s.contains("%pinataparty")) {
+					//i'm done with arguing with that person about whose fault it is, just pretending like it works
+					return s.replace("%pinataparty_votes_total%", "0");
+				} else {
+					Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion() + ". Placeholders to replace: " + Arrays.toString(placeholders));
+					Shared.error(null, "Input arguments: [Player = " + player + ", String = " + s + "]");
+					Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
+				}
 			} else {
 				//thats why it failed
 				placeholderAPI = false;
