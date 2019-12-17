@@ -179,13 +179,9 @@ public abstract class ITabPlayer {
 
 	public void updatePlayerListName() {
 		isListNameUpdateNeeded(); //triggering updates to replaced values
-		try {
-			Object packet = Shared.mainClass.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, infoData), null);
-			for (ITabPlayer all : Shared.getPlayers()) {
-				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
-			}
-		} catch (Exception e) {
-			Shared.error(null, "Failed to create PacketPlayOutPlayerInfo", e);
+		Object packet = buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, infoData), null);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
 	}
 
@@ -241,7 +237,7 @@ public abstract class ITabPlayer {
 							}
 						}
 					}
-				if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
+			if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
 			}
 		}
 		if (!permissionGroup.equals(newGroup)) {
@@ -548,13 +544,15 @@ public abstract class ITabPlayer {
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
+		sendPacket(buildPacket(packet, version));
+	}
+	public static Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion version) {
 		try {
-			sendPacket(Shared.mainClass.buildPacket(packet, version));
+			return Shared.mainClass.buildPacket(packet, version);
 		} catch (Exception e) {
-			Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
+			return Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
-
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
@@ -562,7 +560,6 @@ public abstract class ITabPlayer {
 			Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
-
 	public void forceUpdateDisplay() {
 		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName();
 		if ((NameTag16.enable || Configs.unlimitedTags) && !disabledNametag) {

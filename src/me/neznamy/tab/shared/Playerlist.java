@@ -14,36 +14,30 @@ public class Playerlist {
 	public static boolean enable;
 	public static int refresh;
 
-	public static void load() throws Exception {
+	public static void load(){
 		if (enable) {
 			updateNames(true);
 			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", Feature.PLAYERLIST_1, new Runnable() {
 				public void run() {
-					try {
-						updateNames(false);
-					} catch (Exception e) {
-						Shared.error(null, null, e);
-					}
+					updateNames(false);
 				}
 			});
 		}
 	}
-	private static void updateNames(boolean force) throws Exception {
+	private static void updateNames(boolean force){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledTablistNames && (p.isListNameUpdateNeeded() || force)) updatedPlayers.add(p.getInfoData());
 		}
 		if (!updatedPlayers.isEmpty()) {
-			Object packet = Shared.mainClass.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), null);
+			Object packet = ITabPlayer.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), null);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
 		}
 	}
-	public static void unload() throws Exception {
-		if (enable) {
-			updateNames(true);
-		}
+	public static void unload(){
+		if (enable) updateNames(true);
 	}
 	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
 		if (receiver.getVersion().getMinorVersion() < 8) return;
