@@ -11,5 +11,5 @@ TAB is a simple yet intuitive plugin that creates a highly customizable TAB scre
 [spigot-download]: https://www.spigotmc.org/resources/57806/updates
 [discord]: https://discord.gg/yx4THeU
 [version-badge]: https://img.shields.io/badge/Version-2.6.0-green.svg
-[minecraft-badge]: https://img.shields.io/badge/Minecraft-1.5.0%20--%201.15.0-blue.svg
+[minecraft-badge]: https://img.shields.io/badge/Minecraft-1.5.0%20--%201.15.1-blue.svg
 [discord-badge]: https://img.shields.io/discord/464328633239207938.svg?label=Discord
