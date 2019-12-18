@@ -40,23 +40,36 @@ public class ArmorStand{
 
 	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	public Property property;
-
+	private boolean staticOffset;
 	private long lastLocationRefresh = 0;
 	
-	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID) {
+	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID, boolean staticOffset) {
 		this.owner = owner;
+		this.staticOffset = staticOffset;
 		player = ((TabPlayer)owner).player;
 		this.yOffset = yOffset;
 		owner.setProperty(ID, format);
 		property = owner.properties.get(ID);
 		visible = getVisibility();
 		refreshName();
-		updateLocation();
 	}
 	public void refreshName() {
 		if (property.isUpdateNeeded()) {
 			visible = getVisibility();
 			updateMetadata();
+		}
+	}
+	public boolean hasStaticOffset() {
+		return staticOffset;
+	}
+	public void setOffset(double offset) {
+		if (yOffset == offset) return;
+		yOffset = offset;
+		updateLocation();
+		synchronized (registeredTo) {
+			for (ITabPlayer all : registeredTo) {
+				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
+			}
 		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
@@ -160,7 +173,7 @@ public class ArmorStand{
 		double y = player.getLocation().getY() + yOffset;
 		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
-			y -= 1.76;
+			y += 1.76;
 		} else {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);

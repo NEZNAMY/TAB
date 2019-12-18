@@ -10,9 +10,9 @@ public class NameTagLineManager {
 	public static void removeFromRegistered(ITabPlayer armorStandOwner, ITabPlayer removed) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.removeFromRegistered(removed);
 	}
-	public static ArmorStand bindLine(ITabPlayer p, String text, double heightDifference, String ID){
+	public static ArmorStand bindLine(ITabPlayer p, String text, double heightDifference, String ID, boolean staticOffset){
 		if (!NameTagX.enable) return null;
-		ArmorStand as = new ArmorStand(p, text, heightDifference, ID);
+		ArmorStand as = new ArmorStand(p, text, heightDifference, ID, staticOffset);
 		p.armorStands.add(as);
 		return as;
 	}

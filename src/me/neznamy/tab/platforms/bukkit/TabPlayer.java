@@ -120,16 +120,17 @@ public class TabPlayer extends ITabPlayer{
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : Premium.dynamicLines) {
 			Property p = properties.get(line);
-			if (p == null || p.get().length() == 0) continue;
+			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			String value = p.getCurrentRawValue();
-			NameTagLineManager.bindLine(this, value, height+=Configs.SECRET_NTX_space, line);
+			NameTagLineManager.bindLine(this, value, height+=Configs.SECRET_NTX_space, line, false);
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			Property p = properties.get(line.getKey());
-			if (p == null || p.get().length() == 0) continue;
+			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			String value = p.getCurrentRawValue();
-			NameTagLineManager.bindLine(this, value, line.getValue(), line.getKey());
+			NameTagLineManager.bindLine(this, value, line.getValue(), line.getKey(), true);
 		}
+		fixArmorStandHeights();
 	}
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);

@@ -205,9 +205,22 @@ public abstract class ITabPlayer {
 		}
 		if (Configs.unlimitedTags) {
 			NameTagLineManager.refreshNames(this);
+			fixArmorStandHeights();
 		}
 	}
 
+	public void fixArmorStandHeights() {
+		NameTagLineManager.refreshNames(this);
+		double currentY = -Configs.SECRET_NTX_space;;
+		for (ArmorStand as : getArmorStands()) {
+			if (as.hasStaticOffset()) continue;
+			if (as.property.get().length() != 0) {
+				currentY += Configs.SECRET_NTX_space;
+				as.setOffset(currentY);
+			}
+		}
+	}
+	
 	private boolean getTeamVisibility() {
 		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
 		return !Configs.unlimitedTags && nameTagVisible;
