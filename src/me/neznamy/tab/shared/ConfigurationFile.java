@@ -39,7 +39,7 @@ public class ConfigurationFile{
 			this.comments = comments;
 			dataFolder.mkdirs();
 			file = new File(dataFolder, destination);
-			if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream(source), file.toPath());
+			if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
 			DumperOptions options = new DumperOptions();
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			yaml = new Yaml(options);
