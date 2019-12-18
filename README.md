@@ -5,6 +5,8 @@
 
 TAB is a simple yet intuitive plugin that creates a highly customizable TAB screen, replacing the standard players list on Minecraft.
 
+All dependencies can be found at http://207.180.242.97/spigot/tab/dependencies/
+
 [Wiki](https://github.com/NEZNAMY/TAB/wiki)
 
 [spigot]: https://www.spigotmc.org/resources/57806/
