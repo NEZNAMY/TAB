@@ -13,6 +13,10 @@
 bossbar-enabled: false
 refresh-interval-milliseconds: 1000
 bossbar-toggle-command: /bossbar
+
+#saving toggle decision into playerdata.yml to keep it saved after reloads/restarts
+remember-toggle-choice: false
+
 #to have no default bars, set it to 
 #default-bars: []
 default-bars:

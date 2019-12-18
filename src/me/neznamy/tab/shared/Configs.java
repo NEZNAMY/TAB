@@ -78,6 +78,7 @@ public class Configs {
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
 
+	public static ConfigurationFile playerdata; 
 
 	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
 
@@ -105,6 +106,7 @@ public class Configs {
 		bossbarComments = new HashMap<String, List<String>>();
 		bossbarComments.put("bossbar-enabled:", Arrays.asList("#styles (SERVER 1.9+)", "#NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20, PROGRESS", "", "#colors (SERVER 1.9+)", "#BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW", "", "#IF YOU ARE USING SERVER 1.8.X", "#the entity will be slightly visible when progress is less than ~50% (client-sided bug)", "#only 1 line can be displayed at a time", "", "#you can also announce a message using /tab announce bar <bar name> <duration in seconds> (does not support animations yet)", ""));
 		bossbarComments.put("default-bars:", Arrays.asList("#to have no default bars, set it to ", "#default-bars: []"));
+		bossbarComments.put("remember-toggle-choice:", Arrays.asList("", "#saving toggle decision into playerdata.yml to keep it saved after reloads/restarts"));
 		animationComments = new HashMap<String, List<String>>();
 		animationComments.put("animations:", Arrays.asList("#usage: %animation:NAME%  or  {animation:NAME}"));
 		advancedconfigComments = new HashMap<String, List<String>>();
@@ -225,6 +227,14 @@ public class Configs {
 				toRemove.add(bar);
 			}
 		}
+		BossBar.remember_toggle_choice = bossbar.getBoolean("remember-toggle-choice", false);
+		if (BossBar.remember_toggle_choice) {
+			File file = new File("plugins" + System.getProperty("file.separator") + "TAB" + System.getProperty("file.separator") + "playerdata.yml");
+			if (!file.exists()) file.createNewFile();
+			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>());
+			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");
+			if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
+		} else BossBar.bossbar_off_players = new ArrayList<String>();
 		BossBar.defaultBars.removeAll(toRemove);
 	}
 	public static void loadTranslation() throws Exception {

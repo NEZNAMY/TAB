@@ -36,7 +36,7 @@ public abstract class ITabPlayer {
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors
 	public Object channel;
 	public boolean nameTagVisible = true;
-	public boolean bossbarVisible = true;
+	public boolean bossbarVisible;
 	private PlayerInfoData infoData;
 
 	public boolean disabledHeaderFooter;
@@ -59,6 +59,7 @@ public abstract class ITabPlayer {
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
 		updateDisabledWorlds(getWorldName());
 		if (Playerlist.enable) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		bossbarVisible = !BossBar.bossbar_off_players.contains(getName());
 	}
 
 	//bukkit only

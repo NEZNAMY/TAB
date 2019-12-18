@@ -20,6 +20,8 @@ public class BossBar{
 	public static int refresh;
 	public static String toggleCommand;
 	public static List<String> announcements = new ArrayList<String>();
+	public static boolean remember_toggle_choice;
+	public static List<String> bossbar_off_players;
 	
 	public static void load() {
 		if (!enabled) return;
@@ -70,12 +72,22 @@ public class BossBar{
 			if (sender.bossbarVisible) {
 				sender.detectBossBarsAndSend();
 				sender.sendMessage(Configs.bossbar_on);
+				if (remember_toggle_choice) {
+					bossbar_off_players.remove(sender.getName());
+					Configs.playerdata.set("bossbar-off", bossbar_off_players);
+					Configs.playerdata.save();
+				}
 			} else {
 				for (BossBarLine line : sender.getActiveBossBars()) {
 					PacketAPI.removeBossBar(sender, line);
 				}
 				sender.getActiveBossBars().clear();
 				sender.sendMessage(Configs.bossbar_off);
+				if (remember_toggle_choice && !bossbar_off_players.contains(sender.getName())) {
+					bossbar_off_players.add(sender.getName());
+					Configs.playerdata.set("bossbar-off", bossbar_off_players);
+					Configs.playerdata.save();
+				}
 			}
 			return true;
 		}
