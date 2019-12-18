@@ -57,12 +57,7 @@ public abstract class ITabPlayer {
 		updateGroupIfNeeded(false);
 		updateAll();
 		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
-		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(getWorldName());
-		disabledTablistNames = Configs.disabledTablistNames.contains(getWorldName());
-		disabledNametag = Configs.disabledNametag.contains(getWorldName());
-		disabledTablistObjective = Configs.disabledTablistObjective.contains(getWorldName());
-		disabledBossbar = Configs.disabledBossbar.contains(getWorldName());
-		disabledBelowname = Configs.disabledBelowname.contains(getWorldName());
+		updateDisabledWorlds(getWorldName());
 		if (Playerlist.enable) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
 	}
 
@@ -470,13 +465,30 @@ public abstract class ITabPlayer {
 		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
 	}
 
+	private void updateDisabledWorlds(String world) {
+		disabledHeaderFooter = isDisabledWorld(Configs.disabledHeaderFooter, world);
+		disabledTablistNames = isDisabledWorld(Configs.disabledTablistNames, world);
+		disabledNametag = isDisabledWorld(Configs.disabledNametag, world);
+		disabledTablistObjective = isDisabledWorld(Configs.disabledTablistObjective, world);
+		disabledBossbar = isDisabledWorld(Configs.disabledBossbar, world);
+		disabledBelowname = isDisabledWorld(Configs.disabledBelowname, world);
+	}
+	private boolean isDisabledWorld(List<String> disabledWorlds, String world) {
+		if (disabledWorlds.contains("WHITELIST")) {
+			for (String enabled : disabledWorlds) {
+				if (enabled.equals(world)) return false;
+			}
+			return true;
+		} else {
+			for (String disabled : disabledWorlds) {
+				if (disabled.equals(world)) return true;
+			}
+			return false;
+		}
+	}
+	
 	public void onWorldChange(String from, String to) {
-		disabledHeaderFooter = Configs.disabledHeaderFooter.contains(to);
-		disabledTablistNames = Configs.disabledTablistNames.contains(to);
-		disabledNametag = Configs.disabledNametag.contains(to);
-		disabledTablistObjective = Configs.disabledTablistObjective.contains(to);
-		disabledBossbar = Configs.disabledBossbar.contains(to);
-		disabledBelowname = Configs.disabledBelowname.contains(to);
+		updateDisabledWorlds(to);
 		updateGroupIfNeeded(false);
 		updateAll();
 		restartArmorStands();
@@ -499,28 +511,32 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (NameTag16.enable || Configs.unlimitedTags) {
-			if (disabledNametag) {
+			if (disabledNametag && !isDisabledWorld(Configs.disabledNametag, from)) {
 				unregisterTeam();
-			} else if (Configs.disabledNametag.contains(from)) {
+			} else if (!disabledNametag && isDisabledWorld(Configs.disabledNametag, from)) {
 				registerTeam();
 			} else {
 				updateTeam();
 			}
 		}
-		if (Playerlist.enable) updatePlayerListName();
+		if (Playerlist.enable) {
+			if (!(isDisabledWorld(Configs.disabledTablistNames, from) && isDisabledWorld(Configs.disabledTablistNames, to))) {
+				if (!Configs.disabledTablistNames.contains("NORESET")) updatePlayerListName();
+			}
+		}
 		if (TabObjective.type != TabObjectiveType.NONE) {
-			if (disabledTablistObjective && !Configs.disabledTablistObjective.contains(from)) {
+			if (disabledTablistObjective && !isDisabledWorld(Configs.disabledTablistObjective, from)) {
 				TabObjective.unload(this);
 			}
-			if (!disabledTablistObjective && Configs.disabledTablistObjective.contains(from)) {
+			if (!disabledTablistObjective && isDisabledWorld(Configs.disabledTablistObjective, from)) {
 				TabObjective.playerJoin(this);
 			}
 		}
 		if (BelowName.enable) {
-			if (disabledBelowname && !Configs.disabledBelowname.contains(from)) {
+			if (disabledBelowname && !isDisabledWorld(Configs.disabledBelowname, from)) {
 				BelowName.unload(this);
 			}
-			if (!disabledBelowname && Configs.disabledBelowname.contains(from)) {
+			if (!disabledBelowname && isDisabledWorld(Configs.disabledBelowname, from)) {
 				BelowName.playerJoin(this);
 			}
 		}

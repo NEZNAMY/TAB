@@ -22,12 +22,12 @@ public class Configs {
 	public static HashMap<String, String> sortedGroups;
 	public static Map<String, Object> rankAliases;
 	public static boolean doNotMoveSpectators;
-	public static List<Object> disabledHeaderFooter;
-	public static List<Object> disabledTablistNames;
-	public static List<Object> disabledNametag;
-	public static List<Object> disabledTablistObjective;
-	public static List<Object> disabledBossbar;
-	public static List<Object> disabledBelowname;
+	public static List<String> disabledHeaderFooter;
+	public static List<String> disabledTablistNames;
+	public static List<String> disabledNametag;
+	public static List<String> disabledTablistObjective;
+	public static List<String> disabledBossbar;
+	public static List<String> disabledBelowname;
 	public static SimpleDateFormat dateFormat;
 	public static SimpleDateFormat timeFormat;
 	public static double timeOffset;
@@ -174,12 +174,12 @@ public class Configs {
 			config.set("rank-aliases", rankAliases = map);
 			config.save();
 		}
-		disabledHeaderFooter = config.getList("disable-features-in-"+Shared.separatorType+"s.header-footer", Arrays.asList("disabled" + Shared.separatorType));
-		disabledTablistNames = config.getList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Arrays.asList("disabled" + Shared.separatorType));
-		disabledNametag = config.getList("disable-features-in-"+Shared.separatorType+"s.nametag", Arrays.asList("disabled" + Shared.separatorType));
-		disabledTablistObjective = config.getList("disable-features-in-"+Shared.separatorType+"s.tablist-objective", Arrays.asList("disabled" + Shared.separatorType));
-		disabledBossbar = config.getList("disable-features-in-"+Shared.separatorType+"s.bossbar", Arrays.asList("disabled" + Shared.separatorType));
-		disabledBelowname = config.getList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
+		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.separatorType+"s.header-footer", Arrays.asList("disabled" + Shared.separatorType));
+		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Arrays.asList("disabled" + Shared.separatorType));
+		disabledNametag = config.getStringList("disable-features-in-"+Shared.separatorType+"s.nametag", Arrays.asList("disabled" + Shared.separatorType));
+		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-objective", Arrays.asList("disabled" + Shared.separatorType));
+		disabledBossbar = config.getStringList("disable-features-in-"+Shared.separatorType+"s.bossbar", Arrays.asList("disabled" + Shared.separatorType));
+		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml", animationComments);
