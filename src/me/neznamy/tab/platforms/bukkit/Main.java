@@ -31,7 +31,7 @@ import net.milkbowl.vault.economy.Economy;
 public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public static Main instance;
-	private static final boolean UNSAFE_BUILD = true;
+	private static final boolean UNSAFE_BUILD = false;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
