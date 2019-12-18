@@ -2,8 +2,7 @@ package me.neznamy.tab.shared;
 
 public enum ProtocolVersion {
 
-	FUTURE		(999, "Future",		15,	16, 13, 0x4C),
-	BUNGEE		(999, "Bungee",		15),
+	FUTURE		(999, "Future",		15,	17, 14, 0x4C),
 	v1_15_1		(575, "1.15.1",		15, 17, 14, 0x4C),
 	v1_15		(573, "1.15",		15, 17, 14, 0x4C),
 	v1_14_4		(498, "1.14.4",		14, 16, 13, 0x4B),
@@ -58,6 +57,7 @@ public enum ProtocolVersion {
 	v1_1		(23,  "1.1",		1),
 	v1_0_1		(22,  "1.0.1",		0),
 	v1_0_0		(22,  "1.0.0",		0),
+	BUNGEE		(999, "Bungee",		15),
 	UNKNOWN		(-1,  "Unknown",   -1);
 	
 	public static ProtocolVersion SERVER_VERSION;
@@ -120,7 +120,7 @@ public enum ProtocolVersion {
 		for (ProtocolVersion v : values()) {
 			if (number == v.getNetworkId()) return v;
 		}
-		if (number > v1_15.getNetworkId()) {
+		if (number > v1_15_1.getNetworkId()) {
 			return FUTURE;
 		}
 		return UNKNOWN;
