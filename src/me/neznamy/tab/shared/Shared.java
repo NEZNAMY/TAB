@@ -33,7 +33,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.1-pre1";
+	public static final String pluginVersion = "2.6.1";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';

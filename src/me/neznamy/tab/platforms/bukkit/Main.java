@@ -31,6 +31,7 @@ import net.milkbowl.vault.economy.Economy;
 public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public static Main instance;
+	private static final boolean UNSAFE_BUILD = true;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -38,7 +39,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
-		if (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN && MethodAPI.getInstance() != null){
+		if (MethodAPI.getInstance() != null && (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN || UNSAFE_BUILD)){
+			if (ProtocolVersion.SERVER_VERSION == ProtocolVersion.UNKNOWN) {
+				Shared.print('6', "Your server version was not tested with this version of plugin! Be careful.");
+			}
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
