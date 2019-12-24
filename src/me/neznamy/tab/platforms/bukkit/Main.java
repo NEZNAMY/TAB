@@ -389,6 +389,17 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return new String[] {Configs.yesAfk, Configs.noAfk};
 				}
 			});
+		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%", 1000) {
+
+				public String get(ITabPlayer p) {
+					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
+				}
+				@Override
+				public String[] getChilds(){
+					return new String[] {Configs.yesAfk, Configs.noAfk};
+				}
+			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%afk%", 1000) {
 

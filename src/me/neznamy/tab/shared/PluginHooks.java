@@ -49,9 +49,19 @@ public class PluginHooks {
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
 		return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
 	}
+	//paid plugin and i do not want to leak the jar when providing all dependencies
+	public static boolean AntiAFKPlus_isAFK(ITabPlayer p) {
+		try {
+			Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
+			return (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, ((TabPlayer)p).player);
+		} catch (Throwable t) {
+			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AntiAFKPlus", t);
+		}
+	}
+	//map is private
 	public static boolean AutoAFK_isAFK(ITabPlayer p) {
 		try {
-			me.prunt.autoafk.Main plugin = (me.prunt.autoafk.Main) Bukkit.getPluginManager().getPlugin("AutoAFK");
+			Object plugin = Bukkit.getPluginManager().getPlugin("AutoAFK");
 			Field f = plugin.getClass().getDeclaredField("afkList");
 			f.setAccessible(true);
 			HashMap map = (HashMap) f.get(plugin);
@@ -202,7 +212,7 @@ public class PluginHooks {
 		try {
 			return ProtocolSupportAPI.getProtocolVersion(((TabPlayer)p).player).getId();
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occurred when getting protocol version of " + p.getName() + " using ProtocolSupport", e);
+			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
 	}
 	public static String Vault_getPermissionPlugin() {
@@ -212,7 +222,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error(new String[] {"null"}, "An error occurred when getting permission groups of " + p.getName() + " using Vault", e);
+			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
@@ -222,7 +232,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error("null", "An error occurred when getting permission group of " + p.getName() + " using Vault", e);
+			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static void Vault_loadProviders() {
@@ -237,7 +247,7 @@ public class PluginHooks {
 		try {
 			return Via.getAPI().getPlayerVersion(p.getUniqueId());
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "An error occurred when getting protocol version of " + p.getName() + " using ViaVersion", e);
+			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion", e);
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
