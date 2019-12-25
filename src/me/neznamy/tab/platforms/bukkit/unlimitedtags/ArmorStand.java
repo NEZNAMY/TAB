@@ -108,6 +108,8 @@ public class ArmorStand{
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
 				if (all == owner) continue; //should never be anyway
+				String displayName = property.get();
+				if (property.hasRelationalPlaceholders()) displayName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
 				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 					//sneaking feature was removed in 1.14, so despawning completely now
 					if (sneaking) {
@@ -115,7 +117,7 @@ public class ArmorStand{
 					} else {
 						all.sendCustomPacket(getSpawnPacket(all, false));
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(property.get(), all).toNMS(), true));
+							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
 						}
 					}
 				} else {
@@ -123,7 +125,7 @@ public class ArmorStand{
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					all.sendCustomPacket(getSpawnPacket(all, false));
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(property.get(), all).toNMS(), true));
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
 					}
 				}
 			}
