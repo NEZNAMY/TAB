@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -257,7 +255,7 @@ public class ConfigurationFile{
 			}
 			file.delete();
 			file.createNewFile();
-			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
+			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
 			for (String line : commented) {
 				buf.write(line + System.getProperty("line.separator"));
 			}
@@ -269,7 +267,7 @@ public class ConfigurationFile{
 	private List<String> readFile(File file) {
 		List<String> list = new ArrayList<String>();
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 			while (true) {
 				String line = br.readLine();
 				if (line == null) {
