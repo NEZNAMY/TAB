@@ -131,7 +131,7 @@ public class TabCommand{
 				if (sender != null) {
 					String replaced = Placeholders.replaceAllPlaceholders(args[1], sender);
 					sendMessage(sender, "&6Attempting to parse string &e" + args[1] + "&6 for player &e" + sender.getName());
-					sendMessage(sender, "&6Result: &r" + replaced + " &r(" + replaced.replace("&", "&") + ")");
+					sendMessage(sender, "&6Result: &r" + replaced + " &r(" + replaced.replace(Shared.COLOR, '&') + ")");
 				}
 			}
 		} else if (args.length == 1){
