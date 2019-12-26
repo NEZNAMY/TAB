@@ -323,6 +323,10 @@ public class TabCommand{
 					sendMessage(sender, "&9tabsuffix: &b" + analyzed.properties.get("tabsuffix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tabsuffix").isStatic() + ")");
 					sendMessage(sender, "&9tabname: &b" + analyzed.properties.get("customtabname").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("customtabname").isStatic() + ")");
 				}
+			} else {
+				sendMessage(sender, "&9tabprefix: &cDisabled");
+				sendMessage(sender, "&9tabsuffix: &cDisabled");
+				sendMessage(sender, "&9tabname: &cDisabled");
 			}
 			if (NameTag16.enable || Configs.unlimitedTags) {
 				if (analyzed.disabledNametag) {
@@ -332,6 +336,9 @@ public class TabCommand{
 					sendMessage(sender, "&9tagprefix: &b" + analyzed.properties.get("tagprefix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tagprefix").isStatic() + ")");
 					sendMessage(sender, "&9tagsuffix: &b" + analyzed.properties.get("tagsuffix").getCurrentRawValue() + " &7(static=" + analyzed.properties.get("tagsuffix").isStatic() + ")");
 				}
+			} else {
+				sendMessage(sender, "&9tagprefix: &cDisabled");
+				sendMessage(sender, "&9tagsuffix: &cDisabled");
 			}
 			if (Configs.unlimitedTags) {
 				if (analyzed.disabledNametag) {
