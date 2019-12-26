@@ -78,10 +78,9 @@ public class ArmorStand{
 		}
 		updateLocation();
 		visible = getVisibility();
-		String name = property.get();
-		if (property.hasRelationalPlaceholders()) name = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, name);
+		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, property.get()) : property.get();
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(name, to));
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(displayName, to));
 	}
 	public Object getNMSTeleportPacket(ITabPlayer to) {
 		updateLocation();
@@ -108,8 +107,7 @@ public class ArmorStand{
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
 				if (all == owner) continue; //should never be anyway
-				String displayName = property.get();
-				if (property.hasRelationalPlaceholders()) displayName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
+				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, property.get()) : property.get();
 				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 					//sneaking feature was removed in 1.14, so despawning completely now
 					if (sneaking) {
@@ -146,21 +144,21 @@ public class ArmorStand{
 	}
 	private void updateMetadata() {
 		synchronized (registeredTo) {
-			String name = property.get();
+			String displayName = property.get();
 			if (property.hasRelationalPlaceholders()) {
 				for (ITabPlayer all : registeredTo) {
-					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, name);
+					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
 				}
 				if (owner.previewingNametag) {
-					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, name);
+					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, displayName);
 					owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
 				}
 			} else {
 				for (ITabPlayer all : registeredTo) {
-					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, all).toNMS(), true));
+					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, all).toNMS(), true));
 				}
-				if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(name, owner).toNMS(), true));
+				if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, owner).toNMS(), true));
 			}
 		}
 	}

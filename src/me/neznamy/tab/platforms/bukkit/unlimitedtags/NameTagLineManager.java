@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.unlimitedtags;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 public class NameTagLineManager {
@@ -32,7 +33,8 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
 			packetReceiver.sendCustomPacket(as.getSpawnPacket(packetReceiver, addToRegistered));
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-				packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(as.property.get(), packetReceiver).toNMS(), true));
+				String displayName = as.property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(armorStandOwner, packetReceiver, as.property.get()) : as.property.get();
+				packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(displayName, packetReceiver).toNMS(), true));
 			}
 		}
 	}
