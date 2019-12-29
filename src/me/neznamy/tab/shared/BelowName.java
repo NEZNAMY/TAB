@@ -11,20 +11,21 @@ public class BelowName{
 	public static String text;
 	private static Property textProperty;
 	private static final String objectivename = "BelowName";
+	private static final int DisplaySlot = 2;
 
 	public static void load() {
 		if (!enable) return;
 		textProperty = new Property(null, text);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;
-			PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), 2, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
 		Shared.scheduleRepeatingTask(refresh, "refreshing belowname", Feature.BELOWNAME, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledBelowname) continue;
 					if (p.properties.get("belowname-number").isUpdateNeeded()) {
-						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), "BelowName", getNumber(p));
+						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getNumber(p));
 					}
 				}
 				if (textProperty.isUpdateNeeded()) {
@@ -37,7 +38,7 @@ public class BelowName{
 	}
 	public static void playerJoin(ITabPlayer p) {
 		if (!enable || p.disabledBelowname) return;
-		PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), 2, EnumScoreboardHealthDisplay.INTEGER);
+		PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (ITabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getNumber(p));
 			PacketAPI.setScoreboardScore(p, all.getName(), objectivename, getNumber(all));
@@ -54,6 +55,6 @@ public class BelowName{
 		if (enable) PacketAPI.unregisterScoreboardObjective(p, objectivename, textProperty.get(), EnumScoreboardHealthDisplay.INTEGER);
 	}
 	public static int getNumber(ITabPlayer p) {
-		return Shared.parseInteger(p.properties.get("belowname-number").get(), 0, "belowname");
+		return Shared.parseInteger(p.properties.get("belowname-number").get(), 0, objectivename);
 	}
 }
