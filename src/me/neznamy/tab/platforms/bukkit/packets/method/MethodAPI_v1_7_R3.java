@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import net.minecraft.server.v1_7_R3.*;
-import net.minecraft.server.v1_7_R4.NetworkManager;
 import net.minecraft.util.io.netty.channel.Channel;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

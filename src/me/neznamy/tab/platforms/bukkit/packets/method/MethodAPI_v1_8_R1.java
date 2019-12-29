@@ -14,7 +14,6 @@ import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import net.minecraft.server.v1_7_R4.NetworkManager;
 import net.minecraft.server.v1_8_R1.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
