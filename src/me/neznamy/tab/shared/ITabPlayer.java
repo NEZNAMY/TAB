@@ -309,39 +309,26 @@ public abstract class ITabPlayer {
 	}
 
 	private void updateRawHeaderAndFooter() {
+		updateRawValue("header");
+		updateRawValue("footer");
+	}
+	
+	private void updateRawValue(String name) {
 		String worldGroup = getWorldGroupOf(getWorldName());
-		StringBuilder rawHeader = new StringBuilder();
-		StringBuilder rawFooter = new StringBuilder();
-		List<Object> h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + ".header");
-		if (h == null) h = Configs.config.getList("Users." + getName() + ".header");
-		if (h == null)
-			h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".header");
-		if (h == null)
-			h = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".header");
-		if (h == null) h = Configs.config.getList("Groups." + permissionGroup + ".header");
-		if (h == null) h = Configs.config.getList("header");
-		if (h == null) h = new ArrayList<Object>();
-		List<Object> f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + ".footer");
-		if (f == null) f = Configs.config.getList("Users." + getName() + ".footer");
-		if (f == null)
-			f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + ".footer");
-		if (f == null)
-			f = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".footer");
-		if (f == null) f = Configs.config.getList("Groups." + permissionGroup + ".footer");
-		if (f == null) f = Configs.config.getList("footer");
-		if (f == null) f = new ArrayList<Object>();
+		StringBuilder rawValue = new StringBuilder();
+		List<Object> lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getList("Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + name);
+		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
+		if (lines == null) lines = Configs.config.getList("Groups." + permissionGroup + "." + name);
+		if (lines == null) lines = Configs.config.getList(name);
+		if (lines == null) lines = new ArrayList<Object>();
 		int i = 0;
-		for (Object headerLine : h) {
-			if (++i > 1) rawHeader.append("\n" + Shared.COLOR + "r");
-			rawHeader.append(headerLine);
+		for (Object line : lines) {
+			if (++i > 1) rawValue.append("\n" + Shared.COLOR + "r");
+			rawValue.append(line);
 		}
-		i = 0;
-		for (Object footerLine : f) {
-			if (++i > 1) rawFooter.append("\n" + Shared.COLOR + "r");
-			rawFooter.append(footerLine);
-		}
-		setProperty("header", rawHeader.toString());
-		setProperty("footer", rawFooter.toString());
+		setProperty(name, rawValue.toString());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -351,7 +338,7 @@ public abstract class ITabPlayer {
 		Map<String, Object> worlds = (Map<String, Object>) rawWorlds;
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split("-")) {
+			for (String localWorld : worldGroup.split(";")) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}
