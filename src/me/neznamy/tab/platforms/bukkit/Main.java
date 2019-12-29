@@ -526,9 +526,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Bukkit.getConsoleSender().sendMessage(message.replace('&', Shared.COLOR));
 	}
 	public String getPermissionPlugin() {
+		if (PluginHooks.luckPerms) return "LuckPerms";
 		if (PluginHooks.permissionsEx) return "PermissionsEx";
 		if (PluginHooks.groupManager != null) return "GroupManager";
-		if (PluginHooks.luckPerms) return "LuckPerms";
 		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}
