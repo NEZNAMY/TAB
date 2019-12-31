@@ -33,7 +33,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.2-pre6";
+	public static final String pluginVersion = "2.6.2";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';
@@ -323,12 +323,13 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%", 2000) {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%", 1000) {
 			public String get(ITabPlayer p) {
+				if (Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%", 2000) {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%", 1000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : getPlayers()){

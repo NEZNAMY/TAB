@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungee;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -35,6 +36,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
+		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
 				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
@@ -107,6 +109,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		}
 		Shared.data.remove(e.getPlayer().getUniqueId());
+		//after removing data so reader considers the player offline and does not cancel removal
+		GlobalPlayerlist.onQuit(disconnectedPlayer);
 	}
 	@EventHandler
 	public void a(ServerSwitchEvent e){
@@ -124,12 +128,18 @@ public class Main extends Plugin implements Listener, MainClass{
 				ScoreboardManager.register(p);
 				NameTag16.playerJoin(p);
 				BelowName.playerJoin(p);
+				GlobalPlayerlist.onJoin(p);
 			} else {
 				String from = p.getWorldName();
 				String to = p.world = e.getPlayer().getServer().getInfo().getName();
 				p.onWorldChange(from, to);
+/*				for (ITabPlayer all : Shared.getPlayers()) {
+					all.unregisterTeam(p);
+					all.registerTeam(p);
+					p.unregisterTeam(all);
+					p.registerTeam(all);
+				}*/
 			}
-
 		} catch (Throwable ex){
 			Shared.error(null, "An error occurred when player joined/changed server", ex);
 		}
@@ -166,7 +176,10 @@ public class Main extends Plugin implements Listener, MainClass{
 						packet = p.toBungee(null);
 					}
 					if (packet instanceof Team && NameTag16.enable) {
-						if (killPacket((Team)packet)) return;
+						Team team = (Team) packet;
+						if (killPacket(team)) {
+							return;
+						}
 					}
 					if (packet instanceof ByteBuf && NameTag16.enable) {
 						ByteBuf buf = ((ByteBuf) packet).duplicate();
@@ -176,7 +189,11 @@ public class Main extends Plugin implements Listener, MainClass{
 							team = new Team();
 							team.read(buf, null, player.getVersion().getNetworkId());
 						}
-						if (team != null && killPacket(team)) return;
+						if (team != null) {
+							if (killPacket(team)) {
+								return;
+							}
+						}
 					}
 				} catch (Throwable e){
 					Shared.error(null, "An error occurred when analyzing packets", e);
@@ -203,7 +220,15 @@ public class Main extends Plugin implements Listener, MainClass{
 		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
 		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
 		Placeholders.constants = new ArrayList<Constant>();
+		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 		Shared.registerUniversalPlaceholders();
+		if (PluginHooks.premiumVanish) {
+			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%vanish-fake-online%", 1000) {
+				public String get() {
+					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
+				}
+			});
+		}
 		Placeholders.constants.add(new Constant("%maxplayers%") {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
@@ -252,5 +277,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
+		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
+		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
+		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 }

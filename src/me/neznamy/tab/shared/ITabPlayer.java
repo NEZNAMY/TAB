@@ -94,6 +94,8 @@ public abstract class ITabPlayer {
 
 	public abstract void sendMessage(String message);
 
+	public abstract Object getSkin();
+	
 	public boolean getTeamPush() {
 		return Configs.collision;
 	}
@@ -449,7 +451,7 @@ public abstract class ITabPlayer {
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
 
-	private void unregisterTeam(ITabPlayer to) {
+	public void unregisterTeam(ITabPlayer to) {
 		if (disabledNametag) return;
 		PacketAPI.unregisterScoreboardTeam(to, teamName);
 	}

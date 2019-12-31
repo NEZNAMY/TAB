@@ -16,6 +16,7 @@ import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.entity.MPlayer;
 
 import ch.soolz.xantiafk.xAntiAFKAPI;
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.clip.deluxetags.DeluxeTag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
@@ -45,6 +46,8 @@ public class PluginHooks {
 	public static Object Vault_economy;
 	public static Object Vault_permission;
 	public static Object Vault_chat;
+	
+	public static boolean premiumVanish;
 
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
 		return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
@@ -207,6 +210,12 @@ public class PluginHooks {
 			}
 		}
 		return s;
+	}
+	public static int PremiumVanish_getVisiblePlayerCount() {
+		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
+	}
+	public static boolean PremiumVanish_isInvisible(ITabPlayer p) {
+		return BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player);
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
 		try {

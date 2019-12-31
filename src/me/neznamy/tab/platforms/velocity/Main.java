@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.velocity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -38,7 +39,7 @@ import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.6.1", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.6.2", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -122,6 +123,8 @@ public class Main implements MainClass{
 			}
 		}
 		Shared.data.remove(e.getPlayer().getUniqueId());
+		//after removing data so reader considers the player offline and does not cancel removal
+		GlobalPlayerlist.onQuit(disconnectedPlayer);
 	}
 	@Subscribe
 	public void a(ServerConnectedEvent e){
@@ -135,6 +138,7 @@ public class Main implements MainClass{
 				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				BossBar.playerJoin(p);
+				GlobalPlayerlist.onJoin(p);
 				ITabPlayer pl = p;
 				//sending custom packets with a delay, it would not work otherwise
 				Executors.newCachedThreadPool().submit(new Runnable() {
@@ -149,7 +153,7 @@ public class Main implements MainClass{
 				});
 			} else {
 				String from = p.getWorldName();
-				String to = p.world = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
+				String to = p.world = e.getServer().getServerInfo().getName();
 				p.onWorldChange(from, to);
 			}
 		} catch (Throwable ex){
@@ -334,5 +338,8 @@ public class Main implements MainClass{
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
+		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
+		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
+		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 }

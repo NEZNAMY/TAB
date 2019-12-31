@@ -38,6 +38,7 @@ public class Configs {
 	public static String yesTag;
 	public static String noAfk;
 	public static String yesAfk;
+	public static Map<String, Object> serverAliases;
 	public static double SECRET_NTX_space;
 	public static int SECRET_relational_placeholders_refresh;
 	public static boolean SECRET_invisible_nametags;
@@ -45,6 +46,7 @@ public class Configs {
 	public static boolean SECRET_remove_ghost_players;
 	public static boolean SECRET_log_errors_into_console;
 	public static boolean SECRET_armorstands_always_visible;
+	public static boolean SECRET_debugMode;
 
 
 	public static ConfigurationFile animation;
@@ -132,6 +134,7 @@ public class Configs {
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
 		SECRET_log_errors_into_console = getSecretOption("log-errors-into-console", false);
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
+		SECRET_debugMode = getSecretOption("debug", false);
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();

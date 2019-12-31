@@ -157,4 +157,8 @@ public class TabPlayer extends ITabPlayer{
 		if (PluginHooks.idisguise != null && PluginHooks.iDisguise_isDisguised(this)) return false; 
 		return Configs.collision;
 	}
+	@Override
+	public Object getSkin() {
+		return null;
+	}
 }

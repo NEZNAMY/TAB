@@ -43,4 +43,8 @@ public class TabPlayer extends ITabPlayer{
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(message.replace('&', Shared.COLOR)));
 	}
+	@Override
+	public Object getSkin() {
+		return player.getGameProfile().getProperties();
+	}
 }

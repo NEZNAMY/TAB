@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.*;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 
@@ -47,4 +48,18 @@ public class TabPlayer extends ITabPlayer{
 		player.sendMessage(message.replace('&', Shared.COLOR));
 	}
 	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
+
+	@Override
+	public Object getSkin() {
+		LoginResult loginResult = ((InitialHandler)player.getPendingConnection()).getLoginProfile();
+		if (loginResult == null) return new String[0][0];
+		String[][] s = new String[loginResult.getProperties().length][3];
+		for (int i = 0;i<loginResult.getProperties().length;i++){
+			LoginResult.Property pr = loginResult.getProperties()[i];
+			s[i][0] = pr.getName();
+			s[i][1] = pr.getValue();
+			s[i][2] = pr.getSignature();
+		}
+		return s;
+	}
 }

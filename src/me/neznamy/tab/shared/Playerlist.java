@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -43,8 +44,14 @@ public class Playerlist {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		for (PlayerInfoData playerInfoData : packet.players) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+			if (packet.action == EnumPlayerInfoAction.REMOVE_PLAYER && GlobalPlayerlist.enabled) {
+				if (packetPlayer != null) { //player online
+					//changing to random non-existing player, the easiest way to cancel the removal
+					playerInfoData.uniqueId = UUID.randomUUID();
+				}
+			}
 			if (packet.action == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && playerInfoData.uniqueId != receiver.getUniqueId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
+				if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && playerInfoData.uniqueId != receiver.getTablistId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
 			}
 			if (packet.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer != null && !packetPlayer.disabledTablistNames) playerInfoData.listName = packetPlayer.getTabFormat(receiver);
