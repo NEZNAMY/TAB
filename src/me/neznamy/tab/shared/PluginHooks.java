@@ -212,9 +212,11 @@ public class PluginHooks {
 		return s;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
+		if (!premiumVanish) return Shared.getPlayers().size();
 		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
 	}
 	public static boolean PremiumVanish_isInvisible(ITabPlayer p) {
+		if (!premiumVanish) return false;
 		return BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player);
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
