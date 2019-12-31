@@ -1,3 +1,5 @@
+global-playerlist: false
+
 change-nametag-prefix-suffix: true
 change-tablist-prefix-suffix: true
 enable-header-footer: true
@@ -118,6 +120,12 @@ placeholders:
   #if time doesn't show correctly, you can change the time it shows
   #setting to -1 will make it show 1 hours less than it does currently, 1 makes it show one hour more than currently, 0 does nothing
   time-offset: 0
+  
+#better output of %server%
+server-aliases:
+  hub: "&eHub"
+  survival: "&bSurvival"
+  plot: "&cPlot"
   
 #better showing of %rank% value
 rank-aliases:
