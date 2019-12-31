@@ -18,6 +18,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.kyori.text.Component;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -55,6 +56,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public static EnumPlayerInfoAction fromNMS(Object nms) {
 			return EnumPlayerInfoAction.valueOf(nms.toString());
 		}
+		public static EnumPlayerInfoAction fromBungee(Object bungee) {
+			return EnumPlayerInfoAction.valueOf(bungee.toString().replace("GAMEMODE", "GAME_MODE"));
+		}
 		public static EnumPlayerInfoAction fromId(int id) {
 			for (EnumPlayerInfoAction action : values()) {
 				if (action.networkId == id) return action;
@@ -63,6 +67,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
+		}
+		public Object toBungee() {
+			return PlayerListItem.Action.valueOf(toString().replace("GAME_MODE", "GAMEMODE"));
 		}
 		public int getNetworkId() {
 			return networkId;
@@ -109,27 +116,31 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public String listName;
 		public String name;
 		public UUID uniqueId;
-		public Object properties; //platform-specific skin data
+		public Object skin; //platform-specific skin data
 
-		public PlayerInfoData(String name, UUID uniqueId, Object properties, int ping, EnumGamemode gamemode, String listName) {
+		public PlayerInfoData(String name, UUID uniqueId) {
+			this.name = name;
+			this.uniqueId = uniqueId;
+		}
+		public PlayerInfoData(String name, UUID uniqueId, Object skin, int ping, EnumGamemode gamemode, String listName) {
 			this.ping = ping;
 			this.gamemode = gamemode;
 			this.listName = listName;
 			this.name = name;
 			this.uniqueId = uniqueId;
-			this.properties = properties;
+			this.skin = skin;
 		}
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
-			if (properties != null) profile.getProperties().putAll((Multimap<String, Property>) properties);
+			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
 			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(listName).toString()));
 		}
 		public Object toBungee() {
 			Item item = new Item();
 			item.setDisplayName(new IChatBaseComponent(listName).toString());
-			item.setGamemode(gamemode.getNetworkId());
+			if (gamemode != null) item.setGamemode(gamemode.getNetworkId());
 			item.setPing(ping);
-			item.setProperties((String[][]) properties);
+			item.setProperties((String[][]) skin);
 			item.setUsername(name);
 			item.setUuid(uniqueId);
 			return item;
@@ -137,9 +148,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toVelocity() {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
 			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromText(listName));
-			item.setGameMode(gamemode.getNetworkId());
+			if (gamemode != null) item.setGameMode(gamemode.getNetworkId());
 			item.setLatency(ping);
-			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) properties);
+			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
 			item.setName(name);
 			return item;
 		}
@@ -178,7 +189,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		PlayerListItem packet = new PlayerListItem();
-		packet.setAction(PlayerListItem.Action.valueOf(action.toString()));
+		packet.setAction((Action) action.toBungee());
 		Item[] items = new Item[players.length];
 		for (int i=0; i<players.length; i++) {
 			items[i] = (Item) players[i].toBungee();
@@ -204,7 +215,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	}
 	public static PacketPlayOutPlayerInfo fromBungee(Object bungeePacket){
 		PlayerListItem item = (PlayerListItem) bungeePacket;
-		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString());
+		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromBungee(item.getAction().toString());
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Item i : item.getItems()) {
 			listData.add(PlayerInfoData.fromBungee(i));
