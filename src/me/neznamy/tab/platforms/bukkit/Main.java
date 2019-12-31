@@ -84,6 +84,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-total) + "ms");
 		} else {
+			Shared.disabled = true;
 			sendConsoleMessage("&c[TAB] Your server version is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
