@@ -230,15 +230,15 @@ public class Configs {
 				toRemove.add(bar);
 			}
 		}
+		BossBar.defaultBars.removeAll(toRemove);
 		BossBar.remember_toggle_choice = bossbar.getBoolean("remember-toggle-choice", false);
 		if (BossBar.remember_toggle_choice) {
 			File file = new File("plugins" + System.getProperty("file.separator") + "TAB" + System.getProperty("file.separator") + "playerdata.yml");
 			if (!file.exists()) file.createNewFile();
 			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>());
 			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");
-			if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
-		} else BossBar.bossbar_off_players = new ArrayList<String>();
-		BossBar.defaultBars.removeAll(toRemove);
+		}
+		if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());

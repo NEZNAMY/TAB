@@ -21,7 +21,7 @@ public class BossBar{
 	public static String toggleCommand;
 	public static List<String> announcements = new ArrayList<String>();
 	public static boolean remember_toggle_choice;
-	public static List<String> bossbar_off_players;
+	public static List<String> bossbar_off_players = new ArrayList<String>();
 	
 	public static void load() {
 		if (!enabled) return;
