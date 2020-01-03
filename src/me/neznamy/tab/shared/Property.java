@@ -127,7 +127,8 @@ public class Property {
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
-				if (!placeholdersTotal.contains(placeholder)) placeholdersTotal.add(placeholder);
+//				if (!placeholdersTotal.contains(placeholder)) 
+					placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
 					for (Placeholder p : detectPlaceholders(child, playerPlaceholders)) {
 						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
