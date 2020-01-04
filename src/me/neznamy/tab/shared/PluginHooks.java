@@ -49,6 +49,12 @@ public class PluginHooks {
 	
 	public static boolean premiumVanish;
 
+	public static boolean _isVanished(ITabPlayer p) {
+		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
+			if (premiumVanish && BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player)) return true;
+		}
+		return false;
+	}
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
 		return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
 	}
@@ -212,12 +218,7 @@ public class PluginHooks {
 		return s;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
-		if (!premiumVanish) return Shared.getPlayers().size();
 		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
-	}
-	public static boolean PremiumVanish_isInvisible(ITabPlayer p) {
-		if (!premiumVanish) return false;
-		return BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player);
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
 		try {

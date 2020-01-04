@@ -13,6 +13,7 @@ public class PremiumVanishListener implements Listener {
 
 	@EventHandler
 	public void a(BungeePlayerHideEvent e) {
+		if (!GlobalPlayerlist.enabled) return;
 		GlobalPlayerlist.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
 	}
 	@EventHandler

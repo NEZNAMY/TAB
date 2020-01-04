@@ -46,8 +46,10 @@ public class Playerlist {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packet.action == EnumPlayerInfoAction.REMOVE_PLAYER && GlobalPlayerlist.enabled) {
 				if (packetPlayer != null) { //player online
-					//changing to random non-existing player, the easiest way to cancel the removal
-					playerInfoData.uniqueId = UUID.randomUUID();
+					if (!PluginHooks._isVanished(packetPlayer)) {
+						//changing to random non-existing player, the easiest way to cancel the removal
+						playerInfoData.uniqueId = UUID.randomUUID();
+					}
 				}
 			}
 			if (packet.action == EnumPlayerInfoAction.UPDATE_GAME_MODE || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {

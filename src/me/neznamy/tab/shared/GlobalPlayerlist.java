@@ -15,8 +15,8 @@ public class GlobalPlayerlist {
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue;
 			if (all.getWorldName().equals(p.getWorldName())) continue;
-			if (!PluginHooks.premiumVanish || !PluginHooks.PremiumVanish_isInvisible(p)) all.sendCustomPacket(add); //not adding vanished players
-			if (!PluginHooks.premiumVanish || !PluginHooks.PremiumVanish_isInvisible(all)) p.sendCustomPacket(getAddPacket(all));
+			if (!PluginHooks._isVanished(p)) all.sendCustomPacket(add);
+			if (!PluginHooks._isVanished(all)) p.sendCustomPacket(getAddPacket(all));
 		}
 	}
 	public static void onQuit(ITabPlayer p) {
