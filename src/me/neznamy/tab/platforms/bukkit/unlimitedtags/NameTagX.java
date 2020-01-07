@@ -33,7 +33,7 @@ public class NameTagX implements Listener{
 	public static void unload() {
 		if (!enable) return;
 		for (ITabPlayer p : Shared.getPlayers()) {
-			p.unregisterTeam();
+			p.unregisterTeam(false);
 			NameTagLineManager.destroy(p);
 			if (p.previewingNametag) NameTagLineManager.destroy(p, p);
 		}
@@ -76,7 +76,7 @@ public class NameTagX implements Listener{
 		}
 	}
 	public static void playerQuit(ITabPlayer p) {
-		if (enable) p.unregisterTeam();
+		if (enable) p.unregisterTeam(false);
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {

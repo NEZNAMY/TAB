@@ -1,7 +1,11 @@
 package me.neznamy.tab.shared;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +37,8 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.3-pre3";
+	public static final String pluginVersion = "2.6.3-pre5";
+	public static final int currentVersionId = 262;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';
@@ -264,6 +269,28 @@ public class Shared {
 				return Shared.error(defaultValue, place + " only accepts one of the defined styles! (Attempted to use \"" + string + "\")");
 			}
 		}
+	}
+	public static void checkForUpdates() {
+		exe.submit(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					HttpURLConnection con = (HttpURLConnection) new URL("http://207.180.242.97/spigot/tab/latest.version").openConnection();
+					BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String versionId = br.readLine();
+					String versionString = br.readLine();
+					br.close();
+					int latestVersion = Integer.parseInt(versionId);
+					if (latestVersion != currentVersionId) {
+						Shared.print('b', "Version " + versionString + " is out! Your version: " + pluginVersion);
+						Shared.print('b', "Get the update at https://www.spigotmc.org/resources/57806/");
+					}
+				} catch (Exception e) {
+					Shared.print('c', "Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+				}
+			}
+		});
 	}
 	
 	public static void registerAnimationPlaceholders() {

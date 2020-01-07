@@ -94,6 +94,7 @@ public class Main implements MainClass{
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
+			Shared.checkForUpdates();
 			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {

@@ -31,7 +31,8 @@ public class Injector {
 	public static void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
 		if (!channel.pipeline().names().contains("packet_handler")) {
-			Shared.error(null, "Failed to inject " + Shared.getPlayer(uuid).getName() + ", packet_handler does not exist");
+			//waterfall bug
+//			Shared.error(null, "Failed to inject " + Shared.getPlayer(uuid).getName() + ", packet_handler does not exist");
 			return;
 		}
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);

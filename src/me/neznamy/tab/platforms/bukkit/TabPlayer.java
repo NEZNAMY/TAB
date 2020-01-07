@@ -20,6 +20,8 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 public class TabPlayer extends ITabPlayer{
 
@@ -160,5 +162,10 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public Object getSkin() {
 		return null;
+	}
+	@Override
+	public PlayerInfoData getInfoData() {
+		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
+		return new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
 	}
 }

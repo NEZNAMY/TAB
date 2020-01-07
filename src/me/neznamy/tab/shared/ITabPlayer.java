@@ -177,7 +177,7 @@ public abstract class ITabPlayer {
 
 	public void updatePlayerListName() {
 		isListNameUpdateNeeded(); //triggering updates to replaced values
-		Object packet = buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, infoData), null);
+		Object packet = buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, getInfoData()), null);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
@@ -197,7 +197,7 @@ public abstract class ITabPlayer {
 		if (teamName.equals(newName)) {
 			updateTeamData();
 		} else {
-			unregisterTeam();
+			unregisterTeam(false);
 			teamName = newName;
 			registerTeam();
 		}
@@ -340,7 +340,7 @@ public abstract class ITabPlayer {
 		Map<String, Object> worlds = (Map<String, Object>) rawWorlds;
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split(";")) {
+			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}
@@ -444,21 +444,19 @@ public abstract class ITabPlayer {
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
-		if (tagprefix.hasRelationalPlaceholders())
-			replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
-		if (tagsuffix.hasRelationalPlaceholders())
-			replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
+		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
+		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
 
-	public void unregisterTeam(ITabPlayer to) {
-		if (disabledNametag) return;
+	public void unregisterTeam(ITabPlayer to, boolean force) {
+		if (disabledNametag && !force) return;
 		PacketAPI.unregisterScoreboardTeam(to, teamName);
 	}
 
-	public void unregisterTeam() {
-		if (disabledNametag) return;
-		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p);
+	public void unregisterTeam(boolean force) {
+		if (disabledNametag && !force) return;
+		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p, force);
 	}
 
 	private void updateDisabledWorlds(String world) {
@@ -508,7 +506,7 @@ public abstract class ITabPlayer {
 		}
 		if (NameTag16.enable || Configs.unlimitedTags) {
 			if (disabledNametag && !isDisabledWorld(Configs.disabledNametag, from)) {
-				unregisterTeam();
+				unregisterTeam(true);
 			} else if (!disabledNametag && isDisabledWorld(Configs.disabledNametag, from)) {
 				registerTeam();
 			} else {
@@ -516,9 +514,9 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (Playerlist.enable) {
-			if (!(isDisabledWorld(Configs.disabledTablistNames, from) && isDisabledWorld(Configs.disabledTablistNames, to))) {
+//			if (!(isDisabledWorld(Configs.disabledTablistNames, from) && isDisabledWorld(Configs.disabledTablistNames, to))) {
 				if (!Configs.disabledTablistNames.contains("NORESET")) updatePlayerListName();
-			}
+//			}
 		}
 		if (TabObjective.type != TabObjectiveType.NONE) {
 			if (disabledTablistObjective && !isDisabledWorld(Configs.disabledTablistObjective, from)) {
@@ -587,8 +585,8 @@ public abstract class ITabPlayer {
 	}
 	public void forceUpdateDisplay() {
 		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName();
-		if ((NameTag16.enable || Configs.unlimitedTags) && !disabledNametag) {
-			unregisterTeam();
+		if ((NameTag16.enable || Configs.unlimitedTags)) {
+			unregisterTeam(false);
 			registerTeam();
 		}
 		if (Configs.unlimitedTags && !disabledNametag) restartArmorStands();

@@ -12,7 +12,7 @@ public class Property {
 	private ITabPlayer owner;
 	private String rawValue;
 	private String temporaryValue;
-	private String lastReplacedValue;
+	public String lastReplacedValue;
 
 	private List<Placeholder> tabPlaceholders = new ArrayList<Placeholder>();
 	private String[] placeholderapiPlaceholders;

@@ -217,7 +217,11 @@ public class ConfigurationFile{
 			}
 			map.put(keyWord, set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
 		} else {
-			map.put(path, value);
+			if (value == null) {
+				map.remove(path);
+			} else {
+				map.put(path, value);
+			}
 		}
 		return map;
 	}

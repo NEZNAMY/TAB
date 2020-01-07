@@ -37,7 +37,7 @@ public class PlaceholderAPIExpansion{
 
 				for (EnumProperty property : EnumProperty.values()) {
 					if (identifier.equals(property.toString())) {
-						return p.properties.get(property.toString()).get();
+						return p.properties.get(property.toString()).lastReplacedValue;
 					}
 					if (identifier.equals(property.toString() + "_raw")) {
 						return p.properties.get(property.toString()).getCurrentRawValue();

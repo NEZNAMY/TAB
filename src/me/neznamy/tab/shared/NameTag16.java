@@ -8,7 +8,7 @@ public class NameTag16 {
 	public static int refresh;
 	
 	public static void unload() {
-		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.unregisterTeam();
+		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.unregisterTeam(false);
 	}
 	public static void load() {
 		if (!enable) return;
@@ -34,6 +34,6 @@ public class NameTag16 {
 		}
 	}
 	public static void playerQuit(ITabPlayer p) {
-		if (enable) p.unregisterTeam();
+		if (enable) p.unregisterTeam(false);
 	}
 }

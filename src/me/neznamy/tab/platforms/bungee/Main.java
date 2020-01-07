@@ -49,6 +49,11 @@ public class Main extends Plugin implements Listener, MainClass{
 				return getPermissionPlugin();
 			}
 		}));
+		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {
+			public String call() {
+				return GlobalPlayerlist.enabled ? "Yes" : "No";
+			}
+		}));
 		if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
 	public void onDisable() {
@@ -80,6 +85,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.startCPUTask();
+			Shared.checkForUpdates();
 			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {

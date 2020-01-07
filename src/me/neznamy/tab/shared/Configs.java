@@ -47,6 +47,7 @@ public class Configs {
 	public static boolean SECRET_log_errors_into_console;
 	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
+	public static String SECRET_multiWorldSeparator;
 
 
 	public static ConfigurationFile animation;
@@ -135,6 +136,7 @@ public class Configs {
 		SECRET_log_errors_into_console = getSecretOption("log-errors-into-console", false);
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
+		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
