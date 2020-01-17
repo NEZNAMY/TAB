@@ -37,8 +37,8 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.3-pre5";
-	public static final int currentVersionId = 262;
+	public static final String pluginVersion = "2.6.3";
+	public static final int currentVersionId = 263;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';
@@ -106,7 +106,7 @@ public class Shared {
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			print('c', "An error occurred when generating error message");
+			print('c', "An error occurred when printing error message into file");
 			ex.printStackTrace();
 			print('c', "Original error: " + message);
 			if (t != null) t.printStackTrace();
@@ -287,7 +287,7 @@ public class Shared {
 						Shared.print('b', "Get the update at https://www.spigotmc.org/resources/57806/");
 					}
 				} catch (Exception e) {
-					Shared.print('c', "Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+//					Shared.print('c', "Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 				}
 			}
 		});
@@ -295,6 +295,7 @@ public class Shared {
 	
 	public static void registerAnimationPlaceholders() {
 		for (Animation a : Configs.animations) {
+			Placeholders.usedPAPIPlaceholders.remove("%animation:" + a.getName() + "%");
 			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
 				public String get() {
 					return a.getMessage();

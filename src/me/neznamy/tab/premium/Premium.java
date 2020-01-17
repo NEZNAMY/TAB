@@ -19,12 +19,12 @@ public class Premium {
 	public static Map<String, Double> staticLines = new HashMap<String, Double>();
 
 	public static boolean is() {
-		return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static void loadPremiumConfig() throws Exception {
-		premiumconfig = new ConfigurationFile("premiumconfig.yml", new HashMap<String, List<String>>());
+		premiumconfig = new ConfigurationFile("premiumconfig.yml", new HashMap<String, List<String>>(), true);
 		String type = premiumconfig.getString("sorting-type", "GROUPS");
 		try {
 			sortingType = SortingType.valueOf(type.toUpperCase());

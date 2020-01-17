@@ -186,7 +186,7 @@ public class TabCommand{
 					sendMessage(sender, "&8&l║ &7&lPLACEHOLDERS TOTAL: &a&l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
 					sendMessage(sender, "&8&l║ &7&lPLUGIN TOTAL: &e&l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
 					sendMessage(sender, "&8&l&m╚             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
-					sendMessage(sender, " ");	
+					sendMessage(sender, " ");
 				} else sendMessage(sender, Configs.no_perm);
 			} else help(sender);
 		} else help(sender);

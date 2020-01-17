@@ -480,7 +480,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				int cooldown = entry.getValue();
 				Placeholders.serverPlaceholders.add(new ServerPlaceholder(placeholder, cooldown, "PlaceholderAPI[" + entry.getKey() + " - " + cooldown + "]") {
 					public String get() {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(null, placeholder, new String[] {placeholder}, false);
+						return PluginHooks.PlaceholderAPI_setPlaceholders(null, placeholder);
 					}
 				});
 			}
@@ -492,7 +492,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				int cooldown = entry.getValue();
 				Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, cooldown, "PlaceholderAPI[" + entry.getKey() + " - " + cooldown + "]") {
 					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder, new String[] {placeholder}, false);
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
 					}
 				});
 			}
@@ -543,7 +543,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return packet.toNMS(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments, true);
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
 		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
@@ -583,7 +583,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments, true);
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
 		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));

@@ -17,7 +17,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	public abstract String get();
 	
 	@Override
-	public String getValue(ITabPlayer p) {
+	public synchronized String getValue(ITabPlayer p) {
 		long startTime = System.nanoTime();
 		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
 			lastRefresh = System.currentTimeMillis();

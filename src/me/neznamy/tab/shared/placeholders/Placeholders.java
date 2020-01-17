@@ -15,6 +15,7 @@ public class Placeholders {
 	public static List<PlayerPlaceholder> playerPlaceholders;
 	public static List<ServerPlaceholder> serverPlaceholders;
 	public static List<Constant> constants;
+	public static List<String> usedPAPIPlaceholders;
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 
 	static {
@@ -77,7 +78,7 @@ public class Placeholders {
 		for (Constant c : Placeholders.constants) {
 			if (string.contains(c.getIdentifier())) string = string.replace(c.getIdentifier(), c.get());
 		}
-		string = PluginHooks.PlaceholderAPI_setPlaceholders(p, string, new String[0], true);
+		string = PluginHooks.PlaceholderAPI_setPlaceholders(p, string);
 		for (String removed : Configs.removeStrings) {
 			string = string.replace(removed, "");
 		}

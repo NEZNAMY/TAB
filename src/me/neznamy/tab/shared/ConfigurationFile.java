@@ -21,6 +21,11 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import me.neznamy.tab.shared.placeholders.Constant;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+
 @SuppressWarnings("unchecked")
 public class ConfigurationFile{
 	
@@ -31,7 +36,7 @@ public class ConfigurationFile{
 	private HashMap<String, List<String>> comments;
 	private Map<String, Object> values;
 	
-	public ConfigurationFile(String source, String destination, HashMap<String, List<String>> comments) throws Exception{
+	public ConfigurationFile(String source, String destination, HashMap<String, List<String>> comments, boolean usesPAPI) throws Exception{
 		FileInputStream input = null;
 		try {
 			this.comments = comments;
@@ -46,6 +51,10 @@ public class ConfigurationFile{
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 			if (!hasComments()) fixComments();
+			if (usesPAPI) {
+				registerPAPIPlaceholders(values.toString());
+				registerPAPIPlaceholders("%" + values.toString());
+			}
 		} catch (Exception e) {
 			input.close();
 			Shared.startupWarn("File " + destination + " has broken formatting.");
@@ -60,8 +69,28 @@ public class ConfigurationFile{
 			throw e;
 		}
 	}
-	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments) throws Exception{
-		this(sourceAndDestination, sourceAndDestination, comments);
+	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments, boolean usesPAPI) throws Exception{
+		this(sourceAndDestination, sourceAndDestination, comments, usesPAPI);
+	}
+	private static void registerPAPIPlaceholders(String string) {
+		main:
+		for (String placeholder : Property.detectPlaceholderAPIPlaceholders(string)) {
+			if (!placeholder.contains("_")) continue;
+			if (!Placeholders.usedPAPIPlaceholders.contains(placeholder)) {
+				for (Placeholder p : Placeholders.getAll()) {
+					if (placeholder.equals(p.getIdentifier())) continue main;
+				}
+				for (Constant c : Placeholders.constants) {
+					if (placeholder.equals(c.getIdentifier())) continue main;
+				}
+				Placeholders.usedPAPIPlaceholders.add(placeholder);
+				Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, 50){
+					public String get(ITabPlayer p) {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
+					}
+				});
+			}
+		}
 	}
 	private String suggestFix(Exception e) {
 		try {

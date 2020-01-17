@@ -328,7 +328,7 @@ public class Main implements MainClass{
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments, true);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);

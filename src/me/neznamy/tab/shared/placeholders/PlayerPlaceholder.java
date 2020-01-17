@@ -20,7 +20,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 	public abstract String get(ITabPlayer p);
 	
 	@Override
-	public String getValue(ITabPlayer p) {
+	public synchronized String getValue(ITabPlayer p) {
 		long startTime = System.nanoTime();
 		if (!lastRefresh.containsKey(p.getName()) || System.currentTimeMillis() - lastRefresh.get(p.getName()) >= cooldown) {
 			lastRefresh.put(p.getName(), System.currentTimeMillis());

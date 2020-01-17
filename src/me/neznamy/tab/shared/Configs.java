@@ -11,6 +11,7 @@ import java.util.Map;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
 
@@ -127,6 +128,7 @@ public class Configs {
 				errorFile.delete();
 			}
 		}
+		Placeholders.usedPAPIPlaceholders = new ArrayList<String>();
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
@@ -189,7 +191,7 @@ public class Configs {
 		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
 	}
 	public static void loadAnimations() throws Exception {
-		animation = new ConfigurationFile("animations.yml", animationComments);
+		animation = new ConfigurationFile("animations.yml", animationComments, true);
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
 			for (String s : animation.getConfigurationSection("animations").keySet())
@@ -198,7 +200,7 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	public static void loadBossbar() throws Exception {
-		bossbar = new ConfigurationFile("bossbar.yml", bossbarComments);
+		bossbar = new ConfigurationFile("bossbar.yml", bossbarComments, true);
 		if (bossbar.get("enabled") != null) {
 			Shared.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
@@ -237,13 +239,13 @@ public class Configs {
 		if (BossBar.remember_toggle_choice) {
 			File file = new File("plugins" + System.getProperty("file.separator") + "TAB" + System.getProperty("file.separator") + "playerdata.yml");
 			if (!file.exists()) file.createNewFile();
-			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>());
+			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>(), false);
 			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");
 		}
 		if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
 	}
 	public static void loadTranslation() throws Exception {
-		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());
+		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>(), false);
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");

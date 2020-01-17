@@ -1,5 +1,5 @@
 name: TAB
-version: 2.6.3-pre5
+version: 2.6.3
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13

@@ -14,8 +14,7 @@ public class Property {
 	private String temporaryValue;
 	public String lastReplacedValue;
 
-	private List<Placeholder> tabPlaceholders = new ArrayList<Placeholder>();
-	private String[] placeholderapiPlaceholders;
+	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
 	private boolean hasRelationalPlaceholders;
 	private long lastUpdate;
 	private boolean Static;
@@ -31,21 +30,9 @@ public class Property {
 				value = value.replace(c.getIdentifier(), c.get());
 			}
 		}
-		tabPlaceholders = detectPlaceholders(value, owner != null);
+		placeholders = detectPlaceholders(value, owner != null);
 		hasRelationalPlaceholders = value.contains("%rel_");
-		List<String> allPlaceholders = detectPlaceholderAPIPlaceholders(value);
-		for (Placeholder p : tabPlaceholders) {
-			for (String child : p.getChilds()) {
-				for (String p2 : detectPlaceholderAPIPlaceholders(child)) {
-					if (!allPlaceholders.contains(p2)) allPlaceholders.add(p2);
-				}
-			}
-		}
-		for (Placeholder tab : tabPlaceholders) {
-			allPlaceholders.remove(tab.getIdentifier());
-		}
-		placeholderapiPlaceholders = allPlaceholders.toArray(new String[0]);
-		if (tabPlaceholders.isEmpty() && placeholderapiPlaceholders.length == 0 && !hasRelationalPlaceholders) {
+		if (placeholders.isEmpty() && !hasRelationalPlaceholders) {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
 			for (String removed : Configs.removeStrings) {
@@ -91,13 +78,9 @@ public class Property {
 		if (Static) return false;
 		String string = getCurrentRawValue();
 
-		//own placeholders
-		for (Placeholder pl : tabPlaceholders) {
+		//placeholders
+		for (Placeholder pl : placeholders) {
 			string = pl.set(string, owner);
-		}
-		//placeholderapi
-		if (placeholderapiPlaceholders.length > 0 && PluginHooks.placeholderAPI) {
-			string = PluginHooks.PlaceholderAPI_setPlaceholders(owner, string, placeholderapiPlaceholders, true);
 		}
 
 		//removing strings
@@ -127,8 +110,7 @@ public class Property {
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
-//				if (!placeholdersTotal.contains(placeholder)) 
-					placeholdersTotal.add(placeholder);
+				placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
 					for (Placeholder p : detectPlaceholders(child, playerPlaceholders)) {
 						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
@@ -138,7 +120,7 @@ public class Property {
 		}
 		return placeholdersTotal;
 	}
-	private static List<String> detectPlaceholderAPIPlaceholders(String s){
+	public static List<String> detectPlaceholderAPIPlaceholders(String s){
 		List<String> list = new ArrayList<String>();
 		if (s == null) return list;
 		while (s.contains("%")) {

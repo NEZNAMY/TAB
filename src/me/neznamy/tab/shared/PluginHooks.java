@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -170,31 +169,27 @@ public class PluginHooks {
 			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String s, String[] placeholders, boolean logCpu) {
-		if (!placeholderAPI) return s;
+	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String placeholder) {
+		if (!placeholderAPI) return placeholder;
 		Player player = (p == null ? null : ((TabPlayer)p).player);
 		try {
-			long startTime = System.nanoTime();
-			String value = PlaceholderAPI.setPlaceholders(player, s);
-			if (logCpu) Shared.placeholderCpu("PlaceholderAPI" + Arrays.toString(placeholders), System.nanoTime()-startTime);
-			return value;
+			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				if (s.contains("%pinataparty")) {
+				if (placeholder.contains("%pinataparty")) {
 					//i'm done with arguing with that person about whose fault it is, just pretending like it works
-					return s.replace("%pinataparty_votes_total%", "0");
+					return "0";
 				} else {
-					Shared.error(null, "PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion() + ". Placeholders to replace: " + Arrays.toString(placeholders));
-					Shared.error(null, "Input arguments: [Player = " + player + ", String = " + s + "]");
-					Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
+					String playername = (player == null ? "null" : player.getName());
+					Shared.error(null, "PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t);
 				}
 			} else {
 				//thats why it failed
 				placeholderAPI = false;
 			}
 		}
-		return s;
+		return placeholder;
 	}
 	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String s) {
 		try {
