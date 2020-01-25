@@ -37,8 +37,8 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.3";
-	public static final int currentVersionId = 263;
+	public static final String pluginVersion = "2.6.4";
+	public static final int currentVersionId = 264;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	public static final char COLOR = '\u00a7';
@@ -282,7 +282,7 @@ public class Shared {
 					String versionString = br.readLine();
 					br.close();
 					int latestVersion = Integer.parseInt(versionId);
-					if (latestVersion != currentVersionId) {
+					if (latestVersion > currentVersionId) {
 						Shared.print('b', "Version " + versionString + " is out! Your version: " + pluginVersion);
 						Shared.print('b', "Get the update at https://www.spigotmc.org/resources/57806/");
 					}
