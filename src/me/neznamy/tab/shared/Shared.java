@@ -353,7 +353,7 @@ public class Shared {
 		});
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%", 1000) {
 			public String get(ITabPlayer p) {
-				if (Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
+				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
