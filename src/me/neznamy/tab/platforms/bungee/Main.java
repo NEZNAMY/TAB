@@ -256,7 +256,7 @@ public class Main extends Plugin implements Listener, MainClass{
 
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {
-		ProxyServer.getInstance().getConsole().sendMessage(message.replace('&', Shared.COLOR));
+		ProxyServer.getInstance().getConsole().sendMessage(Placeholders.color(message));
 	}
 	public String getPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
@@ -272,7 +272,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		return packet.toBungee(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments, true);
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);

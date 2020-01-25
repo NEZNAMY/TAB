@@ -15,16 +15,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
-import me.neznamy.tab.shared.placeholders.Constant;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 @SuppressWarnings("unchecked")
 public class ConfigurationFile{
@@ -36,7 +34,7 @@ public class ConfigurationFile{
 	private HashMap<String, List<String>> comments;
 	private Map<String, Object> values;
 	
-	public ConfigurationFile(String source, String destination, HashMap<String, List<String>> comments, boolean usesPAPI) throws Exception{
+	public ConfigurationFile(String source, String destination, HashMap<String, List<String>> comments) throws Exception{
 		FileInputStream input = null;
 		try {
 			this.comments = comments;
@@ -51,10 +49,7 @@ public class ConfigurationFile{
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 			if (!hasComments()) fixComments();
-			if (usesPAPI) {
-				registerPAPIPlaceholders(values.toString());
-				registerPAPIPlaceholders("%" + values.toString());
-			}
+			detectPlaceholders(values);
 		} catch (Exception e) {
 			input.close();
 			Shared.startupWarn("File " + destination + " has broken formatting.");
@@ -62,33 +57,28 @@ public class ConfigurationFile{
 			String fix = suggestFix(e);
 			if (fix != null) {
 				Shared.print('d', "Suggestion: " + fix);
-			} else {
-				Shared.print('d', "No fix suggestion available :(");
-				Shared.print('d', "Please post your file and the error messsage on our discord, so we can add a suggestion for this kind of error.");
 			}
 			throw e;
 		}
 	}
-	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments, boolean usesPAPI) throws Exception{
-		this(sourceAndDestination, sourceAndDestination, comments, usesPAPI);
+	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments) throws Exception{
+		this(sourceAndDestination, sourceAndDestination, comments);
 	}
-	private static void registerPAPIPlaceholders(String string) {
-		main:
-		for (String placeholder : Property.detectPlaceholderAPIPlaceholders(string)) {
-			if (!placeholder.contains("_")) continue;
-			if (!Placeholders.usedPAPIPlaceholders.contains(placeholder)) {
-				for (Placeholder p : Placeholders.getAll()) {
-					if (placeholder.equals(p.getIdentifier())) continue main;
+	private void detectPlaceholders(Map<String, Object> map) {
+		for (Entry<String, Object> entry : map.entrySet()) {
+			Object value = entry.getValue();
+			if (value instanceof String) {
+				for (String placeholder : Placeholders.detectAll((String) value)) {
+					if (!Placeholders.usedPlaceholders.contains(placeholder)) Placeholders.usedPlaceholders.add(placeholder);
 				}
-				for (Constant c : Placeholders.constants) {
-					if (placeholder.equals(c.getIdentifier())) continue main;
-				}
-				Placeholders.usedPAPIPlaceholders.add(placeholder);
-				Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, 50){
-					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
+			}
+			if (value instanceof Map) detectPlaceholders((Map<String, Object>) value);
+			if (value instanceof List) {
+				for (Object line : (List<Object>)value) {
+					for (String placeholder : Placeholders.detectAll(line+"")) {
+						if (!Placeholders.usedPlaceholders.contains(placeholder)) Placeholders.usedPlaceholders.add(placeholder);
 					}
-				});
+				}
 			}
 		}
 	}

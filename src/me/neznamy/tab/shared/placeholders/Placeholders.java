@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 
 public class Placeholders {
@@ -15,7 +14,7 @@ public class Placeholders {
 	public static List<PlayerPlaceholder> playerPlaceholders;
 	public static List<ServerPlaceholder> serverPlaceholders;
 	public static List<Constant> constants;
-	public static List<String> usedPAPIPlaceholders;
+	public static List<String> usedPlaceholders;
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
 
 	static {
@@ -26,6 +25,19 @@ public class Placeholders {
 		List<Placeholder> list = new ArrayList<Placeholder>();
 		list.addAll(playerPlaceholders);
 		list.addAll(serverPlaceholders);
+		return list;
+	}
+	public static List<String> detectAll(String s){
+		List<String> list = new ArrayList<String>();
+		if (s == null) return list;
+		while (s.contains("%")) {
+			s = s.substring(s.indexOf("%")+1, s.length());
+			if (s.contains("%")) {
+				String placeholder = s.substring(0, s.indexOf("%"));
+				s = s.substring(s.indexOf("%")+1, s.length());
+				list.add("%" + placeholder + "%");
+			}
+		}
 		return list;
 	}
 	public static void recalculateOnlineVersions() {
@@ -72,7 +84,7 @@ public class Placeholders {
 		return result;
 	}
 	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		for (Placeholder pl : Property.detectPlaceholders(string, true)) {
+		for (Placeholder pl : detectPlaceholders(string, true)) {
 			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
 		}
 		for (Constant c : Placeholders.constants) {
@@ -84,5 +96,20 @@ public class Placeholders {
 		}
 		string = color(string);
 		return string;
+	}
+	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
+		if (rawValue == null || (!rawValue.contains("%") && !rawValue.contains("{"))) return new ArrayList<Placeholder>();
+		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
+		for (Placeholder placeholder : playerPlaceholders ? Placeholders.getAll() : Placeholders.serverPlaceholders) {
+			if (rawValue.contains(placeholder.getIdentifier())) {
+				placeholdersTotal.add(placeholder);
+				for (String child : placeholder.getChilds()) {
+					for (Placeholder p : detectPlaceholders(child, playerPlaceholders)) {
+						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
+					}
+				}
+			}
+		}
+		return placeholdersTotal;
 	}
 }

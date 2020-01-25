@@ -39,7 +39,7 @@ import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
-@Plugin(id = "tab", name = "TAB", version = "2.6.4", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.6.5-pre1", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
 	public static ProxyServer server;
@@ -313,7 +313,7 @@ public class Main implements MainClass{
 	 */
 
 	public void sendConsoleMessage(String message) {
-		server.getConsoleCommandSource().sendMessage(TextComponent.of(message.replace('&', Shared.COLOR)));
+		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
 	public String getPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("LuckPerms").isPresent()) return "LuckPerms";
@@ -328,7 +328,7 @@ public class Main implements MainClass{
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments, true);
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);

@@ -307,15 +307,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
 			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deluxetag%", 2000) {
 				public String get(ITabPlayer p) {
-					String tag = PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
-					if (tag == null || tag.length() == 0) {
-						return Configs.noTag;
-					}
-					return Configs.yesTag.replace("%value%", tag);
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesTag, Configs.noTag};
+					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 				}
 			});
 		}
@@ -335,18 +327,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			
 			public String get(ITabPlayer p) {
-				if (type == 0) return Configs.noFaction;
+				if (type == 0) return "";
 				String name = null;
 				if (type == 1) name = PluginHooks.FactionsUUID_getFactionTag(p);
 				if (type == 2) name = PluginHooks.FactionsMCore_getFactionName(p);
-				if (name == null || name.length() == 0 || name.contains("Wilderness")) {
-					return Configs.noFaction;
-				}
-				return Configs.yesFaction.replace("%value%", name);
-			}
-			@Override
-			public String[] getChilds(){
-				return new String[] {Configs.yesFaction, Configs.noFaction};
+				return name;
 			}
 		});
 		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%health%", 100) {
@@ -525,7 +510,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	 */
 	
 	public void sendConsoleMessage(String message) {
-		Bukkit.getConsoleSender().sendMessage(message.replace('&', Shared.COLOR));
+		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
 	}
 	public String getPermissionPlugin() {
 		if (PluginHooks.luckPerms) return "LuckPerms";
@@ -543,7 +528,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return packet.toNMS(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments, true);
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
 		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
@@ -576,14 +561,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		BelowName.refresh = 50*Configs.config.getInt("belowname.refresh-interval-ticks", 5);
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
-		Configs.noFaction = Configs.config.getString("placeholders.faction-no", "&2Wilderness");
-		Configs.yesFaction = Configs.config.getString("placeholders.faction-yes", "<%value%>");
-		Configs.noTag = Configs.config.getString("placeholders.deluxetag-no", "&oNo Tag :(");
-		Configs.yesTag = Configs.config.getString("placeholders.deluxetag-yes", "< %value% >");
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments, true);
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
 		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));

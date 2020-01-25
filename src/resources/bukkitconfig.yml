@@ -123,10 +123,6 @@ per-world-settings:
       - "world2 and world3"
 #setting output of some placeholders
 placeholders:
-  deluxetag-yes: "< %value% >"
-  deluxetag-no: "&oNo Tag :("
-  faction-yes: "< %value% >"
-  faction-no: "&2Wilderness"
   afk-yes: " &4*&4&lAFK&4*&r"
   afk-no: ""
   date-format: "dd.MM.yyyy"

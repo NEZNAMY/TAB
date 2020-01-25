@@ -39,8 +39,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		String prefix = this.prefix;
 		String suffix = this.suffix;
 		if (clientVersion.getMinorVersion() < 13) {
-			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
-			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
+			prefix = cutTo(prefix, 16);
+			suffix = cutTo(suffix, 16);
 		}
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		NAME.set(packet, team);
@@ -57,8 +57,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
 		} else {
 			DISPLAYNAME.set(packet, team);
-			if (prefix != null) PREFIX.set(packet, prefix);
-			if (suffix != null) SUFFIX.set(packet, suffix);
+			PREFIX.set(packet, prefix);
+			SUFFIX.set(packet, suffix);
 		}
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) PUSH.set(packet, teamPush);
 		PLAYERS.set(packet, entities);
@@ -70,28 +70,32 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
 		int color = 0;
+		String prefix;
+		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(prefix).toString();
-			suffix = new IChatBaseComponent(suffix).toString();
+			prefix = new IChatBaseComponent(this.prefix).toString();
+			suffix = new IChatBaseComponent(this.suffix).toString();
 			teamDisplay = new IChatBaseComponent(team).toString();
 			color = chatFormat.toBungee();
 		} else {
-			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
-			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
+			prefix = cutTo(this.prefix, 16);
+			suffix = cutTo(this.suffix, 16);
 		}
 		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
 		int color = 0;
+		String prefix;
+		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(prefix).toString();
-			suffix = new IChatBaseComponent(suffix).toString();
+			prefix = new IChatBaseComponent(this.prefix).toString();
+			suffix = new IChatBaseComponent(this.suffix).toString();
 			teamDisplay = new IChatBaseComponent(team).toString();
 			color = chatFormat.toBungee();
 		} else {
-			if (prefix != null && prefix.length() > 16) prefix = prefix.substring(0, 16);
-			if (suffix != null && suffix.length() > 16) suffix = suffix.substring(0, 16);
+			prefix = cutTo(this.prefix, 16);
+			suffix = cutTo(this.suffix, 16);
 		}
 		return new me.neznamy.tab.platforms.velocity.protocol.Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
 	}
@@ -100,9 +104,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private static final Field DISPLAYNAME = getField(fields, "b");
 	private static final Field PREFIX = getField(fields, "c");
 	private static final Field SUFFIX = getField(fields, "d");
-	private static final Field VISIBILITY;
-	private static final Field CHATFORMAT;
-	private static final Field PUSH;
+	private static Field VISIBILITY; //1.8+
+	private static Field CHATFORMAT; //1.13+
+	private static Field PUSH; //1.9+
 	public static final Field PLAYERS;
 	private static final Field ACTION;
 	public static final Field SIGNATURE;
@@ -115,14 +119,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			PLAYERS = getField(fields, "h");
 			ACTION = getField(fields, "i");
 			SIGNATURE = getField(fields, "j");
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-				CHATFORMAT = getField(fields, "g");
-			} else {
-				CHATFORMAT = null;
-			}
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) CHATFORMAT = getField(fields, "g");
 		} else {
-			CHATFORMAT = null;
-			PUSH = null;
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				//1.8.x
 				VISIBILITY = getField(fields, "e");
@@ -131,7 +129,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 				SIGNATURE = getField(fields, "i");
 			} else {
 				//1.5.x - 1.7.x
-				VISIBILITY = null;
 				PLAYERS = getField(fields, "e");
 				ACTION = getField(fields, "f");
 				SIGNATURE = getField(fields, "g");

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -45,7 +46,7 @@ public class TabPlayer extends ITabPlayer{
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(message.replace('&', Shared.COLOR));
+		player.sendMessage(Placeholders.color(message));
 	}
 	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
 

@@ -7,6 +7,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.kyori.text.TextComponent;
 
 public class TabPlayer extends ITabPlayer{
@@ -41,7 +42,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(TextComponent.of(message.replace('&', Shared.COLOR)));
+		player.sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
 	@Override
 	public Object getSkin() {

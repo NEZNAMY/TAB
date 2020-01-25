@@ -131,7 +131,7 @@ public class TabCommand{
 				if (sender != null) {
 					String replaced = Placeholders.replaceAllPlaceholders(args[1], sender);
 					sendMessage(sender, "&6Attempting to parse string &e" + args[1] + "&6 for player &e" + sender.getName());
-					sendMessage(sender, "&6Result: &r" + replaced + " &r(" + replaced.replace(Shared.COLOR, '&') + ")");
+					sendMessage(sender, "&6Result: &r" + replaced + " &r(" + replaced + ")");
 				}
 			}
 		} else if (args.length == 1){
@@ -369,7 +369,7 @@ public class TabCommand{
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player").replace("&", "&"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
@@ -385,7 +385,7 @@ public class TabCommand{
 		Configs.config.set("Groups." + group + "." + type, value);
 		Configs.config.save();
 		if (value != null){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group").replace("&", "&"));
+			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}

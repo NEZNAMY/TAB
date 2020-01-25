@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class TabPlayer extends ITabPlayer{
 
@@ -63,7 +64,11 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this)[0];
+		if (PluginHooks.permissionsEx) {
+			String[] groups = PluginHooks.PermissionsEx_getGroupNames(this);
+			if (groups.length == 0) return "null";
+			return groups[0];
+		}
 		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		return "null";
@@ -109,7 +114,7 @@ public class TabPlayer extends ITabPlayer{
 		for (Player w : player.getWorld().getPlayers()) {
 			ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
 			if (wPlayer == null) {
-				Shared.error(null, "Data of " + w.getName() + " don't exist ? Returned as a member of world " + player.getWorld());
+				//CiTiZeNs
 				continue;
 			}
 			if (w == player) continue;
@@ -147,7 +152,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(message.replace('&', Shared.COLOR));
+		player.sendMessage(Placeholders.color(message));
 	}
 	@Override
 	public boolean hasInvisibility() {

@@ -51,8 +51,8 @@ public class PlaceholderAPIExpansion{
 	public static void unregister() {
 		try {
 			if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
-		} catch (Exception ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread) {
-			Shared.error(null, "Failed to unregister expansion for PlaceholderAPI", ExceptionThrownDueToExpansionUnregisterEventBeingCalledInServerShutdownThreadWhichIsNotMainThreadAnd1_14RequiresTheEventToBeCalledInTheMainThread);
+		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
+			Shared.error(null, "Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously);
 		}
 	}
 }

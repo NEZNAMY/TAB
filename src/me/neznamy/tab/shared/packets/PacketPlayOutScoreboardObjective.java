@@ -24,7 +24,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String title = this.title;
 		if (clientVersion.getMinorVersion() < 13) {
-			if (title != null && title.length() > 32) title = title.substring(0, 32);
+			title = cutTo(title, 32);
 		}
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
@@ -42,7 +42,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (clientVersion.getMinorVersion() >= 13) {
 			title = new IChatBaseComponent(title).toString();
 		} else {
-			if (title != null && title.length() > 32) title = title.substring(0, 32);
+			title = cutTo(title, 32);
 		}
 		return new ScoreboardObjective(objectiveName, title, displayType.toBungee(), (byte)action);
 	}
@@ -51,7 +51,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (clientVersion.getMinorVersion() >= 13) {
 			title = new IChatBaseComponent(title).toString();
 		} else {
-			if (title != null && title.length() > 32) title = title.substring(0, 32);
+			title = cutTo(title, 32);
 		}
 		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, title, displayType.toVelocity(), (byte)action);
 	}
@@ -82,7 +82,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
 	private static final Field OBJECTIVENAME = getField(fields, "a");
 	private static final Field TITLE = getField(fields, "b");
-	private static final Field DISPLAYTYPE;
+	private static Field DISPLAYTYPE;
 	private static final Field ACTION;
 
 	static {
@@ -90,7 +90,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 			DISPLAYTYPE = getField(fields, "c");
 			ACTION = getField(fields, "d");
 		} else {
-			DISPLAYTYPE = null;
 			ACTION = getField(fields, "c");
 		}
 	}
