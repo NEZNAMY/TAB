@@ -5,6 +5,9 @@ import java.util.*;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class TABAPI {
 
@@ -177,6 +180,28 @@ public class TABAPI {
 	 */
 	public static boolean hasHiddenNametag(UUID player) {
 		return hiddenNametag.contains(player);
+	}
+	
+	
+	/**
+	 * Registers a player placeholder (placeholder with player-specific output)
+	 * @param placeholder - Placeholder handler
+	 * @since 2.6.5
+	 * @see registerServerPlaceholder
+	 */
+	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
+		Placeholders.playerPlaceholders.add(placeholder);
+	}
+	
+	
+	/**
+	 * Registers a server placeholder (placeholder with same output for all players)
+	 * @param placeholder - Placeholder handler
+	 * @since 2.6.5
+	 * @see registerPlayerPlaceholder
+	 */
+	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
+		Placeholders.serverPlaceholders.add(placeholder);
 	}
 	
 	@Deprecated

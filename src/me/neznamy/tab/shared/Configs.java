@@ -142,11 +142,16 @@ public class Configs {
 		for (String placeholder : Placeholders.usedPlaceholders) {
 			if (!placeholder.contains("_")) continue; //ignoring my own placeholders
 			if (placeholder.contains("rel_")) continue; //relational placeholders are something else
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, 49){
-				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
-				}
-			});
+			if (placeholder.equals("%player_biome%") && ProtocolVersion.SERVER_VERSION.getMinorVersion() == 15) {
+				Shared.startupWarn("%player_biome% placeholder is banned and will not work because it can crash the server on 1.15.x");
+			} else {
+				Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, 49){
+					public String get(ITabPlayer p) {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
+					}
+				});
+				
+			}
 		}
 	}
 	public static void loadConfig() throws Exception {
