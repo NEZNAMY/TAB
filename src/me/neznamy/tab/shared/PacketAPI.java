@@ -131,8 +131,10 @@ public class PacketAPI{
 			}
 		} else {
 			DataWatcher w = new DataWatcher(null);
+			boolean update = false;
 			if (text.isUpdateNeeded()) {
 				w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), text.get());
+				update = true;
 			}
 			if (progress.isUpdateNeeded()) {
 				float health = (float)3*bar.parseProgress(progress.get());
@@ -142,9 +144,9 @@ public class PacketAPI{
 				} else {
 					w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
 				}
+				update = true;
 			}
-			if (w.getAllObjects().isEmpty()) return;
-			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(bar.getEntityId(), w.toNMS(), true));
+			if (update) to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(bar.getEntityId(), w.toNMS(), true));
 		}
 	}
 }

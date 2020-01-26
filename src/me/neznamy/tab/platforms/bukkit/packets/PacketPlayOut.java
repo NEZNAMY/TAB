@@ -55,8 +55,10 @@ public abstract class PacketPlayOut{
 		if (f == null) {
 			//modded server
 			for (Entry<String, Field> entry : fields.entrySet()) {
-				String localfield = entry.getKey().split("_")[2];
-				if (localfield.equals(field)) return entry.getValue();
+				if (entry.getKey().contains("_")) {
+					String localfield = entry.getKey().split("_")[2];
+					if (localfield.equals(field)) return entry.getValue();
+				}
 			}
 		} else {
 			return f;

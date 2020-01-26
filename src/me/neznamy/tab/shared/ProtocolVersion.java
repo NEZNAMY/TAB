@@ -121,7 +121,7 @@ public enum ProtocolVersion {
 		for (ProtocolVersion v : values()) {
 			if (number == v.getNetworkId()) return v;
 		}
-		if (number > v1_15_1.getNetworkId()) {
+		if (number > v1_15_2.getNetworkId()) {
 			return FUTURE;
 		}
 		return UNKNOWN;

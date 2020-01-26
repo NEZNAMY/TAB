@@ -6,7 +6,7 @@ public interface MainClass {
 
 	public void sendConsoleMessage(String message);
 	public String getPermissionPlugin();
-	public void reload(ITabPlayer sender);
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
+	public void load(boolean broadcastTime, boolean inject);
 }

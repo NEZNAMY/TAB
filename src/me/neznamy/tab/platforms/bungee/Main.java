@@ -15,6 +15,7 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -37,9 +38,10 @@ public class Main extends Plugin implements Listener, MainClass{
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
+		TabCommand command = new TabCommand();
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
-				TabCommand.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+				command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 			}
 		});
 		load(false, true);
@@ -139,12 +141,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				String from = p.getWorldName();
 				String to = p.world = e.getPlayer().getServer().getInfo().getName();
 				p.onWorldChange(from, to);
-/*				for (ITabPlayer all : Shared.getPlayers()) {
-					all.unregisterTeam(p);
-					all.registerTeam(p);
-					p.unregisterTeam(all);
-					p.registerTeam(all);
-				}*/
 			}
 		} catch (Throwable ex){
 			Shared.error(null, "An error occurred when player joined/changed server", ex);
@@ -262,11 +258,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return "LuckPerms";
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
 		return "Unknown/None";
-	}
-	public void reload(ITabPlayer sender) {
-		Shared.unload();
-		load(true, false);
-		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
 		return packet.toBungee(protocolVersion);

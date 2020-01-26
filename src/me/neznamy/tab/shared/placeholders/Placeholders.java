@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 
 public class Placeholders {
@@ -90,7 +89,6 @@ public class Placeholders {
 		for (Constant c : Placeholders.constants) {
 			if (string.contains(c.getIdentifier())) string = string.replace(c.getIdentifier(), c.get());
 		}
-		string = PluginHooks.PlaceholderAPI_setPlaceholders(p, string);
 		for (String removed : Configs.removeStrings) {
 			string = string.replace(removed, "");
 		}

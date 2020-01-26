@@ -3,6 +3,7 @@ package me.neznamy.tab.api;
 import java.util.*;
 
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class TABAPI {
@@ -64,7 +65,7 @@ public class TABAPI {
 		ITabPlayer p = Shared.getPlayer(player);
 		if (p == null) return;
 		p.properties.get(type.toString()).changeRawValue(value);
-		TabCommand.savePlayer(null, p.getName(), type.toString(), value);
+		PlayerCommand.savePlayer(null, p.getName(), type.toString(), value);
 		p.forceUpdateDisplay();
 	}
 	

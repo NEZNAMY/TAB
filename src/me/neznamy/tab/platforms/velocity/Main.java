@@ -33,6 +33,7 @@ import me.neznamy.tab.platforms.velocity.protocol.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
@@ -56,9 +57,10 @@ public class Main implements MainClass{
 		me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.BUNGEE;
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
+		TabCommand command = new TabCommand();
 		server.getCommandManager().register("btab", new Command() {
 			public void execute(CommandSource sender, String[] args) {
-				TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
 		registerPackets();
@@ -318,11 +320,6 @@ public class Main implements MainClass{
 	public String getPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("LuckPerms").isPresent()) return "LuckPerms";
 		return "Unknown/None";
-	}
-	public void reload(ITabPlayer sender) {
-		Shared.unload();
-		load(true, false);
-		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
 		return packet.toVelocity(protocolVersion);

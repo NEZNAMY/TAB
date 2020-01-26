@@ -21,22 +21,6 @@ public class DataWatcher{
 	public Item getItem(int position) {
 		return dataValues.get(position);
 	}
-	public List<Item> getObjectsThatNeedUpdate(){
-		ArrayList<Item> arraylist = new ArrayList<Item>();
-		for (Item object : dataValues.values()) {
-			if (object.needsUpdate){
-				object.needsUpdate = false;
-				arraylist.add(object);
-			}
-		}
-		if (arraylist.isEmpty()) arraylist = null;
-		return arraylist;
-	}
-	public List<Item> getAllObjects(){
-		ArrayList<Item> arraylist = new ArrayList<Item>();
-		arraylist.addAll(dataValues.values());
-		return arraylist;
-	}
 
 	public static class Item{
 

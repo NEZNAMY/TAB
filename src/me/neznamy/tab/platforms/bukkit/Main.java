@@ -22,6 +22,7 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
@@ -45,9 +46,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
+			TabCommand command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-					TabCommand.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 					return false;
 				}
 			});
@@ -519,11 +521,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}
-	public void reload(ITabPlayer sender) {
-		Shared.unload();
-		load(true, false);
-		if (!Shared.disabled) TabCommand.sendMessage(sender, Configs.reloaded);
-	}
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
 		return packet.toNMS(protocolVersion);
 	}
@@ -540,9 +537,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		NameTag16.enable = false;
 		Configs.unlimitedTags = false;
 		if (changeNameTag) {
-			Configs.unlimitedTags = unlimitedTags;
 			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				NameTagX.enable = true;
+				Configs.unlimitedTags = true;
 			} else {
 				NameTag16.enable = true;
 			}
