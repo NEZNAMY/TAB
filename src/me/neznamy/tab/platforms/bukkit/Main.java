@@ -152,6 +152,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
+			PluginHooks.DeluxeTags_onChat(p);
 			PerWorldPlayerlist.trigger(e.getPlayer());
 			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
 
@@ -252,9 +253,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return false;
 	}
 	public static void registerPlaceholders() {
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault")){
-			PluginHooks.Vault_loadProviders();
-		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
 			PluginHooks.idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
 		}
@@ -264,6 +263,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.register();
 		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
+		PluginHooks.deluxetags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 
 		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
@@ -307,13 +307,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deluxetag%", 2000) {
+			Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%deluxetag%", 0) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 				}
 			});
 		}
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%faction%", 3000) {
+		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%faction%", 1000) {
 
 			public int type;
 

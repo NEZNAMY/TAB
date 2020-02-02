@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -17,6 +18,8 @@ import com.massivecraft.factions.entity.MPlayer;
 import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.clip.deluxetags.DeluxeTag;
+import me.clip.deluxetags.DeluxeTags;
+import me.clip.deluxetags.listeners.PlayerListener;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
@@ -39,6 +42,7 @@ public class PluginHooks {
 	public static boolean luckPerms;
 	public static boolean permissionsEx;
 	public static boolean placeholderAPI;
+	public static boolean deluxetags;
 	public static Object essentials;
 	public static Object idisguise;
 	public static Object groupManager;
@@ -87,6 +91,11 @@ public class PluginHooks {
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
 		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
+	}
+	public static void DeluxeTags_onChat(ITabPlayer p) {
+		if (deluxetags) {
+			new PlayerListener((DeluxeTags) Bukkit.getPluginManager().getPlugin("DeluxeTags")).onChat(new AsyncPlayerChatEvent(true, ((TabPlayer)p).player, null, null));
+		}
 	}
 	public static double Essentials_getMoney(ITabPlayer p) {
 		try {
