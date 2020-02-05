@@ -12,10 +12,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 	public Map<String, String> lastValue = new HashMap<String, String>();
 	
 	public PlayerPlaceholder(String identifier, int cooldown) {
-		super(identifier, cooldown, identifier);
-	}
-	public PlayerPlaceholder(String identifier, int cooldown, String cpuDisplay) {
-		super(identifier, cooldown, cpuDisplay);
+		super(identifier, cooldown);
 	}
 	public abstract String get(ITabPlayer p);
 	
@@ -26,7 +23,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 			lastValue.put(p.getName(), get(p));
 			lastRefresh.put(p.getName(), System.currentTimeMillis());
 		}
-		Shared.placeholderCpu(cpuDisplay, System.nanoTime()-startTime);
+		Shared.placeholderCpu(identifier, System.nanoTime()-startTime);
 		return lastValue.get(p.getName());
 	}
 }

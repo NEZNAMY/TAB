@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -29,6 +28,7 @@ import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
 import io.netty.channel.*;
+import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.velocity.protocol.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
@@ -80,7 +80,6 @@ public class Main implements MainClass{
 			Shared.startupWarns = 0;
 			registerPlaceholders();
 			Configs.loadFiles();
-			Shared.registerAnimationPlaceholders();
 			Shared.data.clear();
 			for (Player p : server.getAllPlayers()) {
 				ITabPlayer t = new TabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
@@ -229,17 +228,15 @@ public class Main implements MainClass{
 		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
-		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
-		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
-		Placeholders.constants = new ArrayList<Constant>();
+		Placeholders.clearAll();
 		Shared.registerUniversalPlaceholders();
-		Placeholders.constants.add(new Constant("%maxplayers%") {
+		TABAPI.registerServerConstant(new Constant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
 				public String get() {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
 				}
@@ -339,5 +336,8 @@ public class Main implements MainClass{
 		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
+	}
+	public void registerUnknownPlaceholder(String identifier) {
+		// TODO Auto-generated method stub
 	}
 }

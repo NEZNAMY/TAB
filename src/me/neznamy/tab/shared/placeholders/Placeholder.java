@@ -7,12 +7,10 @@ public abstract class Placeholder {
 
 	protected int cooldown;
 	protected String identifier;
-	protected String cpuDisplay;
 	
-	public Placeholder(String identifier, int cooldown, String cpuDisplay) {
+	public Placeholder(String identifier, int cooldown) {
 		this.identifier = identifier;
 		this.cooldown = cooldown;
-		this.cpuDisplay = cpuDisplay;
 	}
 	public String getIdentifier() {
 		return identifier;

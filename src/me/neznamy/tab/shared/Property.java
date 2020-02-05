@@ -25,7 +25,7 @@ public class Property {
 		this.rawValue = analyze(rawValue);
 	}
 	private String analyze(String value) {
-		for (Constant c : Placeholders.constants) {
+		for (Constant c : Placeholders.usedServerConstants.values()) {
 			if (value.contains(c.getIdentifier())) {
 				value = value.replace(c.getIdentifier(), c.get());
 			}

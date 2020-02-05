@@ -23,9 +23,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class PacketAPI{
 
-	public static void debug(ITabPlayer p, String message) {
-		System.out.println("[TAB DEBUG] [" + p.getName() + "] " + message);
-	}
 
 	//scoreboard team
 	public static synchronized void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {

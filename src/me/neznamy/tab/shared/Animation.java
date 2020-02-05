@@ -35,7 +35,7 @@ public class Animation {
 		this.messages = list.toArray(new String[0]);
 		this.interval = interval;
 		for (int i=0; i<messages.length; i++) {
-			for (Constant c : Placeholders.constants) {
+			for (Constant c : Placeholders.myServerConstants.values()) {
 				if (messages[i].contains(c.getIdentifier())) {
 					messages[i] = messages[i].replace(c.getIdentifier(), c.get());
 				}

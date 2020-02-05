@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.PlaceholderAPIExpansion;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
@@ -37,7 +38,7 @@ public class Shared {
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.5";
+	public static final String pluginVersion = "2.6.6-pre1";
 	public static final int currentVersionId = 265;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
@@ -47,7 +48,6 @@ public class Shared {
 
 	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
 	public static List<CPUSample> cpuHistory = new ArrayList<CPUSample>();
-
 	public static ConcurrentHashMap<String, Long> placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
 	public static List<ConcurrentHashMap<String, Long>> placeholderCpuHistory = new ArrayList<ConcurrentHashMap<String, Long>>();
 
@@ -139,6 +139,9 @@ public class Shared {
 	}
 	public static void printClean(String message) {
 		mainClass.sendConsoleMessage(message);
+	}
+	public static void debug(String message) {
+		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&" + 7 + "[TAB DEBUG] " + message);
 	}
 	public static void featureCPU(Feature feature, long value) {
 		Long previous = cpuLastSecond.get(feature);
@@ -295,7 +298,7 @@ public class Shared {
 	
 	public static void registerAnimationPlaceholders() {
 		for (Animation a : Configs.animations) {
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
 				public String get() {
 					return a.getMessage();
 				}
@@ -304,7 +307,7 @@ public class Shared {
 					return a.getAllMessages();
 				}
 			});
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("{animation:" + a.getName() + "}", 0) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("{animation:" + a.getName() + "}", 0) {
 				public String get() {
 					return a.getMessage();
 				}
@@ -316,7 +319,7 @@ public class Shared {
 		}
 	}
 	public static void registerUniversalPlaceholders() {
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%rank%", 1000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getRank();
 			}
@@ -326,13 +329,13 @@ public class Shared {
 			}
 		});
 		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%version-group:" + entry.getKey()+ "%", 5000) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%version-group:" + entry.getKey()+ "%", 5000) {
 				public String get() {
 					return Placeholders.online.get(entry.getKey())+"";
 				}
 			});
 		}
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%staffonline%", 2000) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
 				int var = 0;
 				for (ITabPlayer all : getPlayers()){
@@ -341,7 +344,7 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%nonstaffonline%", 2000) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
 			public String get() {
 				int var = getPlayers().size();
 				for (ITabPlayer all : getPlayers()){
@@ -350,13 +353,13 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"%", 1000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%"+separatorType+"%", 1000) {
 			public String get(ITabPlayer p) {
 				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%"+separatorType+"online%", 1000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%"+separatorType+"online%", 1000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : getPlayers()){
@@ -365,52 +368,52 @@ public class Shared {
 				return var+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used%", 200) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
 			public String get() {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		Placeholders.constants.add(new Constant("%memory-max%") {
+		TABAPI.registerServerConstant(new Constant("%memory-max%") {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%memory-used-gb%", 200) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
 			public String get() {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		Placeholders.constants.add(new Constant("%memory-max-gb%") {
+		TABAPI.registerServerConstant(new Constant("%memory-max-gb%") {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%nick%", 999999999) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getName();
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%time%", 900) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%date%", 60000) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
 				return Configs.dateFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		Placeholders.serverPlaceholders.add(new ServerPlaceholder("%online%", 1000) {
+		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%online%", 1000) {
 			public String get() {
 				return getPlayers().size()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%ping%", 2000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%ping%", 2000) {
 			public String get(ITabPlayer p) {
 				return p.getPing()+"";
 			}
 		});
-		Placeholders.playerPlaceholders.add(new PlayerPlaceholder("%player-version%", 999999999) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%player-version%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}

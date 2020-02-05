@@ -12,7 +12,6 @@ import java.util.Map;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 public class Configs {
 
@@ -124,7 +123,8 @@ public class Configs {
 				errorFile.delete();
 			}
 		}
-		Placeholders.usedPlaceholders = new ArrayList<String>();
+		loadAnimations();
+		Shared.registerAnimationPlaceholders();
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
@@ -135,18 +135,30 @@ public class Configs {
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
-		loadAnimations();
 		loadBossbar();
 		loadTranslation();
 		if (Premium.is()) Premium.loadPremiumConfig();
 		for (String placeholder : Placeholders.usedPlaceholders) {
-			if (!placeholder.contains("_")) continue; //ignoring my own placeholders
 			if (placeholder.contains("rel_")) continue; //relational placeholders are something else
-			Placeholders.playerPlaceholders.add(new PlayerPlaceholder(placeholder, 49){
-				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
-				}
-			});
+			
+			//filtering though placeholder types
+			if (Placeholders.myPlayerPlaceholders.containsKey(placeholder)) {
+				Shared.debug("Registered own player placeholder " + placeholder);
+				Placeholders.usedPlayerPlaceholders.put(placeholder, Placeholders.myPlayerPlaceholders.get(placeholder));
+				continue;
+			}
+			if (Placeholders.myServerPlaceholders.containsKey(placeholder)) {
+				Shared.debug("Registered own server placeholder " + placeholder);
+				Placeholders.usedServerPlaceholders.put(placeholder, Placeholders.myServerPlaceholders.get(placeholder));
+				continue;
+			}
+			if (Placeholders.myServerConstants.containsKey(placeholder)) {
+				Shared.debug("Registered own server constant " + placeholder);
+				Placeholders.usedServerConstants.put(placeholder, Placeholders.myServerConstants.get(placeholder));
+				continue;
+			}
+			
+			Shared.mainClass.registerUnknownPlaceholder(placeholder);
 		}
 	}
 	public static void loadConfig() throws Exception {

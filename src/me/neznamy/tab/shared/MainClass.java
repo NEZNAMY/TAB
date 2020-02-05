@@ -9,4 +9,5 @@ public interface MainClass {
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
 	public void load(boolean broadcastTime, boolean inject);
+	public void registerUnknownPlaceholder(String identifier);
 }

@@ -35,7 +35,7 @@ public class TabCommand extends SubCommand {
 		}
 		if (args.length > 0) {
 			String arg0 = args[0];
-			SubCommand command = subcommands.get(arg0);
+			SubCommand command = subcommands.get(arg0.toLowerCase());
 			if (command != null) {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));

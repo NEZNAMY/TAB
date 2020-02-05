@@ -9,10 +9,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	private String lastValue = "";
 
 	public ServerPlaceholder(String identifier, int cooldown) {
-		super(identifier, cooldown, identifier);
-	}
-	public ServerPlaceholder(String identifier, int cooldown, String cpuDisplay) {
-		super(identifier, cooldown, cpuDisplay);
+		super(identifier, cooldown);
 	}
 	public abstract String get();
 	
@@ -23,7 +20,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 			lastValue = get();
 			lastRefresh = System.currentTimeMillis();
 		}
-		Shared.placeholderCpu(cpuDisplay, System.nanoTime()-startTime);
+		Shared.placeholderCpu(identifier, System.nanoTime()-startTime);
 		return lastValue;
 	}
 }

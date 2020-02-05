@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungee;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
+import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.BossBar;
@@ -71,7 +71,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.startupWarns = 0;
 			registerPlaceholders();
 			Configs.loadFiles();
-			Shared.registerAnimationPlaceholders();
 			Shared.data.clear();
 			for (ProxiedPlayer p : getProxy().getPlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -219,25 +218,23 @@ public class Main extends Plugin implements Listener, MainClass{
 		return false;
 	}
 	public static void registerPlaceholders() {
-		Placeholders.serverPlaceholders = new ArrayList<ServerPlaceholder>();
-		Placeholders.playerPlaceholders = new ArrayList<PlayerPlaceholder>();
-		Placeholders.constants = new ArrayList<Constant>();
+		Placeholders.clearAll();
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 		Shared.registerUniversalPlaceholders();
 		if (PluginHooks.premiumVanish) {
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%vanish-fake-online%", 1000) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%vanish-fake-online%", 1000) {
 				public String get() {
 					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
 				}
 			});
 		}
-		Placeholders.constants.add(new Constant("%maxplayers%") {
+		TABAPI.registerServerConstant(new Constant("%maxplayers%") {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			Placeholders.serverPlaceholders.add(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
 				public String get() {
 					return server.getValue().getPlayers().size()+"";
 				}
@@ -277,5 +274,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
+	}
+	public void registerUnknownPlaceholder(String identifier) {
+		// TODO Auto-generated method stub
 	}
 }

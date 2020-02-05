@@ -5,6 +5,7 @@ import java.util.*;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.placeholders.Constant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -188,9 +189,10 @@ public class TABAPI {
 	 * @param placeholder - Placeholder handler
 	 * @since 2.6.5
 	 * @see registerServerPlaceholder
+	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		Placeholders.playerPlaceholders.add(placeholder);
+		Placeholders.myPlayerPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
 	
 	
@@ -199,9 +201,22 @@ public class TABAPI {
 	 * @param placeholder - Placeholder handler
 	 * @since 2.6.5
 	 * @see registerPlayerPlaceholder
+	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		Placeholders.serverPlaceholders.add(placeholder);
+		Placeholders.myServerPlaceholders.put(placeholder.getIdentifier(), placeholder);
+	}
+	
+	
+	/**
+	 * Registers a server constant (constant with same output for all players)
+	 * @param constant - Constant handler
+	 * @since 2.6.6
+	 * @see registerPlayerPlaceholder
+	 * @see registerServerPlaceholder
+	 */
+	public static void registerServerConstant(Constant constant) {
+		Placeholders.myServerConstants.put(constant.getIdentifier(), constant);
 	}
 	
 	@Deprecated

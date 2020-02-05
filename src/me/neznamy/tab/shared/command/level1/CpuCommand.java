@@ -23,17 +23,17 @@ public class CpuCommand extends SubCommand {
 	public void execute(ITabPlayer sender, String[] args) {
 		int dataSize = Shared.cpuHistory.size();
 		sendMessage(sender, " ");
-		sendMessage(sender, "&8&l&m╔             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, "&8&l║ &6TAB CPU STATS FROM THE LAST MINUTE");
-		sendMessage(sender, "&8&l&m╠                                       ");
-		sendMessage(sender, "&8&l║ &6Placeholders using over 0.01%:");
+		sendMessage(sender, "&8&l║&8&m                                                    ");
+		sendMessage(sender, "&8&l║ &6Placeholders:");
 		Map<String, Long> placeholders = sortByValue(getPlaceholderCpu(dataSize));
 		for (Entry<String, Long> entry : placeholders.entrySet()) {
 			if (entry.getValue()/dataSize > 100000) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/dataSize/10000000)) + "%");
 		}
 		long placeholdersTotal = 0;
 		for (Long time : placeholders.values()) placeholdersTotal += time;
-		sendMessage(sender, "&8&l&m╠                                       ");
+		sendMessage(sender, "&8&l║&8&m                                                    ");
 		sendMessage(sender, "&8&l║ &6Feature specific:");
 		Map<Feature, Long> features = sortByValue(getFeatureCpu(dataSize));
 		for (Entry<Feature, Long> entry : features.entrySet()) {
@@ -41,10 +41,10 @@ public class CpuCommand extends SubCommand {
 		}
 		long featuresTotal = 0;
 		for (Long time : features.values()) featuresTotal += time;
-		sendMessage(sender, "&8&l&m╠                                       ");
-		sendMessage(sender, "&8&l║ &7&lPLACEHOLDERS TOTAL: &a&l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
-		sendMessage(sender, "&8&l║ &7&lPLUGIN TOTAL: &e&l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
-		sendMessage(sender, "&8&l&m╚             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+		sendMessage(sender, "&8&l║&8&m                                                    ");
+		sendMessage(sender, "&8&l║ &6&lPlaceholders Total: &a&l" + Shared.decimal3.format((float)placeholdersTotal/dataSize/10000000) + "%");
+		sendMessage(sender, "&8&l║ &6&lPlugin Total: &e&l" + Shared.decimal3.format((float)featuresTotal/dataSize/10000000) + "%");
+		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}
 	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {

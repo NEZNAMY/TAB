@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.packets;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
@@ -23,28 +25,32 @@ public class IChatBaseComponent {
 			CraftItemStack_asNMSCopy = Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class);
 			ItemStack_save = Class.forName("net.minecraft.server." + pack + ".ItemStack").getMethod("save", NBTTagCompound);
 		} catch (Throwable t) {
-			serverVersion = 14;
+			serverVersion = 15;
 			//bungeecord, velocity
 		}
 	}
+	
 	private String text;
-	private List<IChatBaseComponent> extras = new ArrayList<IChatBaseComponent>();
-	private EnumChatFormat color;
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underlined;
 	private Boolean strikethrough;
 	private Boolean obfuscated;
+	private EnumChatFormat color;
+	@SuppressWarnings("unused")
+	private String insertion;
 	private ClickAction clickAction;
 	private Object clickValue;
 	private HoverAction hoverAction;
 	private String hoverValue;
+	private List<IChatBaseComponent> extra = new ArrayList<IChatBaseComponent>();
+	
 
 	public IChatBaseComponent(String text) {
 		this.text = text;
 	}
 	public void addExtra(IChatBaseComponent c) {
-		extras.add(c);
+		extra.add(c);
 	}
 	
 	
@@ -81,23 +87,20 @@ public class IChatBaseComponent {
 	
 	
 	public IChatBaseComponent onClickOpenUrl(String url) {
-		clickAction = ClickAction.OPEN_URL;
-		clickValue = url;
-		return this;
+		return onClick(ClickAction.OPEN_URL, url);
 	}
 	public IChatBaseComponent onClickRunCommand(String command) {
-		clickAction = ClickAction.RUN_COMMAND;
-		clickValue = command;
-		return this;
+		return onClick(ClickAction.RUN_COMMAND, command);
 	}
 	public IChatBaseComponent onClickSuggestCommand(String command) {
-		clickAction = ClickAction.SUGGEST_COMMAND;
-		clickValue = command;
-		return this;
+		return onClick(ClickAction.SUGGEST_COMMAND, command);
 	}
 	public IChatBaseComponent onClickChangePage(int newpage) {
-		clickAction = ClickAction.CHANGE_PAGE;
-		clickValue = newpage;
+		return onClick(ClickAction.CHANGE_PAGE, newpage);
+	}
+	private IChatBaseComponent onClick(ClickAction action, Object value) {
+		clickAction = action;
+		clickValue = value;
 		return this;
 	}
 	
@@ -106,30 +109,29 @@ public class IChatBaseComponent {
 	
 	
 	public IChatBaseComponent onHoverShowText(String text) {
-		hoverAction = HoverAction.SHOW_TEXT;
-		hoverValue = text;
-		return this;
+		return onHover(HoverAction.SHOW_TEXT, text);
 	}
 	public IChatBaseComponent onHoverShowItem(ItemStack item) {
-		hoverAction = HoverAction.SHOW_ITEM;
-//		hoverValue = CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
-		hoverValue = serialize(item);
-		return this;
+		return onHover(HoverAction.SHOW_ITEM, serialize(item));
+	}
+	public IChatBaseComponent onHoverShowEntity(UUID id, @Nullable String customname, @Nullable String type) {
+		String value = "{id:" + id.toString();
+		if (type != null) value += ",type:" + type;
+		if (customname != null) value += ",name:" + customname;
+		return onHover(HoverAction.SHOW_ENTITY, value + "}");
 	}
 	private String serialize(ItemStack item) {
 		try {
+//			return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
 			return ItemStack_save.invoke(CraftItemStack_asNMSCopy.invoke(null, item), NBTTagCompound.getConstructor().newInstance()).toString();
 		} catch (Throwable t) {
 			t.printStackTrace();
 			return "null";
 		}
 	}
-	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
-		hoverAction = HoverAction.SHOW_ENTITY;
-		String value = "{id:" + id.toString();
-		if (type != null) value += ",type:" + type;
-		if (customname != null) value += ",name:" + customname;
-		hoverValue = (value += "}");
+	private IChatBaseComponent onHover(HoverAction action, String value) {
+		hoverAction = action;
+		hoverValue = value;
 		return this;
 	}
 	
@@ -138,15 +140,15 @@ public class IChatBaseComponent {
 	
 	
 	public String toString() {
-		if (extras.isEmpty()) {
+		if (extra.isEmpty()) {
 			if (text == null) return null;
 			if (text.length() == 0) return "{\"translate\":\"\"}";
 		}
 		JSONObject json = new JSONObject();
 		if (serverVersion >= 7) {
 			//1.7+
-			if (text != null && text.length() > 0) json.put("text", text);
-			if (!extras.isEmpty()) json.put("extra", extras);
+			if (text != null) json.put("text", text);
+			if (!extra.isEmpty()) json.put("extra", extra);
 			if (color != null) json.put("color", color.toString().toLowerCase());
 			if (bold != null) json.put("bold", bold);
 			if (italic != null) json.put("italic", italic);
@@ -169,8 +171,8 @@ public class IChatBaseComponent {
 		} else {
 			String text = "";
 			if (this.text != null) text += this.text;
-			if (!extras.isEmpty()) {
-				for (IChatBaseComponent c : extras) {
+			if (!extra.isEmpty()) {
+				for (IChatBaseComponent c : extra) {
 					if (c.text != null) text += c.text;
 				}
 			}
