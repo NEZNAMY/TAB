@@ -37,7 +37,7 @@ public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
-	public static final String CHANNEL_NAME = "TAB:Placeholders";
+	public static final String CHANNEL_NAME = "tab:placeholders";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
 	public static final String pluginVersion = "2.7.0-pre1";
 	public static final int currentVersionId = 265;
