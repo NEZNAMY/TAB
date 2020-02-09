@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -123,8 +126,7 @@ public class Configs {
 				errorFile.delete();
 			}
 		}
-		loadAnimations();
-		Shared.registerAnimationPlaceholders();
+		Placeholders.clearAll();
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
@@ -135,31 +137,81 @@ public class Configs {
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
+		loadAnimations();
 		loadBossbar();
 		loadTranslation();
-		if (Premium.is()) Premium.loadPremiumConfig();
-		for (String placeholder : Placeholders.usedPlaceholders) {
-			if (placeholder.contains("rel_")) continue; //relational placeholders are something else
-			
-			//filtering though placeholder types
-			if (Placeholders.myPlayerPlaceholders.containsKey(placeholder)) {
-				Shared.debug("Registered own player placeholder " + placeholder);
-				Placeholders.usedPlayerPlaceholders.put(placeholder, Placeholders.myPlayerPlaceholders.get(placeholder));
-				continue;
-			}
-			if (Placeholders.myServerPlaceholders.containsKey(placeholder)) {
-				Shared.debug("Registered own server placeholder " + placeholder);
-				Placeholders.usedServerPlaceholders.put(placeholder, Placeholders.myServerPlaceholders.get(placeholder));
-				continue;
-			}
-			if (Placeholders.myServerConstants.containsKey(placeholder)) {
-				Shared.debug("Registered own server constant " + placeholder);
-				Placeholders.usedServerConstants.put(placeholder, Placeholders.myServerConstants.get(placeholder));
-				continue;
-			}
-			
-			Shared.mainClass.registerUnknownPlaceholder(placeholder);
+		checkAnimations(config.getValues());
+		checkAnimations(bossbar.getValues());
+		if (Premium.is()) {
+			Premium.loadPremiumConfig();
+			checkAnimations(Premium.premiumconfig.getValues());
 		}
+		
+	}
+	@SuppressWarnings("unchecked")
+	private static void checkAnimations(Map<String, Object> values) {
+		for (Entry<String, Object> entry : values.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if (value instanceof String || value instanceof List) {
+				if (HeaderFooter.enable) {
+					checkAnimation(key, "header", value, "header", HeaderFooter.refresh);
+					checkAnimation(key, "footer", value, "footer", HeaderFooter.refresh);
+				}
+				if (NameTag16.enable || unlimitedTags) {
+					checkAnimation(key, "tagprefix", value, "tagprefix", NameTag16.refresh);
+					checkAnimation(key, "tagsuffix", value, "tagsuffix", NameTag16.refresh);
+				}
+				if (Playerlist.enable) {
+					checkAnimation(key, "tabprefix", value, "tabprefix", Playerlist.refresh);
+					checkAnimation(key, "tabsuffix", value, "tabsuffix", Playerlist.refresh);
+				}
+				if (ScoreboardManager.enabled) {
+					checkAnimation(key, "title", value, "scoreboard title", ScoreboardManager.refresh);
+					checkAnimation(key, "lines", value, "scoreboard", ScoreboardManager.refresh);
+				}
+				if (BossBar.enabled) {
+					checkAnimation(key, "style", value, "bossbar style", BossBar.refresh);
+					checkAnimation(key, "color", value, "bossbar color", BossBar.refresh);
+					checkAnimation(key, "progress", value, "bossbar progress", BossBar.refresh);
+					checkAnimation(key, "text", value, "bossbar text", BossBar.refresh);
+				}
+			}
+			if (value instanceof Map) checkAnimations((Map<String, Object>) value);
+		}
+	}
+	private static void checkAnimation(String key, String searching, Object value, String position, int refresh) {
+		if (key.contains(searching)) {
+			for (Animation a : animations) {
+				if (value.toString().contains("%animation:" + a.getName() + "%") && a.getInterval() < refresh) {
+					Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+				}
+			}
+		}
+	}
+	public static void assignPlaceholder(String placeholder) {
+		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
+		if (!Placeholders.usedPlaceholders.contains(placeholder)) return;
+		
+		//filtering though placeholder types
+		if (Placeholders.myPlayerPlaceholders.containsKey(placeholder)) {
+			Placeholders.usedPlayerPlaceholders.put(placeholder, Placeholders.myPlayerPlaceholders.get(placeholder));
+			return;
+		}
+		if (Placeholders.myServerPlaceholders.containsKey(placeholder)) {
+			Placeholders.usedServerPlaceholders.put(placeholder, Placeholders.myServerPlaceholders.get(placeholder));
+			return;
+		}
+		if (Placeholders.myServerConstants.containsKey(placeholder)) {
+			Placeholders.usedServerConstants.put(placeholder, Placeholders.myServerConstants.get(placeholder));
+			return;
+		}
+		if (placeholder.contains("animation:")) {
+			String animation = placeholder.substring(11, placeholder.length()-1);
+			Shared.startupWarn("Unknown animation &e\"" + animation + "\"&c used in configuration. You need to define it in animations.yml");
+			return;
+		}
+		Shared.mainClass.registerUnknownPlaceholder(placeholder);
 	}
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
@@ -167,6 +219,10 @@ public class Configs {
 			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
 			Playerlist.enable = config.getBoolean("change-tablist-prefix-suffix", true);
 		}
+		NameTag16.refresh = NameTagX.refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		Playerlist.refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		HeaderFooter.refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
+		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
 		timeOffset = config.getDouble("placeholders.time-offset", 0);

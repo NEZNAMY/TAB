@@ -6,7 +6,6 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.Shared.Feature;
 
 public class ScoreboardManager {
 
@@ -27,7 +26,7 @@ public class ScoreboardManager {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			register(p);
 		}
-		Shared.scheduleRepeatingTask(refresh*50, "refreshing scoreboard", Feature.SCOREBOARD, new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing scoreboard", "Scoreboard", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					Scoreboard board = p.getActiveScoreboard();

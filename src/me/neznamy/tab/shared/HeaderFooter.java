@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class HeaderFooter {
@@ -11,7 +10,7 @@ public class HeaderFooter {
 	public static void load() {
 		if (!enable) return;
 		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
-		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", Feature.HEADERFOOTER, new Runnable(){
+		Shared.scheduleRepeatingTask(refresh, "refreshing header/footer", "Header/Footer", new Runnable(){
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, false);
 			}

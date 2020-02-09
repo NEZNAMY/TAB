@@ -19,9 +19,9 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.Shared.Feature;
 
 public class NameTagX implements Listener{
 
@@ -56,16 +56,17 @@ public class NameTagX implements Listener{
 				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", Feature.NAMETAG, new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAGX, new Runnable() {
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
-			}
-		});
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
+			Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
+				public void run() {
+					for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
+				}
+			});
 	}
 	public static void playerJoin(ITabPlayer p) {
 		if (!enable) return;
@@ -86,7 +87,7 @@ public class NameTagX implements Listener{
 			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
 			return;
 		}
-		Shared.runTask("processing sneak toggle", Feature.NAMETAGX, new Runnable() {
+		Shared.runTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
 			public void run() {
 				NameTagLineManager.sneak(p, e.isSneaking());
 			}
@@ -100,7 +101,7 @@ public class NameTagX implements Listener{
 			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player moved");
 			return;
 		}
-		if (p.previewingNametag) Shared.runTask("processing move", Feature.NAMETAGX, new Runnable() {
+		if (p.previewingNametag) Shared.runTask("processing move", "NameTagX - move event", new Runnable() {
 
 			public void run() {
 				NameTagLineManager.teleportArmorStand(p, p);
@@ -130,7 +131,7 @@ public class NameTagX implements Listener{
 						//activating this code will fix desync on boats
 						//however, boat movement will be extremely laggy
 						//seems to only work for 1.8.x servers idk why
-/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
+						/*							if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
 								if (packetReceiver == passenger) continue;
 								if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
 								new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);
@@ -141,7 +142,7 @@ public class NameTagX implements Listener{
 		}
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
 			ITabPlayer spawnedPlayer = Shared.getPlayer((int)packet.a);
-//			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag && !packetReceiver.disabledNametag) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);			
+			//			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag && !packetReceiver.disabledNametag) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);			
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {

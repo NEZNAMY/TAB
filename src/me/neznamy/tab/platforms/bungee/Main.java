@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungee;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -69,8 +70,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
-			registerPlaceholders();
 			Configs.loadFiles();
+			registerPlaceholders();
 			Shared.data.clear();
 			for (ProxiedPlayer p : getProxy().getPlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -78,6 +79,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				if (inject) inject(t.getUniqueId());
 			}
 			Placeholders.recalculateOnlineVersions();
+			Shared.cpu = new CPUManager();
 			BossBar.load();
 			NameTag16.load();
 			Playerlist.load();
@@ -85,7 +87,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			BelowName.load();
 			HeaderFooter.load();
 			ScoreboardManager.load();
-			Shared.startCPUTask();
 			Shared.checkForUpdates();
 			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -218,9 +219,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		return false;
 	}
 	public static void registerPlaceholders() {
-		Placeholders.clearAll();
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
-		Shared.registerUniversalPlaceholders();
 		if (PluginHooks.premiumVanish) {
 			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%vanish-fake-online%", 1000) {
 				public String get() {
@@ -240,6 +239,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				}
 			});
 		}
+		Shared.registerUniversalPlaceholders();
 	}
 
 
@@ -263,19 +263,18 @@ public class Main extends Plugin implements Listener, MainClass{
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Configs.configComments);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
-		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
 		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
-		BelowName.number = Configs.config.getString("belowname.number", "%health%");
-		BelowName.text = Configs.config.getString("belowname.text", "Health");
-		Playerlist.refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		BelowName.number = Configs.config.getString("belowname.number", "%ping%");
+		BelowName.text = Configs.config.getString("belowname.text", "&aPing");
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		NameTag16.refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		HeaderFooter.refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 50);
 		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 	public void registerUnknownPlaceholder(String identifier) {
-		// TODO Auto-generated method stub
+		
+	}
+	public boolean convertConfig(Map<String, Object> values) {
+		return false;
 	}
 }

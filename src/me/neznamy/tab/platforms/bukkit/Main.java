@@ -24,7 +24,6 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -135,8 +134,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
-			registerPlaceholders();
 			Configs.loadFiles();
+			registerPlaceholders();
 			Shared.data.clear();
 			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
@@ -144,6 +143,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				if (inject) inject(t.getUniqueId());
 			}
 			Placeholders.recalculateOnlineVersions();
+			Shared.cpu = new CPUManager();
 			BossBar.load();
 			BossBar_legacy.load();
 			NameTagX.load();
@@ -154,7 +154,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			HeaderFooter.load();
 			PerWorldPlayerlist.load();
 			ScoreboardManager.load();
-			Shared.startCPUTask();
 			Shared.checkForUpdates();
 			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -178,7 +177,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
 			PerWorldPlayerlist.trigger(e.getPlayer());
-			Shared.runTask("player joined the server", Feature.OTHER, new Runnable() {
+			Shared.runTask("player joined the server", "Other", new Runnable() {
 
 				public void run() {
 					PluginHooks.DeluxeTags_onChat(p);
@@ -290,9 +289,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		PluginHooks.deluxetags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-
-		Placeholders.clearAll();
-		Shared.registerUniversalPlaceholders();
+		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
+		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 3000) {
 			public String get(ITabPlayer p) {
@@ -486,6 +484,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return Bukkit.getMaxPlayers()+"";
 			}
 		});
+		Shared.registerUniversalPlaceholders();
 	}
 	@SuppressWarnings("unchecked")
 	public static Player[] getOnlinePlayers(){
@@ -529,11 +528,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		NameTag16.refresh = NameTagX.refresh = (Configs.config.getInt("nametag-refresh-interval-ticks", 20)*50);
-		Playerlist.refresh = (Configs.config.getInt("tablist-refresh-interval-ticks", 20)*50);
 		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
 		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
-		HeaderFooter.refresh = (Configs.config.getInt("header-footer-refresh-interval-ticks", 1)*50);
 		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
 		NameTagX.enable = false;
 		NameTag16.enable = false;
@@ -556,21 +552,20 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
 		if (TabObjective.type == TabObjectiveType.PING) {
 			TabObjective.rawValue = "%ping%";
-			Shared.debug("Registered own player placeholder %ping%");
-			Placeholders.usedPlayerPlaceholders.put("%ping%", Placeholders.myPlayerPlaceholders.get("%ping%"));
+			Placeholders.usedPlaceholders.add("%ping%");
 		}
 		if (TabObjective.type == TabObjectiveType.HEARTS) {
 			TabObjective.rawValue = "%health%";
-			Shared.debug("Registered own player placeholder %health%");
-			Placeholders.usedPlayerPlaceholders.put("%health%", Placeholders.myPlayerPlaceholders.get("%health%"));
+			Placeholders.usedPlaceholders.add("%health%");
 		}
-		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
 		BelowName.refresh = 50*Configs.config.getInt("belowname.refresh-interval-ticks", 5);
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
+		
+		
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
@@ -588,7 +583,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return PluginHooks.PlaceholderAPI_setPlaceholders(null, identifier);
 				}
 			});
-			Shared.debug("Registered PAPI server placeholder " + identifier + " with cooldown " + server);
 			return;
 		}
 		int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
@@ -598,7 +592,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
 				}
 			});
-			Shared.debug("Registered PAPI player placeholder " + identifier + " with cooldown " + server);
 			return;
 		}
 		if (identifier.contains("_")) {
@@ -607,14 +600,30 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
 				}
 			});
-			Shared.debug("Registered PAPI player placeholder " + identifier);
-			return;
-		}
-		if (identifier.contains("animation:")) {
-			String animation = identifier.substring(11, identifier.length()-1);
-			Shared.startupWarn("Unknown animation &e\"" + animation + "\"&c used in config. You need to define it in animations.yml");
 			return;
 		}
 //		Shared.print('6', "Unknown placeholder: " + identifier);
+	}
+
+	public boolean convertConfig(Map<String, Object> values) {
+		boolean changed = false;
+		if (values.containsKey("nametag-refresh-interval-ticks")) {
+			convert(values, "nametag-refresh-interval-ticks", values.get("nametag-refresh-interval-ticks"), "nametag-refresh-interval-milliseconds", (int)values.get("nametag-refresh-interval-ticks") * 50);
+			changed = true;
+		}
+		if (values.containsKey("tablist-refresh-interval-ticks")) {
+			convert(values, "tablist-refresh-interval-ticks", values.get("tablist-refresh-interval-ticks"), "tablist-refresh-interval-milliseconds", (int)values.get("tablist-refresh-interval-ticks") * 50);
+			changed = true;
+		}
+		if (values.containsKey("header-footer-refresh-interval-ticks")) {
+			convert(values, "header-footer-refresh-interval-ticks", values.get("header-footer-refresh-interval-ticks"), "header-footer-refresh-interval-milliseconds", (int)values.get("header-footer-refresh-interval-ticks") * 50);
+			changed = true;
+		}
+		return changed;
+	}
+	private void convert(Map<String, Object> values, String oldKey, Object oldValue, String newKey, Object newValue) {
+		values.remove(oldKey);
+		values.put(newKey, newValue);
+		Shared.print('2', "Converted old config value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }

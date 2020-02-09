@@ -44,7 +44,7 @@ public class Premium {
 		ScoreboardManager.useNumbers = premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		ScoreboardManager.disabledWorlds = premiumconfig.getList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1);
+		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1)*50;
 		ScoreboardManager.perWorld = (Map<String, String>) premiumconfig.get("scoreboard.per-world");
 		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");

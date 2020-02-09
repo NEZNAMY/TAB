@@ -43,6 +43,8 @@ public class PluginHooks {
 	public static boolean permissionsEx;
 	public static boolean placeholderAPI;
 	public static boolean deluxetags;
+	public static boolean viaversion;
+	public static boolean protocolsupport;
 	public static Object essentials;
 	public static Object idisguise;
 	public static Object groupManager;
@@ -205,7 +207,7 @@ public class PluginHooks {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
 				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, s);
-				Shared.placeholderCpu("PlaceholderAPI-Relational", System.nanoTime()-startTime);
+				Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {

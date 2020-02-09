@@ -46,16 +46,12 @@ public class Shared {
 
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 
-	public static ConcurrentHashMap<Feature, Long> cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
-	public static List<CPUSample> cpuHistory = new ArrayList<CPUSample>();
-	public static ConcurrentHashMap<String, Long> placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
-	public static List<ConcurrentHashMap<String, Long>> placeholderCpuHistory = new ArrayList<ConcurrentHashMap<String, Long>>();
-
 	public static boolean disabled;
 	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
 	public static String separatorType;
+	public static CPUManager cpu;
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
@@ -113,20 +109,6 @@ public class Shared {
 		}
 		return defaultValue;
 	}
-	public static void startCPUTask() {
-		scheduleRepeatingTask(1000, "calculating cpu usage", Feature.OTHER, new Runnable() {
-
-			public void run() {
-				cpuHistory.add(new CPUSample(cpuLastSecond));
-				cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
-				if (cpuHistory.size() > 60) cpuHistory.remove(0);
-
-				placeholderCpuHistory.add(placeholderCpuLastSecond);
-				placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
-				if (placeholderCpuHistory.size() > 60) placeholderCpuHistory.remove(0);
-			}
-		});
-	}
 	private static String ERROR_PREFIX() {
 		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
 	}
@@ -143,23 +125,8 @@ public class Shared {
 	public static void debug(String message) {
 		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&" + 7 + "[TAB DEBUG] " + message);
 	}
-	public static void featureCPU(Feature feature, long value) {
-		Long previous = cpuLastSecond.get(feature);
-		if (previous != null) {
-			cpuLastSecond.put(feature, previous+value);
-		} else {
-			cpuLastSecond.put(feature, value);
-		}
-	}
-	public static void placeholderCpu(String placeholder, long value) {
-		Long previous = placeholderCpuLastSecond.get(placeholder);
-		if (previous != null) {
-			placeholderCpuLastSecond.put(placeholder, previous+value);
-		} else {
-			placeholderCpuLastSecond.put(placeholder, value);
-		}
-	}
-	public static void scheduleRepeatingTask(int delayMilliseconds, String description, Feature feature, Runnable r) {
+	
+	public static void scheduleRepeatingTask(int delayMilliseconds, String description, String feature, Runnable r) {
 		if (delayMilliseconds <= 0) return;
 		tasks.add(exe.submit(new Runnable() {
 
@@ -168,7 +135,7 @@ public class Shared {
 					try {
 						long time = System.nanoTime();
 						r.run();
-						featureCPU(feature, System.nanoTime()-time);
+						cpu.addFeatureTime(feature.toString(), System.nanoTime()-time);
 						Thread.sleep(delayMilliseconds);
 					} catch (InterruptedException pluginDisabled) {
 						break;
@@ -179,14 +146,14 @@ public class Shared {
 			}
 		}));
 	}
-	public static void runTask(String description, Feature feature, Runnable r) {
+	public static void runTask(String description, String feature, Runnable r) {
 		exe.submit(new Runnable() {
 
 			public void run() {
 				try {
 					long time = System.nanoTime();
 					r.run();
-					featureCPU(feature, System.nanoTime()-time);
+					cpu.addFeatureTime(feature.toString(), System.nanoTime()-time);
 				} catch (Throwable t) {
 					error(null, "An error occurred when " + description, t);
 				}
@@ -207,10 +174,6 @@ public class Shared {
 			long time = System.currentTimeMillis();
 			cancelAllTasks();
 			Configs.animations = new ArrayList<Animation>();
-			cpuHistory = new ArrayList<CPUSample>();
-			cpuLastSecond = new ConcurrentHashMap<Feature, Long>();
-			placeholderCpuHistory = new ArrayList<ConcurrentHashMap<String, Long>>();
-			placeholderCpuLastSecond = new ConcurrentHashMap<String, Long>();
 			HeaderFooter.unload();
 			TabObjective.unload();
 			BelowName.unload();
@@ -295,8 +258,7 @@ public class Shared {
 			}
 		});
 	}
-	
-	public static void registerAnimationPlaceholders() {
+	public static void registerUniversalPlaceholders() {
 		for (Animation a : Configs.animations) {
 			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
 				public String get() {
@@ -317,8 +279,6 @@ public class Shared {
 				}
 			});
 		}
-	}
-	public static void registerUniversalPlaceholders() {
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getRank();
@@ -418,8 +378,15 @@ public class Shared {
 				return p.getVersion().getFriendlyName();
 			}
 		});
+		for (String placeholder : Placeholders.usedPlaceholders) {
+			if (!Placeholders.usedServerPlaceholders.containsKey(placeholder) && 
+				!Placeholders.usedPlayerPlaceholders.containsKey(placeholder) && 
+				!Placeholders.usedServerConstants.containsKey(placeholder)) {
+				Configs.assignPlaceholder(placeholder);
+			}
+		}
 	}
-	public static enum Feature{
+/*	public static enum Feature{
 
 		NAMETAG("Name tags"),
 		NAMETAGAO("Name tag anti-override"),
@@ -441,8 +408,8 @@ public class Shared {
 		public String toString() {
 			return string;
 		}
-	}
-	public static class CPUSample{
+	}*/
+/*	public static class CPUSample{
 
 		private ConcurrentHashMap<Feature, Long> values;
 
@@ -459,5 +426,5 @@ public class Shared {
 		public ConcurrentHashMap<Feature, Long> getValues(){
 			return values;
 		}
-	}
+	}*/
 }

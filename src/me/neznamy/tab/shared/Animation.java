@@ -51,4 +51,7 @@ public class Animation {
 	public String getName(){
 		return name;
 	}
+	public int getInterval() {
+		return interval;
+	}
 }

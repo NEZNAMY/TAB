@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class BelowName{
@@ -20,7 +19,7 @@ public class BelowName{
 			if (p.disabledBelowname) continue;
 			PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing belowname", Feature.BELOWNAME, new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing belowname", "Belowname", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledBelowname) continue;

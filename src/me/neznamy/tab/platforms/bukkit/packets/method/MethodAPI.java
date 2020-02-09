@@ -14,7 +14,6 @@ import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 public abstract class MethodAPI {
 
 	private static MethodAPI instance;
-	private static boolean spigot;
 	
 	public static Class<?> BarColor;
 	public static Class<?> BarStyle;
@@ -49,7 +48,7 @@ public abstract class MethodAPI {
 	public static Class<?> PacketPlayOutEntity;
 	public static Class<?> PlayerInfoData;
 	
-	public static Field PacketPlayOutEntityMetadata_LIST;
+	public static Field PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 	
 	public static MethodAPI getInstance() {
 		return instance;
@@ -87,20 +86,16 @@ public abstract class MethodAPI {
 	public abstract Item readDataWatcherItem(Object nmsItem);
 	
 	public double getTPS() {
-		if (!spigot) return -1;
-		return getRecentTps()[0];
+		try {
+			return getRecentTps()[0];
+		} catch (Throwable t) {
+			return -1;
+		}
 	}
 
 	static {
 		try {
 			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]).getConstructor().newInstance();
-			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
-			try {
-				Class.forName("org.spigotmc.SpigotConfig");
-				spigot = true;
-			} catch (Throwable e) {
-				spigot = false;
-			}
 		} catch (Throwable e) {
 			//bungee or velocity
 		}

@@ -23,7 +23,6 @@ import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.Playerlist;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 public class Injector {
@@ -92,11 +91,11 @@ public class Injector {
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
 						if ((NameTag16.enable || NameTagX.enable) && Main.killPacket(packet)) {
-							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
+							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 							return;
 						}
 					}
-					Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
+					Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 
 					if (NameTagX.enable) {
 						time = System.nanoTime();
@@ -111,14 +110,14 @@ public class Injector {
 							}
 							if (packetPlayer == null || !packetPlayer.disabledNametag) {
 								//sending packets outside of the packet reader or protocollib will cause problems
-								Shared.runTask("processing packet out", Feature.NAMETAGX, new Runnable() {
+								Shared.runTask("processing packet out", "NameTagX - processing", new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(pack, player);
 									}
 								});
 							}
 						}
-						Shared.featureCPU(Feature.NAMETAGX, System.nanoTime()-time);
+						Shared.cpu.addFeatureTime("NameTagX - reading", System.nanoTime()-time);
 					}
 					PacketPlayOut p = null;
 
@@ -144,7 +143,7 @@ public class Injector {
 							PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 						}
 					}
-					Shared.featureCPU(Feature.OTHER, System.nanoTime()-time);
+					Shared.cpu.addFeatureTime("Other", System.nanoTime()-time);
 					if (Playerlist.enable) {
 						//correcting name, spectators if enabled, changing npc names if enabled
 						time = System.nanoTime();
@@ -152,7 +151,7 @@ public class Injector {
 							Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
 							packet = p.toNMS(null);
 						}
-						Shared.featureCPU(Feature.PLAYERLIST_2, System.nanoTime()-time);
+						Shared.cpu.addFeatureTime("Tablist names 2", System.nanoTime()-time);
 					}
 				} catch (Throwable e){
 					Shared.error(null, "An error occurred when reading packets", e);

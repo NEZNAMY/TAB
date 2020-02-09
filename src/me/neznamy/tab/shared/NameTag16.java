@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared;
 
-import me.neznamy.tab.shared.Shared.Feature;
-
 public class NameTag16 {
 
 	public static boolean enable;
@@ -13,17 +11,18 @@ public class NameTag16 {
 	public static void load() {
 		if (!enable) return;
 		for (ITabPlayer p : Shared.getPlayers()) p.registerTeam();
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", Feature.NAMETAG, new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
-		Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", Feature.NAMETAG, new Runnable() {
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
-			}
-		});
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
+			Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
+				public void run() {
+					for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
+				}
+			});
 	}
 	public static void playerJoin(ITabPlayer p) {
 		if (!enable) return;

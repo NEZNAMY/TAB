@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.Shared.Feature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -28,7 +27,7 @@ public class BossBar{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.detectBossBarsAndSend();
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", Feature.BOSSBAR, new Runnable() {
+		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible) continue;

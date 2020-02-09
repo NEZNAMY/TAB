@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.Shared.Feature;
 import net.minecraft.util.io.netty.channel.*;
 
 public class Injector1_7 {
@@ -38,11 +37,11 @@ public class Injector1_7 {
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
 						if (NameTag16.enable && Main.killPacket(packet)) {
-							Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
+							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 							return;
 						}
 					}
-					Shared.featureCPU(Feature.NAMETAGAO, System.nanoTime()-time);
+					Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 				} catch (Throwable e){
 					Shared.error(null, "An error occurred when reading packets", e);
 				}

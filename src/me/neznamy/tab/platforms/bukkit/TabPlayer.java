@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -38,10 +37,10 @@ public class TabPlayer extends ITabPlayer{
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		int version;
-		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
+		if (PluginHooks.protocolsupport){
 			version = PluginHooks.ProtocolSupportAPI_getProtocolVersionId(this);
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
-		} else if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")){
+		} else if (PluginHooks.viaversion){
 			version = PluginHooks.ViaVersion_getPlayerVersion(this);
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 		}
