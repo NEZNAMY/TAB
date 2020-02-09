@@ -37,8 +37,9 @@ public class Shared {
 
 	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
+	public static final String CHANNEL_NAME = "TAB:Placeholders";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
-	public static final String pluginVersion = "2.6.6-pre1";
+	public static final String pluginVersion = "2.7.0-pre1";
 	public static final int currentVersionId = 265;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final DecimalFormat decimal3 = new DecimalFormat("#.###");
@@ -89,14 +90,14 @@ public class Shared {
 				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
 				if (message != null) {
 					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-					if (Configs.SECRET_log_errors_into_console) print('c', message);
+					if (Configs.SECRET_debugMode) print('c', message);
 				}
 				if (t != null) {
 					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_log_errors_into_console) printClean("&c" + t.getClass().getName() +": " + t.getMessage());
+					if (Configs.SECRET_debugMode) printClean("&c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
 						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_log_errors_into_console) printClean("&c       at " + ste.toString());
+						if (Configs.SECRET_debugMode) printClean("&c       at " + ste.toString());
 					}
 				}
 				buf.close();
@@ -128,6 +129,7 @@ public class Shared {
 	
 	public static void scheduleRepeatingTask(int delayMilliseconds, String description, String feature, Runnable r) {
 		if (delayMilliseconds <= 0) return;
+		debug("Starting repeating task [" + feature + "] with refresh " + delayMilliseconds + "ms");
 		tasks.add(exe.submit(new Runnable() {
 
 			public void run() {
@@ -260,7 +262,7 @@ public class Shared {
 	}
 	public static void registerUniversalPlaceholders() {
 		for (Animation a : Configs.animations) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", 0) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", a.getInterval()-1) {
 				public String get() {
 					return a.getMessage();
 				}
@@ -269,7 +271,7 @@ public class Shared {
 					return a.getAllMessages();
 				}
 			});
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("{animation:" + a.getName() + "}", 0) {
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("{animation:" + a.getName() + "}", a.getInterval()-1) {
 				public String get() {
 					return a.getMessage();
 				}
@@ -386,45 +388,4 @@ public class Shared {
 			}
 		}
 	}
-/*	public static enum Feature{
-
-		NAMETAG("Name tags"),
-		NAMETAGAO("Name tag anti-override"),
-		PLAYERLIST_1("Tablist names 1"),
-		PLAYERLIST_2("Tablist names 2"),
-		BOSSBAR("Boss Bar"),
-		SCOREBOARD("Scoreboard"),
-		HEADERFOOTER("Header/Footer"),
-		TABLISTOBJECTIVE("Tablist objective"),
-		NAMETAGX("Unlimited nametag mode"),
-		BELOWNAME("Belowname"),
-		OTHER("Other");
-
-		private String string;
-
-		Feature(String string) {
-			this.string = string;
-		}
-		public String toString() {
-			return string;
-		}
-	}*/
-/*	public static class CPUSample{
-
-		private ConcurrentHashMap<Feature, Long> values;
-
-		public CPUSample(ConcurrentHashMap<Feature, Long> cpuLastSecond) {
-			this.values = cpuLastSecond;
-		}
-		public long getTotalCpuTime() {
-			long time = 0;
-			for (long value : values.values()) {
-				time += value;
-			}
-			return time;
-		}
-		public ConcurrentHashMap<Feature, Long> getValues(){
-			return values;
-		}
-	}*/
 }

@@ -36,6 +36,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public static Main instance;
 	private static final boolean UNSAFE_BUILD = false;
+	@SuppressWarnings("unused")
+	private PluginMessenger plm;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -126,7 +128,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Injector1_7.uninject(p.getUniqueId());
 				}
 			}
-			Shared.unload();
+			if (Configs.bukkitBridgeMode) {
+				Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
+			} else {
+				Shared.unload();
+			}
 		}
 	}
 	public void load(boolean broadcastTime, boolean inject) {
@@ -134,27 +140,35 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
-			Configs.loadFiles();
-			registerPlaceholders();
-			Shared.data.clear();
-			for (Player p : getOnlinePlayers()) {
-				ITabPlayer t = new TabPlayer(p);
-				Shared.data.put(p.getUniqueId(), t);
-				if (inject) inject(t.getUniqueId());
-			}
-			Placeholders.recalculateOnlineVersions();
 			Shared.cpu = new CPUManager();
-			BossBar.load();
-			BossBar_legacy.load();
-			NameTagX.load();
-			NameTag16.load();
-			Playerlist.load();
-			TabObjective.load();
-			BelowName.load();
-			HeaderFooter.load();
-			PerWorldPlayerlist.load();
-			ScoreboardManager.load();
-			Shared.checkForUpdates();
+			Configs.loadFiles();
+			if (Configs.bukkitBridgeMode) {
+				PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+				if (!PluginHooks.placeholderAPI) {
+					Shared.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI is not found, this will not work.");
+				}
+				plm = new PluginMessenger(this);
+			} else {
+				registerPlaceholders();
+				Shared.data.clear();
+				for (Player p : getOnlinePlayers()) {
+					ITabPlayer t = new TabPlayer(p);
+					Shared.data.put(p.getUniqueId(), t);
+					if (inject) inject(t.getUniqueId());
+				}
+				Placeholders.recalculateOnlineVersions();
+				BossBar.load();
+				BossBar_legacy.load();
+				NameTagX.load();
+				NameTag16.load();
+				Playerlist.load();
+				TabObjective.load();
+				BelowName.load();
+				HeaderFooter.load();
+				PerWorldPlayerlist.load();
+				ScoreboardManager.load();
+				Shared.checkForUpdates();
+			}
 			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
@@ -173,6 +187,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void a(PlayerJoinEvent e) {
 		try {
 			if (Shared.disabled) return;
+			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
@@ -199,6 +214,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void a(PlayerQuitEvent e){
 		try {
 			if (Shared.disabled) return;
+			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) {
 				Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player left");
@@ -232,6 +248,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void a(PlayerChangedWorldEvent e){
 		try {
 			if (Shared.disabled) return;
+			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
 			PerWorldPlayerlist.trigger(e.getPlayer());
@@ -245,6 +262,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@EventHandler
 	public void a(PlayerCommandPreprocessEvent e) {
 		if (Shared.disabled) return;
+		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
@@ -574,6 +592,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
@@ -589,7 +608,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (player != -1) {
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
+					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
 				}
 			});
 			return;
@@ -597,7 +616,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (identifier.contains("_")) {
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
+					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
 				}
 			});
 			return;

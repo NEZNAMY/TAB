@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,69 +10,55 @@ import java.util.concurrent.ConcurrentMap;
 
 public class CPUManager {
 
-	public static final int CPU_HISTORY = 60;
+	private ConcurrentMap<String, Long> placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
+	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
 	
-	private ConcurrentMap<String, ConcurrentHashMap<Long, Long>> placeholders = new ConcurrentHashMap<String, ConcurrentHashMap<Long, Long>>();
-	private ConcurrentMap<String, ConcurrentHashMap<Long, Long>> features = new ConcurrentHashMap<String, ConcurrentHashMap<Long, Long>>();
-	private long startTime = System.currentTimeMillis();
-	
-	public long getHistory() {
-		return Math.min(CPU_HISTORY, (System.currentTimeMillis()-startTime)/1000);
+	private ConcurrentMap<String, Long> featuresLastSecond = new ConcurrentHashMap<String, Long>();
+	private List<ConcurrentMap<String, Long>> featuresLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
+
+	public CPUManager() {
+		Shared.scheduleRepeatingTask(1000, "Calculating cpu usage", "Calculating CPU usage", new Runnable() {
+
+			@Override
+			public void run() {
+				placeholdersLastMinute.add(placeholdersLastSecond);
+				placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
+				if (placeholdersLastMinute.size() > 60) placeholdersLastMinute.remove(0);
+				
+				featuresLastMinute.add(featuresLastSecond);
+				featuresLastSecond = new ConcurrentHashMap<String, Long>();
+				if (featuresLastMinute.size() > 60) featuresLastMinute.remove(0);
+			}
+		});
+	}
+	public long getHistorySize() {
+		return placeholdersLastMinute.size();
 	}
 	public Map<String, Long> getFeatureCPU(){
-		Map<String, Long> map = new HashMap<String, Long>();
-		for (Entry<String, ConcurrentHashMap<Long, Long>> entry : features.entrySet()) {
-			long time = 0;
-			for (Entry<Long, Long> nanos : entry.getValue().entrySet()) {
-				time += nanos.getValue();
-			}
-			map.put(entry.getKey(), time);
-		}
-		return map;
+		return getCPU(featuresLastMinute);
 	}
 	public Map<String, Long> getPlaceholderCPU(){
+		return getCPU(placeholdersLastMinute);
+	}
+	public void addFeatureTime(String feature, long nanoseconds) {
+		addTime(featuresLastSecond, feature, nanoseconds);
+	}
+	public void addPlaceholderTime(String placeholder, long nanoseconds) {
+		addTime(placeholdersLastSecond, placeholder, nanoseconds);
+	}
+	private Map<String, Long> getCPU(List<ConcurrentMap<String, Long>> source){
 		Map<String, Long> map = new HashMap<String, Long>();
-		for (Entry<String, ConcurrentHashMap<Long, Long>> entry : placeholders.entrySet()) {
-			long time = 0;
-			for (Entry<Long, Long> nanos : entry.getValue().entrySet()) {
-				time += nanos.getValue();
+		for (ConcurrentMap<String, Long> second : source) {
+			for (Entry<String, Long> nanos : second.entrySet()) {
+				String key = nanos.getKey();
+				if (!map.containsKey(key)) map.put(key, 0L);
+				map.put(key, map.get(key)+nanos.getValue());
 			}
-			map.put(entry.getKey(), time);
 		}
 		return map;
 	}
-	public void addFeatureTime(String feature, long nanoseconds) {
-		if (!features.containsKey(feature)) {
-			features.put(feature, new ConcurrentHashMap<Long, Long>());
-		}
-		long ms = System.currentTimeMillis();
-		long time = 0;
-		if (features.get(feature).containsKey(ms)) {
-			//some time worked already exists for this millisecond
-			time = features.get(feature).get(ms);
-		}
-		features.get(feature).put(ms, time + nanoseconds);
-		
-		//removing old history
-		for (Entry<Long, Long> entry : features.get(feature).entrySet()) {
-			if (entry.getKey() + CPU_HISTORY*1000 < ms) features.get(feature).remove(entry.getKey());
-		}
-	}
-	public synchronized void addPlaceholderTime(String placeholder, long nanoseconds) {
-		if (!placeholders.containsKey(placeholder)) {
-			placeholders.put(placeholder, new ConcurrentHashMap<Long, Long>());
-		}
-		long ms = System.currentTimeMillis();
-		long time = 0;
-		if (placeholders.get(placeholder).containsKey(ms)) {
-			//some time worked already exists for this millisecond
-			time = placeholders.get(placeholder).get(ms);
-		}
-		placeholders.get(placeholder).put(ms, time + nanoseconds);
-		
-		//removing old history
-		for (Entry<Long, Long> entry : placeholders.get(placeholder).entrySet()) {
-			if (entry.getKey() + CPU_HISTORY*1000 < ms) placeholders.get(placeholder).remove(entry.getKey());
-		}
+	private synchronized void addTime(ConcurrentMap<String, Long> map, String key, long nanoseconds) {
+		if (!map.containsKey(key)) map.put(key, 0L);
+		map.put(key, map.get(key)+nanoseconds);
 	}
 }

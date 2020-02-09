@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -180,9 +181,9 @@ public class PluginHooks {
 			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String placeholder) {
+	public static String PlaceholderAPI_setPlaceholders(UUID id, String placeholder) {
 		if (!placeholderAPI) return placeholder;
-		Player player = (p == null ? null : ((TabPlayer)p).player);
+		Player player = (id == null ? null : Bukkit.getPlayer(id));
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {

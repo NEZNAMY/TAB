@@ -32,6 +32,8 @@ import net.md_5.bungee.protocol.packet.*;
 
 public class Main extends Plugin implements Listener, MainClass{
 
+	private PluginMessenger plm;
+	
 	public void onEnable(){
 		long time = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
@@ -45,6 +47,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 			}
 		});
+		plm = new PluginMessenger(this);
 		load(false, true);
 		Metrics metrics = new Metrics(this);
 		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
@@ -70,6 +73,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
+			Shared.cpu = new CPUManager();
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -79,7 +83,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				if (inject) inject(t.getUniqueId());
 			}
 			Placeholders.recalculateOnlineVersions();
-			Shared.cpu = new CPUManager();
 			BossBar.load();
 			NameTag16.load();
 			Playerlist.load();
@@ -272,7 +275,15 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 	public void registerUnknownPlaceholder(String identifier) {
-		
+		if (identifier.contains("_")) {
+			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
+				public String get(ITabPlayer p) {
+					plm.requestPlaceholder(p, identifier);
+					return lastValue.get(p.getName());
+				}
+			});
+			return;
+		}
 	}
 	public boolean convertConfig(Map<String, Object> values) {
 		return false;

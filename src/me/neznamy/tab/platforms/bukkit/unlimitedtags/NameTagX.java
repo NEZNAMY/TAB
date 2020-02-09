@@ -18,7 +18,9 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket.PacketType;
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -26,7 +28,6 @@ import me.neznamy.tab.shared.Shared;
 public class NameTagX implements Listener{
 
 	public static boolean enable;
-	public static int refresh;
 	public static ConcurrentHashMap<Integer, List<Integer>> vehicles = new ConcurrentHashMap<Integer, List<Integer>>();
 	private static boolean EVENTS_REGISTERED = false;
 
@@ -56,7 +57,7 @@ public class NameTagX implements Listener{
 				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
+		Shared.scheduleRepeatingTask(NameTag16.refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
@@ -82,6 +83,7 @@ public class NameTagX implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {
 		if (Shared.disabled || !enable) return;
+		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
 			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
@@ -96,6 +98,7 @@ public class NameTagX implements Listener{
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
 		if (Shared.disabled || !enable) return;
+		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
 			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player moved");

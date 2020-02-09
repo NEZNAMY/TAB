@@ -46,6 +46,7 @@ public class Main implements MainClass{
 
 	public static ProxyServer server;
 	public static Logger logger;
+//	private PluginMessenger plm;
 
 	@Inject
 	public Main(ProxyServer server, Logger logger) {
@@ -65,6 +66,7 @@ public class Main implements MainClass{
 			}
 		});
 		registerPackets();
+//		plm = new PluginMessenger(this);
 		load(false, true);
 		if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 	}
@@ -79,6 +81,7 @@ public class Main implements MainClass{
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
+			Shared.cpu = new CPUManager();
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -88,7 +91,6 @@ public class Main implements MainClass{
 				if (inject) inject(t.getUniqueId());
 			}
 			Placeholders.recalculateOnlineVersions();
-			Shared.cpu = new CPUManager();
 			BossBar.load();
 			NameTag16.load();
 			Playerlist.load();
@@ -334,7 +336,15 @@ public class Main implements MainClass{
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 	public void registerUnknownPlaceholder(String identifier) {
-		
+/*		if (identifier.contains("_")) {
+			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
+				public String get(ITabPlayer p) {
+					plm.requestPlaceholder(p, identifier);
+					return lastValue.get(p.getName());
+				}
+			});
+			return;
+		}*/
 	}
 	public boolean convertConfig(Map<String, Object> values) {
 		return false;

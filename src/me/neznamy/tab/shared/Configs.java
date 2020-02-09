@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
@@ -79,6 +78,7 @@ public class Configs {
 	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
+	public static boolean bukkitBridgeMode;
 
 	public static ConfigurationFile playerdata; 
 
@@ -133,7 +133,6 @@ public class Configs {
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_safe_register = getSecretOption("safe-team-register", true);
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
-		SECRET_log_errors_into_console = getSecretOption("log-errors-into-console", false);
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
@@ -219,7 +218,7 @@ public class Configs {
 			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
 			Playerlist.enable = config.getBoolean("change-tablist-prefix-suffix", true);
 		}
-		NameTag16.refresh = NameTagX.refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		NameTag16.refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		Playerlist.refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
 		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);

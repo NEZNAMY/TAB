@@ -25,7 +25,8 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l║ &6Placeholders:");
 		Map<String, Long> placeholders = sortByValue(Shared.cpu.getPlaceholderCPU());
 		for (Entry<String, Long> entry : placeholders.entrySet()) {
-			if (entry.getValue()/Shared.cpu.getHistory() > 100000) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/Shared.cpu.getHistory()/10000000)) + "%");
+			if (entry.getValue()/Shared.cpu.getHistorySize() > 100000) 
+				sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizePlaceholder(Shared.decimal3.format((float)entry.getValue()/Shared.cpu.getHistorySize()/10000000)) + "%");
 		}
 		long placeholdersTotal = 0;
 		for (Long time : placeholders.values()) placeholdersTotal += time;
@@ -33,13 +34,13 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l║ &6Feature specific:");
 		Map<String, Long> features = sortByValue(Shared.cpu.getFeatureCPU());
 		for (Entry<String, Long> entry : features.entrySet()) {
-			sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizeFeature(Shared.decimal3.format((float)entry.getValue()/Shared.cpu.getHistory()/10000000)) + "%");
+			sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - &a" + colorizeFeature(Shared.decimal3.format((float)entry.getValue()/Shared.cpu.getHistorySize()/10000000)) + "%");
 		}
 		long featuresTotal = 0;
 		for (Long time : features.values()) featuresTotal += time;
 		sendMessage(sender, "&8&l║&8&m                                                    ");
-		sendMessage(sender, "&8&l║ &6&lPlaceholders Total: &a&l" + Shared.decimal3.format((float)placeholdersTotal/Shared.cpu.getHistory()/10000000) + "%");
-		sendMessage(sender, "&8&l║ &6&lPlugin Total: &e&l" + Shared.decimal3.format((float)featuresTotal/Shared.cpu.getHistory()/10000000) + "%");
+		sendMessage(sender, "&8&l║ &6&lPlaceholders Total: &a&l" + Shared.decimal3.format((float)placeholdersTotal/Shared.cpu.getHistorySize()/10000000) + "%");
+		sendMessage(sender, "&8&l║ &6&lPlugin Total: &e&l" + Shared.decimal3.format((float)featuresTotal/Shared.cpu.getHistorySize()/10000000) + "%");
 		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}
