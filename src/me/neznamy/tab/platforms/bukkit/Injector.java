@@ -19,10 +19,10 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.Playerlist;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 public class Injector {
@@ -70,7 +70,7 @@ public class Injector {
 						}
 					}
 				} catch (Throwable e){
-					Shared.error(null, "An error occurred when reading packets", e);
+					Shared.errorManager.printError("An error occurred when reading packets", e);
 				}
 				super.channelRead(context, packet);
 			}
@@ -110,7 +110,7 @@ public class Injector {
 							}
 							if (packetPlayer == null || !packetPlayer.disabledNametag) {
 								//sending packets outside of the packet reader or protocollib will cause problems
-								Shared.runTask("processing packet out", "NameTagX - processing", new Runnable() {
+								Shared.cpu.runMeasuredTask("processing packet out", "NameTagX - processing", new Runnable() {
 									public void run() {
 										NameTagX.processPacketOUT(pack, player);
 									}
@@ -154,7 +154,7 @@ public class Injector {
 						Shared.cpu.addFeatureTime("Tablist names 2", System.nanoTime()-time);
 					}
 				} catch (Throwable e){
-					Shared.error(null, "An error occurred when reading packets", e);
+					Shared.errorManager.printError("An error occurred when reading packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}

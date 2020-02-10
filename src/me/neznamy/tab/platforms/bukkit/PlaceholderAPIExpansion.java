@@ -52,7 +52,7 @@ public class PlaceholderAPIExpansion{
 		try {
 			if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
-			Shared.error(null, "Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously);
+			Shared.errorManager.printError("Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously);
 		}
 	}
 }

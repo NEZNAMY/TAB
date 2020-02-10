@@ -1,4 +1,9 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.features;
+
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 
 public class NameTag16 {
 
@@ -11,14 +16,14 @@ public class NameTag16 {
 	public static void load() {
 		if (!enable) return;
 		for (ITabPlayer p : Shared.getPlayers()) p.registerTeam();
-		Shared.scheduleRepeatingTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
 				}

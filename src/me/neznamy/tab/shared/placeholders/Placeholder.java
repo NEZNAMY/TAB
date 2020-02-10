@@ -24,7 +24,7 @@ public abstract class Placeholder {
 			if (value == null) value = "";
 			return s.replace(identifier, value);
 		} catch (Throwable t) {
-			return Shared.error(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
+			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
 	public abstract String getValue(ITabPlayer p);

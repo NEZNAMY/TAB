@@ -1,9 +1,13 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -17,7 +21,7 @@ public class Playerlist {
 	public static void load(){
 		if (enable) {
 			updateNames(true);
-			Shared.scheduleRepeatingTask(refresh, "refreshing tablist prefix/suffix", "Tablist names 1", new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", "Tablist names 1", new Runnable() {
 				public void run() {
 					updateNames(false);
 				}

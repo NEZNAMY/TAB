@@ -1,23 +1,18 @@
 package me.neznamy.tab.shared;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.PerWorldPlayerlist;
@@ -25,17 +20,22 @@ import me.neznamy.tab.platforms.bukkit.PlaceholderAPIExpansion;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.shared.placeholders.*;
+import me.neznamy.tab.shared.placeholders.ServerConstant;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class Shared {
 
-	private static final String newline = System.getProperty("line.separator");
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
 	public static final ExecutorService exe = Executors.newCachedThreadPool();
@@ -48,11 +48,11 @@ public class Shared {
 	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 
 	public static boolean disabled;
-	private static List<Future<?>> tasks = new ArrayList<Future<?>>();
 	public static int startupWarns = 0;
 	public static MainClass mainClass;
 	public static String separatorType;
 	public static CPUManager cpu;
+	public static ErrorManager errorManager;
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
@@ -80,39 +80,6 @@ public class Shared {
 		}
 		return null;
 	}
-	public static <T> T error(T defaultValue, String message) {
-		return error(defaultValue, message, null);
-	}
-	public static <T> T error(T defaultValue, String message, Throwable t) {
-		try {
-			if (!Configs.errorFile.exists()) Configs.errorFile.createNewFile();
-			if (Configs.errorFile.length() < 1000000) { //not going over 1 MB
-				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
-				if (message != null) {
-					buf.write(ERROR_PREFIX() + "[TAB v" + pluginVersion + "] " + message + newline);
-					if (Configs.SECRET_debugMode) print('c', message);
-				}
-				if (t != null) {
-					buf.write(ERROR_PREFIX() + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_debugMode) printClean("&c" + t.getClass().getName() +": " + t.getMessage());
-					for (StackTraceElement ste : t.getStackTrace()) {
-						buf.write(ERROR_PREFIX() + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_debugMode) printClean("&c       at " + ste.toString());
-					}
-				}
-				buf.close();
-			}
-		} catch (Throwable ex) {
-			print('c', "An error occurred when printing error message into file");
-			ex.printStackTrace();
-			print('c', "Original error: " + message);
-			if (t != null) t.printStackTrace();
-		}
-		return defaultValue;
-	}
-	private static String ERROR_PREFIX() {
-		return new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ").format(new Date());
-	}
 	public static void startupWarn(String message) {
 		print('c', message);
 		startupWarns++;
@@ -120,50 +87,8 @@ public class Shared {
 	public static void print(char color, String message) {
 		mainClass.sendConsoleMessage("&" + color + "[TAB] " + message);
 	}
-	public static void printClean(String message) {
-		mainClass.sendConsoleMessage(message);
-	}
 	public static void debug(String message) {
 		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&" + 7 + "[TAB DEBUG] " + message);
-	}
-	
-	public static void scheduleRepeatingTask(int delayMilliseconds, String description, String feature, Runnable r) {
-		if (delayMilliseconds <= 0) return;
-		debug("Starting repeating task [" + feature + "] with refresh " + delayMilliseconds + "ms");
-		tasks.add(exe.submit(new Runnable() {
-
-			public void run() {
-				while (true) {
-					try {
-						long time = System.nanoTime();
-						r.run();
-						cpu.addFeatureTime(feature.toString(), System.nanoTime()-time);
-						Thread.sleep(delayMilliseconds);
-					} catch (InterruptedException pluginDisabled) {
-						break;
-					} catch (Throwable t) {
-						error(null, "An error occurred when " + description, t);
-					}
-				}
-			}
-		}));
-	}
-	public static void runTask(String description, String feature, Runnable r) {
-		exe.submit(new Runnable() {
-
-			public void run() {
-				try {
-					long time = System.nanoTime();
-					r.run();
-					cpu.addFeatureTime(feature.toString(), System.nanoTime()-time);
-				} catch (Throwable t) {
-					error(null, "An error occurred when " + description, t);
-				}
-			}
-		});
-	}
-	public static void cancelAllTasks() {
-		for (Future<?> f : tasks) f.cancel(true);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(COLOR + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
@@ -174,7 +99,7 @@ public class Shared {
 		try {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
-			cancelAllTasks();
+			cpu.cancelAllTasks();
 			Configs.animations = new ArrayList<Animation>();
 			HeaderFooter.unload();
 			TabObjective.unload();
@@ -191,55 +116,12 @@ public class Shared {
 			data.clear();
 			print('a', "Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
-			error(null, "Failed to unload the plugin", e);
+			errorManager.criticalError("Failed to unload the plugin", e);
 		}
 	}
-	public static int parseInteger(String string, int defaultValue, String place) {
-		try {
-			return Integer.parseInt(string);
-		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return Shared.error(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
-			}
-		}
-	}
-	public static float parseFloat(String string, float defaultValue, String place) {
-		try {
-			return Float.parseFloat(string);
-		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return Shared.error(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
-			}
-		}
-	}
-	public static BarColor parseColor(String string, BarColor defaultValue, String place) {
-		try {
-			return BarColor.valueOf(string);
-		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return Shared.error(defaultValue, place + " only accepts one of the defined colors! (Attempted to use \"" + string + "\")");
-			}
-		}
-	}
-	public static BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
-		try {
-			return BarStyle.valueOf(string);
-		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return Shared.error(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return Shared.error(defaultValue, place + " only accepts one of the defined styles! (Attempted to use \"" + string + "\")");
-			}
-		}
-	}
+	
 	public static void checkForUpdates() {
-		exe.submit(new Runnable() {
+		exe.execute(new Runnable() {
 
 			@Override
 			public void run() {
@@ -335,7 +217,7 @@ public class Shared {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		TABAPI.registerServerConstant(new Constant("%memory-max%") {
+		TABAPI.registerServerConstant(new ServerConstant("%memory-max%") {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
@@ -345,7 +227,7 @@ public class Shared {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		TABAPI.registerServerConstant(new Constant("%memory-max-gb%") {
+		TABAPI.registerServerConstant(new ServerConstant("%memory-max-gb%") {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}

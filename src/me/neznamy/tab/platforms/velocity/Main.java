@@ -33,8 +33,14 @@ import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.velocity.protocol.*;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.GlobalPlayerlist;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
@@ -82,6 +88,7 @@ public class Main implements MainClass{
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
 			Shared.cpu = new CPUManager();
+			Shared.errorManager = new ErrorManager();
 			Configs.loadFiles();
 			registerPlaceholders();
 			Shared.data.clear();
@@ -162,7 +169,7 @@ public class Main implements MainClass{
 				p.onWorldChange(from, to);
 			}
 		} catch (Throwable ex){
-			Shared.error(null, "An error occurred when player joined/changed server", ex);
+			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
 	/*	@Subscribe
@@ -200,7 +207,7 @@ public class Main implements MainClass{
 						if (killPacket((Team)packet)) return;
 					}
 				} catch (Throwable e){
-					Shared.error(null, "An error occurred when analyzing packets", e);
+					Shared.errorManager.printError("An error occurred when analyzing packets", e);
 				}
 				super.write(context, packet, channelPromise);
 			}
@@ -231,7 +238,7 @@ public class Main implements MainClass{
 		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
-		TABAPI.registerServerConstant(new Constant("%maxplayers%") {
+		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}

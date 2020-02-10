@@ -13,6 +13,10 @@ import java.util.Map.Entry;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
@@ -145,7 +149,7 @@ public class Configs {
 			Premium.loadPremiumConfig();
 			checkAnimations(Premium.premiumconfig.getValues());
 		}
-		
+
 	}
 	@SuppressWarnings("unchecked")
 	private static void checkAnimations(Map<String, Object> values) {
@@ -182,8 +186,12 @@ public class Configs {
 	private static void checkAnimation(String key, String searching, Object value, String position, int refresh) {
 		if (key.contains(searching)) {
 			for (Animation a : animations) {
-				if (value.toString().contains("%animation:" + a.getName() + "%") && a.getInterval() < refresh) {
-					Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+				if (value.toString().contains("%animation:" + a.getName() + "%")){
+					if (a.getInterval() < refresh) {
+						Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+					} else if (a.getInterval() % refresh != 0) {
+						Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+					}
 				}
 			}
 		}
@@ -191,7 +199,7 @@ public class Configs {
 	public static void assignPlaceholder(String placeholder) {
 		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
 		if (!Placeholders.usedPlaceholders.contains(placeholder)) return;
-		
+
 		//filtering though placeholder types
 		if (Placeholders.myPlayerPlaceholders.containsKey(placeholder)) {
 			Placeholders.usedPlayerPlaceholders.put(placeholder, Placeholders.myPlayerPlaceholders.get(placeholder));
@@ -308,7 +316,7 @@ public class Configs {
 		BossBar.defaultBars.removeAll(toRemove);
 		BossBar.remember_toggle_choice = bossbar.getBoolean("remember-toggle-choice", false);
 		if (BossBar.remember_toggle_choice) {
-			File file = new File("plugins" + System.getProperty("file.separator") + "TAB" + System.getProperty("file.separator") + "playerdata.yml");
+			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
 			if (!file.exists()) file.createNewFile();
 			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>());
 			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");

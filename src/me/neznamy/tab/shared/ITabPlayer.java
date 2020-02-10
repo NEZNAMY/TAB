@@ -11,7 +11,12 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.BossBar.BossBarLine;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -33,7 +38,7 @@ public abstract class ITabPlayer {
 	public HashMap<String, Property> properties = new HashMap<String, Property>();
 	private long lastRefreshGroup;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
-	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION; //preventing errors
+	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	public Object channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible;
@@ -255,7 +260,7 @@ public abstract class ITabPlayer {
 		if (!permissionGroup.equals(newGroup)) {
 			if (newGroup == null) {
 				//ultrapermissions
-				Shared.error(null, "New updated group of " + getName() + " is null?");
+				Shared.errorManager.printError("New updated group of " + getName() + " is null?");
 				return;
 			}
 			permissionGroup = newGroup;
@@ -284,7 +289,7 @@ public abstract class ITabPlayer {
 		for (String property : Premium.staticLines.keySet()) {
 			if (!property.equals("nametag")) setProperty(property, getValue(property));
 		}
-		rank = (String) Configs.rankAliases.get("_OTHER_");
+		rank = String.valueOf(Configs.rankAliases.get("_OTHER_")+""); //it is a string, but some geniuses might like something else..
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(permissionGroup)) {
 				rank = (String) entry.getValue();
@@ -573,14 +578,14 @@ public abstract class ITabPlayer {
 		try {
 			return Shared.mainClass.buildPacket(packet, version);
 		} catch (Exception e) {
-			return Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
+			return Shared.errorManager.printError(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
 		} catch (Exception e) {
-			Shared.error(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
+			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void forceUpdateDisplay() {

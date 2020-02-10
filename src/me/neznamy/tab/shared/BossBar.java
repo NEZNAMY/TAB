@@ -27,7 +27,7 @@ public class BossBar{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.detectBossBarsAndSend();
 		}
-		Shared.scheduleRepeatingTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible) continue;
@@ -159,13 +159,13 @@ public class BossBar{
 			return uuid;
 		}
 		public BarColor parseColor(String color) {
-			return Shared.parseColor(color, BarColor.PURPLE, "bossbar color");
+			return Shared.errorManager.parseColor(color, BarColor.PURPLE, "bossbar color");
 		}
 		public BarStyle parseStyle(String style) {
-			return Shared.parseStyle(style, BarStyle.PROGRESS, "bossbar style");
+			return Shared.errorManager.parseStyle(style, BarStyle.PROGRESS, "bossbar style");
 		}
 		public float parseProgress(String progress) {
-			return Shared.parseFloat(progress, 100, "bossbar progress");
+			return Shared.errorManager.parseFloat(progress, 100, "bossbar progress");
 		}
 	}
 }

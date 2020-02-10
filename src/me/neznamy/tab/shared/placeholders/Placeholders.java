@@ -15,12 +15,12 @@ public class Placeholders {
 	//my registered placeholders
 	public static Map<String, PlayerPlaceholder> myPlayerPlaceholders;
 	public static Map<String, ServerPlaceholder> myServerPlaceholders;
-	public static Map<String, Constant> myServerConstants;
+	public static Map<String, ServerConstant> myServerConstants;
 	
 	//my used placeholders + used papi placeholders
 	public static Map<String, PlayerPlaceholder> usedPlayerPlaceholders;
 	public static Map<String, ServerPlaceholder> usedServerPlaceholders;
-	public static Map<String, Constant> usedServerConstants;
+	public static Map<String, ServerConstant> usedServerConstants;
 	public static List<String> usedPlaceholders;
 
 	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
@@ -32,11 +32,11 @@ public class Placeholders {
 	public static void clearAll() {
 		myPlayerPlaceholders = new HashMap<String, PlayerPlaceholder>();
 		myServerPlaceholders = new HashMap<String, ServerPlaceholder>();
-		myServerConstants = new HashMap<String, Constant>();
+		myServerConstants = new HashMap<String, ServerConstant>();
 		
 		usedPlayerPlaceholders = new HashMap<String, PlayerPlaceholder>();
 		usedServerPlaceholders = new HashMap<String, ServerPlaceholder>();
-		usedServerConstants = new HashMap<String, Constant>();
+		usedServerConstants = new HashMap<String, ServerConstant>();
 		usedPlaceholders = new ArrayList<String>();
 	}
 	public static List<Placeholder> getAllUsed(){
@@ -105,7 +105,7 @@ public class Placeholders {
 		for (Placeholder pl : detectPlaceholders(string, true)) {
 			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
 		}
-		for (Constant c : myServerConstants.values()) {
+		for (ServerConstant c : myServerConstants.values()) {
 			if (string.contains(c.getIdentifier())) string = string.replace(c.getIdentifier(), c.get());
 		}
 		for (String removed : Configs.removeStrings) {

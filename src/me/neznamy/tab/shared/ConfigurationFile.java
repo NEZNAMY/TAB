@@ -27,7 +27,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 @SuppressWarnings("unchecked")
 public class ConfigurationFile{
 	
-	public static final File dataFolder = new File("plugins" + System.getProperty("file.separator") + "TAB");
+	public static final File dataFolder = new File("plugins" + File.separatorChar + "TAB");
 	
 	private File file;
 	private Yaml yaml;
@@ -259,7 +259,7 @@ public class ConfigurationFile{
 			writer.close();
 			fixComments();
 		} catch (Throwable e) {
-			Shared.error(null, "Failed to save yaml file " + file.getPath(), e);
+			Shared.errorManager.criticalError("Failed to save yaml file " + file.getPath(), e);
 		}
 	}
 	public boolean hasComments() {
@@ -288,7 +288,7 @@ public class ConfigurationFile{
 			}
 			buf.close();
 		} catch (Exception ex) {
-			Shared.error(null, "Failed to modify file " + file, ex);
+			Shared.errorManager.criticalError("Failed to modify file " + file, ex);
 		}
 	}
 	private List<String> readFile(File file) {
@@ -304,7 +304,7 @@ public class ConfigurationFile{
 			}
 			br.close();
 		} catch (Exception ex) {
-			Shared.error(null, "Failed to read file " + file, ex);
+			Shared.errorManager.criticalError("Failed to read file " + file, ex);
 		}
 		return list;
 	}

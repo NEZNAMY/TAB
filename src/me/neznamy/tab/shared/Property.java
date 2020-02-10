@@ -3,7 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.shared.placeholders.Constant;
+import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -25,7 +25,7 @@ public class Property {
 		this.rawValue = analyze(rawValue);
 	}
 	private String analyze(String value) {
-		for (Constant c : Placeholders.usedServerConstants.values()) {
+		for (ServerConstant c : Placeholders.usedServerConstants.values()) {
 			if (value.contains(c.getIdentifier())) {
 				value = value.replace(c.getIdentifier(), c.get());
 			}

@@ -1,5 +1,8 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class TabObjective{
@@ -15,8 +18,9 @@ public class TabObjective{
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
 			PacketAPI.registerScoreboardObjective(p, objectivename, title, DisplaySlot, type.getDisplay());
+			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
 		}
-		Shared.scheduleRepeatingTask(type.getRefresh(), "refreshing tablist objective", "Tablist Objective", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(type.getRefresh(), "refreshing tablist objective", "Tablist Objective", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
@@ -46,7 +50,7 @@ public class TabObjective{
 		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
 	}
 	public static int getValue(ITabPlayer p) {
-		return Shared.parseInteger(p.properties.get("tablist-objective").get(), 0, "tablist objective");
+		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "tablist objective");
 	}
 	public enum TabObjectiveType{
 

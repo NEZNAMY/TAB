@@ -74,7 +74,7 @@ public class ArmorStand{
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		if (to == null) {
-			return Shared.error(null, "Attempted to spawn armor stand for null player");
+			return Shared.errorManager.printError(null, "Attempted to spawn armor stand for null player");
 		}
 		updateLocation();
 		visible = getVisibility();

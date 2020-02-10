@@ -24,7 +24,7 @@ public class BossBar_legacy implements Listener {
 				EVENTS_REGISTERED = true;
 				Bukkit.getPluginManager().registerEvents(new BossBar_legacy(), Main.instance);
 			}
-			Shared.scheduleRepeatingTask(200, "refreshing bossbar", "BossBar 1.8", new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing bossbar", "BossBar 1.8", new Runnable() {
 				public void run() {
 					for (ITabPlayer all : Shared.getPlayers()) {
 						for (BossBarLine l : all.activeBossBars) {

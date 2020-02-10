@@ -24,8 +24,13 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
@@ -35,7 +40,6 @@ import net.milkbowl.vault.economy.Economy;
 public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public static Main instance;
-	private static final boolean UNSAFE_BUILD = false;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
 
@@ -45,10 +49,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
-		if (MethodAPI.getInstance() != null && (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN || UNSAFE_BUILD)){
-			if (ProtocolVersion.SERVER_VERSION == ProtocolVersion.UNKNOWN) {
-				Shared.print('6', "Your server version was not tested with this version of plugin! Be careful.");
-			}
+		if (MethodAPI.getInstance() != null && (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN)){
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			TabCommand command = new TabCommand();
@@ -129,6 +130,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 			if (Configs.bukkitBridgeMode) {
+				Shared.cpu.cancelAllTasks();
 				Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
 			} else {
 				Shared.unload();
@@ -141,11 +143,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.disabled = false;
 			Shared.startupWarns = 0;
 			Shared.cpu = new CPUManager();
+			Shared.errorManager = new ErrorManager();
 			Configs.loadFiles();
 			if (Configs.bukkitBridgeMode) {
 				PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 				if (!PluginHooks.placeholderAPI) {
-					Shared.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI is not found, this will not work.");
+					Shared.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
 				}
 				plm = new PluginMessenger(this);
 			} else {
@@ -192,7 +195,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
 			PerWorldPlayerlist.trigger(e.getPlayer());
-			Shared.runTask("player joined the server", "Other", new Runnable() {
+			Shared.cpu.runMeasuredTask("player joined the server", "Other", new Runnable() {
 
 				public void run() {
 					PluginHooks.DeluxeTags_onChat(p);
@@ -207,7 +210,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} catch (Throwable ex) {
-			Shared.error(null, "An error occurred when player joined the server", ex);
+			Shared.errorManager.criticalError("An error occurred when player joined the server", ex);
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -217,7 +220,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) {
-				Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player left");
+				Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player left");
 				return;
 			}
 			Placeholders.recalculateOnlineVersions();
@@ -240,7 +243,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
-			Shared.error(null, "An error occurred when player left server", t);
+			Shared.errorManager.printError("An error occurred when player left server", t);
 			Shared.data.remove(e.getPlayer().getUniqueId());
 		}
 	}
@@ -256,7 +259,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			String to = p.world = e.getPlayer().getWorld().getName();
 			p.onWorldChange(from, to);
 		} catch (Throwable ex) {
-			Shared.error(null, "An error occurred when processing PlayerChangedWorldEvent", ex);
+			Shared.errorManager.printError("An error occurred when processing PlayerChangedWorldEvent", ex);
 		}
 	}
 	@EventHandler
@@ -352,7 +355,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new Constant("%deluxetag%") {
+			TABAPI.registerServerConstant(new ServerConstant("%deluxetag%") {
 				public String get() {
 					return "";
 				}
@@ -446,7 +449,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new Constant("%afk%") {
+			TABAPI.registerServerConstant(new ServerConstant("%afk%") {
 				public String get() {
 					return "";
 				}
@@ -486,18 +489,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new Constant("%vault-prefix%") {
+			TABAPI.registerServerConstant(new ServerConstant("%vault-prefix%") {
 				public String get() {
 					return "";
 				}
 			});
-			TABAPI.registerServerConstant(new Constant("%vault-suffix%") {
+			TABAPI.registerServerConstant(new ServerConstant("%vault-suffix%") {
 				public String get() {
 					return "";
 				}
 			});
 		}
-		TABAPI.registerServerConstant(new Constant("%maxplayers%") {
+		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
 			}
@@ -516,7 +519,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return ((Collection<Player>)players).toArray(new Player[0]); 
 			}
 		} catch (Exception e) {
-			return Shared.error(new Player[0], "Failed to get online players");
+			return Shared.errorManager.printError(new Player[0], "Failed to get online players");
 		}
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {

@@ -5,11 +5,11 @@ import java.util.Arrays;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.NameTag16;
-import me.neznamy.tab.shared.Playerlist;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
 
 public class DebugCommand extends SubCommand {
 

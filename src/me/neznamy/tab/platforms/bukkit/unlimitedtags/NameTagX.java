@@ -20,10 +20,10 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket.PacketType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.NameTag16;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.NameTag16;
 
 public class NameTagX implements Listener{
 
@@ -50,20 +50,20 @@ public class NameTagX implements Listener{
 			for (Player w : (((TabPlayer)all).player).getWorld().getPlayers()) {
 				ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
 				if (wPlayer == null) {
-					Shared.error(null, "Data of " + w.getName() + " don't exist ?");
+					Shared.errorManager.printError("Data of " + w.getName() + " don't exist ?");
 					continue;
 				}
 				if (all == wPlayer) continue;
 				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
 			}
 		}
-		Shared.scheduleRepeatingTask(NameTag16.refresh, "refreshing nametags", "Nametags", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(NameTag16.refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.scheduleRepeatingTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
 				}
@@ -86,10 +86,10 @@ public class NameTagX implements Listener{
 		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
-			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
+			Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
 			return;
 		}
-		Shared.runTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
+		Shared.cpu.runMeasuredTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
 			public void run() {
 				NameTagLineManager.sneak(p, e.isSneaking());
 			}
@@ -101,10 +101,10 @@ public class NameTagX implements Listener{
 		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) {
-			Shared.error(null, "Data of " + e.getPlayer().getName() + " did not exist when player moved");
+			Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player moved");
 			return;
 		}
-		if (p.previewingNametag) Shared.runTask("processing move", "NameTagX - move event", new Runnable() {
+		if (p.previewingNametag) Shared.cpu.runMeasuredTask("processing move", "NameTagX - move event", new Runnable() {
 
 			public void run() {
 				NameTagLineManager.teleportArmorStand(p, p);

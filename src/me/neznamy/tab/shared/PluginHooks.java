@@ -70,7 +70,7 @@ public class PluginHooks {
 			Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 			return (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, ((TabPlayer)p).player);
 		} catch (Throwable t) {
-			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AntiAFKPlus", t);
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AntiAFKPlus", t);
 		}
 	}
 	//map is private
@@ -82,14 +82,14 @@ public class PluginHooks {
 			HashMap map = (HashMap) f.get(plugin);
 			return map.containsKey(((TabPlayer)p).player);
 		} catch (Throwable t) {
-			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
 		}
 	}
 	public static String BungeePerms_getMainGroup(ITabPlayer p) {
 		try {
 			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
 		} catch (Throwable t) {
-			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
 		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
@@ -104,7 +104,7 @@ public class PluginHooks {
 		try {
 			return ((Essentials)essentials).getUser(((TabPlayer)p).player).getMoney().doubleValue();
 		} catch (Throwable t) {
-			return Shared.error(0, "Failed to check money of " + p.getName() + " using Essentials", t);
+			return Shared.errorManager.printError(0, "Failed to check money of " + p.getName() + " using Essentials", t);
 		}
 	}
 	public static String Essentials_getNickname(ITabPlayer p) {
@@ -114,7 +114,7 @@ public class PluginHooks {
 		try {
 			return ((Essentials)essentials).getUser(((TabPlayer)p).player).isAfk();
 		} catch (Throwable t) {
-			return Shared.error(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
 		}
 	}
 	public static String FactionsMCore_getFactionName(ITabPlayer p) {
@@ -127,14 +127,14 @@ public class PluginHooks {
 		try {
 			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
 		} catch (Throwable t) {
-			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using GroupManager", t);
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using GroupManager", t);
 		}
 	}
 	public static String[] GroupManager_getGroups(ITabPlayer p) {
 		try {
 			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
 		} catch (Throwable t) {
-			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using GroupManager", t);
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using GroupManager", t);
 		}
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
@@ -144,7 +144,7 @@ public class PluginHooks {
 		try {
 			return me.neznamy.tab.platforms.bukkit.Main.LibsDisguises_isDisguised(p); //preventing errors on bungee version
 		} catch (Throwable t) {
-			return Shared.error(false, "Failed to check if player " + p.getName() + " is disguised using LibsDisguises", t);
+			return Shared.errorManager.printError(false, "Failed to check if player " + p.getName() + " is disguised using LibsDisguises", t);
 		}
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
@@ -157,7 +157,7 @@ public class PluginHooks {
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			}
 		} catch (Throwable t) {
-			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
 		}
 	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
@@ -170,7 +170,7 @@ public class PluginHooks {
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
 			}
 		} catch (Throwable t) {
-			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
 		}
 	}
 	@SuppressWarnings("deprecation")
@@ -178,7 +178,7 @@ public class PluginHooks {
 		try {
 			return PermissionsEx.getUser(((TabPlayer)p).player).getGroupNames();
 		} catch (Throwable t) {
-			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
 	public static String PlaceholderAPI_setPlaceholders(UUID id, String placeholder) {
@@ -194,7 +194,7 @@ public class PluginHooks {
 					return "0";
 				} else {
 					String playername = (player == null ? "null" : player.getName());
-					Shared.error(null, "PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t);
+					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t);
 				}
 			} else {
 				//thats why it failed
@@ -203,26 +203,24 @@ public class PluginHooks {
 		}
 		return placeholder;
 	}
-	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String s) {
+	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String placeholder) {
 		try {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, s);
+				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, placeholder);
 				Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.error(null, "Relational PlaceholderAPI replace task failed. PlaceholderAPI version: " + papi.getDescription().getVersion());
-				Shared.error(null, "String to replace: " + s);
-				Shared.error(null, "Please send this error to the FIRST author whose name or plugin name you see here:", t);
+				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational placeholder " + placeholder + " for players " + one.getName() + " and " + two.getName(), t);
 			} else {
 				//thats why it failed
 				placeholderAPI = false;
 			}
 		}
-		return s;
+		return placeholder;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
 		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
@@ -231,7 +229,7 @@ public class PluginHooks {
 		try {
 			return ProtocolSupportAPI.getProtocolVersion(((TabPlayer)p).player).getId();
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
 	}
 	public static String Vault_getPermissionPlugin() {
@@ -241,7 +239,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using Vault", e);
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
@@ -251,7 +249,7 @@ public class PluginHooks {
 		try {
 			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
 		} catch (Throwable e) {
-			return Shared.error("null", "Failed to get permission group of " + p.getName() + " using Vault", e);
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static void Vault_loadProviders() {
@@ -266,7 +264,7 @@ public class PluginHooks {
 		try {
 			return Via.getAPI().getPlayerVersion(p.getUniqueId());
 		} catch (Throwable e) {
-			return Shared.error(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion", e);
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion", e);
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
