@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.command.level2;
 
-import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.features.BossBar;
+import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 
 public class AnnounceBarCommand extends SubCommand{
 
@@ -21,7 +21,7 @@ public class AnnounceBarCommand extends SubCommand{
 			try {
 				duration = Integer.parseInt(args[1]);
 				int d2 = duration;
-				Shared.exe.submit(new Runnable() {
+				Shared.cpu.runMeasuredTask("announcing bossbar", "BossBar", new Runnable() {
 
 					public void run() {
 						try {

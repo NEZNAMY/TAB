@@ -29,7 +29,7 @@ public class Premium {
 		try {
 			sortingType = SortingType.valueOf(type.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"&e" + type + "&c\" is not a valid type of sorting type. Valid options are: &eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z, GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW and GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH. &bUsing GROUPS");
+			Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid type of sorting type. Valid options are: &eGROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z, GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW and GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH. &bUsing GROUPS");
 			sortingType = SortingType.GROUPS;
 		}
 		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");

@@ -12,7 +12,7 @@ import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
+import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -121,20 +126,12 @@ public class BossBar{
 		public BossBarLine(String name, boolean permissionRequired, int refresh, String color, String style, String text, String progress) {
 			this.name = name;
 			this.permissionRequired = permissionRequired;
-			if (refresh == 0) {
-				Shared.startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
-				refresh = 1000;
-			}
-			if (refresh < 0) {
-				Shared.startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of "+refresh+". Refresh cannot be negative! &bUsing 1000.");
-				refresh = 1000;
-			}
+			this.refresh = Shared.errorManager.fixBossBarRefresh(name, refresh);
 			this.uuid = UUID.randomUUID();
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
 				nmsEntity = MethodAPI.getInstance().newEntityWither();
 				entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 			}
-			this.refresh = refresh;
 			this.color = color;
 			this.style = style;
 			this.text = text;

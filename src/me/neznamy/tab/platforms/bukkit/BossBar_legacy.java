@@ -8,11 +8,11 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
-import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.BossBar;
+import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 
 public class BossBar_legacy implements Listener {
 

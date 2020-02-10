@@ -14,9 +14,9 @@ import io.netty.channel.*;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.BossBar;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
@@ -78,7 +78,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		try {
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
-			Shared.startupWarns = 0;
 			Shared.cpu = new CPUManager();
 			Shared.errorManager = new ErrorManager();
 			Configs.loadFiles();
@@ -98,7 +97,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			HeaderFooter.load();
 			ScoreboardManager.load();
 			Shared.checkForUpdates();
-			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
+			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			Shared.print('c', "Did not enable due to a broken configuration file.");

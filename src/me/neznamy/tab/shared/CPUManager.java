@@ -22,17 +22,23 @@ public class CPUManager {
 	private ExecutorService exe = Executors.newCachedThreadPool();
 	
 	public CPUManager() {
-		startRepeatingMeasuredTask(1000, "Calculating cpu usage", "Calculating CPU usage", new Runnable() {
+		exe.submit(new Runnable() {
 
 			@Override
 			public void run() {
-				placeholdersLastMinute.add(placeholdersLastSecond);
-				placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
-				if (placeholdersLastMinute.size() > 60) placeholdersLastMinute.remove(0);
-				
-				featuresLastMinute.add(featuresLastSecond);
-				featuresLastSecond = new ConcurrentHashMap<String, Long>();
-				if (featuresLastMinute.size() > 60) featuresLastMinute.remove(0);
+				try {
+					while (true) {
+						Thread.sleep(1000);
+						placeholdersLastMinute.add(placeholdersLastSecond);
+						placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
+						if (placeholdersLastMinute.size() > 60) placeholdersLastMinute.remove(0);
+						
+						featuresLastMinute.add(featuresLastSecond);
+						featuresLastSecond = new ConcurrentHashMap<String, Long>();
+						if (featuresLastMinute.size() > 60) featuresLastMinute.remove(0);
+					}
+				} catch (Exception e) {
+				}
 			}
 		});
 	}

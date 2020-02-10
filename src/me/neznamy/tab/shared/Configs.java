@@ -12,11 +12,12 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.BossBar.BossBarLine;
 import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
@@ -188,9 +189,9 @@ public class Configs {
 			for (Animation a : animations) {
 				if (value.toString().contains("%animation:" + a.getName() + "%")){
 					if (a.getInterval() < refresh) {
-						Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+						Shared.errorManager.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
 					} else if (a.getInterval() % refresh != 0) {
-						Shared.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+						Shared.errorManager.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
 					}
 				}
 			}
@@ -215,7 +216,7 @@ public class Configs {
 		}
 		if (placeholder.contains("animation:")) {
 			String animation = placeholder.substring(11, placeholder.length()-1);
-			Shared.startupWarn("Unknown animation &e\"" + animation + "\"&c used in configuration. You need to define it in animations.yml");
+			Shared.errorManager.startupWarn("Unknown animation &e\"" + animation + "\"&c used in configuration. You need to define it in animations.yml");
 			return;
 		}
 		Shared.mainClass.registerUnknownPlaceholder(placeholder);
@@ -281,7 +282,7 @@ public class Configs {
 	public static void loadBossbar() throws Exception {
 		bossbar = new ConfigurationFile("bossbar.yml", bossbarComments);
 		if (bossbar.get("enabled") != null) {
-			Shared.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
+			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
 		}
 		BossBar.enabled = bossbar.getBoolean("bossbar-enabled", false);
@@ -300,7 +301,7 @@ public class Configs {
 				Object progress = bossbar.get("bars." + bar + ".progress");
 				String text = bossbar.getString("bars." + bar + ".text");
 				if (progress == null) {
-					Shared.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
+					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
 					progress = 100;
 				}
 				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));
@@ -309,7 +310,7 @@ public class Configs {
 		List<String> toRemove = new ArrayList<String>();
 		for (String bar : BossBar.defaultBars) {
 			if (BossBar.getLine(bar) == null) {
-				Shared.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
+				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
 				toRemove.add(bar);
 			}
 		}

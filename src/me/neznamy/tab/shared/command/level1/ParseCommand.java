@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class ParseCommand extends SubCommand{
 
 	public ParseCommand() {
-		super("parse", null);
+		super("parse", "tab.parse");
 	}
 
 	@Override

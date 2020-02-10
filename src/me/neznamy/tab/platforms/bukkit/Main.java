@@ -26,6 +26,7 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -141,14 +142,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try {
 			long time = System.currentTimeMillis();
 			Shared.disabled = false;
-			Shared.startupWarns = 0;
 			Shared.cpu = new CPUManager();
 			Shared.errorManager = new ErrorManager();
 			Configs.loadFiles();
 			if (Configs.bukkitBridgeMode) {
 				PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 				if (!PluginHooks.placeholderAPI) {
-					Shared.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
+					Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
 				}
 				plm = new PluginMessenger(this);
 			} else {
@@ -172,7 +172,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				ScoreboardManager.load();
 				Shared.checkForUpdates();
 			}
-			if (Shared.startupWarns > 0) Shared.print('e', "There were " + Shared.startupWarns + " startup warnings.");
+			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			Shared.print('c', "Did not enable due to a broken configuration file.");
@@ -567,7 +567,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		try{
 			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
 		} catch (Throwable e) {
-			Shared.startupWarn("\"&e" + objective + "&c\" is not a valid type of tablist-objective. Valid options are: &ePING, HEARTS, CUSTOM &cand &eNONE &cfor disabling the feature.");
+			Shared.errorManager.startupWarn("\"&e" + objective + "&c\" is not a valid type of tablist-objective. Valid options are: &ePING, HEARTS, CUSTOM &cand &eNONE &cfor disabling the feature.");
 			TabObjective.type = TabObjectiveType.NONE;
 		}
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");

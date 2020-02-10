@@ -53,11 +53,11 @@ public class ConfigurationFile{
 			detectPlaceholders(values);
 		} catch (Exception e) {
 			input.close();
-			Shared.startupWarn("File " + destination + " has broken formatting.");
-			Shared.print('6', "Error message from yaml parser: " + e.getMessage());
+			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
+			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
 			String fix = suggestFix(e);
 			if (fix != null) {
-				Shared.print('d', "Suggestion: " + fix);
+				Shared.mainClass.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
 			}
 			throw e;
 		}
