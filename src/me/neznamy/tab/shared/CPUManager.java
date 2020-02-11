@@ -16,6 +16,9 @@ public class CPUManager {
 	private ConcurrentMap<String, Long> placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
 	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
 	
+	private ConcurrentMap<String, Long> bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
+	private List<ConcurrentMap<String, Long>> bridgePlaceholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
+	
 	private ConcurrentMap<String, Long> featuresLastSecond = new ConcurrentHashMap<String, Long>();
 	private List<ConcurrentMap<String, Long>> featuresLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
 
@@ -32,6 +35,10 @@ public class CPUManager {
 						placeholdersLastMinute.add(placeholdersLastSecond);
 						placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
 						if (placeholdersLastMinute.size() > 60) placeholdersLastMinute.remove(0);
+						
+						bridgePlaceholdersLastMinute.add(bridgePlaceholdersLastSecond);
+						bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
+						if (bridgePlaceholdersLastMinute.size() > 60) bridgePlaceholdersLastMinute.remove(0);
 						
 						featuresLastMinute.add(featuresLastSecond);
 						featuresLastSecond = new ConcurrentHashMap<String, Long>();
@@ -91,11 +98,17 @@ public class CPUManager {
 	public Map<String, Float> getPlaceholderCPU(){
 		return getCPU(placeholdersLastMinute);
 	}
+	public Map<String, Float> getBridgePlaceholderCPU(){
+		return getCPU(bridgePlaceholdersLastMinute);
+	}
 	public void addFeatureTime(String feature, long nanoseconds) {
 		addTime(featuresLastSecond, feature, nanoseconds);
 	}
 	public void addPlaceholderTime(String placeholder, long nanoseconds) {
 		addTime(placeholdersLastSecond, placeholder, nanoseconds);
+	}
+	public void addBridgePlaceholderTime(String placeholder, long nanoseconds) {
+		addTime(bridgePlaceholdersLastSecond, placeholder, nanoseconds);
 	}
 	private Map<String, Float> getCPU(List<ConcurrentMap<String, Long>> source){
 		Map<String, Long> nanoMap = new HashMap<String, Long>();

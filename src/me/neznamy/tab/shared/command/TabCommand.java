@@ -2,9 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.level1.*;
 
 public class TabCommand extends SubCommand {
@@ -18,6 +16,7 @@ public class TabCommand extends SubCommand {
 		subcommands.put("ntpreview", new NTPreviewCommand());
 		subcommands.put("parse", new ParseCommand());
 		subcommands.put("player", new PlayerCommand());
+		subcommands.put("playeruuid", new PlayerUUIDCommand());
 		subcommands.put("reload", new ReloadCommand());
 	}
 

@@ -26,8 +26,7 @@ public abstract class SubCommand {
 		if (permission == null) return true; //no permission required
 		if (sender == null) return true; //console
 		if (sender.hasPermission("tab.admin")) return true;
-		if (sender.hasPermission(permission)) return true;
-		return false;
+		return sender.hasPermission(permission);
 	}
 	public static void sendMessage(ITabPlayer sender, String message) {
 		if (sender != null) {

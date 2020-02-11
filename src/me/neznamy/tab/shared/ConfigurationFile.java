@@ -22,6 +22,8 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 @SuppressWarnings("unchecked")
@@ -31,13 +33,13 @@ public class ConfigurationFile{
 	
 	private File file;
 	private Yaml yaml;
-	private HashMap<String, List<String>> comments;
+	private List<String> header;
 	private Map<String, Object> values;
 	
-	public ConfigurationFile(String source, String destination, HashMap<String, List<String>> comments) throws Exception{
+	public ConfigurationFile(String source, String destination, List<String> header) throws Exception{
 		FileInputStream input = null;
 		try {
-			this.comments = comments;
+			this.header = header;
 			dataFolder.mkdirs();
 			file = new File(dataFolder, destination);
 			if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
@@ -49,7 +51,7 @@ public class ConfigurationFile{
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 			if (Shared.mainClass.convertConfig(values)) save();
-			if (!hasComments()) fixComments();
+			if (!hasHeader()) fixHeader();
 			detectPlaceholders(values);
 		} catch (Exception e) {
 			input.close();
@@ -62,8 +64,8 @@ public class ConfigurationFile{
 			throw e;
 		}
 	}
-	public ConfigurationFile(String sourceAndDestination, HashMap<String, List<String>> comments) throws Exception{
-		this(sourceAndDestination, sourceAndDestination, comments);
+	public ConfigurationFile(String sourceAndDestination, List<String> header) throws Exception{
+		this(sourceAndDestination, sourceAndDestination, header);
 	}
 	private void detectPlaceholders(Map<String, Object> map) {
 		for (Entry<String, Object> entry : map.entrySet()) {
@@ -257,33 +259,27 @@ public class ConfigurationFile{
 			Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 			yaml.dump(values, writer);
 			writer.close();
-			fixComments();
+			fixHeader();
 		} catch (Throwable e) {
 			Shared.errorManager.criticalError("Failed to save yaml file " + file.getPath(), e);
 		}
 	}
-	public boolean hasComments() {
+	public boolean hasHeader() {
+		if (header == null) return true;
 		for (String line : readFile(file)) {
 			if (line.startsWith("#")) return true;
 		}
 		return false;
 	}
-	public void fixComments() {
+	public void fixHeader() {
+		if (header == null) return;
 		try {
-			List<String> fileContent = readFile(file);
-			List<String> commented = new ArrayList<String>();
-			for (String line : fileContent) {
-				for (String commentedSetting : comments.keySet()) {
-					if (line.startsWith(commentedSetting)) {
-						commented.addAll(comments.get(commentedSetting));
-					}
-				}
-				commented.add(line);
-			}
+			List<String> content = Lists.newArrayList(header);
+			content.addAll(readFile(file));
 			file.delete();
 			file.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
-			for (String line : commented) {
+			for (String line : content) {
 				buf.write(line + System.getProperty("line.separator"));
 			}
 			buf.close();

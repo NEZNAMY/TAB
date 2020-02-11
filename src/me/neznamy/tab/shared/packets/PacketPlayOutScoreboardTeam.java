@@ -7,7 +7,6 @@ import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
@@ -17,13 +16,14 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private String suffix;
 	private String visibility;
 	private String teamPush;
+	@SuppressWarnings("unused")
 	private EnumChatFormat chatFormat;
 	private Collection<String> entities;
 	private int action;
 	private int signature;
 
 	@SuppressWarnings("unchecked")
-	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String teamPush, Collection<String> entities, int action, int signature, EnumChatFormat format) {
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String teamPush, Collection<String> entities, int action, int signature) {
 		this.team = team;
 		this.prefix = prefix;
 		this.suffix = suffix;
@@ -32,7 +32,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		this.entities = (Collection<String>) (entities == null ? Collections.emptyList() : entities);
 		this.action = action;
 		this.signature = signature;
-		this.chatFormat = format == null ? EnumChatFormat.RESET : format;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		if (team == null || team.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
@@ -46,15 +45,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(team).toString()));
-			if (prefix != null && prefix.length() > 0) {
-				PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
-				String last = Placeholders.getLastColors(prefix);
-				if (last != null && last.length() > 0) {
-					chatFormat = EnumChatFormat.getByCharacter(last.toCharArray()[1]);
-				}
-				if (chatFormat != null) CHATFORMAT.set(packet, chatFormat.toNMS());
-			}
+			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
+			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix));
 		} else {
 			DISPLAYNAME.set(packet, team);
 			PREFIX.set(packet, prefix);
@@ -76,7 +69,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = new IChatBaseComponent(this.prefix).toString();
 			suffix = new IChatBaseComponent(this.suffix).toString();
 			teamDisplay = new IChatBaseComponent(team).toString();
-			color = chatFormat.toBungee();
+			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.prefix, 16);
 			suffix = cutTo(this.suffix, 16);
@@ -92,7 +85,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = new IChatBaseComponent(this.prefix).toString();
 			suffix = new IChatBaseComponent(this.suffix).toString();
 			teamDisplay = new IChatBaseComponent(team).toString();
-			color = chatFormat.toBungee();
+			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.prefix, 16);
 			suffix = cutTo(this.suffix, 16);

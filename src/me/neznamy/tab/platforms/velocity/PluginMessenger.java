@@ -46,7 +46,7 @@ public class PluginMessenger{
 				if (pl != null) {
 					pl.lastValue.put(receiver.getName(), output);
 					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
-					Shared.cpu.addPlaceholderTime(placeholder, cpu);
+					Shared.cpu.addBridgePlaceholderTime(placeholder, cpu);
 				} else {
 					Shared.debug("Received output for unknown placeholder " + placeholder);
 				}

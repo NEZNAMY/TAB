@@ -37,11 +37,14 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
 		sendMessage(sender, "&6Found Permission system: &a" + Shared.mainClass.getPermissionPlugin());
-		if (Configs.usePrimaryGroup) {
-			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8/&r&8&mChoose from list");
+		if (Configs.groupsByPermissions) {
+			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
+		} else if (Configs.usePrimaryGroup) {
+			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions");
 		} else {
-			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8/&aChoose from list");
+			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
+
 		boolean sorting = Configs.unlimitedTags || NameTag16.enable;
 		String sortingType;
 

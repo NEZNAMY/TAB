@@ -21,7 +21,7 @@ public class ParseCommand extends SubCommand{
 			String replaced = args[0];
 			List<Placeholder> list = new ArrayList<Placeholder>();
 			list.addAll(Placeholders.myServerPlaceholders.values());
-			list.addAll( Placeholders.myPlayerPlaceholders.values());
+			list.addAll(Placeholders.myPlayerPlaceholders.values());
 			list.addAll(Placeholders.myServerConstants.values());
 			for (Placeholder p : list) 
 				if (replaced.contains(p.getIdentifier())) replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));

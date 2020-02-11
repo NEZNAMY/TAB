@@ -17,6 +17,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import com.google.common.collect.Lists;
+
 import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -547,7 +549,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return packet.toNMS(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Configs.configComments);
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", null);
 		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
 		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
 		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
@@ -587,7 +589,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		
 		
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Configs.advancedconfigComments);
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Lists.newArrayList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
 		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
@@ -596,6 +598,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);
+		Configs.groupsByPermissions = Configs.advancedconfig.getBoolean("assign-groups-by-permissions", false);
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);

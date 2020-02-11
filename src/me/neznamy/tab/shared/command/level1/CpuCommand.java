@@ -21,6 +21,11 @@ public class CpuCommand extends SubCommand {
 		Map<String, Float> placeholders = Shared.cpu.getPlaceholderCPU();
 		float placeholdersTotal = 0;
 		for (Float time : placeholders.values()) placeholdersTotal += time;
+		
+		Map<String, Float> bridgeplaceholders = Shared.cpu.getBridgePlaceholderCPU();
+		float bridgeplaceholdersTotal = 0;
+		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
+		
 		Map<String, Float> features = Shared.cpu.getFeatureCPU();
 		float featuresTotal = 0;
 		for (Float time : features.values()) featuresTotal += time;
@@ -34,14 +39,22 @@ public class CpuCommand extends SubCommand {
 			if (entry.getValue() > 0.1) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
+		if (Shared.separatorType.equals("server")) {
+			sendMessage(sender, "&8&l║ &6Bukkit bridge placeholders:");
+			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
+				if (entry.getValue() > 0.1) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
+			}
+			sendMessage(sender, "&8&l║&8&m                                                    ");
+		}
 		sendMessage(sender, "&8&l║ &6Features:");
 		for (Entry<String, Float> entry : features.entrySet()) {
 			sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizeFeature(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		sendMessage(sender, "&8&l║ &6&lPlaceholders Total: &a&l" + colorizeTotalUsage(decimal3.format(placeholdersTotal)) + "%");
+		if (Shared.separatorType.equals("server")) sendMessage(sender, "&8&l║ &6&lBukkit bridge placeholders Total: &a&l" + colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%");
 		sendMessage(sender, "&8&l║ &6&lPlugin internals: &a&l" + colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal)) + "%");
-		sendMessage(sender, "&8&l║ &6&lTotal: &e&l" + colorizeTotalUsage(decimal3.format(featuresTotal)) + "%");
+		sendMessage(sender, "&8&l║ &6&lTotal: &e&l" + colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal)) + "%");
 		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}

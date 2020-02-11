@@ -38,7 +38,7 @@ public class PacketAPI{
 		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
 	}
 	private static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature, null));
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature));
 	}
 
 	//scoreboard objective

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum EnumChatFormat{
 
@@ -27,26 +28,31 @@ public enum EnumChatFormat{
 	ITALIC(20, 'o'),
 	RESET(21, 'r');
 	
-	private int bungeeEquivalent;
+	private int networkId;
 	private char character;
 	private Object nmsEquivalent;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private EnumChatFormat(int bungeeEquivalent, char character) {
-		this.bungeeEquivalent = bungeeEquivalent;
+	private EnumChatFormat(int networkId, char character) {
+		this.networkId = networkId;
 		this.character = character;
 		if (MethodAPI.getInstance() != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumChatFormat, toString());
-	}
-	public static EnumChatFormat getByCharacter(char c) {
-		for (EnumChatFormat e : values()) {
-			if (e.character == c) return e;
-		}
-		return EnumChatFormat.RESET;
 	}
 	public Object toNMS() {
 		return nmsEquivalent;
 	}
-	public int toBungee() {
-		return bungeeEquivalent;
+	public int getNetworkId() {
+		return networkId;
+	}
+	public static EnumChatFormat lastColorsOf(String string) {
+		if (string == null || string.length() == 0) return EnumChatFormat.RESET;
+		String last = Placeholders.getLastColors(string);
+		if (last != null && last.length() > 0) {
+			char c = last.toCharArray()[1];
+			for (EnumChatFormat e : values()) {
+				if (e.character == c) return e;
+			}
+		}
+		return EnumChatFormat.RESET;
 	}
 }

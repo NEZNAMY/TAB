@@ -240,28 +240,38 @@ public abstract class ITabPlayer {
 
 	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
 		String newGroup = "null";
-		if (Configs.usePrimaryGroup) {
-			newGroup = getGroupFromPermPlugin();
+		if (Configs.groupsByPermissions) {
+			for (Object group : Configs.primaryGroupFindingList) {
+				if (hasPermission("tab.group." + group)) {
+					newGroup = String.valueOf(group);
+					break;
+				}
+			}
 		} else {
-			String[] playerGroups = getGroupsFromPermPlugin();
-			if (playerGroups != null && playerGroups.length > 0) {
-				loop:
-					for (Object entry : Configs.primaryGroupFindingList) {
-						for (String playerGroup : playerGroups) {
-							if (playerGroup == null) playerGroup = "null"; //ultrapermissions stuff
-							if (playerGroup.equalsIgnoreCase(entry + "")) {
-								newGroup = playerGroup;
-								break loop;
+			if (Configs.usePrimaryGroup) {
+				newGroup = getGroupFromPermPlugin();
+			} else {
+				String[] playerGroups = getGroupsFromPermPlugin();
+				if (playerGroups != null && playerGroups.length > 0) {
+					loop:
+						for (Object entry : Configs.primaryGroupFindingList) {
+							for (String playerGroup : playerGroups) {
+								if (playerGroup == null) playerGroup = "null"; //ultrapermissions stuff
+								if (playerGroup.equalsIgnoreCase(entry + "")) {
+									newGroup = playerGroup;
+									break loop;
+								}
 							}
 						}
-					}
-			if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
+				if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
+				}
 			}
 		}
 		if (!permissionGroup.equals(newGroup)) {
 			if (newGroup == null) {
 				//ultrapermissions
 				Shared.errorManager.printError("New updated group of " + getName() + " is null?");
+				newGroup = "null";
 				return;
 			}
 			permissionGroup = newGroup;
@@ -306,7 +316,10 @@ public abstract class ITabPlayer {
 		String value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null)
 			return value;
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null)
+			return value;
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("Users." + getUniqueId().toString() + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + property)) != null)
 			return value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null)
@@ -325,7 +338,9 @@ public abstract class ITabPlayer {
 		String worldGroup = getWorldGroupOf(getWorldName());
 		StringBuilder rawValue = new StringBuilder();
 		List<Object> lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + name);
 		if (lines == null) lines = Configs.config.getList("Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getList("Users." + getUniqueId().toString() + "." + name);
 		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + name);
 		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
 		if (lines == null) lines = Configs.config.getList("Groups." + permissionGroup + "." + name);

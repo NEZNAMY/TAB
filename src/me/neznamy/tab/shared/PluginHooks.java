@@ -164,7 +164,10 @@ public class PluginHooks {
 		try {
 			try {
 				//LuckPerms API v5
-				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getPrimaryGroup();
+				return LuckPermsProvider.get()
+						.getUserManager()
+						.getUser(p.getUniqueId())
+						.getPrimaryGroup();
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
@@ -203,24 +206,24 @@ public class PluginHooks {
 		}
 		return placeholder;
 	}
-	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String placeholder) {
+	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String text) {
 		try {
 			if (placeholderAPI) {
 				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, placeholder);
+				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, text);
 				Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 				return value;
 			}
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational placeholder " + placeholder + " for players " + one.getName() + " and " + two.getName(), t);
+				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational text " + text + " for players " + one.getName() + " and " + two.getName(), t);
 			} else {
 				//thats why it failed
 				placeholderAPI = false;
 			}
 		}
-		return placeholder;
+		return text;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
 		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();

@@ -23,7 +23,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class Configs {
 
 	public static ConfigurationFile config;
-	public static HashMap<String, List<String>> configComments;
 	public static boolean unlimitedTags;
 	public static boolean modifyNPCnames;
 	public static boolean collision;
@@ -55,12 +54,10 @@ public class Configs {
 
 
 	public static ConfigurationFile animation;
-	public static HashMap<String, List<String>> animationComments;
 	public static List<Animation> animations;
 
 
 	public static ConfigurationFile bossbar;
-	public static HashMap<String, List<String>> bossbarComments;
 
 
 	public static ConfigurationFile translation;
@@ -78,57 +75,21 @@ public class Configs {
 	public static String preview_on;
 
 	public static ConfigurationFile advancedconfig;
-	public static HashMap<String, List<String>> advancedconfigComments;
 	public static boolean sortByPermissions = false;
 	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
 	public static boolean bukkitBridgeMode;
+	public static boolean groupsByPermissions;
 
 	public static ConfigurationFile playerdata; 
 
 	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
 
-	static {
-		configComments = new HashMap<String, List<String>>();
-		configComments.put("nametag-refresh-interval-ticks", Arrays.asList("", "#20 ticks = 1 second"));
-		configComments.put("tablist-objective:", Arrays.asList("#the yellow number in tablist", "#options: PING, HEARTS, NONE (to disable it), CUSTOM (any placeholder defined below)"));
-		configComments.put("tablist-objective-value:", Arrays.asList("#the yellow number in tablist", "#set to \"\" to disable"));
-		configComments.put("group-sorting-priority-list", Arrays.asList("#NOT case sensitive"));
-		configComments.put("Groups:", Arrays.asList("#properties: tabprefix, tabsuffix, tagprefix (in name tag), tagsuffix, customtabname (modifying the name itself), header, footer", "#extra ones which need unlimited nametag mode enabled: abovename (line of text above name tag), belowname (below name tag), customtagname"));
-		configComments.put("  _OTHER_:", Arrays.asList("  #any other group not defined above"));
-		configComments.put("Users:", Arrays.asList("", "#personal settings, override group settings"));
-		configComments.put("enable-collision:", Arrays.asList("", "#servers and clients 1.9+"));
-		configComments.put("do-not-move-spectators", Arrays.asList("", "#preventing players in spectator gamemode from appearing at the bottom of tablist with transparent name FOR OTHER PLAYERS"));
-		configComments.put("unlimited-nametag-prefix-suffix-mode:", Arrays.asList("#VERY EXPERIMENTAL !", "#IF YOU EXPERIENCE ANY ISSUES CONTACT ME"));
-		configComments.put("  modify-npc-names:", Arrays.asList("  #modifying names of NPCs to avoid empty names on NPCs of online players", "  #this blocks any other attemps to change the name visibility or anything, so you need to disable it if you are using some citizens addon that changes their name", "  #needs relog to see the change"));
-		configComments.put("per-world-settings:", Arrays.asList("", "#list of worlds with different settings than default, other worlds will use settings from above"));
-		configComments.put("per-server-settings:", Arrays.asList("", "#list of servers with different settings than default, other servers will use settings from above"));
-		configComments.put("placeholders:", Arrays.asList("#setting output of some placeholders"));
-		configComments.put("  time-offset:", Arrays.asList("  #if time doesn't show correctly, you can change the time it shows", "  #setting to -1 will make it show 1 hour less than it does currently, 1 makes it show one hour more than currently, 0 does nothing"));
-		configComments.put("  remove-strings:", Arrays.asList("  #remove these strings from everywhere. Typically an empty output when using some clan/faction related plugin but player isn't in any", "  #so players won't have empty brackets before their names"));
-		configComments.put("rank-aliases:", Arrays.asList("", "#better showing of %rank% placeholder"));
-		configComments.put("disable-features", Arrays.asList(""));
-		configComments.put("belowname:", Arrays.asList("", "#the vanilla belowname feature", "#doesn't support player placeholders (faction, prefix), only server placeholders (time, date, animations) and static text"));
-		bossbarComments = new HashMap<String, List<String>>();
-		bossbarComments.put("bossbar-enabled:", Arrays.asList("#styles (SERVER 1.9+)", "#NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20, PROGRESS", "", "#colors (SERVER 1.9+)", "#BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW", "", "#IF YOU ARE USING SERVER 1.8.X", "#the entity will be slightly visible when progress is less than ~50% (client-sided bug)", "#only 1 line can be displayed at a time", "", "#you can also announce a message using /tab announce bar <bar name> <duration in seconds> (does not support animations yet)", ""));
-		bossbarComments.put("default-bars:", Arrays.asList("#to have no default bars, set it to ", "#default-bars: []"));
-		bossbarComments.put("remember-toggle-choice:", Arrays.asList("", "#saving toggle decision into playerdata.yml to keep it saved after reloads/restarts"));
-		animationComments = new HashMap<String, List<String>>();
-		animationComments.put("animations:", Arrays.asList("#usage: %animation:NAME%  or  {animation:NAME}"));
-		advancedconfigComments = new HashMap<String, List<String>>();
-		advancedconfigComments.put("per-world-playerlist:", Arrays.asList("#players will only see in tablist those who are in the same world"));
-		advancedconfigComments.put("allow-pwp-bypass-permission:", Arrays.asList("", "#allow players with tab.bypass permission to see every player in tablist even if the setting above is enabled"));
-		advancedconfigComments.put("ignore-pwp-in-worlds:", Arrays.asList("", "#even if per-world-playerlist is enabled, people in these worlds will see everyone on server in tablist"));
-		advancedconfigComments.put("sort-players-by-permissions:", Arrays.asList("", "#sorting by permissions. Permission node is \"tab.sort.<group>\" and priorities can be set in config"));
-		advancedconfigComments.put("fix-pet-names:", Arrays.asList("", "#an option to remove minecraft vanilla feature since 1.9 making named pets have same prefix as their owner (and being invisible when unlimited nametag mode is enabled)", "#needs relog to see the change"));
-		advancedconfigComments.put("use-primary-group:", Arrays.asList("", "#asking permission plugin for primary group only"));
-		advancedconfigComments.put("primary-group-finding-list:", Arrays.asList("", "#if the option above is disabled, full group list will be asked for and group higher in this list will be used as primary"));
-	}
 	public static void loadFiles() throws Exception {
 		if (errorFile.exists()) {
-			if (errorFile.length() > 10000000) {
-				errorFile.delete();
+			if (errorFile.length() > 10) {
+				Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 			}
 		}
 		Placeholders.clearAll();
@@ -271,7 +232,7 @@ public class Configs {
 		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
 	}
 	public static void loadAnimations() throws Exception {
-		animation = new ConfigurationFile("animations.yml", animationComments);
+		animation = new ConfigurationFile("animations.yml", null);
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
 			for (String s : animation.getConfigurationSection("animations").keySet())
@@ -280,7 +241,7 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	public static void loadBossbar() throws Exception {
-		bossbar = new ConfigurationFile("bossbar.yml", bossbarComments);
+		bossbar = new ConfigurationFile("bossbar.yml", null);
 		if (bossbar.get("enabled") != null) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
@@ -319,13 +280,13 @@ public class Configs {
 		if (BossBar.remember_toggle_choice) {
 			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
 			if (!file.exists()) file.createNewFile();
-			playerdata = new ConfigurationFile("playerdata.yml", new HashMap<String, List<String>>());
+			playerdata = new ConfigurationFile("playerdata.yml", null);
 			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");
 		}
 		if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
 	}
 	public static void loadTranslation() throws Exception {
-		translation = new ConfigurationFile("translation.yml", new HashMap<String, List<String>>());
+		translation = new ConfigurationFile("translation.yml", null);
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");

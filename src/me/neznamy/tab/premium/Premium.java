@@ -24,7 +24,7 @@ public class Premium {
 
 	@SuppressWarnings("unchecked")
 	public static void loadPremiumConfig() throws Exception {
-		premiumconfig = new ConfigurationFile("premiumconfig.yml", new HashMap<String, List<String>>());
+		premiumconfig = new ConfigurationFile("premiumconfig.yml", null);
 		String type = premiumconfig.getString("sorting-type", "GROUPS");
 		try {
 			sortingType = SortingType.valueOf(type.toUpperCase());
