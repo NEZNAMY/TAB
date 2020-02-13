@@ -31,6 +31,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		this(entityId, uuid, entityIds.get(entityType), loc);
 	}
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, int entityType, Location loc) {
+		if (loc == null) throw new IllegalArgumentException("Location cannot be null");
 		this.entityId = entityId;
 		this.uuid = uuid;
 		this.entityType = entityType;
