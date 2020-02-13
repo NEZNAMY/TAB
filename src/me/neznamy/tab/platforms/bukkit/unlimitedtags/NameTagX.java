@@ -116,6 +116,7 @@ public class NameTagX implements Listener{
 		if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
 			int id = (int) packet.a;
 			ITabPlayer pl = Shared.getPlayer(id);
+			List<Integer> vehicleList;
 			if (pl != null) {
 				//player moved
 				if (((TabPlayer)pl).player.isFlying() && !teleportPacket) {
@@ -124,9 +125,9 @@ public class NameTagX implements Listener{
 				} else {
 					NameTagLineManager.teleportArmorStand(pl, packetReceiver);
 				}
-			} else if (vehicles.containsKey(id)){
+			} else if ((vehicleList = vehicles.get(id)) != null){
 				//a vehicle carrying something moved
-				for (Integer entity : vehicles.get(id)) {
+				for (Integer entity : vehicleList) {
 					ITabPlayer passenger = Shared.getPlayer(entity);
 					if (passenger != null) {
 						NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
