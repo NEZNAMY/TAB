@@ -47,7 +47,6 @@ public class Configs {
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_safe_register;
 	public static boolean SECRET_remove_ghost_players;
-	public static boolean SECRET_log_errors_into_console;
 	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
 	public static String SECRET_multiWorldSeparator;
