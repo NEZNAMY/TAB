@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
+
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -161,5 +164,173 @@ public class ErrorManager {
 				Shared.mainClass.sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.");
 			}
 		}
+	}
+	public String suggestYamlFix(Exception e, List<String> fileLines) {
+		try {
+			String indent;
+			if ((indent = checkForIndent(fileLines)) != null) {
+				return indent;
+			}
+			int line1 = Integer.parseInt(e.getMessage().split(", line ")[1].split(",")[0]);
+			if (e instanceof ScannerException) {
+				String text = fileLines.get(line1-1).split("#")[0];
+				if (e.getMessage().contains("\\t(TAB)")) {
+					return "Replace \\t (TAB) with 4 spaces on line " + line1 + ".";
+				}
+				if (e.getMessage().contains("Do not use %")) {
+					if (!text.contains("\"") && !text.contains("'")) {
+						return "Wrap value in line " + line1 + " into quotes.";
+					} else {
+						return "One of your lines (from 1 to " + (line1-1) + ") is missing ending ' (or \").";
+					}
+				}
+				if (e.getMessage().contains("expected alphabetic or numeric character")) {
+					String quotes = brokenQuotes(fileLines, 1, line1-1);
+					if (quotes != null) return quotes;
+					return "Wrap value in line " + line1 + " into quotes.";
+				}
+				if (e.getMessage().contains("found unexpected end of stream")) {
+					String quotes = brokenQuotes(fileLines, line1, line1);
+					if (quotes != null) return quotes;
+				}
+				if (e.getMessage().contains("mapping values are not allowed here.")) {
+					return "Remove the last : from line " + line1 + ".";
+				}
+				if (e.getMessage().contains("could not find expected ':'")) {
+					while (text.startsWith(" ")) text = text.substring(1, text.length());
+					if (text.startsWith("-") && !text.startsWith("- ")) {
+						return "Add a space after the \"-\" at line " + line1 + ".";
+					}
+					if (text.contains(":") && !text.contains(": ")) {
+						return "Add a space after the \":\" at line " + line1 + ".";
+					}
+					return "Remove line " + line1 + " or add a : followed by a value.";
+				}
+				if (e.getMessage().contains("found unknown escape character")) {
+					return "Remove the \\ from line " + line1 + ".";
+				}
+			}
+			if (e instanceof ParserException) {
+				int line2 = Integer.parseInt(e.getMessage().split(", line ")[2].split(",")[0]);
+				String text2 = fileLines.get(line2-1).split("#")[0];
+				if (e.getMessage().contains("expected <block end>, but found '-'")) {
+					if (fileLines.get(line2-2).endsWith(":")) {
+						return "List starting at line " + line2 + " seems to be starting at line " + line1 + " already. Make sure indenting is correct.";
+					} else {
+						return "List starting at line " + line2 + " is missing a name.";
+					}
+				}
+				if (text2.contains(":") && !text2.contains(": ")) {
+					return "Add a space after the \":\" at line " + line2 + ".";
+				}
+				String quotes = brokenQuotes(fileLines, line1, line2);
+				if (quotes != null) return quotes;
+			}
+			return null;
+		} catch (Exception ex) {
+			if (Configs.SECRET_debugMode) {
+				Shared.errorManager.criticalError("Failed to check yaml file for assistance", ex);
+			}
+			return null;
+		}
+	}
+	private String brokenQuotes(List<String> lines, int from, int to) {
+		for (int line=from; line<=to; line++) {
+			String text = lines.get(line-1);
+			if (isComment(text)) continue;
+			int simpleQstart = text.indexOf("'");
+			int simpleQend = text.lastIndexOf("'");
+			int doubleQstart = text.indexOf("\"");
+			int doubleQend = text.lastIndexOf("\"");
+			if (simpleQstart != -1 && doubleQstart == -1) {
+				//text in simple quotes
+				if (simpleQstart == simpleQend) {
+					return "Add ' at the end of line " + line;
+				}
+			}
+			if (doubleQstart != -1 && simpleQstart == -1) {
+				//text in double quotes
+				if (doubleQstart == doubleQend) {
+					return "Add \" at the end of line " + line;
+				}
+			}
+			if (simpleQstart != -1 && simpleQstart < doubleQstart) {
+				//the text is supposed to be in simple quotes
+				if (simpleQend < doubleQend && simpleQstart == simpleQend) {
+					return "Add ' at the end of line " + line;
+				}
+			}
+			if (doubleQstart != -1 && doubleQstart < simpleQstart) {
+				//the text is supposed to be in double quotes
+				if (doubleQend < simpleQend && doubleQstart == doubleQend) {
+					return "Add \" at the end of line " + line;
+				}
+			}
+			if (text.endsWith("''")) {
+				return "Remove one ' from the end of line " + line;
+			}
+			if (text.endsWith("\"\"")) {
+				return "Remove one \" from the end of line " + line;
+			}
+		}
+		return null;
+	}
+	private String checkForIndent(List<String> lines) {
+		int lineId = -1;
+		for (String line : lines) {
+			line = line.split("#")[0];
+			lineId++;
+			if (line.length() == 0 || line.replace(" ", "").length() == 0 || isComment(line)) continue;
+			int currentLineIndent = getIndentCount(line);
+			String prevLine = lineId == 0 ? "" : lines.get(lineId-1);
+			int remove = 1;
+			while (isComment(prevLine)) {
+				int id = lineId-(remove++);
+				if (id == -1) {
+					prevLine = "";
+					break;
+				}
+				prevLine = lines.get(id);
+			}
+			prevLine = prevLine.split("#")[0];
+			int prevLineIndent = getIndentCount(prevLine);
+			if (prevLine.replace(" ", "").endsWith(":")) {
+				//expecting 2 more spaces or same or 2k less (k = 1,2,..)
+				if (currentLineIndent - prevLineIndent > 2) {
+					return "Remove " + (currentLineIndent-prevLineIndent-2) + " space(s) from line " + (lineId+1);
+				}
+				if (currentLineIndent - prevLineIndent == 1) {
+					return "Add 1 space to line " + (lineId+1);
+				}
+				if (prevLineIndent - currentLineIndent == 1) {
+					if (line.replace(" ", "").startsWith("-")) {
+						return "Add 1 or 3 spaces to line " +  (lineId+1);
+					} else {
+						return "Remove 1 space from line " + (lineId+1);
+					}
+				}
+			} else {
+				//expecting same indent count or 2k less (k = 1,2,..)
+				if (currentLineIndent != prevLineIndent) {
+					if (currentLineIndent > prevLineIndent) {
+						return "Remove " + (currentLineIndent-prevLineIndent) + " space(s) from line " + (lineId+1);
+					}
+				}
+			}
+			if (currentLineIndent%2 == 1) {
+				return "Add or remove one space at line " + (lineId+1);
+			}
+		}
+		return null;
+	}
+	private int getIndentCount(String line) {
+		if (isComment(line)) return 0;
+		int i = -1;
+		while (line.charAt(++i) == ' ');
+		return i;
+	}
+	private boolean isComment(String line) {
+		line = line.replace(" ", "");
+		return line.startsWith("#") || line.length() == 0;
 	}
 }

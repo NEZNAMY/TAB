@@ -19,8 +19,6 @@ import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.google.common.collect.Lists;
 
@@ -57,7 +55,7 @@ public class ConfigurationFile{
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
-			String fix = suggestFix(e);
+			String fix = Shared.errorManager.suggestYamlFix(e, readFile(file));
 			if (fix != null) {
 				Shared.mainClass.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
 			}
@@ -85,85 +83,7 @@ public class ConfigurationFile{
 			}
 		}
 	}
-	private String suggestFix(Exception e) {
-		try {
-			List<String> lines = readFile(file);
-			int line1 = Integer.parseInt(e.getMessage().split(", line ")[1].split(",")[0]);
-			if (e instanceof ScannerException) {
-				if (e.getMessage().contains("\\t(TAB)")) {
-					return "Replace \\t (TAB) with 4 spaces on line " + line1 + ".";
-				}
-				if (e.getMessage().contains("Do not use %")) {
-					String text = lines.get(line1-1);
-					if (!text.contains("\"") && !text.contains("'")) {
-						return "Wrap value in line " + line1 + " into quotes.";
-					} else {
-						return "One of your lines (from 1 to " + (line1-1) + ") is missing ending ' (or \").";
-					}
-				}
-				if (e.getMessage().contains("expected alphabetic or numeric character")) {
-					String quotes = brokenQuotes(lines, 1, line1-1);
-					if (quotes != null) return quotes;
-					return "Wrap value in line " + line1 + " into quotes.";
-				}
-				if (e.getMessage().contains("found unexpected end of stream")) {
-					String quotes = brokenQuotes(lines, line1, line1);
-					if (quotes != null) return quotes;
-				}
-				if (e.getMessage().contains("mapping values are not allowed here.")) {
-					return "Remove the last : from line " + line1;
-				}
-				if (e.getMessage().contains("could not find expected ':'")) {
-					return "Remove line " + line1 + " or add a : followed by a value.";
-				}
-				if (e.getMessage().contains("found unknown escape character")) {
-					return "Remove the \\ from line " + line1;
-				}
-			}
-			if (e instanceof ParserException) {
-				int line2 = Integer.parseInt(e.getMessage().split(", line ")[2].split(",")[0]);
-				if (e.getMessage().contains("expected <block end>, but found '<block sequence start>'")) {
-					if (isIndentWrong(lines.get(line2-1))) {
-						if (lines.get(line2-2).endsWith(":")) {
-							return "Add one space at the beginning of line " + line2 + ".";
-						} else {
-							return "Remove one space from the beginning of line " + line2 + ".";
-						}
-					}
-				}
-				if (e.getMessage().contains("expected <block end>, but found '-'")) {
-					if (lines.get(line2-2).endsWith(":")) {
-						return "List starting at line " + line2 + " seems to be starting at line " + line1 + " already. Make sure indenting is correct.";
-					} else {
-						return "List starting at line " + line2 + " is missing a name.";
-					}
-				}
-				String quotes = brokenQuotes(lines, line1, line2);
-				if (quotes != null) return quotes;
-			}
-			return null;
-		} catch (Exception ex) {
-			//just making sure
-			return null;
-		}
-	}
-	private String brokenQuotes(List<String> lines, int from, int to) {
-		for (int line=from; line<=to; line++) {
-			String text = lines.get(line-1);
-			if (text.indexOf("\"") != -1 && text.indexOf("\"") == text.lastIndexOf("\"") && !text.endsWith("\"")) {
-				return "Add \" at the end of line " + line;
-			}
-			if (text.indexOf("'") != -1 && text.indexOf("'") == text.lastIndexOf("'") && !text.endsWith("'")) {
-				return "Add ' at the end of line " + line;
-			}
-		}
-		return null;
-	}
-	private boolean isIndentWrong(String line) {
-		int i = -1;
-		while (line.charAt(++i) == ' ');
-		return i%2==1;
-	}
+	
 	public Map<String, Object> getValues(){
 		return values;
 	}
