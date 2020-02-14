@@ -133,8 +133,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 			if (Configs.bukkitBridgeMode) {
+				long time = System.currentTimeMillis();
 				Shared.cpu.cancelAllTasks();
 				Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
+				sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 			} else {
 				Shared.unload();
 			}
