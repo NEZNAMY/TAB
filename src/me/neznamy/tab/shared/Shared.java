@@ -6,7 +6,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.api.TABAPI;
@@ -149,13 +148,6 @@ public class Shared {
 				return Configs.rankAliases.values().toArray(new String[0]);
 			}
 		});
-		for (Entry<String, Integer> entry : Placeholders.online.entrySet()){
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%version-group:" + entry.getKey()+ "%", 5000) {
-				public String get() {
-					return Placeholders.online.get(entry.getKey())+"";
-				}
-			});
-		}
 		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
 				int var = 0;
@@ -239,6 +231,18 @@ public class Shared {
 				return p.getVersion().getFriendlyName();
 			}
 		});
+		for (int i=5; i<=15; i++) {
+			final int version = i;
+			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%version-group:1-" + version + "-x%", 1000) {
+				public String get() {
+					int count = 0;
+					for (ITabPlayer p : getPlayers()) {
+						if (p.getVersion().getMinorVersion() == version) count++;
+					}
+					return count+"";
+				}
+			});
+		}
 		for (String placeholder : Placeholders.usedPlaceholders) {
 			if (!Placeholders.usedServerPlaceholders.containsKey(placeholder) && 
 				!Placeholders.usedPlayerPlaceholders.containsKey(placeholder) && 

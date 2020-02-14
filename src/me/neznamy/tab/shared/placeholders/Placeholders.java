@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -23,12 +22,6 @@ public class Placeholders {
 	public static Map<String, ServerConstant> usedServerConstants;
 	public static List<String> usedPlaceholders;
 
-	public static ConcurrentHashMap<String, Integer> online = new ConcurrentHashMap<String, Integer>();
-
-	static {
-		online.put("other", 0);
-		for (int i=5; i<=15; i++) online.put("1-" + i + "-x", 0);
-	}
 	public static void clearAll() {
 		myPlayerPlaceholders = new HashMap<String, PlayerPlaceholder>();
 		myServerPlaceholders = new HashMap<String, ServerPlaceholder>();
@@ -58,18 +51,7 @@ public class Placeholders {
 		}
 		return list;
 	}
-	public static void recalculateOnlineVersions() {
-		online.put("other", 0);
-		for (int i=5; i<=15; i++) online.put("1-" + i + "-x", 0);
-		for (ITabPlayer p : Shared.getPlayers()){
-			String group = "1-"+p.getVersion().getMinorVersion()+"-x";
-			if (online.containsKey(group)) {
-				online.put(group, online.get(group)+1);
-			} else {
-				online.put("other", online.get("other")+1);
-			}
-		}
-	}
+
 	//code taken from bukkit, so it can work on bungee too
 	public static String color(String textToTranslate){
 		if (textToTranslate == null) return null;

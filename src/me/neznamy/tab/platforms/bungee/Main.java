@@ -88,7 +88,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				Shared.data.put(p.getUniqueId(), t);
 				if (inject) inject(t.getUniqueId());
 			}
-			Placeholders.recalculateOnlineVersions();
 			BossBar.load();
 			NameTag16.load();
 			Playerlist.load();
@@ -116,7 +115,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
-		Placeholders.recalculateOnlineVersions();
 		NameTag16.playerQuit(disconnectedPlayer);
 		ScoreboardManager.unregister(disconnectedPlayer);
 		if (Configs.SECRET_remove_ghost_players) {
@@ -138,7 +136,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				Placeholders.recalculateOnlineVersions();
 				HeaderFooter.playerJoin(p);
 				BossBar.playerJoin(p);
 				TabObjective.playerJoin(p);

@@ -163,7 +163,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Shared.data.put(p.getUniqueId(), t);
 					if (inject) inject(t.getUniqueId());
 				}
-				Placeholders.recalculateOnlineVersions();
 				BossBar.load();
 				BossBar_legacy.load();
 				NameTagX.load();
@@ -203,7 +202,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 				public void run() {
 					PluginHooks.DeluxeTags_onChat(p);
-					Placeholders.recalculateOnlineVersions();
 					HeaderFooter.playerJoin(p);
 					TabObjective.playerJoin(p);
 					BelowName.playerJoin(p);
@@ -227,7 +225,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player left");
 				return;
 			}
-			Placeholders.recalculateOnlineVersions();
 			NameTag16.playerQuit(disconnectedPlayer);
 			NameTagX.playerQuit(disconnectedPlayer);
 			ScoreboardManager.unregister(disconnectedPlayer);

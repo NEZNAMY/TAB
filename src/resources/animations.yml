@@ -118,6 +118,7 @@ animations:
   versions:
     change-interval: 1000
     texts:
+      - "Online players with MC 1.15.x : %version-group:1-15-x%"
       - "Online players with MC 1.14.x : %version-group:1-14-x%"
       - "Online players with MC 1.13.x : %version-group:1-13-x%"
       - "Online players with MC 1.12.x : %version-group:1-12-x%"
@@ -128,7 +129,6 @@ animations:
       - "Online players with MC 1.7.x : %version-group:1-7-x%"
       - "Online players with MC 1.6.x : %version-group:1-6-x%"
       - "Online players with MC 1.5.x : %version-group:1-5-x%"
-      - "Online players with unknown version: %version-group:other%"
   admin_prefix:
     change-interval: 200
     texts:
