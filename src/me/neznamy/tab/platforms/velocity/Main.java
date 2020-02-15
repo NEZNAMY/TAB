@@ -8,8 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
@@ -61,20 +59,25 @@ public class Main implements MainClass{
 	}
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
-		long time = System.currentTimeMillis();
-		me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.BUNGEE;
-		Shared.mainClass = this;
-		Shared.separatorType = "server";
-		TabCommand command = new TabCommand();
-		server.getCommandManager().register("btab", new Command() {
-			public void execute(CommandSource sender, String[] args) {
-				command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-			}
-		});
-		registerPackets();
-		plm = new PluginMessenger(this);
-		load(false, true);
-		if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		try {
+			Class.forName("org.yaml.snakeyaml.Yaml");
+			long time = System.currentTimeMillis();
+			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.BUNGEE;
+			Shared.mainClass = this;
+			Shared.separatorType = "server";
+			TabCommand command = new TabCommand();
+			server.getCommandManager().register("btab", new Command() {
+				public void execute(CommandSource sender, String[] args) {
+					command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				}
+			});
+			registerPackets();
+			plm = new PluginMessenger(this);
+			load(false, true);
+			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		} catch (ClassNotFoundException e) {
+			sendConsoleMessage("&c[TAB] The plugin requires Velocity 1.1.0 and up to work ! Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
+		}
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
@@ -106,16 +109,17 @@ public class Main implements MainClass{
 			Shared.checkForUpdates();
 			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (ParserException | ScannerException e) {
-			Shared.print('c', "Did not enable due to a broken configuration file.");
-			Shared.disabled = true;
 		} catch (Throwable e) {
-			Shared.print('c', "Failed to enable");
-			sendConsoleMessage("&c" + e.getClass().getName() +": " + e.getMessage());
-			for (StackTraceElement ste : e.getStackTrace()) {
-				sendConsoleMessage("&c       at " + ste.toString());
-			}
 			Shared.disabled = true;
+			if (e.getClass().getSimpleName().equals("ParserException") || e.getClass().getSimpleName().equals("ScannerException")) { //avoiding NoClassDefFoundError on Velocity <1.1.0
+				Shared.print('c', "Did not enable due to a broken configuration file.");
+			} else {
+				Shared.print('c', "Failed to enable");
+				sendConsoleMessage("&c" + e.getClass().getName() +": " + e.getMessage());
+				for (StackTraceElement ste : e.getStackTrace()) {
+					sendConsoleMessage("&c       at " + ste.toString());
+				}
+			}
 		}
 	}
 	@Subscribe
