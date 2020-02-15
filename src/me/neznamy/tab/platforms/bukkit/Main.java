@@ -629,25 +629,28 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 //		Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
-	public boolean convertConfig(Map<String, Object> values) {
-		boolean changed = false;
-		if (values.containsKey("nametag-refresh-interval-ticks")) {
-			convert(values, "nametag-refresh-interval-ticks", values.get("nametag-refresh-interval-ticks"), "nametag-refresh-interval-milliseconds", (int)values.get("nametag-refresh-interval-ticks") * 50);
-			changed = true;
+	public void convertConfig(ConfigurationFile config) {
+		Map<String, Object> values = config.getValues();
+		boolean save = false;
+		if (config.getName().equals("config.yml")) {
+			if (values.containsKey("nametag-refresh-interval-ticks")) {
+				convert(config, "nametag-refresh-interval-ticks", values.get("nametag-refresh-interval-ticks"), "nametag-refresh-interval-milliseconds", (int)values.get("nametag-refresh-interval-ticks") * 50);
+				save = true;
+			}
+			if (values.containsKey("tablist-refresh-interval-ticks")) {
+				convert(config, "tablist-refresh-interval-ticks", values.get("tablist-refresh-interval-ticks"), "tablist-refresh-interval-milliseconds", (int)values.get("tablist-refresh-interval-ticks") * 50);
+				save = true;
+			}
+			if (values.containsKey("header-footer-refresh-interval-ticks")) {
+				convert(config, "header-footer-refresh-interval-ticks", values.get("header-footer-refresh-interval-ticks"), "header-footer-refresh-interval-milliseconds", (int)values.get("header-footer-refresh-interval-ticks") * 50);
+				save = true;
+			}
 		}
-		if (values.containsKey("tablist-refresh-interval-ticks")) {
-			convert(values, "tablist-refresh-interval-ticks", values.get("tablist-refresh-interval-ticks"), "tablist-refresh-interval-milliseconds", (int)values.get("tablist-refresh-interval-ticks") * 50);
-			changed = true;
-		}
-		if (values.containsKey("header-footer-refresh-interval-ticks")) {
-			convert(values, "header-footer-refresh-interval-ticks", values.get("header-footer-refresh-interval-ticks"), "header-footer-refresh-interval-milliseconds", (int)values.get("header-footer-refresh-interval-ticks") * 50);
-			changed = true;
-		}
-		return changed;
+		if (save) config.save();
 	}
-	private void convert(Map<String, Object> values, String oldKey, Object oldValue, String newKey, Object newValue) {
-		values.remove(oldKey);
-		values.put(newKey, newValue);
-		Shared.print('2', "Converted old config value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
+	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
+		config.set(oldKey, null);
+		config.set(newKey, newValue);
+		Shared.print('2', "Converted old " + config.getName() + " value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }

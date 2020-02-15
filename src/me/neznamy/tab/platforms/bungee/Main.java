@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungee;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -297,7 +296,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			return;
 		}
 	}
-	public boolean convertConfig(Map<String, Object> values) {
-		return false;
+	public void convertConfig(ConfigurationFile config) {
+
 	}
 }

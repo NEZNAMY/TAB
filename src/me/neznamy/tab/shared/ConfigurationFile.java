@@ -48,7 +48,7 @@ public class ConfigurationFile{
 			values = yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
-			if (Shared.mainClass.convertConfig(values)) save();
+			Shared.mainClass.convertConfig(this);
 			if (!hasHeader()) fixHeader();
 			detectPlaceholders(values);
 		} catch (Exception e) {
@@ -83,7 +83,9 @@ public class ConfigurationFile{
 			}
 		}
 	}
-	
+	public String getName() {
+		return file.getName();
+	}
 	public Map<String, Object> getValues(){
 		return values;
 	}

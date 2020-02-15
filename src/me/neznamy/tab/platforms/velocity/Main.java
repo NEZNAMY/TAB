@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.velocity;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -350,7 +349,7 @@ public class Main implements MainClass{
 			return;
 		}
 	}
-	public boolean convertConfig(Map<String, Object> values) {
-		return false;
+	public void convertConfig(ConfigurationFile config) {
+
 	}
 }
