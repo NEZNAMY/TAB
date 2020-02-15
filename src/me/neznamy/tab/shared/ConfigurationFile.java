@@ -119,37 +119,70 @@ public class ConfigurationFile{
 	}
 	public String getString(String path, String defaultValue) {
 		Object value = get(path, defaultValue);
-		if (value == null) return null;
+		if (value == null) return defaultValue;
 		return value+"";
-	}
-	public List<Object> getList(String path) {
-		return getList(path, null);
-	}
-	public List<Object> getList(String path, List<String> defaultValue) {
-		return (List<Object>) get(path, defaultValue);
 	}
 	public List<String> getStringList(String path) {
 		return getStringList(path, null);
 	}
 	public List<String> getStringList(String path, List<String> defaultValue) {
-		return (List<String>) get(path, defaultValue);
+		Object value = get(path, defaultValue);
+		if (!(value instanceof List)) {
+			dataMismatch(path, "ArrayList", value.getClass().getSimpleName());
+			return new ArrayList<String>();
+		}
+		List<String> fixedList = new ArrayList<String>();
+		for (Object key : (List<Object>)value) {
+			fixedList.add(key+"");
+		}
+		return fixedList;
 	}
-	public int getInt(String path, Object defaultValue) {
-		Object result = get(path, defaultValue);
-		if (result == null) return 0;
-		return Integer.parseInt(result+"");
-	}
+	
+	
 	public int getInt(String path) {
-		return getInt(path, null);
+		return getInt(path, 0);
 	}
-	public boolean getBoolean(String path, Object defaultValue) {
-		return Boolean.parseBoolean(get(path, defaultValue)+"");
+	public int getInt(String path, int defaultValue) {
+		Object value = get(path, defaultValue);
+		if (value == null) return defaultValue;
+		try{
+			return Integer.parseInt(value+"");
+		} catch (Exception e) {
+			dataMismatch(path, "Integer", value.getClass().getSimpleName());
+			return defaultValue;
+		}
 	}
+	
+	
 	public boolean getBoolean(String path) {
-		return getBoolean(path, null);
+		return getBoolean(path, false);
 	}
+	public boolean getBoolean(String path, boolean defaultValue) {
+		Object value = get(path, defaultValue);
+		if (value == null) return defaultValue;
+		try{
+			return Boolean.parseBoolean(value+"");
+		} catch (Exception e) {
+			dataMismatch(path, "Boolean", value.getClass().getSimpleName());
+			return defaultValue;
+		}
+	}
+	
+	
 	public double getDouble(String path, double defaultValue) {
-		return Double.parseDouble(get(path, defaultValue)+"");
+		Object value = get(path, defaultValue);
+		if (value == null) return defaultValue;
+		try{
+			return Double.parseDouble(value+"");
+		} catch (Exception e) {
+			dataMismatch(path, "Double", value.getClass().getSimpleName());
+			return defaultValue;
+		}
+	}
+	
+	
+	private void dataMismatch(String path, String expected, String found) {
+		Shared.errorManager.startupWarn("Data mismatch in &e" + file.getName() + "&c. Value of &e" + path + "&c is expected to be &e" + expected + "&c, but is &e" + found + "&c. This is a misconfiguration issue.");
 	}
 	public void set(String path, Object value) {
 		set(values, path, value);

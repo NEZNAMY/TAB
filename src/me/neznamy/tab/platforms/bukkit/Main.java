@@ -557,7 +557,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
-		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
+		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getStringList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
 		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
 		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);

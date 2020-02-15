@@ -337,17 +337,17 @@ public abstract class ITabPlayer {
 	private void updateRawValue(String name) {
 		String worldGroup = getWorldGroupOf(getWorldName());
 		StringBuilder rawValue = new StringBuilder();
-		List<Object> lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + name);
-		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getList("Users." + getName() + "." + name);
-		if (lines == null) lines = Configs.config.getList("Users." + getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + name);
-		if (lines == null) lines = Configs.config.getList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
-		if (lines == null) lines = Configs.config.getList("Groups." + permissionGroup + "." + name);
-		if (lines == null) lines = Configs.config.getList(name);
-		if (lines == null) lines = new ArrayList<Object>();
+		List<String> lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Users." + getName() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Users." + getUniqueId().toString() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Groups." + permissionGroup + "." + name);
+		if (lines == null) lines = Configs.config.getStringList(name);
+		if (lines == null) lines = new ArrayList<String>();
 		int i = 0;
-		for (Object line : lines) {
+		for (String line : lines) {
 			if (++i > 1) rawValue.append("\n" + Shared.COLOR + "r");
 			rawValue.append(line);
 		}

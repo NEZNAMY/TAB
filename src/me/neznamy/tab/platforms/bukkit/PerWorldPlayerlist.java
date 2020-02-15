@@ -9,7 +9,7 @@ public class PerWorldPlayerlist {
 
 	public static boolean enabled;
 	public static boolean allowBypass;
-	public static List<Object> ignoredWorlds;
+	public static List<String> ignoredWorlds;
 	
 	public static void load(){
 		if (!enabled) return;

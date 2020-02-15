@@ -11,7 +11,7 @@ public class ScoreboardManager {
 
 	public static boolean enabled;
 	public static String toggleCommand;
-	public static List<Object> disabledWorlds;
+	public static List<String> disabledWorlds;
 	public static String defaultScoreboard;
 	public static int refresh;
 	public static Map<String, String> perWorld;
