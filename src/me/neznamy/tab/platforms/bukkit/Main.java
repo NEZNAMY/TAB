@@ -1,11 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
@@ -17,8 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
-import com.google.common.collect.Lists;
-
 import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -27,12 +21,7 @@ import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
@@ -94,34 +83,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}));
 			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-total) + "ms");
-			checkForBlacklist();
 		} else {
 			Shared.disabled = true;
 			sendConsoleMessage("&c[TAB] Your server version is not supported. Disabling..");
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
-	}
-	public void checkForBlacklist() {
-		final JavaPlugin instance = this;
-		Executors.newCachedThreadPool().submit(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					String[] blacklist = new String[] {
-								"82.208.17.57:27965", //insulting prefix, blackmailing, banned me
-							};
-					
-					URL whatismyip = new URL("http://checkip.amazonaws.com");
-					BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-					String ip = in.readLine() + ":" + Bukkit.getPort();
-					for (String blocked : blacklist) {
-						if (blocked.equals(ip)) Bukkit.getPluginManager().disablePlugin(instance);
-					}
-				} catch (Exception e) {
-				}
-			}
-		});
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
@@ -588,7 +554,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		
 		
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Lists.newArrayList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
 		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
