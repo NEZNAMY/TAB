@@ -139,9 +139,6 @@ public class ConfigurationFile{
 	}
 	
 	
-	public int getInt(String path) {
-		return getInt(path, 0);
-	}
 	public int getInt(String path, int defaultValue) {
 		Object value = get(path, defaultValue);
 		if (value == null) return defaultValue;
@@ -154,9 +151,6 @@ public class ConfigurationFile{
 	}
 	
 	
-	public boolean getBoolean(String path) {
-		return getBoolean(path, false);
-	}
 	public boolean getBoolean(String path, boolean defaultValue) {
 		Object value = get(path, defaultValue);
 		if (value == null) return defaultValue;

@@ -235,7 +235,7 @@ public class Configs {
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
 			for (String s : animation.getConfigurationSection("animations").keySet())
-				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval")));
+				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -254,8 +254,8 @@ public class Configs {
 		BossBar.lines.clear();
 		if (bossbar.getConfigurationSection("bars") != null) {
 			for (String bar : bossbar.getConfigurationSection("bars").keySet()){
-				boolean permissionRequired = bossbar.getBoolean("bars." + bar + ".permission-required");
-				int refresh = bossbar.getInt("bars." + bar + ".refresh");
+				boolean permissionRequired = bossbar.getBoolean("bars." + bar + ".permission-required", false);
+				int refresh = bossbar.getInt("bars." + bar + ".refresh", 0);
 				String style = bossbar.getString("bars." + bar + ".style");
 				String color = bossbar.getString("bars." + bar + ".color");
 				Object progress = bossbar.get("bars." + bar + ".progress");
