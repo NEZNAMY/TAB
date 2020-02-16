@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
@@ -34,6 +35,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
+	private static List<String> expansionsToDownload;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -140,6 +142,43 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				PerWorldPlayerlist.load();
 				ScoreboardManager.load();
 				Shared.checkForUpdates();
+				JavaPlugin instance = this;
+				if (PluginHooks.placeholderAPI) {
+					expansionsToDownload.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+					if (!expansionsToDownload.isEmpty()) {
+						Shared.cpu.runMeasuredTask("Downloading PlaceholderAPI Expansions", "Other", new Runnable() {
+
+							@Override
+							public void run() {
+								try {
+									Thread.sleep(3000);
+									for (String expansion : expansionsToDownload) {
+										sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+										Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+
+											@Override
+											public void run() {
+												Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
+											}
+										});
+										Thread.sleep(5000);
+									}
+									sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+
+										@Override
+										public void run() {
+											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
+										}
+									});
+
+								} catch (Throwable e) {
+									Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
+								}
+							}
+						});
+					}
+				}
 			}
 			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -249,7 +288,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Injector1_7.inject(player);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
 		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
@@ -260,7 +299,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 		} else {
-//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
+			//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}
@@ -279,6 +318,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+
+		expansionsToDownload = new ArrayList<String>();
 
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 3000) {
 			public String get(ITabPlayer p) {
@@ -342,7 +383,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					type = 2;
 				} catch (Throwable e) {}
 			}
-			
+
 			public String get(ITabPlayer p) {
 				if (type == 0) return "";
 				String name = null;
@@ -495,11 +536,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static double Vault_getMoney(ITabPlayer p) {
 		return ((Economy)PluginHooks.Vault_economy).getBalance(((TabPlayer)p).player);
 	}
-	
+
 	/*
 	 *  Implementing MainClass
 	 */
-	
+
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
 	}
@@ -552,8 +593,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
-		
-		
+
+
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
 		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
@@ -566,25 +607,28 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.groupsByPermissions = Configs.advancedconfig.getBoolean("assign-groups-by-permissions", false);
 	}
 	public void registerUnknownPlaceholder(String identifier) {
-		int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
-		if (server != -1) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
-				public String get() {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(null, identifier);
-				}
-			});
-			return;
-		}
-		int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
-		if (player != -1) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
-				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
-				}
-			});
-			return;
-		}
 		if (identifier.contains("_")) {
+			String plugin = identifier.split("_")[0].replace("%", "");
+			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
+			if (!expansionsToDownload.contains(plugin)) expansionsToDownload.add(plugin);
+			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
+			if (server != -1) {
+				TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
+					public String get() {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(null, identifier);
+					}
+				});
+				return;
+			}
+			int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
+			if (player != -1) {
+				TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
+					public String get(ITabPlayer p) {
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
+					}
+				});
+				return;
+			}
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
