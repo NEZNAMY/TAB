@@ -35,7 +35,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
-	private static List<String> expansionsToDownload;
+	private static List<String> usedExpantions;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -144,15 +144,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.checkForUpdates();
 				JavaPlugin instance = this;
 				if (PluginHooks.placeholderAPI) {
-					expansionsToDownload.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-					if (!expansionsToDownload.isEmpty()) {
+					usedExpantions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+					if (!usedExpantions.isEmpty()) {
 						Shared.cpu.runMeasuredTask("Downloading PlaceholderAPI Expansions", "Other", new Runnable() {
 
 							@Override
 							public void run() {
 								try {
 									Thread.sleep(3000);
-									for (String expansion : expansionsToDownload) {
+									for (String expansion : usedExpantions) {
 										sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
 										Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
 
@@ -319,7 +319,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 
-		expansionsToDownload = new ArrayList<String>();
+		usedExpantions = new ArrayList<String>();
 
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 3000) {
 			public String get(ITabPlayer p) {
@@ -610,7 +610,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "");
 			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
-			if (!expansionsToDownload.contains(plugin)) expansionsToDownload.add(plugin);
+			if (!usedExpantions.contains(plugin)) usedExpantions.add(plugin);
 			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
 			if (server != -1) {
 				TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
