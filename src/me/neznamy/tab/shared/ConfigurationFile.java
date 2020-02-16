@@ -127,6 +127,7 @@ public class ConfigurationFile{
 	}
 	public List<String> getStringList(String path, List<String> defaultValue) {
 		Object value = get(path, defaultValue);
+		if (value == null) return defaultValue;
 		if (!(value instanceof List)) {
 			dataMismatch(path, "ArrayList", value.getClass().getSimpleName());
 			return new ArrayList<String>();
