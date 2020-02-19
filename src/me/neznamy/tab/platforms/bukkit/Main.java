@@ -144,40 +144,47 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.checkForUpdates();
 				JavaPlugin instance = this;
 				if (PluginHooks.placeholderAPI) {
-					usedExpantions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-					if (!usedExpantions.isEmpty()) {
-						Shared.cpu.runMeasuredTask("Downloading PlaceholderAPI Expansions", "Other", new Runnable() {
+					Bukkit.getScheduler().runTaskLater(this, new Runnable() {
 
-							@Override
-							public void run() {
-								try {
-									Thread.sleep(3000);
-									for (String expansion : usedExpantions) {
-										sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
-										Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+						@Override
+						public void run() {
+							Shared.cpu.runMeasuredTask("Downloading PlaceholderAPI Expansions", "Other", new Runnable() {
 
-											@Override
-											public void run() {
-												Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
-											}
-										});
+								@Override
+								public void run() {
+									try {
 										Thread.sleep(5000);
-									}
-									sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
-									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+										usedExpantions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+										if (!usedExpantions.isEmpty()) {
+											for (String expansion : usedExpantions) {
+												sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
 
-										@Override
-										public void run() {
-											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
+													@Override
+													public void run() {
+														Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
+													}
+												});
+												Thread.sleep(5000);
+											}
+											sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+											Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+
+												@Override
+												public void run() {
+													Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
+												}
+											});
 										}
-									});
-
-								} catch (Throwable e) {
-									Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
+									} catch (InterruptedException e) {
+									} catch (Throwable e) {
+										Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
+									}
 								}
-							}
-						});
-					}
+							});
+						}
+						
+					}, 1);
 				}
 			}
 			Shared.errorManager.printConsoleWarnCount();
@@ -609,10 +616,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "");
-			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
+//			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
 			if (!usedExpantions.contains(plugin)) usedExpantions.add(plugin);
 			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
 			if (server != -1) {
+				Shared.debug("Registering SERVER PAPI placeholder " + identifier + " with cooldown " + server);
 				TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
 					public String get() {
 						return PluginHooks.PlaceholderAPI_setPlaceholders(null, identifier);
@@ -622,16 +630,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
 			if (player != -1) {
+				Shared.debug("Registering PLAYER PAPI placeholder " + identifier + " with cooldown " + player);
 				TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
 					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
+						return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
 					}
 				});
 				return;
 			}
+			Shared.debug("Registering PLAYER PAPI placeholder " + identifier);
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getUniqueId(), identifier);
+					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
 				}
 			});
 			return;
