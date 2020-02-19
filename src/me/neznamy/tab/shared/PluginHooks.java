@@ -184,23 +184,24 @@ public class PluginHooks {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(UUID id, String placeholder) {
+	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String placeholder) {
 		if (!placeholderAPI) return placeholder;
-		Player player = (id == null ? null : Bukkit.getPlayer(id));
+		Player player = (p == null ? null : ((TabPlayer)p).player);
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
+			String playername = (player == null ? "null" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				if (placeholder.contains("%pinataparty")) {
 					//i'm done with arguing with that person about whose fault it is, just pretending like it works
 					return "0";
 				} else {
-					String playername = (player == null ? "null" : player.getName());
 					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t);
 				}
 			} else {
 				//thats why it failed
+				Shared.errorManager.printError("PlaceholderAPI not found when trying to replace placeholder " + placeholder + " for player " + playername);
 				placeholderAPI = false;
 			}
 		}

@@ -9,6 +9,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 
@@ -23,12 +24,14 @@ public class PluginMessenger implements PluginMessageListener {
 	}
 	public void onPluginMessageReceived(String channel, Player player, byte[] bytes){
 		if (!channel.equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+		ITabPlayer p = Shared.getPlayer(player.getUniqueId());
+		if (p == null) return;
 		ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){
 			String placeholder = in.readUTF();
 			long start = System.nanoTime();
-			String output = PluginHooks.PlaceholderAPI_setPlaceholders(player.getUniqueId(), placeholder);
+			String output = PluginHooks.PlaceholderAPI_setPlaceholders(p, placeholder);
 			long time = System.nanoTime() - start;
 
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
