@@ -48,7 +48,7 @@ public abstract class MethodAPI {
 	public static Class<?> PacketPlayOutEntity;
 	public static Class<?> PlayerInfoData;
 	
-	public static Field PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
+	public static Field PacketPlayOutEntityMetadata_LIST;
 	
 	public static MethodAPI getInstance() {
 		return instance;
@@ -96,6 +96,7 @@ public abstract class MethodAPI {
 	static {
 		try {
 			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]).getConstructor().newInstance();
+			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 		} catch (Throwable e) {
 			//bungee or velocity
 		}
