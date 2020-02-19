@@ -32,6 +32,11 @@ public class Property {
 		}
 		placeholders = Placeholders.detectPlaceholders(value, owner != null);
 		hasRelationalPlaceholders = value.contains("%rel_");
+		for (Placeholder placeholder : placeholders) {
+			for (String child : placeholder.getChilds()) {
+				if (child.contains("%rel_")) hasRelationalPlaceholders = true;
+			}
+		}
 		if (placeholders.isEmpty() && !hasRelationalPlaceholders) {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
