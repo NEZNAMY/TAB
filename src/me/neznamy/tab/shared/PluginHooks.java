@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -27,6 +26,7 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.lapismc.afkplus.AFKPlus;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import net.milkbowl.vault.chat.Chat;
@@ -164,10 +164,12 @@ public class PluginHooks {
 		try {
 			try {
 				//LuckPerms API v5
-				return LuckPermsProvider.get()
-						.getUserManager()
-						.getUser(p.getUniqueId())
-						.getPrimaryGroup();
+				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					return "null";
+				}
+				return user.getPrimaryGroup();
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
