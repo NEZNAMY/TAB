@@ -28,7 +28,13 @@ public class PluginMessenger{
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
 		if (((TabPlayer)player).player.getCurrentServer().isPresent())
-			((TabPlayer)player).player.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
+			try {
+				((TabPlayer)player).player.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
+			} catch (IllegalStateException e) {
+				// java.lang.IllegalStateException: Not connected to server!
+				// this is not the best way to deal with this problem, but i could not find a better one
+			}
+			
 	}
 	@Subscribe
 	public void on(PluginMessageEvent event){
