@@ -238,6 +238,8 @@ public class Main implements MainClass{
 		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
+		if (server.getPluginManager().getPlugin("luckperms").isPresent()) PluginHooks.luckPerms = true;
+		
 		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
@@ -324,7 +326,7 @@ public class Main implements MainClass{
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
 	public String getPermissionPlugin() {
-		if (server.getPluginManager().getPlugin("LuckPerms").isPresent()) return "LuckPerms";
+		if (PluginHooks.luckPerms) return "luckperms";
 		return "Unknown/None";
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
