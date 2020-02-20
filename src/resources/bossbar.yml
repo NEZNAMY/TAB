@@ -39,5 +39,5 @@ bars:
     refresh: 100
     style: PROGRESS
     color: WHITE
-    progress: "%animation:test%"
+    progress: "100"
     text: "test"

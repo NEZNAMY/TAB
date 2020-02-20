@@ -193,6 +193,7 @@ public class Configs {
 		Playerlist.refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		HeaderFooter.refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
 		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
+		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval-milliseconds", 200);
 		collision = config.getBoolean("enable-collision", true);
 		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
 		timeOffset = config.getDouble("placeholders.time-offset", 0);

@@ -130,7 +130,7 @@ animations:
       - "Online players with MC 1.6.x : %version-group:1-6-x%"
       - "Online players with MC 1.5.x : %version-group:1-5-x%"
   admin_prefix:
-    change-interval: 200
+    change-interval: 1000
     texts:
       - "&6&lAdmin &e"
       - "&6&lAdmin &e"

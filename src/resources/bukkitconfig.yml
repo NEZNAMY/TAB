@@ -83,7 +83,7 @@ Users:
 #doesn't support player placeholders (faction, prefix), only server placeholders (time, date, animations) and static text
 belowname:
   enabled: true
-  refresh-interval-ticks: 5
+  refresh-interval-milliseconds: 250
   number: "%health%"
   text: "Health"
   

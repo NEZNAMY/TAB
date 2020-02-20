@@ -336,7 +336,6 @@ public class Main implements MainClass{
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", null);
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
 		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
-		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval", 200);
 		BelowName.number = Configs.config.getString("belowname.number", "%ping%");
 		BelowName.text = Configs.config.getString("belowname.text", "&aPing");
 		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
@@ -356,6 +355,21 @@ public class Main implements MainClass{
 		}
 	}
 	public void convertConfig(ConfigurationFile config) {
-
+		if (config.getName().equals("config.yml")) {
+			if (config.get("belowname.refresh-interval") != null) {
+				int value = (int) config.get("belowname.refresh-interval");
+				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
+			}
+		}
+	}
+	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
+		if (oldKey == null) {
+			config.set(newKey, newValue);
+			Shared.print('2', "Added new " + config.getName() + " value " + newKey + " (" + newValue + ")");
+			return;
+		}
+		config.set(oldKey, null);
+		config.set(newKey, newValue);
+		Shared.print('2', "Converted old " + config.getName() + " value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }

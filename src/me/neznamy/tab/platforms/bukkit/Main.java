@@ -35,7 +35,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
-	private static List<String> usedExpantions;
+	private static List<String> usedExpansions;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -154,9 +154,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 								public void run() {
 									try {
 										Thread.sleep(5000);
-										usedExpantions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-										if (!usedExpantions.isEmpty()) {
-											for (String expansion : usedExpantions) {
+										usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+										usedExpansions.remove("some"); //default config
+										if (!usedExpansions.isEmpty()) {
+											for (String expansion : usedExpansions) {
 												sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
 												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
 
@@ -326,7 +327,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 
-		usedExpantions = new ArrayList<String>();
+		usedExpansions = new ArrayList<String>();
 
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 3000) {
 			public String get(ITabPlayer p) {
@@ -594,7 +595,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			TabObjective.rawValue = "%health%";
 			Placeholders.usedPlaceholders.add("%health%");
 		}
-		BelowName.refresh = 50*Configs.config.getInt("belowname.refresh-interval-ticks", 5);
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
@@ -617,7 +617,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "");
 //			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
-			if (!usedExpantions.contains(plugin)) usedExpantions.add(plugin);
+			if (!usedExpansions.contains(plugin)) usedExpansions.add(plugin);
 			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
 			if (server != -1) {
 				Shared.debug("Registering SERVER PAPI placeholder " + identifier + " with cooldown " + server);
@@ -650,27 +650,44 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 
 	public void convertConfig(ConfigurationFile config) {
-		Map<String, Object> values = config.getValues();
-		boolean save = false;
 		if (config.getName().equals("config.yml")) {
-			if (values.containsKey("nametag-refresh-interval-ticks")) {
-				convert(config, "nametag-refresh-interval-ticks", values.get("nametag-refresh-interval-ticks"), "nametag-refresh-interval-milliseconds", (int)values.get("nametag-refresh-interval-ticks") * 50);
-				save = true;
-			}
-			if (values.containsKey("tablist-refresh-interval-ticks")) {
-				convert(config, "tablist-refresh-interval-ticks", values.get("tablist-refresh-interval-ticks"), "tablist-refresh-interval-milliseconds", (int)values.get("tablist-refresh-interval-ticks") * 50);
-				save = true;
-			}
-			if (values.containsKey("header-footer-refresh-interval-ticks")) {
-				convert(config, "header-footer-refresh-interval-ticks", values.get("header-footer-refresh-interval-ticks"), "header-footer-refresh-interval-milliseconds", (int)values.get("header-footer-refresh-interval-ticks") * 50);
-				save = true;
-			}
+			ticks2Millis(config, "nametag-refresh-interval-ticks", "nametag-refresh-interval-milliseconds");
+			ticks2Millis(config, "tablist-refresh-interval-ticks", "tablist-refresh-interval-milliseconds");
+			ticks2Millis(config, "header-footer-refresh-interval-ticks", "header-footer-refresh-interval-milliseconds");
+			ticks2Millis(config, "belowname.refresh-interval-ticks", "belowname.refresh-interval-milliseconds");
+			removeOld(config, "placeholders.deluxetag-yes");
+			removeOld(config, "placeholders.deluxetag-no");
+			removeOld(config, "placeholders.faction-yes");
+			removeOld(config, "placeholders.faction-no");
+			removeOld(config, "staff-groups");
+			removeOld(config, "use-essentials-nickname");
+			removeOld(config, "deluxetag-empty-value");
+			removeOld(config, "per-world-playerlist");
+			removeOld(config, "factions-faction");
+			removeOld(config, "factions-nofaction");
+			removeOld(config, "date-format");
+			removeOld(config, "time-format");
 		}
-		if (save) config.save();
+	}
+	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
+		if (config.get(oldKey) != null) {
+			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
+		}
+	}
+	private void removeOld(ConfigurationFile config, String oldKey) {
+		if (config.get(oldKey) != null) {
+			config.set(oldKey, null);
+			Shared.print('2', "Removed old " + config.getName() + " option " + oldKey);
+		}
 	}
 	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
+		if (oldKey == null) {
+			config.set(newKey, newValue);
+			Shared.print('2', "Added new " + config.getName() + " option " + newKey + " (" + newValue + ")");
+			return;
+		}
 		config.set(oldKey, null);
 		config.set(newKey, newValue);
-		Shared.print('2', "Converted old " + config.getName() + " value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
+		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }
