@@ -101,8 +101,8 @@ public class TabPlayer extends ITabPlayer{
 		if (PluginHooks.essentials != null) {
 			name = PluginHooks.Essentials_getNickname(this);
 		}
-		if (name == null || name.length() == 0) name = getName();
-		return name;
+		if (name == null || name.length() == 0) return getName();
+		return Configs.SECRET_essentials_nickname_prefix + name;
 	}
 	@Override
 	public void restartArmorStands() {

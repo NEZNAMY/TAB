@@ -50,6 +50,7 @@ public class Configs {
 	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
 	public static String SECRET_multiWorldSeparator;
+	public static String SECRET_essentials_nickname_prefix;
 
 
 	public static ConfigurationFile animation;
@@ -101,6 +102,7 @@ public class Configs {
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
+		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
