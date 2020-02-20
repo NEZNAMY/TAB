@@ -70,6 +70,18 @@ public class CPUManager {
 			}
 		});
 	}
+	public void runTask(String errorDescription, Runnable task) {
+		exe.submit(new Runnable() {
+
+			public void run() {
+				try {
+					task.run();
+				} catch (Throwable t) {
+					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
+				}
+			}
+		});
+	}
 	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
 		exe.submit(new Runnable() {
@@ -92,6 +104,21 @@ public class CPUManager {
 					} catch (Throwable t) {
 						Shared.errorManager.printError("An error occurred when " + errorDescription, t);
 					}
+				}
+			}
+		});
+	}
+	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, Runnable task) {
+		exe.submit(new Runnable() {
+
+			public void run() {
+				try {
+					Thread.sleep(delayMilliseconds);
+					long time = System.nanoTime();
+					task.run();
+					addFeatureTime(feature, System.nanoTime()-time);
+				} catch (Throwable t) {
+					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});
