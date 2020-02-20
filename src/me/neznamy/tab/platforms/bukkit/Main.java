@@ -148,7 +148,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 						@Override
 						public void run() {
-							Shared.cpu.runMeasuredTask("Downloading PlaceholderAPI Expansions", "Other", new Runnable() {
+							Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 								@Override
 								public void run() {
