@@ -7,6 +7,7 @@ import java.util.UUID;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -45,6 +46,7 @@ public class Playerlist {
 	}
 	public static void modifyPacket(PacketPlayOutPlayerInfo packet, ITabPlayer receiver){
 		if (receiver.getVersion().getMinorVersion() < 8) return;
+		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : packet.players) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packet.action == EnumPlayerInfoAction.REMOVE_PLAYER && GlobalPlayerlist.enabled) {
@@ -59,7 +61,9 @@ public class Playerlist {
 				if (Configs.doNotMoveSpectators && playerInfoData.gamemode == EnumGamemode.SPECTATOR && playerInfoData.uniqueId != receiver.getTablistId()) playerInfoData.gamemode = EnumGamemode.CREATIVE;
 			}
 			if (packet.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer != null && !packetPlayer.disabledTablistNames) playerInfoData.listName = packetPlayer.getTabFormat(receiver);
+				if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
+					playerInfoData.listName = packetPlayer.getTabFormat(receiver);
+				}
 			}
 			if (packet.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer == null) {
@@ -73,8 +77,19 @@ public class Playerlist {
 							}
 						}
 					}
+				} else {
+					v180PrefixBugFixList.add(playerInfoData.clone());
 				}
 			}
+		}
+		if (packet.action == EnumPlayerInfoAction.ADD_PLAYER && receiver.getVersion() == ProtocolVersion.v1_8) {
+			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist names 3", new Runnable() {
+
+				@Override
+				public void run() {
+					receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList));
+				}
+			});
 		}
 	}
 }

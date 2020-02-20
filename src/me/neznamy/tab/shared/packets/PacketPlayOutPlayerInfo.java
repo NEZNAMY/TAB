@@ -123,12 +123,15 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.uniqueId = uniqueId;
 		}
 		public PlayerInfoData(String name, UUID uniqueId, Object skin, int ping, EnumGamemode gamemode, String listName) {
-			this.ping = ping;
-			this.gamemode = gamemode;
-			this.listName = listName;
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
+			this.ping = ping;
+			this.gamemode = gamemode;
+			this.listName = listName;
+		}
+		public PlayerInfoData clone() {
+			return new PlayerInfoData(name, uniqueId, skin, ping, gamemode, listName);
 		}
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
