@@ -87,18 +87,20 @@ public class Injector {
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					long time = System.nanoTime();
-					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-						//nametag anti-override
-						if ((NameTag16.enable || NameTagX.enable) && Main.killPacket(packet)) {
-							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
-							return;
+					if (NameTag16.enable || NameTagX.enable) {
+						long time = System.nanoTime();
+						if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+							//nametag anti-override
+							if (Main.killPacket(packet)) {
+								Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
+								return;
+							}
 						}
+						Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 					}
-					Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 
 					if (NameTagX.enable) {
-						time = System.nanoTime();
+						long time = System.nanoTime();
 						NameTagXPacket pack = NameTagXPacket.fromNMS(packet);
 						if (pack != null) {
 							ITabPlayer packetPlayer = null;
@@ -121,9 +123,9 @@ public class Injector {
 					}
 					PacketPlayOut p = null;
 
-					time = System.nanoTime();
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
 						//preventing pets from having owner's nametag properties if feature is enabled
+						long time = System.nanoTime();
 						if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
 							List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
 							List<Object> newList = new ArrayList<Object>();
@@ -142,11 +144,11 @@ public class Injector {
 							if (petOwner != null) modifyDataWatcherItem(petOwner);
 							PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 						}
+						Shared.cpu.addFeatureTime("Pet name fix", System.nanoTime()-time);
 					}
-					Shared.cpu.addFeatureTime("Other", System.nanoTime()-time);
 					if (Playerlist.enable) {
 						//correcting name, spectators if enabled, changing npc names if enabled
-						time = System.nanoTime();
+						long time = System.nanoTime();
 						if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
 							Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
 							packet = p.toNMS(null);
