@@ -50,11 +50,8 @@ public class CPUManager {
 		});
 	}
 	public void cancelAllTasks() {
-		Shared.debug("Shutting down tasks " + this);
 		exe.shutdownNow();
-		Shared.debug("Shut down tasks " + this);
 		exe = Executors.newCachedThreadPool();
-		Shared.debug("Created new pool " + this);
 	}
 	public void runMeasuredTask(String errorDescription, String feature, Runnable task) {
 		exe.submit(new Runnable() {
