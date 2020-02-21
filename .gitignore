@@ -30,3 +30,6 @@ hs_err_pid*
 
 # intellij
 /.idea/
+
+# other
+.gitattributes
