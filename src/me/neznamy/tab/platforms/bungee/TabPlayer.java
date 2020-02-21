@@ -27,7 +27,7 @@ public class TabPlayer extends ITabPlayer{
 		init();
 	}
 	public String getGroupFromPermPlugin() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) return PluginHooks.LuckPerms_getPrimaryGroup(this);
+		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
 		return player.getGroups().toArray(new String[0])[0];
 	}

@@ -160,6 +160,40 @@ public class PluginHooks {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
 		}
 	}
+	public static String LuckPerms_getPrefix(ITabPlayer p) {
+		try {
+			String prefix;
+			try {
+				//LuckPerms API v5
+				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
+			} catch (NoClassDefFoundError e) {
+				//LuckPerms API v4
+				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				prefix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getPrefix();
+			}
+			return prefix == null ? "" : prefix;
+		} catch (Throwable t) {
+			return Shared.errorManager.printError("", "Failed to get prefix of " + p.getName() + " using LuckPerms", t);
+		}
+	}
+	public static String LuckPerms_getSuffix(ITabPlayer p) {
+		try {
+			String suffix;
+			try {
+				//LuckPerms API v5
+				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
+			} catch (NoClassDefFoundError e) {
+				//LuckPerms API v4
+				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				suffix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getSuffix();
+			}
+			return suffix == null ? "" : suffix;
+		} catch (Throwable t) {
+			return Shared.errorManager.printError("", "Failed to get suffix of " + p.getName() + " using LuckPerms", t);
+		}
+	}
 	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
 		try {
 			try {
@@ -181,7 +215,7 @@ public class PluginHooks {
 	@SuppressWarnings("deprecation")
 	public static String[] PermissionsEx_getGroupNames(ITabPlayer p) {
 		try {
-			return PermissionsEx.getUser(((TabPlayer)p).player).getGroupNames();
+			return PermissionsEx.getUser(p.getName()).getGroupNames();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}

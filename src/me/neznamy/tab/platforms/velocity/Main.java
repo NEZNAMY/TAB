@@ -238,7 +238,7 @@ public class Main implements MainClass{
 		return ((TextComponent) component).content();
 	}
 	public static void registerPlaceholders() {
-		if (server.getPluginManager().getPlugin("luckperms").isPresent()) PluginHooks.luckPerms = true;
+		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
 		
 		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
 			public String get() {

@@ -21,7 +21,7 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.7.0-pre11";
+	public static final String pluginVersion = "2.7.0-pre12";
 	public static final int currentVersionId = 265;
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char COLOR = '\u00a7';
@@ -240,6 +240,18 @@ public class Shared {
 						if (p.getVersion().getMinorVersion() == version) count++;
 					}
 					return count+"";
+				}
+			});
+		}
+		if (PluginHooks.luckPerms) {
+			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 49) {
+				public String get(ITabPlayer p) {
+					return PluginHooks.LuckPerms_getPrefix(p);
+				}
+			});
+			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 49) {
+				public String get(ITabPlayer p) {
+					return PluginHooks.LuckPerms_getSuffix(p);
 				}
 			});
 		}
