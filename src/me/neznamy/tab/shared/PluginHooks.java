@@ -220,13 +220,20 @@ public class PluginHooks {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(ITabPlayer p, String placeholder) {
+	public static String PlaceholderAPI_setPlaceholders(Object player, String placeholder) {
 		if (!placeholderAPI) return placeholder;
-		Player player = (p == null ? null : ((TabPlayer)p).player);
+		Player bukkitplayer = null;
+		if (player != null) {
+			if (player instanceof Player) {
+				bukkitplayer = (Player) player;
+			} else if (player instanceof ITabPlayer) {
+				bukkitplayer = ((TabPlayer)player).player;
+			}
+		}
 		try {
-			return PlaceholderAPI.setPlaceholders(player, placeholder);
+			return PlaceholderAPI.setPlaceholders(bukkitplayer, placeholder);
 		} catch (Throwable t) {
-			String playername = (player == null ? "null" : player.getName());
+			String playername = (bukkitplayer == null ? "null" : bukkitplayer.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				if (placeholder.contains("%pinataparty")) {
