@@ -55,7 +55,7 @@ public class ConfigurationFile{
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
-			String fix = Shared.errorManager.suggestYamlFix(e, readFile(file));
+			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
 			if (fix != null) {
 				Shared.mainClass.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
 			}
@@ -216,7 +216,7 @@ public class ConfigurationFile{
 	}
 	public boolean hasHeader() {
 		if (header == null) return true;
-		for (String line : readFile(file)) {
+		for (String line : readAllLines()) {
 			if (line.startsWith("#")) return true;
 		}
 		return false;
@@ -225,7 +225,7 @@ public class ConfigurationFile{
 		if (header == null) return;
 		try {
 			List<String> content = Lists.newArrayList(header);
-			content.addAll(readFile(file));
+			content.addAll(readAllLines());
 			file.delete();
 			file.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
@@ -237,15 +237,12 @@ public class ConfigurationFile{
 			Shared.errorManager.criticalError("Failed to modify file " + file, ex);
 		}
 	}
-	private List<String> readFile(File file) {
+	private List<String> readAllLines() {
 		List<String> list = new ArrayList<String>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-			while (true) {
-				String line = br.readLine();
-				if (line == null) {
-					break;
-				}
+			String line;
+			while ((line = br.readLine()) != null) {
 				list.add(line);
 			}
 			br.close();
