@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -157,6 +158,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 										usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
 										usedExpansions.remove("some"); //default config
 										if (!usedExpansions.isEmpty()) {
+											File expansionsFolder = new File("plugins" + File.separatorChar + "PlaceholderAPI" + File.separatorChar + "expansions");
+											int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
 											for (String expansion : usedExpansions) {
 												sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
 												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
@@ -168,14 +171,16 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 												});
 												Thread.sleep(5000);
 											}
-											sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
-											Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+											if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
+												sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
 
-												@Override
-												public void run() {
-													Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
-												}
-											});
+													@Override
+													public void run() {
+														Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
+													}
+												});
+											}
 										}
 									} catch (InterruptedException e) {
 									} catch (Throwable e) {
