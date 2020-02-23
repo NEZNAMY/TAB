@@ -588,19 +588,23 @@ public abstract class ITabPlayer {
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		sendPacket(buildPacket(packet, version));
+		try {
+			sendPacket(buildPacket(packet, version));
+		} catch (Throwable e) {
+			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
+		}
 	}
 	public static Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion version) {
 		try {
 			return Shared.mainClass.buildPacket(packet, version);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return Shared.errorManager.printError(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void sendCustomPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
