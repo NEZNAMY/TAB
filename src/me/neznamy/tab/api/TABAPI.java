@@ -38,7 +38,7 @@ public class TABAPI {
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 			Configs.config.save();
 			Shared.unload();
-			me.neznamy.tab.platforms.bukkit.Main.instance.load(false, false);
+			Shared.load(false, false);
 		} else throw new IllegalStateException("Unlimited nametag mode is only supported on bukkit");
 	}
 	

@@ -214,7 +214,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 		}
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
 			ITabPlayer spawnedPlayer = Shared.getPlayer((int)packet.a);
-//			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag && !packetReceiver.disabledNametag) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);			
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {

@@ -25,7 +25,7 @@ public class TabCommand extends SubCommand {
 		if (Shared.disabled) {
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				Shared.unload();
-				Shared.mainClass.load(true, false);
+				Shared.load(true, false);
 				if (!Shared.disabled) sendMessage(sender, Configs.reloaded);
 			} else {
 				sendMessage(sender, Configs.plugin_disabled);

@@ -60,9 +60,6 @@ public abstract class ITabPlayer {
 		teamName = buildTeamName();
 		updateDisabledWorlds(getWorldName());
 		if (Shared.features.containsKey("playerlist")) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
-		if (Shared.features.containsKey("bossbar")) {
-			bossbarVisible = !((BossBar)Shared.features.get("bossbar")).bossbar_off_players.contains(getName());
-		}
 	}
 
 	//bukkit only
@@ -509,7 +506,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void detectBossBarsAndSend() {
-		if (!Shared.features.containsKey("bossbar")) return;
 		BossBar feature = (BossBar) Shared.features.get("bossbar");
 		activeBossBars.clear();
 		if (disabledBossbar || !bossbarVisible) return;

@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.api.TABAPI;
@@ -57,7 +55,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return false;
 				}
 			});
-			load(false, true);
+			Shared.load(false, true);
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
 				public String call() {
@@ -77,9 +75,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
 				public String call() {
-					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ViaVersion + ProtocolSupport";
-					if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) return "ViaVersion";
-					if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")) return "ProtocolSupport";
+					if (PluginHooks.viaversion && PluginHooks.protocolsupport) return "ViaVersion + ProtocolSupport";
+					if (PluginHooks.viaversion) return "ViaVersion";
+					if (PluginHooks.protocolsupport) return "ProtocolSupport";
 					return "None";
 				}
 			}));
@@ -112,75 +110,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			} else {
 				Shared.unload();
 			}
-		}
-	}
-	public void load(boolean broadcastTime, boolean inject) {
-		try {
-			long time = System.currentTimeMillis();
-			Shared.disabled = false;
-			Shared.cpu = new CPUManager();
-			Shared.errorManager = new ErrorManager();
-			Configs.loadFiles();
-			if (Configs.bukkitBridgeMode) {
-				PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-				if (!PluginHooks.placeholderAPI) {
-					Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
-				}
-				plm = new PluginMessenger(this);
-			} else {
-				registerPlaceholders();
-				for (Player p : getOnlinePlayers()) {
-					ITabPlayer t = new TabPlayer(p);
-					Shared.data.put(p.getUniqueId(), t);
-					if (inject) inject(t.getUniqueId());
-				}
-				if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
-				if (Configs.BossBarEnabled) {
-					Shared.features.put("bossbar", new BossBar());
-					Shared.features.put("bossbar1.8", new BossBar_legacy());
-				}
-				if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
-				if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
-					if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-						NameTagX f = new NameTagX();
-						Shared.features.put("nametagx", f);
-						Shared.rawpacketfeatures.put("nametagx", f);
-					} else {
-						Shared.features.put("nametag16", new NameTag16());
-					}
-				}
-				if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-					Playerlist f = new Playerlist();
-					Shared.features.put("playerlist", f);	
-					Shared.packetfeatures.put("playerlist", f);
-				}
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) {
-					Shared.rawpacketfeatures.put("petfix", new PetFix());
-				}
-				if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
-				if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
-				if (Configs.advancedconfig.getBoolean("per-world-playerlist", false)) Shared.features.put("pwp", new PerWorldPlayerlist());
-				if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
-				if (PluginHooks.placeholderAPI) {
-					Shared.features.put("papihook", new PlaceholderAPIExpansion());
-					new PlaceholderAPIExpansionDownloader();
-				}
-				new UpdateChecker();
-				Shared.features.values().forEach(f -> f.load());
-			}
-			Shared.errorManager.printConsoleWarnCount();
-			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (ParserException | ScannerException e) {
-			Shared.print('c', "Did not enable due to a broken configuration file.");
-			Shared.disabled = true;
-		} catch (Throwable e) {
-			Shared.print('c', "Failed to enable");
-			sendConsoleMessage("&c" + e.getClass().getName() +": " + e.getMessage());
-			for (StackTraceElement ste : e.getStackTrace()) {
-				sendConsoleMessage("&c       at " + ste.toString());
-			}
-			Shared.disabled = true;
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -268,7 +197,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 		} else {
-			//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
+//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}
@@ -509,6 +438,58 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	 *  Implementing MainClass
 	 */
 
+	public void loadFeatures(boolean inject) throws Exception{
+		if (Configs.bukkitBridgeMode) {
+			PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+			if (!PluginHooks.placeholderAPI) {
+				Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
+			}
+			plm = new PluginMessenger(this);
+		} else {
+			registerPlaceholders();
+			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
+			if (Configs.BossBarEnabled) {
+				Shared.features.put("bossbar", new BossBar());
+				Shared.features.put("bossbar1.8", new BossBar_legacy());
+			}
+			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
+			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
+				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+					NameTagX f = new NameTagX();
+					Shared.features.put("nametagx", f);
+					Shared.rawpacketfeatures.put("nametagx", f);
+				} else {
+					Shared.features.put("nametag16", new NameTag16());
+				}
+			}
+			if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+				Playerlist f = new Playerlist();
+				Shared.features.put("playerlist", f);	
+				Shared.packetfeatures.put("playerlist", f);
+			}
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) {
+				Shared.rawpacketfeatures.put("petfix", new PetFix());
+			}
+			if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
+			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
+			if (Configs.advancedconfig.getBoolean("per-world-playerlist", false)) Shared.features.put("pwp", new PerWorldPlayerlist());
+			if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+			if (PluginHooks.placeholderAPI) {
+				Shared.features.put("papihook", new PlaceholderAPIExpansion());
+				new PlaceholderAPIExpansionDownloader();
+			}
+			new UpdateChecker();
+			
+			for (Player p : getOnlinePlayers()) {
+				ITabPlayer t = new TabPlayer(p);
+				Shared.data.put(p.getUniqueId(), t);
+				if (inject) inject(t.getUniqueId());
+			}
+			
+			Shared.features.values().forEach(f -> f.load());
+		}
+	}
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
 	}
@@ -525,7 +506,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
-		//		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
 
 		String objective = Configs.config.getString("tablist-objective", "PING");
 		try{
@@ -588,7 +568,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			});
 			return;
 		}
-		//		Shared.print('6', "Unknown placeholder: " + identifier);
+//		Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
 	public void convertConfig(ConfigurationFile config) {

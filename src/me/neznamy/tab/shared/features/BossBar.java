@@ -21,10 +21,10 @@ public class BossBar implements SimpleFeature{
 
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
-	private List<BossBarLine> lines;
+	private List<BossBarLine> lines = new ArrayList<BossBarLine>();
 	private int refresh;
 	private String toggleCommand;
-	public List<String> announcements;
+	public List<String> announcements = new ArrayList<String>();
 	private boolean remember_toggle_choice;
 	public List<String> bossbar_off_players;
 
@@ -74,6 +74,7 @@ public class BossBar implements SimpleFeature{
 		if (bossbar_off_players == null) bossbar_off_players = new ArrayList<String>();
 
 		for (ITabPlayer p : Shared.getPlayers()) {
+			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 			p.detectBossBarsAndSend();
 		}
 		Shared.cpu.startRepeatingMeasuredTask(getRefresh(), "refreshing bossbar", "BossBar", new Runnable() {
@@ -119,6 +120,7 @@ public class BossBar implements SimpleFeature{
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
+		p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 		p.detectBossBarsAndSend();
 	}
 	@Override

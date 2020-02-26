@@ -67,7 +67,7 @@ public class Main implements MainClass{
 			});
 			registerPackets();
 			plm = new PluginMessenger(this);
-			load(false, true);
+			Shared.load(false, true);
 			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ClassNotFoundException e) {
 			sendConsoleMessage("&c[TAB] The plugin requires Velocity 1.1.0 and up to work ! Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
@@ -77,52 +77,6 @@ public class Main implements MainClass{
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			Shared.unload();
-		}
-	}
-	public void load(boolean broadcastTime, boolean inject) {
-		try {
-			long time = System.currentTimeMillis();
-			Shared.disabled = false;
-			Shared.cpu = new CPUManager();
-			Shared.errorManager = new ErrorManager();
-			Configs.loadFiles();
-			registerPlaceholders();
-			Shared.data.clear();
-			for (Player p : server.getAllPlayers()) {
-				ITabPlayer t = new TabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
-				Shared.data.put(p.getUniqueId(), t);
-				if (inject) inject(t.getUniqueId());
-			}
-			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
-			if (Configs.BossBarEnabled) Shared.features.put("bossbar", new BossBar());
-			if (Configs.config.getBoolean("global-playerlist", false)) Shared.features.put("globalplayerlist", new GlobalPlayerlist());
-			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
-			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.features.put("nametag16", new NameTag16());
-			if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
-			if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-				Playerlist f = new Playerlist();
-				Shared.features.put("playerlist", f);	
-				Shared.packetfeatures.put("playerlist", f);
-			}
-			if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
-			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
-			if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
-			new UpdateChecker();
-			Shared.features.values().forEach(f -> f.load());
-
-			Shared.errorManager.printConsoleWarnCount();
-			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-		} catch (Throwable e) {
-			Shared.disabled = true;
-			if (e.getClass().getSimpleName().equals("ParserException") || e.getClass().getSimpleName().equals("ScannerException")) { //avoiding NoClassDefFoundError on Velocity <1.1.0
-				Shared.print('c', "Did not enable due to a broken configuration file.");
-			} else {
-				Shared.print('c', "Failed to enable");
-				sendConsoleMessage("&c" + e.getClass().getName() +": " + e.getMessage());
-				for (StackTraceElement ste : e.getStackTrace()) {
-					sendConsoleMessage("&c       at " + ste.toString());
-				}
-			}
 		}
 	}
 	@Subscribe
@@ -323,6 +277,32 @@ public class Main implements MainClass{
 	 *  Implementing MainClass
 	 */
 
+	public void loadFeatures(boolean inject) throws Exception{
+		registerPlaceholders();
+		if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
+		if (Configs.BossBarEnabled) Shared.features.put("bossbar", new BossBar());
+		if (Configs.config.getBoolean("global-playerlist", false)) Shared.features.put("globalplayerlist", new GlobalPlayerlist());
+		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.features.put("nametag16", new NameTag16());
+		if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
+		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+			Playerlist f = new Playerlist();
+			Shared.features.put("playerlist", f);	
+			Shared.packetfeatures.put("playerlist", f);
+		}
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
+		if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+		new UpdateChecker();
+		
+		for (Player p : server.getAllPlayers()) {
+			ITabPlayer t = new TabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
+			Shared.data.put(p.getUniqueId(), t);
+			if (inject) inject(t.getUniqueId());
+		}
+		
+		Shared.features.values().forEach(f -> f.load());
+	}
 	public void sendConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));
 	}

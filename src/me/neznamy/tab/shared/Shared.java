@@ -4,6 +4,9 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
+
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.shared.features.*;
@@ -68,6 +71,24 @@ public class Shared {
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
+	public static void load(boolean broadcastTime, boolean inject) {
+		try {
+			long time = System.currentTimeMillis();
+			disabled = false;
+			cpu = new CPUManager();
+			errorManager = new ErrorManager();
+			Configs.loadFiles();
+			mainClass.loadFeatures(inject);
+			errorManager.printConsoleWarnCount();
+			if (broadcastTime) print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		} catch (ParserException | ScannerException e) {
+			print('c', "Did not enable due to a broken configuration file.");
+			disabled = true;
+		} catch (Throwable e) {
+			errorManager.criticalError("Failed to enable", e);
+			disabled = true;
+		}
+	}
 	public static void unload() {
 		try {
 			if (disabled) return;
@@ -80,7 +101,7 @@ public class Shared {
 			data.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
-			errorManager.criticalError("Failed to unload the plugin", e);
+			errorManager.criticalError("Failed to disable", e);
 		}
 	}
 	public static void registerUniversalPlaceholders() {

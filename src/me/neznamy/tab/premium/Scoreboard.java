@@ -12,6 +12,8 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard {
 
+	private static final int DisplaySlot = 1;
+	
 	private ScoreboardManager manager;
 	private String name;
 	private String title;
@@ -51,7 +53,7 @@ public class Scoreboard {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title);
 			String replacedTitle = p.properties.get("scoreboard-title").get();
-			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, 1, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
 				s.register(p);
 			}

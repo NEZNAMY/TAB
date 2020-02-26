@@ -93,13 +93,12 @@ public class Configs {
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
-		checkAnimations(config.getValues());
-		checkAnimations(bossbar.getValues());
 		if (Premium.is()) {
 			Premium.loadPremiumConfig();
 			checkAnimations(Premium.premiumconfig.getValues());
 		}
-
+		checkAnimations(config.getValues());
+		checkAnimations(bossbar.getValues());
 	}
 	@SuppressWarnings("unchecked")
 	private static void checkAnimations(Map<String, Object> values) {
