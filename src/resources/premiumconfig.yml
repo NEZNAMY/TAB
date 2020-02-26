@@ -47,7 +47,7 @@ scoreboard:
     - disabledworld
   #set to NONE to have no default scoreboard
   default-scoreboard: "scoreboard3"
-  refresh-interval-ticks: 1
+  refresh-interval-milliseconds: 50
   per-world:
     testworld: "twscoreboard"
   
@@ -87,3 +87,13 @@ scoreboards:
 #toggle messages
 scoreboard-on: "&2Scorebord enabled"
 scoreboard-off: "&7Scoreboard disabled"
+
+
+placeholder-output-replacements:
+  "%essentials_vanished%":
+    "yes": "&7| Vanished"
+    "no": ""
+    
+  #only showing "Perfect" for exactly 20 TPS, standard output for any other value
+  "%tps%":
+    "20": "&aPerfect"
