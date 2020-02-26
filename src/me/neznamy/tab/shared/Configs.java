@@ -2,33 +2,20 @@ package me.neznamy.tab.shared;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
 
 	public static ConfigurationFile config;
-	public static boolean unlimitedTags;
 	public static boolean modifyNPCnames;
 	public static boolean collision;
-	public static HashMap<String, String> sortedGroups;
+	public static Map<String, String> sortedGroups;
 	public static Map<String, Object> rankAliases;
-	public static boolean doNotMoveSpectators;
 	public static List<String> disabledHeaderFooter;
 	public static List<String> disabledTablistNames;
 	public static List<String> disabledNametag;
@@ -58,6 +45,7 @@ public class Configs {
 
 
 	public static ConfigurationFile bossbar;
+	public static boolean BossBarEnabled;
 
 
 	public static ConfigurationFile translation;
@@ -76,7 +64,6 @@ public class Configs {
 
 	public static ConfigurationFile advancedconfig;
 	public static boolean sortByPermissions = false;
-	public static boolean fixPetNames = false;
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
 	public static boolean bukkitBridgeMode;
@@ -120,27 +107,32 @@ public class Configs {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			if (value instanceof String || value instanceof List) {
-				if (HeaderFooter.enable) {
-					checkAnimation(key, "header", value, "header", HeaderFooter.refresh);
-					checkAnimation(key, "footer", value, "footer", HeaderFooter.refresh);
+				if (true) {
+					int refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
+					checkAnimation(key, "header", value, "header", refresh);
+					checkAnimation(key, "footer", value, "footer", refresh);
 				}
-				if (NameTag16.enable || unlimitedTags) {
-					checkAnimation(key, "tagprefix", value, "tagprefix", NameTag16.refresh);
-					checkAnimation(key, "tagsuffix", value, "tagsuffix", NameTag16.refresh);
+				if (true) {
+					int refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
+					checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
+					checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
 				}
-				if (Playerlist.enable) {
-					checkAnimation(key, "tabprefix", value, "tabprefix", Playerlist.refresh);
-					checkAnimation(key, "tabsuffix", value, "tabsuffix", Playerlist.refresh);
+				if (true) {
+					int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+					checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
+					checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
 				}
-				if (ScoreboardManager.enabled) {
-					checkAnimation(key, "title", value, "scoreboard title", ScoreboardManager.refresh);
-					checkAnimation(key, "lines", value, "scoreboard", ScoreboardManager.refresh);
+				if (Premium.is()) {
+					int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
+					checkAnimation(key, "title", value, "scoreboard title", refresh);
+					checkAnimation(key, "lines", value, "scoreboard", refresh);
 				}
-				if (BossBar.enabled) {
-					checkAnimation(key, "style", value, "bossbar style", BossBar.refresh);
-					checkAnimation(key, "color", value, "bossbar color", BossBar.refresh);
-					checkAnimation(key, "progress", value, "bossbar progress", BossBar.refresh);
-					checkAnimation(key, "text", value, "bossbar text", BossBar.refresh);
+				if (BossBarEnabled) {
+					int refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
+					checkAnimation(key, "style", value, "bossbar style", refresh);
+					checkAnimation(key, "color", value, "bossbar color", refresh);
+					checkAnimation(key, "progress", value, "bossbar progress", refresh);
+					checkAnimation(key, "text", value, "bossbar text", refresh);
 				}
 			}
 			if (value instanceof Map) checkAnimations((Map<String, Object>) value);
@@ -185,20 +177,13 @@ public class Configs {
 	}
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			HeaderFooter.enable = config.getBoolean("enable-header-footer", true);
-			Playerlist.enable = config.getBoolean("change-tablist-prefix-suffix", true);
-		}
-		NameTag16.refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		Playerlist.refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		HeaderFooter.refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
-		BelowName.enable = Configs.config.getBoolean("belowname.enabled", true);
-		BelowName.refresh = Configs.config.getInt("belowname.refresh-interval-milliseconds", 200);
 		collision = config.getBoolean("enable-collision", true);
+		
+		BelowName.number = Configs.config.getString("belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
 		dateFormat = new SimpleDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"));
-		doNotMoveSpectators = config.getBoolean("do-not-move-spectators", false);
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
 		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
@@ -241,51 +226,13 @@ public class Configs {
 				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
-	@SuppressWarnings("unchecked")
 	public static void loadBossbar() throws Exception {
 		bossbar = new ConfigurationFile("bossbar.yml", null);
 		if (bossbar.get("enabled") != null) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
 		}
-		BossBar.enabled = bossbar.getBoolean("bossbar-enabled", false);
-		BossBar.refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
-		BossBar.toggleCommand = bossbar.getString("bossbar-toggle-command", "/bossbar");
-		BossBar.defaultBars = bossbar.getStringList("default-bars");
-		BossBar.perWorld = (Map<String, List<String>>) bossbar.get("per-world");
-		if (BossBar.perWorld == null) BossBar.perWorld = new HashMap<String, List<String>>();
-		BossBar.lines.clear();
-		if (bossbar.getConfigurationSection("bars") != null) {
-			for (String bar : bossbar.getConfigurationSection("bars").keySet()){
-				boolean permissionRequired = bossbar.getBoolean("bars." + bar + ".permission-required", false);
-				int refresh = bossbar.getInt("bars." + bar + ".refresh", 0);
-				String style = bossbar.getString("bars." + bar + ".style");
-				String color = bossbar.getString("bars." + bar + ".color");
-				Object progress = bossbar.get("bars." + bar + ".progress");
-				String text = bossbar.getString("bars." + bar + ".text");
-				if (progress == null) {
-					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
-					progress = 100;
-				}
-				BossBar.lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));
-			}
-		}
-		List<String> toRemove = new ArrayList<String>();
-		for (String bar : BossBar.defaultBars) {
-			if (BossBar.getLine(bar) == null) {
-				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
-				toRemove.add(bar);
-			}
-		}
-		BossBar.defaultBars.removeAll(toRemove);
-		BossBar.remember_toggle_choice = bossbar.getBoolean("remember-toggle-choice", false);
-		if (BossBar.remember_toggle_choice) {
-			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
-			if (!file.exists()) file.createNewFile();
-			playerdata = new ConfigurationFile("playerdata.yml", null);
-			BossBar.bossbar_off_players = playerdata.getStringList("bossbar-off");
-		}
-		if (BossBar.bossbar_off_players == null) BossBar.bossbar_off_players = new ArrayList<String>();
+		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new ConfigurationFile("translation.yml", null);

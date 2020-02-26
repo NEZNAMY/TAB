@@ -1,8 +1,9 @@
 package me.neznamy.tab.shared.command.level1;
 
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 
 public class NTPreviewCommand extends SubCommand{
@@ -13,7 +14,7 @@ public class NTPreviewCommand extends SubCommand{
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		if (Configs.unlimitedTags) {
+		if (Shared.features.containsKey("nametagx")) {
 			if (sender != null) {
 				if (sender.previewingNametag) {
 					NameTagLineManager.destroy(sender, sender);

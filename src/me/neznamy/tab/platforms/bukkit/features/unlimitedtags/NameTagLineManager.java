@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.unlimitedtags;
+package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -12,7 +12,6 @@ public class NameTagLineManager {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) as.removeFromRegistered(removed);
 	}
 	public static ArmorStand bindLine(ITabPlayer p, String text, double heightDifference, String ID, boolean staticOffset){
-		if (!NameTagX.enable) return null;
 		ArmorStand as = new ArmorStand(p, text, heightDifference, ID, staticOffset);
 		p.armorStands.add(as);
 		return as;

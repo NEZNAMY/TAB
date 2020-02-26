@@ -1,4 +1,4 @@
-#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml
+# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml
 
 per-world-playerlist: false
 allow-pwp-bypass-permission: false

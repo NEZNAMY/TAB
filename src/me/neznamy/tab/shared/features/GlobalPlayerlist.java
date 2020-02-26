@@ -8,12 +8,18 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
-public class GlobalPlayerlist {
+public class GlobalPlayerlist implements SimpleFeature {
 
-	public static boolean enabled;
-
-	public static void onJoin(ITabPlayer p) {
-		if (!enabled) return;
+	@Override
+	public void load() {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void unload() {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void onJoin(ITabPlayer p) {
 		PacketPlayOutPlayerInfo add = getAddPacket(p);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue;
@@ -22,18 +28,20 @@ public class GlobalPlayerlist {
 			if (!PluginHooks._isVanished(all)) p.sendCustomPacket(getAddPacket(all));
 		}
 	}
-	public static void onQuit(ITabPlayer p) {
-		if (!enabled) return;
+	public void onQuit(ITabPlayer p) {
 		PacketPlayOutPlayerInfo remove = getRemovePacket(p);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue;
 			all.sendCustomPacket(remove);
 		}
 	}
-	public static PacketPlayOutPlayerInfo getRemovePacket(ITabPlayer p) {
+	public PacketPlayOutPlayerInfo getRemovePacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getTablistId(), null, 0, null, null));
 	}
-	public static PacketPlayOutPlayerInfo getAddPacket(ITabPlayer p) {
+	public PacketPlayOutPlayerInfo getAddPacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, p.getTabFormat(null)));
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
 	}
 }

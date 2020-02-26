@@ -13,14 +13,14 @@ public class PremiumVanishListener implements Listener {
 
 	@EventHandler
 	public void a(BungeePlayerHideEvent e) {
-		if (!GlobalPlayerlist.enabled) return;
-		GlobalPlayerlist.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
+		if (!Shared.features.containsKey("globalplayerlist")) return;
+		((GlobalPlayerlist)Shared.features.get("globalplayerlist")).onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
 	}
 	@EventHandler
 	public void a(BungeePlayerShowEvent e) {
-		if (!GlobalPlayerlist.enabled) return;
+		if (!Shared.features.containsKey("globalplayerlist")) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		PacketPlayOutPlayerInfo add = GlobalPlayerlist.getAddPacket(p);
+		PacketPlayOutPlayerInfo add = ((GlobalPlayerlist)Shared.features.get("globalplayerlist")).getAddPacket(p);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			all.sendCustomPacket(add);
 		}

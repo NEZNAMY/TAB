@@ -3,6 +3,7 @@ package me.neznamy.tab.premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum SortingType {
@@ -32,22 +33,22 @@ public enum SortingType {
 			teamName = p.properties.get("tabprefix").getCurrentRawValue();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
-			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
 			while (teamName.length() < 10) teamName = "0" + teamName;
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
-			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
 			teamName = (999999999-value)+"";
 			break;
 		case PLACEHOLDER_A_TO_Z:
-			teamName = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
 			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
-			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
+			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = (999999999-value)+"";
 			teamName = group + number;
@@ -55,7 +56,7 @@ public enum SortingType {
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
 			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 			if (group == null) group = "";
-			number = Placeholders.replaceAllPlaceholders(Premium.sortingPlaceholder, p);
+			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = (999999999-value)+"";
 			while (number.length() < 8) number = "0" + number;
@@ -63,7 +64,7 @@ public enum SortingType {
 			break;
 		}
 		teamName += p.getName();
-		teamName = Placeholders.replaceAllPlaceholders(teamName, p);
+		teamName = setPlaceholders(teamName, p);
 		if (teamName.length() > 15) {
 			teamName = teamName.substring(0, 15);
 		}
@@ -81,5 +82,13 @@ public enum SortingType {
 			}
 		}
 		return "InvalidTeam";
+	}
+	private String setPlaceholders(String s, ITabPlayer p) {
+		if (s.contains("%")) {
+			for (Placeholder pl : Placeholders.getAllUsed()) {
+				if (s.contains(pl.getIdentifier())) s = s.replace(pl.getIdentifier(), pl.getValue(p));
+			}
+		}
+		return s;
 	}
 }

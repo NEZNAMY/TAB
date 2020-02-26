@@ -1,0 +1,62 @@
+package me.neznamy.tab.platforms.bukkit.features;
+
+import java.io.File;
+
+import org.bukkit.Bukkit;
+
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.platforms.bukkit.Main;
+import me.neznamy.tab.shared.Shared;
+
+public class PlaceholderAPIExpansionDownloader{
+
+	public PlaceholderAPIExpansionDownloader() {
+		Main instance = Main.instance;
+		Bukkit.getScheduler().runTaskLater(instance, new Runnable() {
+
+			@Override
+			public void run() {
+				Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(5000);
+							Main.usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+							Main.usedExpansions.remove("some"); //default config
+							if (!Main.usedExpansions.isEmpty()) {
+								File expansionsFolder = new File("plugins" + File.separatorChar + "PlaceholderAPI" + File.separatorChar + "expansions");
+								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
+								for (String expansion : Main.usedExpansions) {
+									instance.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+
+										@Override
+										public void run() {
+											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
+										}
+									});
+									Thread.sleep(5000);
+								}
+								if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
+									instance.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
+
+										@Override
+										public void run() {
+											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
+										}
+									});
+								}
+							}
+						} catch (InterruptedException e) {
+						} catch (Throwable e) {
+							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
+						}
+					}
+				});
+			}
+			
+		}, 1);
+	}
+}

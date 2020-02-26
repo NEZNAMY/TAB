@@ -1,20 +1,14 @@
 package me.neznamy.tab.shared.features;
 
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.*;
 
-public class NameTag16 {
+public class NameTag16 implements SimpleFeature{
 
-	public static boolean enable;
-	public static int refresh;
-	
-	public static void unload() {
-		if (enable) for (ITabPlayer p : Shared.getPlayers()) p.unregisterTeam(false);
-	}
-	public static void load() {
-		if (!enable) return;
+	public int refresh;
+
+	@Override
+	public void load() {
+		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		for (ITabPlayer p : Shared.getPlayers()) p.registerTeam();
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
@@ -29,15 +23,29 @@ public class NameTag16 {
 				}
 			});
 	}
-	public static void playerJoin(ITabPlayer p) {
-		if (!enable) return;
+	public void unload() {
+		for (ITabPlayer p : Shared.getPlayers()) p.unregisterTeam(false);
+	}
+	@Override
+	public void onJoin(ITabPlayer p) {
 		p.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue; //already registered 2 lines above
 			all.registerTeam(p);
 		}
 	}
-	public static void playerQuit(ITabPlayer p) {
-		if (enable) p.unregisterTeam(false);
+	@Override
+	public void onQuit(ITabPlayer p) {
+		p.unregisterTeam(false);
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
+		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
+			p.unregisterTeam(true);
+		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
+			p.registerTeam();
+		} else {
+			p.updateTeam();
+		}
 	}
 }

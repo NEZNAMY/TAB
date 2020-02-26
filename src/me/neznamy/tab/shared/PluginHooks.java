@@ -52,7 +52,7 @@ public class PluginHooks {
 	public static Object Vault_economy;
 	public static Object Vault_permission;
 	public static Object Vault_chat;
-	
+
 	public static boolean premiumVanish;
 
 	public static boolean _isVanished(ITabPlayer p) {
@@ -251,13 +251,12 @@ public class PluginHooks {
 		return placeholder;
 	}
 	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String text) {
+		if (!placeholderAPI) return text;
 		try {
-			if (placeholderAPI) {
-				long startTime = System.nanoTime();
-				String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, text);
-				Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
-				return value;
-			}
+			long startTime = System.nanoTime();
+			String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, text);
+			Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
+			return value;
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {

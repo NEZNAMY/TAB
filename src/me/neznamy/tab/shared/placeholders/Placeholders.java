@@ -1,16 +1,11 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Shared;
+import java.util.*;
 
 public class Placeholders {
 
+	public static final char colorChar = '\u00a7';
+	
 	//my registered placeholders
 	public static Map<String, PlayerPlaceholder> myPlayerPlaceholders;
 	public static Map<String, ServerPlaceholder> myServerPlaceholders;
@@ -59,7 +54,7 @@ public class Placeholders {
 		char[] b = textToTranslate.toCharArray();
 		for (int i = 0; i < b.length - 1; i++) {
 			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[(i + 1)]) > -1)){
-				b[i] = Shared.COLOR;
+				b[i] = colorChar;
 				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
 			}
 		}
@@ -71,10 +66,10 @@ public class Placeholders {
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
-			if ((section == Shared.COLOR) && (index < length - 1)){
+			if ((section == colorChar) && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
-					result = Shared.COLOR + "" + c + result;
+					result = colorChar + "" + c + result;
 					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
 						break;
 					}
@@ -82,19 +77,6 @@ public class Placeholders {
 			}
 		}
 		return result;
-	}
-	public static String replaceAllPlaceholders(String string, ITabPlayer p) {
-		for (Placeholder pl : detectPlaceholders(string, true)) {
-			if (string.contains(pl.getIdentifier())) string = pl.set(string, p);
-		}
-		for (ServerConstant c : myServerConstants.values()) {
-			if (string.contains(c.getIdentifier())) string = string.replace(c.getIdentifier(), c.get());
-		}
-		for (String removed : Configs.removeStrings) {
-			string = string.replace(removed, "");
-		}
-		string = color(string);
-		return string;
 	}
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
 		if (rawValue == null || (!rawValue.contains("%") && !rawValue.contains("{"))) return new ArrayList<Placeholder>();

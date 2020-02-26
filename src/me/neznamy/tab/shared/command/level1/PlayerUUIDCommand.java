@@ -36,7 +36,7 @@ public class PlayerUUIDCommand extends SubCommand {
 					Configs.config.save();
 					changed.updateAll();
 					changed.forceUpdateDisplay();
-					if (Configs.unlimitedTags) changed.restartArmorStands();
+					if (Shared.features.containsKey("nametagx")) changed.restartArmorStands();
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
 				return;
@@ -55,7 +55,7 @@ public class PlayerUUIDCommand extends SubCommand {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, changed, type, value);
-						if (!Configs.unlimitedTags) {
+						if (!Shared.features.containsKey("nametagx")) {
 							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 						}
 					} else {

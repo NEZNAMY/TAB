@@ -1,20 +1,24 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
-public class TabObjective{
+public class TabObjective implements SimpleFeature{
 
-	public static TabObjectiveType type;
+	public TabObjectiveType type;
 	public static String rawValue;
-	private static final String objectivename = "TabObjective";
-	private static final String title = "ms";
-	private static final int DisplaySlot = 0;
+	private final String objectivename = "TabObjective";
+	private final String title = "ms";
+	private final int DisplaySlot = 0;
 
-	public static void load() {
-		if (type == TabObjectiveType.NONE) return;
+	public TabObjective(TabObjectiveType type) {
+		this.type = type;
+	}
+	@Override
+	public void load() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
 			PacketAPI.registerScoreboardObjective(p, objectivename, title, DisplaySlot, type.getDisplay());
@@ -31,25 +35,36 @@ public class TabObjective{
 			}
 		});
 	}
-	public static void playerJoin(ITabPlayer p) {
-		if (type == TabObjectiveType.NONE || p.disabledTablistObjective) return;
+	@Override
+	public void unload() {
+		for (ITabPlayer p : Shared.getPlayers()){
+			if (p.disabledTablistObjective) continue;
+			PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
+		}
+	}
+	@Override
+	public void onJoin(ITabPlayer p) {
+		if (p.disabledTablistObjective) return;
 		PacketAPI.registerScoreboardObjective(p, objectivename, title, DisplaySlot, type.getDisplay());
 		for (ITabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
 			PacketAPI.setScoreboardScore(p, all.getName(), objectivename, getValue(all));
 		}
 	}
-	public static void unload() {
-		if (type == TabObjectiveType.NONE) return;
-		for (ITabPlayer p : Shared.getPlayers()){
-			if (p.disabledTablistObjective) continue;
-			PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
+	@Override
+	public void onQuit(ITabPlayer p) {
+		PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
+		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
+			onQuit(p);
+		}
+		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
+			onJoin(p);
 		}
 	}
-	public static void unload(ITabPlayer p) {
-		if (type != TabObjectiveType.NONE) PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
-	}
-	public static int getValue(ITabPlayer p) {
+	public int getValue(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "tablist objective");
 	}
 	public enum TabObjectiveType{

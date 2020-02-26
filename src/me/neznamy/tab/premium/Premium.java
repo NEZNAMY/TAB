@@ -39,22 +39,5 @@ public class Premium {
 		Premium.dynamicLines.addAll(realList);
 		Collections.reverse(Premium.dynamicLines);
 		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
-		ScoreboardManager.enabled = premiumconfig.getBoolean("scoreboard.enabled", false);
-		ScoreboardManager.toggleCommand = premiumconfig.getString("scoreboard.toggle-command", "/sb");
-		ScoreboardManager.useNumbers = premiumconfig.getBoolean("scoreboard.use-numbers", false);
-		ScoreboardManager.disabledWorlds = premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
-		ScoreboardManager.defaultScoreboard = premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		ScoreboardManager.refresh = premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1)*50;
-		ScoreboardManager.perWorld = (Map<String, String>) premiumconfig.get("scoreboard.per-world");
-		ScoreboardManager.scoreboard_on = premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
-		ScoreboardManager.scoreboard_off = premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
-		if (premiumconfig.get("scoreboards") != null)
-			for (String scoreboard : ((Map<String, Object>) premiumconfig.get("scoreboards")).keySet()) {
-				boolean permissionRequired = premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required", false);
-				String childBoard = premiumconfig.getString("scoreboards." + scoreboard + ".if-permission-missing");
-				String title = premiumconfig.getString("scoreboards." + scoreboard + ".title");
-				List<String> lines = premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
-				ScoreboardManager.scoreboards.put(scoreboard, new Scoreboard(scoreboard, title, lines, permissionRequired, childBoard));
-			}
 	}
 }

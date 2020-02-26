@@ -1,29 +1,18 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagXPacket;
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.CustomPacketFeature;
+import me.neznamy.tab.shared.features.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Injector {
 
@@ -44,37 +33,23 @@ public class Injector {
 				}
 				try{
 					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player == null) {
-						//wtf
-						super.channelRead(context, packet);
-						return;
-					}
-					if (Configs.unlimitedTags && player.getVersion().getMinorVersion() == 8) {
-						if (MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
-							Field a = MethodAPI.PacketPlayInUseEntity.getDeclaredField("a");
-							a.setAccessible(true);
-							int entityId = a.getInt(packet);
-							ITabPlayer attacked = null;
-							loop:
-							for (ITabPlayer all : Shared.getPlayers()) {
-								for (ArmorStand as : all.getArmorStands()) {
-									if (as.getEntityId() == entityId) {
-										attacked = all;
-										break loop;
-									}
-								}
+					if (player != null) {
+						for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
+							long time = System.nanoTime();
+							try {
+								if (packet != null) packet = f.onPacketReceive(player, packet);
+							} catch (Throwable e) {
+								Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
 							}
-							if (attacked != null && attacked != player) {
-								a.set(packet, ((TabPlayer)attacked).player.getEntityId());
-							}
+							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 						}
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when reading packets", e);
 				}
-				super.channelRead(context, packet);
+				if (packet != null) super.channelRead(context, packet);
 			}
-			@SuppressWarnings("unchecked")
+
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				if (Shared.disabled) {
 					super.write(context, packet, channelPromise);
@@ -87,7 +62,7 @@ public class Injector {
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					if (NameTag16.enable || NameTagX.enable) {
+					if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
 						long time = System.nanoTime();
 						if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							//nametag anti-override
@@ -99,88 +74,35 @@ public class Injector {
 						Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 					}
 
-					if (NameTagX.enable) {
+					for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
 						long time = System.nanoTime();
-						NameTagXPacket pack = NameTagXPacket.fromNMS(packet);
-						if (pack != null) {
-							ITabPlayer packetPlayer = null;
-							if (pack.a != null && pack.a instanceof Integer) {
-								packetPlayer = Shared.getPlayer((int)pack.a);
-							}
-							if (packetPlayer == null && pack.b != null && pack.b instanceof Integer) {
-								packetPlayer = Shared.getPlayer((int)pack.b);
-							}
-							if (packetPlayer == null || !packetPlayer.disabledNametag) {
-								//sending packets outside of the packet reader or protocollib will cause problems
-								Shared.cpu.runMeasuredTask("processing packet out", "NameTagX - processing", new Runnable() {
-									public void run() {
-										NameTagX.processPacketOUT(pack, player);
-									}
-								});
-							}
+						try {
+							if (packet != null) packet = f.onPacketSend(player, packet);
+						} catch (Throwable e) {
+							Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
 						}
-						Shared.cpu.addFeatureTime("NameTagX - reading", System.nanoTime()-time);
+						Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 					}
-					PacketPlayOut p = null;
 
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.fixPetNames) {
-						//preventing pets from having owner's nametag properties if feature is enabled
-						long time = System.nanoTime();
-						if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
-							List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
-							List<Object> newList = new ArrayList<Object>();
-							for (Object item : items) {
-								Item i = Item.fromNMS(item);
-								if (i.type.position == ProtocolVersion.SERVER_VERSION.getPetOwnerPosition()) {
-									modifyDataWatcherItem(i);
-								}
-								newList.add(i.toNMS());
-							}
-							MethodAPI.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
+					UniversalPacketPlayOut customPacket = null;
+					customPacket = PacketPlayOutPlayerInfo.fromNMS(packet);
+					if (customPacket != null) {
+						for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+							long time = System.nanoTime();
+							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 						}
-						if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
-							DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
-							Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
-							if (petOwner != null) modifyDataWatcherItem(petOwner);
-							PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
-						}
-						Shared.cpu.addFeatureTime("Pet name fix", System.nanoTime()-time);
-					}
-					if (Playerlist.enable) {
-						//correcting name, spectators if enabled, changing npc names if enabled
-						long time = System.nanoTime();
-						if ((p = PacketPlayOutPlayerInfo.fromNMS(packet)) != null) {
-							Playerlist.modifyPacket((PacketPlayOutPlayerInfo) p, player);
-							packet = p.toNMS(null);
-						}
-						Shared.cpu.addFeatureTime("Tablist names 2", System.nanoTime()-time);
+						packet = customPacket.toNMS(player.getVersion());
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when reading packets", e);
 				}
-				super.write(context, packet, channelPromise);
+				if (packet != null) super.write(context, packet, channelPromise);
 			}
 		});
 	}
 	public static void uninject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
-	}
-	@SuppressWarnings({ "rawtypes" })
-	private static void modifyDataWatcherItem(Item petOwner) {
-		//1.12-
-		if (petOwner.value instanceof com.google.common.base.Optional) {
-			com.google.common.base.Optional o = (com.google.common.base.Optional) petOwner.value;
-			if (o.isPresent() && o.get() instanceof UUID) {
-				petOwner.value = com.google.common.base.Optional.of(UUID.randomUUID());
-			}
-		}
-		//1.13+
-		if (petOwner.value instanceof java.util.Optional) {
-			java.util.Optional o = (java.util.Optional) petOwner.value;
-			if (o.isPresent() && o.get() instanceof UUID) {
-				petOwner.value = java.util.Optional.of(UUID.randomUUID());
-			}
-		}
 	}
 }

@@ -1,16 +1,12 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -18,7 +14,6 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -45,21 +40,7 @@ public class TabPlayer extends ITabPlayer{
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 		}
 		init();
-		if (NameTagX.enable || NameTag16.enable) {
-			nameTagVisible = !hasInvisibility();
-		}
-		if (NameTagX.enable) {
-			if (player.getVehicle() != null) {
-				Entity vehicle = player.getVehicle();
-				List<Integer> list = new ArrayList<Integer>();
-				for (Entity e : NameTagX.getPassengers(vehicle)) {
-					list.add(e.getEntityId());
-				}
-				NameTagX.vehicles.put(vehicle.getEntityId(), list);
-			}
-			loadArmorStands();
-		}
-		PerWorldPlayerlist.trigger(player);
+		nameTagVisible = !hasInvisibility();
 	}
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);

@@ -1,18 +1,21 @@
-package me.neznamy.tab.platforms.bukkit;
+package me.neznamy.tab.platforms.bukkit.features;
 
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.EnumProperty;
+import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.SimpleFeature;
 
-public class PlaceholderAPIExpansion{
+public class PlaceholderAPIExpansion implements SimpleFeature{
 
-	private static PlaceholderExpansion exp;
+	private PlaceholderExpansion exp;
 
-	public static void register() {
+	@Override
+	public void load() {
 		exp = new PlaceholderExpansion() {
 
 			public boolean persist(){
@@ -48,11 +51,21 @@ public class PlaceholderAPIExpansion{
 		};
 		exp.register();
 	}
-	public static void unregister() {
+	@Override
+	public void unload() {
 		try {
-			if (exp != null) PlaceholderAPI.unregisterExpansion(exp);
+			PlaceholderAPI.unregisterExpansion(exp);
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
 			Shared.errorManager.printError("Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously);
 		}
+	}
+	@Override
+	public void onJoin(ITabPlayer p) {
+	}
+	@Override
+	public void onQuit(ITabPlayer p) {
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
 	}
 }

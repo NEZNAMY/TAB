@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.features.NameTag16;
 import net.minecraft.util.io.netty.channel.*;
 
 public class Injector1_7 {
@@ -37,7 +36,7 @@ public class Injector1_7 {
 					long time = System.nanoTime();
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
-						if (NameTag16.enable && Main.killPacket(packet)) {
+						if (Shared.features.containsKey("nametag16") && Main.killPacket(packet)) {
 							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
 							return;
 						}

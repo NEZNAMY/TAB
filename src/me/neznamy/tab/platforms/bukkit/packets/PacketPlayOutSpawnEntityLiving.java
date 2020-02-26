@@ -85,7 +85,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		return paramDouble < i ? i - 1 : i;
 	}
 
-	private static HashMap<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
+	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
 	private static Field ENTITYID = fields.get("a");

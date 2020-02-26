@@ -1,17 +1,11 @@
 package me.neznamy.tab.shared;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.*;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
-import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
@@ -21,18 +15,20 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.7.0-pre13";
-	public static final int currentVersionId = 265;
+	public static final String pluginVersion = "2.7.0-pre15";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
-	public static final char COLOR = '\u00a7';
 
-	public static ConcurrentHashMap<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
+	public static Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 
 	public static boolean disabled;
 	public static MainClass mainClass;
 	public static String separatorType;
 	public static CPUManager cpu;
 	public static ErrorManager errorManager;
+	
+	public static Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
+	public static Map<String, CustomPacketFeature> packetfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
+	public static Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
@@ -68,7 +64,7 @@ public class Shared {
 		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&7[TAB DEBUG] " + message);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
-		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(COLOR + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
@@ -77,46 +73,15 @@ public class Shared {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();
-			Configs.animations = new ArrayList<Animation>();
-			HeaderFooter.unload();
-			TabObjective.unload();
-			BelowName.unload();
-			Playerlist.unload();
-			NameTag16.unload();
-			BossBar.unload();
-			ScoreboardManager.unload();
-			if (separatorType.equals("world")) {
-				NameTagX.unload();
-				PerWorldPlayerlist.unload();
-				if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.unregister();
-			}
+			features.values().forEach(f -> f.unload());
+			features.clear();
+			packetfeatures.clear();
+			rawpacketfeatures.clear();
 			data.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to unload the plugin", e);
 		}
-	}
-	public static void checkForUpdates() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					HttpURLConnection con = (HttpURLConnection) new URL("http://207.180.242.97/spigot/tab/latest.version").openConnection();
-					BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String versionId = br.readLine();
-					String versionString = br.readLine();
-					br.close();
-					int latestVersion = Integer.parseInt(versionId);
-					if (latestVersion > currentVersionId) {
-						mainClass.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + pluginVersion);
-						mainClass.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/");
-					}
-				} catch (Exception e) {
-//					mainClass.sendConsoleMessage("&a[TAB] Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
-				}
-			}
-		}).run();
 	}
 	public static void registerUniversalPlaceholders() {
 		for (Animation a : Configs.animations) {

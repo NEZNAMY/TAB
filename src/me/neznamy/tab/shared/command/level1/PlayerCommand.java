@@ -33,7 +33,7 @@ public class PlayerCommand extends SubCommand {
 					if (pl != null) {
 						pl.updateAll();
 						pl.forceUpdateDisplay();
-						if (Configs.unlimitedTags) pl.restartArmorStands();
+						if (Shared.features.containsKey("nametagx")) pl.restartArmorStands();
 					}
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", player));
 				}
@@ -53,7 +53,7 @@ public class PlayerCommand extends SubCommand {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, player, type, value);
-						if (!Configs.unlimitedTags) {
+						if (!Shared.features.containsKey("nametagx")) {
 							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 						}
 					} else {

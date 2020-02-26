@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -15,17 +14,20 @@ import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
+import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
+import me.neznamy.tab.platforms.bukkit.features.PetFix;
+import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansion;
+import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansionDownloader;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagX;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
 import net.milkbowl.vault.chat.Chat;
@@ -36,7 +38,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
-	private static List<String> usedExpansions;
+	public static List<String> usedExpansions;
+	private TabObjectiveType objType;
 
 	public void onEnable(){
 		long total = System.currentTimeMillis();
@@ -58,7 +61,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
 				public String call() {
-					return Configs.unlimitedTags ? "Yes" : "No";
+					return Shared.features.containsKey("nametagx") ? "Yes" : "No";
 				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
@@ -126,72 +129,45 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				plm = new PluginMessenger(this);
 			} else {
 				registerPlaceholders();
-				Shared.data.clear();
 				for (Player p : getOnlinePlayers()) {
 					ITabPlayer t = new TabPlayer(p);
 					Shared.data.put(p.getUniqueId(), t);
 					if (inject) inject(t.getUniqueId());
 				}
-				BossBar.load();
-				BossBar_legacy.load();
-				NameTagX.load();
-				NameTag16.load();
-				Playerlist.load();
-				TabObjective.load();
-				BelowName.load();
-				HeaderFooter.load();
-				PerWorldPlayerlist.load();
-				ScoreboardManager.load();
-				Shared.checkForUpdates();
-				JavaPlugin instance = this;
-				if (PluginHooks.placeholderAPI) {
-					Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-
-						@Override
-						public void run() {
-							Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
-
-								@Override
-								public void run() {
-									try {
-										Thread.sleep(5000);
-										usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-										usedExpansions.remove("some"); //default config
-										if (!usedExpansions.isEmpty()) {
-											File expansionsFolder = new File("plugins" + File.separatorChar + "PlaceholderAPI" + File.separatorChar + "expansions");
-											int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
-											for (String expansion : usedExpansions) {
-												sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
-												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
-
-													@Override
-													public void run() {
-														Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
-													}
-												});
-												Thread.sleep(5000);
-											}
-											if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-												sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
-												Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
-
-													@Override
-													public void run() {
-														Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
-													}
-												});
-											}
-										}
-									} catch (InterruptedException e) {
-									} catch (Throwable e) {
-										Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
-									}
-								}
-							});
-						}
-						
-					}, 1);
+				if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
+				if (Configs.BossBarEnabled) {
+					Shared.features.put("bossbar", new BossBar());
+					Shared.features.put("bossbar1.8", new BossBar_legacy());
 				}
+				if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
+				if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
+					if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+						NameTagX f = new NameTagX();
+						Shared.features.put("nametagx", f);
+						Shared.rawpacketfeatures.put("nametagx", f);
+					} else {
+						Shared.features.put("nametag16", new NameTag16());
+					}
+				}
+				if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+					Playerlist f = new Playerlist();
+					Shared.features.put("playerlist", f);	
+					Shared.packetfeatures.put("playerlist", f);
+				}
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) {
+					Shared.rawpacketfeatures.put("petfix", new PetFix());
+				}
+				if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
+				if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
+				if (Configs.advancedconfig.getBoolean("per-world-playerlist", false)) Shared.features.put("pwp", new PerWorldPlayerlist());
+				if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+				if (PluginHooks.placeholderAPI) {
+					Shared.features.put("papihook", new PlaceholderAPIExpansion());
+					new PlaceholderAPIExpansionDownloader();
+				}
+				new UpdateChecker();
+				Shared.features.values().forEach(f -> f.load());
 			}
 			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -215,22 +191,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			inject(e.getPlayer().getUniqueId());
-			PerWorldPlayerlist.trigger(e.getPlayer());
-			Shared.cpu.runMeasuredTask("player joined the server", "Other", new Runnable() {
+			Shared.cpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
 
 				public void run() {
 					PluginHooks.DeluxeTags_onChat(p);
-					HeaderFooter.playerJoin(p);
-					TabObjective.playerJoin(p);
-					BelowName.playerJoin(p);
-					NameTag16.playerJoin(p);
-					NameTagX.playerJoin(p);
-					BossBar.playerJoin(p);
-					ScoreboardManager.register(p);
+					Shared.features.values().forEach(f -> f.onJoin(p));
 				}
 			});
 		} catch (Throwable ex) {
-			Shared.errorManager.criticalError("An error occurred when player joined the server", ex);
+			Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -239,32 +208,16 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Shared.disabled) return;
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-			if (disconnectedPlayer == null) {
-				Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player left");
-				return;
-			}
-			NameTag16.playerQuit(disconnectedPlayer);
-			NameTagX.playerQuit(disconnectedPlayer);
-			ScoreboardManager.unregister(disconnectedPlayer);
-			for (ITabPlayer all : Shared.getPlayers()) {
-				NameTagLineManager.removeFromRegistered(all, disconnectedPlayer);
-			}
-			NameTagLineManager.destroy(disconnectedPlayer);
-			if (Configs.SECRET_remove_ghost_players) {
-				Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toNMS(null);
-				for (ITabPlayer all : Shared.getPlayers()) {
-					all.sendPacket(packet);
-				}
-			}
+			if (disconnectedPlayer == null) return;
+			Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
 			for (PlayerPlaceholder pl : Placeholders.usedPlayerPlaceholders.values()) {
 				pl.lastRefresh.remove(e.getPlayer().getName());
 				pl.lastValue.remove(e.getPlayer().getName());
 			}
-			Shared.data.remove(e.getPlayer().getUniqueId());
 		} catch (Throwable t) {
-			Shared.errorManager.printError("An error occurred when player left server", t);
-			Shared.data.remove(e.getPlayer().getUniqueId());
+			Shared.errorManager.printError("An error occurred when processing PlayerQuitEvent", t);
 		}
+		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerChangedWorldEvent e){
@@ -273,12 +226,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
-			PerWorldPlayerlist.trigger(e.getPlayer());
 			String from = e.getFrom().getName();
 			String to = p.world = e.getPlayer().getWorld().getName();
 			p.onWorldChange(from, to);
-		} catch (Throwable ex) {
-			Shared.errorManager.printError("An error occurred when processing PlayerChangedWorldEvent", ex);
+		} catch (Throwable t) {
+			Shared.errorManager.printError("An error occurred when processing PlayerChangedWorldEvent", t);
 		}
 	}
 	@EventHandler
@@ -291,8 +243,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		if (BossBar.onChat(sender, e.getMessage())) e.setCancelled(true);
-		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
+		if (Shared.features.containsKey("bossbar")) {
+			if (((BossBar)Shared.features.get("bossbar")).onChat(sender, e.getMessage())) e.setCancelled(true);
+		}
+		if (Shared.features.containsKey("scoreboard")) {
+			if (((ScoreboardManager)Shared.features.get("scoreboard")).onCommand(sender, e.getMessage())) e.setCancelled(true);
+		}
 	}
 	private static void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
@@ -324,7 +280,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		if (PluginHooks.placeholderAPI) PlaceholderAPIExpansion.register();
 		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		PluginHooks.deluxetags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
@@ -334,7 +289,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		usedExpansions = new ArrayList<String>();
 
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 3000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getMoney();
 			}
@@ -364,7 +319,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return (((TabPlayer)p).player).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 3000) {
+		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getNickname();
 			}
@@ -568,51 +523,33 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return packet.toNMS(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", null);
-		boolean changeNameTag = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
+		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
-		//resetting booleans if this is a plugin reload to avoid chance of both modes being loaded at the same time
-		NameTagX.enable = false;
-		NameTag16.enable = false;
-		Configs.unlimitedTags = false;
-		if (changeNameTag) {
-			if (unlimitedTags && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				NameTagX.enable = true;
-				Configs.unlimitedTags = true;
-			} else {
-				NameTag16.enable = true;
-			}
-		}
+		//		boolean unlimitedTags = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false);
+
 		String objective = Configs.config.getString("tablist-objective", "PING");
 		try{
-			TabObjective.type = TabObjectiveType.valueOf(objective.toUpperCase());
+			objType = TabObjectiveType.valueOf(objective.toUpperCase());
 		} catch (Throwable e) {
 			Shared.errorManager.startupWarn("\"&e" + objective + "&c\" is not a valid type of tablist-objective. Valid options are: &ePING, HEARTS, CUSTOM &cand &eNONE &cfor disabling the feature.");
-			TabObjective.type = TabObjectiveType.NONE;
+			objType = TabObjectiveType.NONE;
 		}
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
-		if (TabObjective.type == TabObjectiveType.PING) {
+		if (objType == TabObjectiveType.PING) {
 			TabObjective.rawValue = "%ping%";
 			Placeholders.usedPlaceholders.add("%ping%");
 		}
-		if (TabObjective.type == TabObjectiveType.HEARTS) {
+		if (objType == TabObjectiveType.HEARTS) {
 			TabObjective.rawValue = "%health%";
 			Placeholders.usedPlaceholders.add("%health%");
 		}
-		BelowName.number = Configs.config.getString("belowname.number", "%health%");
-		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.removeStrings = Configs.config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 
 
-		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
-		PerWorldPlayerlist.enabled = Configs.advancedconfig.getBoolean("per-world-playerlist", false);
-		PerWorldPlayerlist.allowBypass = Configs.advancedconfig.getBoolean("allow-pwp-bypass-permission", false);
-		PerWorldPlayerlist.ignoredWorlds = Configs.advancedconfig.getStringList("ignore-pwp-in-worlds", Arrays.asList("ignoredworld", "spawn"));
+		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		Configs.sortByPermissions = Configs.advancedconfig.getBoolean("sort-players-by-permissions", false);
-		Configs.fixPetNames = Configs.advancedconfig.getBoolean("fix-pet-names", false);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);
@@ -621,7 +558,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "");
-//			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
+			Shared.debug("&dFound used placeholderapi placeholder from plugin: &e" + plugin);
 			if (!usedExpansions.contains(plugin)) usedExpansions.add(plugin);
 			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
 			if (server != -1) {
@@ -651,7 +588,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			});
 			return;
 		}
-//		Shared.print('6', "Unknown placeholder: " + identifier);
+		//		Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
 	public void convertConfig(ConfigurationFile config) {

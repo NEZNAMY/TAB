@@ -8,8 +8,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
 
 public class DebugCommand extends SubCommand {
 
@@ -45,7 +43,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
 
-		boolean sorting = Configs.unlimitedTags || NameTag16.enable;
+		boolean sorting = Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx");
 		String sortingType;
 
 		if (sorting) {
@@ -83,7 +81,7 @@ public class DebugCommand extends SubCommand {
 					sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
 				}
 			}
-			if (Playerlist.enable) {
+			if (Shared.features.containsKey("playerlist")) {
 				if (analyzed.disabledTablistNames) {
 					sendMessage(sender, "&9tabprefix: &cDisabled in player's world");
 					sendMessage(sender, "&9tabsuffix: &cDisabled in player's world");
@@ -98,7 +96,7 @@ public class DebugCommand extends SubCommand {
 				sendMessage(sender, "&9tabsuffix: &cDisabled");
 				sendMessage(sender, "&9tabname: &cDisabled");
 			}
-			if (NameTag16.enable || Configs.unlimitedTags) {
+			if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
 				if (analyzed.disabledNametag) {
 					sendMessage(sender, "&9tagprefix: &cDisabled in player's world");
 					sendMessage(sender, "&9tagsuffix: &cDisabled in player's world");
@@ -110,7 +108,7 @@ public class DebugCommand extends SubCommand {
 				sendMessage(sender, "&9tagprefix: &cDisabled");
 				sendMessage(sender, "&9tagsuffix: &cDisabled");
 			}
-			if (Configs.unlimitedTags) {
+			if (Shared.features.containsKey("nametagx")) {
 				if (analyzed.disabledNametag) {
 					sendMessage(sender, "&9abovename: &cDisabled in player's world");
 					sendMessage(sender, "&9belowname: &cDisabled in player's world");

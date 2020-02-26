@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -23,24 +23,17 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
-import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
 import io.netty.channel.*;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.velocity.protocol.*;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.GlobalPlayerlist;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.*;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
@@ -51,6 +44,7 @@ public class Main implements MainClass{
 	public static ProxyServer server;
 	public static Logger logger;
 	private PluginMessenger plm;
+	private TabObjectiveType objType;
 
 	@Inject
 	public Main(ProxyServer server, Logger logger) {
@@ -99,14 +93,23 @@ public class Main implements MainClass{
 				Shared.data.put(p.getUniqueId(), t);
 				if (inject) inject(t.getUniqueId());
 			}
-			BossBar.load();
-			NameTag16.load();
-			Playerlist.load();
-			TabObjective.load();
-			BelowName.load();
-			HeaderFooter.load();
-			ScoreboardManager.load();
-			Shared.checkForUpdates();
+			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
+			if (Configs.BossBarEnabled) Shared.features.put("bossbar", new BossBar());
+			if (Configs.config.getBoolean("global-playerlist", false)) Shared.features.put("globalplayerlist", new GlobalPlayerlist());
+			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
+			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.features.put("nametag16", new NameTag16());
+			if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
+			if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+				Playerlist f = new Playerlist();
+				Shared.features.put("playerlist", f);	
+				Shared.packetfeatures.put("playerlist", f);
+			}
+			if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
+			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
+			if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+			new UpdateChecker();
+			Shared.features.values().forEach(f -> f.load());
+
 			Shared.errorManager.printConsoleWarnCount();
 			if (broadcastTime) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
@@ -127,43 +130,32 @@ public class Main implements MainClass{
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
-		NameTag16.playerQuit(disconnectedPlayer);
-		ScoreboardManager.unregister(disconnectedPlayer);
-		if (Configs.SECRET_remove_ghost_players) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).toVelocity(null);
-			for (ITabPlayer all : Shared.getPlayers()) {
-				all.sendPacket(packet);
-			}
-		}
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		//after removing data so reader considers the player offline and does not cancel removal
-		GlobalPlayerlist.onQuit(disconnectedPlayer);
+		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
+		for (PlayerPlaceholder pl : Placeholders.usedPlayerPlaceholders.values()) {
+			pl.lastRefresh.remove(disconnectedPlayer.getName());
+			pl.lastValue.remove(disconnectedPlayer.getName());
+		}
 	}
 	@Subscribe
 	public void a(ServerConnectedEvent e){
 		try{
 			if (Shared.disabled) return;
-			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			if (p == null) {
+			ITabPlayer p;
+			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				HeaderFooter.playerJoin(p);
-				BossBar.playerJoin(p);
-				GlobalPlayerlist.onJoin(p);
-				ITabPlayer pl = p;
 				//sending custom packets with a delay, it would not work otherwise
-				Executors.newCachedThreadPool().submit(new Runnable() {
+				Shared.cpu.runMeasuredTask("processing join", "onJoin handle", new Runnable() {
 
 					@Override
 					public void run() {
-						NameTag16.playerJoin(pl);
-						ScoreboardManager.register(pl);
-						TabObjective.playerJoin(pl);
-						BelowName.playerJoin(pl);
+						Shared.features.values().forEach(f -> f.onJoin(p));
 					}
 				});
 			} else {
+				p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				String from = p.getWorldName();
 				String to = p.world = e.getServer().getServerInfo().getName();
 				p.onWorldChange(from, to);
@@ -172,15 +164,19 @@ public class Main implements MainClass{
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
-	/*	@Subscribe
+/*	@Subscribe
 	public void a(PlayerChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		if (BossBar.onChat(sender, e.getMessage())) e.setResult(ChatResult.denied());
-		if (ScoreboardManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
+		if (Shared.features.containsKey("bossbar")) {
+			if (((BossBar)Shared.features.get("bossbar")).onChat(sender, e.getMessage())) e.setCancelled(true);
+		}
+		if (Shared.features.containsKey("scoreboard")) {
+			if (((ScoreboardManager)Shared.features.get("scoreboard")).onCommand(sender, e.getMessage())) e.setCancelled(true);
+		}
 	}*/
 	private void inject(UUID uuid) {
 		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
@@ -198,12 +194,17 @@ public class Main implements MainClass{
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					if (packet instanceof PlayerListItem && Playerlist.enable && player.getVersion().getMinorVersion() >= 8) {
-						PacketPlayOutPlayerInfo p = PacketPlayOutPlayerInfo.fromVelocity(packet);
-						Playerlist.modifyPacket(p, player);
-						packet = p.toVelocity(null);
+					UniversalPacketPlayOut customPacket = null;
+					customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
+					if (customPacket != null) {
+						for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+							long time = System.nanoTime();
+							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+						}
+						packet = customPacket.toVelocity(player.getVersion());
 					}
-					if (packet instanceof Team && NameTag16.enable) {
+					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
 						if (killPacket((Team)packet)) return;
 					}
 				} catch (Throwable e){
@@ -333,13 +334,9 @@ public class Main implements MainClass{
 		return packet.toVelocity(protocolVersion);
 	}
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", null);
+		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
-		TabObjective.type = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
-		BelowName.number = Configs.config.getString("belowname.number", "%ping%");
-		BelowName.text = Configs.config.getString("belowname.text", "&aPing");
-		NameTag16.enable = Configs.config.getBoolean("change-nametag-prefix-suffix", true);
-		GlobalPlayerlist.enabled = Configs.config.getBoolean("global-playerlist", false);
+		objType = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}

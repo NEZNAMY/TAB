@@ -7,12 +7,12 @@ import java.util.List;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard {
 
+	private ScoreboardManager manager;
 	private String name;
 	private String title;
 	private boolean permissionRequired;
@@ -21,7 +21,8 @@ public class Scoreboard {
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private String objectiveName;
 
-	public Scoreboard(String name, String title, List<String> lines, boolean permissionRequired, String childBoard) {
+	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, boolean permissionRequired, String childBoard) {
+		this.manager = manager;
 		this.name = name;
 		this.title = title;
 		this.permissionRequired = permissionRequired;
@@ -44,7 +45,7 @@ public class Scoreboard {
 	public String getLineName(int i) {
 		String id = i+"";
 		if (id.length() == 1) id = "0" + id;
-		return Shared.COLOR + String.valueOf(id.toCharArray()[0]) + Shared.COLOR + String.valueOf(id.toCharArray()[1]) + Shared.COLOR + "r";
+		return Placeholders.colorChar + String.valueOf(id.toCharArray()[0]) + Placeholders.colorChar + String.valueOf(id.toCharArray()[1]) + Placeholders.colorChar + "r";
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
@@ -107,9 +108,9 @@ public class Scoreboard {
 				if (replaced.length() > 16) {
 					prefix = replaced.substring(0, 16);
 					suffix = replaced.substring(16, replaced.length());
-					if (prefix.toCharArray()[15] == Shared.COLOR) {
+					if (prefix.toCharArray()[15] == Placeholders.colorChar) {
 						prefix = prefix.substring(0, 15);
-						suffix = Shared.COLOR + suffix;
+						suffix = Placeholders.colorChar + suffix;
 					}
 					suffix = Placeholders.getLastColors(prefix) + suffix;
 				} else {
@@ -119,7 +120,7 @@ public class Scoreboard {
 				if (replaced.length() > 0) {
 					if (emptyBefore) {
 						//was "", now it is not
-						int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
+						int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
 						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, objectiveName, score);
 						return null;
 					} else {
@@ -138,7 +139,7 @@ public class Scoreboard {
 			p.setProperty("sb-"+teamname, rawtext);
 			List<String> prefixsuffix = replaceText(p, true, true);
 			if (prefixsuffix == null) return;
-			int score = (p.getVersion().getMinorVersion() < 8 || ScoreboardManager.useNumbers) ? this.score : 0;
+			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
 			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {

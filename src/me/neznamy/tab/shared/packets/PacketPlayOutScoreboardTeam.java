@@ -15,21 +15,21 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private String prefix;
 	private String suffix;
 	private String visibility;
-	private String teamPush;
+	private String collision;
 	@SuppressWarnings("unused")
 	private EnumChatFormat chatFormat;
-	private Collection<String> entities;
+	private Collection<String> players;
 	private int action;
 	private int signature;
 
 	@SuppressWarnings("unchecked")
-	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String teamPush, Collection<String> entities, int action, int signature) {
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int action, int signature) {
 		this.team = team;
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.visibility = visibility;
-		this.teamPush = teamPush;
-		this.entities = (Collection<String>) (entities == null ? Collections.emptyList() : entities);
+		this.collision = collision;
+		this.players = (Collection<String>) (players == null ? Collections.emptyList() : players);
 		this.action = action;
 		this.signature = signature;
 	}
@@ -53,8 +53,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			PREFIX.set(packet, prefix);
 			SUFFIX.set(packet, suffix);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) PUSH.set(packet, teamPush);
-		PLAYERS.set(packet, entities);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) COLLISION.set(packet, collision);
+		PLAYERS.set(packet, players);
 		ACTION.set(packet, action);
 		SIGNATURE.set(packet, signature);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) VISIBILITY.set(packet, visibility);
@@ -74,7 +74,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = cutTo(this.prefix, 16);
 			suffix = cutTo(this.suffix, 16);
 		}
-		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
+		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, collision, color, (byte)signature, players.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String teamDisplay = team;
@@ -90,7 +90,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = cutTo(this.prefix, 16);
 			suffix = cutTo(this.suffix, 16);
 		}
-		return new me.neznamy.tab.platforms.velocity.protocol.Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, teamPush, color, (byte)signature, entities.toArray(new String[0]));
+		return new me.neznamy.tab.platforms.velocity.protocol.Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, collision, color, (byte)signature, players.toArray(new String[0]));
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
 	private static final Field NAME = getField(fields, "a");
@@ -99,7 +99,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private static final Field SUFFIX = getField(fields, "d");
 	private static Field VISIBILITY; //1.8+
 	private static Field CHATFORMAT; //1.13+
-	private static Field PUSH; //1.9+
+	private static Field COLLISION; //1.9+
 	public static final Field PLAYERS;
 	private static final Field ACTION;
 	public static final Field SIGNATURE;
@@ -108,7 +108,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			//1.9+
 			VISIBILITY = getField(fields, "e");
-			PUSH = getField(fields, "f");
+			COLLISION = getField(fields, "f");
 			PLAYERS = getField(fields, "h");
 			ACTION = getField(fields, "i");
 			SIGNATURE = getField(fields, "j");

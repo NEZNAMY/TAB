@@ -4,26 +4,21 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.ArmorStand;
-import me.neznamy.tab.platforms.bukkit.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
-import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
-import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public abstract class ITabPlayer {
@@ -36,7 +31,7 @@ public abstract class ITabPlayer {
 	public String teamName;
 	private String rank = "&7No Rank";
 
-	public HashMap<String, Property> properties = new HashMap<String, Property>();
+	public Map<String, Property> properties = new HashMap<String, Property>();
 	private long lastRefreshGroup;
 	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
@@ -62,10 +57,12 @@ public abstract class ITabPlayer {
 	public void init() {
 		updateGroupIfNeeded(false);
 		updateAll();
-		if (NameTag16.enable || Configs.unlimitedTags) teamName = buildTeamName();
+		teamName = buildTeamName();
 		updateDisabledWorlds(getWorldName());
-		if (Playerlist.enable) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
-		bossbarVisible = !BossBar.bossbar_off_players.contains(getName());
+		if (Shared.features.containsKey("playerlist")) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		if (Shared.features.containsKey("bossbar")) {
+			bossbarVisible = !((BossBar)Shared.features.get("bossbar")).bossbar_off_players.contains(getName());
+		}
 	}
 
 	//bukkit only
@@ -173,7 +170,7 @@ public abstract class ITabPlayer {
 	}
 
 	public boolean isListNameUpdateNeeded() {
-		if (!Playerlist.enable) return false;
+		if (!Shared.features.containsKey("playerlist")) return false;
 		getGroup();
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
@@ -207,7 +204,7 @@ public abstract class ITabPlayer {
 			teamName = newName;
 			registerTeam();
 		}
-		if (Configs.unlimitedTags) {
+		if (Shared.features.containsKey("nametagx")) {
 			NameTagLineManager.refreshNames(this);
 			fixArmorStandHeights();
 		}
@@ -227,7 +224,7 @@ public abstract class ITabPlayer {
 	
 	private boolean getTeamVisibility() {
 		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
-		return !Configs.unlimitedTags && nameTagVisible;
+		return !Shared.features.containsKey("nametagx") && nameTagVisible;
 	}
 
 	public String getGroup() {
@@ -348,7 +345,7 @@ public abstract class ITabPlayer {
 		if (lines == null) lines = new ArrayList<String>();
 		int i = 0;
 		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n" + Shared.COLOR + "r");
+			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
 			rawValue.append(line);
 		}
 		setProperty(name, rawValue.toString());
@@ -389,19 +386,20 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (name == null) {
-			if (Playerlist.enable) {
+			if (Shared.features.containsKey("playerlist")) {
 				name = properties.get("tabprefix").get();
 			} else {
-				if (!NameTag16.enable && !Configs.unlimitedTags) {
-					return getName();
-				}
 				name = properties.get("tagprefix").get();
 			}
 		}
 		if (name == null || name.length() == 0) {
 			name = "&f";
 		} else {
-			name = Placeholders.replaceAllPlaceholders(name, this);
+			if (name.contains("%")) {
+				for (Placeholder pl : Placeholders.getAllUsed()) {
+					if (name.contains(pl.getIdentifier())) name = name.replace(pl.getIdentifier(), pl.getValue(this));
+				}
+			}
 		}
 		if (name.length() > 12) {
 			name = name.substring(0, 12);
@@ -488,7 +486,7 @@ public abstract class ITabPlayer {
 		disabledBossbar = isDisabledWorld(Configs.disabledBossbar, world);
 		disabledBelowname = isDisabledWorld(Configs.disabledBelowname, world);
 	}
-	private boolean isDisabledWorld(List<String> disabledWorlds, String world) {
+	public boolean isDisabledWorld(List<String> disabledWorlds, String world) {
 		if (disabledWorlds.contains("WHITELIST")) {
 			for (String enabled : disabledWorlds) {
 				if (enabled.equals(world)) return false;
@@ -507,79 +505,30 @@ public abstract class ITabPlayer {
 		updateGroupIfNeeded(false);
 		updateAll();
 		restartArmorStands();
-		if (BossBar.enabled) {
-			if (disabledBossbar) {
-				for (BossBarLine line : BossBar.lines)
-					PacketAPI.removeBossBar(this, line);
-			} else for (BossBarLine active : getActiveBossBars()) {
-				if (!BossBar.defaultBars.contains(active.getName())) { //per-world bar from previous world
-					PacketAPI.removeBossBar(this, active);
-				}
-			}
-			detectBossBarsAndSend();
-		}
-		if (HeaderFooter.enable) {
-			if (disabledHeaderFooter) {
-				sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
-			} else {
-				HeaderFooter.refreshHeaderFooter(this, true);
-			}
-		}
-		if (NameTag16.enable || Configs.unlimitedTags) {
-			if (disabledNametag && !isDisabledWorld(Configs.disabledNametag, from)) {
-				unregisterTeam(true);
-			} else if (!disabledNametag && isDisabledWorld(Configs.disabledNametag, from)) {
-				registerTeam();
-			} else {
-				updateTeam();
-			}
-		}
-		if (Playerlist.enable) {
-//			if (!(isDisabledWorld(Configs.disabledTablistNames, from) && isDisabledWorld(Configs.disabledTablistNames, to))) {
-				if (!Configs.disabledTablistNames.contains("NORESET")) updatePlayerListName();
-//			}
-		}
-		if (TabObjective.type != TabObjectiveType.NONE) {
-			if (disabledTablistObjective && !isDisabledWorld(Configs.disabledTablistObjective, from)) {
-				TabObjective.unload(this);
-			}
-			if (!disabledTablistObjective && isDisabledWorld(Configs.disabledTablistObjective, from)) {
-				TabObjective.playerJoin(this);
-			}
-		}
-		if (BelowName.enable) {
-			if (disabledBelowname && !isDisabledWorld(Configs.disabledBelowname, from)) {
-				BelowName.unload(this);
-			}
-			if (!disabledBelowname && isDisabledWorld(Configs.disabledBelowname, from)) {
-				BelowName.playerJoin(this);
-			}
-		}
-		if (ScoreboardManager.enabled) {
-			ScoreboardManager.unregister(this);
-			ScoreboardManager.register(this);
-		}
+		Shared.features.values().forEach(f -> f.onWorldChange(this, from, to));
 	}
 
 	public void detectBossBarsAndSend() {
+		if (!Shared.features.containsKey("bossbar")) return;
+		BossBar feature = (BossBar) Shared.features.get("bossbar");
 		activeBossBars.clear();
 		if (disabledBossbar || !bossbarVisible) return;
-		for (String defaultBar : BossBar.defaultBars) {
-			BossBarLine bar = BossBar.getLine(defaultBar);
+		for (String defaultBar : feature.defaultBars) {
+			BossBarLine bar = feature.getLine(defaultBar);
 			if (bar != null && bar.hasPermission(this)) {
 				PacketAPI.createBossBar(this, bar);
 				activeBossBars.add(bar);
 			}
 		}
-		for (String announcement : BossBar.announcements) {
-			BossBarLine bar = BossBar.getLine(announcement);
+		for (String announcement : feature.announcements) {
+			BossBarLine bar = feature.getLine(announcement);
 			if (bar != null && bar.hasPermission(this)) {
 				PacketAPI.createBossBar(this, bar);
 			}
 		}
-		if (BossBar.perWorld.get(getWorldName()) != null)
-			for (String worldbar : BossBar.perWorld.get(getWorldName())) {
-				BossBarLine bar = BossBar.getLine(worldbar);
+		if (feature.perWorld.get(getWorldName()) != null)
+			for (String worldbar : feature.perWorld.get(getWorldName())) {
+				BossBarLine bar = feature.getLine(worldbar);
 				if (bar != null && bar.hasPermission(this)) {
 					PacketAPI.createBossBar(this, bar);
 					activeBossBars.add(bar);
@@ -609,11 +558,11 @@ public abstract class ITabPlayer {
 		}
 	}
 	public void forceUpdateDisplay() {
-		if (Playerlist.enable && !disabledTablistNames) updatePlayerListName();
-		if ((NameTag16.enable || Configs.unlimitedTags)) {
+		if (Shared.features.containsKey("playerlist") && !disabledTablistNames) updatePlayerListName();
+		if ((Shared.features.containsKey("nametag16")) || Shared.features.containsKey("nametagx")) {
 			unregisterTeam(false);
 			registerTeam();
 		}
-		if (Configs.unlimitedTags && !disabledNametag) restartArmorStands();
+		if (Shared.features.containsKey("nametagx") && !disabledNametag) restartArmorStands();
 	}
 }

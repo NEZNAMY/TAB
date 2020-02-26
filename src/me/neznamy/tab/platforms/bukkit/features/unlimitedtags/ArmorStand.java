@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.unlimitedtags;
+package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.ArrayList;
 import java.util.Collections;

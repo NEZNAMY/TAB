@@ -1,30 +1,48 @@
 package me.neznamy.tab.premium;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.SimpleFeature;
 
-public class ScoreboardManager {
+public class ScoreboardManager implements SimpleFeature{
 
-	public static boolean enabled;
-	public static String toggleCommand;
-	public static List<String> disabledWorlds;
-	public static String defaultScoreboard;
-	public static int refresh;
-	public static Map<String, String> perWorld;
-	public static Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
-	public static boolean useNumbers;
+	private String toggleCommand;
+	private List<String> disabledWorlds;
+	private String defaultScoreboard;
+	private int refresh;
+	private Map<String, String> perWorld;
+	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
+	public boolean useNumbers;
 
-	public static String scoreboard_on;
-	public static String scoreboard_off;
+	private String scoreboard_on;
+	private String scoreboard_off;
 
-	public static void load() {
-		if (!enabled) return;
+	@SuppressWarnings("unchecked")
+	@Override
+	public void load() {
+		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
+		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
+		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
+		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
+		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1)*50;
+		perWorld = (Map<String, String>) Premium.premiumconfig.get("scoreboard.per-world");
+		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
+		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
+		if (Premium.premiumconfig.get("scoreboards") != null)
+			for (String scoreboard : ((Map<String, Object>) Premium.premiumconfig.get("scoreboards")).keySet()) {
+				boolean permissionRequired = Premium.premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required", false);
+				String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-permission-missing");
+				String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
+				List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
+				scoreboards.put(scoreboard, new Scoreboard(this, scoreboard, title, lines, permissionRequired, childBoard));
+			}
 		for (ITabPlayer p : Shared.getPlayers()) {
-			register(p);
+			onJoin(p);
 		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", "Scoreboard", new Runnable() {
 			public void run() {
@@ -36,7 +54,7 @@ public class ScoreboardManager {
 					if ((current == null && highest != null) || (current != null && highest == null) || (!current.equals(highest))) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 						p.setActiveScoreboard(null);
-						register(p);
+						onJoin(p);
 					}
 				}
 				for (Scoreboard board : scoreboards.values()) {
@@ -45,7 +63,39 @@ public class ScoreboardManager {
 			}
 		});
 	}
-	public static String getHighestScoreboard(ITabPlayer p) {
+	@Override
+	public void unload() {
+		for (Scoreboard board : scoreboards.values()) {
+			board.unregister();
+		}
+		for (ITabPlayer p : Shared.getPlayers()) {
+			p.setActiveScoreboard(null);
+		}
+		scoreboards.clear();
+	}
+	@Override
+	public void onJoin(ITabPlayer p) {
+		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
+		String scoreboard = getHighestScoreboard(p);
+		if (scoreboard != null) {
+			Scoreboard board = scoreboards.get(scoreboard);
+			if (board != null) {
+				p.setActiveScoreboard(board);
+				board.register(p);
+			}
+		}
+	}
+	@Override
+	public void onQuit(ITabPlayer p) {
+		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
+		p.setActiveScoreboard(null);
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
+		onQuit(p);
+		onJoin(p);
+	}
+	public String getHighestScoreboard(ITabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
 		if (scoreboard != null) {
@@ -58,49 +108,22 @@ public class ScoreboardManager {
 		}
 		return scoreboard;
 	}
-	public static void unload() {
-		if (!enabled) return;
-		for (Scoreboard board : scoreboards.values()) {
-			board.unregister();
-		}
-		for (ITabPlayer p : Shared.getPlayers()) {
-			p.setActiveScoreboard(null);
-		}
-		scoreboards.clear();
-	}
-	public static void register(ITabPlayer p) {
-		if (!enabled || disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
-		String scoreboard = getHighestScoreboard(p);
-		if (scoreboard != null) {
-			Scoreboard board = scoreboards.get(scoreboard);
-			if (board != null) {
-				p.setActiveScoreboard(board);
-				board.register(p);
-			}
-		}
-	}
-	public static void unregister(ITabPlayer p) {
-		if (!enabled) return;
-		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
-		p.setActiveScoreboard(null);
-	}
-	public static boolean onCommand(ITabPlayer sender, String message) {
-		if (!enabled) return false;
+	public boolean onCommand(ITabPlayer sender, String message) {
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.hiddenScoreboard = !sender.hiddenScoreboard;
 			if (sender.hiddenScoreboard) {
-				unregister(sender);
+				onQuit(sender);
 				sender.sendMessage(scoreboard_off);
 			} else {
-				register(sender);
+				onJoin(sender);
 				sender.sendMessage(scoreboard_on);
 			}
 			return true;
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " on")) {
 			if (sender.hiddenScoreboard) {
-				register(sender);
+				onJoin(sender);
 				sender.sendMessage(scoreboard_on);
 				sender.hiddenScoreboard = false;
 			}
@@ -108,7 +131,7 @@ public class ScoreboardManager {
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " off")) {
 			if (!sender.hiddenScoreboard) {
-				unregister(sender);
+				onQuit(sender);
 				sender.sendMessage(scoreboard_off);
 				sender.hiddenScoreboard = true;
 			}

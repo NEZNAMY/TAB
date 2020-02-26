@@ -22,7 +22,7 @@ public class TABAPI {
 	 * @since 2.4.12
 	 */
 	public static boolean isUnlimitedNameTagModeEnabled() {
-		return Configs.unlimitedTags;
+		return Shared.features.containsKey("nametagx");
 	}
 	
 	
