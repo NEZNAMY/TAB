@@ -26,6 +26,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.*;
 import net.md_5.bungee.event.*;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.*;
 
 public class Main extends Plugin implements Listener, MainClass{
@@ -129,15 +130,17 @@ public class Main extends Plugin implements Listener, MainClass{
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					UniversalPacketPlayOut customPacket = null;
-					customPacket = PacketPlayOutPlayerInfo.fromBungee(packet);
-					if (customPacket != null) {
-						for (CustomPacketFeature f : Shared.packetfeatures.values()) {
-							long time = System.nanoTime();
-							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
-							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+					if (packet instanceof DefinedPacket) {
+						UniversalPacketPlayOut customPacket = null;
+						customPacket = PacketPlayOutPlayerInfo.fromBungee(packet);
+						if (customPacket != null) {
+							for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+								long time = System.nanoTime();
+								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+							}
+							packet = customPacket.toBungee(player.getVersion());
 						}
-						packet = customPacket.toBungee(player.getVersion());
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
 						Team team = (Team) packet;

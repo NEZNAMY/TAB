@@ -20,6 +20,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
@@ -148,15 +149,17 @@ public class Main implements MainClass{
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					UniversalPacketPlayOut customPacket = null;
-					customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
-					if (customPacket != null) {
-						for (CustomPacketFeature f : Shared.packetfeatures.values()) {
-							long time = System.nanoTime();
-							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
-							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+					if (packet instanceof MinecraftPacket) {
+						UniversalPacketPlayOut customPacket = null;
+						customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
+						if (customPacket != null) {
+							for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+								long time = System.nanoTime();
+								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+							}
+							packet = customPacket.toVelocity(player.getVersion());
 						}
-						packet = customPacket.toVelocity(player.getVersion());
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
 						if (killPacket((Team)packet)) return;
