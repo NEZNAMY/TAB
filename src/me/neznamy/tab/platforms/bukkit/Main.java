@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
@@ -40,7 +39,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	private TabObjectiveType objType;
 
 	public void onEnable(){
-		long total = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
@@ -55,38 +53,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return false;
 				}
 			});
-			Shared.load(false, true);
-			Metrics metrics = new Metrics(this);
-			metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
-				public String call() {
-					return Shared.features.containsKey("nametagx") ? "Yes" : "No";
-				}
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", new Callable<String>() {
-				public String call() {
-					return PluginHooks.placeholderAPI ? "Yes" : "No";
-				}
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-				public String call() {
-					if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
-					return getPermissionPlugin();
-				}
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
-				public String call() {
-					if (PluginHooks.viaversion && PluginHooks.protocolsupport) return "ViaVersion + ProtocolSupport";
-					if (PluginHooks.viaversion) return "ViaVersion";
-					if (PluginHooks.protocolsupport) return "ProtocolSupport";
-					return "None";
-				}
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("server_version", new Callable<String>() {
-				public String call() {
-					return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
-				}
-			}));
-			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-total) + "ms");
+			Shared.load(true, true);
+			Metrics.start(this);
 		} else {
 			Shared.disabled = true;
 			sendConsoleMessage("&c[TAB] Your server version is not supported. Disabling..");
@@ -473,7 +441,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
 			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
-			if (Configs.advancedconfig.getBoolean("per-world-playerlist", false)) Shared.features.put("pwp", new PerWorldPlayerlist());
+			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) {
+				PerWorldPlayerlist pwp = new PerWorldPlayerlist();
+				Shared.features.put("pwp", pwp);
+				Shared.packetfeatures.put("pwp", pwp);
+			}
 			if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
 				Shared.features.put("papihook", new PlaceholderAPIExpansion());
@@ -590,6 +562,21 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			removeOld(config, "date-format");
 			removeOld(config, "time-format");
 		}
+		if (config.getName().equals("premiumconfig.yml")) {
+			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+		}
+		if (config.getName().equals("advancedconfig.yml")) {
+			if (config.get("per-world-playerlist") instanceof Boolean) {
+				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
+				rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
+				rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
+				Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
+				sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
+				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
+				sharedWorlds.put("DoNotDoThis", Arrays.asList("ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt"));
+				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
+			}
+		}
 	}
 	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
 		if (config.get(oldKey) != null) {
@@ -600,6 +587,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (config.get(oldKey) != null) {
 			config.set(oldKey, null);
 			Shared.print('2', "Removed old " + config.getName() + " option " + oldKey);
+		}
+	}
+	private void rename(ConfigurationFile config, String oldName, String newName) {
+		if (config.get(oldName) != null) {
+			convert(config, oldName, config.get(oldName), newName, config.get(oldName));
 		}
 	}
 	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {

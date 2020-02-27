@@ -56,7 +56,6 @@ public class Main implements MainClass{
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		try {
 			Class.forName("org.yaml.snakeyaml.Yaml");
-			long time = System.currentTimeMillis();
 			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.BUNGEE;
 			Shared.mainClass = this;
 			Shared.separatorType = "server";
@@ -68,8 +67,7 @@ public class Main implements MainClass{
 			});
 			registerPackets();
 			plm = new PluginMessenger(this);
-			Shared.load(false, true);
-			if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			Shared.load(true, true);
 		} catch (ClassNotFoundException e) {
 			sendConsoleMessage("&c[TAB] The plugin requires Velocity 1.1.0 and up to work ! Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
 		}
@@ -340,6 +338,14 @@ public class Main implements MainClass{
 				int value = (int) config.get("belowname.refresh-interval");
 				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
 			}
+		}
+		if (config.getName().equals("premiumconfig.yml")) {
+			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+		}
+	}
+	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
+		if (config.get(oldKey) != null) {
+			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
 		}
 	}
 	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -32,18 +33,18 @@ import java.util.zip.GZIPOutputStream;
  */
 public class Metrics {
 
-	static {
-		// You can use the property to disable the check in your test environment
-		if (System.getProperty("bstats.relocatecheck") == null || !System.getProperty("bstats.relocatecheck").equals("false")) {
-			// Maven's Relocate is clever and changes strings, too. So we have to use this little "trick" ... :D
-			final String defaultPackage = new String(
-					new byte[]{'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's', '.', 'b', 'u', 'n', 'g', 'e', 'e', 'c', 'o', 'r', 'd'});
-			final String examplePackage = new String(new byte[]{'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
-			// We want to make sure nobody just copy & pastes the example and use the wrong package names
-			if (Metrics.class.getPackage().getName().equals(defaultPackage) || Metrics.class.getPackage().getName().equals(examplePackage)) {
-				throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
+	public static void start(Plugin plugin) {
+		Metrics metrics = new Metrics(plugin);
+		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
+			public String call() {
+				return Shared.mainClass.getPermissionPlugin();
 			}
-		}
+		}));
+		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {
+			public String call() {
+				return Shared.features.containsKey("globalplayerlist") ? "Yes" : "No";
+			}
+		}));
 	}
 
 	// The version of this bStats class

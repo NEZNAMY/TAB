@@ -92,7 +92,8 @@ public class Injector {
 							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 						}
-						packet = customPacket.toNMS(player.getVersion());
+						if (customPacket != null) packet = customPacket.toNMS(player.getVersion());
+						else packet = null;
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when reading packets", e);

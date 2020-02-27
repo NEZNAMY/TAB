@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -35,7 +34,6 @@ public class Main extends Plugin implements Listener, MainClass{
 	private TabObjectiveType objType;
 	
 	public void onEnable(){
-		long time = System.currentTimeMillis();
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
@@ -48,19 +46,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		});
 		plm = new PluginMessenger(this);
-		Shared.load(false, true);
-		Metrics metrics = new Metrics(this);
-		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-			public String call() {
-				return getPermissionPlugin();
-			}
-		}));
-		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {
-			public String call() {
-				return Shared.features.containsKey("globalplayerlist") ? "Yes" : "No";
-			}
-		}));
-		if (!Shared.disabled) Shared.print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+		Shared.load(true, true);
+		Metrics.start(this);
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
@@ -284,6 +271,14 @@ public class Main extends Plugin implements Listener, MainClass{
 				int value = (int) config.get("belowname.refresh-interval");
 				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
 			}
+		}
+		if (config.getName().equals("premiumconfig.yml")) {
+			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+		}
+	}
+	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
+		if (config.get(oldKey) != null) {
+			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
 		}
 	}
 	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {

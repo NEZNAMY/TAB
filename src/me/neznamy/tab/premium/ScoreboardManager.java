@@ -29,7 +29,7 @@ public class ScoreboardManager implements SimpleFeature{
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-ticks", 1)*50;
+		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		perWorld = (Map<String, String>) Premium.premiumconfig.get("scoreboard.per-world");
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
