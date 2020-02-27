@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -17,6 +19,10 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
+import me.TechsCode.UltraPermissions.UltraPermissions;
+import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
+import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
+import me.TechsCode.UltraPermissions.storage.objects.Group;
 import me.clip.deluxetags.DeluxeTag;
 import me.clip.deluxetags.DeluxeTags;
 import me.clip.deluxetags.listeners.PlayerListener;
@@ -46,6 +52,7 @@ public class PluginHooks {
 	public static boolean deluxetags;
 	public static boolean viaversion;
 	public static boolean protocolsupport;
+	public static boolean ultrapermissions;
 	public static Object essentials;
 	public static Object idisguise;
 	public static Object groupManager;
@@ -277,6 +284,20 @@ public class PluginHooks {
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
+	}
+	public static String[] UltraPermissions_getAllGroups(ITabPlayer p) {
+		UltraPermissionsAPI api = null;
+		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
+			api = UltraPermissionsBungee.getAPI();
+		}
+		if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
+			api = UltraPermissions.getAPI();
+		}
+		List<String> groups = new ArrayList<String>();
+		for (Group group : api.getUsers().name(p.getName()).getGroups().bestToWorst().get()) {
+			groups.add(group.getName());
+		}
+		return groups.toArray(new String[0]);
 	}
 	public static String Vault_getPermissionPlugin() {
 		return ((Permission)Vault_permission).getName();

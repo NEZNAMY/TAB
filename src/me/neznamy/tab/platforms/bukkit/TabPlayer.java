@@ -21,8 +21,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class TabPlayer extends ITabPlayer{
 
 	public Player player;
-	private String money = "-";
-	private long lastRefreshMoney;
 
 	public TabPlayer(Player p) throws Exception {
 		player = p;
@@ -50,6 +48,7 @@ public class TabPlayer extends ITabPlayer{
 			return groups[0];
 		}
 		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
+		if (PluginHooks.ultrapermissions) return PluginHooks.UltraPermissions_getAllGroups(this)[0];
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		return "null";
 	}
@@ -57,17 +56,9 @@ public class TabPlayer extends ITabPlayer{
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
 		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
 		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
+		if (PluginHooks.ultrapermissions) return PluginHooks.UltraPermissions_getAllGroups(this);
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
 		return new String[] {"null"};
-	}
-	@Override
-	public String getMoney() {
-		if (System.currentTimeMillis() - lastRefreshMoney > 1000L) {
-			lastRefreshMoney = System.currentTimeMillis();
-			if (PluginHooks.essentials != null) money = Shared.decimal2.format(PluginHooks.Essentials_getMoney(this));
-			if (PluginHooks.Vault_economy != null) money = Shared.decimal2.format(PluginHooks.Vault_getMoney(this));
-		}
-		return money;
 	}
 	@Override
 	public void setTeamVisible(boolean visible) {
@@ -75,15 +66,6 @@ public class TabPlayer extends ITabPlayer{
 			nameTagVisible = visible;
 			updateTeam();
 		}
-	}
-	@Override
-	public String getNickname() {
-		String name = null;
-		if (PluginHooks.essentials != null) {
-			name = PluginHooks.Essentials_getNickname(this);
-		}
-		if (name == null || name.length() == 0) return getName();
-		return Configs.SECRET_essentials_nickname_prefix + name;
 	}
 	@Override
 	public void restartArmorStands() {

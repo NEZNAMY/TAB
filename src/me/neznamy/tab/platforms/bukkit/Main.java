@@ -183,12 +183,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+		PluginHooks.ultrapermissions = Bukkit.getPluginManager().isPluginEnabled("UltraPermissions");
 
 		usedExpansions = new ArrayList<String>();
 
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
-				return p.getMoney();
+				if (PluginHooks.essentials != null) return Shared.decimal2.format(PluginHooks.Essentials_getMoney(p));
+				if (PluginHooks.Vault_economy != null) return Shared.decimal2.format(PluginHooks.Vault_getMoney(p));
+				return "-";
 			}
 		});
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%xPos%", 0) {
@@ -218,7 +221,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		});
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
 			public String get(ITabPlayer p) {
-				return p.getNickname();
+				String name = null;
+				if (PluginHooks.essentials != null) {
+					name = PluginHooks.Essentials_getNickname(p);
+				}
+				if (name == null || name.length() == 0) return p.getName();
+				return Configs.SECRET_essentials_nickname_prefix + name;
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
@@ -469,6 +477,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.luckPerms) return "LuckPerms";
 		if (PluginHooks.permissionsEx) return "PermissionsEx";
 		if (PluginHooks.groupManager != null) return "GroupManager";
+		if (PluginHooks.ultrapermissions) return "UltraPermissions";
 		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}

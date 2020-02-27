@@ -63,14 +63,6 @@ public abstract class ITabPlayer {
 	}
 
 	//bukkit only
-	public String getNickname() {
-		return getName();
-	}
-
-	public String getMoney() {
-		return "-";
-	}
-
 	public void setTeamVisible(boolean p0) {
 	}
 

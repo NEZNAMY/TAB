@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
@@ -19,6 +18,7 @@ import me.neznamy.tab.shared.features.SimpleFeature;
 
 public class BossBar_legacy implements Listener, SimpleFeature {
 	
+	private static final int WITHER_DISTANCE = 100;
 	@Override
 	public void load() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
@@ -27,21 +27,13 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 				public void run() {
 					for (ITabPlayer all : Shared.getPlayers()) {
 						for (BossBarLine l : all.activeBossBars) {
-							Location to = (((TabPlayer)all).player).getEyeLocation().add((((TabPlayer)all).player).getEyeLocation().getDirection().normalize().multiply(25));
+							Location to = (((TabPlayer)all).player).getEyeLocation().add((((TabPlayer)all).player).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), to));
 						}
 					}
 				}
 			});
 		}
-	}
-	@EventHandler
-	public void a(PlayerChangedWorldEvent e) {
-		long time = System.nanoTime();
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return; //teleport in early login event or what
-		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
-		Shared.cpu.addFeatureTime("BossBar 1.8", System.nanoTime()-time);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
@@ -61,5 +53,6 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		p.detectBossBarsAndSend();
 	}
 }

@@ -119,14 +119,15 @@ public class Main extends Plugin implements Listener, MainClass{
 					}
 					if (packet instanceof DefinedPacket) {
 						UniversalPacketPlayOut customPacket = null;
-						customPacket = PacketPlayOutPlayerInfo.fromBungee(packet);
+						if (player.getVersion().getMinorVersion() >= 8) customPacket = PacketPlayOutPlayerInfo.fromBungee(packet);
 						if (customPacket != null) {
 							for (CustomPacketFeature f : Shared.packetfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 							}
-							packet = customPacket.toBungee(player.getVersion());
+							if (customPacket != null) packet = customPacket.toBungee(player.getVersion());
+							else packet = null;
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
@@ -173,6 +174,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public static void registerPlaceholders() {
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 		PluginHooks.luckPerms = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null;
+		PluginHooks.ultrapermissions = ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null;
 		if (PluginHooks.premiumVanish) {
 			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
@@ -241,6 +243,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public String getPermissionPlugin() {
 		if (PluginHooks.luckPerms) return "LuckPerms";
+		if (PluginHooks.ultrapermissions) return "UltraPermissions";
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
 		return "Unknown/None";
 	}

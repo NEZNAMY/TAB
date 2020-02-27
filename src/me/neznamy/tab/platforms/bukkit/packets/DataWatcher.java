@@ -7,8 +7,8 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 
 public class DataWatcher{
 
-	private static final Field ENTITY = PacketPlayOut.getFields(MethodAPI.DataWatcher, MethodAPI.Entity).get(0);
-	
+	private static final Field ENTITY = PacketPlayOut.getObjectAt(PacketPlayOut.getFields(MethodAPI.DataWatcher, MethodAPI.Entity), 0);
+
 	private Object entity;
 	private Map<Integer, Item> dataValues = new HashMap<Integer, Item>();
 

@@ -149,14 +149,15 @@ public class Main implements MainClass{
 					}
 					if (packet instanceof MinecraftPacket) {
 						UniversalPacketPlayOut customPacket = null;
-						customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
+						if (player.getVersion().getMinorVersion() >= 8) customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
 						if (customPacket != null) {
 							for (CustomPacketFeature f : Shared.packetfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 							}
-							packet = customPacket.toVelocity(player.getVersion());
+							if (customPacket != null) packet = customPacket.toVelocity(player.getVersion());
+							else packet = null;
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
