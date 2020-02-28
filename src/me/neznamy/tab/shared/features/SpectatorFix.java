@@ -24,6 +24,6 @@ public class SpectatorFix implements CustomPacketFeature{
 
 	@Override
 	public String getCPUName() {
-		return "spectator fix";
+		return "SpectatorFix";
 	}
 }

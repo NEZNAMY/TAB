@@ -431,7 +431,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
 			if (Configs.BossBarEnabled) {
 				Shared.features.put("bossbar", new BossBar());
-				Shared.features.put("bossbar1.8", new BossBar_legacy());
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.features.put("bossbar1.8", new BossBar_legacy());
 			}
 			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {

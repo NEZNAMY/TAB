@@ -60,6 +60,6 @@ public class PetFix implements RawPacketFeature{
 	}
 	@Override
 	public String getCPUName() {
-		return "Pet name fix";
+		return "PetFix";
 	}
 }

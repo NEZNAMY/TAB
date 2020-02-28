@@ -88,7 +88,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 			}
 		}
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER && receiver.getVersion() == ProtocolVersion.v1_8) {
-			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist names 3", new Runnable() {
+			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist Names 3", new Runnable() {
 
 				@Override
 				public void run() {
@@ -100,6 +100,6 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 	}
 	@Override
 	public String getCPUName() {
-		return "Tablist names 2";
+		return "Tablist Names 2";
 	}
 }
