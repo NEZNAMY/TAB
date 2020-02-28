@@ -286,18 +286,22 @@ public class PluginHooks {
 		}
 	}
 	public static String[] UltraPermissions_getAllGroups(ITabPlayer p) {
-		UltraPermissionsAPI api = null;
-		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
-			api = UltraPermissionsBungee.getAPI();
+		try {
+			UltraPermissionsAPI api = null;
+			if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
+				api = UltraPermissionsBungee.getAPI();
+			}
+			if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
+				api = UltraPermissions.getAPI();
+			}
+			List<String> groups = new ArrayList<String>();
+			for (Group group : api.getUsers().name(p.getName()).getGroups().bestToWorst().get()) {
+				groups.add(group.getName());
+			}
+			return groups.toArray(new String[0]);
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using UltraPermissions", e);
 		}
-		if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
-			api = UltraPermissions.getAPI();
-		}
-		List<String> groups = new ArrayList<String>();
-		for (Group group : api.getUsers().name(p.getName()).getGroups().bestToWorst().get()) {
-			groups.add(group.getName());
-		}
-		return groups.toArray(new String[0]);
 	}
 	public static String Vault_getPermissionPlugin() {
 		return ((Permission)Vault_permission).getName();
