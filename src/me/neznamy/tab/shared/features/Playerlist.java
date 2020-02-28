@@ -43,7 +43,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 			if (!p.disabledTablistNames && (p.isListNameUpdateNeeded() || force)) updatedPlayers.add(p.getInfoData());
 		}
 		if (!updatedPlayers.isEmpty()) {
-			Object packet = ITabPlayer.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), null);
+			Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), null);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}

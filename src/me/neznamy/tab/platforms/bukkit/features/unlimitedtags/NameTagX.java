@@ -40,14 +40,10 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			onJoin(all);
-			for (Player w : (((TabPlayer)all).player).getWorld().getPlayers()) {
-				ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
-				if (wPlayer == null) {
-					Shared.errorManager.printError("Data of " + w.getName() + " don't exist ?");
-					continue;
-				}
-				if (all == wPlayer) continue;
-				NameTagLineManager.spawnArmorStand(all, wPlayer, true);
+			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
+				if (all == worldPlayer) continue;
+				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
+				NameTagLineManager.spawnArmorStand(all, worldPlayer, true);
 			}
 		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
@@ -56,7 +52,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 			}
 		});
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags - invisfix", new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags", new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
 				}
@@ -99,6 +95,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		p.restartArmorStands();
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.unregisterTeam(true);
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
@@ -155,24 +152,15 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) {
-			Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player sneaked");
-			return;
-		}
 		Shared.cpu.runMeasuredTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
 			public void run() {
-				NameTagLineManager.sneak(p, e.isSneaking());
+				NameTagLineManager.sneak(Shared.getPlayer(e.getPlayer().getUniqueId()), e.isSneaking());
 			}
 		});
 	}
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) {
-			Shared.errorManager.printError("Data of " + e.getPlayer().getName() + " did not exist when player moved");
-			return;
-		}
 		if (p.previewingNametag) Shared.cpu.runMeasuredTask("processing move", "NameTagX - move event", new Runnable() {
 			public void run() {
 				NameTagLineManager.teleportArmorStand(p, p);

@@ -169,7 +169,7 @@ public abstract class ITabPlayer {
 
 	public void updatePlayerListName() {
 		isListNameUpdateNeeded(); //triggering updates to replaced values
-		Object packet = buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, getInfoData()), null);
+		Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, getInfoData()), null);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
@@ -493,7 +493,6 @@ public abstract class ITabPlayer {
 		updateDisabledWorlds(to);
 		updateGroupIfNeeded(false);
 		updateAll();
-		restartArmorStands();
 		Shared.features.values().forEach(f -> f.onWorldChange(this, from, to));
 	}
 
@@ -526,16 +525,9 @@ public abstract class ITabPlayer {
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		try {
-			sendPacket(buildPacket(packet, version));
+			sendPacket(PacketAPI.buildPacket(packet, version));
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-		}
-	}
-	public static Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion version) {
-		try {
-			return Shared.mainClass.buildPacket(packet, version);
-		} catch (Throwable e) {
-			return Shared.errorManager.printError(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void sendCustomPacket(PacketPlayOut packet) {

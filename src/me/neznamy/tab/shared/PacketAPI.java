@@ -20,10 +20,18 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class PacketAPI{
 
-
+	public static Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion version) {
+		try {
+			return Shared.mainClass.buildPacket(packet, version);
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(null, "An error occurred when creating " + packet.getClass().getSimpleName(), e);
+		}
+	}
+	
 	//scoreboard team
 	public static synchronized void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
