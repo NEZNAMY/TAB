@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.command.level2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
@@ -59,8 +63,21 @@ public class AnnounceBarCommand extends SubCommand{
 			sendMessage(sender, "&4This command requires the bossbar feature to be enabled.");
 		}
 	}
+
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		BossBar b = (BossBar) Shared.features.get("bossbar");
+		if (b == null) return new ArrayList<String>();
+		List<String> suggestions = new ArrayList<String>();
+		if (arguments.length == 1) {
+			for (BossBarLine bar : b.lines) {
+				if (bar.getName().startsWith(arguments[0])) suggestions.add(bar.getName());
+			}
+		} else if (arguments.length == 2 && b.getLine(arguments[0]) != null){
+			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
+				if (time.startsWith(arguments[1])) suggestions.add(time);
+			}
+		}
+		return suggestions;
 	}
 }

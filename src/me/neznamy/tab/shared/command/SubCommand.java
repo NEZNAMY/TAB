@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
@@ -36,5 +37,5 @@ public abstract class SubCommand {
 		}
 	}
 	public abstract void execute(ITabPlayer sender, String[] args);
-	public abstract Object complete(ITabPlayer sender, String currentArgument);
+	public abstract List<String> complete(ITabPlayer sender, String[] arguments);
 }

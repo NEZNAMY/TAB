@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
@@ -122,8 +124,7 @@ public class DebugCommand extends SubCommand {
 		}
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		return arguments.length == 1 ? null : new ArrayList<String>();
 	}
 }

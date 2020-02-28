@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -77,7 +79,7 @@ public class CpuCommand extends SubCommand {
 		return "&a" + usage;
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		return new ArrayList<String>();
 	}
 }

@@ -33,7 +33,7 @@ public class ParseCommand extends SubCommand{
 		}
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		return new ArrayList<String>();
 	}
 }

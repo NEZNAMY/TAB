@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -28,7 +31,7 @@ public class NTPreviewCommand extends SubCommand{
 		} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		return new ArrayList<String>();
 	}
 }

@@ -21,7 +21,7 @@ public class BossBar implements SimpleFeature{
 
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
-	private List<BossBarLine> lines = new ArrayList<BossBarLine>();
+	public List<BossBarLine> lines = new ArrayList<BossBarLine>();
 	private int refresh;
 	private String toggleCommand;
 	public List<String> announcements = new ArrayList<String>();

@@ -53,6 +53,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return false;
 				}
 			});
+			Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
+				public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
+					return command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				}
+			});
 			Shared.load(true, true);
 			Metrics.start(this);
 		} else {

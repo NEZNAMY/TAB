@@ -48,7 +48,11 @@ public class TabPlayer extends ITabPlayer{
 			return groups[0];
 		}
 		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
-		if (PluginHooks.ultrapermissions) return PluginHooks.UltraPermissions_getAllGroups(this)[0];
+		if (PluginHooks.ultrapermissions) {
+			String[] groups = PluginHooks.UltraPermissions_getAllGroups(this);
+			if (groups.length == 0) return "null";
+			return groups[0];
+		}
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		return "null";
 	}

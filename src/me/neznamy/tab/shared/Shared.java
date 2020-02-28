@@ -18,7 +18,7 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.7.0-pre16";
+	public static final String pluginVersion = "2.7.0-pre17";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
 	public static Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();

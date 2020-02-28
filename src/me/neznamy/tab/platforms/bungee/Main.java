@@ -1,9 +1,13 @@
 package me.neznamy.tab.platforms.bungee;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -32,6 +36,7 @@ public class Main extends Plugin implements Listener, MainClass{
 
 	private PluginMessenger plm;
 	private TabObjectiveType objType;
+	private TabCommand command;
 	
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
@@ -39,7 +44,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
-		TabCommand command = new TabCommand();
+		command = new TabCommand();
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			public void execute(CommandSender sender, String[] args) {
 				command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
@@ -53,6 +58,31 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
 			Shared.unload();
+		}
+	}
+	@EventHandler
+	public void a(TabCompleteEvent e) {
+		if (Shared.disabled) return;
+		if (e.getCursor().startsWith("/btab ")) {
+			System.out.println(e.getCursor());
+			String arg = e.getCursor();
+			while (arg.contains("  ")) arg = arg.replace("  ", " ");
+			String[] args = arg.split(" ");
+			args = Arrays.copyOfRange(args, 1, args.length);
+			if (arg.endsWith(" ")) {
+				List<String> list = Lists.newArrayList(args);
+				list.add("");
+				args = list.toArray(new String[0]);
+			}
+			e.getSuggestions().clear();
+			List<String> suggestions = command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args);
+			if (suggestions == null) {
+				suggestions = new ArrayList<String>();
+				for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+					suggestions.add(p.getName());
+				}
+			}
+			e.getSuggestions().addAll(suggestions);
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)

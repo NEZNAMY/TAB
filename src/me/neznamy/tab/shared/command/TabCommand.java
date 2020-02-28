@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.level1.*;
@@ -72,7 +74,19 @@ public class TabCommand extends SubCommand {
 		}
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		String argument = arguments[0];
+		if (arguments.length == 1) {
+			List<String> suggestions = new ArrayList<String>();
+			for (String subcommand : subcommands.keySet()) {
+				if (subcommand.startsWith(argument)) suggestions.add(subcommand);
+			}
+			return suggestions;
+		}
+		SubCommand subcommand = subcommands.get(argument);
+		if (subcommand != null) {
+			return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
+		}
+		return new ArrayList<String>();
 	}
 }

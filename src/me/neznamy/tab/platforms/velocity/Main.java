@@ -64,6 +64,16 @@ public class Main implements MainClass{
 				public void execute(CommandSource sender, String[] args) {
 					command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
+/*				public List<String> suggest(CommandSource sender, String[] args) {
+					List<String> sug = command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					if (sug == null) {
+						sug = new ArrayList<String>();
+						for (Player p : server.getAllPlayers()) {
+							sug.add(p.getUsername());
+						}
+					}
+					return sug;
+				}*/
 			});
 			registerPackets();
 			plm = new PluginMessenger(this);

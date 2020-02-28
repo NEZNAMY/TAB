@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -65,8 +68,8 @@ public class PlayerCommand extends SubCommand {
 		}
 		sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
 		sendMessage(sender, "&7Valid Properties are:");
-		sendMessage(sender, " - &9tabprefix&3/&9tabsuffix&3/&9tabname");
-		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9tagname");
+		sendMessage(sender, " - &9tabprefix&3/&9tabsuffix&3/&9customtabname");
+		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
 	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
@@ -85,8 +88,17 @@ public class PlayerCommand extends SubCommand {
 		}
 	}
 	@Override
-	public Object complete(ITabPlayer sender, String currentArgument) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		if (arguments.length == 1) return null;
+		List<String> suggestions = new ArrayList<String>();
+		if (arguments.length == 2) {
+			for (String property : usualProperties) {
+				if (property.startsWith(arguments[1])) suggestions.add(property);
+			}
+			for (String property : extraProperties) {
+				if (property.startsWith(arguments[1])) suggestions.add(property);
+			}
+		}
+		return suggestions;
 	}
 }

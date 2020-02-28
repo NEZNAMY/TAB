@@ -13,7 +13,6 @@ import org.json.simple.parser.ParseException;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.velocitypowered.proxy.protocol.MinecraftPacket;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -228,7 +227,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
 	public static PacketPlayOutPlayerInfo fromVelocity(Object velocityPacket){
-		if (!(velocityPacket instanceof MinecraftPacket)) return null;
+		if (!(velocityPacket instanceof com.velocitypowered.proxy.protocol.packet.PlayerListItem)) return null;
 		com.velocitypowered.proxy.protocol.packet.PlayerListItem item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem) velocityPacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.fromId(item.getAction());
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
