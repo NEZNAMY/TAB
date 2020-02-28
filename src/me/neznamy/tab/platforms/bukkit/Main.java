@@ -578,6 +578,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+			if (config.get("placeholder-output-replacements") == null) {
+				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
+				Map<String, String> essVanished = new HashMap<String, String>();
+				essVanished.put("yes", "&7| Vanished");
+				essVanished.put("no", "");
+				replacements.put("%essentials_vanished%", essVanished);
+				Map<String, String> tps = new HashMap<String, String>();
+				tps.put("20", "&aPerfect");
+				replacements.put("%tps%", tps);
+				config.set("placeholder-output-replacements", replacements);
+				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
+			}
 		}
 		if (config.getName().equals("advancedconfig.yml")) {
 			if (config.get("per-world-playerlist") instanceof Boolean) {
@@ -589,33 +601,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
 				sharedWorlds.put("DoNotDoThis", Arrays.asList("ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt"));
 				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
+				Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
 			}
 		}
-	}
-	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
-		if (config.get(oldKey) != null) {
-			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
-		}
-	}
-	private void removeOld(ConfigurationFile config, String oldKey) {
-		if (config.get(oldKey) != null) {
-			config.set(oldKey, null);
-			Shared.print('2', "Removed old " + config.getName() + " option " + oldKey);
-		}
-	}
-	private void rename(ConfigurationFile config, String oldName, String newName) {
-		if (config.get(oldName) != null) {
-			convert(config, oldName, config.get(oldName), newName, config.get(oldName));
-		}
-	}
-	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
-		if (oldKey == null) {
-			config.set(newKey, newValue);
-			Shared.print('2', "Added new " + config.getName() + " option " + newKey + " (" + newValue + ")");
-			return;
-		}
-		config.set(oldKey, null);
-		config.set(newKey, newValue);
-		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }

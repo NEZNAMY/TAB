@@ -74,7 +74,7 @@ Users:
 #doesn't support player placeholders (rank, prefix), only server placeholders (time, date, animations) and static text
 belowname:
   enabled: true
-  refresh-interval: 200
+  refresh-interval-milliseconds: 200
   number: "%ping%"
   text: "&aPing"
 

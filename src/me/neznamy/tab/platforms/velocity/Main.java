@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -352,21 +353,18 @@ public class Main implements MainClass{
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+			if (config.get("placeholder-output-replacements") == null) {
+				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
+				Map<String, String> essVanished = new HashMap<String, String>();
+				essVanished.put("yes", "&7| Vanished");
+				essVanished.put("no", "");
+				replacements.put("%essentials_vanished%", essVanished);
+				Map<String, String> tps = new HashMap<String, String>();
+				tps.put("20", "&aPerfect");
+				replacements.put("%tps%", tps);
+				config.set("placeholder-output-replacements", replacements);
+				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
+			}
 		}
-	}
-	private void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
-		if (config.get(oldKey) != null) {
-			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
-		}
-	}
-	private void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
-		if (oldKey == null) {
-			config.set(newKey, newValue);
-			Shared.print('2', "Added new " + config.getName() + " value " + newKey + " (" + newValue + ")");
-			return;
-		}
-		config.set(oldKey, null);
-		config.set(newKey, newValue);
-		Shared.print('2', "Converted old " + config.getName() + " value " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 }

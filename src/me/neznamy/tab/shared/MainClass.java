@@ -11,4 +11,26 @@ public interface MainClass {
 	public void loadConfig() throws Exception;
 	public void registerUnknownPlaceholder(String identifier);
 	public void convertConfig(ConfigurationFile config);
+	
+	public default void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
+		if (config.get(oldKey) != null) {
+			convert(config, oldKey, config.get(oldKey), newKey, (int)config.get(oldKey) * 50);
+		}
+	}
+	public default void removeOld(ConfigurationFile config, String oldKey) {
+		if (config.get(oldKey) != null) {
+			config.set(oldKey, null);
+			Shared.print('2', "Removed old " + config.getName() + " option " + oldKey);
+		}
+	}
+	public default void rename(ConfigurationFile config, String oldName, String newName) {
+		if (config.get(oldName) != null) {
+			convert(config, oldName, config.get(oldName), newName, config.get(oldName));
+		}
+	}
+	public default void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
+		config.set(oldKey, null);
+		config.set(newKey, newValue);
+		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
+	}
 }
