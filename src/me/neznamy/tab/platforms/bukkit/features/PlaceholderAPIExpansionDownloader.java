@@ -22,8 +22,10 @@ public class PlaceholderAPIExpansionDownloader{
 					public void run() {
 						try {
 							Thread.sleep(5000);
+							Shared.debug("All used expansions: " + Main.usedExpansions);
+							Shared.debug("Installed expansions: " + PlaceholderAPI.getRegisteredIdentifiers());
 							Main.usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-							Main.usedExpansions.remove("some"); //default config
+							Shared.debug("Expansions to install: " + Main.usedExpansions);
 							if (!Main.usedExpansions.isEmpty()) {
 								File expansionsFolder = new File("plugins" + File.separatorChar + "PlaceholderAPI" + File.separatorChar + "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
