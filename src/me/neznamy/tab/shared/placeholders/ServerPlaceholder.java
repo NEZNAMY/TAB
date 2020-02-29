@@ -19,7 +19,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
 			String value = get();
 			lastRefresh = System.currentTimeMillis();
-			if (value == null || !value.equals(identifier)) {
+			if (value == null || !value.equals("ERROR")) {
 				lastValue = value;
 			}
 		}

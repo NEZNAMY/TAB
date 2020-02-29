@@ -254,8 +254,8 @@ public class PluginHooks {
 				Shared.errorManager.printError("PlaceholderAPI not found when trying to replace placeholder " + placeholder + " for player " + playername);
 				placeholderAPI = false;
 			}
+			return "ERROR";
 		}
-		return placeholder;
 	}
 	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String text) {
 		if (!placeholderAPI) return text;

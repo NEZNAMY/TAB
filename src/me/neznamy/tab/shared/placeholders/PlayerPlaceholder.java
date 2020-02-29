@@ -23,7 +23,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 		if (!lastRefresh.containsKey(p.getName()) || System.currentTimeMillis() - lastRefresh.get(p.getName()) >= cooldown) {
 			String value = get(p);
 			lastRefresh.put(p.getName(), System.currentTimeMillis());
-			if (value == null || !value.equals(identifier)) {
+			if (value == null || !value.equals("ERROR")) {
 				lastValue.put(p.getName(), value);
 			}
 		}
