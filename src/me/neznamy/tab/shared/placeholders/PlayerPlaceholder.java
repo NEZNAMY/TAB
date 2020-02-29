@@ -21,8 +21,11 @@ public abstract class PlayerPlaceholder extends Placeholder{
 		if (p == null) return identifier;
 		long startTime = System.nanoTime();
 		if (!lastRefresh.containsKey(p.getName()) || System.currentTimeMillis() - lastRefresh.get(p.getName()) >= cooldown) {
-			lastValue.put(p.getName(), get(p));
+			String value = get(p);
 			lastRefresh.put(p.getName(), System.currentTimeMillis());
+			if (value == null || !value.equals(identifier)) {
+				lastValue.put(p.getName(), value);
+			}
 		}
 		Shared.cpu.addPlaceholderTime(identifier, System.nanoTime()-startTime);
 		return lastValue.get(p.getName());

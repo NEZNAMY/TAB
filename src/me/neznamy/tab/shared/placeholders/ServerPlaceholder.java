@@ -17,8 +17,11 @@ public abstract class ServerPlaceholder extends Placeholder{
 	public String getValue(ITabPlayer p) {
 		long startTime = System.nanoTime();
 		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
-			lastValue = get();
+			String value = get();
 			lastRefresh = System.currentTimeMillis();
+			if (value == null || !value.equals(identifier)) {
+				lastValue = value;
+			}
 		}
 		Shared.cpu.addPlaceholderTime(identifier, System.nanoTime()-startTime);
 		return lastValue;
