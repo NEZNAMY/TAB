@@ -294,6 +294,7 @@ public class PluginHooks {
 			if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
 				api = UltraPermissions.getAPI();
 			}
+			if (api == null) return new String[]{"null"};
 			List<String> groups = new ArrayList<String>();
 			for (Group group : api.getUsers().name(p.getName()).getGroups().bestToWorst().get()) {
 				groups.add(group.getName());
