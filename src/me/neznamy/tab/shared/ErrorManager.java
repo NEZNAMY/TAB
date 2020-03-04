@@ -220,11 +220,11 @@ public class ErrorManager {
 						return "List starting at line " + line2 + " is missing a name.";
 					}
 				}
-				if (text2.contains(":") && !text2.contains(": ")) {
-					return "Add a space after the \":\" at line " + line2 + ".";
-				}
 				String quotes = brokenQuotes(fileLines, line1, line2);
 				if (quotes != null) return quotes;
+				if (text2.contains(":") && !text2.contains(": ") && !text2.endsWith(":")) {
+					return "Add a space after the \":\" at line " + line2 + ".";
+				}
 			}
 			return null;
 		} catch (Exception ex) {
