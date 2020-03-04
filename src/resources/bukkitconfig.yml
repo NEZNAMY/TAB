@@ -26,7 +26,6 @@ footer:
 
 tablist-objective: PING
 tablist-objective-custom-value: "%some_placeholderapi_placeholder%"
-
 group-sorting-priority-list:
   - owner
   - admin
@@ -36,28 +35,21 @@ group-sorting-priority-list:
   - premium
   - player
   - default
-
 Groups:
   Owner:
     tabprefix: "&0&l[&a&lOwner&0&l] &a"
     tagprefix: "&2&lOwner &a"
-    header:
-      - "ur server man"
-    footer:
-      - "welcome"
-      - ""
-      - "THIS IS NOT A BUG"
-      - "DO NOT REPORT THIS AS A BUG"
-      - "This is per-group header/footer"
-      - "applied to Owner group"
-      - "You can modify this or delete in config in Groups section"
   Admin:
     tabprefix: "&0&l[&4&lAdmin&0&l] &1"
     tagprefix: "%animation:admin_prefix%"
   Player:
     tabprefix: "&0&l[&7&lPlayer&0&l] &3"
     tagprefix: "&2&lPlayer &3"
-    
+  hfexample:
+    header:
+      - "This is an example for per-group header/footer"
+    footer:
+      - "applied to a group"
   _OTHER_:
     tabprefix: "%vault-prefix% "
     tagprefix: "%vault-prefix% "
@@ -75,7 +67,7 @@ Users:
 
 belowname:
   enabled: true
-  refresh-interval-milliseconds: 250
+  refresh-interval-milliseconds: 200
   number: "%health%"
   text: "Health"
 
@@ -106,8 +98,8 @@ placeholders:
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
   remove-strings:
-    - "[] "
-    - "< > "
+    - "[]"
+    - "< >"
 rank-aliases:
   Admin: "&4&lADMIN"
   Mod: "&b&lMOD"

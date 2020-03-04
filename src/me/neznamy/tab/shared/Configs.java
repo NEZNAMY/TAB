@@ -25,7 +25,7 @@ public class Configs {
 	public static SimpleDateFormat dateFormat;
 	public static SimpleDateFormat timeFormat;
 	public static double timeOffset;
-	public static List<String> removeStrings = new ArrayList<String>();
+	public static List<String> removeStrings;
 	public static String noAfk;
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
@@ -177,12 +177,12 @@ public class Configs {
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
 		collision = config.getBoolean("enable-collision", true);
-		
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
 		dateFormat = new SimpleDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"));
+		removeStrings = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
 		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
