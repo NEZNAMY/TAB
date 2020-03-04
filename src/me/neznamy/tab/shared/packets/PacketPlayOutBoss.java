@@ -144,7 +144,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private Action(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && MethodAPI.getInstance() != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.PacketPlayOutBoss_Action, toString());
 			}
 		}
@@ -170,7 +170,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarColor(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && MethodAPI.getInstance() != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarColor, toString());
 			}
 		}
@@ -194,7 +194,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarStyle(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && ProtocolVersion.SERVER_VERSION != ProtocolVersion.BUNGEE) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && MethodAPI.getInstance() != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarStyle, toString());
 			}
 		}

@@ -40,7 +40,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	private TabCommand command;
 	
 	public void onEnable(){
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.BUNGEE;
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.v1_15_2;
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);

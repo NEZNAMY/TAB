@@ -43,7 +43,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
-		if (MethodAPI.getInstance() != null && (ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN)){
+		if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN){
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			TabCommand command = new TabCommand();
