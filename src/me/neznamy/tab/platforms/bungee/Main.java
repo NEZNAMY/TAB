@@ -152,7 +152,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						UniversalPacketPlayOut customPacket = null;
 						if (player.getVersion().getMinorVersion() >= 8) customPacket = PacketPlayOutPlayerInfo.fromBungee(packet);
 						if (customPacket != null) {
-							for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
@@ -244,20 +244,16 @@ public class Main extends Plugin implements Listener, MainClass{
 
 	public void loadFeatures(boolean inject) throws Exception{
 		registerPlaceholders();
-		if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
-		if (Configs.BossBarEnabled) Shared.features.put("bossbar", new BossBar());
-		if (Configs.config.getBoolean("global-playerlist", false)) Shared.features.put("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.features.put("nametag16", new NameTag16());
-		if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
-		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-			Playerlist f = new Playerlist();
-			Shared.features.put("playerlist", f);	
-			Shared.packetfeatures.put("playerlist", f);
-		}
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
-		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
-		if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+		if (Configs.config.getBoolean("belowname.enabled", true)) 							Shared.registerFeature("belowname", new BelowName());
+		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
+		if (Configs.config.getBoolean("global-playerlist", false)) 							Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
+		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16());
+		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
+		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 				Shared.registerFeature("playerlist", new Playerlist());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
+		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		new UpdateChecker();
 		
 		for (ProxiedPlayer p : getProxy().getPlayers()) {

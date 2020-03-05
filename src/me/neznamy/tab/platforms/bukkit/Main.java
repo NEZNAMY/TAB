@@ -428,40 +428,28 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			plm = new PluginMessenger(this);
 		} else {
 			registerPlaceholders();
-			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.features.put("belowname", new BelowName());
+			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
 			if (Configs.BossBarEnabled) {
-				Shared.features.put("bossbar", new BossBar());
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.features.put("bossbar1.8", new BossBar_legacy());
+				Shared.registerFeature("bossbar", new BossBar());
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy());
 			}
-			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.features.put("headerfooter", new HeaderFooter());
+			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-					NameTagX f = new NameTagX();
-					Shared.features.put("nametagx", f);
-					Shared.rawpacketfeatures.put("nametagx", f);
+					Shared.registerFeature("nametagx", new NameTagX());
 				} else {
-					Shared.features.put("nametag16", new NameTag16());
+					Shared.registerFeature("nametag16", new NameTag16());
 				}
 			}
-			if (objType != TabObjectiveType.NONE) Shared.features.put("tabobjective", new TabObjective(objType));
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-				Playerlist f = new Playerlist();
-				Shared.features.put("playerlist", f);	
-				Shared.packetfeatures.put("playerlist", f);
-			}
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) {
-				Shared.rawpacketfeatures.put("petfix", new PetFix());
-			}
-			if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.packetfeatures.put("spectatorfix", new SpectatorFix());
-			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.features.put("scoreboard", new ScoreboardManager());
-			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) {
-				PerWorldPlayerlist pwp = new PerWorldPlayerlist();
-				Shared.features.put("pwp", pwp);
-				Shared.packetfeatures.put("pwp", pwp);
-			}
-			if (Configs.SECRET_remove_ghost_players) Shared.features.put("ghostplayerfix", new GhostPlayerFix());
+			if (objType != TabObjectiveType.NONE) 																							Shared.registerFeature("tabobjective", new TabObjective(objType));
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	Shared.registerFeature("playerlist", new Playerlist());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
+			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());
+			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 												Shared.registerFeature("scoreboard", new ScoreboardManager());
+			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 													Shared.registerFeature("pwp", new PerWorldPlayerlist());
+			if (Configs.SECRET_remove_ghost_players) 																						Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
-				Shared.features.put("papihook", new PlaceholderAPIExpansion());
+				Shared.registerFeature("papihook", new PlaceholderAPIExpansion());
 				new PlaceholderAPIExpansionDownloader();
 			}
 			new UpdateChecker();

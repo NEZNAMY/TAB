@@ -87,7 +87,7 @@ public class Injector {
 					UniversalPacketPlayOut customPacket = null;
 					customPacket = PacketPlayOutPlayerInfo.fromNMS(packet);
 					if (customPacket != null) {
-						for (CustomPacketFeature f : Shared.packetfeatures.values()) {
+						for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 							long time = System.nanoTime();
 							if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);

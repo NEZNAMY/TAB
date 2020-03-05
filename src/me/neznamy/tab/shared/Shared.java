@@ -30,7 +30,7 @@ public class Shared {
 	public static ErrorManager errorManager;
 	
 	public static Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
-	public static Map<String, CustomPacketFeature> packetfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
+	public static Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
 	public static Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
 
 	public static Collection<ITabPlayer> getPlayers(){
@@ -96,12 +96,23 @@ public class Shared {
 			cpu.cancelAllTasks();
 			features.values().forEach(f -> f.unload());
 			features.clear();
-			packetfeatures.clear();
+			custompacketfeatures.clear();
 			rawpacketfeatures.clear();
 			data.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
+		}
+	}
+	public static void registerFeature(String featureName, Object featureHandler) {
+		if (featureHandler instanceof SimpleFeature) {
+			features.put(featureName, (SimpleFeature) featureHandler);
+		}
+		if (featureHandler instanceof CustomPacketFeature) {
+			custompacketfeatures.put(featureName, (CustomPacketFeature) featureHandler);
+		}
+		if (featureHandler instanceof RawPacketFeature) {
+			rawpacketfeatures.put(featureName, (RawPacketFeature) featureHandler);
 		}
 	}
 	public static void registerUniversalPlaceholders() {
