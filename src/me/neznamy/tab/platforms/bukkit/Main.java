@@ -544,6 +544,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 //		Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
 			ticks2Millis(config, "nametag-refresh-interval-ticks", "nametag-refresh-interval-milliseconds");
@@ -562,6 +563,17 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			removeOld(config, "factions-nofaction");
 			removeOld(config, "date-format");
 			removeOld(config, "time-format");
+			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
+				for (String group : ((Map<String, Object>)config.get("Groups")).keySet()) {
+					String tagprefix = config.getString("Groups." + group + ".tagprefix");
+					if (tagprefix != null) {
+						if (!tagprefix.contains("%eglow_glowcolor%")) {
+							Shared.print('2', "eGlow is installed but %eglow_glowcolor% is not used in tagprefix of group " + group + ". Adding it to make eGlow work properly");
+							config.set("Groups." + group + ".tagprefix", tagprefix + "%eglow_glowcolor%");
+						}
+					}
+				}
+			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
