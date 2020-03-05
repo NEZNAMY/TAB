@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -36,7 +37,7 @@ public class PlayerCommand extends SubCommand {
 					if (pl != null) {
 						pl.updateAll();
 						pl.forceUpdateDisplay();
-						if (Shared.features.containsKey("nametagx")) pl.restartArmorStands();
+						if (Shared.features.containsKey("nametagx")) ((TabPlayer)pl).restartArmorStands();
 					}
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", player));
 				}

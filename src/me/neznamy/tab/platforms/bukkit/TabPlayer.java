@@ -71,21 +71,17 @@ public class TabPlayer extends ITabPlayer{
 			updateTeam();
 		}
 	}
-	@Override
 	public void restartArmorStands() {
 		if (!Shared.features.containsKey("nametagx")) return;
 		NameTagLineManager.destroy(this);
 		if (previewingNametag) NameTagLineManager.destroy(this, this);
 		armorStands.clear();
+		if (disabledNametag) return;
 		loadArmorStands();
-		for (Player w : player.getWorld().getPlayers()) {
-			ITabPlayer wPlayer = Shared.getPlayer(w.getUniqueId());
-			if (wPlayer == null) {
-				//CiTiZeNs
-				continue;
-			}
-			if (w == player) continue;
-			NameTagLineManager.spawnArmorStand(this, wPlayer, true);
+		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
+			if (this == worldPlayer) continue;
+			if (!worldPlayer.getWorldName().equals(getWorldName())) continue;
+			NameTagLineManager.spawnArmorStand(this, worldPlayer, true);
 		}
 		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this, false);
 	}

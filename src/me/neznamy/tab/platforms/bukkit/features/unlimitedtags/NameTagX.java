@@ -46,6 +46,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			onJoin(all);
+			if (all.disabledNametag) continue;
 			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
@@ -60,7 +61,10 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
 			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags", new Runnable() {
 				public void run() {
-					for (ITabPlayer p : Shared.getPlayers()) NameTagLineManager.updateVisibility(p);
+					for (ITabPlayer p : Shared.getPlayers()) {
+						if (p.disabledNametag) continue;
+						NameTagLineManager.updateVisibility(p);
+					}
 				}
 			});
 	}
@@ -68,17 +72,18 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void unload() {
 		HandlerList.unregisterAll(this);
 		for (ITabPlayer p : Shared.getPlayers()) {
-			p.unregisterTeam(false);
+			if (!p.disabledNametag) p.unregisterTeam();
 			NameTagLineManager.destroy(p);
 			if (p.previewingNametag) NameTagLineManager.destroy(p, p);
 		}
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
+		if (p.disabledNametag) return;
 		p.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue; //already registered 2 lines above
-			all.registerTeam(p);
+			if (!all.disabledNametag) all.registerTeam(p);
 		}
 		Player player = ((TabPlayer)p).player;
 		if (player.getVehicle() != null) {
@@ -93,7 +98,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		p.unregisterTeam(false);
+		if (!p.disabledNametag) p.unregisterTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			NameTagLineManager.removeFromRegistered(all, p);
 		}
@@ -101,9 +106,9 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		p.restartArmorStands();
+		((TabPlayer)p).restartArmorStands();
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
-			p.unregisterTeam(true);
+			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {

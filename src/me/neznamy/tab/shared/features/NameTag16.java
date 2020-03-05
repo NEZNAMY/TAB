@@ -9,10 +9,14 @@ public class NameTag16 implements SimpleFeature{
 	@Override
 	public void load() {
 		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		for (ITabPlayer p : Shared.getPlayers()) p.registerTeam();
+		for (ITabPlayer p : Shared.getPlayers()) {
+			if (!p.disabledNametag) p.registerTeam();
+		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
+				for (ITabPlayer p : Shared.getPlayers()) {
+					if (!p.disabledNametag) p.updateTeam();
+				}
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
@@ -24,24 +28,27 @@ public class NameTag16 implements SimpleFeature{
 			});
 	}
 	public void unload() {
-		for (ITabPlayer p : Shared.getPlayers()) p.unregisterTeam(false);
+		for (ITabPlayer p : Shared.getPlayers()) {
+			if (!p.disabledNametag) p.unregisterTeam();
+		}
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
+		if (p.disabledNametag) return;
 		p.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == p) continue; //already registered 2 lines above
-			all.registerTeam(p);
+			if (!all.disabledNametag) all.registerTeam(p);
 		}
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		p.unregisterTeam(false);
+		if (!p.disabledNametag) p.unregisterTeam();
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
-			p.unregisterTeam(true);
+			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {

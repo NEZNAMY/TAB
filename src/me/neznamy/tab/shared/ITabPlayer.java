@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
@@ -64,9 +65,6 @@ public abstract class ITabPlayer {
 
 	//bukkit only
 	public void setTeamVisible(boolean p0) {
-	}
-
-	public void restartArmorStands() {
 	}
 
 	public boolean hasInvisibility() {
@@ -189,7 +187,7 @@ public abstract class ITabPlayer {
 		if (teamName.equals(newName)) {
 			updateTeamData();
 		} else {
-			unregisterTeam(false);
+			unregisterTeam();
 			teamName = newName;
 			registerTeam();
 		}
@@ -434,7 +432,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void registerTeam() {
-		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
@@ -447,7 +444,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void registerTeam(ITabPlayer to) {
-		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
@@ -457,14 +453,10 @@ public abstract class ITabPlayer {
 		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
 
-	public void unregisterTeam(ITabPlayer to, boolean force) {
-		if (disabledNametag && !force) return;
-		PacketAPI.unregisterScoreboardTeam(to, teamName);
-	}
-
-	public void unregisterTeam(boolean force) {
-		if (disabledNametag && !force) return;
-		for (ITabPlayer p : Shared.getPlayers()) unregisterTeam(p, force);
+	public void unregisterTeam() {
+		for (ITabPlayer p : Shared.getPlayers()) {
+			PacketAPI.unregisterScoreboardTeam(p, teamName);
+		}
 	}
 
 	private void updateDisabledWorlds(String world) {
@@ -540,9 +532,11 @@ public abstract class ITabPlayer {
 	public void forceUpdateDisplay() {
 		if (Shared.features.containsKey("playerlist") && !disabledTablistNames) updatePlayerListName();
 		if ((Shared.features.containsKey("nametag16")) || Shared.features.containsKey("nametagx")) {
-			unregisterTeam(false);
-			registerTeam();
+			if (!disabledNametag) {
+				unregisterTeam();
+				registerTeam();
+			}
 		}
-		if (Shared.features.containsKey("nametagx") && !disabledNametag) restartArmorStands();
+		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((TabPlayer)this).restartArmorStands();
 	}
 }
