@@ -5,7 +5,6 @@ import java.util.*;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.*;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Playerlist implements SimpleFeature, CustomPacketFeature{
@@ -57,34 +56,13 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.players) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER && Shared.features.containsKey("globalplayerlist")) {
-				if (packetPlayer != null) { //player online
-					if (!PluginHooks._isVanished(packetPlayer)) {
-						//changing to random non-existing player, the easiest way to cancel the removal
-						playerInfoData.uniqueId = UUID.randomUUID();
-					}
-				}
-			}
 			if (info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || info.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
 					playerInfoData.listName = packetPlayer.getTabFormat(receiver);
 				}
 			}
 			if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer == null) {
-					//NPC on bukkit
-					if (Shared.features.containsKey("nametagx") && Configs.modifyNPCnames) {
-						if (playerInfoData.name.length() <= 15) {
-							if (playerInfoData.name.length() <= 14) {
-								playerInfoData.name += Placeholders.colorChar + "r";
-							} else {
-								playerInfoData.name += " ";
-							}
-						}
-					}
-				} else {
-					v180PrefixBugFixList.add(playerInfoData.clone());
-				}
+				if (packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
 			}
 		}
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER && receiver.getVersion() == ProtocolVersion.v1_8) {

@@ -26,10 +26,16 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
 import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
+public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, CustomPacketFeature{
 
 	private int refresh;
 	private Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<Integer, List<Integer>>();
@@ -187,15 +193,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 					ITabPlayer passenger = Shared.getPlayer(entity);
 					if (passenger != null) {
 						NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
-
-						//activating this code will fix desync on boats
-						//however, boat movement will be extremely laggy
-						//seems to only work for 1.8.x servers idk why
-/*						if (((Player)passenger.getPlayer()).getVehicle() != null){ //bukkit api bug
-							if (packetReceiver == passenger) continue;
-							if (packet.getPacketType() == PacketType.ENTITY_TELEPORT) continue;
-							new PacketPlayOutEntityTeleport(((Player)passenger.getPlayer()).getVehicle()).send(packetReceiver);
-						}*/
 					}
 				}
 			}
@@ -260,5 +257,26 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature{
 			if (vehicle.getPassenger() != null) passengers.add(vehicle.getPassenger());
 		}
 		return passengers;
+	}
+	@Override
+	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
+		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
+		if (receiver.getVersion().getMinorVersion() < 8) return packet;
+		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
+		if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
+			for (PlayerInfoData playerInfoData : info.players) {
+				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				if (packetPlayer == null && Configs.modifyNPCnames) {
+					if (playerInfoData.name.length() <= 15) {
+						if (playerInfoData.name.length() <= 14) {
+							playerInfoData.name += Placeholders.colorChar + "r";
+						} else {
+							playerInfoData.name += " ";
+						}
+					}
+				}
+			}
+		}
+		return info;
 	}
 }

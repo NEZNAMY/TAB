@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.UUID;
+
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
@@ -7,8 +9,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class GlobalPlayerlist implements SimpleFeature {
+public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 
 	@Override
 	public void load() {
@@ -41,5 +44,27 @@ public class GlobalPlayerlist implements SimpleFeature {
 	}
 	public PacketPlayOutPlayerInfo getAddPacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, p.getTabFormat(null)));
+	}
+	@Override
+	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
+		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
+		if (receiver.getVersion().getMinorVersion() < 8) return packet;
+		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
+		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+			for (PlayerInfoData playerInfoData : info.players) {
+				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				if (packetPlayer != null) { //player online
+					if (!PluginHooks._isVanished(packetPlayer)) {
+						//changing to random non-existing player, the easiest way to cancel the removal
+						playerInfoData.uniqueId = UUID.randomUUID();
+					}
+				}
+			}
+		}
+		return info;
+	}
+	@Override
+	public String getCPUName() {
+		return "GlobalPlayerlist";
 	}
 }
