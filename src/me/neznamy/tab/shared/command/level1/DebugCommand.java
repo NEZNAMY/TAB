@@ -10,7 +10,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 
@@ -39,7 +38,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (Shared.separatorType.equals("world")) {
-			sendMessage(sender, "&6Server version: &a" + ProtocolVersion.SERVER_VERSION.getFriendlyName() + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
+			sendMessage(sender, "&6Server version: &a" + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		}
 		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion);
 		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
