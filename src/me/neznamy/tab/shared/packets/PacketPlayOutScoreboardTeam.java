@@ -45,19 +45,19 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(team).toString()));
-			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
+			if (prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
+			if (suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
 			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, team);
 			PREFIX.set(packet, prefix);
 			SUFFIX.set(packet, suffix);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) COLLISION.set(packet, collision);
+		if (COLLISION != null) COLLISION.set(packet, collision);
 		PLAYERS.set(packet, players);
 		ACTION.set(packet, action);
 		SIGNATURE.set(packet, signature);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) VISIBILITY.set(packet, visibility);
+		if (VISIBILITY != null) VISIBILITY.set(packet, visibility);
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {

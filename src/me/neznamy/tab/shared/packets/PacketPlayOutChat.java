@@ -41,7 +41,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private ChatMessageType(byte id) {
 			this.id = id;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12 && MethodAPI.getInstance() != null) {
+			if (MethodAPI.ChatMessageType != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.ChatMessageType, toString());
 			}
 		}

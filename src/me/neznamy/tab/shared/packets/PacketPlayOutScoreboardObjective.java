@@ -33,7 +33,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		} else {
 			TITLE.set(packet, title);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && displayType != null) DISPLAYTYPE.set(packet, displayType.toNMS());
+		if (DISPLAYTYPE != null && displayType != null) DISPLAYTYPE.set(packet, displayType.toNMS());
 		ACTION.set(packet, action);
 		return packet;
 	}
@@ -63,7 +63,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private EnumScoreboardHealthDisplay() {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && MethodAPI.getInstance() != null) {
+			if (MethodAPI.EnumScoreboardHealthDisplay != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
 			} else {
 				nmsEquivalent = ordinal();
