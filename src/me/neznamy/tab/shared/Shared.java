@@ -21,17 +21,17 @@ public class Shared {
 	public static final String pluginVersion = "2.7.0-pre19";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
-	public static Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
+	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
+	
+	public static final Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
+	public static final Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
+	public static final Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
 
 	public static boolean disabled;
 	public static MainClass mainClass;
 	public static String separatorType;
 	public static CPUManager cpu;
 	public static ErrorManager errorManager;
-	
-	public static Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
-	public static Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
-	public static Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
