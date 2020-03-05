@@ -167,10 +167,6 @@ public class ErrorManager {
 	}
 	public String suggestYamlFix(Exception e, List<String> fileLines) {
 		try {
-			String indent;
-			if ((indent = checkForIndent(fileLines)) != null) {
-				return indent;
-			}
 			int line1 = Integer.parseInt(e.getMessage().split(", line ")[1].split(",")[0]);
 			if (e instanceof ScannerException) {
 				String text = fileLines.get(line1-1).split("#")[0];
@@ -209,6 +205,10 @@ public class ErrorManager {
 				if (e.getMessage().contains("found unknown escape character")) {
 					return "Remove the \\ from line " + line1 + ".";
 				}
+			}
+			String indent;
+			if ((indent = checkForIndent(fileLines)) != null) {
+				return indent;
 			}
 			if (e instanceof ParserException) {
 				int line2 = Integer.parseInt(e.getMessage().split(", line ")[2].split(",")[0]);
