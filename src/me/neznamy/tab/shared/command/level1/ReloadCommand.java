@@ -17,7 +17,7 @@ public class ReloadCommand extends SubCommand{
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
 		Shared.unload();
-		Shared.load(true, false);
+		Shared.load(false);
 		if (!Shared.disabled) sendMessage(sender, Configs.reloaded);
 	}
 	@Override

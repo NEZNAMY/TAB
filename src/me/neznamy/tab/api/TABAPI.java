@@ -37,7 +37,7 @@ public class TABAPI {
 			Configs.config.set("change-nametag-prefix-suffix", true);
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 			Shared.unload();
-			Shared.load(false, false);
+			Shared.load(false);
 		} else throw new IllegalStateException("Unlimited nametag mode is only supported on bukkit");
 	}
 	

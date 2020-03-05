@@ -78,7 +78,7 @@ public class Main implements MainClass{
 			});
 			registerPackets();
 			plm = new PluginMessenger(this);
-			Shared.load(true, true);
+			Shared.load(true);
 		} catch (ClassNotFoundException e) {
 			sendConsoleMessage("&c[TAB] The plugin requires Velocity 1.1.0 and up to work ! Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
 		}

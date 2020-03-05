@@ -58,7 +58,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			});
-			Shared.load(true, true);
+			Shared.load(true);
 			Metrics.start(this);
 		} else {
 			Shared.disabled = true;

@@ -71,7 +71,7 @@ public class Shared {
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}
-	public static void load(boolean broadcastTime, boolean inject) {
+	public static void load(boolean inject) {
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
@@ -80,7 +80,7 @@ public class Shared {
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
 			errorManager.printConsoleWarnCount();
-			if (broadcastTime) print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;

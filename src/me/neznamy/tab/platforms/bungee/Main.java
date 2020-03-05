@@ -52,7 +52,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		});
 		plm = new PluginMessenger(this);
-		Shared.load(true, true);
+		Shared.load(true);
 		Metrics.start(this);
 	}
 	public void onDisable() {
