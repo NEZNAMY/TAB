@@ -15,9 +15,11 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 
 	@Override
 	public void load() {
+		//TODO
 	}
 	@Override
 	public void unload() {
+		//TODO
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
