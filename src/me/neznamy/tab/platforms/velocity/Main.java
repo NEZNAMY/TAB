@@ -160,7 +160,7 @@ public class Main implements MainClass{
 					}
 					if (packet instanceof MinecraftPacket) {
 						UniversalPacketPlayOut customPacket = null;
-						if (player.getVersion().getMinorVersion() >= 8) customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
+						customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
 						if (customPacket != null) {
 							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 								long time = System.nanoTime();

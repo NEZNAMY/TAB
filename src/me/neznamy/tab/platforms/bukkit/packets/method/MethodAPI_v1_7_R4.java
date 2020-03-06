@@ -77,7 +77,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		return new PacketPlayOutSpawnEntityLiving();
 	}
 	public Object newPacketPlayOutPlayerInfo(Object action) {
-		return null;
+		return new PacketPlayOutPlayerInfo();
 	}
 	public Object newPacketPlayOutBoss() {
 		return null;

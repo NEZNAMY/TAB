@@ -67,7 +67,7 @@ public class MethodAPI_v1_5_R2 extends MethodAPI {
 		return new Packet24MobSpawn();
 	}
 	public Object newPacketPlayOutPlayerInfo(Object action) {
-		return null;
+		return new Packet201PlayerInfo();
 	}
 	public Object newPacketPlayOutBoss() {
 		return null;
