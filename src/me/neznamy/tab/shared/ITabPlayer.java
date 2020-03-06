@@ -158,7 +158,6 @@ public abstract class ITabPlayer {
 	}
 
 	public boolean isListNameUpdateNeeded() {
-		if (!Shared.features.containsKey("playerlist")) return false;
 		getGroup();
 		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
 		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
