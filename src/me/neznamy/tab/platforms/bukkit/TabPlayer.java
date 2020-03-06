@@ -72,7 +72,6 @@ public class TabPlayer extends ITabPlayer{
 		}
 	}
 	public void restartArmorStands() {
-		if (!Shared.features.containsKey("nametagx")) return;
 		NameTagLineManager.destroy(this);
 		if (previewingNametag) NameTagLineManager.destroy(this, this);
 		armorStands.clear();
