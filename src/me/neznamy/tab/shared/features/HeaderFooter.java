@@ -22,7 +22,7 @@ public class HeaderFooter implements SimpleFeature{
 	}
 	@Override
 	public void unload() {
-		for (ITabPlayer p : Shared.getPlayers()) clearHeaderFooter(p);
+		Shared.getPlayers().forEach(p -> p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("","")));
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
@@ -33,19 +33,14 @@ public class HeaderFooter implements SimpleFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (p.getVersion().getMinorVersion() < 8) return;
 		if (p.disabledHeaderFooter) {
-			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
+			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from))
+				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), true);
 		} else {
 			refreshHeaderFooter(p, true);
 		}
 	}
-	public void clearHeaderFooter(ITabPlayer p) {
-		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
-	}
 	public void refreshHeaderFooter(ITabPlayer p, boolean force) {
-		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
 		Property headerp = p.properties.get("header");
 		Property footerp = p.properties.get("footer");
 		boolean header = headerp.isUpdateNeeded();

@@ -31,9 +31,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-//		if (!(isDisabledWorld(Configs.disabledTablistNames, from) && isDisabledWorld(Configs.disabledTablistNames, to))) {
-			if (!Configs.disabledTablistNames.contains("NORESET")) p.updatePlayerListName();
-//		}
+		if (!Configs.disabledTablistNames.contains("NORESET")) p.updatePlayerListName();
 	}
 	private void updateNames(boolean force){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) return;
