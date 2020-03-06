@@ -106,7 +106,7 @@ public class PacketAPI{
 				w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
 			}
 			packet.setDataWatcher(w);
-			to.sendCustomPacket(packet);
+			to.sendCustomBukkitPacket(packet);
 		}
 	}
 	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {

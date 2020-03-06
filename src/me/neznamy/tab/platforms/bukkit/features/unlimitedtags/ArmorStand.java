@@ -113,7 +113,7 @@ public class ArmorStand{
 					if (sneaking) {
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					} else {
-						all.sendCustomPacket(getSpawnPacket(all, false));
+						all.sendCustomBukkitPacket(getSpawnPacket(all, false));
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
 						}
@@ -121,7 +121,7 @@ public class ArmorStand{
 				} else {
 					//respawning so there's no animation and it's instant
 					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-					all.sendCustomPacket(getSpawnPacket(all, false));
+					all.sendCustomBukkitPacket(getSpawnPacket(all, false));
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
 					}

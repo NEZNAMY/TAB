@@ -528,7 +528,7 @@ public abstract class ITabPlayer {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
-	public void sendCustomPacket(PacketPlayOut packet) {
+	public void sendCustomBukkitPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(version));
 		} catch (Throwable e) {
