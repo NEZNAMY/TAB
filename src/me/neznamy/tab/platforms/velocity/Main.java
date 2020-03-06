@@ -309,8 +309,6 @@ public class Main implements MainClass{
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) inject(t.getUniqueId());
 		}
-		
-		Shared.features.values().forEach(f -> f.load());
 	}
 	public void sendConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));

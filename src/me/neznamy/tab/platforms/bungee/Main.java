@@ -260,8 +260,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) inject(t.getUniqueId());
 		}
-		
-		Shared.features.values().forEach(f -> f.load());
 	}
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message) {

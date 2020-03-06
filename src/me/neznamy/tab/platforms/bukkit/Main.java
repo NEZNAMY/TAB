@@ -453,8 +453,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.data.put(p.getUniqueId(), t);
 				if (inject) inject(t.getUniqueId());
 			}
-			
-			Shared.features.values().forEach(f -> f.load());
 		}
 	}
 	public void sendConsoleMessage(String message) {

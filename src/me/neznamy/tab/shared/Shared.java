@@ -79,6 +79,7 @@ public class Shared {
 			errorManager = new ErrorManager();
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
+			features.values().forEach(f -> f.load());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
