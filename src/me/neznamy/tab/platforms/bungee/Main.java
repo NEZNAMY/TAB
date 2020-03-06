@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -22,9 +21,6 @@ import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.*;
 import net.md_5.bungee.api.CommandSender;
@@ -111,13 +107,6 @@ public class Main extends Plugin implements Listener, MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				Shared.features.values().forEach(f -> f.onJoin(p));
-				for (int i=0; i<10; i++) {
-					String name = "TestPlayer" + new Random().nextInt(1000);
-					System.out.println("adding player " + name);
-					PlayerInfoData data = new PlayerInfoData(name, UUID.randomUUID(), null, 0, EnumGamemode.CREATIVE, "§f§" + i + "§r");
-					PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data);
-					p.sendCustomPacket(packet);
-				}
 			} else {
 				p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				String from = p.getWorldName();
