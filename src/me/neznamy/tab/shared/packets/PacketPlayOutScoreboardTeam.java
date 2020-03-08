@@ -45,8 +45,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		NAME.set(packet, team);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(team).toString()));
-			if (prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
-			if (suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
+			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
 			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, team);
