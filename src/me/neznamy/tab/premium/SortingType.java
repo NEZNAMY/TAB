@@ -8,12 +8,14 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum SortingType {
 	
-	GROUPS, GROUP_PERMISSIONS, TABPREFIX_A_TO_Z, PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z,
-	GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH;
+	GROUPS, GROUP_PERMISSIONS, 
+	TABPREFIX_A_TO_Z, 
+	PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z,
+	GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH, 
+	GROUPS_THEN_PLACEHOLDER_A_TO_Z;
 	
 	public String getTeamName(ITabPlayer p) {
 		String teamName = "";
-		String group;
 		String number;
 		int value;
 		switch(this){
@@ -46,21 +48,20 @@ public enum SortingType {
 			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
-			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
-			if (group == null) group = "";
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = (999999999-value)+"";
-			teamName = group + number;
+			teamName = getGroupChars(p) + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
-			group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
-			if (group == null) group = "";
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
-			number = (999999999-value)+"";
+			number = value+"";
 			while (number.length() < 8) number = "0" + number;
-			teamName = group + number;
+			teamName = getGroupChars(p) + number;
+			break;
+		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
+			teamName = getGroupChars(p) + setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		}
 		teamName += p.getName();
@@ -82,6 +83,11 @@ public enum SortingType {
 			}
 		}
 		return "InvalidTeam";
+	}
+	private String getGroupChars(ITabPlayer p) {
+		String group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
+		if (group == null) group = "";
+		return group;
 	}
 	private String setPlaceholders(String s, ITabPlayer p) {
 		if (s.contains("%")) {
