@@ -8,7 +8,7 @@ All dependencies can be found at http://207.180.242.97/spigot/tab/dependencies/
 [URL-Issues]: https://github.com/NEZNAMY/TAB/issues
 [URL-Release]: https://www.spigotmc.org/resources/57806/update?update=316499
 [URL-Discord]: https://discord.gg/yx4THeU
-[URL-DevBuild]: https://cdn.discordapp.com/attachments/464896376820465685/685244391950123100/TAB_v2.7.0-pre20.jar
+[URL-DevBuild]: https://cdn.discordapp.com/attachments/464896376820465685/685799941742133250/TAB_v2.7.0-pre20.jar
 
 [Badge-PluginVersion]: https://img.shields.io/badge/Version-2.6.5-green.svg
 [Badge-Issues]: https://img.shields.io/github/issues/neznamy/tab?label=Issues
