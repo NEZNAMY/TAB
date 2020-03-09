@@ -49,12 +49,35 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			TabCommand command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-					command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					if (Configs.bukkitBridgeMode) {
+						if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
+							if (sender.hasPermission("tab.reload")) {
+								Shared.unload();
+								Shared.load(false);
+								if (!Shared.disabled) sender.sendMessage(Placeholders.color(Configs.reloaded));
+							} else {
+								sender.sendMessage(Placeholders.color(Configs.no_perm));
+							}
+						} else {
+							if (sender.hasPermission("tab.admin")) {
+								sender.sendMessage(Placeholders.color("&m                                                                                "));
+								sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
+								sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
+								sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
+								sender.sendMessage(Placeholders.color("&m                                                                                "));
+							}
+						}
+					} else {
+						command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					}
 					return false;
 				}
 			});
 			Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
 				public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
+					if (Configs.bukkitBridgeMode) {
+						return null;
+					}
 					return command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			});
@@ -164,7 +187,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 		} else {
-//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
+			//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}
@@ -447,7 +470,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				new PlaceholderAPIExpansionDownloader();
 			}
 			new UpdateChecker();
-			
+
 			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
@@ -533,7 +556,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			});
 			return;
 		}
-//		Shared.print('6', "Unknown placeholder: " + identifier);
+		//		Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
 	@SuppressWarnings("unchecked")
