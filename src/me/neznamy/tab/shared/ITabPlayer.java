@@ -467,14 +467,15 @@ public abstract class ITabPlayer {
 		disabledBelowname = isDisabledWorld(Configs.disabledBelowname, world);
 	}
 	public boolean isDisabledWorld(List<String> disabledWorlds, String world) {
+		if (disabledWorlds == null) return false;
 		if (disabledWorlds.contains("WHITELIST")) {
 			for (String enabled : disabledWorlds) {
-				if (enabled.equals(world)) return false;
+				if (enabled != null && enabled.equals(world)) return false;
 			}
 			return true;
 		} else {
 			for (String disabled : disabledWorlds) {
-				if (disabled.equals(world)) return true;
+				if (disabled != null && disabled.equals(world)) return true;
 			}
 			return false;
 		}
