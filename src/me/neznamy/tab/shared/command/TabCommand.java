@@ -75,7 +75,7 @@ public class TabCommand extends SubCommand {
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		String argument = arguments[0];
+		String argument = arguments[0].toLowerCase();
 		if (arguments.length == 1) {
 			List<String> suggestions = new ArrayList<String>();
 			for (String subcommand : subcommands.keySet()) {

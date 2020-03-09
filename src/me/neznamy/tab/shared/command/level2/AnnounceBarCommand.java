@@ -71,7 +71,7 @@ public class AnnounceBarCommand extends SubCommand{
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 1) {
 			for (BossBarLine bar : b.lines) {
-				if (bar.getName().startsWith(arguments[0])) suggestions.add(bar.getName());
+				if (bar.getName().toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar.getName());
 			}
 		} else if (arguments.length == 2 && b.getLine(arguments[0]) != null){
 			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {

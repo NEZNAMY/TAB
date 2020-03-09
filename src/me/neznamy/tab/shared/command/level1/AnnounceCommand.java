@@ -19,8 +19,8 @@ public class AnnounceCommand extends SubCommand{
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
 		if (args.length > 0) {
-			String arg0 = args[0];
-			SubCommand command = subcommands.get(arg0.toLowerCase());
+			String arg0 = args[0].toLowerCase();
+			SubCommand command = subcommands.get(arg0);
 			if (command != null) {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
@@ -38,7 +38,7 @@ public class AnnounceCommand extends SubCommand{
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		String argument = arguments[0];
+		String argument = arguments[0].toLowerCase();
 		if (arguments.length == 1) {
 			List<String> suggestions = new ArrayList<String>();
 			for (String subcommand : subcommands.keySet()) {

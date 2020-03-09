@@ -93,10 +93,10 @@ public class PlayerUUIDCommand extends SubCommand {
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 2) {
 			for (String property : usualProperties) {
-				if (property.startsWith(arguments[1])) suggestions.add(property);
+				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 			for (String property : extraProperties) {
-				if (property.startsWith(arguments[1])) suggestions.add(property);
+				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 		}
 		return suggestions;
