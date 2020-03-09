@@ -50,7 +50,8 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
 		long time = System.nanoTime();
-		Shared.getPlayer(e.getPlayer().getUniqueId()).detectBossBarsAndSend();
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p != null) p.detectBossBarsAndSend();
 		Shared.cpu.addFeatureTime("BossBar 1.8", System.nanoTime()-time);
 	}
 }

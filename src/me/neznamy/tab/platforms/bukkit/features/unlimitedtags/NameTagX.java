@@ -163,15 +163,18 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void a(PlayerToggleSneakEvent e) {
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) return;
 		Shared.cpu.runMeasuredTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
 			public void run() {
-				NameTagLineManager.sneak(Shared.getPlayer(e.getPlayer().getUniqueId()), e.isSneaking());
+				NameTagLineManager.sneak(p, e.isSneaking());
 			}
 		});
 	}
 	@EventHandler
 	public void a(PlayerMoveEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) return;
 		if (p.previewingNametag) Shared.cpu.runMeasuredTask("processing move", "NameTagX - move event", new Runnable() {
 			public void run() {
 				NameTagLineManager.teleportArmorStand(p, p);
