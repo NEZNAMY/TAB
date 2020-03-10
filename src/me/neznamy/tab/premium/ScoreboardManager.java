@@ -35,11 +35,11 @@ public class ScoreboardManager implements SimpleFeature{
 		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
 		if (Premium.premiumconfig.get("scoreboards") != null)
 			for (String scoreboard : ((Map<String, Object>) Premium.premiumconfig.get("scoreboards")).keySet()) {
-				boolean permissionRequired = Premium.premiumconfig.getBoolean("scoreboards." + scoreboard + ".permission-required", false);
-				String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-permission-missing");
+				String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
+				String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
 				String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
 				List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
-				scoreboards.put(scoreboard, new Scoreboard(this, scoreboard, title, lines, permissionRequired, childBoard));
+				scoreboards.put(scoreboard, new Scoreboard(this, scoreboard, title, lines, condition, childBoard));
 			}
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
@@ -100,7 +100,7 @@ public class ScoreboardManager implements SimpleFeature{
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
-			while (board != null && board.isPermissionRequired() && !p.hasPermission("tab.scoreboard." + board.getName())) {
+			while (board != null && !board.isConditionMet(p)) {
 				board = scoreboards.get(board.getChildScoreboard());
 				if (board == null) return null;
 				scoreboard = board.getName();

@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard {
@@ -17,17 +18,17 @@ public class Scoreboard {
 	private ScoreboardManager manager;
 	private String name;
 	private String title;
-	private boolean permissionRequired;
+	private String displayCondition;
 	private String childBoard;
 	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private String objectiveName;
 
-	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, boolean permissionRequired, String childBoard) {
+	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this.manager = manager;
 		this.name = name;
 		this.title = title;
-		this.permissionRequired = permissionRequired;
+		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
 		objectiveName = Math.random()*1000000+"";
 		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
@@ -38,8 +39,22 @@ public class Scoreboard {
 	public String getName() {
 		return name;
 	}
-	public boolean isPermissionRequired() {
-		return permissionRequired;
+	public boolean isConditionMet(ITabPlayer p) {
+		if (displayCondition == null) return true;
+		for (String condition : displayCondition.split(";")) {
+			if (condition.startsWith("permission:")) {
+				if (!p.hasPermission(condition.split(":")[0])) return false;
+			}
+			if (condition.contains("%")) {
+				String placeholder = condition.split("=")[0];
+				String value = condition.split("=")[1];
+				for (Placeholder pl : Placeholders.getAllUsed()) {
+					placeholder = placeholder.replace(pl.getIdentifier(), pl.getValue(p));
+				}
+				if (!placeholder.equals(value)) return false;
+			}
+		}
+		return true;
 	}
 	public String getChildScoreboard() {
 		return childBoard;

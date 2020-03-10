@@ -46,41 +46,29 @@ scoreboard:
   disable-in-worlds: 
     - disabledworld
   #set to NONE to have no default scoreboard
-  default-scoreboard: "scoreboard3"
+  default-scoreboard: "admin"
   refresh-interval-milliseconds: 50
   per-world:
     testworld: "twscoreboard"
   
 scoreboards:
-  scoreboard3:
-    #permission is "tab.scoreboard.<scoreboard name>", in this case tab.scoreboard.scoreboard3
-    permission-required: true
-    #if player is missing the permission, display a different scoreboard
-    #if no other should be displayed / permission required is false, delete the line entirely
-    if-permission-missing: scoreboard2
-    title: "Super board"
+  admin:
+    #if you don't want any condition, just delete this line
+    #another option is "%your_placeholder%=something"
+    #separate multiple conditions with a ; ("permission:my.perm;%placeholder%=test")
+    display-condition: "permission:tab.scoreboard.admin"
+    #if condition for player is not met, display a different scoreboard
+    if-condition-not-met: scoreboard1
+    title: "Admin scoreboard"
     lines:
       - "Scoreboard for people with permission"
-      - "tab.scoreboard.scoreboard3"
-  scoreboard2:
-    #here the permission is "tab.scoreboard.scoreboard2"
-    permission-required: true
-    if-permission-missing: scoreboard1
-    title: "Average board"
-    lines:
-      - "Scoreboard for people with permission"
-      - "tab.scoreboard.scoreboard2"
-      - "AND MISSING tab.scoreboard.scoreboard3"
+      - "tab.scoreboard.admin"
+  #scoreboard with no requirements
   scoreboard1:
-    permission-required: false
     title: "Default"
     lines:
-      - "Scoreboard for people with none of"
-      - "tab.scoreboard.scoreboard3 or"
-      - "tab.scoreboard.scoreboard2 "
-      - "permission"
+      - "Scoreboard for players"
   twscoreboard:
-    permission-required: false
     title: "TestWorld"
     lines:
       - "This is scoreboard for everyone in testworld world"
@@ -91,8 +79,8 @@ scoreboard-off: "&7Scoreboard disabled"
 
 placeholder-output-replacements:
   "%essentials_vanished%":
-    "yes": "&7| Vanished"
-    "no": ""
+    "Yes": "&7| Vanished"
+    "No": ""
     
   #only showing "Perfect" for exactly 20 TPS, standard output for any other value
   "%tps%":

@@ -107,6 +107,7 @@ public class Main implements MainClass{
 			if (Shared.disabled) return;
 			ITabPlayer p;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
+				//join
 				p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
@@ -119,10 +120,12 @@ public class Main implements MainClass{
 					}
 				});
 			} else {
+				//server change
 				p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				String from = p.getWorldName();
 				String to = p.world = e.getServer().getServerInfo().getName();
 				p.onWorldChange(from, to);
+//				if (Shared.features.containsKey("playerlist")) p.updatePlayerListName();
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
@@ -338,6 +341,7 @@ public class Main implements MainClass{
 			return;
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
 			if (config.get("belowname.refresh-interval") != null) {
@@ -350,14 +354,34 @@ public class Main implements MainClass{
 			if (config.get("placeholder-output-replacements") == null) {
 				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
 				Map<String, String> essVanished = new HashMap<String, String>();
-				essVanished.put("yes", "&7| Vanished");
-				essVanished.put("no", "");
+				essVanished.put("Yes", "&7| Vanished");
+				essVanished.put("No", "");
 				replacements.put("%essentials_vanished%", essVanished);
 				Map<String, String> tps = new HashMap<String, String>();
 				tps.put("20", "&aPerfect");
 				replacements.put("%tps%", tps);
 				config.set("placeholder-output-replacements", replacements);
 				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
+			}
+			boolean scoreboardsConverted = false;
+			for (String scoreboard : ((Map<String, Object>)config.get("scoreboards")).keySet()) {
+				Boolean permReq = (Boolean) config.get("scoreboards." + scoreboard + ".permission-required");
+				if (permReq != null) {
+					if (permReq) {
+						config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);
+					}
+					config.set("scoreboards." + scoreboard + ".permission-required", null);
+					scoreboardsConverted = true;
+				}
+				String childBoard = config.getString("scoreboards." + scoreboard + ".if-permission-missing");
+				if (childBoard != null) {
+					config.set("scoreboards." + scoreboard + ".if-permission-missing", null);
+					config.set("scoreboards." + scoreboard + ".if-condition-not-met", childBoard);
+					scoreboardsConverted = true;
+				}
+			}
+			if (scoreboardsConverted) {
+				Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 			}
 		}
 	}
