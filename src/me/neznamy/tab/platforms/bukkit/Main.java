@@ -266,9 +266,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%faction%", 1000) {
 
-			public int type;
+			private boolean init;
+			private int type;
 
-			{
+			private void init() {
+				if (init) return;
 				try {
 					Class.forName("com.massivecraft.factions.FPlayers");
 					type = 1;
@@ -277,9 +279,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Class.forName("com.massivecraft.factions.entity.MPlayer");
 					type = 2;
 				} catch (Throwable e) {}
+				init = true;
 			}
-
 			public String get(ITabPlayer p) {
+				init();
 				if (type == 0) return "";
 				String name = null;
 				if (type == 1) name = PluginHooks.FactionsUUID_getFactionTag(p);
