@@ -50,7 +50,7 @@ public class PacketAPI{
 	}
 
 	//scoreboard objective
-	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
+	public static synchronized void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8) {
 			unregisterScoreboardObjective(to, objectiveName, title, displayType);
 		}
