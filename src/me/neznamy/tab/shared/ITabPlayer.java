@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -516,14 +515,7 @@ public abstract class ITabPlayer {
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		sendCustomPacket(packet, false);
-	}
-	public void sendCustomPacket(UniversalPacketPlayOut packet, boolean forceThroughDisabled) {
 		try {
-			if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
-				if (version.getMinorVersion() < ProtocolVersion.v1_8.getMinorVersion()) return;
-				if (disabledHeaderFooter && !forceThroughDisabled) return;
-			}
 			sendPacket(PacketAPI.buildPacket(packet, version));
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
