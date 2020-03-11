@@ -54,6 +54,7 @@ public class ConfigurationFile{
 		} catch (Exception e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
+			Shared.brokenFile = file.getPath();
 			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
 			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
 			if (fix != null) {

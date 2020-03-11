@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -47,8 +48,35 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		command = new TabCommand();
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
+			@SuppressWarnings("deprecation")
 			public void execute(CommandSender sender, String[] args) {
-				command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+				if (Shared.disabled) {
+					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
+						if (sender.hasPermission("tab.reload")) {
+							Shared.unload();
+							Shared.load(false);
+							if (Shared.disabled) {
+								if (sender instanceof ProxiedPlayer) {
+									sender.sendMessage(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
+								}
+							} else {
+								sender.sendMessage(Placeholders.color(Configs.reloaded));
+							}
+						} else {
+							sender.sendMessage(Placeholders.color(Configs.no_perm));
+						}
+					} else {
+						if (sender.hasPermission("tab.admin")) {
+							sender.sendMessage(Placeholders.color("&m                                                                                "));
+							sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
+							sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
+							sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
+							sender.sendMessage(Placeholders.color("&m                                                                                "));
+						}
+					}
+				} else {
+					command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+				}
 			}
 		});
 		plm = new PluginMessenger(this);

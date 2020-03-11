@@ -30,10 +30,10 @@ public class Scoreboard {
 		this.title = title;
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
-		objectiveName = Math.random()*1000000+"";
+		objectiveName = "TAB-SB-" + name;
 		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
 		for (int i=0; i<lines.size(); i++) {
-			scores.add(new Score(lines.size()-i, "TABSBTM"+i, getLineName(i),  lines.get(i)));
+			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
 		}
 	}
 	public String getName() {
@@ -43,13 +43,14 @@ public class Scoreboard {
 		if (displayCondition == null) return true;
 		for (String condition : displayCondition.split(";")) {
 			if (condition.startsWith("permission:")) {
-				if (!p.hasPermission(condition.split(":")[0])) return false;
+				String permission = condition.split(":")[1];
+				if (!p.hasPermission(permission)) return false;
 			}
 			if (condition.contains("%")) {
 				String placeholder = condition.split("=")[0];
 				String value = condition.split("=")[1];
 				for (Placeholder pl : Placeholders.getAllUsed()) {
-					placeholder = placeholder.replace(pl.getIdentifier(), pl.getValue(p));
+					placeholder = pl.set(placeholder, p);
 				}
 				if (!placeholder.equals(value)) return false;
 			}

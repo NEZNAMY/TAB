@@ -49,12 +49,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			TabCommand command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-					if (Configs.bukkitBridgeMode) {
+					if (Configs.bukkitBridgeMode || Shared.disabled) {
 						if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
 							if (sender.hasPermission("tab.reload")) {
 								Shared.unload();
 								Shared.load(false);
-								if (!Shared.disabled) sender.sendMessage(Placeholders.color(Configs.reloaded));
+								if (Shared.disabled) {
+									if (sender instanceof Player) {
+										sender.sendMessage(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
+									}
+								} else {
+									sender.sendMessage(Placeholders.color(Configs.reloaded));
+								}
 							} else {
 								sender.sendMessage(Placeholders.color(Configs.no_perm));
 							}

@@ -61,6 +61,7 @@ public class Configs {
 	public static String bossbar_on;
 	public static String preview_off;
 	public static String preview_on;
+	public static String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
 
 	public static ConfigurationFile advancedconfig;
 	public static boolean sortByPermissions = false;
@@ -246,6 +247,7 @@ public class Configs {
 		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
 		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.");
 		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.");
+		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {

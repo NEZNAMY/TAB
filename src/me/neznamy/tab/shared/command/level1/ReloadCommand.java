@@ -18,7 +18,13 @@ public class ReloadCommand extends SubCommand{
 	public void execute(ITabPlayer sender, String[] args) {
 		Shared.unload();
 		Shared.load(false);
-		if (!Shared.disabled) sendMessage(sender, Configs.reloaded);
+		if (Shared.disabled) {
+			if (sender != null) {
+				sendMessage(sender, Configs.reloadFailed.replace("%file%", Shared.brokenFile));
+			}
+		} else {
+			sendMessage(sender, Configs.reloaded);
+		}
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {

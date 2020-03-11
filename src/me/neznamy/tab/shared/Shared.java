@@ -32,6 +32,8 @@ public class Shared {
 	public static String separatorType;
 	public static CPUManager cpu;
 	public static ErrorManager errorManager;
+	
+	public static String brokenFile;
 
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();

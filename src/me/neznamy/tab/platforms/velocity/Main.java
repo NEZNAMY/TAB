@@ -63,7 +63,33 @@ public class Main implements MainClass{
 			TabCommand command = new TabCommand();
 			server.getCommandManager().register("btab", new Command() {
 				public void execute(CommandSource sender, String[] args) {
-					command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					if (Shared.disabled) {
+						if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
+							if (sender.hasPermission("tab.reload")) {
+								Shared.unload();
+								Shared.load(false);
+								if (Shared.disabled) {
+									if (sender instanceof Player) {
+										sender.sendMessage(TextComponent.of(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile))));
+									}
+								} else {
+									sender.sendMessage(TextComponent.of(Placeholders.color(Configs.reloaded)));
+								}
+							} else {
+								sender.sendMessage(TextComponent.of(Placeholders.color(Configs.no_perm)));
+							}
+						} else {
+							if (sender.hasPermission("tab.admin")) {
+								sender.sendMessage(TextComponent.of(Placeholders.color("&m                                                                                ")));
+								sender.sendMessage(TextComponent.of(Placeholders.color(" &6&lBukkit bridge mode activated")));
+								sender.sendMessage(TextComponent.of(Placeholders.color(" &8>> &3&l/tab reload")));
+								sender.sendMessage(TextComponent.of(Placeholders.color("      - &7Reloads plugin and config")));
+								sender.sendMessage(TextComponent.of(Placeholders.color("&m                                                                                ")));
+							}
+						}
+					} else {
+						command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					}
 				}
 /*				public List<String> suggest(CommandSource sender, String[] args) {
 					List<String> sug = command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
