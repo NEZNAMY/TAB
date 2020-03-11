@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 
 public class BelowName implements SimpleFeature{
 
-	private static final String objectivename = "BelowName";
+	private static final String objectivename = "TAB-BelowName";
 	private static final int DisplaySlot = 2;
 	
 	private int refresh;

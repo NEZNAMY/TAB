@@ -10,7 +10,7 @@ public class TabObjective implements SimpleFeature{
 
 	public TabObjectiveType type;
 	public static String rawValue;
-	private final String objectivename = "TabObjective";
+	private final String objectivename = "TAB-TabObjective";
 	private final String title = "ms";
 	private final int DisplaySlot = 0;
 
