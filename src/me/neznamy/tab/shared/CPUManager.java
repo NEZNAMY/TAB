@@ -13,6 +13,9 @@ import java.util.concurrent.Executors;
 
 public class CPUManager {
 
+	private static final int bufferSizeMillis = 100;
+	private static final int dataMemorySize = 600;
+	
 	private ConcurrentMap<String, Long> placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
 	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
 	
@@ -31,18 +34,18 @@ public class CPUManager {
 			public void run() {
 				try {
 					while (true) {
-						Thread.sleep(1000);
+						Thread.sleep(bufferSizeMillis);
 						placeholdersLastMinute.add(placeholdersLastSecond);
 						placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
-						if (placeholdersLastMinute.size() > 60) placeholdersLastMinute.remove(0);
+						if (placeholdersLastMinute.size() > dataMemorySize) placeholdersLastMinute.remove(0);
 						
 						bridgePlaceholdersLastMinute.add(bridgePlaceholdersLastSecond);
 						bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
-						if (bridgePlaceholdersLastMinute.size() > 60) bridgePlaceholdersLastMinute.remove(0);
+						if (bridgePlaceholdersLastMinute.size() > dataMemorySize) bridgePlaceholdersLastMinute.remove(0);
 						
 						featuresLastMinute.add(featuresLastSecond);
 						featuresLastSecond = new ConcurrentHashMap<String, Long>();
-						if (featuresLastMinute.size() > 60) featuresLastMinute.remove(0);
+						if (featuresLastMinute.size() > dataMemorySize) featuresLastMinute.remove(0);
 					}
 				} catch (Exception e) {
 				}
@@ -152,9 +155,10 @@ public class CPUManager {
 		long nanotime;
 		float percent;
 		for (Entry<String, Long> entry : nanoMap.entrySet()) {
-			nanotime = entry.getValue(); //nano seconds last minute
-			nanotime /= featuresLastMinute.size(); //average nanoseconds per second
-			percent = (float) nanotime / 10000000;
+			nanotime = entry.getValue(); //nano seconds total (last minute)
+			nanotime /= featuresLastMinute.size(); //average nanoseconds per buffer (1 second)
+			percent = (float) nanotime / bufferSizeMillis / 1000000; //relative usage (0-1)
+			percent *= 100; //relative into %
 			percentMap.put(entry.getKey(), percent);
 		}
 		return sortByValue(percentMap);
