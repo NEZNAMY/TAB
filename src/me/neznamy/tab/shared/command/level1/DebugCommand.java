@@ -40,7 +40,7 @@ public class DebugCommand extends SubCommand {
 		if (Shared.separatorType.equals("world")) {
 			sendMessage(sender, "&6Server version: &a" + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		}
-		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion);
+		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Premium.is() ? " Premium" : ""));
 		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
 		sendMessage(sender, "&6Found Permission system: &a" + Shared.mainClass.getPermissionPlugin());
 		if (Configs.groupsByPermissions) {

@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.*;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
@@ -18,7 +19,7 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.7.0-pre22";
+	public static final String pluginVersion = "2.7.0";
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
@@ -69,7 +70,7 @@ public class Shared {
 		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&7[TAB DEBUG] " + message);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
-		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion + (Premium.is() ? " Premium" : "")).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
 	}

@@ -1,6 +1,6 @@
 {
   "id":"tab",
-  "version":"2.7.0-pre22",
+  "version":"2.7.0",
   "description":"Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more",
   "authors":[
     "NEZNAMY"
