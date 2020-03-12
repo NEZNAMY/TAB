@@ -37,6 +37,7 @@ public class HeaderFooter implements SimpleFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		if (p.getVersion().getMinorVersion() < ProtocolVersion.v1_8.getMinorVersion()) return;
 		if (p.disabledHeaderFooter) {
 			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from))
 				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
