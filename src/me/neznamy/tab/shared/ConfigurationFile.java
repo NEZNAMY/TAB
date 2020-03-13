@@ -210,7 +210,7 @@ public class ConfigurationFile{
 			Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 			yaml.dump(values, writer);
 			writer.close();
-			fixHeader();
+			if (!hasHeader()) fixHeader();
 		} catch (Throwable e) {
 			Shared.errorManager.criticalError("Failed to save yaml file " + file.getPath(), e);
 		}
