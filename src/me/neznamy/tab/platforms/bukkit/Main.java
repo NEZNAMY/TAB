@@ -37,13 +37,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	private PluginMessenger plm;
 	public static List<String> usedExpansions;
 	private TabObjectiveType objType;
+	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
 		Shared.separatorType = "world";
-		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION != ProtocolVersion.UNKNOWN){
+		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			TabCommand command = new TabCommand();

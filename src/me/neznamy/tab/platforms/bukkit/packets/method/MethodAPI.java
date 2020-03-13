@@ -3,11 +3,11 @@ package me.neznamy.tab.platforms.bukkit.packets.method;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 
@@ -96,7 +96,7 @@ public abstract class MethodAPI {
 
 	static {
 		try {
-			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]).getConstructor().newInstance();
+			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.serverPackage).getConstructor().newInstance();
 			PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
 			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 		} catch (Throwable e) {

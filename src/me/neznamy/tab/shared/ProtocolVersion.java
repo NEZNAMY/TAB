@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared;
 
+import me.neznamy.tab.platforms.bukkit.Main;
+
 public enum ProtocolVersion {
 
 	UNKNOWN		(999, "Unknown",	17, 14, 0x4C),
@@ -55,7 +57,7 @@ public enum ProtocolVersion {
 	v1_2_3		(28,  "1.2.3"),
 	v1_2_2		(28,  "1.2.2"),
 	v1_2_1		(28,  "1.2.1"),
-	v1_1		(23,  "1.1"  ),
+	v1_1		(23,  "1.1"),
 	v1_0_1		(22,  "1.0.1"),
 	v1_0		(22,  "1.0");
 	
@@ -78,7 +80,11 @@ public enum ProtocolVersion {
 		this.markerPosition = markerPosition;
 		this.PacketPlayOutScoreboardTeamId = PacketPlayOutScoreboardTeamId;
 		if (toString().equals("UNKNOWN")) {
-			minorVersion = 15;
+			try {
+				minorVersion = Integer.parseInt(Main.serverPackage.split("_")[1]);
+			} catch (Throwable t) {
+				minorVersion = 15;
+			}
 		} else {
 			minorVersion = Integer.parseInt(toString().split("_")[1]);
 		}
