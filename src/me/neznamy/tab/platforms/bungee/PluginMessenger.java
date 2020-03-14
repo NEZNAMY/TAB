@@ -34,6 +34,7 @@ public class PluginMessenger implements Listener {
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){
 			if (event.getReceiver() instanceof ProxiedPlayer){
+				event.setCancelled(true);
 				ITabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 				if (receiver == null) return;
 				String placeholder = in.readUTF();

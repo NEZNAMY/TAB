@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
@@ -43,6 +44,7 @@ public class PluginMessenger{
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){
 			if (event.getTarget() instanceof Player){
+				event.setResult(ForwardResult.handled());
 				ITabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
 				if (receiver == null) return;
 				String placeholder = in.readUTF();
