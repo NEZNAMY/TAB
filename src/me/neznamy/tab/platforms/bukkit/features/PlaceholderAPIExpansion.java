@@ -56,6 +56,7 @@ public class PlaceholderAPIExpansion implements SimpleFeature{
 		try {
 			PlaceholderAPI.unregisterExpansion(exp);
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
+			// java.lang.IllegalStateException: ExpansionUnregisterEvent may only be triggered synchronously.
 			Shared.errorManager.printError("Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously);
 		}
 	}
