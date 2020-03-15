@@ -42,7 +42,7 @@ public class CpuCommand extends SubCommand {
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		if (Shared.separatorType.equals("server")) {
-			sendMessage(sender, "&8&l║ &6Bukkit bridge placeholders:");
+			sendMessage(sender, "&8&l║ &6Placeholder usage on Bukkit servers:");
 			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
 				if (entry.getValue() > 0.1) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 			}
