@@ -5,9 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class Configs {
 
@@ -169,8 +171,22 @@ public class Configs {
 			return;
 		}
 		if (placeholder.contains("animation:")) {
-			String animation = placeholder.substring(11, placeholder.length()-1);
-			Shared.errorManager.startupWarn("Unknown animation &e\"" + animation + "\"&c used in configuration. You need to define it in animations.yml");
+			String animationName = placeholder.substring(11, placeholder.length()-1);
+			for (Animation a : Configs.animations) {
+				if (a.getName().equalsIgnoreCase(animationName)) {
+					TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()-1) {
+						public String get() {
+							return a.getMessage();
+						}
+						@Override
+						public String[] getChilds(){
+							return a.getAllMessages();
+						}
+					});
+					return;
+				}
+			}
+			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
 			return;
 		}
 		Shared.mainClass.registerUnknownPlaceholder(placeholder);

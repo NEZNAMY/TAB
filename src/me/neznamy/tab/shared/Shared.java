@@ -121,26 +121,6 @@ public class Shared {
 		}
 	}
 	public static void registerUniversalPlaceholders() {
-		for (Animation a : Configs.animations) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", a.getInterval()-1) {
-				public String get() {
-					return a.getMessage();
-				}
-				@Override
-				public String[] getChilds(){
-					return a.getAllMessages();
-				}
-			});
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("{animation:" + a.getName() + "}", a.getInterval()-1) {
-				public String get() {
-					return a.getMessage();
-				}
-				@Override
-				public String[] getChilds(){
-					return a.getAllMessages();
-				}
-			});
-		}
 		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getRank();
