@@ -1,4 +1,4 @@
-#usage: %animation:NAME%  or  {animation:NAME}
+#usage: %animation:NAME%
 animations:
   MyAnimation1:
     #in MILLISECONDS
