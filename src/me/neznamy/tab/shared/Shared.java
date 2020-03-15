@@ -70,6 +70,7 @@ public class Shared {
 		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&7[TAB DEBUG] " + message);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
+		if (Premium.is()) return;
 		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion + (Premium.is() ? " Premium" : "")).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
 		to.sendCustomPacket(new PacketPlayOutChat(message.toString(), ChatMessageType.CHAT));
