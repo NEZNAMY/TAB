@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,13 +18,13 @@ public class CPUManager {
 	private static final int dataMemorySize = 600;
 	
 	private ConcurrentMap<String, Long> placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
+	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 	
 	private ConcurrentMap<String, Long> bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> bridgePlaceholdersLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
+	private List<ConcurrentMap<String, Long>> bridgePlaceholdersLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 	
 	private ConcurrentMap<String, Long> featuresLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> featuresLastMinute = new ArrayList<ConcurrentMap<String, Long>>();
+	private List<ConcurrentMap<String, Long>> featuresLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 
 	private ExecutorService exe = Executors.newCachedThreadPool();
 	
@@ -144,11 +145,13 @@ public class CPUManager {
 	private Map<String, Float> getCPU(List<ConcurrentMap<String, Long>> source){
 		Map<String, Long> nanoMap = new HashMap<String, Long>();
 		String key;
-		for (ConcurrentMap<String, Long> second : source) {
-			for (Entry<String, Long> nanos : second.entrySet()) {
-				key = nanos.getKey();
-				if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
-				nanoMap.put(key, nanoMap.get(key)+nanos.getValue());
+		synchronized (source) {
+			for (ConcurrentMap<String, Long> second : source) {
+				for (Entry<String, Long> nanos : second.entrySet()) {
+					key = nanos.getKey();
+					if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
+					nanoMap.put(key, nanoMap.get(key)+nanos.getValue());
+				}
 			}
 		}
 		Map<String, Float> percentMap = new HashMap<String, Float>();
