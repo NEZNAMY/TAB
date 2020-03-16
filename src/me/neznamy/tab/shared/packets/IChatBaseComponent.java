@@ -16,7 +16,7 @@ public class IChatBaseComponent {
 	private static Class<?> NBTTagCompound;
 	private static Method CraftItemStack_asNMSCopy;
 	private static Method ItemStack_save;
-	
+
 	static {
 		try {
 			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
@@ -29,7 +29,7 @@ public class IChatBaseComponent {
 			//bungeecord, velocity
 		}
 	}
-	
+
 	private String text;
 	private Boolean bold;
 	private Boolean italic;
@@ -37,26 +37,81 @@ public class IChatBaseComponent {
 	private Boolean strikethrough;
 	private Boolean obfuscated;
 	private EnumChatFormat color;
-	@SuppressWarnings("unused")
-	private String insertion;
 	private ClickAction clickAction;
 	private Object clickValue;
 	private HoverAction hoverAction;
 	private String hoverValue;
-	private List<IChatBaseComponent> extra = new ArrayList<IChatBaseComponent>();
-	
+	private IChatBaseComponent parent;
+	private List<IChatBaseComponent> extra;
 
+
+	public IChatBaseComponent() {
+	}
 	public IChatBaseComponent(String text) {
 		this.text = text;
 	}
-	public void addExtra(IChatBaseComponent c) {
-		extra.add(c);
+
+	public List<IChatBaseComponent> getExtra(){
+		return extra;
 	}
-	
-	
-	
-	
-	
+	public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
+		for (IChatBaseComponent component : components) {
+			component.parent = this;
+		}
+		this.extra = components;
+		return this;
+	}
+	public void addExtra(IChatBaseComponent child) {
+		if (extra == null) extra = new ArrayList<IChatBaseComponent>();
+		extra.add(child);
+		child.parent = this;
+	}
+
+
+
+
+	public String getText() {
+		return text;
+	}
+	public EnumChatFormat getColor() {
+		if (color != null) return color;
+		return parent.color;
+	}
+	public boolean isBold(){
+		if (bold == null) {
+			return (parent != null) && (parent.isBold());
+		}
+		return bold;
+	}
+	public boolean isItalic(){
+		if (italic == null) {
+			return (parent != null) && (parent.isItalic());
+		}
+		return italic;
+	}
+	public boolean isUnderlined(){
+		if (underlined == null) {
+			return (parent != null) && (parent.isUnderlined());
+		}
+		return underlined;
+	}
+	public boolean isStrikethrough(){
+		if (strikethrough == null) {
+			return (parent != null) && (parent.isStrikethrough());
+		}
+		return strikethrough;
+	}
+	public boolean isObfuscated(){
+		if (obfuscated == null) {
+			return (parent != null) && (parent.isObfuscated());
+		}
+		return obfuscated;
+	}
+
+	public IChatBaseComponent setText(String text) {
+		this.text = text;
+		return this;
+	}
 	public IChatBaseComponent setColor(EnumChatFormat color) {
 		this.color = color;
 		return this;
@@ -81,11 +136,11 @@ public class IChatBaseComponent {
 		this.obfuscated = obfuscated;
 		return this;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public IChatBaseComponent onClickOpenUrl(String url) {
 		return onClick(ClickAction.OPEN_URL, url);
 	}
@@ -103,11 +158,11 @@ public class IChatBaseComponent {
 		clickValue = value;
 		return this;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
@@ -122,7 +177,7 @@ public class IChatBaseComponent {
 	}
 	private String serialize(ItemStack item) {
 		try {
-//			return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
+			//			return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
 			return ItemStack_save.invoke(CraftItemStack_asNMSCopy.invoke(null, item), NBTTagCompound.getConstructor().newInstance()).toString();
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -134,21 +189,25 @@ public class IChatBaseComponent {
 		hoverValue = value;
 		return this;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public String toString() {
-		if (extra.isEmpty()) {
+		if (extra == null) {
 			if (text == null) return null;
 			if (text.length() == 0) return "{\"translate\":\"\"}";
 		}
 		JSONObject json = new JSONObject();
 		if (serverVersion >= 7) {
 			//1.7+
-			if (text != null) json.put("text", text);
-			if (!extra.isEmpty()) json.put("extra", extra);
+			if (text != null) {
+				json.put("text", text);
+			} else {
+				json.put("text", "");
+			}
+			if (extra != null) json.put("extra", extra);
 			if (color != null) json.put("color", color.toString().toLowerCase());
 			if (bold != null) json.put("bold", bold);
 			if (italic != null) json.put("italic", italic);
@@ -186,7 +245,87 @@ public class IChatBaseComponent {
 			}
 		}
 	}
+
+	public static IChatBaseComponent fromColoredText(String message){
+		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
+		StringBuilder builder = new StringBuilder();
+		IChatBaseComponent component = new IChatBaseComponent();
+		for (int i = 0; i < message.length(); i++){
+			char c = message.charAt(i);
+			if (c == '§'){
+				i++;
+				if (i >= message.length()) {
+					break;
+				}
+				c = message.charAt(i);
+				if ((c >= 'A') && (c <= 'Z')) {
+					c = (char)(c + ' ');
+				}
+				EnumChatFormat format = EnumChatFormat.getByChar(c);
+				if (format != null){
+					if (builder.length() > 0){
+						IChatBaseComponent old = component;
+						component = old.clone();
+						old.setText(builder.toString());
+						builder = new StringBuilder();
+						components.add(old);
+					}
+					switch (format){
+					case BOLD: 
+						component.setBold(true);
+						break;
+					case ITALIC: 
+						component.setItalic(true);
+						break;
+					case UNDERLINE: 
+						component.setUnderlined(true);
+						break;
+					case STRIKETHROUGH: 
+						component.setStrikethrough(true);
+						break;
+					case OBFUSCATED: 
+						component.setObfuscated(true);
+						break;
+					case RESET: 
+						format = EnumChatFormat.WHITE;
+					default: 
+						component = new IChatBaseComponent();
+						component.setColor(format);
+						break;
+					}
+				}
+			} else {
+				int pos = message.indexOf(' ', i);
+				if (pos == -1) {
+					pos = message.length();
+				}
+				builder.append(c);
+			}
+		}
+		component.setText(builder.toString());
+		components.add(component);
+
+		return new IChatBaseComponent().setExtra(components);
+	}
 	
+	public IChatBaseComponent clone() {
+		IChatBaseComponent copy = new IChatBaseComponent();
+		copy.bold = bold;
+		copy.clickAction = clickAction;
+		copy.clickValue = clickValue;
+		copy.color = color;
+//		copy.extra = extra;
+		copy.hoverAction = hoverAction;
+		copy.hoverValue = hoverValue;
+		copy.italic = italic;
+		copy.obfuscated = obfuscated;
+//		copy.parent = parent;
+		copy.strikethrough = strikethrough;
+		copy.text = text;
+		copy.underlined = underlined;
+		return copy;
+	}
+
 	public enum ClickAction{
 		OPEN_URL,
 		@Deprecated OPEN_FILE,//Cannot be sent by server

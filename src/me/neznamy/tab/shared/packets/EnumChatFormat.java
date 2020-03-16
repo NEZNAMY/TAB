@@ -44,6 +44,12 @@ public enum EnumChatFormat{
 	public int getNetworkId() {
 		return networkId;
 	}
+	public static EnumChatFormat getByChar(char c) {
+		for (EnumChatFormat format : values()) {
+			if (format.character == c) return format;
+		}
+		return null;
+	}
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.RESET;
 		String last = Placeholders.getLastColors(string);
