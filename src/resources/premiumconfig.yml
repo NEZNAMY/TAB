@@ -85,3 +85,5 @@ placeholder-output-replacements:
   #only showing "Perfect" for exactly 20 TPS, standard output for any other value
   "%tps%":
     "20": "&aPerfect"
+    
+allign-tabsuffix-on-the-right: false

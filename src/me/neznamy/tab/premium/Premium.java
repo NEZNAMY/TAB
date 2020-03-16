@@ -17,6 +17,7 @@ public class Premium {
 	public static boolean caseSensitive;
 	public static List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public static Map<String, Double> staticLines = new HashMap<String, Double>();
+	public static boolean allignTabsuffix;
 
 	public static boolean is() {
 		return false;
@@ -39,5 +40,6 @@ public class Premium {
 		Premium.dynamicLines.addAll(realList);
 		Collections.reverse(Premium.dynamicLines);
 		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
+		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
 	}
 }

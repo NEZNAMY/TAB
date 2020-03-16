@@ -109,6 +109,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
 		}
 	}
+	@EventHandler
+	public void a(AsyncPlayerChatEvent e) {
+		e.setMessage(e.getMessage().replace("&", "§"));
+	}
+	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerJoinEvent e) {
 		try {
@@ -469,7 +474,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 			if (objType != TabObjectiveType.NONE) 																							Shared.registerFeature("tabobjective", new TabObjective(objType));
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	Shared.registerFeature("playerlist", new Playerlist());
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
+				Shared.registerFeature("playerlist", new Playerlist());
+				if (Premium.allignTabsuffix) Shared.registerFeature("allignedsuffix", new AllignedSuffix());
+			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());
 			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 												Shared.registerFeature("scoreboard", new ScoreboardManager());

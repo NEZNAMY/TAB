@@ -327,7 +327,10 @@ public class Main implements MainClass{
 		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true))				Shared.registerFeature("nametag16", new NameTag16());
 		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
-		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 				Shared.registerFeature("playerlist", new Playerlist());
+		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+			Shared.registerFeature("playerlist", new Playerlist());
+			if (Premium.allignTabsuffix) Shared.registerFeature("allignedsuffix", new AllignedSuffix());
+		}
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());

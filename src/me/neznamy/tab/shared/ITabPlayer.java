@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
+import me.neznamy.tab.shared.features.AllignedSuffix;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -175,7 +176,12 @@ public abstract class ITabPlayer {
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
 		Property suffix = properties.get("tabsuffix");
-		String format = prefix.get() + name.get() + suffix.get();
+		String format;
+		if (Premium.allignTabsuffix) {
+			format = ((AllignedSuffix)Shared.features.get("allignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
+		} else {
+			format = prefix.get() + name.get() + suffix.get();
+		}
 		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, format) : format;
 	}
 
