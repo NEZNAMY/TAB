@@ -109,11 +109,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
 		}
 	}
-	@EventHandler
-	public void a(AsyncPlayerChatEvent e) {
-		e.setMessage(e.getMessage().replace("&", "§"));
-	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerJoinEvent e) {
 		try {
