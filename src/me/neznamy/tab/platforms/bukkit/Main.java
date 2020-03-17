@@ -472,7 +472,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (objType != TabObjectiveType.NONE) 																							Shared.registerFeature("tabobjective", new TabObjective(objType));
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
 				Shared.registerFeature("playerlist", new Playerlist());
-				if (Premium.allignTabsuffix) Shared.registerFeature("allignedsuffix", new AllignedSuffix());
+				if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());

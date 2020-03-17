@@ -10,13 +10,13 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class AllignedSuffix implements SimpleFeature{
+public class AlignedSuffix implements SimpleFeature{
 
 	private int maxWidth;
 	private static final Map<Character, Integer> widths = new HashMap<Character, Integer>();
 	private Map<ITabPlayer, Integer> playerWidths = new HashMap<ITabPlayer, Integer>();
 	
-	public AllignedSuffix() {
+	public AlignedSuffix() {
 		widths.put('A', 5);
 		widths.put('B', 5);
 		widths.put('C', 5);
@@ -102,6 +102,7 @@ public class AllignedSuffix implements SimpleFeature{
 		widths.put('8', 5);
 		widths.put('9', 5);
 
+		widths.put('+', 5);
 		widths.put('*', 4);
 		widths.put('%', 5);
 		widths.put('(', 4);
@@ -114,6 +115,7 @@ public class AllignedSuffix implements SimpleFeature{
 		widths.put('=', 5);
 		widths.put('_', 5);
 		widths.put(' ', 3);
+		widths.put((char)9876, 7); //crossed swords
 		widths.put((char)12304, 8);
 		widths.put((char)12305, 8);
 		widths.put((char)10084, 7);

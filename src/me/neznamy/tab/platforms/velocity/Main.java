@@ -329,7 +329,7 @@ public class Main implements MainClass{
 		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Shared.registerFeature("playerlist", new Playerlist());
-			if (Premium.allignTabsuffix) Shared.registerFeature("allignedsuffix", new AllignedSuffix());
+			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
 		}
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());

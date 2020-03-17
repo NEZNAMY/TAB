@@ -10,7 +10,7 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
-import me.neznamy.tab.shared.features.AllignedSuffix;
+import me.neznamy.tab.shared.features.AlignedSuffix;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -178,7 +178,7 @@ public abstract class ITabPlayer {
 		Property suffix = properties.get("tabsuffix");
 		String format;
 		if (Premium.allignTabsuffix) {
-			format = ((AllignedSuffix)Shared.features.get("allignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
+			format = ((AlignedSuffix)Shared.features.get("allignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
