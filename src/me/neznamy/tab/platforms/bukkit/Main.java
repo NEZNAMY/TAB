@@ -476,7 +476,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 													Shared.registerFeature("pwp", new PerWorldPlayerlist());
 			if (Configs.SECRET_remove_ghost_players) 																						Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
-				Shared.registerFeature("papihook", new PlaceholderAPIExpansion());
+				Shared.registerFeature("papihook", new TabExpansion());
 				new PlaceholderAPIExpansionDownloader();
 			}
 			new UpdateChecker();

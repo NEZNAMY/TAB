@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.SimpleFeature;
 
-public class PlaceholderAPIExpansion implements SimpleFeature{
+public class TabExpansion implements SimpleFeature{
 
 	private PlaceholderExpansion exp;
 
