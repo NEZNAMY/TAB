@@ -178,7 +178,7 @@ public abstract class ITabPlayer {
 		Property suffix = properties.get("tabsuffix");
 		String format;
 		if (Premium.allignTabsuffix) {
-			format = ((AlignedSuffix)Shared.features.get("allignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
+			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
