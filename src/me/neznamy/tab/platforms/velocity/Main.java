@@ -29,6 +29,7 @@ import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
 import io.netty.channel.*;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.velocity.protocol.*;
+import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;

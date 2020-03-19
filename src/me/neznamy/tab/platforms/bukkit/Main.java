@@ -19,6 +19,7 @@ import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
