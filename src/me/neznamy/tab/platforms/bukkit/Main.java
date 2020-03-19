@@ -28,7 +28,6 @@ import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
-import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
@@ -392,14 +391,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 1000) {
 
 				public String get(ITabPlayer p) {
-					String prefix = ((Chat)PluginHooks.Vault_chat).getPlayerPrefix(((TabPlayer)p).player);
+					String prefix = PluginHooks.Vault_getPrefix(p);
 					return prefix != null ? prefix : "";
 				}
 			});
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 1000) {
 
 				public String get(ITabPlayer p) {
-					String suffix = ((Chat)PluginHooks.Vault_chat).getPlayerSuffix(((TabPlayer)p).player);
+					String suffix = PluginHooks.Vault_getSuffix(p);
 					return suffix != null ? suffix : "";
 				}
 			});

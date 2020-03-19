@@ -317,6 +317,20 @@ public class PluginHooks {
 	public static double Vault_getMoney(ITabPlayer p) {
 		return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
 	}
+	public static String Vault_getPrefix(ITabPlayer p) {
+		try {
+			return ((Chat)Vault_chat).getPlayerPrefix(((TabPlayer)p).player);
+		} catch (Exception e) {
+			return Shared.errorManager.printError("", "Failed to get prefix of " + p.getName() + " using Vault", e);
+		}
+	}
+	public static String Vault_getSuffix(ITabPlayer p) {
+		try {
+			return ((Chat)Vault_chat).getPlayerSuffix(((TabPlayer)p).player);
+		} catch (Exception e) {
+			return Shared.errorManager.printError("", "Failed to get suffix of " + p.getName() + " using Vault", e);
+		}
+	}
 	public static String Vault_getPrimaryGroup(ITabPlayer p) {
 		try {
 			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
