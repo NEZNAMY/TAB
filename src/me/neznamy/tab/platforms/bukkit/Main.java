@@ -12,11 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
-import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
-import me.neznamy.tab.platforms.bukkit.features.PetFix;
-import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansion;
-import me.neznamy.tab.platforms.bukkit.features.PlaceholderAPIExpansionDownloader;
+import me.neznamy.tab.platforms.bukkit.features.*;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.AlignedSuffix;
