@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -227,27 +228,23 @@ public class PluginHooks {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
-	public static String PlaceholderAPI_setPlaceholders(Object player, String placeholder) {
+	public static String PlaceholderAPI_setPlaceholders(UUID player, String placeholder) {
+		Player p = (player == null ? null : Bukkit.getPlayer(player));
+		return PlaceholderAPI_setPlaceholders(p, placeholder);
+	}
+	public static String PlaceholderAPI_setPlaceholders(Player player, String placeholder) {
 		if (!placeholderAPI) return placeholder;
-		Player bukkitplayer = null;
-		if (player != null) {
-			if (player instanceof Player) {
-				bukkitplayer = (Player) player;
-			} else if (player instanceof ITabPlayer) {
-				bukkitplayer = ((TabPlayer)player).player;
-			}
-		}
 		try {
-			return PlaceholderAPI.setPlaceholders(bukkitplayer, placeholder);
+			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
-			String playername = (bukkitplayer == null ? "null" : bukkitplayer.getName());
+			String playername = (player == null ? "null" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				if (placeholder.contains("%pinataparty")) {
 					//i'm done with arguing with that person about whose fault it is, just pretending like it works
 					return "0";
 				} else {
-					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t);
+					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
 				}
 			} else {
 				//thats why it failed

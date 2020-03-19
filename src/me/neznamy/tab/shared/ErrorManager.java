@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,10 +36,13 @@ public class ErrorManager {
 		printError(message, t, false);
 	}
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
+		printError(message, t, intoConsoleToo, Configs.errorFile);
+	}
+	public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
 		try {
-			if (!Configs.errorFile.exists()) Configs.errorFile.createNewFile();
-			if (Configs.errorFile.length() < 1000000) { //not going over 1 MB
-				BufferedWriter buf = new BufferedWriter(new FileWriter(Configs.errorFile, true));
+			if (!file.exists()) file.createNewFile();
+			if (file.length() < 1000000) { //not going over 1 MB
+				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 				if (message != null) {
 					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + "] " + message + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);

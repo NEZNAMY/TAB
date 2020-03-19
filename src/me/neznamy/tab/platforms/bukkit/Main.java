@@ -543,7 +543,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.debug("Registering SERVER PAPI placeholder " + identifier + " with cooldown " + server);
 				TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
 					public String get() {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(null, identifier);
+						return PluginHooks.PlaceholderAPI_setPlaceholders((Player)null, identifier);
 					}
 				});
 				return;
@@ -553,7 +553,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.debug("Registering PLAYER PAPI placeholder " + identifier + " with cooldown " + player);
 				TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
 					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
+						return PluginHooks.PlaceholderAPI_setPlaceholders(((TabPlayer)p).player, identifier);
 					}
 				});
 				return;
@@ -561,7 +561,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.debug("Registering PLAYER PAPI placeholder " + identifier);
 			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p, identifier);
+					return PluginHooks.PlaceholderAPI_setPlaceholders(((TabPlayer)p).player, identifier);
 				}
 			});
 			return;

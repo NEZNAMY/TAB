@@ -74,7 +74,8 @@ public class Configs {
 
 	public static ConfigurationFile playerdata; 
 
-	public static File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
+	public static final File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
+	public static final File papiErrorFile = new File(ConfigurationFile.dataFolder, "PlaceholderAPI.errors.txt");
 
 	public static void loadFiles() throws Exception {
 		if (errorFile.exists()) {

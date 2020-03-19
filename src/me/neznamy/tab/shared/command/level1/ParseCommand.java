@@ -25,7 +25,7 @@ public class ParseCommand extends SubCommand{
 			list.addAll(Placeholders.myServerConstants.values());
 			for (Placeholder p : list) 
 				if (replaced.contains(p.getIdentifier())) replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));
-			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender, replaced);
+			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
 			sendMessage(sender, "&6Replacing placeholder &e" + args[0] + (sender == null ? "" : "&6 for player &e" + sender.getName()));
 			sendMessage(sender, "&6Result: &r" + replaced);
 		} else {
