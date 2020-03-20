@@ -51,9 +51,12 @@ public class DataWatcher{
 	}
 	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
 		DataWatcher watcher = new DataWatcher(ENTITY.get(nmsWatcher));
-		for (Object watchableObject : MethodAPI.getInstance().getDataWatcherItems(nmsWatcher)) {
-			Item w = Item.fromNMS(watchableObject);
-			watcher.setValue(w.type, w.value);
+		List<Object> items = MethodAPI.getInstance().getDataWatcherItems(nmsWatcher);
+		if (items != null) {
+			for (Object watchableObject : items) {
+				Item w = Item.fromNMS(watchableObject);
+				watcher.setValue(w.type, w.value);
+			}
 		}
 		return watcher;
 	}
