@@ -8,6 +8,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
@@ -198,7 +199,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			PluginHooks.idisguise = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class).getProvider();
+			RegisteredServiceProvider<DisguiseAPI> provider = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class);
+			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
