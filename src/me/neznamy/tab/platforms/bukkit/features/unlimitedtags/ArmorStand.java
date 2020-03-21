@@ -168,7 +168,6 @@ public class ArmorStand{
 	}
 	private void updateLocation() {
 		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;
-		lastLocationRefresh = System.currentTimeMillis();
 		double x = player.getLocation().getX();
 		double y = player.getLocation().getY() + yOffset;
 		double z = player.getLocation().getZ();
@@ -183,6 +182,7 @@ public class ArmorStand{
 		}
 		y += 2;
 		location = new Location(null,x,y,z);
+		lastLocationRefresh = System.currentTimeMillis();
 	}
 	public int getEntityId() {
 		return entityId;
