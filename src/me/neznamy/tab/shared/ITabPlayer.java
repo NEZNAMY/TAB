@@ -300,6 +300,7 @@ public abstract class ITabPlayer {
 	}
 
 	private String getValue(Object property) {
+		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null)
@@ -308,11 +309,11 @@ public abstract class ITabPlayer {
 			return value;
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Users." + getUniqueId().toString() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + property)) != null)
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null)
 			return value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null)
 			return value;
-		if ((value = Configs.config.getString("Groups." + permissionGroup + "." + property)) != null) return value;
+		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) return value;
 		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
 		return "";
 	}

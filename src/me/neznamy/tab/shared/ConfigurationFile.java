@@ -97,6 +97,7 @@ public class ConfigurationFile{
 		try {
 			Object value = values;
 			for (String tab : path.split("\\.")) {
+				tab = tab.replace("@#@", ".");
 				value = getIgnoreCase((Map<String, Object>) value, tab);
 			}
 			if (value == null && defaultValue != null) {
@@ -191,7 +192,7 @@ public class ConfigurationFile{
 			if (submap == null || !(submap instanceof Map)) {
 				submap = new HashMap<String, Object>();
 			}
-			map.put(keyWord, set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
+			map.put(keyWord.replace("@#@", "."), set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
 		} else {
 			if (value == null) {
 				map.remove(path);

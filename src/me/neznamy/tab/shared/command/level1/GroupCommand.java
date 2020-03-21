@@ -74,7 +74,7 @@ public class GroupCommand extends SubCommand {
 	}
 	private void saveGroup(ITabPlayer sender, String group, String type, String value){
 		if (value.length() == 0) value = null;
-		Configs.config.set("Groups." + group + "." + type, value);
+		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value);
 		Configs.config.save();
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
