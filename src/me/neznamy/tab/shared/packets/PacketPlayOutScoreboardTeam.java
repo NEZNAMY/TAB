@@ -11,87 +11,143 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 
-	private String team;
-	private String prefix;
-	private String suffix;
-	private String visibility;
-	private String collision;
-	@SuppressWarnings("unused")
-	private EnumChatFormat chatFormat;
-	private Collection<String> players;
-	private int action;
-	private int signature;
+	private String name;
+//	private String displayName;
+	private String playerPrefix;
+	private String playerSuffix;
+	private String nametagVisibility;
+	private String collisionRule;
+//	private EnumChatFormat color;
+	private Collection<String> players = Collections.emptyList();
+	private EnumTeamAction method;
+	private int options;
 
-	@SuppressWarnings("unchecked")
-	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int action, int signature) {
-		this.team = team;
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.visibility = visibility;
-		this.collision = collision;
-		this.players = (Collection<String>) (players == null ? Collections.emptyList() : players);
-		this.action = action;
-		this.signature = signature;
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+		this.method = EnumTeamAction.CREATE_TEAM;
+		this.name = team;
+		this.playerPrefix = prefix;
+		this.playerSuffix = suffix;
+		this.nametagVisibility = visibility;
+		this.collisionRule = collision;
+		this.players = players;
+		this.options = options;
 	}
+	public PacketPlayOutScoreboardTeam(String team) {
+		this.method = EnumTeamAction.REMOVE_TEAM;
+		this.name = team;
+	}
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
+		this.method = EnumTeamAction.UPDATE_TEAM_INFO;
+		this.name = team;
+		this.playerPrefix = prefix;
+		this.playerSuffix = suffix;
+		this.nametagVisibility = visibility;
+		this.collisionRule = collision;
+		this.options = options;
+	}
+	public PacketPlayOutScoreboardTeam(String team, Collection<String> players, EnumTeamAction method) {
+		this.method = method;
+		this.name = team;
+		this.players = players;
+	}
+	
+	public PacketPlayOutScoreboardTeam setTeamOptions(int options) {
+		this.options = options;
+		return this;
+	}
+	
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		if (team == null || team.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
-		String prefix = this.prefix;
-		String suffix = this.suffix;
+		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
+		String prefix = this.playerPrefix;
+		String suffix = this.playerSuffix;
 		if (clientVersion.getMinorVersion() < 13) {
 			prefix = cutTo(prefix, 16);
 			suffix = cutTo(suffix, 16);
 		}
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
-		NAME.set(packet, team);
+		NAME.set(packet, name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(team).toString()));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(name).toString()));
 			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
 			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
-			DISPLAYNAME.set(packet, team);
+			DISPLAYNAME.set(packet, name);
 			PREFIX.set(packet, prefix);
 			SUFFIX.set(packet, suffix);
 		}
-		if (COLLISION != null) COLLISION.set(packet, collision);
+		if (COLLISION != null) COLLISION.set(packet, collisionRule);
 		PLAYERS.set(packet, players);
-		ACTION.set(packet, action);
-		SIGNATURE.set(packet, signature);
-		if (VISIBILITY != null) VISIBILITY.set(packet, visibility);
+		ACTION.set(packet, method.getNetworkId());
+		SIGNATURE.set(packet, options);
+		if (VISIBILITY != null) VISIBILITY.set(packet, nametagVisibility);
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		String teamDisplay = team;
+		String teamDisplay = name;
 		int color = 0;
 		String prefix;
 		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(this.prefix).toString();
-			suffix = new IChatBaseComponent(this.suffix).toString();
-			teamDisplay = new IChatBaseComponent(team).toString();
+			prefix = new IChatBaseComponent(this.playerPrefix).toString();
+			suffix = new IChatBaseComponent(this.playerSuffix).toString();
+			teamDisplay = new IChatBaseComponent(name).toString();
 			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
-			prefix = cutTo(this.prefix, 16);
-			suffix = cutTo(this.suffix, 16);
+			prefix = cutTo(this.playerPrefix, 16);
+			suffix = cutTo(this.playerSuffix, 16);
 		}
-		return new Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, collision, color, (byte)signature, players.toArray(new String[0]));
+		return new Team(name, (byte)method.getNetworkId(), teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		String teamDisplay = team;
+		String teamDisplay = name;
 		int color = 0;
 		String prefix;
 		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(this.prefix).toString();
-			suffix = new IChatBaseComponent(this.suffix).toString();
-			teamDisplay = new IChatBaseComponent(team).toString();
+			prefix = new IChatBaseComponent(this.playerPrefix).toString();
+			suffix = new IChatBaseComponent(this.playerSuffix).toString();
+			teamDisplay = new IChatBaseComponent(name).toString();
 			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
-			prefix = cutTo(this.prefix, 16);
-			suffix = cutTo(this.suffix, 16);
+			prefix = cutTo(this.playerPrefix, 16);
+			suffix = cutTo(this.playerSuffix, 16);
 		}
-		return new me.neznamy.tab.platforms.velocity.protocol.Team(team, (byte)action, teamDisplay, prefix, suffix, visibility, collision, color, (byte)signature, players.toArray(new String[0]));
+		return new me.neznamy.tab.platforms.velocity.protocol.Team(name, (byte)method.getNetworkId(), teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
+	
+	@Override
+	public String toString() {
+		switch(method) {
+		case CREATE_TEAM:
+			return "PacketPlayOutScoreboardTeam{name=" + name + ",playerPrefix=" + playerPrefix + ",playerSuffix=" + playerSuffix + ",nametagVisibility=" + nametagVisibility + ",collisionRule=" + collisionRule + ",players=" + players + ",method=" + method + ",options=" + options + "}";
+		case REMOVE_TEAM:
+			return "PacketPlayOutScoreboardTeam{name=" + name + ",method=" + method + "}";
+		case UPDATE_TEAM_INFO:
+			return "PacketPlayOutScoreboardTeam{name=" + name + ",playerPrefix=" + playerPrefix + ",playerSuffix=" + playerSuffix + ",nametagVisibility=" + nametagVisibility + ",collisionRule=" + collisionRule + ",method=" + method + ",options=" + options + "}";
+		default: 
+			return "PacketPlayOutScoreboardTeam{name=" + name + ",method=" + method + ",players=" + players + "}";
+		}
+	}
+	
+	public enum EnumTeamAction{
+		
+		CREATE_TEAM(0),
+		REMOVE_TEAM(1),
+		UPDATE_TEAM_INFO(2),
+		ADD_PLAYERS(3),
+		REMOVE_PLAYERS(4);
+		
+		private int networkId;
+		
+		EnumTeamAction(int networkId) {
+			this.networkId = networkId;
+		}
+		public int getNetworkId() {
+			return networkId;
+		}
+	}
+	
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
 	private static final Field NAME = getField(fields, "a");
 	private static final Field DISPLAYNAME = getField(fields, "b");

@@ -37,16 +37,13 @@ public class PacketAPI{
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
 			unregisterScoreboardTeam(to, teamName);
 		}
-		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, players, 0, 69);
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69));
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
-		sendScoreboardTeamPacket(to, teamName, null, null, true, true, null, 1, 69);
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
 	}
 	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
-		sendScoreboardTeamPacket(to, teamName, prefix, suffix, enumNameTagVisibility, enumTeamPush, null, 2, 69);
-	}
-	private static void sendScoreboardTeamPacket(ITabPlayer to, String team, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, int action, int signature) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(team, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, action, signature));
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", 69));
 	}
 
 	//scoreboard objective
