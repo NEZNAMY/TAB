@@ -219,7 +219,7 @@ public class ConfigurationFile{
 	public boolean hasHeader() {
 		if (header == null) return true;
 		for (String line : readAllLines()) {
-			if (line.startsWith("#")) return true;
+			if (line.contains("#")) return true;
 		}
 		return false;
 	}
