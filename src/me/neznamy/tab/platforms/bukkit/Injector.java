@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
@@ -33,7 +34,7 @@ public class Injector {
 				}
 				try{
 					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player != null) {
+					if (player != null && player.getVersion() != ProtocolVersion.UNKNOWN) {
 						for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
 							long time = System.nanoTime();
 							try {
@@ -57,8 +58,7 @@ public class Injector {
 				}
 				try{
 					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player == null) {
-						//wtf
+					if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
 						super.write(context, packet, channelPromise);
 						return;
 					}

@@ -171,8 +171,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				try{
 					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player == null) {
-						//wtf
+					if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
 						super.write(context, packet, channelPromise);
 						return;
 					}
