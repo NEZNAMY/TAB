@@ -105,9 +105,9 @@ public class Configs {
 		checkAnimations(bossbar.getValues());
 	}
 	@SuppressWarnings("unchecked")
-	private static void checkAnimations(Map<String, Object> values) {
-		for (Entry<String, Object> entry : values.entrySet()) {
-			String key = entry.getKey();
+	private static void checkAnimations(Map<?, Object> values) {
+		for (Entry<?, Object> entry : values.entrySet()) {
+			String key = entry.getKey()+"";
 			Object value = entry.getValue();
 			if (value instanceof String || value instanceof List) {
 				if (true) {
