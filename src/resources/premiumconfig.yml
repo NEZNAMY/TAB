@@ -87,3 +87,6 @@ placeholder-output-replacements:
     "20": "&aPerfect"
     
 allign-tabsuffix-on-the-right: false
+extra-character-widths:
+  65330: 6
+  65365: 5

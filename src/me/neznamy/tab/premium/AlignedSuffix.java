@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class AlignedSuffix implements SimpleFeature{
 
 	private int maxWidth;
-	private static final Map<Character, Integer> widths = new HashMap<Character, Integer>();
+	public static final Map<Character, Integer> widths = new HashMap<Character, Integer>();
 	private Map<ITabPlayer, Integer> playerWidths = new HashMap<ITabPlayer, Integer>();
 	
 	public AlignedSuffix() {
