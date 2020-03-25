@@ -192,7 +192,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			}
 		} else {
-			//			PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
+			//PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}
