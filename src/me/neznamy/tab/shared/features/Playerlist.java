@@ -56,6 +56,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 			if (info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || info.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
 					playerInfoData.listName = packetPlayer.getTabFormat(receiver);
+					playerInfoData.name = packetPlayer.getName();
 				}
 			}
 			if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
