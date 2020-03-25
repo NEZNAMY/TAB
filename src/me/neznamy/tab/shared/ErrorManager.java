@@ -102,6 +102,17 @@ public class ErrorManager {
 			}
 		}
 	}
+	public double parseDouble(String string, double defaultValue, String place) {
+		try {
+			return Double.parseDouble(string);
+		} catch (Throwable e) {
+			if (string.contains("%")) {
+				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
+			} else {
+				return oneTimeConsoleError(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
+			}
+		}
+	}
 	public BarColor parseColor(String string, BarColor defaultValue, String place) {
 		try {
 			return BarColor.valueOf(string);

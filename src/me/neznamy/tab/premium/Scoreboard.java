@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -47,12 +48,30 @@ public class Scoreboard {
 				if (!p.hasPermission(permission)) return false;
 			}
 			if (condition.contains("%")) {
-				String placeholder = condition.split("=")[0];
-				String value = condition.split("=")[1];
-				for (Placeholder pl : Placeholders.getAllUsed()) {
-					placeholder = pl.set(placeholder, p);
+				if (condition.contains("=")) {
+					String leftSide = condition.split("=")[0];
+					String rightSide = condition.split("=")[1];
+					for (Placeholder pl : Placeholders.getAllUsed()) {
+						leftSide = pl.set(leftSide, p);
+					}
+					if (!leftSide.equals(rightSide)) return false;
+				} else if (condition.contains("<")) {
+					String leftSide = condition.split("<")[0];
+					double rightSide = Shared.errorManager.parseDouble(condition.split("<")[1], 0, "Scoreboard condition with \"<\" - right side");
+					for (Placeholder pl : Placeholders.getAllUsed()) {
+						leftSide = pl.set(leftSide, p);
+					}
+					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \"<\" - left side");
+					if (numericValueLeftSide >= rightSide) return false;
+				} else if (condition.contains(">")) {
+					String leftSide = condition.split(">")[0];
+					double rightSide = Shared.errorManager.parseDouble(condition.split("<")[1], 0, "Scoreboard condition with \">\" - right side");
+					for (Placeholder pl : Placeholders.getAllUsed()) {
+						leftSide = pl.set(leftSide, p);
+					}
+					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \">\" - left side");
+					if (numericValueLeftSide <= rightSide) return false;
 				}
-				if (!placeholder.equals(value)) return false;
 			}
 		}
 		return true;
