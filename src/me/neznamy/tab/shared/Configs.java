@@ -106,39 +106,44 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	private static void checkAnimations(Map<?, Object> values) {
-		for (Entry<?, Object> entry : values.entrySet()) {
-			String key = entry.getKey()+"";
-			Object value = entry.getValue();
-			if (value instanceof String || value instanceof List) {
-				if (config.getBoolean("enable-header-footer", true)) {
-					int refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
-					checkAnimation(key, "header", value, "header", refresh);
-					checkAnimation(key, "footer", value, "footer", refresh);
+		try {
+			for (Entry<?, Object> entry : values.entrySet()) {
+				String key = entry.getKey()+"";
+				Object value = entry.getValue();
+				if (value instanceof String || value instanceof List) {
+					if (config.getBoolean("enable-header-footer", true)) {
+						int refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
+						checkAnimation(key, "header", value, "header", refresh);
+						checkAnimation(key, "footer", value, "footer", refresh);
+					}
+					if (config.getBoolean("change-nametag-prefix-suffix", true)) {
+						int refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
+						checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
+						checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
+					}
+					if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+						int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+						checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
+						checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
+					}
+					if (Premium.is()) {
+						int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
+						checkAnimation(key, "title", value, "scoreboard title", refresh);
+						checkAnimation(key, "lines", value, "scoreboard", refresh);
+					}
+					if (BossBarEnabled) {
+						int refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
+						checkAnimation(key, "style", value, "bossbar style", refresh);
+						checkAnimation(key, "color", value, "bossbar color", refresh);
+						checkAnimation(key, "progress", value, "bossbar progress", refresh);
+						checkAnimation(key, "text", value, "bossbar text", refresh);
+					}
 				}
-				if (config.getBoolean("change-nametag-prefix-suffix", true)) {
-					int refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
-					checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
-					checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
-				}
-				if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-					int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-					checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
-					checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
-				}
-				if (Premium.is()) {
-					int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
-					checkAnimation(key, "title", value, "scoreboard title", refresh);
-					checkAnimation(key, "lines", value, "scoreboard", refresh);
-				}
-				if (BossBarEnabled) {
-					int refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
-					checkAnimation(key, "style", value, "bossbar style", refresh);
-					checkAnimation(key, "color", value, "bossbar color", refresh);
-					checkAnimation(key, "progress", value, "bossbar progress", refresh);
-					checkAnimation(key, "text", value, "bossbar text", refresh);
-				}
+				if (value instanceof Map) checkAnimations((Map<String, Object>) value);
 			}
-			if (value instanceof Map) checkAnimations((Map<String, Object>) value);
+		} catch (ConcurrentModificationException e) {
+			//one of the .getInt methods inserted that missing configuration option which results in concurrent modification
+			//ignoring the entire check, default values are usually correct and users will eventually see warning on next startup
 		}
 	}
 	private static void checkAnimation(String key, String searching, Object value, String position, int refresh) {
