@@ -36,12 +36,12 @@ public enum SortingType {
 		case PLACEHOLDER_LOW_TO_HIGH:
 			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
-			while (teamName.length() < 10) teamName = "0" + teamName;
+			while (teamName.length() < 9) teamName = "0" + teamName;
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
 			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
-			teamName = (999999999-value)+"";
+			teamName = (99999999-value)+"";
 			break;
 		case PLACEHOLDER_A_TO_Z:
 			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
@@ -49,14 +49,14 @@ public enum SortingType {
 		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
-			number = (999999999-value)+"";
+			number = (99999999-value)+"";
 			teamName = getGroupChars(p) + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = value+"";
-			while (number.length() < 8) number = "0" + number;
+			while (number.length() < 9) number = "0" + number;
 			teamName = getGroupChars(p) + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
