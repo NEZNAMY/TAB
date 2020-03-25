@@ -20,8 +20,7 @@ public enum SortingType {
 		int value;
 		switch(this){
 		case GROUPS:
-			teamName = Configs.sortedGroups.get(p.getGroup().toLowerCase());
-			if (teamName == null) teamName = "";
+			teamName = getGroupChars(p);
 			break;
 		case GROUP_PERMISSIONS:
 			for (String localgroup : Configs.sortedGroups.keySet()) {
@@ -86,7 +85,10 @@ public enum SortingType {
 	}
 	private String getGroupChars(ITabPlayer p) {
 		String group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
-		if (group == null) group = "";
+		if (group == null) {
+			group = "";
+			Shared.errorManager.oneTimeConsoleError("Group \"" + p.getGroup() + "\" is not defined in sorting list! This will result in unwanted behavior.");
+		}
 		return group;
 	}
 	private String setPlaceholders(String s, ITabPlayer p) {

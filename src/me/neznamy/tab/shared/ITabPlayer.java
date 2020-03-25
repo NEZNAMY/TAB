@@ -378,6 +378,7 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (name == null) {
+			Shared.errorManager.oneTimeConsoleError("Group \"" + permissionGroup + "\" is not defined in sorting list! This will result in unwanted behavior.");
 			if (Shared.features.containsKey("playerlist")) {
 				name = properties.get("tabprefix").get();
 			} else {
