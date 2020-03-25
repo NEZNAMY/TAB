@@ -6,27 +6,31 @@ import net.md_5.bungee.protocol.packet.Chat;
 
 public class PacketPlayOutChat extends UniversalPacketPlayOut{
 
-	private String json;
+	private IChatBaseComponent message;
 	private ChatMessageType type;
 	
-	public PacketPlayOutChat(String json, ChatMessageType type) {
-		this.json = json;
+	public PacketPlayOutChat(String message, ChatMessageType type) {
+		this.message = IChatBaseComponent.fromColoredText(message);
+		this.type = type;
+	}
+	public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
+		this.message = message;
 		this.type = type;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(json), type.toNMS());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.toNMS());
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(json), type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.getId());
 		} else {
-			return MethodAPI.getInstance().newPacketPlayOutChat(json, type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(), type.getId());
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new Chat(json, type.getId());
+		return new Chat(message.toString(), type.getId());
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new com.velocitypowered.proxy.protocol.packet.Chat(json, type.getId());
+		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(), type.getId());
 	}
 	
 	public enum ChatMessageType{
