@@ -110,17 +110,17 @@ public class Configs {
 			String key = entry.getKey()+"";
 			Object value = entry.getValue();
 			if (value instanceof String || value instanceof List) {
-				if (true) {
+				if (config.getBoolean("enable-header-footer", true)) {
 					int refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
 					checkAnimation(key, "header", value, "header", refresh);
 					checkAnimation(key, "footer", value, "footer", refresh);
 				}
-				if (true) {
+				if (config.getBoolean("change-nametag-prefix-suffix", true)) {
 					int refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
 					checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
 					checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
 				}
-				if (true) {
+				if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 					int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 					checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
 					checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
