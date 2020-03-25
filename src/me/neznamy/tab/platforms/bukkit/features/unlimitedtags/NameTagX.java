@@ -272,7 +272,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-			for (PlayerInfoData playerInfoData : info.players) {
+			for (PlayerInfoData playerInfoData : info.entries) {
 				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (packetPlayer == null && Configs.modifyNPCnames) {
 					if (playerInfoData.name.length() <= 15) {

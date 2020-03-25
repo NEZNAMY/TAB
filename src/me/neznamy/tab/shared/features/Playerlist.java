@@ -51,11 +51,11 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
-		for (PlayerInfoData playerInfoData : info.players) {
+		for (PlayerInfoData playerInfoData : info.entries) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || info.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
-					playerInfoData.listName = packetPlayer.getTabFormat(receiver);
+					playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
 					playerInfoData.name = packetPlayer.getName();
 				}
 			}

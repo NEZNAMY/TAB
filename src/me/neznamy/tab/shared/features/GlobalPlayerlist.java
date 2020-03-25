@@ -53,7 +53,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-			for (PlayerInfoData playerInfoData : info.players) {
+			for (PlayerInfoData playerInfoData : info.entries) {
 				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (packetPlayer != null) { //player online
 					if (!PluginHooks._isVanished(packetPlayer)) {

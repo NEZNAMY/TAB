@@ -26,15 +26,15 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public EnumPlayerInfoAction action;
-	public PlayerInfoData[] players;
+	public PlayerInfoData[] entries;
 
-	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... players) {
+	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
 		this.action = action;
-		this.players = players;
+		this.entries = entries;
 	}
-	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> players) {
+	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
 		this.action = action;
-		this.players = players.toArray(new PlayerInfoData[0]);
+		this.entries = entries.toArray(new PlayerInfoData[0]);
 	}
 
 	public enum EnumPlayerInfoAction{
@@ -112,9 +112,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public static class PlayerInfoData{
 
-		public int ping;
-		public EnumGamemode gamemode;
-		public String listName;
+		public int latency;
+		public EnumGamemode gameMode;
+		public String displayName;
 		public String name;
 		public UUID uniqueId;
 		public Object skin; //platform-specific skin data
@@ -123,31 +123,31 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.name = name;
 			this.uniqueId = uniqueId;
 		}
-		public PlayerInfoData(String name, UUID uniqueId, Object skin, int ping, EnumGamemode gamemode, String listName) {
+		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, String displayName) {
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
-			this.ping = ping;
-			this.gamemode = gamemode;
-			this.listName = listName;
+			this.latency = latency;
+			this.gameMode = gameMode;
+			this.displayName = displayName;
 		}
 		public PlayerInfoData clone() {
-			return new PlayerInfoData(name, uniqueId, skin, ping, gamemode, listName);
+			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
 		}
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, ping, gamemode.toNMS(), MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(listName).toString()));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode.toNMS(), MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(displayName).toString()));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
 			if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-				item.setDisplayName(new IChatBaseComponent(listName).toString());
+				item.setDisplayName(new IChatBaseComponent(displayName).toString());
 			} else {
-				item.setDisplayName(listName == null ? name : listName);
+				item.setDisplayName(displayName == null ? name : displayName);
 			}
-			if (gamemode != null) item.setGamemode(gamemode.getNetworkId());
-			item.setPing(ping);
+			if (gameMode != null) item.setGamemode(gameMode.getNetworkId());
+			item.setPing(latency);
 			item.setProperties((String[][]) skin);
 			item.setUsername(name);
 			item.setUuid(uniqueId);
@@ -155,9 +155,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toVelocity() {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromText(listName));
-			if (gamemode != null) item.setGameMode(gamemode.getNetworkId());
-			item.setLatency(ping);
+			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromText(displayName));
+			if (gameMode != null) item.setGameMode(gameMode.getNetworkId());
+			item.setLatency(latency);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
 			item.setName(name);
 			return item;
@@ -195,37 +195,37 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
 			List<Object> items = new ArrayList<Object>();
-			for (PlayerInfoData data : players) {
+			for (PlayerInfoData data : entries) {
 				items.add(data.toNMS());
 			}
 			PLAYERS.set(packet, items);
 			return packet;
 		} else {
 			Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(null);
-			PlayerInfoData data = players[0];
+			PlayerInfoData data = entries[0];
 			ACTION.set(packet, action.getNetworkId());
 			net.minecraft.util.com.mojang.authlib.GameProfile profile = new net.minecraft.util.com.mojang.authlib.GameProfile(data.uniqueId, data.name);
 			if (data.skin != null) profile.getProperties().putAll((net.minecraft.util.com.google.common.collect.Multimap<String, net.minecraft.util.com.mojang.authlib.properties.Property>) data.skin);
 			PROFILE.set(packet, profile);
-			GAMEMODE.set(packet, data.gamemode.networkId);
-			PING.set(packet, data.ping);
-			LISTNAME.set(packet, data.listName);
+			GAMEMODE.set(packet, data.gameMode.networkId);
+			PING.set(packet, data.latency);
+			LISTNAME.set(packet, data.displayName);
 			return packet;
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction((Action) action.toBungee());
-		Item[] items = new Item[players.length];
-		for (int i=0; i<players.length; i++) {
-			items[i] = (Item) players[i].toBungee(clientVersion);
+		Item[] items = new Item[entries.length];
+		for (int i=0; i<entries.length; i++) {
+			items[i] = (Item) entries[i].toBungee(clientVersion);
 		}
 		packet.setItems(items);
 		return packet;
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		List items = new ArrayList();
-		for (PlayerInfoData data : players) {
+		for (PlayerInfoData data : entries) {
 			items.add(data.toVelocity());
 		}
 		return new com.velocitypowered.proxy.protocol.packet.PlayerListItem(action.getNetworkId(), (List<com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item>) items);

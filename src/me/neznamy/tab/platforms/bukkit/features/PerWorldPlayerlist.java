@@ -106,17 +106,17 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 			PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 			if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
 				List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
-				for (PlayerInfoData data : info.players) {
+				for (PlayerInfoData data : info.entries) {
 					ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
 					if (added != null) {
 						if (!shouldSee(((TabPlayer)receiver).player, ((TabPlayer)added).player)) toRemove.add(data);
 					}
 				}
 				List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();
-				Arrays.asList(info.players).forEach(d -> newList.add(d));
+				Arrays.asList(info.entries).forEach(d -> newList.add(d));
 				newList.removeAll(toRemove);
-				info.players = newList.toArray(new PlayerInfoData[0]);
-				if (info.players.length == 0) return null;
+				info.entries = newList.toArray(new PlayerInfoData[0]);
+				if (info.entries.length == 0) return null;
 			}
 		}
 		return packet;
