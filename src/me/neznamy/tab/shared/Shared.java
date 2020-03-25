@@ -12,7 +12,6 @@ import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.placeholders.*;
 
 public class Shared {
@@ -73,7 +72,7 @@ public class Shared {
 		if (Premium.is()) return;
 		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(EnumChatFormat.DARK_AQUA).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_ (discord: NEZNAMY#4659)").setColor(EnumChatFormat.BLACK));
-		to.sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.CHAT));
+		to.sendCustomPacket(new PacketPlayOutChat(message));
 	}
 	public static void load(boolean inject) {
 		try {
