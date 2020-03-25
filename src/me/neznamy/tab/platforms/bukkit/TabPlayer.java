@@ -133,6 +133,6 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public PlayerInfoData getInfoData() {
 		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
-		return new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
 	}
 }
