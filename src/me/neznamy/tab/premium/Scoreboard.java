@@ -65,7 +65,7 @@ public class Scoreboard {
 					if (numericValueLeftSide >= rightSide) return false;
 				} else if (condition.contains(">")) {
 					String leftSide = condition.split(">")[0];
-					double rightSide = Shared.errorManager.parseDouble(condition.split("<")[1], 0, "Scoreboard condition with \">\" - right side");
+					double rightSide = Shared.errorManager.parseDouble(condition.split(">")[1], 0, "Scoreboard condition with \">\" - right side");
 					for (Placeholder pl : Placeholders.getAllUsed()) {
 						leftSide = pl.set(leftSide, p);
 					}
