@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.BelowName;
@@ -281,5 +283,18 @@ public class Configs {
 		if (defaultValue instanceof Long) return (T) (Object) Long.parseLong(value+"");
 		if (defaultValue instanceof String) return (T) (value+"");
 		return (T) value;
+	}
+	public static List<String> getPlayerData(String key) {
+		if (playerdata == null) {
+			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
+			try {
+				if (!file.exists()) file.createNewFile();
+				playerdata = new ConfigurationFile("playerdata.yml", null);
+			} catch (Exception e) {
+				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
+				return Lists.newArrayList();
+			}
+		}
+		return playerdata.getStringList(key);
 	}
 }

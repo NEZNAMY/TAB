@@ -1,10 +1,12 @@
 package me.neznamy.tab.premium;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.SimpleFeature;
@@ -18,6 +20,8 @@ public class ScoreboardManager implements SimpleFeature{
 	private Map<String, String> perWorld;
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	public boolean useNumbers;
+	private boolean remember_toggle_choice;
+	private List<String> sb_off_players;
 
 	private String scoreboard_on;
 	private String scoreboard_off;
@@ -31,8 +35,13 @@ public class ScoreboardManager implements SimpleFeature{
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		perWorld = (Map<String, String>) Premium.premiumconfig.get("scoreboard.per-world");
+		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
+		if (remember_toggle_choice) {
+			sb_off_players = Configs.getPlayerData("scoreboard-off");
+		}
+		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
 		if (Premium.premiumconfig.get("scoreboards") != null)
 			for (String scoreboard : ((Map<String, Object>) Premium.premiumconfig.get("scoreboards")).keySet()) {
 				String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
@@ -75,6 +84,7 @@ public class ScoreboardManager implements SimpleFeature{
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
+		p.hiddenScoreboard = sb_off_players.contains(p.getName());
 		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
 		String scoreboard = getHighestScoreboard(p);
 		if (scoreboard != null) {
@@ -115,9 +125,19 @@ public class ScoreboardManager implements SimpleFeature{
 			if (sender.hiddenScoreboard) {
 				onQuit(sender);
 				sender.sendMessage(scoreboard_off);
+				if (remember_toggle_choice && !sb_off_players.contains(sender.getName())) {
+					sb_off_players.add(sender.getName());
+					Configs.playerdata.set("scoreboard-off", sb_off_players);
+					Configs.playerdata.save();
+				}
 			} else {
 				onJoin(sender);
 				sender.sendMessage(scoreboard_on);
+				if (remember_toggle_choice) {
+					sb_off_players.remove(sender.getName());
+					Configs.playerdata.set("scoreboard-off", sb_off_players);
+					Configs.playerdata.save();
+				}
 			}
 			return true;
 		}

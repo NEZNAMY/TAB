@@ -1,19 +1,9 @@
 package me.neznamy.tab.shared.features;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ConfigurationFile;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -62,14 +52,7 @@ public class BossBar implements SimpleFeature{
 		defaultBars.removeAll(toRemove);
 		remember_toggle_choice = Configs.bossbar.getBoolean("remember-toggle-choice", false);
 		if (remember_toggle_choice) {
-			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
-			try {
-				if (!file.exists()) file.createNewFile();
-				Configs.playerdata = new ConfigurationFile("playerdata.yml", null);
-				bossbar_off_players = Configs.playerdata.getStringList("bossbar-off");
-			} catch (Exception e) {
-				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
-			}
+			bossbar_off_players = Configs.getPlayerData("bossbar-off");
 		}
 		if (bossbar_off_players == null) bossbar_off_players = new ArrayList<String>();
 
