@@ -27,6 +27,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('G', 5);
 		widths.put('H', 5);
 		widths.put('I', 3);
+		widths.put('İ', 3);
 		widths.put('J', 5);
 		widths.put('K', 5);
 		widths.put('L', 5);
@@ -51,6 +52,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('b', 5);
 		widths.put('c', 5);
 		widths.put('č', 3);
+		widths.put('ç', 5);
 		widths.put('d', 5);
 		widths.put('ď', 5);
 		widths.put('e', 5);
@@ -61,6 +63,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('h', 5);
 		widths.put('i', 1);
 		widths.put('í', 1);
+		widths.put('ı', 2); //more like 2.5
 		widths.put('j', 5);
 		widths.put('k', 4);
 		widths.put('l', 2);
@@ -71,6 +74,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('ň', 5);
 		widths.put('o', 5);
 		widths.put('ó', 5);
+		widths.put('ö', 5);
 		widths.put('ô', 5);
 		widths.put('p', 5);
 		widths.put('q', 5);
@@ -79,9 +83,11 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('ř', 5);
 		widths.put('s', 5);
 		widths.put('š', 5);
+		widths.put('ş', 5);	
 		widths.put('t', 3);
 		widths.put('ť', 3);
 		widths.put('u', 5);
+		widths.put('ü', 5);
 		widths.put('ú', 5);
 		widths.put('ů', 5);
 		widths.put('v', 5);
