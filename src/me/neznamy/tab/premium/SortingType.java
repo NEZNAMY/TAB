@@ -68,18 +68,17 @@ public enum SortingType {
 		if (teamName.length() > 15) {
 			teamName = teamName.substring(0, 15);
 		}
-		for (int i = 1; i <= 255; ++i) {
-			String name2 = teamName + (char)i;
-			boolean nameUsed = false;
-			for (ITabPlayer d : Shared.getPlayers()) {
-				if (d.getTeamName() != null && d.getTeamName().equals(name2) && !d.getName().equals(p.getName())) {
-					nameUsed = true;
+		main:
+		for (int i = 65; i <= 255; i++) {
+			String potentialTeamName = teamName + (char)i;
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all == p) continue;
+				if (all.getTeamName().equals(potentialTeamName)) {
+					continue main;
 				}
 			}
-			if (!nameUsed) {
-				if (!Premium.caseSensitive) name2 = name2.toLowerCase();
-				return name2;
-			}
+			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase();
+			return potentialTeamName;
 		}
 		return "InvalidTeam";
 	}

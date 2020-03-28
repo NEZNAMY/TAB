@@ -401,17 +401,17 @@ public abstract class ITabPlayer {
 		if (name.length() > 15) {
 			name = name.substring(0, 15);
 		}
-		for (int i = 1; i <= 255; ++i) {
-			String name2 = name + (char) i;
-			boolean nameUsed = false;
-			for (ITabPlayer d : Shared.getPlayers()) {
-				if (d.getTeamName() != null && d.getTeamName().equals(name2) && !d.getName().equals(getName())) {
-					nameUsed = true;
+		main:
+		for (int i = 65; i <= 255; i++) {
+			String potentialTeamName = name + (char)i;
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all == this) continue;
+				if (all.getTeamName().equals(potentialTeamName)) {
+					continue main;
 				}
 			}
-			if (!nameUsed) {
-				return name2;
-			}
+			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase();
+			return potentialTeamName;
 		}
 		return getName();
 	}
