@@ -41,6 +41,7 @@ unlimited-nametag-mode-static-lines:
 scoreboard:
   enabled: false
   toggle-command: /sb
+  remember-toggle-choice: false
   #using 1-15 instead of 0s everywhere
   use-numbers: false
   disable-in-worlds: 
