@@ -18,7 +18,11 @@ public class TabPlayer extends ITabPlayer{
 
 	public TabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
-		world = p.getServer().getInfo().getName();
+		if (p.getServer() != null) {
+			world = p.getServer().getInfo().getName();
+		} else {
+			world = "-";
+		}
 		channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
 		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
