@@ -244,7 +244,6 @@ public abstract class ITabPlayer {
 					loop:
 						for (Object entry : Configs.primaryGroupFindingList) {
 							for (String playerGroup : playerGroups) {
-								if (playerGroup == null) playerGroup = "null"; //ultrapermissions stuff
 								if (playerGroup.equalsIgnoreCase(entry + "")) {
 									newGroup = playerGroup;
 									break loop;
@@ -256,12 +255,6 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (!permissionGroup.equals(newGroup)) {
-			if (newGroup == null) {
-				//ultrapermissions
-				Shared.errorManager.printError("New updated group of " + getName() + " is null?");
-				newGroup = "null";
-				return;
-			}
 			permissionGroup = newGroup;
 			if (updateDataIfChanged) {
 				updateAll();
