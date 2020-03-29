@@ -348,4 +348,7 @@ public class ErrorManager {
 		line = line.replace(" ", "");
 		return line.startsWith("#") || line.length() == 0;
 	}
+	public void refreshTooLow(String feature, int refresh) {
+		startupWarn("Refresh interval of &e" + feature + " &cis set to every &e" + refresh + " milliseconds&c, which appears to be too low. Did you set it that low accidentally?");
+	}
 }

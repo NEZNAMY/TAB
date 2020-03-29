@@ -19,7 +19,8 @@ public class BelowName implements SimpleFeature{
 	
 	@Override
 	public void load() {
-		this.refresh =  Configs.config.getInt("belowname.refresh-interval-milliseconds", 200);
+		refresh =  Configs.config.getInt("belowname.refresh-interval-milliseconds", 200);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
 		textProperty = new Property(null, text);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;

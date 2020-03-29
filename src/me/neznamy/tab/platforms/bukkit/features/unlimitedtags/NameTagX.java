@@ -43,6 +43,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	@Override
 	public void load() {
 		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			onJoin(all);

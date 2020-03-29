@@ -9,6 +9,7 @@ public class NameTag16 implements SimpleFeature{
 	@Override
 	public void load() {
 		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.registerTeam();
 		}

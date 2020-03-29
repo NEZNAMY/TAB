@@ -13,6 +13,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 
 	public void load(){
 		refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("Tablist prefix/suffix", refresh);
 		updateNames(true);
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", "Tablist Names 1", new Runnable() {
 			public void run() {

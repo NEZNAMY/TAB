@@ -14,6 +14,7 @@ public class HeaderFooter implements SimpleFeature{
 	@Override
 	public void load() {
 		refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 100);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("Header/Footer", refresh);
 		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing header/footer", "Header/Footer", new Runnable(){
 			public void run() {

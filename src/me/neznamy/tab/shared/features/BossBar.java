@@ -22,6 +22,7 @@ public class BossBar implements SimpleFeature{
 	@Override
 	public void load() {
 		refresh = Configs.bossbar.getInt("refresh-interval-milliseconds", 1000);
+		if (refresh < 50) Shared.errorManager.refreshTooLow("BossBar", refresh);
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
