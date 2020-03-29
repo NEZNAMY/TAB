@@ -37,8 +37,8 @@ public class TabPlayer extends ITabPlayer{
 			version = PluginHooks.ViaVersion_getPlayerVersion(this);
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 		}
-		init();
 		nameTagVisible = !hasInvisibility();
+		init();
 	}
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
