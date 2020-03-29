@@ -76,12 +76,15 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed != null) {
 			sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
-			if (Configs.usePrimaryGroup) {
+			if (Configs.groupsByPermissions) {
+				sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
+			} else if (Configs.usePrimaryGroup) {
 				sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 			} else {
 				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
 				sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
 			}
+			
 			if (sorting) {
 				if (analyzed.disabledNametag) {
 					sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
