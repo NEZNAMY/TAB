@@ -63,7 +63,7 @@ public class ScoreboardManager implements SimpleFeature{
 					if ((current == null && highest != null) || (current != null && highest == null) || (!current.equals(highest))) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 						p.setActiveScoreboard(null);
-						onJoin(p);
+						send(p);
 					}
 				}
 				for (Scoreboard board : scoreboards.values()) {
@@ -85,6 +85,9 @@ public class ScoreboardManager implements SimpleFeature{
 	@Override
 	public void onJoin(ITabPlayer p) {
 		p.hiddenScoreboard = sb_off_players.contains(p.getName());
+		send(p);
+	}
+	private void send(ITabPlayer p) {
 		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
 		String scoreboard = getHighestScoreboard(p);
 		if (scoreboard != null) {
@@ -103,7 +106,7 @@ public class ScoreboardManager implements SimpleFeature{
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		onQuit(p);
-		onJoin(p);
+		send(p);
 	}
 	public String getHighestScoreboard(ITabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
@@ -131,7 +134,7 @@ public class ScoreboardManager implements SimpleFeature{
 					Configs.playerdata.save();
 				}
 			} else {
-				onJoin(sender);
+				send(sender);
 				sender.sendMessage(scoreboard_on);
 				if (remember_toggle_choice) {
 					sb_off_players.remove(sender.getName());
@@ -143,9 +146,14 @@ public class ScoreboardManager implements SimpleFeature{
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " on")) {
 			if (sender.hiddenScoreboard) {
-				onJoin(sender);
+				send(sender);
 				sender.sendMessage(scoreboard_on);
 				sender.hiddenScoreboard = false;
+				if (remember_toggle_choice) {
+					sb_off_players.remove(sender.getName());
+					Configs.playerdata.set("scoreboard-off", sb_off_players);
+					Configs.playerdata.save();
+				}
 			}
 			return true;
 		}
@@ -154,6 +162,11 @@ public class ScoreboardManager implements SimpleFeature{
 				onQuit(sender);
 				sender.sendMessage(scoreboard_off);
 				sender.hiddenScoreboard = true;
+				if (remember_toggle_choice) {
+					sb_off_players.add(sender.getName());
+					Configs.playerdata.set("scoreboard-off", sb_off_players);
+					Configs.playerdata.save();
+				}
 			}
 			return true;
 		}
