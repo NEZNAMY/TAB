@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.google.common.collect.Lists;
 
@@ -51,7 +53,7 @@ public class ConfigurationFile{
 			Shared.mainClass.convertConfig(this);
 			if (!hasHeader()) fixHeader();
 			detectPlaceholders(values);
-		} catch (Exception e) {
+		} catch (ParserException | ScannerException e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
