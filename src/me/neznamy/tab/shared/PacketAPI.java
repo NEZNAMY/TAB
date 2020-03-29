@@ -48,7 +48,7 @@ public class PacketAPI{
 
 	//scoreboard objective
 	public static synchronized void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
-		if (to.getVersion().getMinorVersion() >= 8) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
 			unregisterScoreboardObjective(to, objectiveName, title, displayType);
 		}
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
