@@ -29,7 +29,7 @@ public abstract class ITabPlayer {
 	public UUID uniqueId;
 	public UUID tablistId;
 	public String world;
-	private String permissionGroup = "null";
+	private String permissionGroup = "< Not Initialized Yet >";
 	public String teamName;
 	private String rank = "&7No Rank";
 
