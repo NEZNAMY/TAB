@@ -67,6 +67,8 @@ belowname:
   text: "&aPing"
 
 enable-collision: true
+revert-collision-rule-in-worlds:
+  - revertedworld
 do-not-move-spectators: false
 per-server-settings:
   server1:

@@ -72,6 +72,8 @@ belowname:
   text: "Health"
 
 enable-collision: true
+revert-collision-rule-in-worlds:
+  - revertedworld
 do-not-move-spectators: false
 unlimited-nametag-prefix-suffix-mode:
   enabled: false

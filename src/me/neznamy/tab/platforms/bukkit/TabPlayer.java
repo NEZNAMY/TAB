@@ -124,7 +124,7 @@ public class TabPlayer extends ITabPlayer{
 	public boolean getTeamPush() {
 		if (PluginHooks.libsDisguises && PluginHooks.LibsDisguises_isDisguised(this)) return false;
 		if (PluginHooks.idisguise != null && PluginHooks.iDisguise_isDisguised(this)) return false; 
-		return Configs.collision;
+		return Configs.getCollisionRule(world);
 	}
 	@Override
 	public Object getSkin() {

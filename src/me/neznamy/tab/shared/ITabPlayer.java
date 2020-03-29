@@ -88,7 +88,7 @@ public abstract class ITabPlayer {
 	public abstract Object getSkin();
 	
 	public boolean getTeamPush() {
-		return Configs.collision;
+		return Configs.getCollisionRule(world);
 	}
 
 	public String getName() {

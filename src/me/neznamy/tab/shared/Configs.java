@@ -17,7 +17,8 @@ public class Configs {
 
 	public static ConfigurationFile config;
 	public static boolean modifyNPCnames;
-	public static boolean collision;
+	public static boolean collisionRule;
+	public static List<String> revertedCollision;
 	public static Map<String, String> sortedGroups;
 	public static Map<String, Object> rankAliases;
 	public static List<String> disabledHeaderFooter;
@@ -201,7 +202,7 @@ public class Configs {
 	}
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
-		collision = config.getBoolean("enable-collision", true);
+		collisionRule = config.getBoolean("enable-collision", true);
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
 		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
@@ -235,6 +236,7 @@ public class Configs {
 			config.set("rank-aliases", rankAliases = map);
 			config.save();
 		}
+		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.separatorType+"s", Arrays.asList("reverted" + Shared.separatorType));
 		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.separatorType+"s.header-footer", Arrays.asList("disabled" + Shared.separatorType));
 		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Arrays.asList("disabled" + Shared.separatorType));
 		disabledNametag = config.getStringList("disable-features-in-"+Shared.separatorType+"s.nametag", Arrays.asList("disabled" + Shared.separatorType));
@@ -296,5 +298,8 @@ public class Configs {
 			}
 		}
 		return playerdata.getStringList(key);
+	}
+	public static boolean getCollisionRule(String world) {
+		return revertedCollision.contains(world) ? !collisionRule : collisionRule;
 	}
 }
