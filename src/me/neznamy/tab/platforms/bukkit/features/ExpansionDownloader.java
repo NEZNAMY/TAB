@@ -8,9 +8,9 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.Shared;
 
-public class PlaceholderAPIExpansionDownloader{
+public class ExpansionDownloader{
 
-	public PlaceholderAPIExpansionDownloader() {
+	public ExpansionDownloader() {
 		Main instance = Main.instance;
 		Bukkit.getScheduler().runTaskLater(instance, new Runnable() {
 

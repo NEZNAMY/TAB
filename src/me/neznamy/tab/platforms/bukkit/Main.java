@@ -479,7 +479,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.SECRET_remove_ghost_players) 																						Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
 				Shared.registerFeature("papihook", new TabExpansion());
-				new PlaceholderAPIExpansionDownloader();
+				new ExpansionDownloader();
 			}
 			new UpdateChecker();
 
