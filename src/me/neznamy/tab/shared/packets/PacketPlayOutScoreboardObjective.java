@@ -21,6 +21,10 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		this.renderType = renderType;
 		this.method = method;
 	}
+	public PacketPlayOutScoreboardObjective(String objectiveName) {
+		this.objectiveName = objectiveName;
+		this.method = 1; // REMOVE
+	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() < 13) {
@@ -44,7 +48,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		} else {
 			displayName = cutTo(displayName, 32);
 		}
-		return new ScoreboardObjective(objectiveName, displayName, renderType.toBungee(), (byte)method);
+		return new ScoreboardObjective(objectiveName, displayName, renderType == null ? null : renderType.toBungee(), (byte)method);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
@@ -53,7 +57,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		} else {
 			displayName = cutTo(displayName, 32);
 		}
-		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, displayName, renderType.toVelocity(), (byte)method);
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, displayName, renderType == null ? null : renderType.toVelocity(), (byte)method);
 	}
 	public enum EnumScoreboardHealthDisplay{
 

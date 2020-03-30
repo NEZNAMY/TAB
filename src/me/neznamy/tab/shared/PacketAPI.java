@@ -55,7 +55,7 @@ public class PacketAPI{
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 1));
+		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName));
 	}
 	public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 2));
