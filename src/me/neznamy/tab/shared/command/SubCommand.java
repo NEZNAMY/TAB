@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,13 @@ public abstract class SubCommand {
 		} else {
 			Shared.mainClass.sendConsoleMessage(message);
 		}
+	}
+	public List<String> getPlayers(String nameStart){
+		List<String> suggestions = new ArrayList<String>();
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
+		}
+		return suggestions;
 	}
 	public abstract void execute(ITabPlayer sender, String[] args);
 	public abstract List<String> complete(ITabPlayer sender, String[] arguments);

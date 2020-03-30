@@ -134,6 +134,6 @@ public class DebugCommand extends SubCommand {
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		return arguments.length == 1 ? null : new ArrayList<String>();
+		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<String>();
 	}
 }

@@ -89,7 +89,7 @@ public class PlayerUUIDCommand extends SubCommand {
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		if (arguments.length == 1) return null;
+		if (arguments.length == 1) return getPlayers(arguments[0]);
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 2) {
 			for (String property : usualProperties) {

@@ -1,10 +1,6 @@
 package me.neznamy.tab.platforms.bungee;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import java.util.UUID;
@@ -104,14 +100,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				args = list.toArray(new String[0]);
 			}
 			e.getSuggestions().clear();
-			List<String> suggestions = command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args);
-			if (suggestions == null) {
-				suggestions = new ArrayList<String>();
-				for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-					suggestions.add(p.getName());
-				}
-			}
-			e.getSuggestions().addAll(suggestions);
+			e.getSuggestions().addAll(command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args));
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
