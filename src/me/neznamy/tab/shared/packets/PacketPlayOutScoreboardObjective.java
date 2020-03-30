@@ -11,49 +11,49 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
 	private String objectiveName;
-	private String title;
-	private EnumScoreboardHealthDisplay displayType;
-	private int action;
+	private String displayName;
+	private EnumScoreboardHealthDisplay renderType;
+	private int method;
 
-	public PacketPlayOutScoreboardObjective(String objectiveName, String title, EnumScoreboardHealthDisplay displayType, int action) {
+	public PacketPlayOutScoreboardObjective(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType, int method) {
 		this.objectiveName = objectiveName;
-		this.title = title;
-		this.displayType = displayType;
-		this.action = action;
+		this.displayName = displayName;
+		this.renderType = renderType;
+		this.method = method;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		String title = this.title;
+		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() < 13) {
-			title = cutTo(title, 32);
+			displayName = cutTo(displayName, 32);
 		}
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			TITLE.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(title).toString()));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(displayName).toString()));
 		} else {
-			TITLE.set(packet, title);
+			DISPLAYNAME.set(packet, displayName);
 		}
-		if (DISPLAYTYPE != null && displayType != null) DISPLAYTYPE.set(packet, displayType.toNMS());
-		ACTION.set(packet, action);
+		if (RENDERTYPE != null && renderType != null) RENDERTYPE.set(packet, renderType.toNMS());
+		METHOD.set(packet, method);
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		String title = this.title;
+		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = new IChatBaseComponent(title).toString();
+			displayName = new IChatBaseComponent(displayName).toString();
 		} else {
-			title = cutTo(title, 32);
+			displayName = cutTo(displayName, 32);
 		}
-		return new ScoreboardObjective(objectiveName, title, displayType.toBungee(), (byte)action);
+		return new ScoreboardObjective(objectiveName, displayName, renderType.toBungee(), (byte)method);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		String title = this.title;
+		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = new IChatBaseComponent(title).toString();
+			displayName = new IChatBaseComponent(displayName).toString();
 		} else {
-			title = cutTo(title, 32);
+			displayName = cutTo(displayName, 32);
 		}
-		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, title, displayType.toVelocity(), (byte)action);
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, displayName, renderType.toVelocity(), (byte)method);
 	}
 	public enum EnumScoreboardHealthDisplay{
 
@@ -81,16 +81,16 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
 	private static final Field OBJECTIVENAME = getField(fields, "a");
-	private static final Field TITLE = getField(fields, "b");
-	private static Field DISPLAYTYPE;
-	private static final Field ACTION;
+	private static final Field DISPLAYNAME = getField(fields, "b");
+	private static Field RENDERTYPE;
+	private static final Field METHOD;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			DISPLAYTYPE = getField(fields, "c");
-			ACTION = getField(fields, "d");
+			RENDERTYPE = getField(fields, "c");
+			METHOD = getField(fields, "d");
 		} else {
-			ACTION = getField(fields, "c");
+			METHOD = getField(fields, "c");
 		}
 	}
 }
