@@ -114,6 +114,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
+			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			inject(e.getPlayer().getUniqueId());
 			Shared.cpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
 
@@ -142,6 +143,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.errorManager.printError("An error occurred when processing PlayerQuitEvent", t);
 		}
 		Shared.data.remove(e.getPlayer().getUniqueId());
+		Shared.entityIdMap.remove(e.getPlayer().getEntityId());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void a(PlayerChangedWorldEvent e){
@@ -486,6 +488,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			for (Player p : getOnlinePlayers()) {
 				ITabPlayer t = new TabPlayer(p);
 				Shared.data.put(p.getUniqueId(), t);
+				Shared.entityIdMap.put(p.getEntityId(), t);
 				if (inject) inject(t.getUniqueId());
 			}
 		}

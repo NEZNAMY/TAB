@@ -142,10 +142,10 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (pack != null) {
 			ITabPlayer packetPlayer = null;
 			if (pack.a != null && pack.a instanceof Integer) {
-				packetPlayer = Shared.getPlayer((int)pack.a);
+				packetPlayer = Shared.entityIdMap.get((int)pack.a);
 			}
 			if (packetPlayer == null && pack.b != null && pack.b instanceof Integer) {
-				packetPlayer = Shared.getPlayer((int)pack.b);
+				packetPlayer = Shared.entityIdMap.get((int)pack.b);
 			}
 			if (packetPlayer == null || !packetPlayer.disabledNametag) {
 				//sending packets outside of the packet reader or protocollib will cause problems
@@ -186,7 +186,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
 		if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
 			int id = (int) packet.a;
-			ITabPlayer pl = Shared.getPlayer(id);
+			ITabPlayer pl = Shared.entityIdMap.get(id);
 			List<Integer> vehicleList;
 			if (pl != null) {
 				//player moved
@@ -199,7 +199,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			} else if ((vehicleList = vehicles.get(id)) != null){
 				//a vehicle carrying something moved
 				for (Integer entity : vehicleList) {
-					ITabPlayer passenger = Shared.getPlayer(entity);
+					ITabPlayer passenger = Shared.entityIdMap.get(entity);
 					if (passenger != null) {
 						NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
 					}
@@ -207,12 +207,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			}
 		}
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
-			ITabPlayer spawnedPlayer = Shared.getPlayer((int)packet.a);
+			ITabPlayer spawnedPlayer = Shared.entityIdMap.get((int)packet.a);
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
 			for (int id : (int[])packet.a) {
-				ITabPlayer despawnedPlayer = Shared.getPlayer(id);
+				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
 				if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
 			}
 		}
@@ -232,7 +232,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 				vehicles.put(vehicle, Arrays.asList(passengers));
 			}
 			for (int entity : passengers) {
-				ITabPlayer pass = Shared.getPlayer(entity);
+				ITabPlayer pass = Shared.entityIdMap.get(entity);
 				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 			}
 		}
@@ -252,7 +252,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 						}
 					}
 				}
-				ITabPlayer pass = Shared.getPlayer(passenger);
+				ITabPlayer pass = Shared.entityIdMap.get(passenger);
 				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
 			}
 		}

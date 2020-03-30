@@ -8,7 +8,6 @@ import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
@@ -22,6 +21,7 @@ public class Shared {
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
+	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	
 	public static final Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
 	public static final Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
@@ -41,12 +41,6 @@ public class Shared {
 	public static ITabPlayer getPlayer(String name) {
 		for (ITabPlayer p : data.values()) {
 			if (p.getName().equals(name)) return p;
-		}
-		return null;
-	}
-	public static ITabPlayer getPlayer(int entityId) {
-		for (ITabPlayer p : data.values()) {
-			if (((TabPlayer)p).player.getEntityId() == entityId) return p;
 		}
 		return null;
 	}
@@ -103,6 +97,7 @@ public class Shared {
 			custompacketfeatures.clear();
 			rawpacketfeatures.clear();
 			data.clear();
+			entityIdMap.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
