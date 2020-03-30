@@ -11,24 +11,28 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 
-	public String header;
-	public String footer;
+	public IChatBaseComponent header;
+	public IChatBaseComponent footer;
 
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
+		this.header = new IChatBaseComponent(header);
+		this.footer = new IChatBaseComponent(footer);
+	}
+	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;
 		this.footer = footer;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerListHeaderFooter();
-		HEADER.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(header).toString()));
-		FOOTER.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(footer).toString()));
+		HEADER.set(packet, MethodAPI.getInstance().ICBC_fromString(header.toString()));
+		FOOTER.set(packet, MethodAPI.getInstance().ICBC_fromString(footer.toString()));
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new PlayerListHeaderFooter(new IChatBaseComponent(header).toString(), new IChatBaseComponent(footer).toString());
+		return new PlayerListHeaderFooter(header.toString(), footer.toString());
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new HeaderAndFooter(new IChatBaseComponent(header).toString(), new IChatBaseComponent(footer).toString());
+		return new HeaderAndFooter(header.toString(), footer.toString());
 	}
 
 	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
