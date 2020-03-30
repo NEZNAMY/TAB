@@ -9,24 +9,24 @@ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut{
 
-	private int position;
+	private int slot;
 	private String objectiveName;
 
-	public PacketPlayOutScoreboardDisplayObjective(int position, String objectiveName) {
-		this.position = position;
+	public PacketPlayOutScoreboardDisplayObjective(int slot, String objectiveName) {
+		this.slot = slot;
 		this.objectiveName = objectiveName;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardDisplayObjective();
-		POSITION.set(packet, position);
+		POSITION.set(packet, slot);
 		OBJECTIVENAME.set(packet, objectiveName);
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new ScoreboardDisplay((byte)position, objectiveName);
+		return new ScoreboardDisplay((byte)slot, objectiveName);
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay((byte)position, objectiveName);
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay((byte)slot, objectiveName);
 	}
 
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
