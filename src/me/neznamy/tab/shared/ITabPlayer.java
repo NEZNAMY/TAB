@@ -235,6 +235,9 @@ public abstract class ITabPlayer {
 					break;
 				}
 			}
+			if (newGroup.equals("null")) {
+				Shared.errorManager.oneTimeConsoleError("Player " + name + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
+			}
 		} else {
 			if (Configs.usePrimaryGroup) {
 				newGroup = getGroupFromPermPlugin();
