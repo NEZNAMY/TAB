@@ -50,7 +50,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 		private EnumPlayerInfoAction(int networkId) {
 			this.networkId = networkId;
-			if (MethodAPI.getInstance() != null) {
+			if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumPlayerInfoAction, toString());
 			}
 		}
@@ -89,7 +89,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 		private EnumGamemode(int networkId) {
 			this.networkId = networkId;
-			if (MethodAPI.getInstance() != null) {
+			if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumGamemode, toString());
 			}
 		}
@@ -209,7 +209,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			PROFILE.set(packet, profile);
 			GAMEMODE.set(packet, data.gameMode.networkId);
 			PING.set(packet, data.latency);
-			LISTNAME.set(packet, data.displayName);
+			LISTNAME.set(packet, cutTo(data.displayName, 16));
 			return packet;
 		}
 	}
