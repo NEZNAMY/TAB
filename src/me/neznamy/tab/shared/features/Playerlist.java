@@ -65,6 +65,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 			}
 		}
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER && receiver.getVersion() == ProtocolVersion.v1_8) {
+			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
 			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist Names 3", new Runnable() {
 
 				@Override
