@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -189,6 +190,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item) nmsData;
 			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), me.neznamy.tab.platforms.velocity.Main.textFromComponent(item.getDisplayName()));
 		}
+		
+		@Override
+		public String toString() {
+			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + "}";
+		}
 	}
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
@@ -268,6 +274,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			listData.add(PlayerInfoData.fromVelocity(i));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
+	}
+	
+	@Override
+	public String toString() {
+		return "PacketPlayOutPlayerInfo{action=" + action + ",entries=" + Arrays.toString(entries) + "}";
 	}
 
 	private static Field ACTION;
