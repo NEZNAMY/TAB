@@ -86,7 +86,7 @@ public enum SortingType {
 		String group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 		if (group == null) {
 			group = "";
-			Shared.errorManager.oneTimeConsoleError("Group \"" + p.getGroup() + " is not defined in sorting list! This will result in unwanted behavior.");
+			Shared.errorManager.oneTimeConsoleError("Group \"" + p.getGroup() + "\" is not defined in sorting list! This will result in unwanted behavior.");
 		}
 		return group;
 	}
