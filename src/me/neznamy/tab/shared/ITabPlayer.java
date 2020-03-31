@@ -406,7 +406,6 @@ public abstract class ITabPlayer {
 					continue main;
 				}
 			}
-			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase();
 			return potentialTeamName;
 		}
 		return getName();
