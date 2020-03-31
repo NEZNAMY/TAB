@@ -19,7 +19,6 @@ public class MethodAPI_v1_6_R1 extends MethodAPI {
 		EnumChatFormat = EnumChatFormat.class;
 		EnumGamemode = EnumGamemode.class;
 		IChatBaseComponent = ChatMessage.class;
-		PacketPlayOutPlayerInfo = Packet201PlayerInfo.class;
 		PacketPlayOutScoreboardDisplayObjective = Packet208SetScoreboardDisplayObjective.class;
 		PacketPlayOutScoreboardObjective = Packet206SetScoreboardObjective.class;
 		PacketPlayOutScoreboardScore = Packet207SetScoreboardScore.class;
