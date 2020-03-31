@@ -38,7 +38,8 @@ public class TabPlayer extends ITabPlayer{
 			return groups[0];
 		}
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
-		return player.getGroups().toArray(new String[0])[0];
+		String[] groups = player.getGroups().toArray(new String[0]);
+		return groups[groups.length-1];
 	}
 	public String[] getGroupsFromPermPlugin() {
 		return new String[] {getGroupFromPermPlugin()};
