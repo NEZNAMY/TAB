@@ -351,4 +351,12 @@ public class ErrorManager {
 	public void refreshTooLow(String feature, int refresh) {
 		startupWarn("Refresh interval of &e" + feature + " &cis set to every &e" + refresh + " milliseconds&c, which appears to be too low. Did you set it that low accidentally?");
 	}
+	public SimpleDateFormat createDateFormat(String value, String defaultValue) {
+		try {
+			return new SimpleDateFormat(value);
+		} catch (Exception e) {
+			startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes ?");
+			return new SimpleDateFormat(defaultValue);
+		}
+	}
 }

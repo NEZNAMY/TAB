@@ -205,9 +205,9 @@ public class Configs {
 		collisionRule = config.getBoolean("enable-collision", true);
 		BelowName.number = Configs.config.getString("belowname.number", "%health%");
 		BelowName.text = Configs.config.getString("belowname.text", "Health");
-		timeFormat = new SimpleDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"));
+		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
-		dateFormat = new SimpleDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"));
+		dateFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		removeStrings = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
