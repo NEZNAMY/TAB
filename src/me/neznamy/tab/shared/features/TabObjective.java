@@ -40,7 +40,7 @@ public class TabObjective implements SimpleFeature{
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
+			PacketAPI.unregisterScoreboardObjective(p, objectivename);
 		}
 	}
 	@Override
@@ -54,7 +54,7 @@ public class TabObjective implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		PacketAPI.unregisterScoreboardObjective(p, objectivename, title, type.getDisplay());
+		PacketAPI.unregisterScoreboardObjective(p, objectivename);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

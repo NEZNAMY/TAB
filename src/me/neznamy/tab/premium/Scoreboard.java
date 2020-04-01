@@ -104,7 +104,7 @@ public class Scoreboard {
 	}
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
-			PacketAPI.unregisterScoreboardObjective(p, objectiveName, p.properties.get("scoreboard-title").get(), EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.unregisterScoreboardObjective(p, objectiveName);
 			for (Score s : scores) {
 				s.unregister(p);
 			}

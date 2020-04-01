@@ -49,12 +49,12 @@ public class PacketAPI{
 	//scoreboard objective
 	public static synchronized void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.separatorType.equals("world")) {
-			unregisterScoreboardObjective(to, objectiveName, title, displayType);
+			unregisterScoreboardObjective(to, objectiveName);
 		}
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName, title, displayType, 0));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
-	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
+	public static void unregisterScoreboardObjective(ITabPlayer to, String objectiveName) {
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName));
 	}
 	public static void changeScoreboardObjectiveTitle(ITabPlayer p, String objectiveName, String title, EnumScoreboardHealthDisplay displayType) {
