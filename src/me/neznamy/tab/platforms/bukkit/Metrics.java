@@ -214,7 +214,7 @@ public class Metrics {
 
 		String pluginName = "TAB Reborn";
 		String pluginVersion = plugin.getDescription().getVersion();
-		if (Premium.is()) pluginVersion += "+";
+		if (Premium.is()) pluginVersion += " Premium";
 
 		data.put("pluginName", pluginName); // Append the name of the plugin
 		data.put("pluginVersion", pluginVersion); // Append the version of the plugin
