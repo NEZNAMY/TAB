@@ -8,11 +8,12 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 
 public class TabObjective implements SimpleFeature{
 
+	private static final String objectivename = "TAB-TabObjective";
+	private static final int DisplaySlot = 0;
+	
 	public TabObjectiveType type;
 	public static String rawValue;
-	private final String objectivename = "TAB-TabObjective";
 	private final String title = "ms";
-	private final int DisplaySlot = 0;
 
 	public TabObjective(TabObjectiveType type) {
 		this.type = type;
