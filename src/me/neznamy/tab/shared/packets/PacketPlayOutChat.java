@@ -10,13 +10,16 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	private ChatMessageType type;
 	
 	public PacketPlayOutChat(String message) {
-		this(message, ChatMessageType.CHAT);
-	}
-	public PacketPlayOutChat(IChatBaseComponent message) {
-		this(message, ChatMessageType.CHAT);
+		this.message = IChatBaseComponent.fromColoredText(message);
+		this.type = ChatMessageType.CHAT;
 	}
 	public PacketPlayOutChat(String message, ChatMessageType type) {
-		this(IChatBaseComponent.fromColoredText(message), type);
+		this.message = IChatBaseComponent.fromColoredText(message);
+		this.type = type;
+	}
+	public PacketPlayOutChat(IChatBaseComponent message) {
+		this.message = message;
+		this.type = ChatMessageType.CHAT;
 	}
 	public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
 		this.message = message;
@@ -28,7 +31,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.getId());
 		} else {
-			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(), type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(message.getText(), type.getId()); //need a method for colored text from component
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
