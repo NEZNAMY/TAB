@@ -84,6 +84,8 @@ public abstract class ITabPlayer {
 	public abstract void sendPacket(Object nmsPacket);
 
 	public abstract void sendMessage(String message);
+	
+	public abstract void sendRawMessage(String message);
 
 	public abstract Object getSkin();
 	

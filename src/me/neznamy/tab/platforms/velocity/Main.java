@@ -345,6 +345,9 @@ public class Main implements MainClass{
 	public void sendConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
+	public void sendRawConsoleMessage(String message) {
+		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
+	}
 	public String getPermissionPlugin() {
 		if (PluginHooks.luckPerms) return "luckperms";
 		return "Unknown/None";

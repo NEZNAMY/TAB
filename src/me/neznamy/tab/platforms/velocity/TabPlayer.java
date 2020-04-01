@@ -44,6 +44,10 @@ public class TabPlayer extends ITabPlayer{
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
+	public void sendRawMessage(String message) {
+		if (message == null || message.length() == 0) return;
+		player.sendMessage(TextComponent.of(message));
+	}
 	@Override
 	public Object getSkin() {
 		return player.getGameProfile().getProperties();

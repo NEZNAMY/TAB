@@ -116,6 +116,10 @@ public class TabPlayer extends ITabPlayer{
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(Placeholders.color(message));
 	}
+	public void sendRawMessage(String message) {
+		if (message == null || message.length() == 0) return;
+		player.sendMessage(message);
+	}
 	@Override
 	public boolean hasInvisibility() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);

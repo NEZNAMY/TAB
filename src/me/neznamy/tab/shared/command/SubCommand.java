@@ -37,6 +37,13 @@ public abstract class SubCommand {
 			Shared.mainClass.sendConsoleMessage(message);
 		}
 	}
+	public static void sendRawMessage(ITabPlayer sender, String message) {
+		if (sender != null) {
+			sender.sendRawMessage(message);
+		} else {
+			Shared.mainClass.sendRawConsoleMessage(message);
+		}
+	}
 	public List<String> getPlayers(String nameStart){
 		List<String> suggestions = new ArrayList<String>();
 		for (ITabPlayer all : Shared.getPlayers()) {

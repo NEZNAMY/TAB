@@ -58,6 +58,11 @@ public class TabPlayer extends ITabPlayer{
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(Placeholders.color(message));
 	}
+	@SuppressWarnings("deprecation")
+	public void sendRawMessage(String message) {
+		if (message == null || message.length() == 0) return;
+		player.sendMessage(message);
+	}
 	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
 
 	@Override

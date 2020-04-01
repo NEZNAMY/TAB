@@ -285,6 +285,10 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void sendConsoleMessage(String message) {
 		ProxyServer.getInstance().getConsole().sendMessage(Placeholders.color(message));
 	}
+	@SuppressWarnings("deprecation")
+	public void sendRawConsoleMessage(String message) {
+		ProxyServer.getInstance().getConsole().sendMessage(message);
+	}
 	public String getPermissionPlugin() {
 		if (PluginHooks.luckPerms) return "LuckPerms";
 		if (PluginHooks.ultrapermissions) return "UltraPermissions";

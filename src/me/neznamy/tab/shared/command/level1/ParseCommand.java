@@ -27,7 +27,9 @@ public class ParseCommand extends SubCommand{
 				if (replaced.contains(p.getIdentifier())) replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
 			sendMessage(sender, "&6Replacing placeholder &e" + args[0] + (sender == null ? "" : "&6 for player &e" + sender.getName()));
-			sendMessage(sender, "&6Result: &r" + replaced);
+			sendMessage(sender, "Colorized output: " + replaced);
+			sendRawMessage(sender, "Original output: " + replaced);
+			sendRawMessage(sender, "Decolorized output: " + replaced.replace(Placeholders.colorChar+"", "&"));
 		} else {
 			sendMessage(sender, "Usage: /tab parse <placeholder>");
 		}

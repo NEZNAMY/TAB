@@ -496,6 +496,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
 	}
+	public void sendRawConsoleMessage(String message) {
+		Bukkit.getConsoleSender().sendMessage(message);
+	}
 	public String getPermissionPlugin() {
 		if (PluginHooks.luckPerms) return "LuckPerms";
 		if (PluginHooks.permissionsEx) return "PermissionsEx";
