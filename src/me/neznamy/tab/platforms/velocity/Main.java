@@ -181,12 +181,12 @@ public class Main implements MainClass{
 				super.channelRead(context, packet);
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+				ITabPlayer player = Shared.getPlayer(uuid);
+				if (player == null || player.getVersion() == me.neznamy.tab.shared.ProtocolVersion.UNKNOWN) {
+					super.write(context, packet, channelPromise);
+					return;
+				}
 				try{
-					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player == null || player.getVersion() == me.neznamy.tab.shared.ProtocolVersion.UNKNOWN) {
-						super.write(context, packet, channelPromise);
-						return;
-					}
 					if (packet instanceof MinecraftPacket) {
 						UniversalPacketPlayOut customPacket = null;
 						customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
@@ -204,7 +204,7 @@ public class Main implements MainClass{
 						if (killPacket((Team)packet)) return;
 					}
 				} catch (Throwable e){
-					Shared.errorManager.printError("An error occurred when analyzing packets", e);
+					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
 				super.write(context, packet, channelPromise);
 			}

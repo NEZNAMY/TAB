@@ -158,12 +158,12 @@ public class Main extends Plugin implements Listener, MainClass{
 				super.channelRead(context, packet);
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+				ITabPlayer player = Shared.getPlayer(uuid);
+				if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
+					super.write(context, packet, channelPromise);
+					return;
+				}
 				try{
-					ITabPlayer player = Shared.getPlayer(uuid);
-					if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
-						super.write(context, packet, channelPromise);
-						return;
-					}
 					if (packet instanceof DefinedPacket) {
 						UniversalPacketPlayOut customPacket = null;
 						customPacket = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
@@ -198,7 +198,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						}
 					}
 				} catch (Throwable e){
-					Shared.errorManager.printError("An error occurred when analyzing packets", e);
+					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
 				super.write(context, packet, channelPromise);
 			}
