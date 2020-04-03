@@ -23,7 +23,6 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagXPacket.Pac
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
@@ -59,15 +58,14 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags", new Runnable() {
-				public void run() {
-					for (ITabPlayer p : Shared.getPlayers()) {
-						if (p.disabledNametag) continue;
-						NameTagLineManager.updateVisibility(p);
-					}
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags", new Runnable() {
+			public void run() {
+				for (ITabPlayer p : Shared.getPlayers()) {
+					if (p.disabledNametag) continue;
+					NameTagLineManager.updateVisibility(p);
 				}
-			});
+			}
+		});
 	}
 	@Override
 	public void unload() {
