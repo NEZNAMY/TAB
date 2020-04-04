@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -40,7 +39,6 @@ public class PlayerUUIDCommand extends SubCommand {
 					Configs.config.save();
 					changed.updateAll();
 					changed.forceUpdateDisplay();
-					if (Shared.features.containsKey("nametagx")) ((TabPlayer)changed).restartArmorStands();
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
 				return;
