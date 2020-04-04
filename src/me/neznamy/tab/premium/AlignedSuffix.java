@@ -135,10 +135,9 @@ public class AlignedSuffix implements SimpleFeature{
 				all.updatePlayerListName();
 			}
 		}
-		String newFormat = prefixAndName;
+		String newFormat = prefixAndName + Placeholders.colorChar + "r";
 		newFormat += buildSpaces(maxWidth + 12 - currentWidth);
-		newFormat += Placeholders.getLastColors(prefixAndName);
-		newFormat += suffix;
+		newFormat += Placeholders.getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
 	private int getTextWidth(IChatBaseComponent component) {
