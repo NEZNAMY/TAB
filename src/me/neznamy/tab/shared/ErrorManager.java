@@ -12,6 +12,7 @@ import java.util.List;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -44,7 +45,7 @@ public class ErrorManager {
 			if (file.length() < 1000000) { //not going over 1 MB
 				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 				if (message != null) {
-					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + "] " + message + newline);
+					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + message + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 				}
 				if (t != null) {
