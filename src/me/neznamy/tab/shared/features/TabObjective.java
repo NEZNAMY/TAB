@@ -66,7 +66,7 @@ public class TabObjective implements SimpleFeature{
 		}
 	}
 	public int getValue(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "tablist objective");
+		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "Tablist Objective");
 	}
 	public enum TabObjectiveType{
 
