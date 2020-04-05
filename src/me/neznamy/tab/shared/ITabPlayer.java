@@ -376,7 +376,7 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (name == null) {
-			Shared.errorManager.oneTimeConsoleError("Group \"" + permissionGroup + "\" is not defined in sorting list! This will result in unwanted behavior.");
+			if (!permissionGroup.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + permissionGroup + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + permissionGroup + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 			if (Shared.features.containsKey("playerlist")) {
 				name = properties.get("tabprefix").get();
 			} else {

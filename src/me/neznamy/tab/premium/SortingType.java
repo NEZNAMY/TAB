@@ -86,7 +86,7 @@ public enum SortingType {
 		String group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
 		if (group == null) {
 			group = "";
-			Shared.errorManager.oneTimeConsoleError("Group \"" + p.getGroup() + "\" is not defined in sorting list! This will result in unwanted behavior.");
+			if (!p.getGroup().equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + p.getGroup() + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + p.getGroup() + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 		}
 		return group;
 	}
