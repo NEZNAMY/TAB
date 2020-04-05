@@ -71,6 +71,6 @@ public class BelowName implements SimpleFeature{
 		}
 	}
 	private int getNumber(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get("belowname-number").get(), 0, objectivename);
+		return Shared.errorManager.parseInteger(p.properties.get("belowname-number").get(), 0, "BelowName");
 	}
 }
