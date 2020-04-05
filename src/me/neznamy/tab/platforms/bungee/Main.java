@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
@@ -223,24 +222,24 @@ public class Main extends Plugin implements Listener, MainClass{
 		PluginHooks.luckPerms = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null;
 		PluginHooks.ultrapermissions = ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null;
 		if (PluginHooks.premiumVanish) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
 					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
 				}
 			});
 		}
-		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
 				public String get() {
 					return server.getValue().getPlayers().size()+"";
 				}
 			});
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
 				public String get() {
 					int count = server.getValue().getPlayers().size();
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
@@ -250,7 +249,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				}
 			});
 		}
-		Shared.registerUniversalPlaceholders();
+		Placeholders.registerUniversalPlaceholders();
 	}
 
 
@@ -307,7 +306,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());

@@ -1,21 +1,10 @@
 package me.neznamy.tab.shared;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -52,7 +41,7 @@ public class ConfigurationFile{
 			input.close();
 			Shared.mainClass.convertConfig(this);
 			if (!hasHeader()) fixHeader();
-			detectPlaceholders(values);
+			Placeholders.findAllUsed(values);
 		} catch (ParserException | ScannerException e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
@@ -67,24 +56,6 @@ public class ConfigurationFile{
 	}
 	public ConfigurationFile(String sourceAndDestination, List<String> header) throws Exception{
 		this(sourceAndDestination, sourceAndDestination, header);
-	}
-	private void detectPlaceholders(Map<String, Object> map) {
-		for (Entry<String, Object> entry : map.entrySet()) {
-			Object value = entry.getValue();
-			if (value instanceof String) {
-				for (String placeholder : Placeholders.detectAll((String) value)) {
-					if (!Placeholders.usedPlaceholders.contains(placeholder)) Placeholders.usedPlaceholders.add(placeholder);
-				}
-			}
-			if (value instanceof Map) detectPlaceholders((Map<String, Object>) value);
-			if (value instanceof List) {
-				for (Object line : (List<Object>)value) {
-					for (String placeholder : Placeholders.detectAll(line+"")) {
-						if (!Placeholders.usedPlaceholders.contains(placeholder)) Placeholders.usedPlaceholders.add(placeholder);
-					}
-				}
-			}
-		}
 	}
 	public String getName() {
 		return file.getName();

@@ -7,11 +7,9 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class Configs {
 
@@ -161,44 +159,6 @@ public class Configs {
 				}
 			}
 		}
-	}
-	public static void assignPlaceholder(String placeholder) {
-		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
-		if (!Placeholders.usedPlaceholders.contains(placeholder)) return;
-
-		//filtering though placeholder types
-		if (Placeholders.myPlayerPlaceholders.containsKey(placeholder)) {
-			Placeholders.usedPlayerPlaceholders.put(placeholder, Placeholders.myPlayerPlaceholders.get(placeholder));
-			return;
-		}
-		if (Placeholders.myServerPlaceholders.containsKey(placeholder)) {
-			Placeholders.usedServerPlaceholders.put(placeholder, Placeholders.myServerPlaceholders.get(placeholder));
-			return;
-		}
-		if (Placeholders.myServerConstants.containsKey(placeholder)) {
-			Placeholders.usedServerConstants.put(placeholder, Placeholders.myServerConstants.get(placeholder));
-			return;
-		}
-		if (placeholder.contains("animation:")) {
-			String animationName = placeholder.substring(11, placeholder.length()-1);
-			for (Animation a : Configs.animations) {
-				if (a.getName().equalsIgnoreCase(animationName)) {
-					TABAPI.registerServerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()-1) {
-						public String get() {
-							return a.getMessage();
-						}
-						@Override
-						public String[] getChilds(){
-							return a.getAllMessages();
-						}
-					});
-					return;
-				}
-			}
-			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
-			return;
-		}
-		Shared.mainClass.registerUnknownPlaceholder(placeholder);
 	}
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();

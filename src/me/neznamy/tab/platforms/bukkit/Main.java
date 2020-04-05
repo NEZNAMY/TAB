@@ -12,7 +12,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
-import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.features.*;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -65,7 +64,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						} else {
 							if (sender.hasPermission("tab.admin")) {
 								sender.sendMessage(Placeholders.color("&m                                                                                "));
-								sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
+								if (Configs.bukkitBridgeMode) sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
 								sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
 								sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
 								sender.sendMessage(Placeholders.color("&m                                                                                "));
@@ -217,39 +216,39 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		usedExpansions = new ArrayList<String>();
 
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
-				if (PluginHooks.essentials != null) return Shared.decimal2.format(PluginHooks.Essentials_getMoney(p));
-				if (PluginHooks.Vault_economy != null) return Shared.decimal2.format(PluginHooks.Vault_getMoney(p));
+				if (PluginHooks.essentials != null) return Placeholders.decimal2.format(PluginHooks.Essentials_getMoney(p));
+				if (PluginHooks.Vault_economy != null) return Placeholders.decimal2.format(PluginHooks.Vault_getMoney(p));
 				return "-";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%xPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockX()+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%yPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%yPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockY()+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%zPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%zPos%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getLocation().getBlockZ()+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%displayname%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 0) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getDisplayName();
 			}
 		});
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%deaths%", 5000) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.registerPlaceholder(new PlayerPlaceholder("%deaths%", 5000) {
 			public String get(ITabPlayer p) {
 				return (((TabPlayer)p).player).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
 			public String get(ITabPlayer p) {
 				String name = null;
 				if (PluginHooks.essentials != null) {
@@ -260,19 +259,19 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%deluxetag%", 0) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%deluxetag%", 0) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new ServerConstant("%deluxetag%") {
+			Placeholders.registerPlaceholder(new ServerConstant("%deluxetag%") {
 				public String get() {
 					return "";
 				}
 			});
 		}
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%faction%", 1000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%faction%", 1000) {
 
 			private boolean init;
 			private int type;
@@ -298,18 +297,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return name;
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%health%", 100) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(((TabPlayer)p).player.getHealth())+"";
 			}
 		});
-		TABAPI.registerServerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
-				return Shared.decimal2.format(Math.min(20, MethodAPI.getInstance().getTPS()));
+				return Placeholders.decimal2.format(Math.min(20, MethodAPI.getInstance().getTPS()));
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
 				}
@@ -319,7 +318,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -330,7 +329,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AutoAFK_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -341,7 +340,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -352,7 +351,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
@@ -363,13 +362,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new ServerConstant("%afk%") {
+			Placeholders.registerPlaceholder(new ServerConstant("%afk%") {
 				public String get() {
 					return "";
 				}
 			});
 		}
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -378,7 +377,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return var+"";
 			}
 		});
-		TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%canseestaffonline%", 2000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -388,14 +387,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && PluginHooks.Vault_chat != null) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 1000) {
 
 				public String get(ITabPlayer p) {
 					String prefix = PluginHooks.Vault_getPrefix(p);
 					return prefix != null ? prefix : "";
 				}
 			});
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 1000) {
 
 				public String get(ITabPlayer p) {
 					String suffix = PluginHooks.Vault_getSuffix(p);
@@ -403,23 +402,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
-			TABAPI.registerServerConstant(new ServerConstant("%vault-prefix%") {
+			Placeholders.registerPlaceholder(new ServerConstant("%vault-prefix%") {
 				public String get() {
 					return "";
 				}
 			});
-			TABAPI.registerServerConstant(new ServerConstant("%vault-suffix%") {
+			Placeholders.registerPlaceholder(new ServerConstant("%vault-suffix%") {
 				public String get() {
 					return "";
 				}
 			});
 		}
-		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
 			}
 		});
-		Shared.registerUniversalPlaceholders();
+		Placeholders.registerUniversalPlaceholders();
 	}
 	@SuppressWarnings("unchecked")
 	public static Player[] getOnlinePlayers(){
@@ -549,7 +548,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
 			if (server != -1) {
 				Shared.debug("Registering SERVER PAPI placeholder " + identifier + " with cooldown " + server);
-				TABAPI.registerServerPlaceholder(new ServerPlaceholder(identifier, server){
+				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, server){
 					public String get() {
 						return PluginHooks.PlaceholderAPI_setPlaceholders((Player)null, identifier);
 					}
@@ -559,7 +558,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
 			if (player != -1) {
 				Shared.debug("Registering PLAYER PAPI placeholder " + identifier + " with cooldown " + player);
-				TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, player){
+				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, player){
 					public String get(ITabPlayer p) {
 						return PluginHooks.PlaceholderAPI_setPlaceholders(((TabPlayer)p).player, identifier);
 					}
@@ -567,7 +566,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return;
 			}
 			Shared.debug("Registering PLAYER PAPI placeholder " + identifier);
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					return PluginHooks.PlaceholderAPI_setPlaceholders(((TabPlayer)p).player, identifier);
 				}

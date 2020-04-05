@@ -191,9 +191,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		Placeholders.usedPlayerPlaceholders.remove(placeholder.getIdentifier());
-		Placeholders.myPlayerPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		Configs.assignPlaceholder(placeholder.getIdentifier());
+		Placeholders.registerPlaceholder(placeholder, true);
 	}
 	
 	
@@ -205,9 +203,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		Placeholders.usedServerPlaceholders.remove(placeholder.getIdentifier());
-		Placeholders.myServerPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		Configs.assignPlaceholder(placeholder.getIdentifier());
+		Placeholders.registerPlaceholder(placeholder, true);
 	}
 	
 	
@@ -219,8 +215,7 @@ public class TABAPI {
 	 * @see registerServerPlaceholder
 	 */
 	public static void registerServerConstant(ServerConstant constant) {
-		Placeholders.usedServerConstants.remove(constant.getIdentifier());
-		Placeholders.myServerConstants.put(constant.getIdentifier(), constant);
+		Placeholders.registerPlaceholder(constant, true);
 	}
 	
 	@Deprecated

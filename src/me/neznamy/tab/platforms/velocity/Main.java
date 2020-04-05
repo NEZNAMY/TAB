@@ -27,7 +27,6 @@ import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
 
 import io.netty.channel.*;
-import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.velocity.protocol.*;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -237,19 +236,19 @@ public class Main implements MainClass{
 	public static void registerPlaceholders() {
 		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
 		
-		TABAPI.registerServerConstant(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			TABAPI.registerServerPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
 				public String get() {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
 				}
 			});
 		}
-		Shared.registerUniversalPlaceholders();
+		Placeholders.registerUniversalPlaceholders();
 	}
 	private static Method map;
 	
@@ -364,7 +363,7 @@ public class Main implements MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			TABAPI.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, 49){
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());
