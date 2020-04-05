@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.Shared;
 public abstract class ServerPlaceholder extends Placeholder{
 
 	private long lastRefresh;
-	private String lastValue = "";
+	private String lastValue;
 
 	public ServerPlaceholder(String identifier, int cooldown) {
 		super(identifier, cooldown);
@@ -18,10 +18,10 @@ public abstract class ServerPlaceholder extends Placeholder{
 		long startTime = System.nanoTime();
 		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
 			String value = get();
-			lastRefresh = System.currentTimeMillis();
 			if (value == null || !value.equals("ERROR")) {
 				lastValue = value;
 			}
+			lastRefresh = System.currentTimeMillis();
 		}
 		Shared.cpu.addPlaceholderTime(identifier, System.nanoTime()-startTime);
 		return lastValue;
