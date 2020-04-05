@@ -292,20 +292,17 @@ public class Placeholders {
 		registerPlaceholder(placeholder, false);
 	}
 	public static void registerPlaceholder(Placeholder placeholder, boolean viaAPI) {
-		Placeholders.usedServerPlaceholders.remove(placeholder.getIdentifier());
-		Placeholders.usedPlayerPlaceholders.remove(placeholder.getIdentifier());
-		Placeholders.usedServerConstants.remove(placeholder.getIdentifier());
 		if (placeholder instanceof PlayerPlaceholder) {
 			myPlayerPlaceholders.put(placeholder.getIdentifier(), (PlayerPlaceholder) placeholder);
-			if (viaAPI) usedPlayerPlaceholders.put(placeholder.getIdentifier(), (PlayerPlaceholder) placeholder);
+			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedPlayerPlaceholders.put(placeholder.getIdentifier(), (PlayerPlaceholder) placeholder);
 		}
 		if (placeholder instanceof ServerPlaceholder) {
 			myServerPlaceholders.put(placeholder.getIdentifier(), (ServerPlaceholder) placeholder);
-			if (viaAPI) usedServerPlaceholders.put(placeholder.getIdentifier(), (ServerPlaceholder) placeholder);
+			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedServerPlaceholders.put(placeholder.getIdentifier(), (ServerPlaceholder) placeholder);
 		}
 		if (placeholder instanceof ServerConstant) {
 			myServerConstants.put(placeholder.getIdentifier(), (ServerConstant) placeholder);
-			if (viaAPI) usedServerConstants.put(placeholder.getIdentifier(), (ServerConstant) placeholder);
+			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedServerConstants.put(placeholder.getIdentifier(), (ServerConstant) placeholder);
 		}
 		if (viaAPI) permanentPlaceholders.add(placeholder);
 	}
