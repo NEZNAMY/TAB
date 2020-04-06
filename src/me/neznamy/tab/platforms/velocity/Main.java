@@ -122,9 +122,11 @@ public class Main implements MainClass{
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
-		for (PlayerPlaceholder pl : Placeholders.usedPlayerPlaceholders.values()) {
-			pl.lastRefresh.remove(disconnectedPlayer.getName());
-			pl.lastValue.remove(disconnectedPlayer.getName());
+		for (Placeholder pl : Placeholders.usedPlaceholders.values()) {
+			if (pl instanceof PlayerPlaceholder) {
+				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
+				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
+			}
 		}
 	}
 	@Subscribe

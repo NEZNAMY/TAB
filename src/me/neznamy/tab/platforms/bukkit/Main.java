@@ -134,9 +134,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) return;
 			Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
-			for (PlayerPlaceholder pl : Placeholders.usedPlayerPlaceholders.values()) {
-				pl.lastRefresh.remove(e.getPlayer().getName());
-				pl.lastValue.remove(e.getPlayer().getName());
+			for (Placeholder pl : Placeholders.usedPlaceholders.values()) {
+				if (pl instanceof PlayerPlaceholder) {
+					((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
+					((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
+				}
 			}
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerQuitEvent", t);
@@ -523,11 +525,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
 		if (objType == TabObjectiveType.PING) {
 			TabObjective.rawValue = "%ping%";
-			Placeholders.usedPlaceholders.add("%ping%");
+			Placeholders.allUsedPlaceholders.add("%ping%");
 		}
 		if (objType == TabObjectiveType.HEARTS) {
 			TabObjective.rawValue = "%health%";
-			Placeholders.usedPlaceholders.add("%health%");
+			Placeholders.allUsedPlaceholders.add("%health%");
 		}
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");

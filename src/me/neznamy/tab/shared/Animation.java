@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.List;
 
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 
@@ -16,9 +17,11 @@ public class Animation {
 		this.interval = Shared.errorManager.fixAnimationInterval(name, interval);
 		this.messages =  Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
 		for (int i=0; i<messages.length; i++) {
-			for (ServerConstant c : Placeholders.usedServerConstants.values()) {
-				if (messages[i].contains(c.getIdentifier())) {
-					messages[i] = messages[i].replace(c.getIdentifier(), c.get());
+			for (Placeholder c : Placeholders.usedPlaceholders.values()) {
+				if (c instanceof ServerConstant) {
+					if (messages[i].contains(c.getIdentifier())) {
+						messages[i] = messages[i].replace(c.getIdentifier(), ((ServerConstant)c).get());
+					}
 				}
 			}
 		}

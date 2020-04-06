@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class PlayerUUIDCommand extends SubCommand {
 	
@@ -77,6 +78,11 @@ public class PlayerUUIDCommand extends SubCommand {
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
 		Configs.config.save();
+		for (String identifier : Placeholders.detectAll(value)) {
+			if (Placeholders.usedPlaceholders.containsKey(identifier)) continue;
+			if (!Placeholders.allUsedPlaceholders.contains(identifier)) Placeholders.allUsedPlaceholders.add(identifier);
+			Placeholders.categorizeUsedPlaceholder(identifier);
+		}
 		player.updateAll();
 		player.forceUpdateDisplay();
 		if (value != null){

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import java.io.File;
+import java.util.ConcurrentModificationException;
 
 import org.bukkit.Bukkit;
 
@@ -51,7 +52,7 @@ public class ExpansionDownloader{
 									});
 								}
 							}
-						} catch (InterruptedException e) {
+						} catch (InterruptedException | ConcurrentModificationException e) {
 						} catch (Throwable e) {
 							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
 						}

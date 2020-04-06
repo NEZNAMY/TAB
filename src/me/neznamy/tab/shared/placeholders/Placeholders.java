@@ -11,45 +11,28 @@ public class Placeholders {
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 	
-	//my registered placeholders
-	public static Map<String, PlayerPlaceholder> myPlayerPlaceholders;
-	public static Map<String, ServerPlaceholder> myServerPlaceholders;
-	public static Map<String, ServerConstant> myServerConstants;
+	//all my placeholders + used placeholderapi placeholders
+	public static Map<String, Placeholder> myPlaceholders;
 	
-	//my used placeholders + used papi placeholders
-	public static Map<String, PlayerPlaceholder> usedPlayerPlaceholders;
-	public static Map<String, ServerPlaceholder> usedServerPlaceholders;
-	public static Map<String, ServerConstant> usedServerConstants;
+	//my used placeholders + used placeholderapi placeholders
+	public static Map<String, Placeholder> usedPlaceholders;
 	
 	//all placeholders used in all configuration files, including invalid ones
-	public static List<String> usedPlaceholders;
+	public static List<String> allUsedPlaceholders;
 	
 	//placeholders registered using the API, so they survive /tab reload
 	public static List<Placeholder> permanentPlaceholders = new ArrayList<Placeholder>();
 
 	public static void clearAll() {
-		myPlayerPlaceholders = new HashMap<String, PlayerPlaceholder>();
-		myServerPlaceholders = new HashMap<String, ServerPlaceholder>();
-		myServerConstants = new HashMap<String, ServerConstant>();
-		
-		usedPlayerPlaceholders = new HashMap<String, PlayerPlaceholder>();
-		usedServerPlaceholders = new HashMap<String, ServerPlaceholder>();
-		usedServerConstants = new HashMap<String, ServerConstant>();
-		
-		usedPlaceholders = new ArrayList<String>();
+		myPlaceholders = new HashMap<String, Placeholder>();
+		usedPlaceholders = new HashMap<String, Placeholder>();
+		allUsedPlaceholders = new ArrayList<String>();
 	}
-	public static List<Placeholder> getAllPlaceholders(){
-		List<Placeholder> list = new ArrayList<Placeholder>();
-		list.addAll(myServerPlaceholders.values());
-		list.addAll(myPlayerPlaceholders.values());
-		list.addAll(myServerConstants.values());
-		return list;
+	public static Collection<Placeholder> getAllPlaceholders(){
+		return myPlaceholders.values();
 	}
-	public static List<Placeholder> getAllUsed(){
-		List<Placeholder> usedPlaceholders = new ArrayList<Placeholder>();
-		usedPlaceholders.addAll(usedPlayerPlaceholders.values());
-		usedPlaceholders.addAll(usedServerPlaceholders.values());
-		return usedPlaceholders;
+	public static Collection<Placeholder> getAllUsed(){
+		return usedPlaceholders.values();
 	}
 	public static List<String> detectAll(String s){
 		List<String> list = new ArrayList<String>();
@@ -99,7 +82,8 @@ public class Placeholders {
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
 		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		for (Placeholder placeholder : playerPlaceholders ? getAllUsed() : usedServerPlaceholders.values()) {
+		for (Placeholder placeholder : getAllUsed()) {
+			if (placeholder instanceof PlayerPlaceholder && !playerPlaceholders) continue;
 			if (rawValue.contains(placeholder.getIdentifier())) {
 				placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
@@ -117,14 +101,14 @@ public class Placeholders {
 			Object value = entry.getValue();
 			if (value instanceof String) {
 				for (String placeholder : detectAll((String) value)) {
-					if (!usedPlaceholders.contains(placeholder)) usedPlaceholders.add(placeholder);
+					if (!allUsedPlaceholders.contains(placeholder)) allUsedPlaceholders.add(placeholder);
 				}
 			}
 			if (value instanceof Map) findAllUsed((Map<String, Object>) value);
 			if (value instanceof List) {
 				for (Object line : (List<Object>)value) {
 					for (String placeholder : detectAll(line+"")) {
-						if (!usedPlaceholders.contains(placeholder)) usedPlaceholders.add(placeholder);
+						if (!allUsedPlaceholders.contains(placeholder)) allUsedPlaceholders.add(placeholder);
 					}
 				}
 			}
@@ -250,10 +234,8 @@ public class Placeholders {
 		for (Placeholder pl : permanentPlaceholders) {
 			registerPlaceholder(pl);
 		}
-		for (String placeholder : usedPlaceholders) {
-			if (!usedServerPlaceholders.containsKey(placeholder) && 
-				!usedPlayerPlaceholders.containsKey(placeholder) && 
-				!usedServerConstants.containsKey(placeholder)) {
+		for (String placeholder : allUsedPlaceholders) {
+			if (!usedPlaceholders.containsKey(placeholder)){
 				categorizeUsedPlaceholder(placeholder);
 			}
 		}
@@ -261,17 +243,8 @@ public class Placeholders {
 	public static void categorizeUsedPlaceholder(String placeholder) {
 		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
 
-		//filtering though placeholder types
-		if (myPlayerPlaceholders.containsKey(placeholder)) {
-			usedPlayerPlaceholders.put(placeholder, myPlayerPlaceholders.get(placeholder));
-			return;
-		}
-		if (myServerPlaceholders.containsKey(placeholder)) {
-			usedServerPlaceholders.put(placeholder, myServerPlaceholders.get(placeholder));
-			return;
-		}
-		if (myServerConstants.containsKey(placeholder)) {
-			usedServerConstants.put(placeholder, myServerConstants.get(placeholder));
+		if (myPlaceholders.containsKey(placeholder)) {
+			usedPlaceholders.put(placeholder, myPlaceholders.get(placeholder));
 			return;
 		}
 		if (placeholder.contains("animation:")) {
@@ -299,18 +272,8 @@ public class Placeholders {
 		registerPlaceholder(placeholder, false);
 	}
 	public static void registerPlaceholder(Placeholder placeholder, boolean viaAPI) {
-		if (placeholder instanceof PlayerPlaceholder) {
-			myPlayerPlaceholders.put(placeholder.getIdentifier(), (PlayerPlaceholder) placeholder);
-			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedPlayerPlaceholders.put(placeholder.getIdentifier(), (PlayerPlaceholder) placeholder);
-		}
-		if (placeholder instanceof ServerPlaceholder) {
-			myServerPlaceholders.put(placeholder.getIdentifier(), (ServerPlaceholder) placeholder);
-			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedServerPlaceholders.put(placeholder.getIdentifier(), (ServerPlaceholder) placeholder);
-		}
-		if (placeholder instanceof ServerConstant) {
-			myServerConstants.put(placeholder.getIdentifier(), (ServerConstant) placeholder);
-			if (viaAPI || usedPlaceholders.contains(placeholder.getIdentifier())) usedServerConstants.put(placeholder.getIdentifier(), (ServerConstant) placeholder);
-		}
+		myPlaceholders.put(placeholder.getIdentifier(), placeholder);
+		if (viaAPI || allUsedPlaceholders.contains(placeholder.getIdentifier())) usedPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		if (viaAPI) permanentPlaceholders.add(placeholder);
 	}
 }

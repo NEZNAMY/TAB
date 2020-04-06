@@ -25,9 +25,11 @@ public class Property {
 		this.rawValue = analyze(rawValue);
 	}
 	private String analyze(String value) {
-		for (ServerConstant c : Placeholders.usedServerConstants.values()) {
-			if (value.contains(c.getIdentifier())) {
-				value = value.replace(c.getIdentifier(), c.get());
+		for (Placeholder c : Placeholders.usedPlaceholders.values()) {
+			if (c instanceof ServerConstant) {
+				if (value.contains(c.getIdentifier())) {
+					value = value.replace(c.getIdentifier(), ((ServerConstant)c).get());
+				}
 			}
 		}
 		placeholders = Placeholders.detectPlaceholders(value, owner != null);
