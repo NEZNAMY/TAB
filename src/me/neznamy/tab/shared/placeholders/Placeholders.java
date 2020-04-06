@@ -38,6 +38,13 @@ public class Placeholders {
 		
 		usedPlaceholders = new ArrayList<String>();
 	}
+	public static List<Placeholder> getAllPlaceholders(){
+		List<Placeholder> list = new ArrayList<Placeholder>();
+		list.addAll(myServerPlaceholders.values());
+		list.addAll(myPlayerPlaceholders.values());
+		list.addAll(myServerConstants.values());
+		return list;
+	}
 	public static List<Placeholder> getAllUsed(){
 		List<Placeholder> usedPlaceholders = new ArrayList<Placeholder>();
 		usedPlaceholders.addAll(usedPlayerPlaceholders.values());

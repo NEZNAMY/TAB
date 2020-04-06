@@ -19,12 +19,9 @@ public class ParseCommand extends SubCommand{
 	public void execute(ITabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String replaced = args[0];
-			List<Placeholder> list = new ArrayList<Placeholder>();
-			list.addAll(Placeholders.myServerPlaceholders.values());
-			list.addAll(Placeholders.myPlayerPlaceholders.values());
-			list.addAll(Placeholders.myServerConstants.values());
-			for (Placeholder p : list) 
-				if (replaced.contains(p.getIdentifier())) replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));
+			for (Placeholder p : Placeholders.getAllPlaceholders()) 
+				if (replaced.contains(p.getIdentifier())) 
+					replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
 			sendMessage(sender, "&6Replacing placeholder &e" + args[0] + (sender == null ? "" : "&6 for player &e" + sender.getName()));
 			sendMessage(sender, "Colorized output: " + replaced);
