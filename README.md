@@ -2,7 +2,7 @@
 [![minecraft][Badge-ServerVersions]][URL-Spigot]   [![issues][Badge-Issues]][URL-Issues]   [![discord][Badge-Discord]][URL-Discord]   [![version][Badge-PluginVersion]][URL-Release]
 
 
-All dependencies can be found at http://207.180.242.97/spigot/tab/dependencies/  
+All free dependencies can be found at http://207.180.242.97/spigot/tab/dependencies/  
 
 [URL-Spigot]: https://www.spigotmc.org/resources/57806/
 [URL-Issues]: https://github.com/NEZNAMY/TAB/issues
