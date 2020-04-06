@@ -97,7 +97,7 @@ public class Placeholders {
 		return result;
 	}
 	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
-		if (rawValue == null || (!rawValue.contains("%") && !rawValue.contains("{"))) return new ArrayList<Placeholder>();
+		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : playerPlaceholders ? getAllUsed() : usedServerPlaceholders.values()) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
