@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 @SuppressWarnings("unchecked")
 public class ConfigurationFile{
 	
-	public static final File dataFolder = new File("plugins" + File.separatorChar + "TAB");
+	public static final File dataFolder = Main.instance.getDataFolder();
 	
 	private File file;
 	private Yaml yaml;
