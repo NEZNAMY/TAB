@@ -11,10 +11,10 @@ public class Placeholders {
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 	
-	//all my placeholders + used placeholderapi placeholders
+	//internal placeholders + used placeholderapi placeholders
 	public static Map<String, Placeholder> myPlaceholders;
 	
-	//my used placeholders + used placeholderapi placeholders
+	//used internal placeholders + used placeholderapi placeholders
 	public static Map<String, Placeholder> usedPlaceholders;
 	
 	//all placeholders used in all configuration files, including invalid ones
@@ -244,10 +244,12 @@ public class Placeholders {
 		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
 
 		if (myPlaceholders.containsKey(placeholder)) {
+			//internal placeholder
 			usedPlaceholders.put(placeholder, myPlaceholders.get(placeholder));
 			return;
 		}
 		if (placeholder.contains("animation:")) {
+			//animation
 			String animationName = placeholder.substring(11, placeholder.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
@@ -266,6 +268,7 @@ public class Placeholders {
 			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
 			return;
 		}
+		//placeholderapi or invalid
 		Shared.mainClass.registerUnknownPlaceholder(placeholder);
 	}
 	public static void registerPlaceholder(Placeholder placeholder) {
