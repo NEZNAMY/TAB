@@ -11,7 +11,7 @@ tablist-refresh-interval-milliseconds: 1000
 header-footer-refresh-interval-milliseconds: 100
 
 header:
-  - "%animation:ServerName%"
+  - "&3&lServer name"
   - "&6&lRank: %rank%"
   - "&7&l>> %animation:Welcome%&3 &l%nick%&7&l! &7&l<<"
   - "&7Online players: &f%online%"
@@ -45,16 +45,14 @@ Groups:
   Player:
     tabprefix: "&0&l[&7&lPlayer&0&l] &3"
     tagprefix: "&2&lPlayer &3"
-  hfexample:
+  example_group:
     header:
-      - "This is an example for per-group header/footer"
+      - "This is an example of per-group header/footer"
     footer:
       - "applied to a group"
   _OTHER_:
     tabprefix: "%rank% "
     tagprefix: "%rank% "
-    tabsuffix: ""
-    tagsuffix: ""
 
 Users:
   _NEZNAMY_:
