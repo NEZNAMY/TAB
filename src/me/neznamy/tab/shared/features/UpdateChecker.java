@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.Shared;
 
 public class UpdateChecker {
 
-	private static final int currentVersionId = 272;
+	private static final int currentVersionId = 273;
 	
 	public UpdateChecker() {
 		new Thread(new Runnable() {
