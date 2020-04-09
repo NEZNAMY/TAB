@@ -21,8 +21,10 @@ public class NTPreviewCommand extends SubCommand{
 			if (sender != null) {
 				if (sender.previewingNametag) {
 					sender.getArmorStands().forEach(a -> a.destroy());
+					sender.getArmorStands().forEach(a -> a.getNearbyUsers().remove(sender));
 					sendMessage(sender, Configs.preview_off);
 				} else {
+					sender.getArmorStands().forEach(a -> a.getNearbyUsers().add(sender));
 					NameTagLineManager.spawnArmorStand(sender, sender, false);
 					sendMessage(sender, Configs.preview_on);
 				}

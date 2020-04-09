@@ -41,7 +41,6 @@ public class ArmorStand{
 	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	public Property property;
 	private boolean staticOffset;
-	private long lastLocationRefresh = 0;
 	
 	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID, boolean staticOffset) {
 		this.owner = owner;
@@ -52,6 +51,7 @@ public class ArmorStand{
 		property = owner.properties.get(ID);
 		visible = getVisibility();
 		refreshName();
+		updateLocation(player.getLocation());
 	}
 	public void refreshName() {
 		if (property.isUpdateNeeded()) {
@@ -65,7 +65,7 @@ public class ArmorStand{
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		updateLocation();
+		updateLocation(player.getLocation());
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
@@ -76,14 +76,12 @@ public class ArmorStand{
 		if (to == null) {
 			return Shared.errorManager.printError(null, "Attempted to spawn armor stand for null player");
 		}
-		updateLocation();
 		visible = getVisibility();
 		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, property.get()) : property.get();
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(displayName, to));
 	}
 	public Object getNMSTeleportPacket(ITabPlayer to) {
-		updateLocation();
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(to));
 	}
 	private Location getArmorStandLocationFor(ITabPlayer to) {
@@ -103,10 +101,8 @@ public class ArmorStand{
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
-		updateLocation();
 		synchronized (registeredTo) {
 			for (ITabPlayer all : registeredTo) {
-				if (all == owner) continue; //should never be anyway
 				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, property.get()) : property.get();
 				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 					//sneaking feature was removed in 1.14, so despawning completely now
@@ -164,11 +160,10 @@ public class ArmorStand{
 		if (Configs.SECRET_armorstands_always_visible) return true;
 		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
 	}
-	private void updateLocation() {
-		if (System.currentTimeMillis() - lastLocationRefresh < 50) return;
-		double x = player.getLocation().getX();
-		double y = player.getLocation().getY() + yOffset;
-		double z = player.getLocation().getZ();
+	public void updateLocation(Location newLocation) {
+		double x = newLocation.getX();
+		double y = newLocation.getY() + yOffset + 2;
+		double z = newLocation.getZ();
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
@@ -178,9 +173,7 @@ public class ArmorStand{
 				y -= (sneaking ? 0.30 : 0.18);
 			}
 		}
-		y += 2;
 		location = new Location(null,x,y,z);
-		lastLocationRefresh = System.currentTimeMillis();
 	}
 	public int getEntityId() {
 		return entityId;
@@ -208,5 +201,8 @@ public class ArmorStand{
 		}
 		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
+	}
+	public List<ITabPlayer> getNearbyUsers(){
+		return registeredTo;
 	}
 }

@@ -33,13 +33,8 @@ public class MethodAPI_v1_7_R3 extends MethodAPI {
 		PacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.class;
 		PacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.class;
 		PacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.class;
-		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
-		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
-		PacketPlayOutRelEntityMove = PacketPlayOutRelEntityMove.class;
-		PacketPlayOutRelEntityMoveLook = PacketPlayOutRelEntityMoveLook.class;
-		PacketPlayOutEntity = PacketPlayOutEntity.class;
 	}
 	public Object ICBC_fromString(String string) {
 		if (string == null) return null;

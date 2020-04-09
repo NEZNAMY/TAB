@@ -45,14 +45,8 @@ public class MethodAPI_v1_15_R1 extends MethodAPI {
 		PacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.class;
 		PacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.class;
 		PacketPlayOutBoss_Action = PacketPlayOutBoss.Action.class;
-		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
-		PacketPlayOutMount = PacketPlayOutMount.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
-		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
-		PacketPlayOutRelEntityMove = PacketPlayOutEntity.PacketPlayOutRelEntityMove.class;
-		PacketPlayOutRelEntityMoveLook = PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook.class;
-		PacketPlayOutEntity = PacketPlayOutEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
 	public Object ICBC_fromString(String string) {

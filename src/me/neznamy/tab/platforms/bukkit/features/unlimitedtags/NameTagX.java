@@ -1,20 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
@@ -23,21 +15,19 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagXPacket.Pac
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
 import me.neznamy.tab.shared.features.SimpleFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, CustomPacketFeature{
 
 	private int refresh;
-	private Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<Integer, List<Integer>>();
 
 	@Override
 	public void load() {
@@ -73,7 +63,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
 			p.getArmorStands().forEach(a -> a.destroy());
-			if (p.previewingNametag) p.getArmorStands().forEach(a -> a.destroy(p));
 		}
 	}
 	@Override
@@ -83,15 +72,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue; //already registered 2 lines above
 			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
-		}
-		Player player = ((TabPlayer)connectedPlayer).player;
-		if (player.getVehicle() != null) {
-			Entity vehicle = player.getVehicle();
-			List<Integer> list = new ArrayList<Integer>();
-			for (Entity e : getPassengers(vehicle)) {
-				list.add(e.getEntityId());
-			}
-			vehicles.put(vehicle.getEntityId(), list);
 		}
 		((TabPlayer)connectedPlayer).loadArmorStands();
 	}
@@ -139,11 +119,8 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		NameTagXPacket pack = NameTagXPacket.fromNMS(packet);
 		if (pack != null) {
 			ITabPlayer packetPlayer = null;
-			if (pack.a != null && pack.a instanceof Integer) {
-				packetPlayer = Shared.entityIdMap.get((int)pack.a);
-			}
-			if (packetPlayer == null && pack.b != null && pack.b instanceof Integer) {
-				packetPlayer = Shared.entityIdMap.get((int)pack.b);
+			if (pack.entity instanceof Integer) {
+				packetPlayer = Shared.entityIdMap.get((int)pack.entity);
 			}
 			if (packetPlayer == null || !packetPlayer.disabledNametag) {
 				//sending packets outside of the packet reader or protocollib will cause problems
@@ -164,116 +141,53 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerToggleSneakEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		Shared.cpu.runMeasuredTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
+		Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", "NameTagX - PlayerToggleSneakEvent", new Runnable() {
 			public void run() {
 				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
 			}
 		});
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerMoveEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (p.previewingNametag) Shared.cpu.runMeasuredTask("processing move", "NameTagX - move event", new Runnable() {
+		Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
 			public void run() {
-				NameTagLineManager.teleportArmorStand(p, p);
+				NameTagLineManager.teleportArmorStand(p, e.getTo());
+			}
+		});
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void a(PlayerTeleportEvent e) {
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) return;
+		Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
+			public void run() {
+				NameTagLineManager.teleportArmorStand(p, e.getTo());
 			}
 		});
 	}
 	public void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
-		boolean teleportPacket = packet.getPacketType() == PacketType.ENTITY_TELEPORT;
-		if (packet.getPacketType() == PacketType.ENTITY_MOVE || teleportPacket) {
-			int id = (int) packet.a;
-			ITabPlayer pl = Shared.entityIdMap.get(id);
-			List<Integer> vehicleList;
-			if (pl != null) {
-				//player moved
-				if (((TabPlayer)pl).player.isFlying() && !teleportPacket) {
-					//fixing a client-sided bug
-					NameTagLineManager.teleportOwner(pl, packetReceiver);
-				} else {
-					NameTagLineManager.teleportArmorStand(pl, packetReceiver);
-				}
-			} else if ((vehicleList = vehicles.get(id)) != null){
-				//a vehicle carrying something moved
-				for (Integer entity : vehicleList) {
-					ITabPlayer passenger = Shared.entityIdMap.get(entity);
-					if (passenger != null) {
-						NameTagLineManager.teleportArmorStand(passenger, packetReceiver);
-					}
-				}
-			}
-		}
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
-			ITabPlayer spawnedPlayer = Shared.entityIdMap.get((int)packet.a);
+			ITabPlayer spawnedPlayer = Shared.entityIdMap.get((int)packet.entity);
 			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
-			for (int id : (int[])packet.a) {
+			for (int id : (int[])packet.entity) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
 				if (despawnedPlayer != null) despawnedPlayer.getArmorStands().forEach(a -> a.destroy(packetReceiver));
 			}
 		}
-		if (packet.getPacketType() == PacketType.MOUNT) {
-			//1.9+ mount detection
-			int vehicle = (int) packet.a;
-			int[] passg = (int[]) packet.b;
-			Integer[] passengers = new Integer[passg.length];
-			for (int i=0; i<passg.length; i++) {
-				passengers[i] = passg[i];
-			}
-			if (passengers.length == 0) {
-				//detach
-				vehicles.remove(vehicle);
-			} else {
-				//attach
-				vehicles.put(vehicle, Arrays.asList(passengers));
-			}
-			for (int entity : passengers) {
-				ITabPlayer pass = Shared.entityIdMap.get(entity);
-				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
-			}
-		}
-		if (packet.getPacketType() == PacketType.ATTACH_ENTITY) {
-			//1.8.x mount detection
-			if ((int)packet.a == 0) {
-				int vehicle = (int) packet.c;
-				int passenger = (int) packet.b;
-				if (vehicle != -1) {
-					//attach
-					vehicles.put(vehicle, Arrays.asList(passenger));
-				} else {
-					//detach
-					for (Entry<Integer, List<Integer>> entry : vehicles.entrySet()) {
-						if (entry.getValue().contains(passenger)) {
-							vehicles.remove(entry.getKey());
-						}
-					}
-				}
-				ITabPlayer pass = Shared.entityIdMap.get(passenger);
-				if (pass != null) NameTagLineManager.teleportArmorStand(pass, packetReceiver);
-			}
-		}
-	}
-	@SuppressWarnings("deprecation")
-	public List<Entity> getPassengers(Entity vehicle){
-		List<Entity> passengers = new ArrayList<Entity>();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
-			passengers = vehicle.getPassengers();
-		} else {
-			if (vehicle.getPassenger() != null) passengers.add(vehicle.getPassenger());
-		}
-		return passengers;
 	}
 	@Override
 	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
+		if (!Configs.modifyNPCnames) return packet;
 		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
-				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-				if (packetPlayer == null && Configs.modifyNPCnames) {
+				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null) {
 					if (playerInfoData.name.length() <= 15) {
 						if (playerInfoData.name.length() <= 14) {
 							playerInfoData.name += Placeholders.colorChar + "r";

@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import org.bukkit.Location;
+
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -22,8 +24,13 @@ public class NameTagLineManager {
 			}
 		}
 	}
-	public static void teleportArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) packetReceiver.sendPacket(as.getNMSTeleportPacket(packetReceiver));
+	public static void teleportArmorStand(ITabPlayer armorStandOwner, Location newLocation) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) {
+			as.updateLocation(newLocation);
+			for (ITabPlayer nearby : as.getNearbyUsers()) {
+				nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+			}
+		}
 	}
 	public static void teleportOwner(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
 		if (armorStandOwner == packetReceiver) return; //avoiding buggy movement when riding entities

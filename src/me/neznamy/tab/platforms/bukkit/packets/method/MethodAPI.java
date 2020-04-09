@@ -38,14 +38,8 @@ public abstract class MethodAPI {
 	public static Class<?> PacketPlayOutEntityMetadata;
 	public static Class<?> PacketPlayOutSpawnEntityLiving;
 	public static Class<?> PacketPlayOutBoss_Action;
-	public static Class<?> PacketPlayOutAttachEntity;
-	public static Class<?> PacketPlayOutMount;
 	public static Class<?> PacketPlayOutNamedEntitySpawn;
 	public static Class<?> PacketPlayOutEntityDestroy;
-	public static Class<?> PacketPlayOutEntityTeleport;
-	public static Class<?> PacketPlayOutRelEntityMove;
-	public static Class<?> PacketPlayOutRelEntityMoveLook;
-	public static Class<?> PacketPlayOutEntity;
 	public static Class<?> PlayerInfoData;
 	
 	public static Field PacketPlayInUseEntity_ENTITY;

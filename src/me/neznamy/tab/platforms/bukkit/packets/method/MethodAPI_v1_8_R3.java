@@ -40,13 +40,8 @@ public class MethodAPI_v1_8_R3 extends MethodAPI {
 		PacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.class;
 		PacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.class;
 		PacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.class;
-		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
-		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
-		PacketPlayOutRelEntityMove = PacketPlayOutEntity.PacketPlayOutRelEntityMove.class;
-		PacketPlayOutRelEntityMoveLook = PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook.class;
-		PacketPlayOutEntity = PacketPlayOutEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
 	public Object ICBC_fromString(String string) {
