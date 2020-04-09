@@ -131,9 +131,7 @@ public class ArmorStand{
 	}
 	public void destroy() {
 		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) all.sendPacket(destroyPacket);
-		}
+		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(destroyPacket);
 		registeredTo.clear();
 	}
 	public void updateVisibility() {
