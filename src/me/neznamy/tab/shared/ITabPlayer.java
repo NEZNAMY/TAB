@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -198,13 +197,13 @@ public abstract class ITabPlayer {
 			registerTeam();
 		}
 		if (Shared.features.containsKey("nametagx")) {
-			NameTagLineManager.refreshNames(this);
+			armorStands.forEach(a -> a.refreshName());
 			fixArmorStandHeights();
 		}
 	}
 
 	public void fixArmorStandHeights() {
-		NameTagLineManager.refreshNames(this);
+		armorStands.forEach(a -> a.refreshName());
 		double currentY = -Configs.SECRET_NTX_space;;
 		for (ArmorStand as : getArmorStands()) {
 			if (as.hasStaticOffset()) continue;

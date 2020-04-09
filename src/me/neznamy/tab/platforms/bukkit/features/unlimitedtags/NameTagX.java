@@ -62,7 +62,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
-					NameTagLineManager.updateVisibility(p);
+					p.getArmorStands().forEach(a -> a.updateVisibility());
 				}
 			}
 		});
@@ -72,8 +72,8 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		HandlerList.unregisterAll(this);
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
-			NameTagLineManager.destroy(p);
-			if (p.previewingNametag) NameTagLineManager.destroy(p, p);
+			p.getArmorStands().forEach(a -> a.destroy());
+			if (p.previewingNametag) p.getArmorStands().forEach(a -> a.destroy(p));
 		}
 	}
 	@Override
@@ -99,9 +99,9 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void onQuit(ITabPlayer p) {
 		if (!p.disabledNametag) p.unregisterTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			NameTagLineManager.removeFromRegistered(all, p);
+			all.getArmorStands().forEach(a -> a.removeFromRegistered(p));
 		}
-		NameTagLineManager.destroy(p);
+		p.getArmorStands().forEach(a -> a.destroy());
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
@@ -160,13 +160,13 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public String getCPUName() {
 		return "NameTagX - reading";
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerToggleSneakEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		Shared.cpu.runMeasuredTask("processing sneak toggle", "NameTagX - sneak event", new Runnable() {
 			public void run() {
-				NameTagLineManager.sneak(p, e.isSneaking());
+				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
 			}
 		});
 	}
@@ -211,7 +211,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
 			for (int id : (int[])packet.a) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null) NameTagLineManager.destroy(despawnedPlayer, packetReceiver);
+				if (despawnedPlayer != null) despawnedPlayer.getArmorStands().forEach(a -> a.destroy(packetReceiver));
 			}
 		}
 		if (packet.getPacketType() == PacketType.MOUNT) {

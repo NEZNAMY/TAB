@@ -20,7 +20,7 @@ public class NTPreviewCommand extends SubCommand{
 		if (Shared.features.containsKey("nametagx")) {
 			if (sender != null) {
 				if (sender.previewingNametag) {
-					NameTagLineManager.destroy(sender, sender);
+					sender.getArmorStands().forEach(a -> a.destroy());
 					sendMessage(sender, Configs.preview_off);
 				} else {
 					NameTagLineManager.spawnArmorStand(sender, sender, false);

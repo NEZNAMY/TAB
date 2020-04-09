@@ -72,8 +72,7 @@ public class TabPlayer extends ITabPlayer{
 		}
 	}
 	public void restartArmorStands() {
-		NameTagLineManager.destroy(this);
-		if (previewingNametag) NameTagLineManager.destroy(this, this);
+		getArmorStands().forEach(a -> a.destroy());
 		armorStands.clear();
 		if (disabledNametag) return;
 		loadArmorStands();
