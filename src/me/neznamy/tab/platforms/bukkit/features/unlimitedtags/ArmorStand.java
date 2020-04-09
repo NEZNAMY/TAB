@@ -136,20 +136,14 @@ public class ArmorStand{
 	private void updateMetadata() {
 		synchronized (registeredTo) {
 			String displayName = property.get();
-			if (property.hasRelationalPlaceholders()) {
-				for (ITabPlayer all : registeredTo) {
-					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
-					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
+			for (ITabPlayer all : registeredTo) {
+				String currentName;
+				if (property.hasRelationalPlaceholders()) {
+					currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
+				} else {
+					currentName = displayName;
 				}
-				if (owner.previewingNametag) {
-					String currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, owner, displayName);
-					owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, owner).toNMS(), true));
-				}
-			} else {
-				for (ITabPlayer all : registeredTo) {
-					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, all).toNMS(), true));
-				}
-				if (owner.previewingNametag) owner.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, owner).toNMS(), true));
+				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
 			}
 		}
 	}
