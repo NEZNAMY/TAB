@@ -53,12 +53,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 				NameTagLineManager.spawnArmorStand(all, worldPlayer, true);
 			}
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "Nametags", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
 			}
 		});
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "Nametags", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
