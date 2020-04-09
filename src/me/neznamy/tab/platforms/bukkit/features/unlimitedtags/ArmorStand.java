@@ -170,7 +170,7 @@ public class ArmorStand{
 		double y = player.getLocation().getY() + yOffset;
 		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
-			y += 1.76;
+			y -= 1.76;
 		} else {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);
