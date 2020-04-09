@@ -13,8 +13,10 @@ import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class ErrorManager {
 
@@ -22,7 +24,7 @@ public class ErrorManager {
 	private SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 	private List<String> oneTimeMessages = new ArrayList<String>();
 	private int startupWarns = 0;
-	
+
 	public void printError(String message) {
 		printError(message, null, false);
 	}
@@ -45,7 +47,7 @@ public class ErrorManager {
 			if (file.length() < 1000000) { //not going over 1 MB
 				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 				if (message != null) {
-					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + message + newline);
+					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + removeColors(message) + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 				}
 				if (t != null) {
@@ -65,6 +67,15 @@ public class ErrorManager {
 			if (t != null) t.printStackTrace();
 		}
 	}
+	private String removeColors(String text) {
+		IChatBaseComponent component = IChatBaseComponent.fromColoredText(Placeholders.color(text));
+		String newText = component.getText() == null ? "" : component.getText();
+		if (component.getExtra() != null)
+			for (IChatBaseComponent extra : component.getExtra()) {
+				newText += extra.getText();
+			}
+		return newText;
+	}
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);
 	}
@@ -80,7 +91,7 @@ public class ErrorManager {
 	private String getCurrentTime() {
 		return dateformat.format(new Date());
 	}
-	
+
 	public int parseInteger(String string, int defaultValue, String place) {
 		try {
 			return Integer.parseInt(string);
@@ -136,7 +147,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	public int fixAnimationInterval(String name, int interval) {
 		if (interval == 0) {
 			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
@@ -155,7 +166,7 @@ public class ErrorManager {
 		}
 		return list;
 	}
-	
+
 	public int fixBossBarRefresh(String name, int refresh) {
 		if (refresh == 0) {
 			startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
@@ -167,7 +178,7 @@ public class ErrorManager {
 		}
 		return refresh;
 	}
-	
+
 	public void startupWarn(String message) {
 		Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 		startupWarns++;
