@@ -77,14 +77,14 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		}
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		if (p.disabledNametag) return;
-		p.registerTeam();
+	public void onJoin(ITabPlayer connectedPlayer) {
+		if (connectedPlayer.disabledNametag) return;
+		connectedPlayer.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all == p) continue; //already registered 2 lines above
-			if (!all.disabledNametag) all.registerTeam(p);
+			if (all == connectedPlayer) continue; //already registered 2 lines above
+			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
 		}
-		Player player = ((TabPlayer)p).player;
+		Player player = ((TabPlayer)connectedPlayer).player;
 		if (player.getVehicle() != null) {
 			Entity vehicle = player.getVehicle();
 			List<Integer> list = new ArrayList<Integer>();
@@ -93,15 +93,15 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			}
 			vehicles.put(vehicle.getEntityId(), list);
 		}
-		((TabPlayer)p).loadArmorStands();
+		((TabPlayer)connectedPlayer).loadArmorStands();
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
-		if (!p.disabledNametag) p.unregisterTeam();
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			all.getArmorStands().forEach(a -> a.removeFromRegistered(p));
+			all.getArmorStands().forEach(a -> a.removeFromRegistered(disconnectedPlayer));
 		}
-		p.getArmorStands().forEach(a -> a.destroy());
+		disconnectedPlayer.getArmorStands().forEach(a -> a.destroy());
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

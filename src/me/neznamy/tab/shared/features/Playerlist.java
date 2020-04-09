@@ -25,10 +25,10 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		updateNames(true);
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
+	public void onJoin(ITabPlayer connectedPlayer) {
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
+	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

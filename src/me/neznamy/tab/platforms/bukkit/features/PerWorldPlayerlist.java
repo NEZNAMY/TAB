@@ -43,12 +43,12 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 		for (Player p : Main.getOnlinePlayers()) for (Player pl : Main.getOnlinePlayers()) p.showPlayer(pl);
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		hidePlayer(((TabPlayer)p).player);
-		showInSameWorldGroup(((TabPlayer)p).player);
+	public void onJoin(ITabPlayer connectedPlayer) {
+		hidePlayer(((TabPlayer)connectedPlayer).player);
+		showInSameWorldGroup(((TabPlayer)connectedPlayer).player);
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
+	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

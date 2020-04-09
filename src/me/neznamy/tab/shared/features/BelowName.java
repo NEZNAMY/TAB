@@ -50,17 +50,17 @@ public class BelowName implements SimpleFeature{
 		}
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		if (p.disabledBelowname) return;
-		PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+	public void onJoin(ITabPlayer connectedPlayer) {
+		if (connectedPlayer.disabledBelowname) return;
+		PacketAPI.registerScoreboardObjective(connectedPlayer, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (ITabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getNumber(p));
-			PacketAPI.setScoreboardScore(p, all.getName(), objectivename, getNumber(all));
+			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), objectivename, getNumber(connectedPlayer));
+			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), objectivename, getNumber(all));
 		}
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
-		PacketAPI.unregisterScoreboardObjective(p, objectivename);
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		PacketAPI.unregisterScoreboardObjective(disconnectedPlayer, objectivename);
 	}
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledBelowname && !p.isDisabledWorld(Configs.disabledBelowname, from)) {

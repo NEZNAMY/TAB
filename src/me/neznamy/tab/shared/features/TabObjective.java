@@ -44,17 +44,17 @@ public class TabObjective implements SimpleFeature{
 		}
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		if (p.disabledTablistObjective) return;
-		PacketAPI.registerScoreboardObjective(p, objectivename, title, DisplaySlot, type.getDisplay());
+	public void onJoin(ITabPlayer connectedPlayer) {
+		if (connectedPlayer.disabledTablistObjective) return;
+		PacketAPI.registerScoreboardObjective(connectedPlayer, objectivename, title, DisplaySlot, type.getDisplay());
 		for (ITabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
-			PacketAPI.setScoreboardScore(p, all.getName(), objectivename, getValue(all));
+			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), objectivename, getValue(connectedPlayer));
+			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), objectivename, getValue(all));
 		}
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
-		PacketAPI.unregisterScoreboardObjective(p, objectivename);
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		PacketAPI.unregisterScoreboardObjective(disconnectedPlayer, objectivename);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

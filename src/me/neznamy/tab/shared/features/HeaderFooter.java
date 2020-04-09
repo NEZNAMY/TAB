@@ -30,11 +30,11 @@ public class HeaderFooter implements SimpleFeature{
 		}
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		refreshHeaderFooter(p, true);
+	public void onJoin(ITabPlayer connectedPlayer) {
+		refreshHeaderFooter(connectedPlayer, true);
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
+	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

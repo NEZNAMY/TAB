@@ -14,14 +14,12 @@ public class GhostPlayerFix implements SimpleFeature{
 	@Override
 	public void unload() {
 	}
-
 	@Override
-	public void onJoin(ITabPlayer p) {
+	public void onJoin(ITabPlayer connectedPlayer) {
 	}
-
 	@Override
-	public void onQuit(ITabPlayer p) {
-		Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, p.getInfoData()), null);
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()), null);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			all.sendPacket(packet);
 		}

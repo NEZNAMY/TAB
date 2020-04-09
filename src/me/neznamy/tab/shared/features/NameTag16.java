@@ -34,17 +34,17 @@ public class NameTag16 implements SimpleFeature{
 		}
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		if (p.disabledNametag) return;
-		p.registerTeam();
+	public void onJoin(ITabPlayer connectedPlayer) {
+		if (connectedPlayer.disabledNametag) return;
+		connectedPlayer.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all == p) continue; //already registered 2 lines above
-			if (!all.disabledNametag) all.registerTeam(p);
+			if (all == connectedPlayer) continue; //already registered 2 lines above
+			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
 		}
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
-		if (!p.disabledNametag) p.unregisterTeam();
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

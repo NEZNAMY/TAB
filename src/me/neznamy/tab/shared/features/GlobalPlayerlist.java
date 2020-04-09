@@ -22,19 +22,19 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		//TODO
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		PacketPlayOutPlayerInfo add = getAddPacket(p);
+	public void onJoin(ITabPlayer connectedPlayer) {
+		PacketPlayOutPlayerInfo add = getAddPacket(connectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all == p) continue;
-			if (all.getWorldName().equals(p.getWorldName())) continue;
-			if (!PluginHooks._isVanished(p)) all.sendCustomPacket(add);
-			if (!PluginHooks._isVanished(all)) p.sendCustomPacket(getAddPacket(all));
+			if (all == connectedPlayer) continue;
+			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
+			if (!PluginHooks._isVanished(connectedPlayer)) all.sendCustomPacket(add);
+			if (!PluginHooks._isVanished(all)) connectedPlayer.sendCustomPacket(getAddPacket(all));
 		}
 	}
-	public void onQuit(ITabPlayer p) {
-		PacketPlayOutPlayerInfo remove = getRemovePacket(p);
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all == p) continue;
+			if (all == disconnectedPlayer) continue;
 			all.sendCustomPacket(remove);
 		}
 	}

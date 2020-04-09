@@ -21,24 +21,24 @@ public class PetFix implements RawPacketFeature{
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable{
-			if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
-				List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
-				List<Object> newList = new ArrayList<Object>();
-				for (Object item : items) {
-					Item i = Item.fromNMS(item);
-					if (i.type.position == ProtocolVersion.SERVER_VERSION.getPetOwnerPosition()) {
-						modifyDataWatcherItem(i);
-					}
-					newList.add(i.toNMS());
+		if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
+			List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
+			List<Object> newList = new ArrayList<Object>();
+			for (Object item : items) {
+				Item i = Item.fromNMS(item);
+				if (i.type.position == ProtocolVersion.SERVER_VERSION.getPetOwnerPosition()) {
+					modifyDataWatcherItem(i);
 				}
-				MethodAPI.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
+				newList.add(i.toNMS());
 			}
-			if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
-				DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
-				Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
-				if (petOwner != null) modifyDataWatcherItem(petOwner);
-				PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
-			}
+			MethodAPI.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
+		}
+		if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
+			DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
+			Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
+			if (petOwner != null) modifyDataWatcherItem(petOwner);
+			PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
+		}
 		return packet;
 	}
 	@SuppressWarnings({ "rawtypes" })

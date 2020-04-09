@@ -6,7 +6,7 @@ public interface SimpleFeature {
 
 	public void load();
 	public void unload();
-	public void onJoin(ITabPlayer p);
-	public void onQuit(ITabPlayer p);
+	public void onJoin(ITabPlayer connectedPlayer);
+	public void onQuit(ITabPlayer disconnectedPlayer);
 	public void onWorldChange(ITabPlayer p, String from, String to);
 }

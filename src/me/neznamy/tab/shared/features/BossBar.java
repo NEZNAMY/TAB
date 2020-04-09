@@ -103,12 +103,12 @@ public class BossBar implements SimpleFeature{
 		lines.clear();
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
-		p.bossbarVisible = !bossbar_off_players.contains(p.getName());
-		p.detectBossBarsAndSend();
+	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.bossbarVisible = !bossbar_off_players.contains(connectedPlayer.getName());
+		connectedPlayer.detectBossBarsAndSend();
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
+	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
