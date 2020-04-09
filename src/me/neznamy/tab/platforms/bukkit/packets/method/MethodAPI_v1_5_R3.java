@@ -107,9 +107,6 @@ public class MethodAPI_v1_5_R3 extends MethodAPI {
 		entity.pitch = loc.getPitch();
 		return new Packet34EntityTeleport(entity);
 	}
-	public Object newPacketPlayOutEntityTeleport(Player p) {
-		return new Packet34EntityTeleport(((CraftPlayer)p).getHandle());
-	}
 	public Object newEntityWither() {
 		return new EntityWither(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
 	}

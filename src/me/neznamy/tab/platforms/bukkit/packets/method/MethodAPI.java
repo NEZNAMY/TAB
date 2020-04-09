@@ -73,7 +73,6 @@ public abstract class MethodAPI {
 	public abstract Object newEntityWither();
 	public abstract int getEntityId(Object entityliving);
 	public abstract Object newPacketPlayOutEntityTeleport(Object entityliving, Location loc);
-	public abstract Object newPacketPlayOutEntityTeleport(Player p);
 	public abstract Object newPacketPlayOutScoreboardScore();
 	public abstract Object newPacketPlayOutScoreboardScore_legacy(String removedPlayer);
 	public abstract Object newPacketPlayOutScoreboardScore_1_13(Object action, String objectiveName, String player, int score);
