@@ -15,8 +15,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.entity.MPlayer;
 
 import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -124,12 +122,6 @@ public class PluginHooks {
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
 		}
-	}
-	public static String FactionsMCore_getFactionName(ITabPlayer p) {
-		return MPlayer.get(((TabPlayer)p).player).getFactionName();
-	}
-	public static String FactionsUUID_getFactionTag(ITabPlayer p) {
-		return FPlayers.getInstance().getByPlayer(((TabPlayer)p).player).getFaction().getTag();
 	}
 	public static String GroupManager_getGroup(ITabPlayer p) {
 		try {

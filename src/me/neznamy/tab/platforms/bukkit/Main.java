@@ -266,39 +266,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 				}
 			});
-		} else {
-			Placeholders.registerPlaceholder(new ServerConstant("%deluxetag%") {
-				public String get() {
-					return "";
-				}
-			});
 		}
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%faction%", 1000) {
-
-			private boolean init;
-			private int type;
-
-			private void init() {
-				if (init) return;
-				try {
-					Class.forName("com.massivecraft.factions.FPlayers");
-					type = 1;
-				} catch (Throwable e) {}
-				try {
-					Class.forName("com.massivecraft.factions.entity.MPlayer");
-					type = 2;
-				} catch (Throwable e) {}
-				init = true;
-			}
-			public String get(ITabPlayer p) {
-				init();
-				if (type == 0) return "";
-				String name = null;
-				if (type == 1) name = PluginHooks.FactionsUUID_getFactionTag(p);
-				if (type == 2) name = PluginHooks.FactionsMCore_getFactionName(p);
-				return name;
-			}
-		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(((TabPlayer)p).player.getHealth())+"";
