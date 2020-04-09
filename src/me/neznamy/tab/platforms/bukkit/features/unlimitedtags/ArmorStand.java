@@ -73,9 +73,6 @@ public class ArmorStand{
 		}
 	}
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
-		if (to == null) {
-			return Shared.errorManager.printError(null, "Attempted to spawn armor stand for null player");
-		}
 		visible = getVisibility();
 		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, property.get()) : property.get();
 		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
