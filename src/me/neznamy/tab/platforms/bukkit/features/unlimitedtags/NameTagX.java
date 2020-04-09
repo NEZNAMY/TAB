@@ -40,7 +40,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
-				NameTagLineManager.spawnArmorStand(all, worldPlayer, true);
+				NameTagLineManager.spawnArmorStand(all, worldPlayer);
 			}
 		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
@@ -121,8 +121,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			ITabPlayer packetPlayer = null;
 			if (pack.entity instanceof Integer) {
 				packetPlayer = Shared.entityIdMap.get((int)pack.entity);
+			} else {
+				for (int id : (int[])pack.entity) {
+					packetPlayer = Shared.entityIdMap.get(id);
+				}
 			}
-			if (packetPlayer == null || !packetPlayer.disabledNametag) {
+			if (packetPlayer != null && !packetPlayer.disabledNametag) {
 				//sending packets outside of the packet reader or protocollib will cause problems
 				Shared.cpu.runMeasuredTask("processing packet out", "NameTagX - processing", new Runnable() {
 					public void run() {
@@ -153,7 +157,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (p == null) return;
 		Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
 			public void run() {
-				NameTagLineManager.teleportArmorStand(p, e.getTo());
+				for (ArmorStand as : p.getArmorStands()) {
+					as.updateLocation(e.getTo());
+					for (ITabPlayer nearby : as.getNearbyUsers()) {
+						nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+					}
+				}
 			}
 		});
 	}
@@ -163,14 +172,19 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (p == null) return;
 		Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
 			public void run() {
-				NameTagLineManager.teleportArmorStand(p, e.getTo());
+				for (ArmorStand as : p.getArmorStands()) {
+					as.updateLocation(e.getTo());
+					for (ITabPlayer nearby : as.getNearbyUsers()) {
+						nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+					}
+				}
 			}
 		});
 	}
 	public void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
 		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get((int)packet.entity);
-			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver, true);
+			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver);
 		}
 		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
 			for (int id : (int[])packet.entity) {

@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
@@ -79,9 +80,9 @@ public class TabPlayer extends ITabPlayer{
 		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 			if (this == worldPlayer) continue;
 			if (!worldPlayer.getWorldName().equals(getWorldName())) continue;
-			NameTagLineManager.spawnArmorStand(this, worldPlayer, true);
+			NameTagLineManager.spawnArmorStand(this, worldPlayer);
 		}
-		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this, false);
+		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this);
 	}
 	public void loadArmorStands() {
 		armorStands.clear();
@@ -91,13 +92,13 @@ public class TabPlayer extends ITabPlayer{
 			Property p = properties.get(line);
 			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			String value = p.getCurrentRawValue();
-			NameTagLineManager.bindLine(this, value, height+=Configs.SECRET_NTX_space, line, false);
+			armorStands.add(new ArmorStand(this, value, height+=Configs.SECRET_NTX_space, line, false));
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			Property p = properties.get(line.getKey());
 			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			String value = p.getCurrentRawValue();
-			NameTagLineManager.bindLine(this, value, line.getValue(), line.getKey(), true);
+			armorStands.add(new ArmorStand(this, value, line.getValue(), line.getKey(), true));
 		}
 		fixArmorStandHeights();
 	}
