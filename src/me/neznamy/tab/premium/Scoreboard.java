@@ -24,6 +24,7 @@ public class Scoreboard {
 	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private String objectiveName;
+	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this.manager = manager;
@@ -32,6 +33,7 @@ public class Scoreboard {
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
 		objectiveName = "TAB-SB-" + name;
+		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition, true);
 		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
 		for (int i=0; i<lines.size(); i++) {
 			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
@@ -51,14 +53,14 @@ public class Scoreboard {
 				if (condition.contains("=")) {
 					String leftSide = condition.split("=")[0];
 					String rightSide = condition.split("=")[1];
-					for (Placeholder pl : Placeholders.getAllUsed()) {
+					for (Placeholder pl : conditionPlaceholders) {
 						leftSide = pl.set(leftSide, p);
 					}
 					if (!leftSide.equals(rightSide)) return false;
 				} else if (condition.contains("<")) {
 					String leftSide = condition.split("<")[0];
 					double rightSide = Shared.errorManager.parseDouble(condition.split("<")[1], 0, "Scoreboard condition with \"<\" - right side");
-					for (Placeholder pl : Placeholders.getAllUsed()) {
+					for (Placeholder pl : conditionPlaceholders) {
 						leftSide = pl.set(leftSide, p);
 					}
 					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \"<\" - left side");
@@ -66,7 +68,7 @@ public class Scoreboard {
 				} else if (condition.contains(">")) {
 					String leftSide = condition.split(">")[0];
 					double rightSide = Shared.errorManager.parseDouble(condition.split(">")[1], 0, "Scoreboard condition with \">\" - right side");
-					for (Placeholder pl : Placeholders.getAllUsed()) {
+					for (Placeholder pl : conditionPlaceholders) {
 						leftSide = pl.set(leftSide, p);
 					}
 					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \">\" - left side");
