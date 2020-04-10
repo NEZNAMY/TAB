@@ -208,8 +208,8 @@ public class Configs {
 		animation = new ConfigurationFile("animations.yml", null);
 		animations = new ArrayList<Animation>();
 		if (animation.getConfigurationSection("animations") != null) {
-			for (String s : animation.getConfigurationSection("animations").keySet())
-				animations.add(new Animation(s, animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
+			for (Object s : animation.getConfigurationSection("animations").keySet())
+				animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
 	public static void loadBossbar() throws Exception {
