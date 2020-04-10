@@ -433,6 +433,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+					if (Configs.config.getBoolean("belowname.enabled", true)) {
+						Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
+					}
 					Shared.registerFeature("nametagx", new NameTagX());
 				} else {
 					Shared.registerFeature("nametag16", new NameTag16());
