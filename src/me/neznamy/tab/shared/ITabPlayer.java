@@ -268,9 +268,13 @@ public abstract class ITabPlayer {
 	}
 
 	public void updateAll() {
-		setProperty("tablist-objective", TabObjective.rawValue);
-		setProperty("belowname-number", BelowName.number);
-		setProperty("belowname-text", BelowName.text);
+		if (Shared.features.containsKey("tabobjective")) {
+			setProperty("tablist-objective", TabObjective.rawValue);
+		}
+		if (Shared.features.containsKey("belowname")) {
+			setProperty("belowname-number", BelowName.number);
+			setProperty("belowname-text", BelowName.text);
+		}
 		setProperty("tabprefix", getValue("tabprefix"));
 		setProperty("tagprefix", getValue("tagprefix"));
 		setProperty("tabsuffix", getValue("tabsuffix"));
