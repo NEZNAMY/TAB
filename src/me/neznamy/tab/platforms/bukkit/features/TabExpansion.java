@@ -38,7 +38,7 @@ public class TabExpansion implements SimpleFeature{
 				if (player == null) return "";
 				ITabPlayer p = Shared.getPlayer(player.getUniqueId());
 				if (p == null) return "";
-
+				if (identifier.equals("error")) throw new RuntimeException("Printing Stack Trace");
 				for (EnumProperty property : EnumProperty.values()) {
 					if (identifier.equals(property.toString())) {
 						return p.properties.get(property.toString()).lastReplacedValue;
