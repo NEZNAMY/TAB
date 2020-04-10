@@ -36,6 +36,7 @@ public class ScoreboardManager implements SimpleFeature{
 		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Scoreboard", refresh);
 		perWorld = (Map<String, String>) Premium.premiumconfig.get("scoreboard.per-world");
+		if (perWorld == null) perWorld = new HashMap<String, String>();
 		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
