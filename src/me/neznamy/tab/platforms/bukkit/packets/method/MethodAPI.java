@@ -44,6 +44,8 @@ public abstract class MethodAPI {
 	
 	public static Field PacketPlayInUseEntity_ENTITY;
 	public static Field PacketPlayOutEntityMetadata_LIST;
+	public static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
+	public static Field PacketPlayOutEntityDestroy_ENTITIES;
 	
 	public static MethodAPI getInstance() {
 		return instance;
@@ -92,6 +94,8 @@ public abstract class MethodAPI {
 			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.serverPackage).getConstructor().newInstance();
 			PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
 			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
+			PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(PacketPlayOutNamedEntitySpawn).get("a");
+			PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(PacketPlayOutEntityDestroy).get("a");
 		} catch (Throwable e) {
 			//bungee or velocity
 		}

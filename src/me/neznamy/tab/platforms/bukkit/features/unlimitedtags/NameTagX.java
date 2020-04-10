@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagXPacket.PacketType;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -116,21 +115,22 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
-		NameTagXPacket pack = NameTagXPacket.fromNMS(packet);
-		if (pack != null) {
-			ITabPlayer packetPlayer = null;
-			if (pack.entity instanceof Integer) {
-				packetPlayer = Shared.entityIdMap.get((int)pack.entity);
-			} else {
-				for (int id : (int[])pack.entity) {
-					packetPlayer = Shared.entityIdMap.get(id);
+		if (MethodAPI.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
+			int entity = MethodAPI.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
+			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
+			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", "NameTagX - NamedEntitySpawn", new Runnable() {
+				public void run() {
+					NameTagLineManager.spawnArmorStand(spawnedPlayer, receiver);
 				}
-			}
-			if (packetPlayer != null && !packetPlayer.disabledNametag) {
-				//sending packets outside of the packet reader or protocollib will cause problems
-				Shared.cpu.runMeasuredTask("processing packet out", "NameTagX - processing", new Runnable() {
+			});
+		}
+		if (MethodAPI.PacketPlayOutEntityDestroy.isInstance(packet)) {
+			int[] entites = (int[]) MethodAPI.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
+			for (int id : entites) {
+				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
+				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", "NameTagX - EntityDestroy", new Runnable() {
 					public void run() {
-						processPacketOUT(pack, receiver);
+						despawnedPlayer.getArmorStands().forEach(a -> a.destroy(receiver));
 					}
 				});
 			}
@@ -139,13 +139,13 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public String getCPUName() {
-		return "NameTagX - reading";
+		return "NameTagX - Packet Listening";
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerToggleSneakEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", "NameTagX - PlayerToggleSneakEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", "NameTagX - PlayerToggleSneakEvent", new Runnable() {
 			public void run() {
 				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
 			}
@@ -155,7 +155,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerMoveEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getTo());
@@ -170,7 +170,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerTeleportEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getTo());
@@ -180,18 +180,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 				}
 			}
 		});
-	}
-	public void processPacketOUT(NameTagXPacket packet, ITabPlayer packetReceiver){
-		if (packet.getPacketType() == PacketType.NAMED_ENTITY_SPAWN) {
-			ITabPlayer spawnedPlayer = Shared.entityIdMap.get((int)packet.entity);
-			if (spawnedPlayer != null) NameTagLineManager.spawnArmorStand(spawnedPlayer, packetReceiver);
-		}
-		if (packet.getPacketType() == PacketType.ENTITY_DESTROY) {
-			for (int id : (int[])packet.entity) {
-				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null) despawnedPlayer.getArmorStands().forEach(a -> a.destroy(packetReceiver));
-			}
-		}
 	}
 	@Override
 	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
