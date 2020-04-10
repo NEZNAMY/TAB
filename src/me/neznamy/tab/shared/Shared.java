@@ -80,7 +80,7 @@ public class Shared {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
 		} catch (Throwable e) {
-			errorManager.criticalError("Failed to enable. Did you just invent a new way of breaking the plugin by misconfiguring it?", e);
+			errorManager.criticalError("Failed to enable. Did you just invent a new way to beak the plugin by misconfiguring it?", e);
 			disabled = true;
 		}
 	}
