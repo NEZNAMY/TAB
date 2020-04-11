@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -159,8 +161,11 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getTo());
-					for (ITabPlayer nearby : as.getNearbyUsers()) {
-						nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
+					synchronized (nearbyPlayers){
+						for (ITabPlayer nearby : nearbyPlayers) {
+							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+						}
 					}
 				}
 			}
@@ -174,8 +179,11 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getTo());
-					for (ITabPlayer nearby : as.getNearbyUsers()) {
-						nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
+					synchronized (nearbyPlayers){
+						for (ITabPlayer nearby : nearbyPlayers) {
+							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+						}
 					}
 				}
 			}

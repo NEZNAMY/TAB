@@ -38,7 +38,7 @@ public class ArmorStand{
 	private boolean sneaking;
 	private boolean visible;
 
-	private List<ITabPlayer> registeredTo = Collections.synchronizedList(new ArrayList<ITabPlayer>());
+	private List<ITabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	public Property property;
 	private boolean staticOffset;
 	
@@ -66,8 +66,8 @@ public class ArmorStand{
 		if (yOffset == offset) return;
 		yOffset = offset;
 		updateLocation(player.getLocation());
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) {
+		synchronized (nearbyPlayers) {
+			for (ITabPlayer all : nearbyPlayers) {
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
 			}
 		}
@@ -75,7 +75,7 @@ public class ArmorStand{
 	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
 		visible = getVisibility();
 		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, property.get()) : property.get();
-		if (!registeredTo.contains(to) && addToRegistered) registeredTo.add(to);
+		if (!nearbyPlayers.contains(to) && addToRegistered) nearbyPlayers.add(to);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(displayName, to));
 	}
 	public Object getNMSTeleportPacket(ITabPlayer to) {
@@ -85,12 +85,12 @@ public class ArmorStand{
 		return to.getVersion().getMinorVersion() == 8 ? location.clone().add(0,-2,0) : location;
 	}
 	public void destroy(ITabPlayer to) {
-		registeredTo.remove(to);
+		nearbyPlayers.remove(to);
 		to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) {
+		synchronized (nearbyPlayers) {
+			for (ITabPlayer all : nearbyPlayers) {
 				Object teleportPacket = getNMSTeleportPacket(all);
 				all.sendPacket(teleportPacket);
 			}
@@ -98,8 +98,8 @@ public class ArmorStand{
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
-		synchronized (registeredTo) {
-			for (ITabPlayer all : registeredTo) {
+		synchronized (nearbyPlayers) {
+			for (ITabPlayer all : nearbyPlayers) {
 				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, property.get()) : property.get();
 				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 					//sneaking feature was removed in 1.14, so despawning completely now
@@ -125,7 +125,7 @@ public class ArmorStand{
 	public void destroy() {
 		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
 		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(destroyPacket);
-		registeredTo.clear();
+		nearbyPlayers.clear();
 	}
 	public void updateVisibility() {
 		if (getVisibility() != visible) {
@@ -134,9 +134,9 @@ public class ArmorStand{
 		}
 	}
 	private void updateMetadata() {
-		synchronized (registeredTo) {
+		synchronized (nearbyPlayers) {
 			String displayName = property.get();
-			for (ITabPlayer all : registeredTo) {
+			for (ITabPlayer all : nearbyPlayers) {
 				String currentName;
 				if (property.hasRelationalPlaceholders()) {
 					currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
@@ -170,7 +170,7 @@ public class ArmorStand{
 		return entityId;
 	}
 	public void removeFromRegistered(ITabPlayer removed) {
-		registeredTo.remove(removed);
+		nearbyPlayers.remove(removed);
 	}
 	public DataWatcher createDataWatcher(String name, ITabPlayer other) {
 		byte flag = 0;
@@ -193,7 +193,7 @@ public class ArmorStand{
 		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
 	}
-	public List<ITabPlayer> getNearbyUsers(){
-		return registeredTo;
+	public List<ITabPlayer> getNearbyPlayers(){
+		return nearbyPlayers;
 	}
 }
