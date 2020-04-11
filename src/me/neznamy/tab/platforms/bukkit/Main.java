@@ -546,10 +546,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			});
 			return;
 		}
-		//		Shared.print('6', "Unknown placeholder: " + identifier);
+		//Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
 			ticks2Millis(config, "nametag-refresh-interval-ticks", "nametag-refresh-interval-milliseconds");
@@ -569,7 +568,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			removeOld(config, "date-format");
 			removeOld(config, "time-format");
 			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
-				for (String group : ((Map<String, Object>)config.get("Groups")).keySet()) {
+				for (Object group : config.getConfigurationSection("Groups").keySet()) {
 					String tagprefix = config.getString("Groups." + group + ".tagprefix");
 					if (tagprefix != null) {
 						if (!tagprefix.contains("%eglow_glowcolor%")) {
@@ -582,7 +581,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
-			if (config.get("placeholder-output-replacements") == null) {
+			if (!config.hasConfigOption("placeholder-output-replacements")) {
 				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
 				Map<String, String> essVanished = new HashMap<String, String>();
 				essVanished.put("Yes", "&7| Vanished");
@@ -595,8 +594,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
 			}
 			boolean scoreboardsConverted = false;
-			for (String scoreboard : ((Map<String, Object>)config.get("scoreboards")).keySet()) {
-				Boolean permReq = (Boolean) config.get("scoreboards." + scoreboard + ".permission-required");
+			for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
+				Boolean permReq = config.getBoolean("scoreboards." + scoreboard + ".permission-required");
 				if (permReq != null) {
 					if (permReq) {
 						config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);
@@ -616,7 +615,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		}
 		if (config.getName().equals("advancedconfig.yml")) {
-			if (config.get("per-world-playerlist") instanceof Boolean) {
+			if (config.getObject("per-world-playerlist") instanceof Boolean) {
 				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
 				rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
 				rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");

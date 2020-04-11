@@ -20,19 +20,18 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 
 	private boolean allowBypass;
 	private List<String> ignoredWorlds;
 	private Map<String, List<String>> sharedWorlds;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void load(){
 		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
 		ignoredWorlds = Configs.advancedconfig.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = (Map<String, List<String>>) Configs.advancedconfig.get("per-world-playerlist.shared-playerlist-world-groups");
+		sharedWorlds = Configs.advancedconfig.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 		for (Player p : Main.getOnlinePlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);

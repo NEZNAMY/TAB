@@ -160,6 +160,7 @@ public class Configs {
 			}
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
@@ -214,7 +215,7 @@ public class Configs {
 	}
 	public static void loadBossbar() throws Exception {
 		bossbar = new ConfigurationFile("bossbar.yml", null);
-		if (bossbar.get("enabled") != null) {
+		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			return;
 		}
@@ -237,7 +238,7 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {
-		Object value = config.get(path);
+		Object value = config.getObject(path);
 		if (value == null) return defaultValue;
 		if (defaultValue instanceof Integer) return (T) (Object) Integer.parseInt(value+"");
 		if (defaultValue instanceof Float) return (T) (Object) Float.parseFloat(value+"");

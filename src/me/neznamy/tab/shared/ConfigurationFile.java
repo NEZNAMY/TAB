@@ -63,10 +63,10 @@ public class ConfigurationFile{
 	public Map<String, Object> getValues(){
 		return values;
 	}
-	public Object get(String path) {
-		return get(path, null);
+	public Object getObject(String path) {
+		return getObject(path, null);
 	}
-	public Object get(String path, Object defaultValue) {
+	public Object getObject(String path, Object defaultValue) {
 		try {
 			Object value = values;
 			for (String tab : path.split("\\.")) {
@@ -93,7 +93,7 @@ public class ConfigurationFile{
 		return getString(path, null);
 	}
 	public String getString(String path, String defaultValue) {
-		Object value = get(path, defaultValue);
+		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		return value+"";
 	}
@@ -101,7 +101,7 @@ public class ConfigurationFile{
 		return getStringList(path, null);
 	}
 	public List<String> getStringList(String path, List<String> defaultValue) {
-		Object value = get(path, defaultValue);
+		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		if (!(value instanceof List)) {
 			dataMismatch(path, "ArrayList", value.getClass().getSimpleName());
@@ -115,8 +115,15 @@ public class ConfigurationFile{
 	}
 	
 	
-	public int getInt(String path, int defaultValue) {
-		Object value = get(path, defaultValue);
+	public boolean hasConfigOption(String path) {
+		return getObject(path) != null;
+	}
+	
+	public Integer getInt(String path) {
+		return getInt(path, null);
+	}
+	public Integer getInt(String path, Integer defaultValue) {
+		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
 			return Integer.parseInt(value+"");
@@ -127,8 +134,11 @@ public class ConfigurationFile{
 	}
 	
 	
-	public boolean getBoolean(String path, boolean defaultValue) {
-		Object value = get(path, defaultValue);
+	public Boolean getBoolean(String path) {
+		return getBoolean(path, null);
+	}
+	public Boolean getBoolean(String path, Boolean defaultValue) {
+		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
 			return Boolean.parseBoolean(value+"");
@@ -139,14 +149,27 @@ public class ConfigurationFile{
 	}
 	
 	
-	public double getDouble(String path, double defaultValue) {
-		Object value = get(path, defaultValue);
+	public Double getDouble(String path, double defaultValue) {
+		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
 			return Double.parseDouble(value+"");
 		} catch (Exception e) {
 			dataMismatch(path, "Double", value.getClass().getSimpleName());
 			return defaultValue;
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public Map getConfigurationSection(String path) {
+		if (path == null || path.length() == 0) return values;
+		Object value = getObject(path, null);
+		if (value == null) return new HashMap<>();
+		if (value instanceof Map) {
+			return (Map) value;
+		} else {
+			dataMismatch(path, "Map", value.getClass().getSimpleName());
+			return new HashMap<>();
 		}
 	}
 	
@@ -174,10 +197,6 @@ public class ConfigurationFile{
 			}
 		}
 		return map;
-	}
-	public Map<String, Object> getConfigurationSection(String path) {
-		if (path == null || path.length() == 0) return values;
-		return ((Map<String, Object>)get(path, null));
 	}
 	public void save() {
 		try {

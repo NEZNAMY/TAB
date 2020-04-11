@@ -356,6 +356,7 @@ public class Main implements MainClass{
 	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
 		return packet.toVelocity(protocolVersion);
 	}
+	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
@@ -374,17 +375,16 @@ public class Main implements MainClass{
 			return;
 		}
 	}
-	@SuppressWarnings("unchecked")
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
-			if (config.get("belowname.refresh-interval") != null) {
-				int value = (int) config.get("belowname.refresh-interval");
+			if (config.hasConfigOption("belowname.refresh-interval")) {
+				int value = config.getInt("belowname.refresh-interval");
 				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
 			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
-			if (config.get("placeholder-output-replacements") == null) {
+			if (!config.hasConfigOption("placeholder-output-replacements")) {
 				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
 				Map<String, String> essVanished = new HashMap<String, String>();
 				essVanished.put("Yes", "&7| Vanished");
@@ -397,8 +397,8 @@ public class Main implements MainClass{
 				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
 			}
 			boolean scoreboardsConverted = false;
-			for (String scoreboard : ((Map<String, Object>)config.get("scoreboards")).keySet()) {
-				Boolean permReq = (Boolean) config.get("scoreboards." + scoreboard + ".permission-required");
+			for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
+				Boolean permReq = config.getBoolean("scoreboards." + scoreboard + ".permission-required");
 				if (permReq != null) {
 					if (permReq) {
 						config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);

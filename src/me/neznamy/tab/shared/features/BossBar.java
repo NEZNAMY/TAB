@@ -26,21 +26,20 @@ public class BossBar implements SimpleFeature{
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
-		perWorld = (Map<String, List<String>>) Configs.bossbar.get("per-world");
-		if (perWorld == null) perWorld = new HashMap<String, List<String>>();
+		perWorld = Configs.bossbar.getConfigurationSection("per-world");
 		if (Configs.bossbar.getConfigurationSection("bars") != null) {
-			for (String bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
+			for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
 				boolean permissionRequired = Configs.bossbar.getBoolean("bars." + bar + ".permission-required", false);
 				int refresh = Configs.bossbar.getInt("bars." + bar + ".refresh", 0);
 				String style = Configs.bossbar.getString("bars." + bar + ".style");
 				String color = Configs.bossbar.getString("bars." + bar + ".color");
-				Object progress = Configs.bossbar.get("bars." + bar + ".progress");
+				String progress = Configs.bossbar.getString("bars." + bar + ".progress");
 				String text = Configs.bossbar.getString("bars." + bar + ".text");
 				if (progress == null) {
 					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
-					progress = 100;
+					progress = "100";
 				}
-				lines.add(new BossBarLine(bar, permissionRequired, refresh, color, style, text, progress+""));
+				lines.add(new BossBarLine(bar+"", permissionRequired, refresh, color, style, text, progress));
 			}
 		}
 		List<String> toRemove = new ArrayList<String>();

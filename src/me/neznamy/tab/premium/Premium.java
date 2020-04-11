@@ -40,9 +40,9 @@ public class Premium {
 		Premium.dynamicLines = new ArrayList<String>();
 		Premium.dynamicLines.addAll(realList);
 		Collections.reverse(Premium.dynamicLines);
-		staticLines = (Map<String, Double>) premiumconfig.get("unlimited-nametag-mode-static-lines");
+		staticLines = premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
-		Map<Integer, Integer> widths = (Map<Integer, Integer>) premiumconfig.get("extra-character-widths");
+		Map<Integer, Integer> widths = premiumconfig.getConfigurationSection("extra-character-widths");
 		if (widths != null) {
 			for (Entry<Integer, Integer> entry : widths.entrySet()) {
 				AlignedSuffix.widths.put((char)(int)entry.getKey(), entry.getValue());

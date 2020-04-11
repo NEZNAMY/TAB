@@ -346,9 +346,7 @@ public abstract class ITabPlayer {
 
 	@SuppressWarnings("unchecked")
 	private String getWorldGroupOf(String world) {
-		Object rawWorlds = Configs.config.get("per-" + Shared.separatorType + "-settings");
-		if (!(rawWorlds instanceof Map)) return world;
-		Map<String, Object> worlds = (Map<String, Object>) rawWorlds;
+		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.separatorType + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
 			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {

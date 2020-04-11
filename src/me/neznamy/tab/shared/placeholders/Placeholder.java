@@ -17,7 +17,7 @@ public abstract class Placeholder {
 	public Placeholder(String identifier, int cooldown) {
 		this.identifier = identifier;
 		this.cooldown = cooldown;
-		if (Premium.is()) replacements = (Map<String, Object>) Premium.premiumconfig.get("placeholder-output-replacements." + identifier);
+		if (Premium.is()) replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 		if (replacements == null) replacements = new HashMap<String, Object>();
 	}
 	public String getIdentifier() {

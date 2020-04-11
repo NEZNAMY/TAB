@@ -35,7 +35,7 @@ public class ScoreboardManager implements SimpleFeature{
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Scoreboard", refresh);
-		perWorld = (Map<String, String>) Premium.premiumconfig.get("scoreboard.per-world");
+		perWorld = Premium.premiumconfig.getConfigurationSection("scoreboard.per-world");
 		if (perWorld == null) perWorld = new HashMap<String, String>();
 		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
@@ -44,14 +44,13 @@ public class ScoreboardManager implements SimpleFeature{
 			sb_off_players = Configs.getPlayerData("scoreboard-off");
 		}
 		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
-		if (Premium.premiumconfig.get("scoreboards") != null)
-			for (String scoreboard : ((Map<String, Object>) Premium.premiumconfig.get("scoreboards")).keySet()) {
-				String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
-				String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
-				String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
-				List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
-				scoreboards.put(scoreboard, new Scoreboard(this, scoreboard, title, lines, condition, childBoard));
-			}
+		for (Object scoreboard : Premium.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
+			String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
+			String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
+			String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
+			List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
+			scoreboards.put(scoreboard+"", new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard));
+		}	
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
