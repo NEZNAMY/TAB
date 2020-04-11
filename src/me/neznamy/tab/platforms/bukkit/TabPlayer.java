@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
@@ -80,9 +80,9 @@ public class TabPlayer extends ITabPlayer{
 		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 			if (this == worldPlayer) continue;
 			if (!worldPlayer.getWorldName().equals(getWorldName())) continue;
-			NameTagLineManager.spawnArmorStand(this, worldPlayer);
+			NameTagX.spawnArmorStand(this, worldPlayer);
 		}
-		if (previewingNametag) NameTagLineManager.spawnArmorStand(this, this);
+		if (previewingNametag) NameTagX.spawnArmorStand(this, this);
 	}
 	public void loadArmorStands() {
 		armorStands.clear();

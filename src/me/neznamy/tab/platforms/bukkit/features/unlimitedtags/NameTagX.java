@@ -16,6 +16,8 @@ import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
@@ -41,7 +43,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
-				NameTagLineManager.spawnArmorStand(all, worldPlayer);
+				spawnArmorStand(all, worldPlayer);
 			}
 		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
@@ -122,7 +124,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", "NameTagX - NamedEntitySpawn", new Runnable() {
 				public void run() {
-					NameTagLineManager.spawnArmorStand(spawnedPlayer, receiver);
+					spawnArmorStand(spawnedPlayer, receiver);
 				}
 			});
 		}
@@ -210,5 +212,14 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			}
 		}
 		return info;
+	}
+	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
+		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
+			packetReceiver.sendCustomBukkitPacket(as.getSpawnPacket(packetReceiver, true));
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+				String displayName = as.property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(armorStandOwner, packetReceiver, as.property.get()) : as.property.get();
+				packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(displayName, packetReceiver).toNMS(), true));
+			}
+		}
 	}
 }

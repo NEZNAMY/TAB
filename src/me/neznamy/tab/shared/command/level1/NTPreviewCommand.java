@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagLineManager;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -24,7 +24,7 @@ public class NTPreviewCommand extends SubCommand{
 					sender.getArmorStands().forEach(a -> a.getNearbyPlayers().remove(sender));
 					sendMessage(sender, Configs.preview_off);
 				} else {
-					NameTagLineManager.spawnArmorStand(sender, sender);
+					NameTagX.spawnArmorStand(sender, sender);
 					sendMessage(sender, Configs.preview_on);
 				}
 				sender.previewingNametag = !sender.previewingNametag;
