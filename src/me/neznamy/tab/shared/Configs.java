@@ -217,6 +217,7 @@ public class Configs {
 		bossbar = new ConfigurationFile("bossbar.yml", null);
 		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
+			BossBarEnabled = false;
 			return;
 		}
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
