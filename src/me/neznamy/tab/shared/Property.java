@@ -120,7 +120,4 @@ public class Property {
 	public boolean hasRelationalPlaceholders() {
 		return hasRelationalPlaceholders && PluginHooks.placeholderAPI;
 	}
-	public boolean isStatic() {
-		return Static;
-	}
 }
