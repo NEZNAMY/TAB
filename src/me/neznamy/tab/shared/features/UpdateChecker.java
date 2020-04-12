@@ -36,6 +36,6 @@ public class UpdateChecker {
 //					Shared.mainClass.sendConsoleMessage("&a[TAB] Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 				}
 			}
-		}).run();
+		}).start();
 	}
 }
