@@ -186,11 +186,11 @@ public abstract class ITabPlayer {
 		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, format) : format;
 	}
 
-	public void updateTeam() {
+	public void updateTeam(boolean force) {
 		if (disabledNametag) return;
 		String newName = buildTeamName();
 		if (teamName.equals(newName)) {
-			updateTeamData();
+			updateTeamData(force);
 		} else {
 			unregisterTeam();
 			teamName = newName;
@@ -421,7 +421,7 @@ public abstract class ITabPlayer {
 		return getName();
 	}
 
-	public void updateTeamData() {
+	public void updateTeamData(boolean force) {
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
@@ -429,7 +429,7 @@ public abstract class ITabPlayer {
 		boolean tagsuffixUpdate = tagsuffix.isUpdateNeeded();
 		boolean collision = getTeamPush();
 		boolean visible = getTeamVisibility();
-		if (tagprefixUpdate || tagsuffixUpdate || lastCollision != collision || lastVisibility != visible) {
+		if (tagprefixUpdate || tagsuffixUpdate || lastCollision != collision || lastVisibility != visible || force) {
 			String replacedPrefix = tagprefix.get();
 			String replacedSuffix = tagsuffix.get();
 			lastCollision = collision;

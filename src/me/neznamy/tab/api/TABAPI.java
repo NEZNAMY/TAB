@@ -159,7 +159,7 @@ public class TABAPI {
 	 */
 	public static void hideNametag(UUID player) {
 		hiddenNametag.add(player);
-		Shared.getPlayer(player).updateTeamData();
+		Shared.getPlayer(player).updateTeamData(true);
 	}
 	
 	
@@ -172,7 +172,7 @@ public class TABAPI {
 	 */
 	public static void showNametag(UUID player) {
 		hiddenNametag.remove(player);
-		Shared.getPlayer(player).updateTeamData();
+		Shared.getPlayer(player).updateTeamData(true);
 	}
 	
 	

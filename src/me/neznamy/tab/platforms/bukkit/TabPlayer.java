@@ -69,7 +69,7 @@ public class TabPlayer extends ITabPlayer{
 	public void setTeamVisible(boolean visible) {
 		if (nameTagVisible != visible) {
 			nameTagVisible = visible;
-			updateTeam();
+			updateTeam(false);
 		}
 	}
 	public void restartArmorStands() {

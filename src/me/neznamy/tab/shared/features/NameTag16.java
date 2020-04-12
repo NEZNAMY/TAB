@@ -16,7 +16,7 @@ public class NameTag16 implements SimpleFeature{
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.disabledNametag) p.updateTeam();
+					if (!p.disabledNametag) p.updateTeam(false);
 				}
 			}
 		});
@@ -53,7 +53,7 @@ public class NameTag16 implements SimpleFeature{
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			p.updateTeam();
+			p.updateTeam(true);
 		}
 	}
 }

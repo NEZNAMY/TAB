@@ -48,7 +48,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		}
 		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam();
+				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam(false);
 			}
 		});
 		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags", new Runnable() {
@@ -94,7 +94,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			p.updateTeam();
+			p.updateTeam(true);
 		}
 	}
 	@Override
