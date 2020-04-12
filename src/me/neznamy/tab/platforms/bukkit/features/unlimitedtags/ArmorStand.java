@@ -42,12 +42,12 @@ public class ArmorStand{
 	public Property property;
 	private boolean staticOffset;
 	
-	public ArmorStand(ITabPlayer owner, String format, double yOffset, String ID, boolean staticOffset) {
+	public ArmorStand(ITabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = ((TabPlayer)owner).player;
 		this.yOffset = yOffset;
-		property = owner.properties.get(ID);
+		this.property = property;
 		visible = getVisibility();
 		refreshName();
 		updateLocation(player.getLocation());

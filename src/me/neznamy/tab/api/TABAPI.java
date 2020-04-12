@@ -53,6 +53,9 @@ public class TABAPI {
 		ITabPlayer p = Shared.getPlayer(player);
 		if (p == null) return;
 		p.properties.get(type.toString()).setTemporaryValue(value);
+		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
+		}
 		p.forceUpdateDisplay();
 	}
 	
@@ -69,6 +72,9 @@ public class TABAPI {
 		if (p == null) return;
 		p.properties.get(type.toString()).changeRawValue(value);
 		PlayerCommand.savePlayer(null, p.getName(), type.toString(), value);
+		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
+		}
 		p.forceUpdateDisplay();
 	}
 	

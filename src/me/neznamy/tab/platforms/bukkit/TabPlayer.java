@@ -91,14 +91,12 @@ public class TabPlayer extends ITabPlayer{
 		for (String line : Premium.dynamicLines) {
 			Property p = properties.get(line);
 			if (p == null || p.getCurrentRawValue().length() == 0) continue;
-			String value = p.getCurrentRawValue();
-			armorStands.add(new ArmorStand(this, value, height+=Configs.SECRET_NTX_space, line, false));
+			armorStands.add(new ArmorStand(this, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			Property p = properties.get(line.getKey());
 			if (p == null || p.getCurrentRawValue().length() == 0) continue;
-			String value = p.getCurrentRawValue();
-			armorStands.add(new ArmorStand(this, value, line.getValue(), line.getKey(), true));
+			armorStands.add(new ArmorStand(this, p, line.getValue(), true));
 		}
 		fixArmorStandHeights();
 	}
