@@ -239,8 +239,6 @@ public class PluginHooks {
 					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
 				}
 			} else {
-				//thats why it failed
-				Shared.errorManager.printError("PlaceholderAPI not found when trying to replace placeholder " + placeholder + " for player " + playername);
 				placeholderAPI = false;
 			}
 			return "ERROR";
@@ -258,7 +256,6 @@ public class PluginHooks {
 			if (papi != null) {
 				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational text " + text + " for players " + one.getName() + " and " + two.getName(), t);
 			} else {
-				//thats why it failed
 				placeholderAPI = false;
 			}
 		}
