@@ -306,11 +306,11 @@ public abstract class ITabPlayer {
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
-			setProperty(property, value, "Player: " + getName() + "," + Shared.separatorType + ":" + worldGroup);
+			setProperty(property, value, "Player: " + getName() + ", " + Shared.separatorType + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
-			setProperty(property, value, "PlayerUUID: " + getName() + "," + Shared.separatorType + ":" + worldGroup);
+			setProperty(property, value, "PlayerUUID: " + getName() + ", " + Shared.separatorType + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) {
@@ -322,11 +322,11 @@ public abstract class ITabPlayer {
 			return;
 		}
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
-			setProperty(property, value, "Group: " + permissionGroup + "," + Shared.separatorType + ":" + worldGroup);
+			setProperty(property, value, "Group: " + permissionGroup + ", " + Shared.separatorType + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
-			setProperty(property, value, "Group: _OTHER_," + Shared.separatorType + ":" + worldGroup);
+			setProperty(property, value, "Group: _OTHER_," + Shared.separatorType + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
