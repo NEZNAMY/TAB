@@ -99,9 +99,9 @@ public class DebugCommand extends SubCommand {
 					sendMessage(sender, "&9tabsuffix: &cDisabled in player's world");
 					sendMessage(sender, "&9tabname: &cDisabled in player's world");
 				} else {
-					sendMessage(sender, property(analyzed, "tabprefix"));
-					sendMessage(sender, property(analyzed, "tabsuffix"));
-					sendMessage(sender, property(analyzed, "customtabname"));
+					sendRawMessage(sender, property(analyzed, "tabprefix"));
+					sendRawMessage(sender, property(analyzed, "tabsuffix"));
+					sendRawMessage(sender, property(analyzed, "customtabname"));
 				}
 			} else {
 				sendMessage(sender, "&9tabprefix: &cDisabled");
@@ -113,8 +113,8 @@ public class DebugCommand extends SubCommand {
 					sendMessage(sender, "&9tagprefix: &cDisabled in player's world");
 					sendMessage(sender, "&9tagsuffix: &cDisabled in player's world");
 				} else {
-					sendMessage(sender, property(analyzed, "tagprefix"));
-					sendMessage(sender, property(analyzed, "tagprefix"));
+					sendRawMessage(sender, property(analyzed, "tagprefix"));
+					sendRawMessage(sender, property(analyzed, "tagprefix"));
 				}
 			} else {
 				sendMessage(sender, "&9tagprefix: &cDisabled");
@@ -126,9 +126,9 @@ public class DebugCommand extends SubCommand {
 					sendMessage(sender, "&9belowname: &cDisabled in player's world");
 					sendMessage(sender, "&9tagname: &cDisabled in player's world");
 				} else {
-					sendMessage(sender, property(analyzed, "abovename"));
-					sendMessage(sender, property(analyzed, "belowname"));
-					sendMessage(sender, property(analyzed, "customtagname"));
+					sendRawMessage(sender, property(analyzed, "abovename"));
+					sendRawMessage(sender, property(analyzed, "belowname"));
+					sendRawMessage(sender, property(analyzed, "customtagname"));
 				}
 			}
 		}
@@ -136,7 +136,8 @@ public class DebugCommand extends SubCommand {
 	private String property(ITabPlayer analyzed, String name) {
 		Property pr = analyzed.properties.get(name);
 		String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
-		return "&a" + name + ": &e\"&r" + rawValue + "&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")";
+		return Placeholders.color("&a%name%: &e\"&r%rawValue%&r&e\" &7(%rawValueLength%) &9(Source: %source%)")
+				.replace("%name%", name).replace("%rawValue%", rawValue).replace("%rawValueLength%", rawValue.length()+"").replace("%source%", pr.getSource());
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
