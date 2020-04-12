@@ -78,10 +78,10 @@ public class PacketAPI{
 	
 	private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
-		to.setProperty("bossbar-text-"+bar.getName(), bar.text);
-		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress);
-		to.setProperty("bossbar-color-"+bar.getName(), bar.color);
-		to.setProperty("bossbar-style-"+bar.getName(), bar.style);
+		to.setProperty("bossbar-text-"+bar.getName(), bar.text, null);
+		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress, null);
+		to.setProperty("bossbar-color-"+bar.getName(), bar.color, null);
+		to.setProperty("bossbar-style-"+bar.getName(), bar.style, null);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), 
 					to.properties.get("bossbar-text-"+bar.getName()).get(), 

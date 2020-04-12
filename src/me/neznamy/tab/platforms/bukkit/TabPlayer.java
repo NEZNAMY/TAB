@@ -86,7 +86,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public void loadArmorStands() {
 		armorStands.clear();
-		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue());
+		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : Premium.dynamicLines) {
 			Property p = properties.get(line);

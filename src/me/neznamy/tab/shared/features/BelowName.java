@@ -21,7 +21,7 @@ public class BelowName implements SimpleFeature{
 	public void load() {
 		refresh =  Configs.config.getInt("belowname.refresh-interval-milliseconds", 200);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
-		textProperty = new Property(null, text);
+		textProperty = new Property(null, text, null);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;
 			PacketAPI.registerScoreboardObjective(p, objectivename, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);

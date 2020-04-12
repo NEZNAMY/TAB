@@ -147,12 +147,13 @@ public abstract class ITabPlayer {
 		return infoData;
 	}
 
-	public String setProperty(String identifier, String rawValue) {
+	public String setProperty(String identifier, String rawValue, String source) {
 		Property p = properties.get(identifier);
 		if (p == null) {
-			properties.put(identifier, new Property(this, rawValue));
+			properties.put(identifier, new Property(this, rawValue, source));
 		} else {
 			p.changeRawValue(rawValue);
+			p.setSource(source);
 		}
 		return rawValue;
 	}
@@ -268,25 +269,26 @@ public abstract class ITabPlayer {
 
 	public void updateAll() {
 		if (Shared.features.containsKey("tabobjective")) {
-			setProperty("tablist-objective", TabObjective.rawValue);
+			setProperty("tablist-objective", TabObjective.rawValue, null);
 		}
 		if (Shared.features.containsKey("belowname")) {
-			setProperty("belowname-number", BelowName.number);
-			setProperty("belowname-text", BelowName.text);
+			setProperty("belowname-number", BelowName.number, null);
+			setProperty("belowname-text", BelowName.text, null);
 		}
-		setProperty("tabprefix", getValue("tabprefix"));
-		setProperty("tagprefix", getValue("tagprefix"));
-		setProperty("tabsuffix", getValue("tabsuffix"));
-		setProperty("tagsuffix", getValue("tagsuffix"));
-		String temp;
-		setProperty("customtabname", (temp = getValue("customtabname")).length() == 0 ? getName() : temp);
-		setProperty("customtagname", (temp = getValue("customtagname")).length() == 0 ? getName() : temp);
-		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue());
+		updateProperty("tabprefix");
+		updateProperty("tagprefix");
+		updateProperty("tabsuffix");
+		updateProperty("tagsuffix");
+		updateProperty("customtabname");
+		if (properties.get("customtabname").getCurrentRawValue().length() == 0) setProperty("customtabname", getName(), "None");
+		updateProperty("customtagname");
+		if (properties.get("customtagname").getCurrentRawValue().length() == 0) setProperty("customtagname", getName(), "None");
+		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		for (String property : Premium.dynamicLines) {
-			if (!property.equals("nametag")) setProperty(property, getValue(property));
+			if (!property.equals("nametag")) updateProperty(property);
 		}
 		for (String property : Premium.staticLines.keySet()) {
-			if (!property.equals("nametag")) setProperty(property, getValue(property));
+			if (!property.equals("nametag")) updateProperty(property);
 		}
 		rank = String.valueOf(Configs.rankAliases.get("_OTHER_")+""); //it is a string, but some geniuses might like something else..
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
@@ -299,23 +301,43 @@ public abstract class ITabPlayer {
 		updateRawHeaderAndFooter();
 	}
 
-	private String getValue(Object property) {
+	private void updateProperty(String property) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null)
-			return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null)
-			return value;
-		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("Users." + getUniqueId().toString() + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null)
-			return value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null)
-			return value;
-		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) return value;
-		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) return value;
-		return "";
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
+			setProperty(property, value, "Player: " + getName() + "," + Shared.separatorType + ":" + worldGroup);
+			return;
+		}
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
+			setProperty(property, value, "PlayerUUID: " + getName() + "," + Shared.separatorType + ":" + worldGroup);
+			return;
+		}
+		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) {
+			setProperty(property, value, "Player: " + getName());
+			return;
+		}
+		if ((value = Configs.config.getString("Users." + getUniqueId().toString() + "." + property)) != null) {
+			setProperty(property, value, "PlayerUUID: " + getName());
+			return;
+		}
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
+			setProperty(property, value, "Group: " + permissionGroup + "," + Shared.separatorType + ":" + worldGroup);
+			return;
+		}
+		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
+			setProperty(property, value, "Group: _OTHER_," + Shared.separatorType + ":" + worldGroup);
+			return;
+		}
+		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
+			setProperty(property, value, "Group: " + permissionGroup);
+			return;
+		}
+		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) {
+			setProperty(property, value, "Group: _OTHER_");
+			return;
+		}
+		setProperty(property, "", "None");
 	}
 
 	private void updateRawHeaderAndFooter() {
@@ -340,7 +362,7 @@ public abstract class ITabPlayer {
 			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
 			rawValue.append(line);
 		}
-		setProperty(name, rawValue.toString());
+		setProperty(name, rawValue.toString(), null);
 	}
 
 	@SuppressWarnings("unchecked")

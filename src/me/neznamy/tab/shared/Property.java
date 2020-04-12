@@ -13,15 +13,17 @@ public class Property {
 	private String rawValue;
 	private String temporaryValue;
 	public String lastReplacedValue;
+	private String source;
 
 	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
 	private boolean hasRelationalPlaceholders;
 	private long lastUpdate;
 	private boolean Static;
 
-	public Property(ITabPlayer owner, String rawValue) {
+	public Property(ITabPlayer owner, String rawValue, String source) {
 		if (rawValue == null) rawValue = "";
 		this.owner = owner;
+		this.source = source;
 		this.rawValue = analyze(rawValue);
 	}
 	private String analyze(String value) {
@@ -81,6 +83,12 @@ public class Property {
 	}
 	public String getOriginalRawValue() {
 		return rawValue;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	public boolean isUpdateNeeded() {
 		if (Static) return false;

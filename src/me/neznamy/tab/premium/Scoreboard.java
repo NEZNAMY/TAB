@@ -88,7 +88,7 @@ public class Scoreboard {
 	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
-			p.setProperty("scoreboard-title", title);
+			p.setProperty("scoreboard-title", title, null);
 			String replacedTitle = p.properties.get("scoreboard-title").get();
 			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
@@ -175,7 +175,7 @@ public class Scoreboard {
 			} else return null; //update not needed
 		}
 		public void register(ITabPlayer p) {
-			p.setProperty("sb-"+teamname, rawtext);
+			p.setProperty("sb-"+teamname, rawtext, null);
 			List<String> prefixsuffix = replaceText(p, true, true);
 			if (prefixsuffix == null) return;
 			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
