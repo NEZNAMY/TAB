@@ -27,6 +27,7 @@ public class Property {
 		this.rawValue = analyze(rawValue);
 	}
 	private String analyze(String value) {
+		value = Placeholders.color(value);
 		for (Placeholder c : Placeholders.usedPlaceholders.values()) {
 			if (c instanceof ServerConstant) {
 				if (value.contains(c.getIdentifier())) {
@@ -44,7 +45,7 @@ public class Property {
 		if (placeholders.isEmpty() && !hasRelationalPlaceholders) {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
-			lastReplacedValue = Placeholders.color(value);
+			lastReplacedValue = value;
 			for (String remove : Configs.removeStrings) {
 				String removed = Placeholders.color(remove);
 				if (value.contains(removed)) value = value.replace(removed, "");
