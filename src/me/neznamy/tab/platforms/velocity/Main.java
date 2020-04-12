@@ -233,7 +233,8 @@ public class Main implements MainClass{
 	}
 	public static String textFromComponent(Component component) {
 		if (component == null) return null;
-		return ((TextComponent) component).content();
+		if (component instanceof TextComponent) return ((TextComponent) component).content();
+		return "";
 	}
 	public static void registerPlaceholders() {
 		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
