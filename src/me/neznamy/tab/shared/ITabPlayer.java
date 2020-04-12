@@ -53,6 +53,7 @@ public abstract class ITabPlayer {
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 	public boolean lastCollision;
 	public boolean lastVisibility;
+	private boolean connected = true;
 
 	public void init() {
 		updateGroupIfNeeded(false);
@@ -179,7 +180,7 @@ public abstract class ITabPlayer {
 		Property suffix = properties.get("tabsuffix");
 		String format;
 		if (Premium.allignTabsuffix) {
-			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(prefix.get() + name.get(), suffix.get());
+			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(this, prefix.get() + name.get(), suffix.get());
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
@@ -550,5 +551,12 @@ public abstract class ITabPlayer {
 			}
 		}
 		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((TabPlayer)this).restartArmorStands();
+	}
+	public boolean isConnected() {
+		return connected;
+	}
+	public void disconnect() {
+		connected = false;
+		//TODO add more stuff such as memory flush to prevent memory leaks
 	}
 }

@@ -55,7 +55,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		for (PlayerInfoData playerInfoData : info.entries) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
+				if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
 					playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
 					playerInfoData.name = packetPlayer.getName();
 				}

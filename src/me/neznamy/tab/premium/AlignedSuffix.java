@@ -1,8 +1,6 @@
 package me.neznamy.tab.premium;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
@@ -14,9 +12,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class AlignedSuffix implements SimpleFeature{
 
 	private int maxWidth;
+	private ITabPlayer maxPlayer;
 	public static final Map<Character, Integer> widths = new HashMap<Character, Integer>();
-	private Map<ITabPlayer, Integer> playerWidths = new HashMap<ITabPlayer, Integer>();
-	
+
 	public AlignedSuffix() {
 		widths.put('A', 5);
 		widths.put('B', 5);
@@ -127,16 +125,30 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put((char)12305, 8);
 		widths.put((char)10084, 7);
 	}
-	public String fixTextWidth(String prefixAndName, String suffix) {
-		int currentWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
-		if (currentWidth > maxWidth) {
-			maxWidth = currentWidth;
+	public String fixTextWidth(ITabPlayer player, String prefixAndName, String suffix) {
+		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
+		if (player == maxPlayer && playerNameWidth < maxWidth) {
+			maxWidth = playerNameWidth;
 			for (ITabPlayer all : Shared.getPlayers()) {
+				int localWidth = getPlayerNameWidth(all);
+				if (localWidth > maxWidth) {
+					maxWidth = localWidth;
+					maxPlayer = all;
+				}
+			}
+			for (ITabPlayer all : Shared.getPlayers()) {
+				all.updatePlayerListName();
+			}
+		} else if (playerNameWidth > maxWidth) {
+			maxWidth = playerNameWidth;
+			maxPlayer = player;
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all == player) continue;
 				all.updatePlayerListName();
 			}
 		}
 		String newFormat = prefixAndName + Placeholders.colorChar + "r";
-		newFormat += buildSpaces(maxWidth + 12 - currentWidth);
+		newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
 		newFormat += Placeholders.getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
@@ -157,7 +169,7 @@ public class AlignedSuffix implements SimpleFeature{
 			}
 			width += component.getText().length()-1;
 		}
-			
+
 		if (component.getExtra() != null) {
 			for (IChatBaseComponent extra : component.getExtra()) {
 				width += getTextWidth(extra);
@@ -197,27 +209,21 @@ public class AlignedSuffix implements SimpleFeature{
 		}
 		return output;
 	}
-	
+
 	@Override
 	public void load() {
-		int newMax = 0;
-		for (ITabPlayer all : Shared.getPlayers()) {
-			int localWidth = getPlayerNameWidth(all);
-			playerWidths.put(all, localWidth);
-			if (localWidth > newMax) newMax = localWidth;
-		}
-		maxWidth = newMax;
+		recalculateMaxWidth(null);
 	}
 	@Override
 	public void unload() {
-		playerWidths.clear();
+
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {
 		int width = getPlayerNameWidth(p);
-		playerWidths.put(p, width);
 		if (width > maxWidth) {
 			maxWidth = width;
+			maxPlayer = p;
 			for (ITabPlayer all : Shared.getPlayers()) {
 				all.updatePlayerListName();
 			}
@@ -225,24 +231,38 @@ public class AlignedSuffix implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		if (getPlayerNameWidth(p) == maxWidth) {
-			List<ITabPlayer> players = new ArrayList<ITabPlayer>();
-			players.addAll(Shared.getPlayers());
-			players.remove(p);
-			int newMax = 0;
-			for (ITabPlayer all : players) {
-				int localWidth = getPlayerNameWidth(all);
-				if (localWidth > newMax) newMax = localWidth;
-			}
-			maxWidth = newMax;
-			for (ITabPlayer all : players) {
-				all.updatePlayerListName();
+		if (maxPlayer == p) {
+			if (recalculateMaxWidth(p)) {
+				for (ITabPlayer all : Shared.getPlayers()) {
+					all.updatePlayerListName();
+				}
 			}
 		}
-		playerWidths.remove(p);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		// TODO Auto-generated method stub
+		if (maxPlayer == p) {
+			if (recalculateMaxWidth(null)) {
+				for (ITabPlayer all : Shared.getPlayers()) {
+					all.updatePlayerListName();
+				}
+			}
+		}
+	}
+
+	// returns true if max changed, false if not
+	private boolean recalculateMaxWidth(ITabPlayer ignoredPlayer) {
+		int oldMaxWidth = maxWidth;
+		maxWidth = 0;
+		maxPlayer = null;
+		for (ITabPlayer all : Shared.getPlayers()) {
+			if (all == ignoredPlayer) continue;
+			int localWidth = getPlayerNameWidth(all);
+			if (localWidth > maxWidth) {
+				maxWidth = localWidth;
+				maxPlayer = all;
+			}
+		}
+		return oldMaxWidth != maxWidth;
 	}
 }

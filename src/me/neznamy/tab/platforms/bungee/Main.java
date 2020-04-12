@@ -107,6 +107,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
+		disconnectedPlayer.disconnect();
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
 		for (Placeholder pl : Placeholders.usedPlaceholders.values()) {
