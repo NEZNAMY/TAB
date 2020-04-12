@@ -47,7 +47,6 @@ public class ArmorStand{
 		this.staticOffset = staticOffset;
 		player = ((TabPlayer)owner).player;
 		this.yOffset = yOffset;
-		owner.setProperty(ID, format);
 		property = owner.properties.get(ID);
 		visible = getVisibility();
 		refreshName();
