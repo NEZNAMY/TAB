@@ -12,6 +12,7 @@ public interface MainClass {
 	public void loadConfig() throws Exception;
 	public void registerUnknownPlaceholder(String identifier);
 	public void convertConfig(ConfigurationFile config);
+	public String getServerVersion();
 	
 	public default void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
 		if (config.hasConfigOption(oldKey)) {

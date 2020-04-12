@@ -361,4 +361,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		}
 	}
+	@Override
+	public String getServerVersion() {
+		return getProxy().getVersion();
+	}
 }

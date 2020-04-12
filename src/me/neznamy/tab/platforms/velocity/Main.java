@@ -418,4 +418,8 @@ public class Main implements MainClass{
 			}
 		}
 	}
+	@Override
+	public String getServerVersion() {
+		return server.getVersion().getName() + " v" + server.getVersion().getVersion();
+	}
 }

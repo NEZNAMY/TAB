@@ -628,4 +628,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		}
 	}
+	@Override
+	public String getServerVersion() {
+		return Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")";
+	}
 }

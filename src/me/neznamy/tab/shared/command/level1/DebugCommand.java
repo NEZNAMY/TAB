@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -37,9 +35,7 @@ public class DebugCommand extends SubCommand {
 		}
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
-		if (Shared.separatorType.equals("world")) {
-			sendMessage(sender, "&6Server version: &a" + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
-		}
+		sendMessage(sender, "&6Server version: &a" + Shared.mainClass.getServerVersion());
 		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Premium.is() ? " Premium" : ""));
 		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
 		sendMessage(sender, "&6Found Permission system: &a" + Shared.mainClass.getPermissionPlugin());
