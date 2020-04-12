@@ -213,12 +213,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		}
 		return info;
 	}
-	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer packetReceiver) {
+	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
-			packetReceiver.sendCustomBukkitPacket(as.getSpawnPacket(packetReceiver, true));
+			viewer.sendCustomBukkitPacket(as.getSpawnPacket(viewer, true));
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-				String displayName = as.property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(armorStandOwner, packetReceiver, as.property.get()) : as.property.get();
-				packetReceiver.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(displayName, packetReceiver).toNMS(), true));
+				String displayName = as.property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, armorStandOwner, as.property.get()) : as.property.get();
+				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(displayName, viewer).toNMS(), true));
 			}
 		}
 	}

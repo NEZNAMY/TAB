@@ -244,17 +244,17 @@ public class PluginHooks {
 			return "ERROR";
 		}
 	}
-	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer one, ITabPlayer two, String text) {
+	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String text) {
 		if (!placeholderAPI) return text;
 		try {
 			long startTime = System.nanoTime();
-			String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)one).player, ((TabPlayer)two).player, text);
+			String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)viewer).player, ((TabPlayer)target).player, text);
 			Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 			return value;
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational text " + text + " for players " + one.getName() + " and " + two.getName(), t);
+				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational text " + text + " for viewer " + viewer.getName() + " and target " + target.getName(), t);
 			} else {
 				placeholderAPI = false;
 			}

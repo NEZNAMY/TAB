@@ -71,11 +71,11 @@ public class ArmorStand{
 			}
 		}
 	}
-	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer to, boolean addToRegistered) {
+	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
-		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, to, property.get()) : property.get();
-		if (!nearbyPlayers.contains(to) && addToRegistered) nearbyPlayers.add(to);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(to)).setDataWatcher(createDataWatcher(displayName, to));
+		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, property.get()) : property.get();
+		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
+		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(createDataWatcher(displayName, viewer));
 	}
 	public Object getNMSTeleportPacket(ITabPlayer to) {
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(to));
@@ -98,24 +98,24 @@ public class ArmorStand{
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
 		synchronized (nearbyPlayers) {
-			for (ITabPlayer all : nearbyPlayers) {
-				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, property.get()) : property.get();
-				if (all.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
+			for (ITabPlayer viewer : nearbyPlayers) {
+				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, property.get()) : property.get();
+				if (viewer.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
 					//sneaking feature was removed in 1.14, so despawning completely now
 					if (sneaking) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					} else {
-						all.sendCustomBukkitPacket(getSpawnPacket(all, false));
+						viewer.sendCustomBukkitPacket(getSpawnPacket(viewer, false));
 						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-							all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
+							viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, viewer).toNMS(), true));
 						}
 					}
 				} else {
 					//respawning so there's no animation and it's instant
-					all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-					all.sendCustomBukkitPacket(getSpawnPacket(all, false));
+					viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+					viewer.sendCustomBukkitPacket(getSpawnPacket(viewer, false));
 					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, all).toNMS(), true));
+						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, viewer).toNMS(), true));
 					}
 				}
 			}
@@ -135,14 +135,14 @@ public class ArmorStand{
 	private void updateMetadata() {
 		synchronized (nearbyPlayers) {
 			String displayName = property.get();
-			for (ITabPlayer all : nearbyPlayers) {
+			for (ITabPlayer viewer : nearbyPlayers) {
 				String currentName;
 				if (property.hasRelationalPlaceholders()) {
-					currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(owner, all, displayName);
+					currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, displayName);
 				} else {
 					currentName = displayName;
 				}
-				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, all).toNMS(), true));
+				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, viewer).toNMS(), true));
 			}
 		}
 	}

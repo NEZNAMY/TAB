@@ -174,7 +174,7 @@ public abstract class ITabPlayer {
 		}
 	}
 
-	public String getTabFormat(ITabPlayer other) {
+	public String getTabFormat(ITabPlayer viewer) {
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
 		Property suffix = properties.get("tabsuffix");
@@ -184,7 +184,7 @@ public abstract class ITabPlayer {
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
-		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, other, format) : format;
+		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format;
 	}
 
 	public void updateTeam(boolean force) {
@@ -435,10 +435,10 @@ public abstract class ITabPlayer {
 			String replacedSuffix = tagsuffix.get();
 			lastCollision = collision;
 			lastVisibility = visible;
-			for (ITabPlayer all : Shared.getPlayers()) {
-				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
-				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
-				PacketAPI.updateScoreboardTeamPrefixSuffix(all, teamName, currentPrefix, currentSuffix, visible, collision);
+			for (ITabPlayer viewer : Shared.getPlayers()) {
+				String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedPrefix) : replacedPrefix;
+				String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedSuffix) : replacedSuffix;
+				PacketAPI.updateScoreboardTeamPrefixSuffix(viewer, teamName, currentPrefix, currentSuffix, visible, collision);
 			}
 		}
 	}
@@ -448,21 +448,21 @@ public abstract class ITabPlayer {
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
-		for (ITabPlayer all : Shared.getPlayers()) {
-			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedPrefix) : replacedPrefix;
-			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, all, replacedSuffix) : replacedSuffix;
-			PacketAPI.registerScoreboardTeam(all, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Arrays.asList(getName()));
+		for (ITabPlayer viewer : Shared.getPlayers()) {
+			String currentPrefix = tagprefix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedPrefix) : replacedPrefix;
+			String currentSuffix = tagsuffix.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedSuffix) : replacedSuffix;
+			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, lastVisibility = getTeamVisibility(), lastCollision = getTeamPush(), Arrays.asList(getName()));
 		}
 	}
 
-	public void registerTeam(ITabPlayer to) {
+	public void registerTeam(ITabPlayer viewer) {
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
 		String replacedPrefix = tagprefix.get();
 		String replacedSuffix = tagsuffix.get();
-		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedPrefix);
-		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(this, to, replacedSuffix);
-		PacketAPI.registerScoreboardTeam(to, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
+		if (tagprefix.hasRelationalPlaceholders()) replacedPrefix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedPrefix);
+		if (tagsuffix.hasRelationalPlaceholders()) replacedSuffix = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, replacedSuffix);
+		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()));
 	}
 
 	public void unregisterTeam() {
