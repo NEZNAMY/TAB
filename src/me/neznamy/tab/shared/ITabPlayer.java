@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -376,22 +375,8 @@ public abstract class ITabPlayer {
 				}
 			}
 		}
-		if (name == null) {
-			if (!permissionGroup.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + permissionGroup + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + permissionGroup + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
-			if (Shared.features.containsKey("playerlist")) {
-				name = properties.get("tabprefix").get();
-			} else {
-				name = properties.get("tagprefix").get();
-			}
-		}
-		if (name == null || name.length() == 0) {
-			name = "&f";
-		} else {
-			if (name.contains("%")) {
-				for (Placeholder pl : Placeholders.getAllUsed()) {
-					if (name.contains(pl.getIdentifier())) name = name.replace(pl.getIdentifier(), pl.getValue(this));
-				}
-			}
+		if (name == null && !permissionGroup.equals("null")) {
+			Shared.errorManager.oneTimeConsoleError("Group \"&e" + permissionGroup + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + permissionGroup + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 		}
 		if (name.length() > 12) {
 			name = name.substring(0, 12);
