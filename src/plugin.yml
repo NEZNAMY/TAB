@@ -3,7 +3,7 @@ version: 2.7.4-pre6
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
-softdepend: [PlaceholderAPI, ViaVersion, ProtocolSupport, Vault, Factions, UltraPermissions, LuckPerms, GroupManager, PermissionsEx, DeluxeTags, Essentials, eGlow]
+softdepend: [PlaceholderAPI, ViaVersion, ProtocolSupport, Vault, UltraPermissions, LuckPerms, GroupManager, PermissionsEx, DeluxeTags, Essentials, eGlow, LibsDisguises]
 website: "https://www.spigotmc.org/resources/57806/"
 description: "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more"
 commands:
