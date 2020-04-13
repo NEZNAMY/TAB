@@ -6,7 +6,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.SimpleFeature;
@@ -58,7 +57,7 @@ public class TabExpansion implements SimpleFeature{
 			PlaceholderAPI.unregisterExpansion(exp);
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
 			// java.lang.IllegalStateException: ExpansionUnregisterEvent may only be triggered synchronously.
-			Shared.errorManager.printError("Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously, false, Configs.papiErrorFile);
+//			Shared.errorManager.printError("Failed to unregister expansion for PlaceholderAPI", ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously, false, Configs.papiErrorFile);
 		}
 	}
 	@Override
