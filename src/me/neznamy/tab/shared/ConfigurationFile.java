@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -183,7 +184,7 @@ public class ConfigurationFile{
 	}
 	private Map<String, Object> set(Map<String, Object> map, String path, Object value) {
 		if (path.contains(".")) {
-			String keyWord = path.split("\\.")[0];
+			String keyWord = fixKey(map, path.split("\\.")[0]);
 			Object submap = map.get(keyWord);
 			if (submap == null || !(submap instanceof Map)) {
 				submap = new HashMap<String, Object>();
@@ -197,6 +198,12 @@ public class ConfigurationFile{
 			}
 		}
 		return map;
+	}
+	private String fixKey(Map<?, ?> map, String key) {
+		for (Entry<?, ?> e : map.entrySet()) {
+			if (e.getKey().toString().equalsIgnoreCase(key)) return e.getKey().toString();
+		}
+		return key;
 	}
 	public void save() {
 		try {
