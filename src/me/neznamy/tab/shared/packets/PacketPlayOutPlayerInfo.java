@@ -95,6 +95,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			}
 		}
 		public static EnumGamemode fromNMS(Object nms) {
+			if (nms == null) return null;
 			return EnumGamemode.valueOf(nms.toString());
 		}
 		public static EnumGamemode fromId(int id) {
