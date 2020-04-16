@@ -293,7 +293,7 @@ public abstract class ITabPlayer {
 		}
 		rank = String.valueOf(Configs.rankAliases.get("_OTHER_")+""); //it is a string, but some geniuses might like something else..
 		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(permissionGroup)) {
+			if (String.valueOf(entry.getKey()).equalsIgnoreCase(permissionGroup)) {
 				rank = (String) entry.getValue();
 				break;
 			}
