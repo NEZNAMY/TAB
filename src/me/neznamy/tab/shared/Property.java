@@ -39,7 +39,7 @@ public class Property {
 		hasRelationalPlaceholders = value.contains("%rel_");
 		for (Placeholder placeholder : placeholders) {
 			for (String child : placeholder.getChilds()) {
-				if (child.contains("%rel_")) hasRelationalPlaceholders = true;
+				if (String.valueOf(child).contains("%rel_")) hasRelationalPlaceholders = true;
 			}
 		}
 		if (placeholders.isEmpty() && !hasRelationalPlaceholders) {
