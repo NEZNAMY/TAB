@@ -151,6 +151,11 @@ public class PluginHooks {
 		try {
 			try {
 				//LuckPerms API v5
+				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					return new String[] {"null"};
+				}
 				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
@@ -166,6 +171,10 @@ public class PluginHooks {
 			try {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					return "";
+				}
 				prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
@@ -183,6 +192,10 @@ public class PluginHooks {
 			try {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					return "";
+				}
 				suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
