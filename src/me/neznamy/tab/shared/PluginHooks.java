@@ -156,7 +156,7 @@ public class PluginHooks {
 					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 					return new String[] {"null"};
 				}
-				return LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId()).getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+				return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
