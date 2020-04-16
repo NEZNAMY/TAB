@@ -85,6 +85,24 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			all.getArmorStands().forEach(a -> a.removeFromRegistered(disconnectedPlayer));
 		}
 		disconnectedPlayer.getArmorStands().forEach(a -> a.destroy());
+		int asCount = disconnectedPlayer.getArmorStands().size();
+		int[] armorStandIds = new int[asCount];
+		for (int i=0; i<asCount; i++) {
+			armorStandIds[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
+		}
+		Shared.cpu.runMeasuredTask("Processing player quit", "NameTagX - onQuit", new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(100);
+					for (ITabPlayer all : Shared.getPlayers()) {
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(armorStandIds));
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+		});
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
