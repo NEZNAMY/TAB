@@ -1,7 +1,10 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
@@ -13,22 +16,66 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 
+	private List<String> spyServers;
+	private Map<String, List<String>> sharedServers;
+	private boolean displayAsSpectators;
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void load() {
-		//TODO
+		spyServers = Configs.config.getStringList("global-playerlist.spy-servers");
+		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
+		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
+		for (ITabPlayer displayed : Shared.getPlayers()) {
+			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
+			for (ITabPlayer viewer : Shared.getPlayers()) {
+				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket);
+			}
+		}
+	}
+	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
+		if (displayed == viewer) return true;
+		if (PluginHooks._isVanished(displayed)) return false;
+		if (spyServers.contains(viewer.getWorldName())) {
+			return true;
+		}
+		String viewerServerGroup = "null";
+		for (String group : sharedServers.keySet()) {
+			if (sharedServers.get(group).contains(viewer.getWorldName())) viewerServerGroup = group;
+		}
+		String displayedServerGroup = "null";
+		for (String group : sharedServers.keySet()) {
+			if (sharedServers.get(group).contains(displayed.getWorldName())) displayedServerGroup = group;
+		}
+		if (spyServers.contains(displayed.getWorldName()) && !spyServers.contains(viewer.getWorldName())) {
+			return false;
+		}
+		if (viewerServerGroup.equals(displayedServerGroup)) {
+			return true;
+		}
+		return false;
 	}
 	@Override
 	public void unload() {
-		//TODO
+		for (ITabPlayer displayed : Shared.getPlayers()) {
+			PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
+			for (ITabPlayer viewer : Shared.getPlayers()) {
+				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendCustomPacket(displayedRemovePacket);
+			}
+		}
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		PacketPlayOutPlayerInfo add = getAddPacket(connectedPlayer);
+		PacketPlayOutPlayerInfo addConnected = getAddPacket(connectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
-			if (!PluginHooks._isVanished(connectedPlayer)) all.sendCustomPacket(add);
-			if (!PluginHooks._isVanished(all)) connectedPlayer.sendCustomPacket(getAddPacket(all));
+			if (shouldSee(all, connectedPlayer)) {
+				all.sendCustomPacket(addConnected);
+			}
+			if (shouldSee(connectedPlayer, all)) {
+				connectedPlayer.sendCustomPacket(getAddPacket(all));
+			}
 		}
 	}
 	public void onQuit(ITabPlayer disconnectedPlayer) {
@@ -40,6 +87,28 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		//delay because VeLoCiTyPoWeReD
+		Shared.cpu.runTaskLater(100, "processing server switch", "processing server switch", new Runnable() {
+
+			@Override
+			public void run() {
+				PacketPlayOutPlayerInfo addChanged = getAddPacket(p);
+				PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
+				for (ITabPlayer all : Shared.getPlayers()) {
+					if (all == p) continue;
+					if (shouldSee(all, p)) {
+						all.sendCustomPacket(addChanged);
+					} else {
+						all.sendCustomPacket(removeChanged);
+					}
+					if (shouldSee(p, all)) {
+						p.sendCustomPacket(getAddPacket(all));
+					} else {
+						p.sendCustomPacket(getRemovePacket(all));
+					}
+				}
+			}
+		});
 	}
 	public PacketPlayOutPlayerInfo getRemovePacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getTablistId(), null, 0, null, null));
@@ -52,13 +121,16 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
-		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-			for (PlayerInfoData playerInfoData : info.entries) {
-				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-				if (packetPlayer != null) { //player online
-					if (!PluginHooks._isVanished(packetPlayer)) {
-						//changing to random non-existing player, the easiest way to cancel the removal
-						playerInfoData.uniqueId = UUID.randomUUID();
+		for (PlayerInfoData playerInfoData : info.entries) {
+			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+			if (packetPlayer != null) {
+				if ((playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+					//remove packet sent by bungeecord
+					//changing to random non-existing player, the easiest way to cancel the removal
+					playerInfoData.uniqueId = UUID.randomUUID();
+				} else {
+					if (displayAsSpectators) {
+						if (!receiver.getWorldName().equals(packetPlayer.getWorldName())) playerInfoData.gameMode = EnumGamemode.SPECTATOR;
 					}
 				}
 			}

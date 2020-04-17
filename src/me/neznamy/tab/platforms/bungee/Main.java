@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.bungee;
 import java.util.*;
 import java.util.Map.Entry;
 
-import java.util.UUID;
-
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
@@ -264,7 +262,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		registerPlaceholders();
 		if (Configs.config.getBoolean("belowname.enabled", true)) 							Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
-		if (Configs.config.getBoolean("global-playerlist", false)) 							Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
+		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 							Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16());
 		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
@@ -272,7 +271,6 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.registerFeature("playerlist", new Playerlist());
 			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
 		}
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		new UpdateChecker();
@@ -324,6 +322,16 @@ public class Main extends Plugin implements Listener, MainClass{
 			if (config.hasConfigOption("belowname.refresh-interval")) {
 				int value = config.getInt("belowname.refresh-interval");
 				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
+			}
+			if (config.getObject("global-playerlist") instanceof Boolean) {
+				rename(config, "global-playerlist", "global-playerlist.enabled");
+				config.set("global-playerlist.spy-servers", Arrays.asList("spyserver1", "spyserver2"));
+				Map<String, List<String>> serverGroups = new HashMap<String, List<String>>();
+				serverGroups.put("lobbies", Arrays.asList("lobby1", "lobby2"));
+				serverGroups.put("group2", Arrays.asList("server1", "server2"));
+				config.set("global-playerlist.server-groups", serverGroups);
+				config.set("global-playerlist.display-others-as-spectators", false);
+				Shared.print('2', "Converted old global-playerlist section to new one in config.yml.");
 			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
