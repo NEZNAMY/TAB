@@ -94,14 +94,14 @@ public enum SortingType {
 		}
 		return chars;
 	}
-	private String setPlaceholders(String s, ITabPlayer p) {
-		if (s.contains("%")) {
+	private String setPlaceholders(String string, ITabPlayer player) {
+		if (string.contains("%")) {
 			for (Placeholder pl : Placeholders.getAllUsed()) {
-				if (s.contains(pl.getIdentifier())) {
-					pl.set(s, p);
+				if (string.contains(pl.getIdentifier())) {
+					string = pl.set(string, player);
 				}
 			}
 		}
-		return s;
+		return string;
 	}
 }
