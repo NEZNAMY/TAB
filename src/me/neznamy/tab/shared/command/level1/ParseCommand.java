@@ -20,8 +20,8 @@ public class ParseCommand extends SubCommand{
 		if (args.length > 0) {
 			String replaced = args[0];
 			for (Placeholder p : Placeholders.getAllPlaceholders()) 
-				if (replaced.contains(p.getIdentifier())) 
-					replaced = replaced.replace(p.getIdentifier(), p.getValue(sender));
+				if (replaced.contains(p.getIdentifier()))
+					replaced = p.set(replaced, sender);
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
 			sendMessage(sender, "&6Replacing placeholder &e" + args[0] + (sender == null ? "" : "&6 for player &e" + sender.getName()));
 			sendMessage(sender, "Colorized output: " + replaced);
