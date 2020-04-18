@@ -263,7 +263,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Configs.config.getBoolean("belowname.enabled", true)) 							Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
-		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 							Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
+		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16());
 		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
