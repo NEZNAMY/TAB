@@ -17,7 +17,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import net.kyori.text.Component;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
@@ -194,7 +196,19 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		
 		@Override
 		public String toString() {
-			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + "}";
+			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + ",uuid belongs to: " + analyzeUUID(uniqueId) + "}";
+		}
+		private static String analyzeUUID(UUID uuid) {
+			String result = "";
+			ITabPlayer p;
+			if ((p = Shared.getPlayer(uuid)) != null) {
+				result = "[UUID of " + p.getName() + "]";
+			}
+			if ((p = Shared.getPlayerByTablistUUID(uuid)) != null) {
+				result += "[TablistUUID of " + p.getName() + "]";
+			}
+			if (result.length() == 0) result = "Unknown";
+			return result;
 		}
 	}
 
