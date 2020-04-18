@@ -36,5 +36,5 @@ public abstract class Placeholder {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
-	public abstract String getValue(ITabPlayer p);
+	protected abstract String getValue(ITabPlayer p);
 }

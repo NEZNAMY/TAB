@@ -16,7 +16,7 @@ public abstract class ServerConstant extends Placeholder{
 	public abstract String get();
 	
 	@Override
-	public String getValue(ITabPlayer p) {
+	protected String getValue(ITabPlayer p) {
 		return value;
 	}
 }
