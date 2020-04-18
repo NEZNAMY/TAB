@@ -4,8 +4,8 @@ import me.neznamy.tab.platforms.bukkit.Main;
 
 public enum ProtocolVersion {
 
-	UNKNOWN		(999, "Unknown",	17, 14, 0x4C),
-	v1_16_20w16a(712, "20w16a",		17,	14,	0x4C),
+	UNKNOWN		(999, "Unknown",	17, 14, 0x4D),
+	v1_16_20w16a(712, "20w16a",		17,	14,	0x4D),
 	v1_15_2		(578, "1.15.2",		17, 14, 0x4C),
 	v1_15_1		(575, "1.15.1",		17, 14, 0x4C),
 	v1_15		(573, "1.15",		17, 14, 0x4C),
