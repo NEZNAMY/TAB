@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
@@ -42,14 +43,21 @@ public class BossBar implements SimpleFeature{
 				lines.add(new BossBarLine(bar+"", permissionRequired, refresh, color, style, text, progress));
 			}
 		}
-		List<String> toRemove = new ArrayList<String>();
-		for (String bar : defaultBars) {
+		for (String bar : defaultBars.toArray(new String[0])) {
 			if (getLine(bar) == null) {
 				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
-				toRemove.add(bar);
+				defaultBars.remove(bar);
 			}
 		}
-		defaultBars.removeAll(toRemove);
+		for (Entry<String, List<String>> entry : perWorld.entrySet()) {
+			List<String> bars = entry.getValue();
+			for (String bar : bars.toArray(new String[0])) {
+				if (getLine(bar) == null) {
+					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
+					bars.remove(bar);
+				}
+			}
+		}
 		remember_toggle_choice = Configs.bossbar.getBoolean("remember-toggle-choice", false);
 		if (remember_toggle_choice) {
 			bossbar_off_players = Configs.getPlayerData("bossbar-off");
