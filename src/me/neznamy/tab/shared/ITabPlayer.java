@@ -175,6 +175,7 @@ public abstract class ITabPlayer {
 	}
 
 	public String getTabFormat(ITabPlayer viewer) {
+		if (!Shared.features.containsKey("playerlist")) return null;
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
 		Property suffix = properties.get("tabsuffix");
