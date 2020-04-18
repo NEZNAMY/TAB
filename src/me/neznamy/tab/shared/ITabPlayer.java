@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -387,17 +388,16 @@ public abstract class ITabPlayer {
 		if (Configs.sortByPermissions) {
 			for (String permissionGroup : Configs.sortedGroups.keySet()) {
 				if (hasPermission("tab.sort." + permissionGroup)) {
-					name = Configs.sortedGroups.get(permissionGroup);
+					name = SortingType.getGroupChars(permissionGroup);
 					break;
 				}
+			}
+			if (name == null) {
+				name = "";
+				Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
 			}
 		} else {
-			for (String permissionGroup : Configs.sortedGroups.keySet()) {
-				if (permissionGroup.equalsIgnoreCase(this.permissionGroup)) {
-					name = Configs.sortedGroups.get(permissionGroup);
-					break;
-				}
-			}
+			name = SortingType.getGroupChars(permissionGroup);
 		}
 		if (name == null && !permissionGroup.equals("null")) {
 			Shared.errorManager.oneTimeConsoleError("Group \"&e" + permissionGroup + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + permissionGroup + "&c\" into &egroup-sorting-priority-list in config.yml&c.");

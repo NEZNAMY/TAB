@@ -15,19 +15,23 @@ public enum SortingType {
 	GROUPS_THEN_PLACEHOLDER_A_TO_Z;
 	
 	public String getTeamName(ITabPlayer p) {
-		String teamName = "";
+		String teamName = null;
 		String number;
 		int value;
 		switch(this){
 		case GROUPS:
-			teamName = getGroupChars(p);
+			teamName = getGroupChars(p.getGroup());
 			break;
 		case GROUP_PERMISSIONS:
 			for (String localgroup : Configs.sortedGroups.keySet()) {
 				if (p.hasPermission("tab.sort." + localgroup)) {
-					teamName = Configs.sortedGroups.get(localgroup);
+					teamName = getGroupChars(localgroup);
 					break;
 				}
+			}
+			if (teamName == null) {
+				teamName = "";
+				Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
 			}
 			break;
 		case TABPREFIX_A_TO_Z:
@@ -50,17 +54,17 @@ public enum SortingType {
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = (99999999-value)+"";
-			teamName = getGroupChars(p) + number;
+			teamName = getGroupChars(p.getGroup()) + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
 			number = setPlaceholders(Premium.sortingPlaceholder, p);
 			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
 			number = value+"";
 			while (number.length() < 9) number = "0" + number;
-			teamName = getGroupChars(p) + number;
+			teamName = getGroupChars(p.getGroup()) + number;
 			break;
 		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
-			teamName = getGroupChars(p) + setPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = getGroupChars(p.getGroup()) + setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		}
 		teamName += p.getName();
@@ -82,13 +86,13 @@ public enum SortingType {
 		}
 		return "InvalidTeam";
 	}
-	private String getGroupChars(ITabPlayer p) {
-		String group = Configs.sortedGroups.get(p.getGroup().toLowerCase()); // 4 chars
-		if (group == null) {
-			group = "";
-			if (!p.getGroup().equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + p.getGroup() + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + p.getGroup() + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
+	public static String getGroupChars(String group) {
+		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 4 chars
+		if (chars == null) {
+			chars = "";
+			if (!group.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 		}
-		return group;
+		return chars;
 	}
 	private String setPlaceholders(String s, ITabPlayer p) {
 		if (s.contains("%")) {
