@@ -29,6 +29,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		for (ITabPlayer displayed : Shared.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
 			for (ITabPlayer viewer : Shared.getPlayers()) {
+				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
 				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket);
 			}
 		}
