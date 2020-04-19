@@ -114,7 +114,7 @@ public class DebugCommand extends SubCommand {
 					sendMessage(sender, "&9tagsuffix: &cDisabled in player's world");
 				} else {
 					sendRawMessage(sender, property(analyzed, "tagprefix"));
-					sendRawMessage(sender, property(analyzed, "tagprefix"));
+					sendRawMessage(sender, property(analyzed, "tagsuffix"));
 				}
 			} else {
 				sendMessage(sender, "&9tagprefix: &cDisabled");
