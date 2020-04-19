@@ -55,7 +55,9 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
-					p.getArmorStands().forEach(a -> a.updateVisibility());
+					synchronized(p.armorStands) {
+						p.getArmorStands().forEach(a -> a.updateVisibility());
+					}
 				}
 			}
 		});
