@@ -34,7 +34,7 @@ public abstract class ITabPlayer {
 
 	public Map<String, Property> properties = new HashMap<String, Property>();
 	private long lastRefreshGroup;
-	public List<ArmorStand> armorStands = new ArrayList<ArmorStand>();
+	public List<ArmorStand> armorStands = Collections.synchronizedList(new ArrayList<ArmorStand>());
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	public Object channel;
 	public boolean nameTagVisible = true;
@@ -182,7 +182,13 @@ public abstract class ITabPlayer {
 		Property suffix = properties.get("tabsuffix");
 		String format;
 		if (Premium.allignTabsuffix) {
-			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(this, prefix.get() + name.get(), suffix.get());
+			AlignedSuffix asuffix = ((AlignedSuffix)Shared.features.get("alignedsuffix"));
+			if (asuffix != null) {
+				format = asuffix.fixTextWidth(this, prefix.get() + name.get(), suffix.get());
+			} else {
+				Shared.errorManager.printError("Aligned suffix is enabled, but the feature is not loaded!");
+				format = prefix.get() + name.get() + suffix.get();
+			}
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
@@ -200,7 +206,9 @@ public abstract class ITabPlayer {
 			registerTeam();
 		}
 		if (Shared.features.containsKey("nametagx")) {
-			armorStands.forEach(a -> a.refreshName());
+			synchronized(armorStands) {
+				armorStands.forEach(a -> a.refreshName());
+			}
 			fixArmorStandHeights();
 		}
 	}
