@@ -118,6 +118,7 @@ public class CPUManager {
 					long time = System.nanoTime();
 					task.run();
 					addFeatureTime(feature, System.nanoTime()-time);
+				} catch (InterruptedException pluginDisabled) {
 				} catch (Throwable t) {
 					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
 				}

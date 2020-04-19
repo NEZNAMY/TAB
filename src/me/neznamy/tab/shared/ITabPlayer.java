@@ -208,8 +208,8 @@ public abstract class ITabPlayer {
 		if (Shared.features.containsKey("nametagx")) {
 			synchronized(armorStands) {
 				armorStands.forEach(a -> a.refreshName());
+				fixArmorStandHeights();
 			}
-			fixArmorStandHeights();
 		}
 	}
 
