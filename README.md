@@ -1,17 +1,5 @@
 # TAB  
-[![minecraft][Badge-ServerVersions]][URL-Spigot]   [![issues][Badge-Issues]][URL-Issues]   [![discord][Badge-Discord]][URL-Discord]   [![version][Badge-PluginVersion]][URL-Release]
-
 
 All free dependencies can be found at http://207.180.242.97/spigot/tab/dependencies/  
-
-[URL-Spigot]: https://www.spigotmc.org/resources/57806/
-[URL-Issues]: https://github.com/NEZNAMY/TAB/issues
-[URL-Release]: https://www.spigotmc.org/resources/57806/update?update=316499
-[URL-Discord]: https://discord.gg/yx4THeU
-[URL-DevBuild]: https://cdn.discordapp.com/attachments/464896376820465685/685799941742133250/TAB_v2.7.0-pre20.jar
-
-[Badge-PluginVersion]: https://img.shields.io/badge/Version-2.7.3-green.svg
-[Badge-Issues]: https://img.shields.io/github/issues/neznamy/tab?label=Issues
-[Badge-ServerVersions]: https://img.shields.io/badge/Minecraft-1.5.0%20--%201.15.2-blue.svg
-[Badge-Discord]: https://img.shields.io/discord/464328633239207938.svg?label=Discord
-[Badge-DevBuild]: https://img.shields.io/badge/Dev%20Build-2.7.0--pre1-orange
+  
+To activate premium version, set https://github.com/NEZNAMY/TAB/blob/master/src/me/neznamy/tab/premium/Premium.java#L24 to return true.
