@@ -26,7 +26,6 @@ public class AnnounceBarCommand extends SubCommand{
 				int duration;
 				try {
 					duration = Integer.parseInt(args[1]);
-					int d2 = duration;
 					Shared.cpu.runMeasuredTask("announcing bossbar", "BossBar", new Runnable() {
 
 						public void run() {
@@ -40,10 +39,7 @@ public class AnnounceBarCommand extends SubCommand{
 								for (ITabPlayer all : Shared.getPlayers()) {
 									PacketAPI.createBossBar(all, bar);
 								}
-//								List<String> animationFrames = //maybe later
-								for (int i=0; i<(float)d2*1000/feature.getRefresh(); i++) {
-									Thread.sleep(feature.getRefresh());
-								}
+								Thread.sleep(duration*1000);
 								for (ITabPlayer all : Shared.getPlayers()) {
 									PacketAPI.removeBossBar(all, bar);
 								}

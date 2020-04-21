@@ -31,7 +31,6 @@ public class BossBar implements SimpleFeature{
 		if (Configs.bossbar.getConfigurationSection("bars") != null) {
 			for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
 				boolean permissionRequired = Configs.bossbar.getBoolean("bars." + bar + ".permission-required", false);
-				int refresh = Configs.bossbar.getInt("bars." + bar + ".refresh", 0);
 				String style = Configs.bossbar.getString("bars." + bar + ".style");
 				String color = Configs.bossbar.getString("bars." + bar + ".color");
 				String progress = Configs.bossbar.getString("bars." + bar + ".progress");
@@ -40,7 +39,7 @@ public class BossBar implements SimpleFeature{
 					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
 					progress = "100";
 				}
-				lines.add(new BossBarLine(bar+"", permissionRequired, refresh, color, style, text, progress));
+				lines.add(new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
 			}
 		}
 		for (String bar : defaultBars.toArray(new String[0])) {
@@ -68,7 +67,7 @@ public class BossBar implements SimpleFeature{
 			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 			p.detectBossBarsAndSend();
 		}
-		Shared.cpu.startRepeatingMeasuredTask(getRefresh(), "refreshing bossbar", "BossBar", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible) continue;
@@ -163,9 +162,6 @@ public class BossBar implements SimpleFeature{
 		}
 		return false;
 	}
-	public int getRefresh() {
-		return refresh;
-	}
 	public class BossBarLine{
 
 		private String name;
@@ -173,16 +169,14 @@ public class BossBar implements SimpleFeature{
 		private UUID uuid; //1.9+
 		private Object nmsEntity; // <1.9
 		private int entityId; // <1.9
-		private int refresh;
 		public String style;
 		public String color;
 		public String text;
 		public String progress;
 
-		public BossBarLine(String name, boolean permissionRequired, int refresh, String color, String style, String text, String progress) {
+		public BossBarLine(String name, boolean permissionRequired, String color, String style, String text, String progress) {
 			this.name = name;
 			this.permissionRequired = permissionRequired;
-			this.refresh = Shared.errorManager.fixBossBarRefresh(name, refresh);
 			this.uuid = UUID.randomUUID();
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
 				nmsEntity = MethodAPI.getInstance().newEntityWither();
@@ -198,9 +192,6 @@ public class BossBar implements SimpleFeature{
 		}
 		public String getName() {
 			return name;
-		}
-		public int getRefresh() {
-			return refresh;
 		}
 		public Object getEntity() {
 			return nmsEntity;
