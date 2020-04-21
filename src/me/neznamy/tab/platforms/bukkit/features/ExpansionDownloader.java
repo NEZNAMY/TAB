@@ -54,7 +54,7 @@ public class ExpansionDownloader{
 							}
 						} catch (InterruptedException | ConcurrentModificationException e) {
 						} catch (Throwable e) {
-							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions", e);
+							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
 						}
 					}
 				});
