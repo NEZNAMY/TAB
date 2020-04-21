@@ -28,19 +28,17 @@ public class BossBar implements SimpleFeature{
 		defaultBars = Configs.bossbar.getStringList("default-bars");
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
 		perWorld = Configs.bossbar.getConfigurationSection("per-world");
-		if (Configs.bossbar.getConfigurationSection("bars") != null) {
-			for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
-				boolean permissionRequired = Configs.bossbar.getBoolean("bars." + bar + ".permission-required", false);
-				String style = Configs.bossbar.getString("bars." + bar + ".style");
-				String color = Configs.bossbar.getString("bars." + bar + ".color");
-				String progress = Configs.bossbar.getString("bars." + bar + ".progress");
-				String text = Configs.bossbar.getString("bars." + bar + ".text");
-				if (progress == null) {
-					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
-					progress = "100";
-				}
-				lines.add(new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
+		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
+			boolean permissionRequired = Configs.bossbar.getBoolean("bars." + bar + ".permission-required", false);
+			String style = Configs.bossbar.getString("bars." + bar + ".style");
+			String color = Configs.bossbar.getString("bars." + bar + ".color");
+			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
+			String text = Configs.bossbar.getString("bars." + bar + ".text");
+			if (progress == null) {
+				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
+				progress = "100";
 			}
+			lines.add(new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
 		}
 		for (String bar : defaultBars.toArray(new String[0])) {
 			if (getLine(bar) == null) {
