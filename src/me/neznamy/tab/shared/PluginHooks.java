@@ -63,12 +63,20 @@ public class PluginHooks {
 
 	public static boolean _isVanished(ITabPlayer p) {
 		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
-			if (premiumVanish && BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player)) return true;
+			try {
+				if (premiumVanish && BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player)) return true;
+			} catch (Throwable t) {
+				return Shared.errorManager.printError(false, "Failed to check Vanish status of " + p.getName() + " using PremiumVanish", t);
+			}
 		}
 		return false;
 	}
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
-		return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
+		try {
+			return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AFKPlus", t);
+		}
 	}
 	//paid plugin and i do not want to leak the jar when providing all dependencies
 	public static boolean AntiAFKPlus_isAFK(ITabPlayer p) {
@@ -142,7 +150,11 @@ public class PluginHooks {
 		}
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
-		return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
+		try {
+			return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using iDisguise", t);
+		}
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
 		try {
@@ -279,7 +291,11 @@ public class PluginHooks {
 		return text;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
-		return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
+		try {
+			return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size();
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(Shared.getPlayers().size(), "Failed to get invisible player count using PremiumVanish");
+		}
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
 		try {
@@ -308,7 +324,11 @@ public class PluginHooks {
 		}
 	}
 	public static String Vault_getPermissionPlugin() {
-		return ((Permission)Vault_permission).getName();
+		try {
+			return ((Permission)Vault_permission).getName();
+		} catch (Throwable e) {
+			return Shared.errorManager.printError("Unknown/None", "Failed to get permission plugin name using Vault", e);
+		}
 	}
 	public static String[] Vault_getGroups(ITabPlayer p) {
 		try {
@@ -318,7 +338,11 @@ public class PluginHooks {
 		}
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
-		return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
+		try {
+			return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(0, "Failed to get money of " + p.getName() + " using Vault", e);
+		}
 	}
 	public static String Vault_getPrefix(ITabPlayer p) {
 		try {
@@ -357,6 +381,10 @@ public class PluginHooks {
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
-		return xAntiAFKAPI.isAfk(((TabPlayer)p).player);
+		try {
+			return xAntiAFKAPI.isAfk(((TabPlayer)p).player);
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
+		}
 	}
 }
