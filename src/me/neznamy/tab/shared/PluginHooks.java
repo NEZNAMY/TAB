@@ -102,8 +102,12 @@ public class PluginHooks {
 		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
 	}
 	public static void DeluxeTags_onChat(ITabPlayer p) {
-		if (deluxetags) {
-			new PlayerListener((DeluxeTags) Bukkit.getPluginManager().getPlugin("DeluxeTags")).onChat(new AsyncPlayerChatEvent(true, ((TabPlayer)p).player, null, null));
+		try {
+			if (deluxetags) {
+				new PlayerListener((DeluxeTags) Bukkit.getPluginManager().getPlugin("DeluxeTags")).onChat(new AsyncPlayerChatEvent(true, ((TabPlayer)p).player, null, null));
+			}
+		} catch (Throwable t) {
+			//new version which already fixed the issue anyway
 		}
 	}
 	public static double Essentials_getMoney(ITabPlayer p) {
