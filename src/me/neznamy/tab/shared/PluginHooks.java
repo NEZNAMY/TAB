@@ -169,7 +169,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
 					return new String[] {"null"};
 				}
 				return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
@@ -188,7 +188,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 					return "";
 				}
 				prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
@@ -209,7 +209,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 					return "";
 				}
 				suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
@@ -229,7 +229,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
 					return "null";
 				}
 				return user.getPrimaryGroup();
