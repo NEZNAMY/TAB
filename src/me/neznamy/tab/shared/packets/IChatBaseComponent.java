@@ -132,10 +132,11 @@ public class IChatBaseComponent {
 		return onHover(HoverAction.SHOW_ITEM, MethodAPI.getInstance().serialize(item));
 	}
 	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
-		String value = "{id:" + id.toString();
-		if (type != null) value += ",type:" + type;
-		if (customname != null) value += ",name:" + customname;
-		return onHover(HoverAction.SHOW_ENTITY, value + "}");
+		JSONObject json = new JSONObject();
+		json.put("id", id.toString());
+		if (type != null) json.put("type", type);
+		if (customname != null) json.put("name", customname);
+		return onHover(HoverAction.SHOW_ENTITY, json.toString());
 	}
 	private IChatBaseComponent onHover(HoverAction action, String value) {
 		hoverAction = action;
