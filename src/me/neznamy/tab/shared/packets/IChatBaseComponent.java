@@ -33,6 +33,7 @@ public class IChatBaseComponent {
 	}
 	public IChatBaseComponent(String text) {
 		this.text = text;
+		jsonObject.put("text", text);
 		jsonObject.put("signature", "TAB");
 	}
 
