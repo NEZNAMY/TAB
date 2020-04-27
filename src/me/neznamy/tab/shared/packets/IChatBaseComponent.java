@@ -1,34 +1,15 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
-import javax.annotation.Nullable;
-
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
+
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
-
-	private static int serverVersion;
-	private static Class<?> NBTTagCompound;
-	private static Method CraftItemStack_asNMSCopy;
-	private static Method ItemStack_save;
-
-	static {
-		try {
-			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-			serverVersion = Integer.parseInt(pack.split("_")[1]);
-			NBTTagCompound = Class.forName("net.minecraft.server." + pack + ".NBTTagCompound");
-			CraftItemStack_asNMSCopy = Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class);
-			ItemStack_save = Class.forName("net.minecraft.server." + pack + ".ItemStack").getMethod("save", NBTTagCompound);
-		} catch (Throwable t) {
-			serverVersion = 15;
-			//bungeecord, velocity
-		}
-	}
 
 	private String text;
 	private Boolean bold;
@@ -167,22 +148,13 @@ public class IChatBaseComponent {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
 	public IChatBaseComponent onHoverShowItem(ItemStack item) {
-		return onHover(HoverAction.SHOW_ITEM, serialize(item));
+		return onHover(HoverAction.SHOW_ITEM, MethodAPI.getInstance().serialize(item));
 	}
-	public IChatBaseComponent onHoverShowEntity(UUID id, @Nullable String customname, @Nullable String type) {
+	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
 		String value = "{id:" + id.toString();
 		if (type != null) value += ",type:" + type;
 		if (customname != null) value += ",name:" + customname;
 		return onHover(HoverAction.SHOW_ENTITY, value + "}");
-	}
-	private String serialize(ItemStack item) {
-		try {
-			//			return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
-			return ItemStack_save.invoke(CraftItemStack_asNMSCopy.invoke(null, item), NBTTagCompound.getConstructor().newInstance()).toString();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			return "null";
-		}
 	}
 	private IChatBaseComponent onHover(HoverAction action, String value) {
 		hoverAction = action;
@@ -200,7 +172,7 @@ public class IChatBaseComponent {
 			if (text.length() == 0) return "{\"translate\":\"\"}";
 		}
 		JSONObject json = new JSONObject();
-		if (serverVersion >= 7) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
 			if (text != null) {
 				json.put("text", text);
@@ -235,7 +207,7 @@ public class IChatBaseComponent {
 					if (c.text != null) text += c.text;
 				}
 			}
-			if (serverVersion == 6) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
 				//1.6.x
 				json.put("text", text);
 				return json.toString();

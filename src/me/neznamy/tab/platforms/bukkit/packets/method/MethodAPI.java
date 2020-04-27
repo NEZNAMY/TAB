@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.Main;
@@ -80,6 +81,7 @@ public abstract class MethodAPI {
 	public abstract Object newPacketPlayOutScoreboardScore_1_13(Object action, String objectiveName, String player, int score);
 	public abstract List<Object> getDataWatcherItems(Object dataWatcher);
 	public abstract Item readDataWatcherItem(Object nmsItem);
+	public abstract String serialize(ItemStack item);
 	
 	public double getTPS() {
 		try {

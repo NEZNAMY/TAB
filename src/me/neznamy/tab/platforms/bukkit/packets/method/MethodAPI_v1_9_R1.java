@@ -7,8 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_9_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.mojang.authlib.GameProfile;
 
@@ -152,5 +154,9 @@ public class MethodAPI_v1_9_R1 extends MethodAPI {
 		boolean needsUpdate = i.c();
 		me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject(position, classType);
 		return new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item(key, value).setNeedsUpdate(needsUpdate);
+	}
+	@Override
+	public String serialize(ItemStack item) {
+		return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
 	}
 }

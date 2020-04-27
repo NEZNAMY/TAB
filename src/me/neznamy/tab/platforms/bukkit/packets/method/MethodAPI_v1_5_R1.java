@@ -6,7 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_5_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import net.minecraft.server.v1_5_R1.*;
 
@@ -130,5 +132,9 @@ public class MethodAPI_v1_5_R1 extends MethodAPI {
 		boolean needsUpdate = i.d();
 		me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject(position, classType);
 		return new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item(key, value).setNeedsUpdate(needsUpdate);
+	}
+	@Override
+	public String serialize(ItemStack item) {
+		return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
 	}
 }
