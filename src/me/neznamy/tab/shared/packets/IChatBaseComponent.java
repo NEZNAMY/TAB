@@ -11,6 +11,8 @@ import me.neznamy.tab.shared.ProtocolVersion;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
+	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
+	
 	private String text;
 	private Boolean bold;
 	private Boolean italic;
@@ -22,7 +24,6 @@ public class IChatBaseComponent {
 	private Object clickValue;
 	private HoverAction hoverAction;
 	private String hoverValue;
-	private IChatBaseComponent parent;
 	private List<IChatBaseComponent> extra;
 
 
@@ -36,16 +37,12 @@ public class IChatBaseComponent {
 		return extra;
 	}
 	public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
-		for (IChatBaseComponent component : components) {
-			component.parent = this;
-		}
 		this.extra = components;
 		return this;
 	}
 	public void addExtra(IChatBaseComponent child) {
 		if (extra == null) extra = new ArrayList<IChatBaseComponent>();
 		extra.add(child);
-		child.parent = this;
 	}
 
 
@@ -55,37 +52,21 @@ public class IChatBaseComponent {
 		return text;
 	}
 	public EnumChatFormat getColor() {
-		if (color != null) return color;
-		return parent.color;
+		return color;
 	}
 	public boolean isBold(){
-		if (bold == null) {
-			return (parent != null) && (parent.isBold());
-		}
 		return bold;
 	}
 	public boolean isItalic(){
-		if (italic == null) {
-			return (parent != null) && (parent.isItalic());
-		}
 		return italic;
 	}
 	public boolean isUnderlined(){
-		if (underlined == null) {
-			return (parent != null) && (parent.isUnderlined());
-		}
 		return underlined;
 	}
 	public boolean isStrikethrough(){
-		if (strikethrough == null) {
-			return (parent != null) && (parent.isStrikethrough());
-		}
 		return strikethrough;
 	}
 	public boolean isObfuscated(){
-		if (obfuscated == null) {
-			return (parent != null) && (parent.isObfuscated());
-		}
 		return obfuscated;
 	}
 
@@ -169,7 +150,7 @@ public class IChatBaseComponent {
 	public String toString() {
 		if (extra == null) {
 			if (text == null) return null;
-			if (text.length() == 0) return "{\"translate\":\"\"}";
+			if (text.length() == 0) return EMPTY_COMPONENT;
 		}
 		JSONObject json = new JSONObject();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
@@ -291,7 +272,6 @@ public class IChatBaseComponent {
 		copy.hoverValue = hoverValue;
 		copy.italic = italic;
 		copy.obfuscated = obfuscated;
-//		copy.parent = parent;
 		copy.strikethrough = strikethrough;
 		copy.text = text;
 		copy.underlined = underlined;
