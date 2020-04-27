@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 public class IChatBaseComponent {
 
 	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
-	
+
 	private String text;
 	private Boolean bold;
 	private Boolean italic;
@@ -26,11 +26,14 @@ public class IChatBaseComponent {
 	private String hoverValue;
 	private List<IChatBaseComponent> extra;
 
+	private JSONObject jsonObject = new JSONObject();
 
 	public IChatBaseComponent() {
+		jsonObject.put("signature", "TAB");
 	}
 	public IChatBaseComponent(String text) {
 		this.text = text;
+		jsonObject.put("signature", "TAB");
 	}
 
 	public List<IChatBaseComponent> getExtra(){
@@ -38,10 +41,14 @@ public class IChatBaseComponent {
 	}
 	public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
 		this.extra = components;
+		jsonObject.put("extra", extra);
 		return this;
 	}
 	public void addExtra(IChatBaseComponent child) {
-		if (extra == null) extra = new ArrayList<IChatBaseComponent>();
+		if (extra == null) {
+			extra = new ArrayList<IChatBaseComponent>();
+			jsonObject.put("extra", extra);
+		}
 		extra.add(child);
 	}
 
@@ -55,53 +62,56 @@ public class IChatBaseComponent {
 		return color;
 	}
 	public boolean isBold(){
-		return bold;
+		return bold == null ? false : bold;
 	}
 	public boolean isItalic(){
-		return italic;
+		return italic == null ? false : italic;
 	}
 	public boolean isUnderlined(){
-		return underlined;
+		return underlined == null ? false : underlined;
 	}
 	public boolean isStrikethrough(){
-		return strikethrough;
+		return strikethrough == null ? false : strikethrough;
 	}
 	public boolean isObfuscated(){
-		return obfuscated;
+		return obfuscated == null ? false : obfuscated;
 	}
 
 	public IChatBaseComponent setText(String text) {
 		this.text = text;
+		jsonObject.put("text", text);
 		return this;
 	}
 	public IChatBaseComponent setColor(EnumChatFormat color) {
 		this.color = color;
+		jsonObject.put("color", color.toString().toLowerCase());
 		return this;
 	}
 	public IChatBaseComponent setBold(Boolean bold) {
 		this.bold = bold;
+		jsonObject.put("bold", bold);
 		return this;
 	}
 	public IChatBaseComponent setItalic(Boolean italic) {
 		this.italic = italic;
+		jsonObject.put("italic", italic);
 		return this;
 	}
 	public IChatBaseComponent setUnderlined(Boolean underlined) {
 		this.underlined = underlined;
+		jsonObject.put("underlined", underlined);
 		return this;
 	}
 	public IChatBaseComponent setStrikethrough(Boolean strikethrough) {
 		this.strikethrough = strikethrough;
+		jsonObject.put("strikethrough", strikethrough);
 		return this;
 	}
 	public IChatBaseComponent setObfuscated(Boolean obfuscated) {
+		jsonObject.put("obfuscated", obfuscated);
 		this.obfuscated = obfuscated;
 		return this;
 	}
-
-
-
-
 
 	public IChatBaseComponent onClickOpenUrl(String url) {
 		return onClick(ClickAction.OPEN_URL, url);
@@ -118,12 +128,12 @@ public class IChatBaseComponent {
 	private IChatBaseComponent onClick(ClickAction action, Object value) {
 		clickAction = action;
 		clickValue = value;
+		JSONObject click = new JSONObject();
+		click.put("action", action.toString().toLowerCase());
+		click.put("value", value);
+		jsonObject.put("clickEvent", click);
 		return this;
 	}
-
-
-
-
 
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
@@ -141,6 +151,10 @@ public class IChatBaseComponent {
 	private IChatBaseComponent onHover(HoverAction action, String value) {
 		hoverAction = action;
 		hoverValue = value;
+		JSONObject hover = new JSONObject();
+		hover.put("action", action.toString().toLowerCase());
+		hover.put("value", value);
+		jsonObject.put("hoverEvent", hover);
 		return this;
 	}
 
@@ -153,34 +167,13 @@ public class IChatBaseComponent {
 			if (text == null) return null;
 			if (text.length() == 0) return EMPTY_COMPONENT;
 		}
-		JSONObject json = new JSONObject();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
-			if (text != null) {
-				json.put("text", text);
-			} else {
-				json.put("text", "");
+			if (text == null) {
+				//com.google.gson.JsonParseException: Don't know how to turn XXX into a Component
+				jsonObject.put("text", "");
 			}
-			if (extra != null) json.put("extra", extra);
-			if (color != null) json.put("color", color.toString().toLowerCase());
-			if (bold != null) json.put("bold", bold);
-			if (italic != null) json.put("italic", italic);
-			if (underlined != null) json.put("underlined", underlined);
-			if (strikethrough != null) json.put("strikethrough", strikethrough);
-			if (obfuscated != null) json.put("obfuscated", obfuscated);
-			if (clickAction != null) {
-				JSONObject o = new JSONObject();
-				o.put("action", clickAction.toString().toLowerCase());
-				o.put("value", clickValue);
-				json.put("clickEvent", o);
-			}
-			if (hoverAction != null) {
-				JSONObject o = new JSONObject();
-				o.put("action", hoverAction.toString().toLowerCase());
-				o.put("value", hoverValue);
-				json.put("hoverEvent", o);
-			}
-			return json.toString();
+			return jsonObject.toString();
 		} else {
 			String text = "";
 			if (this.text != null) text += this.text;
@@ -191,8 +184,8 @@ public class IChatBaseComponent {
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
 				//1.6.x
-				json.put("text", text);
-				return json.toString();
+				jsonObject.put("text", text);
+				return jsonObject.toString();
 			} else {
 				//1.5.x
 				return text;
@@ -261,9 +254,9 @@ public class IChatBaseComponent {
 
 		return new IChatBaseComponent().setExtra(components);
 	}
-	
+
 	public IChatBaseComponent clone() {
-		IChatBaseComponent copy = new IChatBaseComponent();
+		IChatBaseComponent copy = new IChatBaseComponent(text);
 		copy.bold = bold;
 		copy.clickAction = clickAction;
 		copy.clickValue = clickValue;
@@ -274,7 +267,6 @@ public class IChatBaseComponent {
 		copy.italic = italic;
 		copy.obfuscated = obfuscated;
 		copy.strikethrough = strikethrough;
-		copy.text = text;
 		copy.underlined = underlined;
 		return copy;
 	}
