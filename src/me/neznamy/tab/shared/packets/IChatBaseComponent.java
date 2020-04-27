@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
-	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
+	public static final String EMPTY_COMPONENT = "{\"signature\":\"TAB\",\"translate\":\"\"}";
 
 	private String text;
 	private Boolean bold;
