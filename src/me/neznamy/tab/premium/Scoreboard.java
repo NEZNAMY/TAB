@@ -86,6 +86,9 @@ public class Scoreboard {
 		if (id.length() == 1) id = "0" + id;
 		return Placeholders.colorChar + String.valueOf(id.toCharArray()[0]) + Placeholders.colorChar + String.valueOf(id.toCharArray()[1]) + Placeholders.colorChar + "r";
 	}
+	public List<ITabPlayer> getRegisteredUsers(){
+		return players;
+	}
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title, null);

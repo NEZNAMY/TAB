@@ -60,11 +60,10 @@ public class BelowName implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		PacketAPI.unregisterScoreboardObjective(disconnectedPlayer, objectivename);
 	}
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledBelowname && !p.isDisabledWorld(Configs.disabledBelowname, from)) {
-			onQuit(p);
+			PacketAPI.unregisterScoreboardObjective(p, objectivename);
 		}
 		if (!p.disabledBelowname && p.isDisabledWorld(Configs.disabledBelowname, from)) {
 			onJoin(p);

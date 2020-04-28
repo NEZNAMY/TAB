@@ -101,7 +101,7 @@ public class ScoreboardManager implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
+		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().getRegisteredUsers().remove(p);
 		p.setActiveScoreboard(null);
 	}
 	@Override

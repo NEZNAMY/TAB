@@ -54,12 +54,11 @@ public class TabObjective implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		PacketAPI.unregisterScoreboardObjective(disconnectedPlayer, objectivename);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
-			onQuit(p);
+			PacketAPI.unregisterScoreboardObjective(p, objectivename);
 		}
 		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
 			onJoin(p);
