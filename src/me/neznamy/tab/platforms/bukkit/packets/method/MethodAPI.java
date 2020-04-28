@@ -60,7 +60,6 @@ public abstract class MethodAPI {
 	public abstract Object newPacketPlayOutEntityDestroy(int... ids);
 	public abstract Object newPacketPlayOutChat(Object chatComponent, Object position);
 	public abstract Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force);
-	public abstract Object newPacketPlayOutEntityTeleport();
 	public abstract Object newPacketPlayOutSpawnEntityLiving();
 	public abstract Object newPacketPlayOutPlayerInfo(Object action);
 	public abstract Object newPacketPlayOutBoss();

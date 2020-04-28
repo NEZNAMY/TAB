@@ -77,9 +77,6 @@ public class MethodAPI_v1_10_R1 extends MethodAPI {
 	public Object newPacketPlayOutEntityMetadata(int entityId, Object dataWatcher, boolean force) {
 		return new PacketPlayOutEntityMetadata(entityId, (DataWatcher) dataWatcher, force);
 	}
-	public Object newPacketPlayOutEntityTeleport() {
-		return new PacketPlayOutEntityTeleport();
-	}
 	public Object newPacketPlayOutSpawnEntityLiving() {
 		return new PacketPlayOutSpawnEntityLiving();
 	}
@@ -154,7 +151,6 @@ public class MethodAPI_v1_10_R1 extends MethodAPI {
 		me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject key = new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject(position, classType);
 		return new me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item(key, value).setNeedsUpdate(needsUpdate);
 	}
-	@Override
 	public String serialize(ItemStack item) {
 		return CraftItemStack.asNMSCopy(item).save(new NBTTagCompound()).toString();
 	}
