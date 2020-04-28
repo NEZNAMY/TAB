@@ -18,6 +18,7 @@ public class BossBar implements SimpleFeature{
 	public List<String> announcements = new ArrayList<String>();
 	private boolean remember_toggle_choice;
 	public List<String> bossbar_off_players;
+	private boolean permToToggle;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -26,6 +27,7 @@ public class BossBar implements SimpleFeature{
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BossBar", refresh);
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");
+		permToToggle = Configs.bossbar.getBoolean("permission-required-to-toggle", false);
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
 		perWorld = Configs.bossbar.getConfigurationSection("per-world");
 		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
@@ -135,26 +137,30 @@ public class BossBar implements SimpleFeature{
 	}
 	public boolean onChat(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
-			sender.bossbarVisible = !sender.bossbarVisible;
-			if (sender.bossbarVisible) {
-				sender.detectBossBarsAndSend();
-				sender.sendMessage(Configs.bossbar_on);
-				if (remember_toggle_choice) {
-					bossbar_off_players.remove(sender.getName());
-					Configs.playerdata.set("bossbar-off", bossbar_off_players);
-					Configs.playerdata.save();
+			if (!permToToggle || sender.hasPermission("tab.togglebar")) {
+				sender.bossbarVisible = !sender.bossbarVisible;
+				if (sender.bossbarVisible) {
+					sender.detectBossBarsAndSend();
+					sender.sendMessage(Configs.bossbar_on);
+					if (remember_toggle_choice) {
+						bossbar_off_players.remove(sender.getName());
+						Configs.playerdata.set("bossbar-off", bossbar_off_players);
+						Configs.playerdata.save();
+					}
+				} else {
+					for (BossBarLine line : sender.getActiveBossBars()) {
+						PacketAPI.removeBossBar(sender, line);
+					}
+					sender.getActiveBossBars().clear();
+					sender.sendMessage(Configs.bossbar_off);
+					if (remember_toggle_choice && !bossbar_off_players.contains(sender.getName())) {
+						bossbar_off_players.add(sender.getName());
+						Configs.playerdata.set("bossbar-off", bossbar_off_players);
+						Configs.playerdata.save();
+					}
 				}
 			} else {
-				for (BossBarLine line : sender.getActiveBossBars()) {
-					PacketAPI.removeBossBar(sender, line);
-				}
-				sender.getActiveBossBars().clear();
-				sender.sendMessage(Configs.bossbar_off);
-				if (remember_toggle_choice && !bossbar_off_players.contains(sender.getName())) {
-					bossbar_off_players.add(sender.getName());
-					Configs.playerdata.set("bossbar-off", bossbar_off_players);
-					Configs.playerdata.save();
-				}
+				sender.sendMessage(Configs.no_perm);
 			}
 			return true;
 		}

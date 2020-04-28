@@ -13,6 +13,7 @@
 bossbar-enabled: false
 refresh-interval-milliseconds: 1000
 bossbar-toggle-command: /bossbar
+permission-required-to-toggle: false
 
 #saving toggle decision into playerdata.yml to keep it saved after reloads/restarts
 remember-toggle-choice: false
