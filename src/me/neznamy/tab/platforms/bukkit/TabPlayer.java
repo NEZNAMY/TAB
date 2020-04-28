@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -136,6 +137,6 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public PlayerInfoData getInfoData() {
 		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
-		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.fromColoredText(name));
 	}
 }

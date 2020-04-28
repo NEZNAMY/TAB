@@ -7,16 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.velocity.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -118,7 +115,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 		public int latency;
 		public EnumGamemode gameMode;
-		public String displayName;
+		public IChatBaseComponent displayName;
 		public String name;
 		public UUID uniqueId;
 		public Object skin; //platform-specific skin data
@@ -127,7 +124,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.name = name;
 			this.uniqueId = uniqueId;
 		}
-		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, String displayName) {
+		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
@@ -141,14 +138,14 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toNMS(){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(displayName).toString()));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), MethodAPI.getInstance().ICBC_fromString(displayName.toString()));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
 			if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-				item.setDisplayName(new IChatBaseComponent(displayName).toString());
+				item.setDisplayName(displayName.toString());
 			} else {
-				item.setDisplayName(displayName == null ? name : displayName);
+				item.setDisplayName(displayName.toColoredText());
 			}
 			if (gameMode != null) item.setGamemode(gameMode.getNetworkId());
 			item.setPing(latency);
@@ -159,7 +156,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toVelocity() {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromText(displayName));
+			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName.toString()));
 			if (gameMode != null) item.setGameMode(gameMode.getNetworkId());
 			item.setLatency(latency);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
@@ -171,27 +168,16 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
 			GameProfile profile = (GameProfile) PROFILE.get(nmsData);
 			Object nmsComponent = LISTNAME.get(nmsData);
-			String listName = (nmsComponent == null ? null : MethodAPI.getInstance().CCM_fromComponent(nmsComponent));
+			IChatBaseComponent listName = IChatBaseComponent.fromString(MethodAPI.getInstance().ICBC_toString(nmsComponent));
 			return new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
 		}
 		public static PlayerInfoData fromBungee(Object nmsData, ProtocolVersion clientVersion){
 			Item item = (Item) nmsData;
-			String name = null;
-			if (item.getDisplayName() != null) {
-				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-					try {
-						name = (String) ((JSONObject) new JSONParser().parse(item.getDisplayName())).get("text");
-					} catch (ParseException e) {
-					}
-				} else {
-					name = item.getDisplayName();
-				}
-			}
-			return new PlayerInfoData(item.getUsername(), item.getUuid(), item.getProperties(), item.getPing(), EnumGamemode.fromId(item.getGamemode()), item.getDisplayName() == null ? null : name);
+			return new PlayerInfoData(item.getUsername(), item.getUuid(), item.getProperties(), item.getPing(), EnumGamemode.fromId(item.getGamemode()), IChatBaseComponent.fromString(item.getDisplayName()));
 		}
 		public static PlayerInfoData fromVelocity(Object nmsData){
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item) nmsData;
-			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), me.neznamy.tab.platforms.velocity.Main.textFromComponent(item.getDisplayName()));
+			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), IChatBaseComponent.fromString(Main.componentToString(item.getDisplayName())));
 		}
 		
 		@Override
@@ -230,7 +216,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			PROFILE.set(packet, profile);
 			GAMEMODE.set(packet, data.gameMode.networkId);
 			PING.set(packet, data.latency);
-			LISTNAME.set(packet, cutTo(data.displayName, 16));
+			LISTNAME.set(packet, cutTo(data.displayName.toColoredText(), 16));
 			return packet;
 		}
 	}
@@ -265,7 +251,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			int ping = PING.getInt(nmsPacket);
 			EnumGamemode gamemode = EnumGamemode.fromId(GAMEMODE.getInt(nmsPacket));
 			net.minecraft.util.com.mojang.authlib.GameProfile profile = (net.minecraft.util.com.mojang.authlib.GameProfile) PROFILE.get(nmsPacket);
-			String listName = (String) LISTNAME.get(nmsPacket);
+			IChatBaseComponent listName = IChatBaseComponent.fromColoredText((String) LISTNAME.get(nmsPacket));
 			PlayerInfoData data = new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
 			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
 		}

@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -61,7 +62,7 @@ public abstract class ITabPlayer {
 		updateAll();
 		teamName = buildTeamName();
 		updateDisabledWorlds(getWorldName());
-		if (Shared.features.containsKey("playerlist")) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, name);
+		if (Shared.features.containsKey("playerlist")) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
 	}
 
 	//bukkit only
@@ -175,7 +176,7 @@ public abstract class ITabPlayer {
 		}
 	}
 
-	public String getTabFormat(ITabPlayer viewer) {
+	public IChatBaseComponent getTabFormat(ITabPlayer viewer) {
 		if (!Shared.features.containsKey("playerlist")) return null;
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
@@ -192,7 +193,7 @@ public abstract class ITabPlayer {
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
-		return (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format;
+		return IChatBaseComponent.fromColoredText((prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format);
 	}
 
 	public void updateTeam(boolean force) {

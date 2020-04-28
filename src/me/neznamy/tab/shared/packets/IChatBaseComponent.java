@@ -191,6 +191,7 @@ public class IChatBaseComponent {
 			}
 			if (jsonObject.containsKey("signature")) {
 				component.signature = (String) jsonObject.get("signature");
+				component.jsonObject.put("signature", component.signature);
 			}
 			return component;
 		} catch (ParseException e) {
@@ -221,6 +222,7 @@ public class IChatBaseComponent {
 	}
 
 	public static IChatBaseComponent fromColoredText(String message){
+		if (message == null) return null;
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();

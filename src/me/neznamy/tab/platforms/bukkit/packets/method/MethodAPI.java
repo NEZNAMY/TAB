@@ -52,7 +52,7 @@ public abstract class MethodAPI {
 		return instance;
 	}
 	public abstract Object ICBC_fromString(String string);
-	public abstract String CCM_fromComponent(Object ichatbasecomponent);
+	public abstract String ICBC_toString(Object component);
 	public abstract int getPing(Player p);
 	public abstract Object getChannel(Player p) throws Exception;
 	public abstract double[] getRecentTps();

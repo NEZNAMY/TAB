@@ -31,11 +31,11 @@ public class MethodAPI_v1_6_R2 extends MethodAPI {
 		PacketPlayOutEntityDestroy = Packet29DestroyEntity.class;
 	}
 	public Object ICBC_fromString(String string) {
-		if (string == null) return null;
-		return ChatMessage.d(string);
+		throw new UnsupportedOperationException("Not supported");
 	}
-	public String CCM_fromComponent(Object ichatbasecomponent) {
-		return null;
+	public String ICBC_toString(Object component) {
+		if (component == null) return null;
+		return ((ChatMessage) component).i();
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;

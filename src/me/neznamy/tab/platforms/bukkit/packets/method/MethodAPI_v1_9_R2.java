@@ -8,7 +8,6 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_9_R2.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -54,8 +53,9 @@ public class MethodAPI_v1_9_R2 extends MethodAPI {
 		if (string == null) return null;
 		return ChatSerializer.a(string);
 	}
-	public String CCM_fromComponent(Object ichatbasecomponent) {
-		return CraftChatMessage.fromComponent((IChatBaseComponent) ichatbasecomponent);
+	public String ICBC_toString(Object component) {
+		if (component == null) return null;
+		return ChatSerializer.a((IChatBaseComponent) component);
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;

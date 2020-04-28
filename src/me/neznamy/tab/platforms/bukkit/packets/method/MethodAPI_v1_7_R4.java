@@ -42,9 +42,9 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		if (string == null) return null;
 		return ChatSerializer.a(string);
 	}
-	public String CCM_fromComponent(Object ichatbasecomponent) {
-		IChatBaseComponent component = (IChatBaseComponent) ichatbasecomponent;
-		return component.c();
+	public String ICBC_toString(Object component) {
+		if (component == null) return null;
+		return ChatSerializer.a((IChatBaseComponent) component);
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;

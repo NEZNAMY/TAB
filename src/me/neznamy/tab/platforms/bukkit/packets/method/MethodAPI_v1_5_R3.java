@@ -30,10 +30,10 @@ public class MethodAPI_v1_5_R3 extends MethodAPI {
 		PacketPlayOutEntityDestroy = Packet29DestroyEntity.class;
 	}
 	public Object ICBC_fromString(String string) {
-		return null;
+		throw new UnsupportedOperationException("Not supported");
 	}
-	public String CCM_fromComponent(Object ichatbasecomponent) {
-		return null;
+	public String ICBC_toString(Object component) {
+		throw new UnsupportedOperationException("Not supported");
 	}
 	public int getPing(Player p) {
 		return ((CraftPlayer)p).getHandle().ping;
