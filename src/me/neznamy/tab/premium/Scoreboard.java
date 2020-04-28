@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard {
 
+	private static final String ObjectiveName = "TAB-Scoreboard";
 	private static final int DisplaySlot = 1;
 	
 	private ScoreboardManager manager;
@@ -23,7 +24,6 @@ public class Scoreboard {
 	private String childBoard;
 	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
-	private String objectiveName;
 	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
@@ -32,9 +32,7 @@ public class Scoreboard {
 		this.title = title;
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
-		objectiveName = "TAB-SB-" + name;
 		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition, true);
-		if (objectiveName.length() > 16) objectiveName = objectiveName.substring(0, 16);
 		for (int i=0; i<lines.size(); i++) {
 			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
 		}
@@ -93,7 +91,7 @@ public class Scoreboard {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title, null);
 			String replacedTitle = p.properties.get("scoreboard-title").get();
-			PacketAPI.registerScoreboardObjective(p, objectiveName, replacedTitle, DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, replacedTitle, DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
 				s.register(p);
 			}
@@ -109,7 +107,7 @@ public class Scoreboard {
 	}
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
-			PacketAPI.unregisterScoreboardObjective(p, objectiveName);
+			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
 			for (Score s : scores) {
 				s.unregister(p);
 			}
@@ -120,7 +118,7 @@ public class Scoreboard {
 		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 			Property title = p.properties.get("scoreboard-title");
 			if (title.isUpdateNeeded()) {
-				PacketAPI.changeScoreboardObjectiveTitle(p, objectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER);
+				PacketAPI.changeScoreboardObjectiveTitle(p, ObjectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER);
 			}
 		}
 		for (Score s : scores.toArray(new Score[0])) {
@@ -163,7 +161,7 @@ public class Scoreboard {
 					if (emptyBefore) {
 						//was "", now it is not
 						int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
-						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, objectiveName, score);
+						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, ObjectiveName, score);
 						return null;
 					} else {
 						return Arrays.asList(prefix, suffix);
@@ -182,7 +180,7 @@ public class Scoreboard {
 			List<String> prefixsuffix = replaceText(p, true, true);
 			if (prefixsuffix == null) return;
 			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
-			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), objectiveName, score);
+			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
 			if (players.contains(p)) {

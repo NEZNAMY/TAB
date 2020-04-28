@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 
 public class TabObjective implements SimpleFeature{
 
-	private static final String objectivename = "TAB-TabObjective";
+	private static final String ObjectiveName = "TAB-TabObjective";
 	private static final int DisplaySlot = 0;
 	
 	public TabObjectiveType type;
@@ -22,15 +22,15 @@ public class TabObjective implements SimpleFeature{
 	public void load() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.registerScoreboardObjective(p, objectivename, title, DisplaySlot, type.getDisplay());
-			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, type.getDisplay());
+			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 		}
 		Shared.cpu.startRepeatingMeasuredTask(type.getRefresh(), "refreshing tablist objective", "Tablist Objective", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
 					if (p.properties.get("tablist-objective").isUpdateNeeded()) {
-						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), objectivename, getValue(p));
+						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 					}
 				}
 			}
@@ -40,16 +40,16 @@ public class TabObjective implements SimpleFeature{
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.unregisterScoreboardObjective(p, objectivename);
+			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
 		}
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		if (connectedPlayer.disabledTablistObjective) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, objectivename, title, DisplaySlot, type.getDisplay());
+		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, type.getDisplay());
 		for (ITabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), objectivename, getValue(connectedPlayer));
-			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), objectivename, getValue(all));
+			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, getValue(connectedPlayer));
+			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
 	}
 	@Override
@@ -58,7 +58,7 @@ public class TabObjective implements SimpleFeature{
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
-			PacketAPI.unregisterScoreboardObjective(p, objectivename);
+			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
 		}
 		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
 			onJoin(p);
