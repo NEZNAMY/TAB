@@ -27,7 +27,10 @@ public interface MainClass {
 	}
 	public default void rename(ConfigurationFile config, String oldName, String newName) {
 		if (config.hasConfigOption(oldName)) {
-			convert(config, oldName, config.getObject(oldName), newName, config.getObject(oldName));
+			Object value = config.getObject(oldName);
+			config.set(oldName, null);
+			config.set(newName, value);
+			Shared.print('2', "Renamed config option " + oldName + " to " + newName);
 		}
 	}
 	public default void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {

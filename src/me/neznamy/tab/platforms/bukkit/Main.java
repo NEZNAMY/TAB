@@ -21,7 +21,6 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
 import net.milkbowl.vault.economy.Economy;
@@ -32,7 +31,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
 	public static List<String> usedExpansions;
-	private TabObjectiveType objType;
 	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
@@ -443,7 +441,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Shared.registerFeature("nametag16", new NameTag16());
 				}
 			}
-			if (objType != TabObjectiveType.NONE) 																							Shared.registerFeature("tabobjective", new TabObjective(objType));
+			if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
 				if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
 				Shared.registerFeature("playerlist", new Playerlist());
@@ -487,23 +485,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", true);
-
-		String objective = Configs.config.getString("tablist-objective", "PING");
-		try{
-			objType = TabObjectiveType.valueOf(objective.toUpperCase());
-		} catch (Throwable e) {
-			Shared.errorManager.startupWarn("\"&e" + objective + "&c\" is not a valid type of tablist-objective. Valid options are: &ePING, HEARTS, CUSTOM &cand &eNONE &cfor disabling the feature.");
-			objType = TabObjectiveType.NONE;
-		}
-		TabObjective.rawValue = Configs.config.getString("tablist-objective-custom-value", "%ping%");
-		if (objType == TabObjectiveType.PING) {
-			TabObjective.rawValue = "%ping%";
-			Placeholders.allUsedPlaceholders.add("%ping%");
-		}
-		if (objType == TabObjectiveType.HEARTS) {
-			TabObjective.rawValue = "%health%";
-			Placeholders.allUsedPlaceholders.add("%health%");
-		}
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
@@ -579,6 +560,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 						}
 					}
 				}
+			}
+			if (config.hasConfigOption("tablist-objective")) {
+				String type = config.getString("tablist-objective");
+				String value;
+				if (type.equals("NONE")) {
+					value = "";
+				} else if (type.equals("PING")){
+					value = "%ping%";
+				} else if (type.equals("HEARTS")) {
+					value = "%health%";
+				} else {
+					value = config.getString("tablist-objective-custom-value");
+				}
+				config.set("tablist-objective", null);
+				config.set("tablist-objective-custom-value", null);
+				config.set("yellow-number-in-tablist", value);
+				Shared.print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
 			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {

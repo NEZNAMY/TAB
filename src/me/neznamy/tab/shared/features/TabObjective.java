@@ -11,21 +11,24 @@ public class TabObjective implements SimpleFeature{
 	private static final String ObjectiveName = "TAB-TabObjective";
 	private static final int DisplaySlot = 0;
 	
-	public TabObjectiveType type;
 	public static String rawValue;
 	private final String title = "ms";
+	private EnumScoreboardHealthDisplay displayType;
 
-	public TabObjective(TabObjectiveType type) {
-		this.type = type;
-	}
 	@Override
 	public void load() {
+		rawValue = Configs.config.getString("yellow-number-in-tablist", "%ping%");
+		if (rawValue.equals("%health%")) {
+			displayType = EnumScoreboardHealthDisplay.HEARTS;
+		} else {
+			displayType = EnumScoreboardHealthDisplay.INTEGER;
+		}
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, type.getDisplay());
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
 			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 		}
-		Shared.cpu.startRepeatingMeasuredTask(type.getRefresh(), "refreshing tablist objective", "Tablist Objective", new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", "Yellow number in tablist", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
@@ -46,7 +49,7 @@ public class TabObjective implements SimpleFeature{
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		if (connectedPlayer.disabledTablistObjective) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, type.getDisplay());
+		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType);
 		for (ITabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, getValue(connectedPlayer));
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
@@ -65,27 +68,6 @@ public class TabObjective implements SimpleFeature{
 		}
 	}
 	public int getValue(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "Tablist Objective");
-	}
-	public enum TabObjectiveType{
-
-		PING(1000, EnumScoreboardHealthDisplay.INTEGER), 
-		HEARTS(500, EnumScoreboardHealthDisplay.HEARTS), 
-		CUSTOM(500, EnumScoreboardHealthDisplay.INTEGER), 
-		NONE(0, null);
-
-		private int refresh;
-		private EnumScoreboardHealthDisplay display;
-
-		TabObjectiveType(int refresh, EnumScoreboardHealthDisplay display){
-			this.refresh = refresh;
-			this.display = display;
-		}
-		public EnumScoreboardHealthDisplay getDisplay() {
-			return display;
-		}
-		public int getRefresh() {
-			return refresh;
-		}
+		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "Yellow number in tablist");
 	}
 }

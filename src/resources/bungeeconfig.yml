@@ -37,7 +37,7 @@ footer:
   - ""
   - "&7Visit our webpage %animation:web%"
   
-tablist-objective-value: "%ping%"
+yellow-number-in-tablist: "%ping%"
 group-sorting-priority-list:
   - owner
   - admin

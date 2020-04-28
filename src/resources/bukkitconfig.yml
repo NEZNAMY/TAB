@@ -24,8 +24,7 @@ footer:
   - ""
   - "&7Visit our webpage %animation:web%"
 
-tablist-objective: PING
-tablist-objective-custom-value: "%some_placeholderapi_placeholder%"
+yellow-number-in-tablist: "%ping%"
 group-sorting-priority-list:
   - owner
   - admin

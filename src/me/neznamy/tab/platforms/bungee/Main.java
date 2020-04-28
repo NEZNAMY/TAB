@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.TabObjective.TabObjectiveType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.*;
@@ -31,7 +30,6 @@ import net.md_5.bungee.protocol.packet.*;
 public class Main extends Plugin implements Listener, MainClass{
 
 	private PluginMessenger plm;
-	private TabObjectiveType objType;
 	private TabCommand command;
 	
 	public void onEnable(){
@@ -266,7 +264,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16());
-		if (objType != TabObjectiveType.NONE) 												Shared.registerFeature("tabobjective", new TabObjective(objType));
+		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0)	Shared.registerFeature("tabobjective", new TabObjective());
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Shared.registerFeature("playerlist", new Playerlist());
 			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
@@ -301,10 +299,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
-		TabObjective.rawValue = Configs.config.getString("tablist-objective-value", "%ping%");
-		objType = (TabObjective.rawValue.length() == 0) ? TabObjectiveType.NONE : TabObjectiveType.CUSTOM;
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
-		if (Configs.serverAliases == null) Configs.serverAliases = new HashMap<String, Object>();
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
@@ -333,6 +328,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				config.set("global-playerlist.display-others-as-spectators", false);
 				Shared.print('2', "Converted old global-playerlist section to new one in config.yml.");
 			}
+			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
