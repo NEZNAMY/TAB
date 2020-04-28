@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -26,14 +28,14 @@ public class IChatBaseComponent {
 	private HoverAction hoverAction;
 	private String hoverValue;
 	private List<IChatBaseComponent> extra;
+	private String signature;
 
 	private JSONObject jsonObject = new JSONObject();
 
 	public IChatBaseComponent() {
 	}
 	public IChatBaseComponent(String text) {
-		this.text = text;
-		jsonObject.put("text", text);
+		setText(text);
 	}
 
 	public List<IChatBaseComponent> getExtra(){
@@ -51,9 +53,6 @@ public class IChatBaseComponent {
 		}
 		extra.add(child);
 	}
-
-
-
 
 	public String getText() {
 		return text;
@@ -160,8 +159,44 @@ public class IChatBaseComponent {
 
 
 
-
-
+	public static IChatBaseComponent fromString(String json) {
+		try {
+			if (json == null) return null;
+			JSONObject jsonObject = ((JSONObject) new JSONParser().parse(json));
+			IChatBaseComponent component = new IChatBaseComponent();
+			if (jsonObject.containsKey("text")) component.setText((String) jsonObject.get("text"));
+			if (jsonObject.containsKey("bold")) component.setBold((Boolean) jsonObject.get("bold"));
+			if (jsonObject.containsKey("italic")) component.setItalic((Boolean) jsonObject.get("italic"));
+			if (jsonObject.containsKey("underlined")) component.setUnderlined((Boolean) jsonObject.get("underlined"));
+			if (jsonObject.containsKey("strikethrough")) component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
+			if (jsonObject.containsKey("obfuscated")) component.setObfuscated((Boolean) jsonObject.get("obfuscated"));
+			if (jsonObject.containsKey("color")) component.setColor(EnumChatFormat.valueOf(((String) jsonObject.get("color")).toUpperCase()));
+			if (jsonObject.containsKey("clickEvent")) {
+				JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
+				String action = (String) clickEvent.get("action");
+				Object value = (Object) clickEvent.get("value");
+				component.onClick(ClickAction.valueOf(action.toUpperCase()), value);
+			}
+			if (jsonObject.containsKey("hoverEvent")) {
+				JSONObject hoverEvent = (JSONObject) jsonObject.get("hoverEvent");
+				String action = (String) hoverEvent.get("action");
+				String value = (String) hoverEvent.get("value");
+				component.onHover(HoverAction.valueOf(action.toUpperCase()), value);
+			}
+			if (jsonObject.containsKey("extra")) {
+				List<JSONObject> list = (List<JSONObject>) jsonObject.get("extra");
+				for (JSONObject extra : list) {
+					component.addExtra(fromString(extra.toString()));
+				}
+			}
+			if (jsonObject.containsKey("signature")) {
+				component.signature = (String) jsonObject.get("signature");
+			}
+			return component;
+		} catch (ParseException e) {
+			return fromColoredText(json);
+		}
+	}
 	public String toString() {
 		if (extra == null) {
 			if (text == null) return null;
@@ -245,7 +280,6 @@ public class IChatBaseComponent {
 
 		return new IChatBaseComponent("").setExtra(components);
 	}
-	
 	public String toColoredText() {
 		StringBuilder builder = new StringBuilder();
 		if (color != null) builder.append(color.getFormat());
