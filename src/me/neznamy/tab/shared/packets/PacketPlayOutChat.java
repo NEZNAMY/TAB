@@ -31,7 +31,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.getId());
 		} else {
-			return MethodAPI.getInstance().newPacketPlayOutChat(message.getText(), type.getId()); //need a method for colored text from component
+			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(), type.getId());
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {

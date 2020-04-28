@@ -61,4 +61,7 @@ public enum EnumChatFormat{
 		}
 		return EnumChatFormat.RESET;
 	}
+	public String getFormat() {
+		return Placeholders.colorChar + "" + character;
+	}
 }

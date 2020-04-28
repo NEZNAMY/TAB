@@ -7,11 +7,12 @@ import org.json.simple.JSONObject;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class IChatBaseComponent {
 
-	public static final String EMPTY_COMPONENT = "{\"signature\":\"TAB\",\"translate\":\"\"}";
+	public static final String EMPTY_SIGNED_COMPONENT = "{\"signature\":\"TAB\",\"translate\":\"\"}";
 
 	private String text;
 	private Boolean bold;
@@ -29,12 +30,10 @@ public class IChatBaseComponent {
 	private JSONObject jsonObject = new JSONObject();
 
 	public IChatBaseComponent() {
-		jsonObject.put("signature", "TAB");
 	}
 	public IChatBaseComponent(String text) {
 		this.text = text;
 		jsonObject.put("text", text);
-		jsonObject.put("signature", "TAB");
 	}
 
 	public List<IChatBaseComponent> getExtra(){
@@ -166,25 +165,17 @@ public class IChatBaseComponent {
 	public String toString() {
 		if (extra == null) {
 			if (text == null) return null;
-			if (text.length() == 0) return EMPTY_COMPONENT;
+			if (text.length() == 0) return EMPTY_SIGNED_COMPONENT;
 		}
+		jsonObject.put("signature", "TAB");
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
-			if (text == null) {
-				//com.google.gson.JsonParseException: Don't know how to turn XXX into a Component
-				jsonObject.put("text", "");
-			}
 			return jsonObject.toString();
 		} else {
-			String text = "";
-			if (this.text != null) text += this.text;
-			if (!extra.isEmpty()) {
-				for (IChatBaseComponent c : extra) {
-					if (c.text != null) text += c.text;
-				}
-			}
+			String text = toColoredText();
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
 				//1.6.x
+				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("text", text);
 				return jsonObject.toString();
 			} else {
@@ -200,7 +191,7 @@ public class IChatBaseComponent {
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < message.length(); i++){
 			char c = message.charAt(i);
-			if (c == '§'){
+			if (c == Placeholders.colorChar || c == '&'){
 				i++;
 				if (i >= message.length()) {
 					break;
@@ -212,11 +203,10 @@ public class IChatBaseComponent {
 				EnumChatFormat format = EnumChatFormat.getByChar(c);
 				if (format != null){
 					if (builder.length() > 0){
-						IChatBaseComponent old = component;
-						component = old.clone();
-						old.setText(builder.toString());
+						component.setText(builder.toString());
+						components.add(component);
+						component = new IChatBaseComponent();
 						builder = new StringBuilder();
-						components.add(old);
 					}
 					switch (format){
 					case BOLD: 
@@ -253,23 +243,24 @@ public class IChatBaseComponent {
 		component.setText(builder.toString());
 		components.add(component);
 
-		return new IChatBaseComponent().setExtra(components);
+		return new IChatBaseComponent("").setExtra(components);
 	}
-
-	public IChatBaseComponent clone() {
-		IChatBaseComponent copy = new IChatBaseComponent(text);
-		copy.bold = bold;
-		copy.clickAction = clickAction;
-		copy.clickValue = clickValue;
-		copy.color = color;
-//		copy.extra = extra;
-		copy.hoverAction = hoverAction;
-		copy.hoverValue = hoverValue;
-		copy.italic = italic;
-		copy.obfuscated = obfuscated;
-		copy.strikethrough = strikethrough;
-		copy.underlined = underlined;
-		return copy;
+	
+	public String toColoredText() {
+		StringBuilder builder = new StringBuilder();
+		if (color != null) builder.append(color.getFormat());
+		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
+		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
+		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
+		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
+		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+		if (text != null) builder.append(text);
+		if (extra != null) {
+			for (IChatBaseComponent component : extra) {
+				builder.append(component.toColoredText());
+			}
+		}
+		return builder.toString();
 	}
 
 	public enum ClickAction{
