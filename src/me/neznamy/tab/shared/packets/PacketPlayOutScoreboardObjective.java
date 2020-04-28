@@ -23,6 +23,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	}
 	public PacketPlayOutScoreboardObjective(String objectiveName) {
 		this.objectiveName = objectiveName;
+		this.displayName = "";
 		this.method = 1; // REMOVE
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
