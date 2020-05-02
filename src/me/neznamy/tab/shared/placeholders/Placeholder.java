@@ -11,14 +11,13 @@ public abstract class Placeholder {
 
 	protected int cooldown;
 	protected String identifier;
-	private Map<String, Object> replacements;
+	private Map<String, Object> replacements = new HashMap<String, Object>();
 	
 	@SuppressWarnings("unchecked")
 	public Placeholder(String identifier, int cooldown) {
 		this.identifier = identifier;
 		this.cooldown = cooldown;
 		if (Premium.is()) replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
-		if (replacements == null) replacements = new HashMap<String, Object>();
 	}
 	public String getIdentifier() {
 		return identifier;

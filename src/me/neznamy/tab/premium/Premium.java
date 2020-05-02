@@ -43,10 +43,8 @@ public class Premium {
 		staticLines = premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
 		Map<Integer, Integer> widths = premiumconfig.getConfigurationSection("extra-character-widths");
-		if (widths != null) {
-			for (Entry<Integer, Integer> entry : widths.entrySet()) {
-				AlignedSuffix.widths.put((char)(int)entry.getKey(), entry.getValue());
-			}
+		for (Entry<Integer, Integer> entry : widths.entrySet()) {
+			AlignedSuffix.widths.put((char)(int)entry.getKey(), entry.getValue());
 		}
 	}
 }

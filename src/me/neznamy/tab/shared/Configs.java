@@ -181,22 +181,7 @@ public class Configs {
 			sortedGroups.put(group+"", sort);
 			index++;
 		}
-		Map<String, Object> cs = config.getConfigurationSection("rank-aliases");
-		if (cs != null) {
-			rankAliases = cs;
-		} else {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("Admin", "&4&lADMIN");
-			map.put("Mod", "&b&lMOD");
-			map.put("Premium", "&6&lPREMIUM");
-			map.put("Ultra", "&b&lULTRA");
-			map.put("Legend", "&a&lLEGEND");
-			map.put("Titan", "&c&lTITAN");
-			map.put("Youtuber", "&c&lYOUTUBE");
-			map.put("_OTHER_", "%vault-prefix%");
-			config.set("rank-aliases", rankAliases = map);
-			config.save();
-		}
+		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.separatorType+"s", Arrays.asList("reverted" + Shared.separatorType));
 		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.separatorType+"s.header-footer", Arrays.asList("disabled" + Shared.separatorType));
 		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Arrays.asList("disabled" + Shared.separatorType));
@@ -208,9 +193,8 @@ public class Configs {
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml", null);
 		animations = new ArrayList<Animation>();
-		if (animation.getConfigurationSection("animations") != null) {
-			for (Object s : animation.getConfigurationSection("animations").keySet())
-				animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
+		for (Object s : animation.getConfigurationSection("animations").keySet()) {
+			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
 	public static void loadBossbar() throws Exception {
