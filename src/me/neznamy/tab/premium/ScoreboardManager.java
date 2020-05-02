@@ -32,6 +32,7 @@ public class ScoreboardManager implements SimpleFeature{
 		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
+		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Scoreboard", refresh);
