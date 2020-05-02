@@ -142,10 +142,12 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
-			if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-				item.setDisplayName(displayName.toString());
-			} else {
-				item.setDisplayName(displayName.toColoredText());
+			if (displayName != null) {
+				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
+					item.setDisplayName(displayName.toString());
+				} else {
+					item.setDisplayName(displayName.toColoredText());
+				}
 			}
 			if (gameMode != null) item.setGamemode(gameMode.getNetworkId());
 			item.setPing(latency);
@@ -156,7 +158,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toVelocity() {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName.toString()));
+			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName == null ? null : displayName.toString()));
 			if (gameMode != null) item.setGameMode(gameMode.getNetworkId());
 			item.setLatency(latency);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
