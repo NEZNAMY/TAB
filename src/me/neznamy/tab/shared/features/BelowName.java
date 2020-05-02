@@ -64,10 +64,14 @@ public class BelowName implements SimpleFeature{
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledBelowname && !p.isDisabledWorld(Configs.disabledBelowname, from)) {
 			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			return;
 		}
 		if (!p.disabledBelowname && p.isDisabledWorld(Configs.disabledBelowname, from)) {
 			onJoin(p);
+			return;
 		}
+		PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+		onJoin(p);
 	}
 	private int getNumber(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get("belowname-number").get(), 0, "BelowName");

@@ -53,7 +53,10 @@ public class NameTag16 implements SimpleFeature{
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			p.updateTeam(true);
+			for (ITabPlayer all : Shared.getPlayers()) {
+				all.unregisterTeam(p);
+				all.registerTeam(p);
+			}
 		}
 	}
 }

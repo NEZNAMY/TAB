@@ -480,6 +480,10 @@ public abstract class ITabPlayer {
 			PacketAPI.unregisterScoreboardTeam(p, teamName);
 		}
 	}
+	
+	public void unregisterTeam(ITabPlayer viewer) {
+		PacketAPI.unregisterScoreboardTeam(viewer, teamName);
+	}
 
 	private void updateDisabledWorlds(String world) {
 		disabledHeaderFooter = isDisabledWorld(Configs.disabledHeaderFooter, world);
@@ -508,7 +512,18 @@ public abstract class ITabPlayer {
 		updateDisabledWorlds(to);
 		updateGroupIfNeeded(false);
 		updateAll();
-		Shared.features.values().forEach(f -> f.onWorldChange(this, from, to));
+		if (Shared.separatorType.equals("server")) {
+			ITabPlayer player = this;
+			Shared.cpu.runTaskLater(50, "processing world change", "WorldChange", new Runnable() {
+
+				@Override
+				public void run() {
+					Shared.features.values().forEach(f -> f.onWorldChange(player, from, to));
+				}
+			});
+		} else {
+			Shared.features.values().forEach(f -> f.onWorldChange(this, from, to));
+		}
 	}
 
 	public void detectBossBarsAndSend() {

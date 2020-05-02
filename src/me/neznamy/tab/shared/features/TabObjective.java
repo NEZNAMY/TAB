@@ -62,10 +62,14 @@ public class TabObjective implements SimpleFeature{
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
 			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			return;
 		}
 		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
 			onJoin(p);
+			return;
 		}
+		PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+		onJoin(p);
 	}
 	public int getValue(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get("tablist-objective").get(), 0, "Yellow number in tablist");

@@ -194,7 +194,7 @@ public class IChatBaseComponent {
 				component.jsonObject.put("signature", component.signature);
 			}
 			return component;
-		} catch (ParseException e) {
+		} catch (ParseException | ClassCastException e) {
 			return fromColoredText(json);
 		}
 	}

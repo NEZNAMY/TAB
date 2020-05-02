@@ -36,7 +36,6 @@ import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.placeholders.*;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
@@ -142,7 +141,7 @@ public class Main implements MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise
-				Shared.cpu.runMeasuredTask("processing join", "onJoin handle", new Runnable() {
+				Shared.cpu.runTaskLater(50, "processing join", "onJoin handle", new Runnable() {
 
 					@Override
 					public void run() {
@@ -155,7 +154,6 @@ public class Main implements MainClass{
 				String from = p.getWorldName();
 				String to = p.world = e.getServer().getServerInfo().getName();
 				p.onWorldChange(from, to);
-//				if (Shared.features.containsKey("playerlist")) p.updatePlayerListName();
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
@@ -199,10 +197,10 @@ public class Main implements MainClass{
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
 								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
 							}
-							PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) customPacket;
+/*							PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) customPacket;
 							if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 								System.out.println("[" + player.getName() + "] " + info.toString());
-							}
+							}*/
 							if (customPacket != null) packet = customPacket.toVelocity(player.getVersion());
 							else packet = null;
 						}
