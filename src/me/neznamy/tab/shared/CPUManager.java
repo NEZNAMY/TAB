@@ -160,7 +160,7 @@ public class CPUManager {
 		float percent;
 		for (Entry<String, Long> entry : nanoMap.entrySet()) {
 			nanotime = entry.getValue(); //nano seconds total (last minute)
-			nanotime /= featuresLastMinute.size(); //average nanoseconds per buffer (1 second)
+			nanotime /= featuresLastMinute.size(); //average nanoseconds per buffer (0.1 second)
 			percent = (float) nanotime / bufferSizeMillis / 1000000; //relative usage (0-1)
 			percent *= 100; //relative into %
 			percentMap.put(entry.getKey(), percent);
