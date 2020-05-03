@@ -181,6 +181,10 @@ public abstract class ITabPlayer {
 		Property prefix = properties.get("tabprefix");
 		Property name = properties.get("customtabname");
 		Property suffix = properties.get("tabsuffix");
+		if (prefix == null || name == null || suffix == null) {
+			Shared.errorManager.printError("TabFormat not initialized for " + getName());
+			return null;
+		}
 		String format;
 		if (Premium.allignTabsuffix) {
 			AlignedSuffix asuffix = ((AlignedSuffix)Shared.features.get("alignedsuffix"));
