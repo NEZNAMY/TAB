@@ -108,7 +108,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('9', 5);
 
 		widths.put('+', 5);
-		widths.put('*', 4);
+		widths.put('*', 3);
 		widths.put('%', 5);
 		widths.put('(', 4);
 		widths.put(')', 4);
