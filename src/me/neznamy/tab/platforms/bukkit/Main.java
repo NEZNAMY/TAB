@@ -425,7 +425,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			plm = new PluginMessenger(this);
 		} else {
 			registerPlaceholders();
-			if (Configs.config.getBoolean("belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
+			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
 			if (Configs.BossBarEnabled) {
 				Shared.registerFeature("bossbar", new BossBar());
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy());
@@ -433,7 +433,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-					if (Configs.config.getBoolean("belowname.enabled", true)) {
+					if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
 						Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
 					}
 					Shared.registerFeature("nametagx", new NameTagX());
@@ -578,6 +578,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				config.set("yellow-number-in-tablist", value);
 				Shared.print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
 			}
+			rename(config, "belowname", "classic-vanilla-belowname");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");

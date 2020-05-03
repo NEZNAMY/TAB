@@ -164,8 +164,8 @@ public class Configs {
 	public static void loadConfig() throws Exception {
 		Shared.mainClass.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
-		BelowName.number = Configs.config.getString("belowname.number", "%health%");
-		BelowName.text = Configs.config.getString("belowname.text", "Health");
+		BelowName.number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
+		BelowName.text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
 		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
 		dateFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");

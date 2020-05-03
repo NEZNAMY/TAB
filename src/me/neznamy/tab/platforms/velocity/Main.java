@@ -326,7 +326,7 @@ public class Main implements MainClass{
 
 	public void loadFeatures(boolean inject) throws Exception{
 		registerPlaceholders();
-		if (Configs.config.getBoolean("belowname.enabled", true)) 							Shared.registerFeature("belowname", new BelowName());
+		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
@@ -393,6 +393,7 @@ public class Main implements MainClass{
 				Shared.print('2', "Converted old global-playerlist section to new one in config.yml.");
 			}
 			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
+			rename(config, "belowname", "classic-vanilla-belowname");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");

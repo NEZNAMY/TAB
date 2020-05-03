@@ -70,7 +70,7 @@ Users:
   _NEZNAMY_:
     tabprefix: "&6&lTAB Author &a"
     tagprefix: "&6&lTAB &r&a"
-belowname:
+classic-vanilla-belowname:
   enabled: true
   refresh-interval-milliseconds: 200
   number: "%ping%"

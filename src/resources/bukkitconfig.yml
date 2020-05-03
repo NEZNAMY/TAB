@@ -64,7 +64,7 @@ Users:
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
 
-belowname:
+classic-vanilla-belowname:
   enabled: true
   refresh-interval-milliseconds: 200
   number: "%health%"
