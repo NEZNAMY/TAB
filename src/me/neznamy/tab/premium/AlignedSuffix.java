@@ -151,7 +151,12 @@ public class AlignedSuffix implements SimpleFeature{
 			}
 		}
 		String newFormat = prefixAndName + Placeholders.colorChar + "r";
-		newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
+		try {
+			newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
+		} catch (IllegalArgumentException e) {
+			//will investigate later
+			newFormat += buildSpaces(12);
+		}
 		newFormat += Placeholders.getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
