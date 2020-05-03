@@ -169,7 +169,10 @@ public class Configs {
 		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
 		dateFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
-		removeStrings = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
+		removeStrings = new ArrayList<>();
+		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
+			removeStrings.add(Placeholders.color(s));
+		}
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
 		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){

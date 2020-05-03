@@ -46,8 +46,7 @@ public class Property {
 			//no placeholders, this is a static string
 			//performing final changes before saving it
 			lastReplacedValue = value;
-			for (String remove : Configs.removeStrings) {
-				String removed = Placeholders.color(remove);
+			for (String removed : Configs.removeStrings) {
 				if (value.contains(removed)) value = value.replace(removed, "");
 			}
 			Static = true;
@@ -99,14 +98,9 @@ public class Property {
 		for (Placeholder pl : placeholders) {
 			string = pl.set(string, owner);
 		}
-
-		//colors
-		string = Placeholders.color(string);
-		
 		
 		//removing strings
-		for (String remove : Configs.removeStrings) {
-			String removed = Placeholders.color(remove);
+		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}
 		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > Configs.SECRET_relational_placeholders_refresh *1000)) {

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -17,7 +18,14 @@ public abstract class Placeholder {
 	public Placeholder(String identifier, int cooldown) {
 		this.identifier = identifier;
 		this.cooldown = cooldown;
-		if (Premium.is()) replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+		if (Premium.is()) {
+			replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+			Map<String, Object> colored = new HashMap<>();
+			for (Entry<String, Object> entry : replacements.entrySet()) {
+				colored.put(entry.getKey().replace('&', Placeholders.colorChar), entry.getValue());
+			}
+			replacements = colored;
+		}
 	}
 	public String getIdentifier() {
 		return identifier;
@@ -29,6 +37,7 @@ public abstract class Placeholder {
 		try {
 			String value = getValue(p);
 			if (value == null) value = "";
+			value = Placeholders.color(value);
 			if (replacements.containsKey(value)) value = replacements.get(value).toString();
 			return s.replace(identifier, value);
 		} catch (Throwable t) {

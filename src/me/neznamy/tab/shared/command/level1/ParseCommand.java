@@ -18,15 +18,19 @@ public class ParseCommand extends SubCommand{
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
 		if (args.length > 0) {
-			String replaced = args[0];
-			for (Placeholder p : Placeholders.getAllPlaceholders()) 
-				if (replaced.contains(p.getIdentifier()))
-					replaced = p.set(replaced, sender);
+			String replaced = "";
+			for (int i=0; i<args.length; i++){
+				if (i>0) replaced += " ";
+				replaced += args[i];
+			}
+			sendMessage(sender, "&6Replacing placeholder &e" + replaced + (sender == null ? "" : "&6 for player &e" + sender.getName()));
+			for (Placeholder p : Placeholders.getAllPlaceholders()) {
+				if (replaced.contains(p.getIdentifier())) replaced = p.set(replaced, sender);
+			}
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
-			sendMessage(sender, "&6Replacing placeholder &e" + args[0] + (sender == null ? "" : "&6 for player &e" + sender.getName()));
-			sendMessage(sender, "Colorized output: " + replaced);
-			sendRawMessage(sender, "Original output: " + replaced);
-			sendRawMessage(sender, "Decolorized output: " + replaced.replace(Placeholders.colorChar+"", "&"));
+			
+			sendMessage(sender, "With colors: " + replaced);
+			sendRawMessage(sender, "Without colors: " + replaced.replace(Placeholders.colorChar, '&'));
 		} else {
 			sendMessage(sender, "Usage: /tab parse <placeholder>");
 		}
