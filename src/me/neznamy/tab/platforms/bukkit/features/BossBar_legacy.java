@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.features.SimpleFeature;
 
 public class BossBar_legacy implements Listener, SimpleFeature {
 
-	private static final int WITHER_DISTANCE = 100;
+	private static final int WITHER_DISTANCE = 50;
 
 	@Override
 	public void load() {
