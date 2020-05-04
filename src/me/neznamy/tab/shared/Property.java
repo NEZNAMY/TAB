@@ -99,6 +99,8 @@ public class Property {
 			string = pl.set(string, owner);
 		}
 		
+		string = Placeholders.color(string);
+		
 		//removing strings
 		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
