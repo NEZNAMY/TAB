@@ -16,7 +16,7 @@ public abstract class Placeholder {
 	
 	@SuppressWarnings("unchecked")
 	public Placeholder(String identifier, int cooldown) {
-		this.identifier = identifier.replace(Placeholders.colorChar, '&');
+		this.identifier = identifier;
 		this.cooldown = cooldown;
 		if (Premium.is()) {
 			replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
