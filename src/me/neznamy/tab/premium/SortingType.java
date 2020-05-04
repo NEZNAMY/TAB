@@ -14,10 +14,11 @@ public enum SortingType {
 	GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH, 
 	GROUPS_THEN_PLACEHOLDER_A_TO_Z;
 	
+	private static final int DEFAULT_NUMBER = 5000000;
+	
 	public String getTeamName(ITabPlayer p) {
 		String teamName = null;
-		String number;
-		int value;
+		int intValue;
 		switch(this){
 		case GROUPS:
 			teamName = getGroupChars(p.getGroup());
@@ -35,40 +36,32 @@ public enum SortingType {
 			}
 			break;
 		case TABPREFIX_A_TO_Z:
-			teamName = p.properties.get("tabprefix").getCurrentRawValue();
+			teamName = p.properties.get("tabprefix").get();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
-			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
-			Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
-			while (teamName.length() < 9) teamName = "0" + teamName;
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = String.valueOf(DEFAULT_NUMBER + intValue);
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
-			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
-			value = Shared.errorManager.parseInteger(teamName, 0, "numeric sorting placeholder");
-			teamName = (99999999-value)+"";
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = String.valueOf(DEFAULT_NUMBER - intValue);
 			break;
 		case PLACEHOLDER_A_TO_Z:
 			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
-		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
-			number = setPlaceholders(Premium.sortingPlaceholder, p);
-			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
-			number = (99999999-value)+"";
-			teamName = getGroupChars(p.getGroup()) + number;
-			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
-			number = setPlaceholders(Premium.sortingPlaceholder, p);
-			value = Shared.errorManager.parseInteger(number, 0, "numeric sorting placeholder");
-			number = value+"";
-			while (number.length() < 9) number = "0" + number;
-			teamName = getGroupChars(p.getGroup()) + number;
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = getGroupChars(p.getGroup()) + String.valueOf(DEFAULT_NUMBER + intValue);
+			break;
+		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = getGroupChars(p.getGroup()) + String.valueOf(DEFAULT_NUMBER - intValue);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
 			teamName = getGroupChars(p.getGroup()) + setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		}
 		teamName += p.getName();
-		teamName = setPlaceholders(teamName, p);
 		if (teamName.length() > 15) {
 			teamName = teamName.substring(0, 15);
 		}
