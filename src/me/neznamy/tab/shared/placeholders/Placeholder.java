@@ -38,7 +38,11 @@ public abstract class Placeholder {
 			String value = getValue(p);
 			if (value == null) value = "";
 			value = Placeholders.color(value);
-			if (replacements.containsKey(value)) value = replacements.get(value).toString();
+			if (replacements.containsKey(value)) {
+				value = replacements.get(value).toString();
+			} else {
+				if (replacements.containsKey("else")) value = replacements.get("else").toString();
+			}
 			return s.replace(identifier, value);
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
