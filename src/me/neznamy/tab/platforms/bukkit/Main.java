@@ -11,7 +11,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.platforms.bukkit.features.*;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -117,7 +116,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.cpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
 
 				public void run() {
-					PluginHooks.DeluxeTags_onChat(p);
 					Shared.features.values().forEach(f -> f.onJoin(p));
 				}
 			});
@@ -202,8 +200,12 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			RegisteredServiceProvider<DisguiseAPI> provider = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class);
-			if (provider != null) PluginHooks.idisguise = provider.getProvider();
+			try {
+				RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
+				if (provider != null) PluginHooks.idisguise = provider.getProvider();
+			} catch (ClassNotFoundException e) {
+				
+			}
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");

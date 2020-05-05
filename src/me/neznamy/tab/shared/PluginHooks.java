@@ -10,26 +10,20 @@ import java.util.stream.Collectors;
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
 
-import ch.soolz.xantiafk.xAntiAFKAPI;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.TechsCode.UltraPermissions.UltraPermissions;
 import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
 import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
 import me.TechsCode.UltraPermissions.storage.objects.Group;
-import me.clip.deluxetags.DeluxeTag;
-import me.clip.deluxetags.DeluxeTags;
-import me.clip.deluxetags.listeners.PlayerListener;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
-import net.lapismc.afkplus.AFKPlus;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
@@ -37,9 +31,7 @@ import net.luckperms.api.node.types.InheritanceNode;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-import protocolsupport.api.ProtocolSupportAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-import us.myles.ViaVersion.api.Via;
 
 @SuppressWarnings({"rawtypes"})
 public class PluginHooks {
@@ -73,7 +65,9 @@ public class PluginHooks {
 	}
 	public static boolean AFKPlus_isAFK(ITabPlayer p) {
 		try {
-			return ((AFKPlus)Bukkit.getPluginManager().getPlugin("AFKPlus")).getPlayer(p.getUniqueId()).isAFK();
+			Object AFKPlus = Bukkit.getPluginManager().getPlugin("AFKPlus");
+			Object AFKPlusPlayer = AFKPlus.getClass().getMethod("getPlayer", UUID.class).invoke(AFKPlus, p.getUniqueId());
+			return (boolean) AFKPlusPlayer.getClass().getMethod("isAFK").invoke(AFKPlusPlayer);
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AFKPlus", t);
 		}
@@ -107,15 +101,10 @@ public class PluginHooks {
 		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
-		return DeluxeTag.getPlayerDisplayTag(((TabPlayer)p).player);
-	}
-	public static void DeluxeTags_onChat(ITabPlayer p) {
 		try {
-			if (deluxetags) {
-				new PlayerListener((DeluxeTags) Bukkit.getPluginManager().getPlugin("DeluxeTags")).onChat(new AsyncPlayerChatEvent(true, ((TabPlayer)p).player, null, null));
-			}
+			return (String) Class.forName("me.clip.deluxetags.DeluxeTag").getMethod("getPlayerDisplayTag", Player.class).invoke(null, ((TabPlayer)p).player);
 		} catch (Throwable t) {
-			//new version which already fixed the issue anyway
+			return Shared.errorManager.printError("", "Failed to get DeluxeTag of " + p.getName(), t);
 		}
 	}
 	public static double Essentials_getMoney(ITabPlayer p) {
@@ -151,7 +140,7 @@ public class PluginHooks {
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
 		try {
-			return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(((TabPlayer)p).player);
+			return (boolean) idisguise.getClass().getMethod("isDisguised", Player.class).invoke(idisguise, ((TabPlayer)p).player);
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using iDisguise", t);
 		}
@@ -299,7 +288,10 @@ public class PluginHooks {
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
 		try {
-			return ProtocolSupportAPI.getProtocolVersion(((TabPlayer)p).player).getId();
+			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, ((TabPlayer)p).player);
+			int ver = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
+			Shared.debug("ProtocolSupport returned protocol version " + ver + " for player " + p.getName());
+			return ver;
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
 		}
@@ -375,14 +367,17 @@ public class PluginHooks {
 	}
 	public static int ViaVersion_getPlayerVersion(ITabPlayer p){
 		try {
-			return Via.getAPI().getPlayerVersion(p.getUniqueId());
+			Object viaAPI = Class.forName("us.myles.ViaVersion.api.Via").getMethod("getAPI").invoke(null);
+			int ver = (int) viaAPI.getClass().getMethod("getPlayerVersion", UUID.class).invoke(viaAPI, p.getUniqueId());
+			Shared.debug("ViaVersion returned protocol version " + ver + " for player " + p.getName());
+			return ver;
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion", e);
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
 		try {
-			return xAntiAFKAPI.isAfk(((TabPlayer)p).player);
+			return (boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, ((TabPlayer)p).player);
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
 		}
