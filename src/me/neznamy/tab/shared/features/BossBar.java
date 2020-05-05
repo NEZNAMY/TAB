@@ -145,7 +145,6 @@ public class BossBar implements SimpleFeature{
 					if (remember_toggle_choice) {
 						bossbar_off_players.remove(sender.getName());
 						Configs.playerdata.set("bossbar-off", bossbar_off_players);
-						Configs.playerdata.save();
 					}
 				} else {
 					for (BossBarLine line : sender.getActiveBossBars()) {
@@ -156,7 +155,6 @@ public class BossBar implements SimpleFeature{
 					if (remember_toggle_choice && !bossbar_off_players.contains(sender.getName())) {
 						bossbar_off_players.add(sender.getName());
 						Configs.playerdata.set("bossbar-off", bossbar_off_players);
-						Configs.playerdata.save();
 					}
 				}
 			} else {
