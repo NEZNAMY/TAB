@@ -19,7 +19,7 @@ public class AlignedSuffix implements SimpleFeature{
 		//32-47
 		widths.put(' ', 3);
 		widths.put('!', 1);
-		widths.put('"', 5);
+		widths.put('"', 4);
 		widths.put('#', 5);
 		widths.put('$', 5);
 		widths.put('%', 5);
