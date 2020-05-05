@@ -132,7 +132,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 					}
 				}
 			if (attacked != null && attacked != sender) {
-				MethodAPI.PacketPlayInUseEntity_ENTITY.set(packet, ((TabPlayer)attacked).player.getEntityId());
+				MethodAPI.PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
 			}
 		}
 		return packet;

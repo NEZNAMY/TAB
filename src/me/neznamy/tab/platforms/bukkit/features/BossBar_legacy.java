@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -26,7 +25,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
-						Location to = (((TabPlayer)all).player).getEyeLocation().add((((TabPlayer)all).player).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+						Location to = all.getBukkitEntity().getEyeLocation().add(all.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), to));
 					}
 				}

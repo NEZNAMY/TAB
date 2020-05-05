@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -43,16 +42,16 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		hidePlayer(((TabPlayer)connectedPlayer).player);
-		showInSameWorldGroup(((TabPlayer)connectedPlayer).player);
+		hidePlayer(connectedPlayer.getBukkitEntity());
+		showInSameWorldGroup(connectedPlayer.getBukkitEntity());
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		hidePlayer(((TabPlayer)p).player);
-		showInSameWorldGroup(((TabPlayer)p).player);
+		hidePlayer(p.getBukkitEntity());
+		showInSameWorldGroup(p.getBukkitEntity());
 	}
 	private void showInSameWorldGroup(Player shown){
 		Bukkit.getScheduler().runTask(Main.instance, new Runnable() {
@@ -108,7 +107,7 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 				for (PlayerInfoData data : info.entries) {
 					ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
 					if (added != null) {
-						if (!shouldSee(((TabPlayer)receiver).player, ((TabPlayer)added).player)) toRemove.add(data);
+						if (!shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) toRemove.add(data);
 					}
 				}
 				List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();

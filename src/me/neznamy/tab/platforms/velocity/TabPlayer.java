@@ -12,7 +12,7 @@ import net.kyori.text.TextComponent;
 
 public class TabPlayer extends ITabPlayer{
 
-	public Player player;
+	private Player player;
 
 	public TabPlayer(Player p, String server) {
 		player = p;
@@ -51,5 +51,9 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public Object getSkin() {
 		return player.getGameProfile().getProperties();
+	}
+	@Override
+	public Player getVelocityEntity() {
+		return player;
 	}
 }

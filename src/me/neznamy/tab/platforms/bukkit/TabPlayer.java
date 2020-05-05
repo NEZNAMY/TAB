@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class TabPlayer extends ITabPlayer{
 
-	public Player player;
+	private Player player;
 
 	public TabPlayer(Player p) throws Exception {
 		player = p;
@@ -138,5 +138,9 @@ public class TabPlayer extends ITabPlayer{
 	public PlayerInfoData getInfoData() {
 		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
 		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.fromColoredText(name));
+	}
+	@Override
+	public Player getBukkitEntity() {
+		return player;
 	}
 }

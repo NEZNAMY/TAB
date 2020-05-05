@@ -25,7 +25,7 @@ public class PluginMessenger implements Listener {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
-		((TabPlayer)player).player.getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
+		player.getBungeeEntity().getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
 	}
 	@EventHandler
 	public void on(PluginMessageEvent event){

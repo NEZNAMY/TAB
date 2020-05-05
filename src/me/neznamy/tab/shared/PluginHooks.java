@@ -22,7 +22,6 @@ import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
 import me.TechsCode.UltraPermissions.storage.objects.Group;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import net.alpenblock.bungeeperms.BungeePerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -56,7 +55,7 @@ public class PluginHooks {
 	public static boolean _isVanished(ITabPlayer p) {
 		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
 			try {
-				if (premiumVanish && BungeeVanishAPI.isInvisible(((me.neznamy.tab.platforms.bungee.TabPlayer)p).player)) return true;
+				if (premiumVanish && BungeeVanishAPI.isInvisible(p.getBungeeEntity())) return true;
 			} catch (Throwable t) {
 				return Shared.errorManager.printError(false, "Failed to check Vanish status of " + p.getName() + " using PremiumVanish", t);
 			}
@@ -76,7 +75,7 @@ public class PluginHooks {
 	public static boolean AntiAFKPlus_isAFK(ITabPlayer p) {
 		try {
 			Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-			return (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, ((TabPlayer)p).player);
+			return (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AntiAFKPlus", t);
 		}
@@ -88,7 +87,7 @@ public class PluginHooks {
 			Field f = plugin.getClass().getDeclaredField("afkList");
 			f.setAccessible(true);
 			HashMap map = (HashMap) f.get(plugin);
-			return map.containsKey(((TabPlayer)p).player);
+			return map.containsKey(p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
 		}
@@ -102,24 +101,24 @@ public class PluginHooks {
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
 		try {
-			return (String) Class.forName("me.clip.deluxetags.DeluxeTag").getMethod("getPlayerDisplayTag", Player.class).invoke(null, ((TabPlayer)p).player);
+			return (String) Class.forName("me.clip.deluxetags.DeluxeTag").getMethod("getPlayerDisplayTag", Player.class).invoke(null, p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("", "Failed to get DeluxeTag of " + p.getName(), t);
 		}
 	}
 	public static double Essentials_getMoney(ITabPlayer p) {
 		try {
-			return ((Essentials)essentials).getUser(((TabPlayer)p).player).getMoney().doubleValue();
+			return ((Essentials)essentials).getUser(p.getBukkitEntity()).getMoney().doubleValue();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(0, "Failed to check money of " + p.getName() + " using Essentials", t);
 		}
 	}
 	public static String Essentials_getNickname(ITabPlayer p) {
-		return ((Essentials)essentials).getUser(((TabPlayer)p).player).getNickname();
+		return ((Essentials)essentials).getUser(p.getBukkitEntity()).getNickname();
 	}
 	public static boolean Essentials_isAFK(ITabPlayer p) {
 		try {
-			return ((Essentials)essentials).getUser(((TabPlayer)p).player).isAfk();
+			return ((Essentials)essentials).getUser(p.getBukkitEntity()).isAfk();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
 		}
@@ -140,7 +139,7 @@ public class PluginHooks {
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
 		try {
-			return (boolean) idisguise.getClass().getMethod("isDisguised", Player.class).invoke(idisguise, ((TabPlayer)p).player);
+			return (boolean) idisguise.getClass().getMethod("isDisguised", Player.class).invoke(idisguise, p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using iDisguise", t);
 		}
@@ -266,7 +265,7 @@ public class PluginHooks {
 		if (!placeholderAPI) return text;
 		try {
 			long startTime = System.nanoTime();
-			String value = PlaceholderAPI.setRelationalPlaceholders(((TabPlayer)viewer).player, ((TabPlayer)target).player, text);
+			String value = PlaceholderAPI.setRelationalPlaceholders(viewer.getBukkitEntity(), target.getBukkitEntity(), text);
 			Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 			return value;
 		} catch (Throwable t) {
@@ -288,7 +287,7 @@ public class PluginHooks {
 	}
 	public static int ProtocolSupportAPI_getProtocolVersionId(ITabPlayer p){
 		try {
-			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, ((TabPlayer)p).player);
+			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, p.getBukkitEntity());
 			int ver = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
 			Shared.debug("ProtocolSupport returned protocol version " + ver + " for player " + p.getName());
 			return ver;
@@ -324,7 +323,7 @@ public class PluginHooks {
 	}
 	public static String[] Vault_getGroups(ITabPlayer p) {
 		try {
-			return ((Permission)Vault_permission).getPlayerGroups(((TabPlayer)p).player);
+			return ((Permission)Vault_permission).getPlayerGroups(p.getBukkitEntity());
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using Vault", e);
 		}
@@ -338,21 +337,21 @@ public class PluginHooks {
 	}
 	public static String Vault_getPrefix(ITabPlayer p) {
 		try {
-			return ((Chat)Vault_chat).getPlayerPrefix(((TabPlayer)p).player);
+			return ((Chat)Vault_chat).getPlayerPrefix(p.getBukkitEntity());
 		} catch (Exception e) {
 			return Shared.errorManager.printError("", "Failed to get prefix of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static String Vault_getSuffix(ITabPlayer p) {
 		try {
-			return ((Chat)Vault_chat).getPlayerSuffix(((TabPlayer)p).player);
+			return ((Chat)Vault_chat).getPlayerSuffix(p.getBukkitEntity());
 		} catch (Exception e) {
 			return Shared.errorManager.printError("", "Failed to get suffix of " + p.getName() + " using Vault", e);
 		}
 	}
 	public static String Vault_getPrimaryGroup(ITabPlayer p) {
 		try {
-			return ((Permission)Vault_permission).getPrimaryGroup(((TabPlayer)p).player);
+			return ((Permission)Vault_permission).getPrimaryGroup(p.getBukkitEntity());
 		} catch (Throwable e) {
 			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using Vault", e);
 		}
@@ -377,7 +376,7 @@ public class PluginHooks {
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
 		try {
-			return (boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, ((TabPlayer)p).player);
+			return (boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
 		}

@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
@@ -89,7 +88,7 @@ public class PacketAPI{
 					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
 					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())));
 		} else {
-			Location l = (((TabPlayer)to).player).getEyeLocation().add(((TabPlayer)to).player.getEyeLocation().getDirection().normalize().multiply(25));
+			Location l = to.getBukkitEntity().getEyeLocation().add(to.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(25));
 			if (l.getY() < 1) l.setY(1);
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
 			DataWatcher w = new DataWatcher(null);

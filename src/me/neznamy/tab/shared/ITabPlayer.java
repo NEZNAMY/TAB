@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -89,6 +90,18 @@ public abstract class ITabPlayer {
 	public abstract void sendRawMessage(String message);
 
 	public abstract Object getSkin();
+	
+	public org.bukkit.entity.Player getBukkitEntity() {
+		throw new IllegalStateException("Wrong platform");
+	}
+	
+	public ProxiedPlayer getBungeeEntity() {
+		throw new IllegalStateException("Wrong platform");
+	}
+	
+	public com.velocitypowered.api.proxy.Player getVelocityEntity() {
+		throw new IllegalStateException("Wrong platform");
+	}
 	
 	public boolean getTeamPush() {
 		return Configs.getCollisionRule(world);

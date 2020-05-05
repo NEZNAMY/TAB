@@ -12,7 +12,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
@@ -45,7 +44,7 @@ public class ArmorStand{
 	public ArmorStand(ITabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
-		player = ((TabPlayer)owner).player;
+		player = owner.getBukkitEntity();
 		this.yOffset = yOffset;
 		this.property = property;
 		visible = getVisibility();
@@ -183,7 +182,7 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
-		boolean visible = (name.length() == 0 || !((TabPlayer)other).player.canSee(player)) ? false : this.visible;
+		boolean visible = (name.length() == 0 || !other.getBukkitEntity().canSee(player)) ? false : this.visible;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
 		} else {

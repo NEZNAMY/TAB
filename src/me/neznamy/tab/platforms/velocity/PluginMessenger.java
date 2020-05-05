@@ -28,9 +28,9 @@ public class PluginMessenger{
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
-		if (((TabPlayer)player).player.getCurrentServer().isPresent())
+		if (player.getVelocityEntity().getCurrentServer().isPresent())
 			try {
-				((TabPlayer)player).player.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
+				player.getVelocityEntity().getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
 			} catch (IllegalStateException e) {
 				// java.lang.IllegalStateException: Not connected to server!
 				// this is not the best way to deal with this problem, but i could not find a better one

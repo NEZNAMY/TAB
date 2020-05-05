@@ -14,7 +14,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
 
 public class TabPlayer extends ITabPlayer{
 
-	public ProxiedPlayer player;
+	private ProxiedPlayer player;
 
 	public TabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
@@ -77,5 +77,9 @@ public class TabPlayer extends ITabPlayer{
 			s[i][2] = pr.getSignature();
 		}
 		return s;
+	}
+	@Override
+	public ProxiedPlayer getBungeeEntity() {
+		return player;
 	}
 }
