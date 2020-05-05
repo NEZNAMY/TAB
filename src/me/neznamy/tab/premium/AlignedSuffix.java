@@ -202,7 +202,7 @@ public class AlignedSuffix implements SimpleFeature{
 						width += localWidth;
 					}
 				} else {
-					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it in premiumconfig.yml in extra-character-widths section (tutorial available on wiki).");
+					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it in premiumconfig.yml in extra-character-widths section.");
 				}
 			}
 			width += component.getText().length()-1;
