@@ -219,6 +219,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public static void registerPlaceholders() {
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 		PluginHooks.luckPerms = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null;
+		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
 		PluginHooks.ultrapermissions = ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null;
 		if (PluginHooks.premiumVanish) {
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {

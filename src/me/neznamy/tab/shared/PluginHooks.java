@@ -37,6 +37,7 @@ public class PluginHooks {
 
 	public static boolean libsDisguises;
 	public static boolean luckPerms;
+	public static String luckPermsVersion;
 	public static boolean permissionsEx;
 	public static boolean placeholderAPI;
 	public static boolean deluxetags;
@@ -157,7 +158,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
 					return new String[] {"null"};
 				}
 				return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
@@ -176,7 +177,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 					return "";
 				}
 				prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
@@ -197,7 +198,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 					return "";
 				}
 				suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
@@ -217,7 +218,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
 					return "null";
 				}
 				return user.getPrimaryGroup();
@@ -292,7 +293,7 @@ public class PluginHooks {
 			Shared.debug("ProtocolSupport returned protocol version " + ver + " for player " + p.getName());
 			return ver;
 		} catch (Throwable e) {
-			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport", e);
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport v" + getVersion("ProtocolSupport"), e);
 		}
 	}
 	public static String[] UltraPermissions_getAllGroups(ITabPlayer p) {
@@ -371,7 +372,7 @@ public class PluginHooks {
 			Shared.debug("ViaVersion returned protocol version " + ver + " for player " + p.getName());
 			return ver;
 		} catch (Throwable e) {
-			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion", e);
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion v" + getVersion("ViaVersion"), e);
 		}
 	}
 	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
@@ -380,5 +381,14 @@ public class PluginHooks {
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
 		}
+	}
+	
+	private static String getVersion(String bukkitPlugin) {
+		 Plugin plugin = Bukkit.getPluginManager().getPlugin(bukkitPlugin);
+		 if (plugin != null) {
+			 return plugin.getDescription().getVersion();
+		 } else {
+			 return "-1";
+		 }
 	}
 }

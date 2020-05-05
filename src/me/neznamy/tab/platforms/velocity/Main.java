@@ -241,7 +241,7 @@ public class Main implements MainClass{
 	}
 	public static void registerPlaceholders() {
 		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
-		
+		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get();
 		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";

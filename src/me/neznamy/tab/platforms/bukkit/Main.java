@@ -208,6 +208,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
+		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
 		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
