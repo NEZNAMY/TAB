@@ -304,10 +304,17 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
+			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
-					return lastValue.get(p.getName());
+					String name;
+					if (p == null) {
+						name = "null";
+					} else {
+						name = p.getName();
+					}
+					return lastValue.get(name);
 				}
 			});
 			return;

@@ -79,15 +79,14 @@ public class Placeholders {
 		}
 		return result;
 	}
-	public static List<Placeholder> detectPlaceholders(String rawValue, boolean playerPlaceholders) {
+	public static List<Placeholder> detectPlaceholders(String rawValue) {
 		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
 		for (Placeholder placeholder : getAllUsed()) {
-			if (placeholder instanceof PlayerPlaceholder && !playerPlaceholders) continue;
 			if (rawValue.contains(placeholder.getIdentifier())) {
 				placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
-					for (Placeholder p : detectPlaceholders(child, playerPlaceholders)) {
+					for (Placeholder p : detectPlaceholders(child)) {
 						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
 					}
 				}

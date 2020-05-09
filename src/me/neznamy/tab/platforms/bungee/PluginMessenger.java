@@ -25,6 +25,10 @@ public class PluginMessenger implements Listener {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
+		if (player == null) {
+			if (Shared.getPlayers().isEmpty()) return;
+			player = Shared.getPlayers().toArray(new ITabPlayer[0])[0];
+		}
 		player.getBungeeEntity().getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
 	}
 	@EventHandler
@@ -43,7 +47,9 @@ public class PluginMessenger implements Listener {
 				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.myPlaceholders.get(placeholder); //all bridge placeholders are marked as player
 				if (pl != null) {
 					pl.lastValue.put(receiver.getName(), output);
+					pl.lastValue.put("null", output);
 					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
+					pl.lastRefresh.put("null", System.currentTimeMillis());
 					Shared.cpu.addBridgePlaceholderTime(placeholder, cpu);
 				} else {
 					Shared.debug("Received output for unknown placeholder " + placeholder);

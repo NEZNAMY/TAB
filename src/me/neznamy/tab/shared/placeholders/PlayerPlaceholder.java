@@ -18,16 +18,16 @@ public abstract class PlayerPlaceholder extends Placeholder{
 	
 	@Override
 	protected String getValue(ITabPlayer p) {
-		if (p == null) return identifier;
+		String name = (p == null ? "null" : p.getName());
 		long startTime = System.nanoTime();
-		if (!lastRefresh.containsKey(p.getName()) || System.currentTimeMillis() - lastRefresh.get(p.getName()) >= cooldown) {
+		if (!lastRefresh.containsKey(name) || System.currentTimeMillis() - lastRefresh.get(name) >= cooldown) {
 			String value = get(p);
-			lastRefresh.put(p.getName(), System.currentTimeMillis());
+			lastRefresh.put(name, System.currentTimeMillis());
 			if (value == null || !value.equals("ERROR")) {
-				lastValue.put(p.getName(), value);
+				lastValue.put(name, value);
 			}
 		}
 		Shared.cpu.addPlaceholderTime(identifier, System.nanoTime()-startTime);
-		return lastValue.get(p.getName());
+		return lastValue.get(name);
 	}
 }

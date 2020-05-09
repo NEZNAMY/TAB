@@ -32,7 +32,7 @@ public class Scoreboard {
 		this.title = title;
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
-		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition, true);
+		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 		for (int i=0; i<lines.size(); i++) {
 			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
 		}

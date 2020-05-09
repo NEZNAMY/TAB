@@ -34,7 +34,7 @@ public class Property {
 				}
 			}
 		}
-		placeholders = Placeholders.detectPlaceholders(value, owner != null);
+		placeholders = Placeholders.detectPlaceholders(value);
 		hasRelationalPlaceholders = value.contains("%rel_");
 		for (Placeholder placeholder : placeholders) {
 			for (String child : placeholder.getChilds()) {
@@ -114,5 +114,8 @@ public class Property {
 	}
 	public boolean hasRelationalPlaceholders() {
 		return hasRelationalPlaceholders && PluginHooks.placeholderAPI;
+	}
+	public List<Placeholder> getUsedPlaceholders(){
+		return placeholders;
 	}
 }
