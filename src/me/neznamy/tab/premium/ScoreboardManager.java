@@ -151,7 +151,6 @@ public class ScoreboardManager implements SimpleFeature{
 				if (remember_toggle_choice) {
 					sb_off_players.remove(sender.getName());
 					Configs.playerdata.set("scoreboard-off", sb_off_players);
-					Configs.playerdata.save();
 				}
 			}
 			return true;
@@ -164,7 +163,6 @@ public class ScoreboardManager implements SimpleFeature{
 				if (remember_toggle_choice) {
 					sb_off_players.add(sender.getName());
 					Configs.playerdata.set("scoreboard-off", sb_off_players);
-					Configs.playerdata.save();
 				}
 			}
 			return true;
