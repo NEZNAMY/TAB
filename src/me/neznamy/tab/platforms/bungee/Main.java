@@ -113,7 +113,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void a(ServerSwitchEvent e){
 		try{
 			if (Shared.disabled) return;
