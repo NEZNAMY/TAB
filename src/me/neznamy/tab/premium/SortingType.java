@@ -65,6 +65,9 @@ public enum SortingType {
 			teamName = getGroupPermissionChars(p) + setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
 		}
+		if (teamName.length() > 12) {
+			teamName = teamName.substring(0, 12);
+		}
 		teamName += p.getName();
 		if (teamName.length() > 15) {
 			teamName = teamName.substring(0, 15);
