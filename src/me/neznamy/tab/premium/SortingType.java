@@ -75,7 +75,8 @@ public enum SortingType {
 		main:
 		for (int i = 65; i <= 255; i++) {
 			String potentialTeamName = teamName;
-			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase() + (char)i;
+			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase();
+			potentialTeamName += (char)i;
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all == p) continue;
 				if (all.getTeamName().equals(potentialTeamName)) {
