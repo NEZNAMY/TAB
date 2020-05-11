@@ -12,7 +12,9 @@ public enum SortingType {
 	TABPREFIX_A_TO_Z, 
 	PLACEHOLDER_LOW_TO_HIGH, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_A_TO_Z,
 	GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH, 
-	GROUPS_THEN_PLACEHOLDER_A_TO_Z;
+	GROUPS_THEN_PLACEHOLDER_A_TO_Z,
+	GROUP_PERMISSIONS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUP_PERMISSIONS_THEN_PLACEHOLDER_LOW_TO_HIGH, 
+	GROUP_PERMISSIONS_THEN_PLACEHOLDER_A_TO_Z;
 	
 	private static final int DEFAULT_NUMBER = 5000000;
 	
@@ -24,16 +26,7 @@ public enum SortingType {
 			teamName = getGroupChars(p.getGroup());
 			break;
 		case GROUP_PERMISSIONS:
-			for (String localgroup : Configs.sortedGroups.keySet()) {
-				if (p.hasPermission("tab.sort." + localgroup)) {
-					teamName = getGroupChars(localgroup);
-					break;
-				}
-			}
-			if (teamName == null) {
-				teamName = "";
-				Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			}
+			teamName = getGroupPermissionChars(p);
 			break;
 		case TABPREFIX_A_TO_Z:
 			teamName = p.properties.get("tabprefix").get();
@@ -60,6 +53,17 @@ public enum SortingType {
 		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
 			teamName = getGroupChars(p.getGroup()) + setPlaceholders(Premium.sortingPlaceholder, p);
 			break;
+		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_LOW_TO_HIGH:
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = getGroupPermissionChars(p) + String.valueOf(DEFAULT_NUMBER + intValue);
+			break;
+		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_HIGH_TO_LOW:
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			teamName = getGroupPermissionChars(p) + String.valueOf(DEFAULT_NUMBER - intValue);
+			break;
+		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_A_TO_Z:
+			teamName = getGroupPermissionChars(p) + setPlaceholders(Premium.sortingPlaceholder, p);
+			break;
 		}
 		teamName += p.getName();
 		if (teamName.length() > 15) {
@@ -84,6 +88,20 @@ public enum SortingType {
 		if (chars == null) {
 			chars = "";
 			if (!group.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
+		}
+		return chars;
+	}
+	public static String getGroupPermissionChars(ITabPlayer p) {
+		String chars = null;
+		for (String localgroup : Configs.sortedGroups.keySet()) {
+			if (p.hasPermission("tab.sort." + localgroup)) {
+				chars = getGroupChars(localgroup);
+				break;
+			}
+		}
+		if (chars == null) {
+			chars = "";
+			Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
 		}
 		return chars;
 	}
