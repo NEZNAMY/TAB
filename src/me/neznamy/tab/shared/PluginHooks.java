@@ -164,7 +164,12 @@ public class PluginHooks {
 				return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
-				return LuckPerms.getApi().getUser(p.getUniqueId()).getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
+				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
+					return new String[] {"null"};
+				}
+				return user.getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 			}
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
@@ -184,6 +189,10 @@ public class PluginHooks {
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+					return "";
+				}
 				prefix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getPrefix();
 			}
 			return prefix == null ? "" : prefix;
@@ -205,6 +214,10 @@ public class PluginHooks {
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
 				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+					return "";
+				}
 				suffix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getSuffix();
 			}
 			return suffix == null ? "" : suffix;
@@ -224,7 +237,12 @@ public class PluginHooks {
 				return user.getPrimaryGroup();
 			} catch (NoClassDefFoundError e) {
 				//LuckPerms API v4
-				return LuckPerms.getApi().getUser(p.getUniqueId()).getPrimaryGroup();
+				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+				if (user == null) {
+					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
+					return "null";
+				}
+				return user.getPrimaryGroup();
 			}
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
