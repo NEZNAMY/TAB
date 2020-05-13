@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class ArmorStand{
 
+	private static final int ARMOR_STAND_BYTEFLAGS_POSITION = getArmorStandFlagsPosition();
 	private ITabPlayer owner;
 	private Player player;
 	private double yOffset;
@@ -188,10 +189,25 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
 		}
-		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ProtocolVersion.SERVER_VERSION.getMarkerPosition(), DataWatcherSerializer.Byte), (byte)16);
+		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){
 		return nearbyPlayers;
+	}
+	private static int getArmorStandFlagsPosition() {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+			//1.15+
+			return 14;
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
+			//1.14.x
+			return 13;
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
+			//1.10.x - 1.13.x
+			return 11;
+		} else {
+			//1.8.1 - 1.9.x
+			return 10;
+		}
 	}
 }

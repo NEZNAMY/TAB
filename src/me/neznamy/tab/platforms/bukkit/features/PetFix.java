@@ -14,6 +14,23 @@ import me.neznamy.tab.shared.features.RawPacketFeature;
 
 public class PetFix implements RawPacketFeature{
 
+	private static final int PET_OWNER_POSITION = getPetOwnerPosition();
+	
+	private static int getPetOwnerPosition() {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+			//1.15+
+			return 17;
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
+			//1.14.x
+			return 16;
+		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
+			//1.10.x - 1.13.x
+			return 14;
+		} else {
+			//1.9.x
+			return 13;
+		}
+	}
 	@Override
 	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
 		return packet;
@@ -26,7 +43,7 @@ public class PetFix implements RawPacketFeature{
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
 				Item i = Item.fromNMS(item);
-				if (i.type.position == ProtocolVersion.SERVER_VERSION.getPetOwnerPosition()) {
+				if (i.type.position == PET_OWNER_POSITION) {
 					modifyDataWatcherItem(i);
 				}
 				newList.add(i.toNMS());
@@ -35,7 +52,7 @@ public class PetFix implements RawPacketFeature{
 		}
 		if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
-			Item petOwner = watcher.getItem(ProtocolVersion.SERVER_VERSION.getPetOwnerPosition());
+			Item petOwner = watcher.getItem(PET_OWNER_POSITION);
 			if (petOwner != null) modifyDataWatcherItem(petOwner);
 			PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 		}
