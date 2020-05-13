@@ -123,6 +123,10 @@ public class ScoreboardManager implements SimpleFeature{
 		return scoreboard;
 	}
 	public boolean onCommand(ITabPlayer sender, String message) {
+		if (sender == null) {
+			Shared.errorManager.printError("Command sender is null");
+			return false;
+		}
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.hiddenScoreboard = !sender.hiddenScoreboard;
