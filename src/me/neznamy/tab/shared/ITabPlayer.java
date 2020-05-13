@@ -410,18 +410,9 @@ public abstract class ITabPlayer {
 		if (Premium.is()) {
 			return Premium.sortingType.getTeamName(this);
 		}
-		String name = null;
+		String name;
 		if (Configs.sortByPermissions) {
-			for (String permissionGroup : Configs.sortedGroups.keySet()) {
-				if (hasPermission("tab.sort." + permissionGroup)) {
-					name = SortingType.getGroupChars(permissionGroup);
-					break;
-				}
-			}
-			if (name == null) {
-				name = "";
-				Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			}
+			name = SortingType.getGroupPermissionChars(this);
 		} else {
 			name = SortingType.getGroupChars(permissionGroup);
 		}
