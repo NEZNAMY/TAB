@@ -94,7 +94,7 @@ public class ErrorManager {
 
 	public int parseInteger(String string, int defaultValue, String place) {
 		try {
-			return Integer.parseInt(string);
+			return Math.round(Float.parseFloat(string));
 		} catch (Throwable e) {
 			if (string.contains("%")) {
 				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
