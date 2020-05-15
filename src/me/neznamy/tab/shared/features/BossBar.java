@@ -40,6 +40,10 @@ public class BossBar implements SimpleFeature{
 				progress = "100";
 				Shared.errorManager.missingAttribute("BossBar", bar, "progress");
 			}
+			if (text == null) {
+				text = "";
+				Shared.errorManager.missingAttribute("BossBar", bar, "text");
+			}
 			lines.add(new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
 		}
 		for (String bar : defaultBars.toArray(new String[0])) {

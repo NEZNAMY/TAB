@@ -53,6 +53,10 @@ public class ScoreboardManager implements SimpleFeature{
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "title");
 			}
 			List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
+			if (lines == null) {
+				lines = new ArrayList<String>();
+				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "lines");
+			}
 			scoreboards.put(scoreboard+"", new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard));
 		}	
 		for (ITabPlayer p : Shared.getPlayers()) {
