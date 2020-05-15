@@ -319,10 +319,11 @@ public abstract class ITabPlayer {
 		for (String property : Premium.staticLines.keySet()) {
 			if (!property.equals("nametag")) updateProperty(property);
 		}
-		rank = String.valueOf(Configs.rankAliases.get("_OTHER_")+""); //it is a string, but some geniuses might like something else..
-		for (Entry<String, Object> entry : Configs.rankAliases.entrySet()) {
+		rank = String.valueOf(Configs.rankAliases.get("_OTHER_"));
+		if (rank.equals("null")) rank = null;
+		for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
 			if (String.valueOf(entry.getKey()).equalsIgnoreCase(permissionGroup)) {
-				rank = (String) entry.getValue();
+				rank = String.valueOf(entry.getValue());
 				break;
 			}
 		}
