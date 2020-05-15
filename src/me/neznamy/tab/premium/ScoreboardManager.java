@@ -48,6 +48,10 @@ public class ScoreboardManager implements SimpleFeature{
 			String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
 			String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
 			String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
+			if (title == null) {
+				title = "<Title not defined>";
+				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "title");
+			}
 			List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
 			scoreboards.put(scoreboard+"", new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard));
 		}	

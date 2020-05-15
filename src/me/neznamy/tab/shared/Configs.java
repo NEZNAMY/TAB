@@ -18,7 +18,7 @@ public class Configs {
 	public static boolean collisionRule;
 	public static List<String> revertedCollision;
 	public static Map<String, String> sortedGroups;
-	public static Map<String, Object> rankAliases;
+	public static Map<Object, Object> rankAliases;
 	public static List<String> disabledHeaderFooter;
 	public static List<String> disabledTablistNames;
 	public static List<String> disabledNametag;

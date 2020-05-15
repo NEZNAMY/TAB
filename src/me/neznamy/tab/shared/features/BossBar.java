@@ -37,8 +37,8 @@ public class BossBar implements SimpleFeature{
 			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
 			String text = Configs.bossbar.getString("bars." + bar + ".text");
 			if (progress == null) {
-				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is missing \"&eprogress&c\" attribute! &bUsing 100");
 				progress = "100";
+				Shared.errorManager.missingAttribute("BossBar", bar, "progress");
 			}
 			lines.add(new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
 		}

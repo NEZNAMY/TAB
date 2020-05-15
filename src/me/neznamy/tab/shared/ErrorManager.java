@@ -183,6 +183,9 @@ public class ErrorManager {
 		Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 		startupWarns++;
 	}
+	public void missingAttribute(String objectType, Object objectName, String attribute) {
+		startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
+	}
 	public void printConsoleWarnCount() {
 		if (startupWarns > 0) {
 			if (startupWarns == 1) {
