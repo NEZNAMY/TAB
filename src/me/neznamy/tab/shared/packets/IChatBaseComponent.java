@@ -46,12 +46,13 @@ public class IChatBaseComponent {
 		jsonObject.put("extra", extra);
 		return this;
 	}
-	public void addExtra(IChatBaseComponent child) {
+	public IChatBaseComponent addExtra(IChatBaseComponent child) {
 		if (extra == null) {
 			extra = new ArrayList<IChatBaseComponent>();
 			jsonObject.put("extra", extra);
 		}
 		extra.add(child);
+		return this;
 	}
 
 	public String getText() {
