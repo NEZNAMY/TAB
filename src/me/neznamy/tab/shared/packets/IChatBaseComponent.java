@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 @SuppressWarnings({"unchecked", "unused"})
 public class IChatBaseComponent {
 
-	public static final String EMPTY_SIGNED_COMPONENT = "{\"signature\":\"TAB\",\"translate\":\"\"}";
+	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
 
 	private String text;
 	private Boolean bold;
@@ -28,7 +28,6 @@ public class IChatBaseComponent {
 	private HoverAction hoverAction;
 	private String hoverValue;
 	private List<IChatBaseComponent> extra;
-	private String signature;
 
 	private JSONObject jsonObject = new JSONObject();
 
@@ -190,10 +189,6 @@ public class IChatBaseComponent {
 					component.addExtra(fromString(extra.toString()));
 				}
 			}
-			if (jsonObject.containsKey("signature")) {
-				component.signature = (String) jsonObject.get("signature");
-				component.jsonObject.put("signature", component.signature);
-			}
 			return component;
 		} catch (ParseException | ClassCastException e) {
 			return fromColoredText(json);
@@ -202,9 +197,8 @@ public class IChatBaseComponent {
 	public String toString() {
 		if (extra == null) {
 			if (text == null) return null;
-			if (text.length() == 0) return EMPTY_SIGNED_COMPONENT;
+			if (text.length() == 0) return EMPTY_COMPONENT;
 		}
-		jsonObject.put("signature", "TAB");
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
 			return jsonObject.toString();
