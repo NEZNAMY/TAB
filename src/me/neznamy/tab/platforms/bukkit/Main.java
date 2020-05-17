@@ -527,7 +527,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.debug("Registering PLAYER PAPI placeholder " + identifier);
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getBukkitEntity(), identifier);
+					return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
 				}
 			});
 			return;
