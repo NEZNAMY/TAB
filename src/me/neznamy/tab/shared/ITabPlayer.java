@@ -210,7 +210,7 @@ public abstract class ITabPlayer {
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
-		return IChatBaseComponent.fromColoredText((prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format);
+		return new IChatBaseComponent((prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format);
 	}
 
 	public void updateTeam(boolean force) {
