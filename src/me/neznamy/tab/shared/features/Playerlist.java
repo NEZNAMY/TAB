@@ -51,20 +51,21 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
+		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
+		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
+		if (!UPDATE_NAME && !ADD) return packet;
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME || info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
-					playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
-					playerInfoData.name = packetPlayer.getName();
-				}
+			if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
+				playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
+				playerInfoData.name = packetPlayer.getName();
 			}
-			if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
+			if (ADD) {
 				if (packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
 			}
 		}
-		if (info.action == EnumPlayerInfoAction.ADD_PLAYER && receiver.getVersion() == ProtocolVersion.v1_8) {
+		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
 			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist Names 3", new Runnable() {
 
