@@ -27,7 +27,7 @@ public class ParseCommand extends SubCommand{
 			for (Placeholder p : Placeholders.getAllPlaceholders()) {
 				if (replaced.contains(p.getIdentifier())) replaced = p.set(replaced, sender);
 			}
-			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender.getUniqueId(), replaced);
+			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
 			
 			sendMessage(sender, "With colors: " + replaced);
 			sendRawMessage(sender, "Without colors: " + replaced.replace(Placeholders.colorChar, '&'));
