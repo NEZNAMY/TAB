@@ -152,9 +152,12 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put('ů', 5);
 		widths.put('ý', 5);
 		widths.put('ž', 5);
+		widths.put((char)9734, 3); //3.5
 		widths.put((char)9876, 7); //crossed swords
-		widths.put((char)12304, 8);
-		widths.put((char)12305, 8);
+		widths.put((char)12302, 8);
+		widths.put((char)12303, 8);
+		widths.put((char)12304, 8); //better [
+		widths.put((char)12305, 8); //better ]
 		widths.put((char)10084, 7);
 		widths.put((char)10004, 8);
 	}
