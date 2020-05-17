@@ -109,12 +109,21 @@ public class ScoreboardManager implements SimpleFeature{
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		if (p.getActiveScoreboard() != null) p.getActiveScoreboard().getRegisteredUsers().remove(p);
+		unregisterScoreboard(p, false);
+	}
+	private void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
+		if (p.getActiveScoreboard() != null) {
+			if (sendUnregisterPacket) {
+				p.getActiveScoreboard().unregister(p);
+			} else {
+				p.getActiveScoreboard().getRegisteredUsers().remove(p);
+			}
+		}
 		p.setActiveScoreboard(null);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		onQuit(p);
+		unregisterScoreboard(p, true);
 		send(p);
 	}
 	public String getHighestScoreboard(ITabPlayer p) {
@@ -139,7 +148,7 @@ public class ScoreboardManager implements SimpleFeature{
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			sender.hiddenScoreboard = !sender.hiddenScoreboard;
 			if (sender.hiddenScoreboard) {
-				onQuit(sender);
+				unregisterScoreboard(sender, true);
 				sender.sendMessage(scoreboard_off);
 				if (remember_toggle_choice && !sb_off_players.contains(sender.getName())) {
 					sb_off_players.add(sender.getName());
