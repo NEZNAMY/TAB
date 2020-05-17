@@ -180,6 +180,8 @@ public class ErrorManager {
 	}
 
 	public void startupWarn(String message) {
+		if (oneTimeMessages.contains(message)) return;
+		oneTimeMessages.add(message);
 		Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 		startupWarns++;
 	}
