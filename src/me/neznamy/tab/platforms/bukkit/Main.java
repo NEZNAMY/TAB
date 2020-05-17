@@ -360,14 +360,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && PluginHooks.Vault_chat != null) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(ITabPlayer p) {
 					String prefix = PluginHooks.Vault_getPrefix(p);
 					return prefix != null ? prefix : "";
 				}
 			});
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(ITabPlayer p) {
 					String suffix = PluginHooks.Vault_getSuffix(p);

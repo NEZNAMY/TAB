@@ -219,12 +219,12 @@ public class Placeholders {
 			});
 		}
 		if (PluginHooks.luckPerms) {
-			registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 49) {
+			registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.LuckPerms_getPrefix(p);
 				}
 			});
-			registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 49) {
+			registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.LuckPerms_getSuffix(p);
 				}
