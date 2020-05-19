@@ -84,7 +84,7 @@ public class Property {
 		return rawValue;
 	}
 	public String getSource() {
-		return source;
+		return temporaryValue == null ? source : "API";
 	}
 	public void setSource(String source) {
 		this.source = source;
