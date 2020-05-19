@@ -48,9 +48,13 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
-		long time = System.nanoTime();
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p != null) p.detectBossBarsAndSend();
-		Shared.cpu.addFeatureTime("BossBar 1.8", System.nanoTime()-time);
+		try {
+			long time = System.nanoTime();
+			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+			if (p != null) p.detectBossBarsAndSend();
+			Shared.cpu.addFeatureTime("BossBar 1.8", System.nanoTime()-time);
+		} catch (Throwable t) {
+			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
+		}
 	}
 }
