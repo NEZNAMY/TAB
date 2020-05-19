@@ -95,36 +95,36 @@ public class DebugCommand extends SubCommand {
 			}
 			if (Shared.features.containsKey("playerlist")) {
 				if (analyzed.disabledTablistNames) {
-					sendMessage(sender, "&9tabprefix: &cDisabled in player's world");
-					sendMessage(sender, "&9tabsuffix: &cDisabled in player's world");
-					sendMessage(sender, "&9tabname: &cDisabled in player's world");
+					sendMessage(sender, "&atabprefix: &cDisabled in player's world");
+					sendMessage(sender, "&atabsuffix: &cDisabled in player's world");
+					sendMessage(sender, "&atabname: &cDisabled in player's world");
 				} else {
 					sendRawMessage(sender, property(analyzed, "tabprefix"));
 					sendRawMessage(sender, property(analyzed, "tabsuffix"));
 					sendRawMessage(sender, property(analyzed, "customtabname"));
 				}
 			} else {
-				sendMessage(sender, "&9tabprefix: &cDisabled");
-				sendMessage(sender, "&9tabsuffix: &cDisabled");
-				sendMessage(sender, "&9tabname: &cDisabled");
+				sendMessage(sender, "&atabprefix: &cDisabled");
+				sendMessage(sender, "&atabsuffix: &cDisabled");
+				sendMessage(sender, "&atabname: &cDisabled");
 			}
 			if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
 				if (analyzed.disabledNametag) {
-					sendMessage(sender, "&9tagprefix: &cDisabled in player's world");
-					sendMessage(sender, "&9tagsuffix: &cDisabled in player's world");
+					sendMessage(sender, "&atagprefix: &cDisabled in player's world");
+					sendMessage(sender, "&atagsuffix: &cDisabled in player's world");
 				} else {
 					sendRawMessage(sender, property(analyzed, "tagprefix"));
 					sendRawMessage(sender, property(analyzed, "tagsuffix"));
 				}
 			} else {
-				sendMessage(sender, "&9tagprefix: &cDisabled");
-				sendMessage(sender, "&9tagsuffix: &cDisabled");
+				sendMessage(sender, "&atagprefix: &cDisabled");
+				sendMessage(sender, "&atagsuffix: &cDisabled");
 			}
 			if (Shared.features.containsKey("nametagx")) {
 				if (analyzed.disabledNametag) {
-					sendMessage(sender, "&9abovename: &cDisabled in player's world");
-					sendMessage(sender, "&9belowname: &cDisabled in player's world");
-					sendMessage(sender, "&9tagname: &cDisabled in player's world");
+					sendMessage(sender, "&aabovename: &cDisabled in player's world");
+					sendMessage(sender, "&abelowname: &cDisabled in player's world");
+					sendMessage(sender, "&atagname: &cDisabled in player's world");
 				} else {
 					sendRawMessage(sender, property(analyzed, "abovename"));
 					sendRawMessage(sender, property(analyzed, "belowname"));
