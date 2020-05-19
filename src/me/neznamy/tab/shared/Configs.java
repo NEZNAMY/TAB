@@ -152,9 +152,9 @@ public class Configs {
 			for (Animation a : animations) {
 				if (value.toString().contains("%animation:" + a.getName() + "%")){
 					if (a.getInterval() < refresh) {
-						Shared.errorManager.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+						Shared.errorManager.startupWarn("Animation &e\"" + a.getName() + "\" &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
 					} else if (a.getInterval() % refresh != 0) {
-						Shared.errorManager.startupWarn("Animation &e" + a.getName() + " &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
+						Shared.errorManager.startupWarn("Animation &e\"" + a.getName() + "\" &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
 					}
 				}
 			}
