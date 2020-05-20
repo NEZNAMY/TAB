@@ -173,16 +173,11 @@ public class AlignedSuffix implements SimpleFeature{
 					maxPlayer = all;
 				}
 			}
-			for (ITabPlayer all : Shared.getPlayers()) {
-				all.updatePlayerListName();
-			}
+			updateAllNames(null);
 		} else if (playerNameWidth > maxWidth) {
 			maxWidth = playerNameWidth;
 			maxPlayer = player;
-			for (ITabPlayer all : Shared.getPlayers()) {
-				if (all == player) continue;
-				all.updatePlayerListName();
-			}
+			updateAllNames(player);
 		}
 		String newFormat = prefixAndName + Placeholders.colorChar + "r";
 		try {
@@ -266,18 +261,14 @@ public class AlignedSuffix implements SimpleFeature{
 		if (width > maxWidth) {
 			maxWidth = width;
 			maxPlayer = p;
-			for (ITabPlayer all : Shared.getPlayers()) {
-				all.updatePlayerListName();
-			}
+			updateAllNames(null);
 		}
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
 		if (maxPlayer == p) {
 			if (recalculateMaxWidth(p)) {
-				for (ITabPlayer all : Shared.getPlayers()) {
-					all.updatePlayerListName();
-				}
+				updateAllNames(null);
 			}
 		}
 	}
@@ -285,11 +276,22 @@ public class AlignedSuffix implements SimpleFeature{
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (maxPlayer == p) {
 			if (recalculateMaxWidth(null)) {
+				updateAllNames(null);
+			}
+		}
+	}
+	
+	private void updateAllNames(ITabPlayer exception) {
+		Shared.cpu.runMeasuredTask("aligning tabsuffix", "AlignSuffix", new Runnable() {
+
+			@Override
+			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
+					if (all == exception) continue;
 					all.updatePlayerListName();
 				}
 			}
-		}
+		});
 	}
 
 	// returns true if max changed, false if not
