@@ -97,11 +97,12 @@ public class ArmorStand{
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
+		updateLocation(player.getLocation());
 		synchronized (nearbyPlayers) {
 			for (ITabPlayer viewer : nearbyPlayers) {
 				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, property.get()) : property.get();
-				if (viewer.getVersion().getMinorVersion() >= 14 && !Configs.SECRET_armorstands_always_visible) {
-					//sneaking feature was removed in 1.14, so despawning completely now
+				if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
+					//1.14.x client sided bug, despawning completely
 					if (sneaking) {
 						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					} else {
