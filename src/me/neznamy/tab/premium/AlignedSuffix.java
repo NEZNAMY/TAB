@@ -160,6 +160,7 @@ public class AlignedSuffix implements SimpleFeature{
 		widths.put((char)12305, 8); //better ]
 		widths.put((char)10084, 7);
 		widths.put((char)10004, 8);
+		widths.put((char)10008, 6); //X mark
 	}
 	public String fixTextWidth(ITabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
