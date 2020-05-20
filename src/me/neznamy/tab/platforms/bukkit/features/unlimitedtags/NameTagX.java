@@ -200,12 +200,14 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (p == null) return;
 		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
 			public void run() {
-				for (ArmorStand as : p.getArmorStands()) {
-					as.updateLocation(e.getTo());
-					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-					synchronized (nearbyPlayers){
-						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+				synchronized (p.armorStands) {
+					for (ArmorStand as : p.armorStands) {
+						as.updateLocation(e.getTo());
+						List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
+						synchronized (nearbyPlayers){
+							for (ITabPlayer nearby : nearbyPlayers) {
+								nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+							}
 						}
 					}
 				}
