@@ -3,11 +3,14 @@ package me.neznamy.tab.shared.placeholders;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.neznamy.tab.shared.*;
 
 public class Placeholders {
 
+	public static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 	
@@ -34,18 +37,14 @@ public class Placeholders {
 	public static Collection<Placeholder> getAllUsed(){
 		return usedPlaceholders.values();
 	}
-	public static List<String> detectAll(String s){
-		List<String> list = new ArrayList<String>();
-		if (s == null) return list;
-		while (s.contains("%")) {
-			s = s.substring(s.indexOf("%")+1, s.length());
-			if (s.contains("%")) {
-				String placeholder = s.substring(0, s.indexOf("%"));
-				s = s.substring(s.indexOf("%")+1, s.length());
-				list.add("%" + placeholder + "%");
-			}
+	public static List<String> detectAll(String text){
+		List<String> placeholders = new ArrayList<>();
+		if (text == null) return placeholders;
+		Matcher m = placeholderPattern.matcher(text);
+		while (m.find()) {
+			placeholders.add(m.group());
 		}
-		return list;
+		return placeholders;
 	}
 
 	//code taken from bukkit, so it can work on bungee too
