@@ -22,6 +22,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
@@ -434,5 +435,19 @@ public class Main implements MainClass{
 	@Override
 	public String getServerVersion() {
 		return server.getVersion().getName() + " v" + server.getVersion().getVersion();
+	}
+	@Override
+	public void suggestPlaceholders() {
+		//bungee only
+		suggestPlaceholderSwitch("%premiumvanish_bungeeplayercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%bungee_total%", "%online%");
+		for (RegisteredServer server : Main.server.getAllServers()) {
+			suggestPlaceholderSwitch("%bungee_" + server.getServerInfo().getName() + "%", "%online_" + server.getServerInfo().getName() + "%");
+		}
+
+		//both
+		suggestPlaceholderSwitch("%player_ping%", "%ping%");
+		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 	}
 }

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public interface MainClass {
 
@@ -13,6 +14,7 @@ public interface MainClass {
 	public void registerUnknownPlaceholder(String identifier);
 	public void convertConfig(ConfigurationFile config);
 	public String getServerVersion();
+	public void suggestPlaceholders();
 	
 	public default void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
 		if (config.hasConfigOption(oldKey)) {
@@ -37,5 +39,10 @@ public interface MainClass {
 		config.set(oldKey, null);
 		config.set(newKey, newValue);
 		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
+	}
+	public default void suggestPlaceholderSwitch(String from, String to) {
+		if (Placeholders.allUsedPlaceholders.contains(from)) {
+			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
+		}
 	}
 }

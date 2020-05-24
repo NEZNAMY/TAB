@@ -104,6 +104,7 @@ public class Configs {
 		}
 		checkAnimations(config.getValues());
 		checkAnimations(bossbar.getValues());
+		Shared.mainClass.suggestPlaceholders();
 	}
 	@SuppressWarnings("unchecked")
 	private static void checkAnimations(Map<?, Object> values) {

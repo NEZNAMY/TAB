@@ -636,4 +636,34 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public String getServerVersion() {
 		return Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")";
 	}
+	@Override
+	public void suggestPlaceholders() {
+		//bukkit only
+		suggestPlaceholderSwitch("%essentials_afk%", "%afk%");
+		suggestPlaceholderSwitch("%vault_prefix%", "%vault-prefix%");
+		suggestPlaceholderSwitch("%vault_suffix%", "%vault-suffix%");
+		suggestPlaceholderSwitch("%luckperms_prefix%", "%luckperms-prefix%");
+		suggestPlaceholderSwitch("%luckperms_suffix%", "%luckperms-suffix%");
+		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");
+		suggestPlaceholderSwitch("%player_x%", "%xPos%");
+		suggestPlaceholderSwitch("%player_y%", "%yPos%");
+		suggestPlaceholderSwitch("%player_z%", "%zPos%");
+		suggestPlaceholderSwitch("%statistic_deaths%", "%deaths%");
+		suggestPlaceholderSwitch("%vault_eco_balance%", "%money%");
+		suggestPlaceholderSwitch("%player_health%", "%health%");
+		suggestPlaceholderSwitch("%player_health_rounded%", "%health%");
+		suggestPlaceholderSwitch("%server_tps_1%", "%tps%");
+		suggestPlaceholderSwitch("%deluxetags_tag%", "%deluxetag%");
+		suggestPlaceholderSwitch("%player_world%", "%world%");
+		suggestPlaceholderSwitch("%server_max_players%", "%maxplayers%");
+		suggestPlaceholderSwitch("%server_online%", "%online%");
+		suggestPlaceholderSwitch("%player_displayname%", "%displayname%");
+		suggestPlaceholderSwitch("%server_ram_used%", "%memory-used%");
+		suggestPlaceholderSwitch("%server_ram_max%", "%memory-max%");
+
+		//both
+		suggestPlaceholderSwitch("%player_ping%", "%ping%");
+		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
+	}
 }

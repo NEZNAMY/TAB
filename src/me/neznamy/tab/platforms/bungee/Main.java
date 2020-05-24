@@ -388,4 +388,18 @@ public class Main extends Plugin implements Listener, MainClass{
 	public String getServerVersion() {
 		return getProxy().getVersion();
 	}
+	@Override
+	public void suggestPlaceholders() {
+		//bungee only
+		suggestPlaceholderSwitch("%premiumvanish_bungeeplayercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%bungee_total%", "%online%");
+		for (String server : ProxyServer.getInstance().getServers().keySet()) {
+			suggestPlaceholderSwitch("%bungee_" + server + "%", "%online_" + server + "%");
+		}
+
+		//both
+		suggestPlaceholderSwitch("%player_ping%", "%ping%");
+		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
+	}
 }
