@@ -146,8 +146,12 @@ public class CPUManager {
 		}
 		return result;
 	}
-	public synchronized void addTime(String key, long nanoseconds) {
-		if (!lastSecond.containsKey(key)) lastSecond.put(key, 0L);
-		lastSecond.put(key, lastSecond.get(key)+nanoseconds);
+	public void addTime(String key, long nanoseconds) {
+		Long current = lastSecond.get(key);
+		if (current == null) {
+			lastSecond.put(key, nanoseconds);
+		} else {
+			lastSecond.put(key, current + nanoseconds);
+		}
 	}
 }
