@@ -21,7 +21,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing bossbar", "BossBar 1.8", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing bossbar", "BossBar 1.8", new Runnable() {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
@@ -52,7 +52,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 			long time = System.nanoTime();
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p != null) p.detectBossBarsAndSend();
-			Shared.cpu.addFeatureTime("BossBar 1.8", System.nanoTime()-time);
+			Shared.featureCpu.addTime("BossBar 1.8", System.nanoTime()-time);
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
 		}

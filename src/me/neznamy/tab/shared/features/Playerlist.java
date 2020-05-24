@@ -15,7 +15,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Tablist prefix/suffix", refresh);
 		updateNames(true);
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", "Tablist Names 1", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", "Tablist Names 1", new Runnable() {
 			public void run() {
 				updateNames(false);
 			}
@@ -67,7 +67,7 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 		}
 		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist Names 3", new Runnable() {
+			Shared.featureCpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", "Tablist Names 3", new Runnable() {
 
 				@Override
 				public void run() {

@@ -282,7 +282,7 @@ public class AlignedSuffix implements SimpleFeature{
 	}
 	
 	private void updateAllNames(ITabPlayer exception) {
-		Shared.cpu.runMeasuredTask("aligning tabsuffix", "AlignSuffix", new Runnable() {
+		Shared.featureCpu.runMeasuredTask("aligning tabsuffix", "AlignSuffix", new Runnable() {
 
 			@Override
 			public void run() {

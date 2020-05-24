@@ -27,7 +27,9 @@ public class Shared {
 	public static boolean disabled;
 	public static MainClass mainClass;
 	public static String separatorType;
-	public static CPUManager cpu;
+	public static CPUManager featureCpu;
+	public static CPUManager placeholderCpu;
+	public static CPUManager bukkitBridgePlaceholderCpu;
 	public static ErrorManager errorManager;
 	
 	public static String brokenFile = "-";
@@ -69,7 +71,9 @@ public class Shared {
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
-			cpu = new CPUManager();
+			featureCpu = new CPUManager();
+			placeholderCpu = new CPUManager();
+			bukkitBridgePlaceholderCpu = new CPUManager();
 			errorManager = new ErrorManager();
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
@@ -88,7 +92,9 @@ public class Shared {
 		try {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
-			cpu.cancelAllTasks();
+			featureCpu.cancelAllTasks();
+			placeholderCpu.cancelAllTasks();
+			bukkitBridgePlaceholderCpu.cancelAllTasks();
 			features.values().forEach(f -> f.unload());
 			features.clear();
 			custompacketfeatures.clear();

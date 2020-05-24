@@ -28,7 +28,7 @@ public class TabObjective implements SimpleFeature{
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
 			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 		}
-		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", "Yellow number in tablist", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", "Yellow number in tablist", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;

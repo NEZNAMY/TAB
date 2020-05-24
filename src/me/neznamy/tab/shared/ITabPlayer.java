@@ -523,7 +523,7 @@ public abstract class ITabPlayer {
 		updateAll();
 		if (Shared.separatorType.equals("server")) {
 			ITabPlayer player = this;
-			Shared.cpu.runTaskLater(50, "processing world change", "WorldChange", new Runnable() {
+			Shared.featureCpu.runTaskLater(50, "processing world change", "WorldChange", new Runnable() {
 
 				@Override
 				public void run() {

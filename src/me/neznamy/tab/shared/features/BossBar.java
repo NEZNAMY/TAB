@@ -71,7 +71,7 @@ public class BossBar implements SimpleFeature{
 			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 			p.detectBossBarsAndSend();
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible) continue;

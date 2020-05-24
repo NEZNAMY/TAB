@@ -169,7 +169,7 @@ public class Main extends Plugin implements Listener, MainClass{
 							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
-								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
 							if (customPacket != null) packet = customPacket.toBungee(player.getVersion());
 							else packet = null;

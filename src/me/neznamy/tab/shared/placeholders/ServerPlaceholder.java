@@ -23,7 +23,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 			}
 			lastRefresh = System.currentTimeMillis();
 		}
-		Shared.cpu.addPlaceholderTime(identifier, System.nanoTime()-startTime);
+		Shared.placeholderCpu.addTime(identifier, System.nanoTime()-startTime);
 		return lastValue;
 	}
 }

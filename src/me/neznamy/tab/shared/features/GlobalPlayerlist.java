@@ -89,7 +89,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		//delay because VeLoCiTyPoWeReD
-		Shared.cpu.runTaskLater(100, "processing server switch", "processing server switch", new Runnable() {
+		Shared.featureCpu.runTaskLater(100, "processing server switch", "processing server switch", new Runnable() {
 
 			@Override
 			public void run() {

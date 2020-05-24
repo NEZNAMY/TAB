@@ -46,12 +46,12 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 				spawnArmorStand(all, worldPlayer);
 			}
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam(false);
 			}
 		});
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
@@ -92,7 +92,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		for (int i=0; i<asCount; i++) {
 			armorStandIds[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
 		}
-		Shared.cpu.runMeasuredTask("Processing player quit", "NameTagX - onQuit", new Runnable() {
+		Shared.featureCpu.runMeasuredTask("Processing player quit", "NameTagX - onQuit", new Runnable() {
 
 			@Override
 			public void run() {
@@ -142,7 +142,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (MethodAPI.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			int entity = MethodAPI.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
-			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", "NameTagX - NamedEntitySpawn", new Runnable() {
+			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", "NameTagX - NamedEntitySpawn", new Runnable() {
 				public void run() {
 					spawnArmorStand(spawnedPlayer, receiver);
 				}
@@ -152,7 +152,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			int[] entites = (int[]) MethodAPI.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
 			for (int id : entites) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", "NameTagX - EntityDestroy", new Runnable() {
+				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing EntityDestroy", "NameTagX - EntityDestroy", new Runnable() {
 					public void run() {
 						despawnedPlayer.getArmorStands().forEach(a -> a.destroy(receiver));
 					}
@@ -169,7 +169,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerToggleSneakEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", "NameTagX - PlayerToggleSneakEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerToggleSneakEvent", "NameTagX - PlayerToggleSneakEvent", new Runnable() {
 			public void run() {
 				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
 			}
@@ -180,7 +180,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		if (e.getFrom().getX() == e.getTo().getX() && e.getFrom().getY() == e.getTo().getY() && e.getFrom().getZ() == e.getTo().getZ()) return; //player only moved head
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerMoveEvent", "NameTagX - PlayerMoveEvent", new Runnable() {
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getTo());
@@ -198,7 +198,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerTeleportEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerTeleportEvent", "NameTagX - PlayerTeleportEvent", new Runnable() {
 			public void run() {
 				synchronized (p.armorStands) {
 					for (ArmorStand as : p.armorStands) {

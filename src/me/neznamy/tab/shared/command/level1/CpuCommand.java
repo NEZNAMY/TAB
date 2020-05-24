@@ -20,15 +20,15 @@ public class CpuCommand extends SubCommand {
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		Map<String, Float> placeholders = Shared.cpu.getPlaceholderCPU();
+		Map<String, Float> placeholders = Shared.placeholderCpu.getUsage();
 		float placeholdersTotal = 0;
 		for (Float time : placeholders.values()) placeholdersTotal += time;
 		
-		Map<String, Float> bridgeplaceholders = Shared.cpu.getBridgePlaceholderCPU();
+		Map<String, Float> bridgeplaceholders = Shared.bukkitBridgePlaceholderCpu.getUsage();
 		float bridgeplaceholdersTotal = 0;
 		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
 		
-		Map<String, Float> features = Shared.cpu.getFeatureCPU();
+		Map<String, Float> features = Shared.featureCpu.getUsage();
 		float featuresTotal = 0;
 		for (Float time : features.values()) featuresTotal += time;
 		

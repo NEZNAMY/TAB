@@ -26,7 +26,7 @@ public class BelowName implements SimpleFeature{
 			if (p.disabledBelowname) continue;
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing belowname", "Belowname", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing belowname", "Belowname", new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledBelowname) continue;

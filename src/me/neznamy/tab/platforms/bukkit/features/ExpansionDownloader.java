@@ -17,7 +17,7 @@ public class ExpansionDownloader{
 
 			@Override
 			public void run() {
-				Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+				Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 					@Override
 					public void run() {

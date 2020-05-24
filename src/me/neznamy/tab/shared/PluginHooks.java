@@ -285,7 +285,7 @@ public class PluginHooks {
 		try {
 			long startTime = System.nanoTime();
 			String value = PlaceholderAPI.setRelationalPlaceholders(viewer.getBukkitEntity(), target.getBukkitEntity(), text);
-			Shared.cpu.addPlaceholderTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
+			Shared.placeholderCpu.addTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
 			return value;
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");

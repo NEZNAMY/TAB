@@ -13,7 +13,7 @@ public class NameTag16 implements SimpleFeature{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.registerTeam();
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.disabledNametag) p.updateTeam(false);
@@ -22,7 +22,7 @@ public class NameTag16 implements SimpleFeature{
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags - invisfix", new Runnable() {
+			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags - invisfix", new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
 				}

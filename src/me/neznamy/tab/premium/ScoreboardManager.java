@@ -62,7 +62,7 @@ public class ScoreboardManager implements SimpleFeature{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
-		Shared.cpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", "Scoreboard", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", "Scoreboard", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					Scoreboard board = p.getActiveScoreboard();

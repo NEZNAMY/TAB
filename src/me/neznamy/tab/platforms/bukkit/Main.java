@@ -113,7 +113,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			inject(e.getPlayer().getUniqueId());
-			Shared.cpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
+			Shared.featureCpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
 
 				public void run() {
 					Shared.features.values().forEach(f -> f.onJoin(p));

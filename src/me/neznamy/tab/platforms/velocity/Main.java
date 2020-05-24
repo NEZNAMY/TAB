@@ -142,7 +142,7 @@ public class Main implements MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise
-				Shared.cpu.runTaskLater(50, "processing join", "onJoin handle", new Runnable() {
+				Shared.featureCpu.runTaskLater(50, "processing join", "onJoin handle", new Runnable() {
 
 					@Override
 					public void run() {
@@ -196,7 +196,7 @@ public class Main implements MainClass{
 							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
-								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
 /*							PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) customPacket;
 							if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {

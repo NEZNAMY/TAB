@@ -37,11 +37,11 @@ public class Injector1_7 {
 					if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 						//nametag anti-override
 						if (Shared.features.containsKey("nametag16") && Main.killPacket(packet)) {
-							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
+							Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
 							return;
 						}
 					}
-					Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
+					Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when reading packets", e);
 				}

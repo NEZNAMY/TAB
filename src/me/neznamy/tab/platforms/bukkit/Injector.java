@@ -43,7 +43,7 @@ public class Injector {
 								} catch (Throwable e) {
 									Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
 								}
-								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
 						}
 					} catch (Throwable e){
@@ -68,11 +68,11 @@ public class Injector {
 							if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								//nametag anti-override
 								if (Main.killPacket(packet)) {
-									Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
+									Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
 									return;
 								}
 							}
-							Shared.cpu.addFeatureTime("Nametag anti-override", System.nanoTime()-time);
+							Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
 						}
 
 						for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
@@ -82,7 +82,7 @@ public class Injector {
 							} catch (Throwable e) {
 								Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
 							}
-							Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 						}
 
 						UniversalPacketPlayOut customPacket = null;
@@ -91,7 +91,7 @@ public class Injector {
 							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
 								long time = System.nanoTime();
 								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
-								Shared.cpu.addFeatureTime(f.getCPUName(), System.nanoTime()-time);
+								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
 							if (customPacket != null) packet = customPacket.toNMS(player.getVersion());
 							else packet = null;

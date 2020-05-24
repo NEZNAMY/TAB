@@ -17,14 +17,8 @@ public class CPUManager {
 	private static final int bufferSizeMillis = 100;
 	private static final int dataMemorySize = 600;
 	
-	private ConcurrentMap<String, Long> placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> placeholdersLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
-	
-	private ConcurrentMap<String, Long> bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> bridgePlaceholdersLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
-	
-	private ConcurrentMap<String, Long> featuresLastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> featuresLastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
+	private ConcurrentMap<String, Long> lastSecond = new ConcurrentHashMap<String, Long>();
+	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 
 	private ExecutorService exe = Executors.newCachedThreadPool();
 	
@@ -36,19 +30,12 @@ public class CPUManager {
 				try {
 					while (true) {
 						Thread.sleep(bufferSizeMillis);
-						placeholdersLastMinute.add(placeholdersLastSecond);
-						placeholdersLastSecond = new ConcurrentHashMap<String, Long>();
-						if (placeholdersLastMinute.size() > dataMemorySize) placeholdersLastMinute.remove(0);
-						
-						bridgePlaceholdersLastMinute.add(bridgePlaceholdersLastSecond);
-						bridgePlaceholdersLastSecond = new ConcurrentHashMap<String, Long>();
-						if (bridgePlaceholdersLastMinute.size() > dataMemorySize) bridgePlaceholdersLastMinute.remove(0);
-						
-						featuresLastMinute.add(featuresLastSecond);
-						featuresLastSecond = new ConcurrentHashMap<String, Long>();
-						if (featuresLastMinute.size() > dataMemorySize) featuresLastMinute.remove(0);
+						lastMinute.add(lastSecond);
+						lastSecond = new ConcurrentHashMap<String, Long>();
+						if (lastMinute.size() > dataMemorySize) lastMinute.remove(0);
 					}
-				} catch (Exception e) {
+				} catch (InterruptedException pluginDisabled) {
+					
 				}
 			}
 		});
@@ -64,7 +51,7 @@ public class CPUManager {
 				try {
 					long time = System.nanoTime();
 					task.run();
-					addFeatureTime(feature, System.nanoTime()-time);
+					addTime(feature, System.nanoTime()-time);
 				} catch (Throwable t) {
 					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
 				}
@@ -99,7 +86,7 @@ public class CPUManager {
 						lastLoop = System.currentTimeMillis();
 						long time = System.nanoTime();
 						task.run();
-						addFeatureTime(feature, System.nanoTime()-time);
+						addTime(feature, System.nanoTime()-time);
 					} catch (InterruptedException pluginDisabled) {
 						break;
 					} catch (Throwable t) {
@@ -117,7 +104,7 @@ public class CPUManager {
 					Thread.sleep(delayMilliseconds);
 					long time = System.nanoTime();
 					task.run();
-					addFeatureTime(feature, System.nanoTime()-time);
+					addTime(feature, System.nanoTime()-time);
 				} catch (InterruptedException pluginDisabled) {
 				} catch (Throwable t) {
 					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
@@ -125,29 +112,11 @@ public class CPUManager {
 			}
 		});
 	}
-	public Map<String, Float> getFeatureCPU(){
-		return getCPU(featuresLastMinute);
-	}
-	public Map<String, Float> getPlaceholderCPU(){
-		return getCPU(placeholdersLastMinute);
-	}
-	public Map<String, Float> getBridgePlaceholderCPU(){
-		return getCPU(bridgePlaceholdersLastMinute);
-	}
-	public void addFeatureTime(String feature, long nanoseconds) {
-		addTime(featuresLastSecond, feature, nanoseconds);
-	}
-	public void addPlaceholderTime(String placeholder, long nanoseconds) {
-		addTime(placeholdersLastSecond, placeholder, nanoseconds);
-	}
-	public void addBridgePlaceholderTime(String placeholder, long nanoseconds) {
-		addTime(bridgePlaceholdersLastSecond, placeholder, nanoseconds);
-	}
-	private Map<String, Float> getCPU(List<ConcurrentMap<String, Long>> source){
+	public Map<String, Float> getUsage(){
 		Map<String, Long> nanoMap = new HashMap<String, Long>();
 		String key;
-		synchronized (source) {
-			for (ConcurrentMap<String, Long> second : source) {
+		synchronized (lastMinute) {
+			for (ConcurrentMap<String, Long> second : lastMinute) {
 				for (Entry<String, Long> nanos : second.entrySet()) {
 					key = nanos.getKey();
 					if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
@@ -160,7 +129,7 @@ public class CPUManager {
 		float percent;
 		for (Entry<String, Long> entry : nanoMap.entrySet()) {
 			nanotime = entry.getValue(); //nano seconds total (last minute)
-			nanotime /= featuresLastMinute.size(); //average nanoseconds per buffer (0.1 second)
+			nanotime /= lastMinute.size(); //average nanoseconds per buffer (0.1 second)
 			percent = (float) nanotime / bufferSizeMillis / 1000000; //relative usage (0-1)
 			percent *= 100; //relative into %
 			percentMap.put(entry.getKey(), percent);
@@ -177,8 +146,8 @@ public class CPUManager {
 		}
 		return result;
 	}
-	private synchronized void addTime(ConcurrentMap<String, Long> map, String key, long nanoseconds) {
-		if (!map.containsKey(key)) map.put(key, 0L);
-		map.put(key, map.get(key)+nanoseconds);
+	public synchronized void addTime(String key, long nanoseconds) {
+		if (!lastSecond.containsKey(key)) lastSecond.put(key, 0L);
+		lastSecond.put(key, lastSecond.get(key)+nanoseconds);
 	}
 }

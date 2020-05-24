@@ -26,7 +26,7 @@ public class AnnounceBarCommand extends SubCommand{
 				int duration;
 				try {
 					duration = Integer.parseInt(args[1]);
-					Shared.cpu.runMeasuredTask("announcing bossbar", "BossBar", new Runnable() {
+					Shared.featureCpu.runMeasuredTask("announcing bossbar", "BossBar", new Runnable() {
 
 						public void run() {
 							try {
