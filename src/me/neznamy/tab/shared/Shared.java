@@ -71,10 +71,10 @@ public class Shared {
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
+			errorManager = new ErrorManager();
 			featureCpu = new CPUManager();
 			placeholderCpu = new CPUManager();
 			bukkitBridgePlaceholderCpu = new CPUManager();
-			errorManager = new ErrorManager();
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
 			features.values().forEach(f -> f.load());
