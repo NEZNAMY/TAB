@@ -227,6 +227,15 @@ public class Main extends Plugin implements Listener, MainClass{
 					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
 				}
 			});
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
+				public String get() {
+					int count = 0;
+					for (ITabPlayer all : Shared.getPlayers()) {
+						if (!PluginHooks._isVanished(all) && all.isStaff()) count++;
+					}
+					return count+"";
+				}
+			});
 		}
 		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
