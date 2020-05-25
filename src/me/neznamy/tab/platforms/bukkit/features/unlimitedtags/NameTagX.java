@@ -116,7 +116,6 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		restartArmorStands(p);
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
@@ -147,12 +146,10 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : Premium.dynamicLines) {
 			Property p = pl.properties.get(line);
-			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			pl.armorStands.add(new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
 			Property p = pl.properties.get(line.getKey());
-			if (p == null || p.getCurrentRawValue().length() == 0) continue;
 			pl.armorStands.add(new ArmorStand(pl, p, line.getValue(), true));
 		}
 		fixArmorStandHeights(pl);
