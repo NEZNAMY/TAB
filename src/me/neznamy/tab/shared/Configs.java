@@ -33,7 +33,7 @@ public class Configs {
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
 	public static double SECRET_NTX_space;
-	public static int SECRET_relational_placeholders_refresh;
+	public static float SECRET_relational_placeholders_refresh;
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_safe_register;
 	public static boolean SECRET_remove_ghost_players;
@@ -86,7 +86,7 @@ public class Configs {
 		}
 		Placeholders.clearAll();
 		loadConfig();
-		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30);
+		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30f);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_safe_register = getSecretOption("safe-team-register", true);

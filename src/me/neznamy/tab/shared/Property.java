@@ -104,7 +104,7 @@ public class Property {
 		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}
-		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > Configs.SECRET_relational_placeholders_refresh *1000)) {
+		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > (float) Configs.SECRET_relational_placeholders_refresh *1000)) {
 			lastReplacedValue = string;
 			lastUpdate = System.currentTimeMillis();
 			return true;
