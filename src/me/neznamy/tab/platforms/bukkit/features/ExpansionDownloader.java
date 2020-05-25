@@ -28,7 +28,7 @@ public class ExpansionDownloader{
 							Main.usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
 							Shared.debug("Expansions to install: " + Main.usedExpansions);
 							if (!Main.usedExpansions.isEmpty()) {
-								File expansionsFolder = new File("plugins" + File.separatorChar + "PlaceholderAPI" + File.separatorChar + "expansions");
+								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
 								for (String expansion : Main.usedExpansions) {
 									instance.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
