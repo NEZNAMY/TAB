@@ -243,6 +243,24 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		});
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void a(PlayerRespawnEvent e) {
+		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) return;
+		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerRespawnEvent", "NameTagX - PlayerRespawnEvent", new Runnable() {
+			public void run() {
+				for (ArmorStand as : p.getArmorStands()) {
+					as.updateLocation(e.getRespawnLocation());
+					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
+					synchronized (nearbyPlayers){
+						for (ITabPlayer nearby : nearbyPlayers) {
+							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+						}
+					}
+				}
+			}
+		});
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerTeleportEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
