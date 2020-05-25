@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -246,7 +247,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	public void a(PlayerRespawnEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (!p.disabledNametag) Shared.cpu.runMeasuredTask("processing PlayerRespawnEvent", "NameTagX - PlayerRespawnEvent", new Runnable() {
+		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerRespawnEvent", "NameTagX - PlayerRespawnEvent", new Runnable() {
 			public void run() {
 				for (ArmorStand as : p.getArmorStands()) {
 					as.updateLocation(e.getRespawnLocation());
