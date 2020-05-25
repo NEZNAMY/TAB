@@ -59,7 +59,10 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
 				playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
-				playerInfoData.name = packetPlayer.getName();
+				if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
+					//preventing plugins from changing player name as nametag feature would not work correctly
+					playerInfoData.name = packetPlayer.getName();
+				}
 			}
 			if (ADD) {
 				if (packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
