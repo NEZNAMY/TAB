@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TABAPI;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -67,9 +67,6 @@ public abstract class ITabPlayer {
 	}
 
 	//bukkit only
-	public void setTeamVisible(boolean p0) {
-	}
-
 	public boolean hasInvisibility() {
 		return false;
 	}
@@ -222,24 +219,6 @@ public abstract class ITabPlayer {
 			unregisterTeam();
 			teamName = newName;
 			registerTeam();
-		}
-		if (Shared.features.containsKey("nametagx")) {
-			synchronized(armorStands) {
-				armorStands.forEach(a -> a.refreshName());
-				fixArmorStandHeights();
-			}
-		}
-	}
-
-	public void fixArmorStandHeights() {
-		armorStands.forEach(a -> a.refreshName());
-		double currentY = -Configs.SECRET_NTX_space;;
-		for (ArmorStand as : getArmorStands()) {
-			if (as.hasStaticOffset()) continue;
-			if (as.property.get().length() != 0) {
-				currentY += Configs.SECRET_NTX_space;
-				as.setOffset(currentY);
-			}
 		}
 	}
 	
@@ -584,7 +563,7 @@ public abstract class ITabPlayer {
 				registerTeam();
 			}
 		}
-		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((TabPlayer)this).restartArmorStands();
+		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((NameTagX)Shared.features.get("nametagx")).restartArmorStands(this);
 	}
 	public boolean isConnected() {
 		return connected;

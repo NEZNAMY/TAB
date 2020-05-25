@@ -13,7 +13,9 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 
 public class TabPlayer extends ITabPlayer{
-
+	
+	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
+	
 	private ProxiedPlayer player;
 
 	public TabPlayer(ProxiedPlayer p) throws Exception {
@@ -30,6 +32,7 @@ public class TabPlayer extends ITabPlayer{
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 		init();
 	}
+	@Override
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 		if (PluginHooks.ultrapermissions) {
@@ -41,30 +44,34 @@ public class TabPlayer extends ITabPlayer{
 		String[] groups = player.getGroups().toArray(new String[0]);
 		return groups[groups.length-1];
 	}
+	@Override
 	public String[] getGroupsFromPermPlugin() {
 		return new String[] {getGroupFromPermPlugin()};
 	}
+	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
+	@Override
 	public long getPing() {
 		return player.getPing();
 	}
+	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
 	}
+	@Override
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(Placeholders.color(message));
 	}
+	@Override
 	@SuppressWarnings("deprecation")
 	public void sendRawMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(message);
 	}
-	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
-
 	@Override
 	public Object getSkin() {
 		LoginResult loginResult = ((InitialHandler)player.getPendingConnection()).getLoginProfile();

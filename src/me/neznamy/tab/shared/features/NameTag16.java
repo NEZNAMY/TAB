@@ -24,7 +24,13 @@ public class NameTag16 implements SimpleFeature{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
 			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags - invisfix", new Runnable() {
 				public void run() {
-					for (ITabPlayer p : Shared.getPlayers()) p.setTeamVisible(!p.hasInvisibility());
+					for (ITabPlayer p : Shared.getPlayers()) {
+						boolean visible = !p.hasInvisibility();
+						if (p.nameTagVisible != visible) {
+							p.nameTagVisible = visible;
+							p.updateTeam(false);
+						}
+					}
 				}
 			});
 	}

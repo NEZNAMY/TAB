@@ -24,26 +24,33 @@ public class TabPlayer extends ITabPlayer{
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
 		init();
 	}
+	@Override
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 		return "null";
 	}
+	@Override
 	public String[] getGroupsFromPermPlugin() {
 		return new String[] {getGroupFromPermPlugin()};
 	}
+	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
+	@Override
 	public long getPing() {
 		return player.getPing();
 	}
+	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
 	}
+	@Override
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(Placeholders.color(message)));
 	}
+	@Override
 	public void sendRawMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(TextComponent.of(message));

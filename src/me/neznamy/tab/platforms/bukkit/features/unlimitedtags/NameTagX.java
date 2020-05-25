@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -12,11 +13,12 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
@@ -48,7 +50,13 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 		}
 		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) p.updateTeam(false);
+				for (ITabPlayer p : Shared.getPlayers()) {
+					p.updateTeam(false);
+					synchronized(p.armorStands) {
+						p.armorStands.forEach(a -> a.refreshName());
+						fixArmorStandHeights(p);
+					}
+				}
 			}
 		});
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags", new Runnable() {
@@ -78,7 +86,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			if (all == connectedPlayer) continue; //already registered 2 lines above
 			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
 		}
-		((TabPlayer)connectedPlayer).loadArmorStands();
+		loadArmorStands(connectedPlayer);
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
@@ -108,13 +116,56 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		((TabPlayer)p).restartArmorStands();
+		restartArmorStands(p);
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
 			p.updateTeam(true);
+			synchronized(p.armorStands) {
+				p.armorStands.forEach(a -> a.refreshName());
+				fixArmorStandHeights(p);
+			}
+		}
+	}
+	public void restartArmorStands(ITabPlayer p) {
+		p.getArmorStands().forEach(a -> a.destroy());
+		p.armorStands.clear();
+		if (p.disabledNametag) return;
+		loadArmorStands(p);
+		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
+			if (p == worldPlayer) continue;
+			if (!worldPlayer.getWorldName().equals(p.getWorldName())) continue;
+			NameTagX.spawnArmorStand(p, worldPlayer);
+		}
+		if (p.previewingNametag) NameTagX.spawnArmorStand(p, p);
+	}
+	public void loadArmorStands(ITabPlayer pl) {
+		pl.armorStands.clear();
+		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
+		double height = -Configs.SECRET_NTX_space;
+		for (String line : Premium.dynamicLines) {
+			Property p = pl.properties.get(line);
+			if (p == null || p.getCurrentRawValue().length() == 0) continue;
+			pl.armorStands.add(new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
+		}
+		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
+			Property p = pl.properties.get(line.getKey());
+			if (p == null || p.getCurrentRawValue().length() == 0) continue;
+			pl.armorStands.add(new ArmorStand(pl, p, line.getValue(), true));
+		}
+		fixArmorStandHeights(pl);
+	}
+	public void fixArmorStandHeights(ITabPlayer p) {
+		p.armorStands.forEach(a -> a.refreshName());
+		double currentY = -Configs.SECRET_NTX_space;;
+		for (ArmorStand as : p.getArmorStands()) {
+			if (as.hasStaticOffset()) continue;
+			if (as.property.get().length() != 0) {
+				currentY += Configs.SECRET_NTX_space;
+				as.setOffset(currentY);
+			}
 		}
 	}
 	@Override

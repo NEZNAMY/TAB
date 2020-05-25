@@ -1,20 +1,13 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.Map.Entry;
-
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -42,6 +35,7 @@ public class TabPlayer extends ITabPlayer{
 		nameTagVisible = !hasInvisibility();
 		init();
 	}
+	@Override
 	public String getGroupFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
 		if (PluginHooks.permissionsEx) {
@@ -58,6 +52,7 @@ public class TabPlayer extends ITabPlayer{
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		return "null";
 	}
+	@Override
 	public String[] getGroupsFromPermPlugin() {
 		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
 		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
@@ -67,55 +62,25 @@ public class TabPlayer extends ITabPlayer{
 		return new String[] {"null"};
 	}
 	@Override
-	public void setTeamVisible(boolean visible) {
-		if (nameTagVisible != visible) {
-			nameTagVisible = visible;
-			updateTeam(false);
-		}
-	}
-	public void restartArmorStands() {
-		getArmorStands().forEach(a -> a.destroy());
-		armorStands.clear();
-		if (disabledNametag) return;
-		loadArmorStands();
-		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
-			if (this == worldPlayer) continue;
-			if (!worldPlayer.getWorldName().equals(getWorldName())) continue;
-			NameTagX.spawnArmorStand(this, worldPlayer);
-		}
-		if (previewingNametag) NameTagX.spawnArmorStand(this, this);
-	}
-	public void loadArmorStands() {
-		armorStands.clear();
-		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
-		double height = -Configs.SECRET_NTX_space;
-		for (String line : Premium.dynamicLines) {
-			Property p = properties.get(line);
-			if (p == null || p.getCurrentRawValue().length() == 0) continue;
-			armorStands.add(new ArmorStand(this, p, height+=Configs.SECRET_NTX_space, false));
-		}
-		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
-			Property p = properties.get(line.getKey());
-			if (p == null || p.getCurrentRawValue().length() == 0) continue;
-			armorStands.add(new ArmorStand(this, p, line.getValue(), true));
-		}
-		fixArmorStandHeights();
-	}
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
+	@Override
 	public long getPing() {
 		int ping = MethodAPI.getInstance().getPing(player);
 		if (ping > 10000 || ping < 0) ping = -1;
 		return ping;
 	}
+	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) MethodAPI.getInstance().sendPacket(player, nmsPacket);
 	}
+	@Override
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(Placeholders.color(message));
 	}
+	@Override
 	public void sendRawMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(message);
