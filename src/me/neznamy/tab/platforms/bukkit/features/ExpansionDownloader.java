@@ -32,24 +32,12 @@ public class ExpansionDownloader{
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
 								for (String expansion : Main.usedExpansions) {
 									instance.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
-									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
-
-										@Override
-										public void run() {
-											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi ecloud download " + expansion);
-										}
-									});
+									runSyncCommand("papi ecloud download " + expansion);
 									Thread.sleep(5000);
 								}
 								if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
 									instance.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
-									Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable() {
-
-										@Override
-										public void run() {
-											Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "papi reload");
-										}
-									});
+									runSyncCommand("papi reload");
 								}
 							}
 						} catch (InterruptedException | ConcurrentModificationException e) {
@@ -61,5 +49,14 @@ public class ExpansionDownloader{
 			}
 			
 		}, 1);
+	}
+	public void runSyncCommand(String command) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.instance, new Runnable() {
+
+			@Override
+			public void run() {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+			}
+		});
 	}
 }
