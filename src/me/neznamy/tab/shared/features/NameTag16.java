@@ -59,9 +59,22 @@ public class NameTag16 implements SimpleFeature{
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			for (ITabPlayer all : Shared.getPlayers()) {
-				all.unregisterTeam(p);
-				all.registerTeam(p);
+			if (Shared.separatorType.equals("server")) {
+				Shared.featureCpu.runTaskLater(100, "processing server switch", "NameTags", new Runnable() {
+
+					@Override
+					public void run() {
+						for (ITabPlayer all : Shared.getPlayers()) {
+							all.unregisterTeam(p);
+							all.registerTeam(p);
+						}
+					}
+				});
+			} else {
+				for (ITabPlayer all : Shared.getPlayers()) {
+					all.unregisterTeam(p);
+					all.registerTeam(p);
+				}
 			}
 		}
 	}
