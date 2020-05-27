@@ -44,7 +44,7 @@ public class PluginMessenger implements Listener {
 				String placeholder = in.readUTF();
 				String output = in.readUTF();
 				long cpu = in.readLong();
-				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.myPlaceholders.get(placeholder); //all bridge placeholders are marked as player
+				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getUsedPlaceholder(placeholder); //all bridge placeholders are marked as player
 				if (pl != null) {
 					pl.lastValue.put(receiver.getName(), output);
 					pl.lastValue.put("null", output);

@@ -52,6 +52,7 @@ public class TABAPI {
 	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
 		ITabPlayer p = Shared.getPlayer(player);
 		if (p == null) return;
+		Placeholders.checkForRegistration(value);
 		p.properties.get(type.toString()).setTemporaryValue(value);
 		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
 			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
@@ -70,6 +71,7 @@ public class TABAPI {
 	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
 		ITabPlayer p = Shared.getPlayer(player);
 		if (p == null) return;
+		Placeholders.checkForRegistration(value);
 		p.properties.get(type.toString()).changeRawValue(value);
 		PlayerCommand.savePlayer(null, p.getName(), type.toString(), value);
 		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
@@ -197,7 +199,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		Placeholders.registerPlaceholder(placeholder, true);
+		Placeholders.registerAPIPlaceholder(placeholder);
 	}
 	
 	
@@ -209,7 +211,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		Placeholders.registerPlaceholder(placeholder, true);
+		Placeholders.registerAPIPlaceholder(placeholder);
 	}
 	
 	
@@ -221,7 +223,7 @@ public class TABAPI {
 	 * @see registerServerPlaceholder
 	 */
 	public static void registerServerConstant(ServerConstant constant) {
-		Placeholders.registerPlaceholder(constant, true);
+		Placeholders.registerAPIPlaceholder(constant);
 	}
 	
 	@Deprecated

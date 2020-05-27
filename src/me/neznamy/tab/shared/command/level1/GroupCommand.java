@@ -77,11 +77,7 @@ public class GroupCommand extends SubCommand {
 		if (value.length() == 0) value = null;
 		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value);
 		Configs.config.save();
-		for (String identifier : Placeholders.detectAll(value)) {
-			if (Placeholders.usedPlaceholders.containsKey(identifier)) continue;
-			if (!Placeholders.allUsedPlaceholders.contains(identifier)) Placeholders.allUsedPlaceholders.add(identifier);
-			Placeholders.categorizeUsedPlaceholder(identifier);
-		}
+		Placeholders.checkForRegistration(value);
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.updateAll();

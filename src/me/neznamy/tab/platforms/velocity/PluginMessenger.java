@@ -50,7 +50,7 @@ public class PluginMessenger{
 				String placeholder = in.readUTF();
 				String output = in.readUTF();
 				long cpu = in.readLong();
-				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.myPlaceholders.get(placeholder); //all bridge placeholders are marked as player
+				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getUsedPlaceholder(placeholder); //all bridge placeholders are marked as player
 				if (pl != null) {
 					pl.lastValue.put(receiver.getName(), output);
 					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());

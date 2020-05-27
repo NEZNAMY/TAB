@@ -78,11 +78,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
 		Configs.config.save();
-		for (String identifier : Placeholders.detectAll(value)) {
-			if (Placeholders.usedPlaceholders.containsKey(identifier)) continue;
-			if (!Placeholders.allUsedPlaceholders.contains(identifier)) Placeholders.allUsedPlaceholders.add(identifier);
-			Placeholders.categorizeUsedPlaceholder(identifier);
-		}
+		Placeholders.checkForRegistration(value);
 		player.updateAll();
 		player.forceUpdateDisplay();
 		if (value != null){

@@ -77,11 +77,7 @@ public class PlayerCommand extends SubCommand {
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player + "." + type, value);
 		Configs.config.save();
-		for (String identifier : Placeholders.detectAll(value)) {
-			if (Placeholders.usedPlaceholders.containsKey(identifier)) continue;
-			if (!Placeholders.allUsedPlaceholders.contains(identifier)) Placeholders.allUsedPlaceholders.add(identifier);
-			Placeholders.categorizeUsedPlaceholder(identifier);
-		}
+		Placeholders.checkForRegistration(value);
 		if (pl != null) {
 			pl.updateAll();
 			pl.forceUpdateDisplay();

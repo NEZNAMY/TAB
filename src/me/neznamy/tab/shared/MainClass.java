@@ -41,7 +41,7 @@ public interface MainClass {
 		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
 	}
 	public default void suggestPlaceholderSwitch(String from, String to) {
-		if (Placeholders.allUsedPlaceholders.contains(from)) {
+		if (Placeholders.allUsedPlaceholderIdentifiers.contains(from)) {
 			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
 		}
 	}
