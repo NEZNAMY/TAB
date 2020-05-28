@@ -82,7 +82,7 @@ public class PacketAPI{
 		to.setProperty("bossbar-color-"+bar.getName(), bar.color, null);
 		to.setProperty("bossbar-style-"+bar.getName(), bar.style, null);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), 
+			to.sendCustomPacket(PacketPlayOutBoss.CREATE(bar.getUniqueId(), 
 					to.properties.get("bossbar-text-"+bar.getName()).get(), 
 					(float)bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get())/100, 
 					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
@@ -105,7 +105,7 @@ public class PacketAPI{
 	}
 	public static void removeBossBar(ITabPlayer to, BossBarLine bar) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId()));
+			to.sendCustomPacket(PacketPlayOutBoss.REMOVE(bar.getUniqueId()));
 		} else {
 			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(bar.getEntityId()));
 		}
@@ -120,13 +120,13 @@ public class PacketAPI{
 			boolean colorUpdate = color.isUpdateNeeded();
 			boolean styleUpdate = style.isUpdateNeeded();
 			if (colorUpdate || styleUpdate) {
-				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())));
+				to.sendCustomPacket(PacketPlayOutBoss.UPDATE_STYLE(bar.getUniqueId(), bar.parseColor(color.get()), bar.parseStyle(style.get())));
 			}
 			if (progress.isUpdateNeeded()) {
-				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), (float)bar.parseProgress(progress.get())/100));
+				to.sendCustomPacket(PacketPlayOutBoss.UPDATE_PCT(bar.getUniqueId(), (float)bar.parseProgress(progress.get())/100));
 			}
 			if (text.isUpdateNeeded()) {
-				to.sendCustomPacket(new PacketPlayOutBoss(bar.getUniqueId(), text.get()));
+				to.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(bar.getUniqueId(), text.get()));
 			}
 		} else {
 			DataWatcher w = new DataWatcher(null);

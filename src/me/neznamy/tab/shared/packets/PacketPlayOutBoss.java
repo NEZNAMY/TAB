@@ -21,46 +21,68 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	private boolean playMusic;
 	private boolean createWorldFog;
 
-	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
-		this(id, name, pct, color, overlay, false, false, false);
+	private PacketPlayOutBoss() {
+		
 	}
-	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		this.operation = Action.ADD;
-		this.id = id;
-		this.name = name;
-		this.pct = pct;
-		this.color = color;
-		this.overlay = overlay;
-		this.darkenScreen = darkenScreen;
-		this.playMusic = playMusic;
-		this.createWorldFog = createWorldFog;
+	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.ADD;
+		packet.id = id;
+		packet.name = name;
+		packet.pct = pct;
+		packet.color = color;
+		packet.overlay = overlay;
+		packet.darkenScreen = darkenScreen;
+		packet.playMusic = playMusic;
+		packet.createWorldFog = createWorldFog;
+		return packet;
 	}
-	public PacketPlayOutBoss(UUID id) {
-		this.operation = Action.REMOVE;
-		this.id = id;
+	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.ADD;
+		packet.id = id;
+		packet.name = name;
+		packet.pct = pct;
+		packet.color = color;
+		packet.overlay = overlay;
+		return packet;
 	}
-	public PacketPlayOutBoss(UUID id, float pct) {
-		this.operation = Action.UPDATE_PCT;
-		this.id = id;
-		this.pct = pct;
+	public static PacketPlayOutBoss REMOVE(UUID id) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.REMOVE;
+		packet.id = id;
+		return packet;
 	}
-	public PacketPlayOutBoss(UUID id, String name) {
-		this.operation = Action.UPDATE_NAME;
-		this.id = id;
-		this.name = name;
+	public static PacketPlayOutBoss UPDATE_PCT(UUID id, float pct) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.UPDATE_PCT;
+		packet.id = id;
+		packet.pct = pct;
+		return packet;
 	}
-	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
-		this.operation = Action.UPDATE_STYLE;
-		this.id = id;
-		this.color = color;
-		this.overlay = overlay;
+	public static PacketPlayOutBoss UPDATE_NAME(UUID id, String name) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.UPDATE_NAME;
+		packet.id = id;
+		packet.name = name;
+		return packet;
 	}
-	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		this.operation = Action.UPDATE_PROPERTIES;
-		this.id = id;
-		this.darkenScreen = darkenScreen;
-		this.playMusic = playMusic;
-		this.createWorldFog = createWorldFog;
+	public static PacketPlayOutBoss UPDATE_STYLE(UUID id, BarColor color, BarStyle overlay) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.UPDATE_STYLE;
+		packet.id = id;
+		packet.color = color;
+		packet.overlay = overlay;
+		return packet;
+	}
+	public static PacketPlayOutBoss UPDATE_PROPERTIES(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+		PacketPlayOutBoss packet = new PacketPlayOutBoss();
+		packet.operation = Action.UPDATE_PROPERTIES;
+		packet.id = id;
+		packet.darkenScreen = darkenScreen;
+		packet.playMusic = playMusic;
+		packet.createWorldFog = createWorldFog;
+		return packet;
 	}
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
