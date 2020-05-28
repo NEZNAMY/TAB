@@ -61,7 +61,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							if (sender.hasPermission("tab.admin")) {
 								sender.sendMessage(Placeholders.color("&m                                                                                "));
 								if (Configs.bukkitBridgeMode) sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
-								if (Shared.disabled) sender.sendMessage(Placeholders.color(" &4&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
+								if (Shared.disabled) sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
 								sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
 								sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
 								sender.sendMessage(Placeholders.color("&m                                                                                "));

@@ -60,7 +60,7 @@ public class Main extends Plugin implements Listener, MainClass{
 					} else {
 						if (sender.hasPermission("tab.admin")) {
 							sender.sendMessage(Placeholders.color("&m                                                                                "));
-							sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
+							sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
 							sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
 							sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
 							sender.sendMessage(Placeholders.color("&m                                                                                "));
