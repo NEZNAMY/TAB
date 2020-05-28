@@ -88,7 +88,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
-	private static Field ENTITYID = fields.get("a");
+	private static Field ENTITYID = getField(fields, "a");
 	private static Field UUID = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, UUID.class), 0);
 	private static Field ENTITYTYPE;
 	private static Field X;
@@ -115,27 +115,27 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		}
 
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			ENTITYTYPE = fields.get("c");
-			X = fields.get("d");
-			Y = fields.get("e");
-			Z = fields.get("f");
-			MOTX = fields.get("g");
-			MOTY = fields.get("h");
-			MOTZ = fields.get("i");
-			YAW = fields.get("j");
-			PITCH = fields.get("k");
-			L = fields.get("l");
+			ENTITYTYPE = getField(fields, "c");
+			X = getField(fields, "d");
+			Y = getField(fields, "e");
+			Z = getField(fields, "f");
+			MOTX = getField(fields, "g");
+			MOTY = getField(fields, "h");
+			MOTZ = getField(fields, "i");
+			YAW = getField(fields, "j");
+			PITCH = getField(fields, "k");
+			L = getField(fields, "l");
 		} else {
-			ENTITYTYPE = fields.get("b");
-			X = fields.get("c");
-			Y = fields.get("d");
-			Z = fields.get("e");
-			MOTX = fields.get("f");
-			MOTY = fields.get("g");
-			MOTZ = fields.get("h");
-			YAW = fields.get("i");
-			PITCH = fields.get("j");
-			L = fields.get("k");
+			ENTITYTYPE = getField(fields, "b");
+			X = getField(fields, "c");
+			Y = getField(fields, "d");
+			Z = getField(fields, "e");
+			MOTX = getField(fields, "f");
+			MOTY = getField(fields, "g");
+			MOTZ = getField(fields, "h");
+			YAW = getField(fields, "i");
+			PITCH = getField(fields, "j");
+			L = getField(fields, "k");
 		}
 	}
 }
