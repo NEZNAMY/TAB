@@ -36,13 +36,13 @@ public class PacketAPI{
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.separatorType.equals("world")) {
 			unregisterScoreboardTeam(to, teamName);
 		}
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69));
+		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69));
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
+		to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 	}
 	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", 69));
+		to.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", 69));
 	}
 
 	//scoreboard objective

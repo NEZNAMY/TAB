@@ -22,33 +22,51 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private EnumTeamAction method;
 	private int options;
 
-	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-		this.method = EnumTeamAction.CREATE_TEAM;
-		this.name = team;
-		this.playerPrefix = prefix;
-		this.playerSuffix = suffix;
-		this.nametagVisibility = visibility;
-		this.collisionRule = collision;
-		this.players = players;
-		this.options = options;
+	private PacketPlayOutScoreboardTeam() {
+		
 	}
-	public PacketPlayOutScoreboardTeam(String team) {
-		this.method = EnumTeamAction.REMOVE_TEAM;
-		this.name = team;
+	public static PacketPlayOutScoreboardTeam CREATE_TEAM(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
+		packet.method = EnumTeamAction.CREATE_TEAM;
+		packet.name = team;
+		packet.playerPrefix = prefix;
+		packet.playerSuffix = suffix;
+		packet.nametagVisibility = visibility;
+		packet.collisionRule = collision;
+		packet.players = players;
+		packet.options = options;
+		return packet;
 	}
-	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
-		this.method = EnumTeamAction.UPDATE_TEAM_INFO;
-		this.name = team;
-		this.playerPrefix = prefix;
-		this.playerSuffix = suffix;
-		this.nametagVisibility = visibility;
-		this.collisionRule = collision;
-		this.options = options;
+	public static PacketPlayOutScoreboardTeam REMOVE_TEAM(String team) {
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
+		packet.method = EnumTeamAction.REMOVE_TEAM;
+		packet.name = team;
+		return packet;
 	}
-	public PacketPlayOutScoreboardTeam(String team, Collection<String> players, EnumTeamAction method) {
-		this.method = method;
-		this.name = team;
-		this.players = players;
+	public static PacketPlayOutScoreboardTeam UPDATE_TEAM_INFO(String team, String prefix, String suffix, String visibility, String collision, int options) {
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
+		packet.method = EnumTeamAction.UPDATE_TEAM_INFO;
+		packet.name = team;
+		packet.playerPrefix = prefix;
+		packet.playerSuffix = suffix;
+		packet.nametagVisibility = visibility;
+		packet.collisionRule = collision;
+		packet.options = options;
+		return packet;
+	}
+	public static PacketPlayOutScoreboardTeam ADD_PLAYERS(String team, Collection<String> players) {
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
+		packet.method = EnumTeamAction.ADD_PLAYERS;
+		packet.name = team;
+		packet.players = players;
+		return packet;
+	}
+	public static PacketPlayOutScoreboardTeam REMOVE_PLAYERS(String team, Collection<String> players) {
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
+		packet.method = EnumTeamAction.REMOVE_PLAYERS;
+		packet.name = team;
+		packet.players = players;
+		return packet;
 	}
 	
 	public PacketPlayOutScoreboardTeam setTeamOptions(int options) {
@@ -114,20 +132,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			suffix = cutTo(this.playerSuffix, 16);
 		}
 		return new me.neznamy.tab.platforms.velocity.protocol.Team(name, (byte)method.getNetworkId(), teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
-	}
-	
-	@Override
-	public String toString() {
-		switch(method) {
-		case CREATE_TEAM:
-			return "PacketPlayOutScoreboardTeam{name=" + name + ",playerPrefix=" + playerPrefix + ",playerSuffix=" + playerSuffix + ",nametagVisibility=" + nametagVisibility + ",collisionRule=" + collisionRule + ",players=" + players + ",method=" + method + ",options=" + options + "}";
-		case REMOVE_TEAM:
-			return "PacketPlayOutScoreboardTeam{name=" + name + ",method=" + method + "}";
-		case UPDATE_TEAM_INFO:
-			return "PacketPlayOutScoreboardTeam{name=" + name + ",playerPrefix=" + playerPrefix + ",playerSuffix=" + playerSuffix + ",nametagVisibility=" + nametagVisibility + ",collisionRule=" + collisionRule + ",method=" + method + ",options=" + options + "}";
-		default: 
-			return "PacketPlayOutScoreboardTeam{name=" + name + ",method=" + method + ",players=" + players + "}";
-		}
 	}
 	
 	public enum EnumTeamAction{
