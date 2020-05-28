@@ -147,9 +147,9 @@ public class PluginHooks {
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
 		try {
-			return me.neznamy.tab.platforms.bukkit.Main.LibsDisguises_isDisguised(p); //preventing errors on bungee version
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check if player " + p.getName() + " is disguised using LibsDisguises", t);
+			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Player.class).invoke(null, p.getBukkitEntity());
+		} catch (Exception e) {
+			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using LibsDisguises", e);
 		}
 	}
 	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {

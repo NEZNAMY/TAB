@@ -407,9 +407,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			return Shared.errorManager.printError(new Player[0], "Failed to get online players");
 		}
 	}
-	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
-		return me.libraryaddict.disguise.DisguiseAPI.isDisguised(p.getBukkitEntity());
-	}
 	public static double Vault_getMoney(ITabPlayer p) {
 		return ((Economy)PluginHooks.Vault_economy).getBalance(p.getBukkitEntity());
 	}
