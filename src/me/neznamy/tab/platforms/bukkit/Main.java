@@ -10,7 +10,6 @@ import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import me.neznamy.tab.platforms.bukkit.features.*;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;

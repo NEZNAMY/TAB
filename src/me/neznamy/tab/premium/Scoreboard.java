@@ -3,6 +3,7 @@ package me.neznamy.tab.premium;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -12,7 +13,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class Scoreboard {
+public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 
 	private static final String ObjectiveName = "TAB-Scoreboard";
 	private static final int DisplaySlot = 1;
@@ -26,12 +27,15 @@ public class Scoreboard {
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
 
-	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
-		this.manager = manager;
-		this.name = name;
-		this.title = title;
+	public Scoreboard(String name, String title, List<String> lines, String displayCondition, String childBoard) {
+		this(name, title, lines);
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
+	}
+	public Scoreboard(String name, String title, List<String> lines) {
+		this.manager = (ScoreboardManager) Shared.features.get("scoreboard");
+		this.name = name;
+		this.title = title;
 		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 		for (int i=0; i<lines.size(); i++) {
 			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
@@ -125,6 +129,25 @@ public class Scoreboard {
 			s.updatePrefixSuffix();
 		}
 	}
+	
+	//implementing interface
+	public void sendTo(UUID player) {
+		ITabPlayer p = Shared.getPlayer(player);
+		if  (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
+		p.setActiveScoreboard(this);
+		register(p);
+	}
+	
+	public void removeFrom(UUID player) {
+		ITabPlayer p = Shared.getPlayer(player);
+		p.setActiveScoreboard(null);
+		unregister(p);
+	}
+	
+	
+	
+	
+	
 	public class Score{
 
 		private int score;

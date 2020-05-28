@@ -2,6 +2,8 @@ package me.neznamy.tab.api;
 
 import java.util.*;
 
+import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -224,6 +226,17 @@ public class TABAPI {
 	 */
 	public static void registerServerConstant(ServerConstant constant) {
 		Placeholders.registerAPIPlaceholder(constant);
+	}
+	
+	public static Scoreboard createScoreboard(String title, List<String> lines) {
+		if (!Premium.is()) throw new IllegalArgumentException("Not supported in free version");
+		for (String line : lines) {
+			Placeholders.checkForRegistration(line);
+		}
+		ScoreboardManager sbm = (ScoreboardManager) Shared.features.get("scoreboard");
+		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard("API", title, lines);
+		sbm.APIscoreboards.add((me.neznamy.tab.premium.Scoreboard) sb);
+		return sb;
 	}
 	
 	@Deprecated

@@ -22,6 +22,7 @@ public class ScoreboardManager implements SimpleFeature{
 	public boolean useNumbers;
 	private boolean remember_toggle_choice;
 	private List<String> sb_off_players;
+	public List<Scoreboard> APIscoreboards = new ArrayList<>();
 
 	private String scoreboard_on;
 	private String scoreboard_off;
@@ -57,7 +58,7 @@ public class ScoreboardManager implements SimpleFeature{
 				lines = new ArrayList<String>();
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "lines");
 			}
-			scoreboards.put(scoreboard+"", new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard));
+			scoreboards.put(scoreboard+"", new Scoreboard(scoreboard+"", title, lines, condition, childBoard));
 		}	
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
@@ -66,16 +67,19 @@ public class ScoreboardManager implements SimpleFeature{
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					Scoreboard board = p.getActiveScoreboard();
-					String current = board == null ? null : board.getName();
+					if (board != null && board.getName().equals("API")) continue;
+					String current = board == null ? "null" : board.getName();
 					String highest = getHighestScoreboard(p);
-					if (current == null && highest == null) continue;
-					if ((current == null && highest != null) || (current != null && highest == null) || (!current.equals(highest))) {
+					if (!current.equals(highest)) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 						p.setActiveScoreboard(null);
 						send(p);
 					}
 				}
 				for (Scoreboard board : scoreboards.values()) {
+					board.refresh();
+				}
+				for (Scoreboard board : APIscoreboards) {
 					board.refresh();
 				}
 			}
@@ -118,8 +122,8 @@ public class ScoreboardManager implements SimpleFeature{
 			} else {
 				p.getActiveScoreboard().getRegisteredUsers().remove(p);
 			}
+			p.setActiveScoreboard(null);
 		}
-		p.setActiveScoreboard(null);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
@@ -133,7 +137,7 @@ public class ScoreboardManager implements SimpleFeature{
 			Scoreboard board = scoreboards.get(scoreboard);
 			while (board != null && !board.isConditionMet(p)) {
 				board = scoreboards.get(board.getChildScoreboard());
-				if (board == null) return null;
+				if (board == null) return "null";
 				scoreboard = board.getName();
 			}
 		}

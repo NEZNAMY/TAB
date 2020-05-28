@@ -245,7 +245,10 @@ public class Placeholders {
 	public static void categorizeUsedPlaceholder(String placeholder) {
 		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
 
-		if (registeredInternalPlaceholders.containsKey(placeholder)) return;
+		if (registeredInternalPlaceholders.containsKey(placeholder)) {
+			usedPlaceholders.put(placeholder, registeredInternalPlaceholders.get(placeholder));
+			return;
+		}
 		
 		if (placeholder.contains("animation:")) {
 			//animation
@@ -285,10 +288,9 @@ public class Placeholders {
 	}
 	
 	public static void checkForRegistration(String text) {
-		for (String identifier : Placeholders.detectAll(text)) {
-			if (Placeholders.usedPlaceholders.containsKey(identifier)) continue;
-			if (!Placeholders.allUsedPlaceholderIdentifiers.contains(identifier)) Placeholders.allUsedPlaceholderIdentifiers.add(identifier);
-			Placeholders.categorizeUsedPlaceholder(identifier);
+		for (String identifier : detectAll(text)) {
+			if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);
+			categorizeUsedPlaceholder(identifier);
 		}
 	}
 }
