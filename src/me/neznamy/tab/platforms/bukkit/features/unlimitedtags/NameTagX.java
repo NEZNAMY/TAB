@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -91,26 +92,29 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
-		for (ITabPlayer all : Shared.getPlayers()) {
-			all.getArmorStands().forEach(a -> a.removeFromRegistered(disconnectedPlayer));
-		}
-		disconnectedPlayer.getArmorStands().forEach(a -> a.destroy());
-		int asCount = disconnectedPlayer.getArmorStands().size();
-		int[] armorStandIds = new int[asCount];
-		for (int i=0; i<asCount; i++) {
-			armorStandIds[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
-		}
 		Shared.featureCpu.runMeasuredTask("Processing player quit", "NameTagX - onQuit", new Runnable() {
 
 			@Override
 			public void run() {
 				try {
+					if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
+					for (ITabPlayer all : Shared.getPlayers()) {
+						List<ArmorStand> armorStands = new ArrayList<>();
+						armorStands.addAll(all.getArmorStands());
+						armorStands.forEach(a -> a.removeFromRegistered(disconnectedPlayer));
+					}
+					disconnectedPlayer.getArmorStands().forEach(a -> a.destroy());
+					int asCount = disconnectedPlayer.getArmorStands().size();
+					int[] armorStandIds = new int[asCount];
+					for (int i=0; i<asCount; i++) {
+						armorStandIds[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
+					}
 					Thread.sleep(100);
 					for (ITabPlayer all : Shared.getPlayers()) {
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(armorStandIds));
 					}
 				} catch (InterruptedException e) {
+					
 				}
 			}
 		});
