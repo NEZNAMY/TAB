@@ -60,7 +60,7 @@ public class NameTag16 implements SimpleFeature{
 			p.registerTeam();
 		} else {
 			if (Shared.separatorType.equals("server")) {
-				Shared.featureCpu.runTaskLater(100, "processing server switch", "NameTags", new Runnable() {
+				Shared.featureCpu.runTaskLater(500, "processing server switch", "NameTags", new Runnable() {
 
 					@Override
 					public void run() {
