@@ -3,9 +3,9 @@ package me.neznamy.tab.shared;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
+import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
@@ -88,9 +88,7 @@ public class PacketAPI{
 					bar.parseColor(to.properties.get("bossbar-color-"+bar.getName()).get()), 
 					bar.parseStyle(to.properties.get("bossbar-style-"+bar.getName()).get())));
 		} else {
-			Location l = to.getBukkitEntity().getEyeLocation().add(to.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(25));
-			if (l.getY() < 1) l.setY(1);
-			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, l);
+			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, ((BossBar_legacy)Shared.features.get("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
 			w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());

@@ -25,8 +25,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
-						Location to = all.getBukkitEntity().getEyeLocation().add(all.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), to));
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), getWitherLocation(all)));
 					}
 				}
 			}
@@ -56,5 +55,10 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
 		}
+	}
+	public Location getWitherLocation(ITabPlayer p) {
+		Location loc = p.getBukkitEntity().getEyeLocation().add(p.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+		if (loc.getY() < 1) loc.setY(1);
+		return loc;
 	}
 }
