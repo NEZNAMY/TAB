@@ -323,9 +323,17 @@ public class PluginHooks {
 			if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
 				api = UltraPermissions.getAPI();
 			}
-			if (api == null) return new String[]{"null"};
+			if (api == null) {
+				Shared.errorManager.printError("UltraPermissions getAPI returned null");
+				return new String[]{"null"};
+			}
+			me.TechsCode.UltraPermissions.storage.objects.User user = api.getUsers().name(p.getName());
+			if (user == null) {
+				Shared.errorManager.printError("UltraPermissions returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+				return new String[]{"null"};
+			}
 			List<String> groups = new ArrayList<String>();
-			for (Group group : api.getUsers().name(p.getName()).getGroups().bestToWorst().get()) {
+			for (Group group : user.getGroups().bestToWorst().get()) {
 				groups.add(group.getName());
 			}
 			return groups.toArray(new String[0]);
