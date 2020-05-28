@@ -518,27 +518,21 @@ public abstract class ITabPlayer {
 		BossBar feature = (BossBar) Shared.features.get("bossbar");
 		activeBossBars.clear();
 		if (disabledBossbar || !bossbarVisible) return;
-		for (String defaultBar : feature.defaultBars) {
+		showBossBars(feature.defaultBars);
+		showBossBars(feature.announcements);
+		if (feature.perWorld.get(getWorldName()) != null) {
+			showBossBars(feature.perWorld.get(getWorldName()));
+		}
+	}
+	private void showBossBars(List<String> bars) {
+		BossBar feature = (BossBar) Shared.features.get("bossbar");
+		for (String defaultBar : bars) {
 			BossBarLine bar = feature.getLine(defaultBar);
 			if (bar != null && bar.hasPermission(this)) {
 				PacketAPI.createBossBar(this, bar);
 				activeBossBars.add(bar);
 			}
 		}
-		for (String announcement : feature.announcements) {
-			BossBarLine bar = feature.getLine(announcement);
-			if (bar != null && bar.hasPermission(this)) {
-				PacketAPI.createBossBar(this, bar);
-			}
-		}
-		if (feature.perWorld.get(getWorldName()) != null)
-			for (String worldbar : feature.perWorld.get(getWorldName())) {
-				BossBarLine bar = feature.getLine(worldbar);
-				if (bar != null && bar.hasPermission(this)) {
-					PacketAPI.createBossBar(this, bar);
-					activeBossBars.add(bar);
-				}
-			}
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {

@@ -74,7 +74,7 @@ public class BossBar implements SimpleFeature{
 		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.bossbarVisible) continue;
+					if (!p.bossbarVisible || p.disabledBossbar) continue;
 					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
 						if (bar.hasPermission(p)) {
 							PacketAPI.updateBossBar(p, bar);
@@ -122,13 +122,8 @@ public class BossBar implements SimpleFeature{
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (p.disabledBossbar) {
-			for (BossBarLine line : lines)
-				PacketAPI.removeBossBar(p, line);
-		} else for (BossBarLine active : p.getActiveBossBars()) {
-			if (!defaultBars.contains(active.getName())) { //per-world bar from previous world
-				PacketAPI.removeBossBar(p, active);
-			}
+		for (BossBarLine line : p.getActiveBossBars()) {
+			PacketAPI.removeBossBar(p, line);
 		}
 		p.detectBossBarsAndSend();
 	}
