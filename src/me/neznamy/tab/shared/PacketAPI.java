@@ -32,7 +32,7 @@ public class PacketAPI{
 	}
 	
 	//scoreboard team
-	public static synchronized void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
+	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.separatorType.equals("world")) {
 			unregisterScoreboardTeam(to, teamName);
 		}
@@ -46,7 +46,7 @@ public class PacketAPI{
 	}
 
 	//scoreboard objective
-	public static synchronized void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
+	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
 			unregisterScoreboardObjective(to, objectiveName);
 		}
