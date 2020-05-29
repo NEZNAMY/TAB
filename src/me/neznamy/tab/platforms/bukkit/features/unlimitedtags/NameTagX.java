@@ -127,10 +127,10 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 			p.registerTeam();
 		} else {
 			p.updateTeam(true);
-			synchronized(p.armorStands) {
-				p.armorStands.forEach(a -> a.refreshName());
-				fixArmorStandHeights(p);
-			}
+			List<ArmorStand> list = new ArrayList<ArmorStand>();
+			list.addAll(p.armorStands);
+			list.forEach(a -> a.refreshName());
+			fixArmorStandHeights(p);
 		}
 	}
 	public void restartArmorStands(ITabPlayer p) {
