@@ -31,12 +31,12 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 		this(name, title, lines);
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
+		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 	}
 	public Scoreboard(String name, String title, List<String> lines) {
 		this.manager = (ScoreboardManager) Shared.features.get("scoreboard");
 		this.name = name;
 		this.title = title;
-		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 		for (int i=0; i<lines.size(); i++) {
 			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
 		}
