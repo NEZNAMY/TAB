@@ -12,6 +12,7 @@ public class TabCommand extends SubCommand {
 	public TabCommand() {
 		super("tab", null);
 		subcommands.put("announce", new AnnounceCommand());
+		subcommands.put("bossbar", new BossBarCommand());
 		subcommands.put("cpu", new CpuCommand());
 		subcommands.put("debug", new DebugCommand());
 		subcommands.put("group", new GroupCommand());
@@ -20,6 +21,7 @@ public class TabCommand extends SubCommand {
 		subcommands.put("player", new PlayerCommand());
 		subcommands.put("playeruuid", new PlayerUUIDCommand());
 		subcommands.put("reload", new ReloadCommand());
+		subcommands.put("scoreboard", new ScoreboardCommand());
 	}
 
 	@Override

@@ -16,9 +16,9 @@ public class BossBar implements SimpleFeature{
 	private int refresh;
 	private String toggleCommand;
 	public List<String> announcements = new ArrayList<String>();
-	private boolean remember_toggle_choice;
+	public boolean remember_toggle_choice;
 	public List<String> bossbar_off_players;
-	private boolean permToToggle;
+	public boolean permToToggle;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -136,29 +136,7 @@ public class BossBar implements SimpleFeature{
 	}
 	public boolean onChat(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
-			if (!permToToggle || sender.hasPermission("tab.togglebar")) {
-				sender.bossbarVisible = !sender.bossbarVisible;
-				if (sender.bossbarVisible) {
-					sender.detectBossBarsAndSend();
-					sender.sendMessage(Configs.bossbar_on);
-					if (remember_toggle_choice) {
-						bossbar_off_players.remove(sender.getName());
-						Configs.playerdata.set("bossbar-off", bossbar_off_players);
-					}
-				} else {
-					for (BossBarLine line : sender.getActiveBossBars()) {
-						PacketAPI.removeBossBar(sender, line);
-					}
-					sender.getActiveBossBars().clear();
-					sender.sendMessage(Configs.bossbar_off);
-					if (remember_toggle_choice && !bossbar_off_players.contains(sender.getName())) {
-						bossbar_off_players.add(sender.getName());
-						Configs.playerdata.set("bossbar-off", bossbar_off_players);
-					}
-				}
-			} else {
-				sender.sendMessage(Configs.no_perm);
-			}
+			Shared.command.execute(sender, new String[] {"bossbar"});
 			return true;
 		}
 		return false;

@@ -20,12 +20,12 @@ public class ScoreboardManager implements SimpleFeature{
 	private Map<String, String> perWorld;
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	public boolean useNumbers;
-	private boolean remember_toggle_choice;
-	private List<String> sb_off_players;
+	public boolean remember_toggle_choice;
+	public List<String> sb_off_players;
 	public List<Scoreboard> APIscoreboards = new ArrayList<>();
 
-	private String scoreboard_on;
-	private String scoreboard_off;
+	public String scoreboard_on;
+	public String scoreboard_off;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -100,7 +100,7 @@ public class ScoreboardManager implements SimpleFeature{
 		p.hiddenScoreboard = sb_off_players.contains(p.getName());
 		send(p);
 	}
-	private void send(ITabPlayer p) {
+	public void send(ITabPlayer p) {
 		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
 		String scoreboard = getHighestScoreboard(p);
 		if (scoreboard != null) {
@@ -115,7 +115,7 @@ public class ScoreboardManager implements SimpleFeature{
 	public void onQuit(ITabPlayer p) {
 		unregisterScoreboard(p, false);
 	}
-	private void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
+	public void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
 		if (p.getActiveScoreboard() != null) {
 			if (sendUnregisterPacket) {
 				p.getActiveScoreboard().unregister(p);
@@ -150,46 +150,15 @@ public class ScoreboardManager implements SimpleFeature{
 		}
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
-			sender.hiddenScoreboard = !sender.hiddenScoreboard;
-			if (sender.hiddenScoreboard) {
-				unregisterScoreboard(sender, true);
-				sender.sendMessage(scoreboard_off);
-				if (remember_toggle_choice && !sb_off_players.contains(sender.getName())) {
-					sb_off_players.add(sender.getName());
-					Configs.playerdata.set("scoreboard-off", sb_off_players);
-				}
-			} else {
-				send(sender);
-				sender.sendMessage(scoreboard_on);
-				if (remember_toggle_choice) {
-					sb_off_players.remove(sender.getName());
-					Configs.playerdata.set("scoreboard-off", sb_off_players);
-				}
-			}
+			Shared.command.execute(sender, new String[] {"scoreboard"});
 			return true;
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " on")) {
-			if (sender.hiddenScoreboard) {
-				send(sender);
-				sender.sendMessage(scoreboard_on);
-				sender.hiddenScoreboard = false;
-				if (remember_toggle_choice) {
-					sb_off_players.remove(sender.getName());
-					Configs.playerdata.set("scoreboard-off", sb_off_players);
-				}
-			}
+			Shared.command.execute(sender, new String[] {"scoreboard on"});
 			return true;
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " off")) {
-			if (!sender.hiddenScoreboard) {
-				onQuit(sender);
-				sender.sendMessage(scoreboard_off);
-				sender.hiddenScoreboard = true;
-				if (remember_toggle_choice) {
-					sb_off_players.add(sender.getName());
-					Configs.playerdata.set("scoreboard-off", sb_off_players);
-				}
-			}
+			Shared.command.execute(sender, new String[] {"scoreboard off"});
 			return true;
 		}
 		return false;

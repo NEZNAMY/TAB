@@ -30,7 +30,6 @@ import net.md_5.bungee.protocol.packet.*;
 public class Main extends Plugin implements Listener, MainClass{
 
 	private PluginMessenger plm;
-	private TabCommand command;
 	
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.v1_15_2;
@@ -38,7 +37,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
-		command = new TabCommand();
+		Shared.command = new TabCommand();
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			@SuppressWarnings("deprecation")
 			public void execute(CommandSender sender, String[] args) {
@@ -67,7 +66,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						}
 					}
 				} else {
-					command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+					Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 				}
 			}
 		});
@@ -95,7 +94,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				args = list.toArray(new String[0]);
 			}
 			e.getSuggestions().clear();
-			e.getSuggestions().addAll(command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args));
+			e.getSuggestions().addAll(Shared.command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args));
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)

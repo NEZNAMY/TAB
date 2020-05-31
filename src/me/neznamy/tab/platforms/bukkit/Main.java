@@ -39,7 +39,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (MethodAPI.getInstance() != null){
 			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
-			TabCommand command = new TabCommand();
+			Shared.command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
 					if (Configs.bukkitBridgeMode || Shared.disabled) {
@@ -68,7 +68,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 							}
 						}
 					} else {
-						command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+						Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 					}
 					return false;
 				}
@@ -78,7 +78,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					if (Configs.bukkitBridgeMode) {
 						return null;
 					}
-					return command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			});
 			Shared.load(true);

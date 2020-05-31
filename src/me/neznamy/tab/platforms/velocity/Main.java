@@ -61,7 +61,7 @@ public class Main implements MainClass{
 			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.v1_15_2;
 			Shared.mainClass = this;
 			Shared.separatorType = "server";
-			TabCommand command = new TabCommand();
+			Shared.command = new TabCommand();
 			server.getCommandManager().register("btab", new Command() {
 				public void execute(CommandSource sender, String[] args) {
 					if (Shared.disabled) {
@@ -89,7 +89,7 @@ public class Main implements MainClass{
 							}
 						}
 					} else {
-						command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+						Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 					}
 				}
 /*				public List<String> suggest(CommandSource sender, String[] args) {

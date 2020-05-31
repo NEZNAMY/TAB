@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.placeholders.*;
@@ -31,6 +32,7 @@ public class Shared {
 	public static CPUManager placeholderCpu;
 	public static CPUManager bukkitBridgePlaceholderCpu;
 	public static ErrorManager errorManager;
+	public static TabCommand command;
 	
 	public static String brokenFile = "-";
 
