@@ -91,7 +91,9 @@ public class PacketAPI{
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, ((BossBar_legacy)Shared.features.get("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher(null);
 			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
-			w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), to.properties.get("bossbar-text-"+bar.getName()).get());
+			String txt = to.properties.get("bossbar-text-"+bar.getName()).get();
+			if (to.getVersion().getMinorVersion() < 7 && txt.length() > 64) txt = txt.substring(0, 64);
+			w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), txt);
 			float health = (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get());
 			if (health == 0) health = 1;
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
@@ -132,7 +134,9 @@ public class PacketAPI{
 			DataWatcher w = new DataWatcher(null);
 			boolean update = false;
 			if (text.isUpdateNeeded()) {
-				w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), text.get());
+				String txt = text.get();
+				if (to.getVersion().getMinorVersion() < 7 && txt.length() > 64) txt = txt.substring(0, 64);
+				w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), txt);
 				update = true;
 			}
 			if (progress.isUpdateNeeded()) {
