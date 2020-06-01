@@ -16,7 +16,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class ErrorManager {
 
@@ -47,7 +46,7 @@ public class ErrorManager {
 			if (file.length() < 1000000) { //not going over 1 MB
 				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 				if (message != null) {
-					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + removeColors(message) + newline);
+					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 				}
 				if (t != null) {
@@ -66,15 +65,6 @@ public class ErrorManager {
 			Shared.mainClass.sendConsoleMessage("&c[TAB] Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
-	}
-	private String removeColors(String text) {
-		IChatBaseComponent component = IChatBaseComponent.fromColoredText(Placeholders.color(text));
-		String newText = component.getText() == null ? "" : component.getText();
-		if (component.getExtra() != null)
-			for (IChatBaseComponent extra : component.getExtra()) {
-				newText += extra.getText();
-			}
-		return newText;
 	}
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);

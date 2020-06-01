@@ -294,6 +294,16 @@ public class IChatBaseComponent {
 		return builder.toString();
 	}
 
+	public String toRawText() {
+		StringBuilder builder = new StringBuilder();
+		if (text != null) builder.append(text);
+		if (extra != null) {
+			for (IChatBaseComponent extra : extra) {
+				if (extra.text != null) builder.append(extra.text);
+			}
+		}
+		return builder.toString();
+	}
 	public enum ClickAction{
 		OPEN_URL,
 		@Deprecated OPEN_FILE,//Cannot be sent by server
