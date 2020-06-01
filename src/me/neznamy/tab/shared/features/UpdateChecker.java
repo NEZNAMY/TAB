@@ -33,7 +33,7 @@ public class UpdateChecker {
 						}
 					}
 				} catch (Exception e) {
-//					Shared.mainClass.sendConsoleMessage("&a[TAB] Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+					Shared.debug("&a[TAB] Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 				}
 			}
 		}).start();
