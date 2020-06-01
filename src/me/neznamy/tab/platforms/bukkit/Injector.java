@@ -11,6 +11,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -68,11 +69,11 @@ public class Injector {
 							if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								//nametag anti-override
 								if (Main.killPacket(packet)) {
-									Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
+									Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
 									return;
 								}
 							}
-							Shared.featureCpu.addTime("Nametag anti-override", System.nanoTime()-time);
+							Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
 						}
 
 						for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {

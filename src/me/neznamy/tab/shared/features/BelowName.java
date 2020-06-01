@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class BelowName implements SimpleFeature{
@@ -26,7 +27,7 @@ public class BelowName implements SimpleFeature{
 			if (p.disabledBelowname) continue;
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing belowname", "Belowname", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing belowname", CPUFeature.BELOWNAME, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledBelowname) continue;

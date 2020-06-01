@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 
 public class NameTag16 implements SimpleFeature{
 
@@ -13,7 +14,7 @@ public class NameTag16 implements SimpleFeature{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.registerTeam();
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", "NameTags", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", CPUFeature.NAMETAG, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.disabledNametag) p.updateTeam(false);
@@ -22,7 +23,7 @@ public class NameTag16 implements SimpleFeature{
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
-			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", "NameTags - invisfix", new Runnable() {
+			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAG_INVISFIX, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
 						boolean visible = !p.hasInvisibility();
@@ -60,7 +61,7 @@ public class NameTag16 implements SimpleFeature{
 			p.registerTeam();
 		} else {
 			if (Shared.separatorType.equals("server")) {
-				Shared.featureCpu.runTaskLater(500, "processing server switch", "NameTags", new Runnable() {
+				Shared.featureCpu.runTaskLater(500, "processing server switch", CPUFeature.NAMETAG, new Runnable() {
 
 					@Override
 					public void run() {

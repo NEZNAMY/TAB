@@ -9,6 +9,7 @@ import java.util.Map;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.SimpleFeature;
 
 public class ScoreboardManager implements SimpleFeature{
@@ -63,7 +64,7 @@ public class ScoreboardManager implements SimpleFeature{
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", "Scoreboard", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", CPUFeature.SCOREBOARD, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					Scoreboard board = p.getActiveScoreboard();

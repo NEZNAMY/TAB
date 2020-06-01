@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.RawPacketFeature;
 
 public class PetFix implements RawPacketFeature{
@@ -76,7 +77,7 @@ public class PetFix implements RawPacketFeature{
 		}
 	}
 	@Override
-	public String getCPUName() {
-		return "PetFix";
+	public CPUFeature getCPUName() {
+		return CPUFeature.PET_NAME_FIX;
 	}
 }

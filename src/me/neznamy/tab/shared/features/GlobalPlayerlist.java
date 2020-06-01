@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -89,7 +90,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		//delay because VeLoCiTyPoWeReD
-		Shared.featureCpu.runTaskLater(100, "processing server switch", "processing server switch", new Runnable() {
+		Shared.featureCpu.runTaskLater(100, "processing server switch", CPUFeature.GLOBAL_PLAYERLIST, new Runnable() {
 
 			@Override
 			public void run() {
@@ -139,7 +140,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		return info;
 	}
 	@Override
-	public String getCPUName() {
-		return "GlobalPlayerlist";
+	public CPUFeature getCPUName() {
+		return CPUFeature.GLOBAL_PLAYERLIST;
 	}
 }

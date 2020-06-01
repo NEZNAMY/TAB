@@ -20,15 +20,15 @@ public class CpuCommand extends SubCommand {
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		Map<String, Float> placeholders = Shared.placeholderCpu.getUsage();
+		Map<Object, Float> placeholders = Shared.placeholderCpu.getUsage();
 		float placeholdersTotal = 0;
 		for (Float time : placeholders.values()) placeholdersTotal += time;
 		
-		Map<String, Float> bridgeplaceholders = Shared.bukkitBridgePlaceholderCpu.getUsage();
+		Map<Object, Float> bridgeplaceholders = Shared.bukkitBridgePlaceholderCpu.getUsage();
 		float bridgeplaceholdersTotal = 0;
 		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
 		
-		Map<String, Float> features = Shared.featureCpu.getUsage();
+		Map<Object, Float> features = Shared.featureCpu.getUsage();
 		float featuresTotal = 0;
 		for (Float time : features.values()) featuresTotal += time;
 		
@@ -37,19 +37,19 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l║ &6CPU stats from the last minute");
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		sendMessage(sender, "&8&l║ &6Placeholders:");
-		for (Entry<String, Float> entry : placeholders.entrySet()) {
+		for (Entry<Object, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() > 0.05) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		if (Shared.separatorType.equals("server")) {
 			sendMessage(sender, "&8&l║ &6Placeholder usage on Bukkit servers:");
-			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
+			for (Entry<Object, Float> entry : bridgeplaceholders.entrySet()) {
 				if (entry.getValue() > 0.05) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 			}
 			sendMessage(sender, "&8&l║&8&m                                                    ");
 		}
 		sendMessage(sender, "&8&l║ &6Features:");
-		for (Entry<String, Float> entry : features.entrySet()) {
+		for (Entry<Object, Float> entry : features.entrySet()) {
 			sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizeFeature(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");

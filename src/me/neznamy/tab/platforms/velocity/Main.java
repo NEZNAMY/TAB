@@ -35,6 +35,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.packets.*;
 import me.neznamy.tab.shared.placeholders.*;
@@ -142,7 +143,7 @@ public class Main implements MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise
-				Shared.featureCpu.runTaskLater(50, "processing join", "onJoin handle", new Runnable() {
+				Shared.featureCpu.runTaskLater(50, "processing join", CPUFeature.OTHER, new Runnable() {
 
 					@Override
 					public void run() {

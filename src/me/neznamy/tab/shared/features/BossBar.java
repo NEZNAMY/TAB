@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
@@ -71,7 +72,7 @@ public class BossBar implements SimpleFeature{
 			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 			p.detectBossBarsAndSend();
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", "BossBar", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", CPUFeature.BOSSBAR, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible || p.disabledBossbar) continue;

@@ -11,6 +11,7 @@ import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -502,7 +503,7 @@ public abstract class ITabPlayer {
 		updateAll();
 		if (Shared.separatorType.equals("server")) {
 			ITabPlayer player = this;
-			Shared.featureCpu.runTaskLater(50, "processing world change", "WorldChange", new Runnable() {
+			Shared.featureCpu.runTaskLater(50, "processing world change", CPUFeature.WORLD_SWITCH, new Runnable() {
 
 				@Override
 				public void run() {

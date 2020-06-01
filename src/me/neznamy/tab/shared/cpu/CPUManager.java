@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.cpu;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,13 +12,16 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+
 public class CPUManager {
 
 	private static final int bufferSizeMillis = 100;
 	private static final int dataMemorySize = 600;
 	
-	private ConcurrentMap<String, Long> lastSecond = new ConcurrentHashMap<String, Long>();
-	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
+	private ConcurrentMap<Object, Long> lastSecond = new ConcurrentHashMap<Object, Long>();
+	private List<ConcurrentMap<Object, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<Object, Long>>());
 
 	private ExecutorService exe = Executors.newCachedThreadPool();
 	
@@ -31,7 +34,7 @@ public class CPUManager {
 					while (true) {
 						Thread.sleep(bufferSizeMillis);
 						lastMinute.add(lastSecond);
-						lastSecond = new ConcurrentHashMap<String, Long>();
+						lastSecond = new ConcurrentHashMap<Object, Long>();
 						if (lastMinute.size() > dataMemorySize) lastMinute.remove(0);
 					}
 				} catch (InterruptedException pluginDisabled) {
@@ -44,7 +47,7 @@ public class CPUManager {
 		exe.shutdownNow();
 		exe = Executors.newCachedThreadPool();
 	}
-	public void runMeasuredTask(String errorDescription, String feature, Runnable task) {
+	public void runMeasuredTask(String errorDescription, CPUFeature feature, Runnable task) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -70,7 +73,7 @@ public class CPUManager {
 			}
 		});
 	}
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, Runnable task) {
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, CPUFeature feature, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
 		exe.submit(new Runnable() {
 
@@ -96,7 +99,7 @@ public class CPUManager {
 			}
 		});
 	}
-	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, CPUFeature feature, Runnable task) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -112,22 +115,22 @@ public class CPUManager {
 			}
 		});
 	}
-	public Map<String, Float> getUsage(){
-		Map<String, Long> nanoMap = new HashMap<String, Long>();
-		String key;
+	public Map<Object, Float> getUsage(){
+		Map<Object, Long> nanoMap = new HashMap<Object, Long>();
+		Object key;
 		synchronized (lastMinute) {
-			for (ConcurrentMap<String, Long> second : lastMinute) {
-				for (Entry<String, Long> nanos : second.entrySet()) {
+			for (ConcurrentMap<Object, Long> second : lastMinute) {
+				for (Entry<Object, Long> nanos : second.entrySet()) {
 					key = nanos.getKey();
 					if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
 					nanoMap.put(key, nanoMap.get(key)+nanos.getValue());
 				}
 			}
 		}
-		Map<String, Float> percentMap = new HashMap<String, Float>();
+		Map<Object, Float> percentMap = new HashMap<Object, Float>();
 		long nanotime;
 		float percent;
-		for (Entry<String, Long> entry : nanoMap.entrySet()) {
+		for (Entry<Object, Long> entry : nanoMap.entrySet()) {
 			nanotime = entry.getValue(); //nano seconds total (last minute)
 			nanotime /= lastMinute.size(); //average nanoseconds per buffer (0.1 second)
 			percent = (float) nanotime / bufferSizeMillis / 1000000; //relative usage (0-1)
@@ -146,7 +149,16 @@ public class CPUManager {
 		}
 		return result;
 	}
-	public void addTime(String key, long nanoseconds) {
+	public void addTime(CPUFeature feature, long nanoseconds) {
+		addTime0(feature.toString(), nanoseconds);
+	}
+	public void addTime(Placeholder placeholder, long nanoseconds) {
+		addTime0(placeholder.getIdentifier(), nanoseconds);
+	}
+	public void addTime(String relationalPlaceholderIdentifier, long nanoseconds) {
+		addTime0(relationalPlaceholderIdentifier, nanoseconds);
+	}
+	private void addTime0(Object key, long nanoseconds) {
 		Long current = lastSecond.get(key);
 		if (current == null) {
 			lastSecond.put(key, nanoseconds);

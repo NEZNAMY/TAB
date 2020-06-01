@@ -11,6 +11,7 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.features.SimpleFeature;
 
@@ -21,7 +22,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
-		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing bossbar", "BossBar 1.8", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing bossbar", CPUFeature.BOSSBAR_LEGACY, new Runnable() {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
@@ -51,7 +52,7 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 			long time = System.nanoTime();
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p != null) p.detectBossBarsAndSend();
-			Shared.featureCpu.addTime("BossBar 1.8", System.nanoTime()-time);
+			Shared.featureCpu.addTime(CPUFeature.BOSSBAR_LEGACY, System.nanoTime()-time);
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
 		}

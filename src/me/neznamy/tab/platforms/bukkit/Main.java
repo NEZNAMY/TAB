@@ -18,6 +18,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.placeholders.*;
 import me.neznamy.tab.shared.packets.*;
@@ -112,7 +113,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			inject(e.getPlayer().getUniqueId());
-			Shared.featureCpu.runMeasuredTask("player joined the server", "onJoin handling", new Runnable() {
+			Shared.featureCpu.runMeasuredTask("player joined the server", CPUFeature.OTHER, new Runnable() {
 
 				public void run() {
 					Shared.features.values().forEach(f -> f.onJoin(p));

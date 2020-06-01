@@ -5,6 +5,7 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.SimpleFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -282,7 +283,7 @@ public class AlignedSuffix implements SimpleFeature{
 	}
 	
 	private void updateAllNames(ITabPlayer exception) {
-		Shared.featureCpu.runMeasuredTask("aligning tabsuffix", "AlignSuffix", new Runnable() {
+		Shared.featureCpu.runMeasuredTask("aligning tabsuffix", CPUFeature.ALIGNED_TABSUFFIX, new Runnable() {
 
 			@Override
 			public void run() {

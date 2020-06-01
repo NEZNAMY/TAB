@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class HeaderFooter implements SimpleFeature{
@@ -16,7 +17,7 @@ public class HeaderFooter implements SimpleFeature{
 		refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 100);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Header/Footer", refresh);
 		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing header/footer", "Header/Footer", new Runnable(){
+		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing header/footer", CPUFeature.HEADER_FOOTER, new Runnable(){
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, false);
 			}

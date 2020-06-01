@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -23,7 +24,7 @@ public class SpectatorFix implements CustomPacketFeature{
 	}
 
 	@Override
-	public String getCPUName() {
-		return "SpectatorFix";
+	public CPUFeature getCPUName() {
+		return CPUFeature.SPECTATOR_FIX;
 	}
 }

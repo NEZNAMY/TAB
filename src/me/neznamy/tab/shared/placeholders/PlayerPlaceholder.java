@@ -27,7 +27,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 				lastValue.put(name, value);
 			}
 		}
-		Shared.placeholderCpu.addTime(identifier, System.nanoTime()-startTime);
+		Shared.placeholderCpu.addTime(this, System.nanoTime()-startTime);
 		return lastValue.get(name);
 	}
 }

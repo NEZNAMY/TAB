@@ -4,6 +4,7 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class TabObjective implements SimpleFeature{
@@ -28,7 +29,7 @@ public class TabObjective implements SimpleFeature{
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
 			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", "Yellow number in tablist", new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", CPUFeature.YELLOW_NUMBER, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;

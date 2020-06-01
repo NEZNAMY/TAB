@@ -50,7 +50,7 @@ public class PluginMessenger implements Listener {
 					pl.lastValue.put("null", output);
 					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
 					pl.lastRefresh.put("null", System.currentTimeMillis());
-					Shared.bukkitBridgePlaceholderCpu.addTime(placeholder, cpu);
+					Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
 				} else {
 					Shared.debug("Received output for unknown placeholder " + placeholder);
 				}

@@ -12,6 +12,7 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.SimpleFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -120,7 +121,7 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 		return packet;
 	}
 	@Override
-	public String getCPUName() {
-		return "PerWorldPlayerlist";
+	public CPUFeature getCPUName() {
+		return CPUFeature.PER_WORLD_PLAYERLIST;
 	}
 }
