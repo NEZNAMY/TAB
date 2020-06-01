@@ -184,7 +184,7 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
-		boolean visible = (name.length() == 0 || !other.getBukkitEntity().canSee(player)) ? false : this.visible;
+		boolean visible = (isNameVisiblyEmpty(name) || !other.getBukkitEntity().canSee(player)) ? false : this.visible;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
 		} else {
@@ -210,5 +210,8 @@ public class ArmorStand{
 			//1.8.1 - 1.9.x
 			return 10;
 		}
+	}
+	public static boolean isNameVisiblyEmpty(String displayName) {
+		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}
 }
