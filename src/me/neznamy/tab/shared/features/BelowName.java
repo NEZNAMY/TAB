@@ -15,14 +15,14 @@ public class BelowName implements SimpleFeature{
 	
 	private int refresh;
 	public static String number;
-	public static String text;
 	private Property textProperty;
 	
 	@Override
 	public void load() {
+		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
 		refresh =  Configs.config.getInt("classic-vanilla-belowname.refresh-interval-milliseconds", 200);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
-		textProperty = new Property(null, text, null);
+		textProperty = new Property(null, Configs.config.getString("classic-vanilla-belowname.text", "Health"), null);
 		for (ITabPlayer p : Shared.getPlayers()){
 			p.setProperty("belowname-number", number, null);
 			if (p.disabledBelowname) continue;
