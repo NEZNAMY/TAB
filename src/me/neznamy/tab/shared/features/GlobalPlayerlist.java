@@ -123,17 +123,20 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
-		for (PlayerInfoData playerInfoData : info.entries) {
-			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (packetPlayer != null) {
+		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+			for (PlayerInfoData playerInfoData : info.entries) {
 				if ((playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 					//remove packet sent by bungeecord
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.uniqueId = UUID.randomUUID();
-				} else {
-					if (displayAsSpectators) {
-						if (!receiver.getWorldName().equals(packetPlayer.getWorldName())) playerInfoData.gameMode = EnumGamemode.SPECTATOR;
-					}
+				}
+			}
+		}
+		if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
+			for (PlayerInfoData playerInfoData : info.entries) {
+				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				if (packetPlayer != null && displayAsSpectators) {
+					if (!receiver.getWorldName().equals(packetPlayer.getWorldName())) playerInfoData.gameMode = EnumGamemode.SPECTATOR;
 				}
 			}
 		}
