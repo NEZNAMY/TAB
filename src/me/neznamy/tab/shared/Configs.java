@@ -122,8 +122,8 @@ public class Configs {
 						checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
 						checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
 					}
-					if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-						int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+					if (config.getBoolean("change-tablist-prefix-suffix", true)) {
+						int refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
 						checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
 						checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
 					}
