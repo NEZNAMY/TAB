@@ -20,9 +20,21 @@ public class GhostPlayerFix implements SimpleFeature{
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()), null);
-		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendPacket(packet);
-		}
+		Shared.featureCpu.runMeasuredTask("removing players", "Ghost Player Fix", new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(100);
+					for (ITabPlayer all : Shared.getPlayers()) {
+						if (all == disconnectedPlayer) continue;
+						all.sendPacket(packet);
+					}
+				} catch (InterruptedException e) {
+					
+				}
+			}
+		});
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
