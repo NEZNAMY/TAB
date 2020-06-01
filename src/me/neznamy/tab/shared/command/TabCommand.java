@@ -26,16 +26,6 @@ public class TabCommand extends SubCommand {
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		if (Shared.disabled) {
-			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-				Shared.unload();
-				Shared.load(false);
-				if (!Shared.disabled) sendMessage(sender, Configs.reloaded);
-			} else {
-				sendMessage(sender, Configs.plugin_disabled);
-			}
-			return;
-		}
 		if (args.length > 0) {
 			String arg0 = args[0];
 			SubCommand command = subcommands.get(arg0.toLowerCase());

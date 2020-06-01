@@ -58,7 +58,6 @@ public class Configs {
 	public static String reloaded;
 	public static String value_assigned;
 	public static String value_removed;
-	public static String plugin_disabled = "&c[TAB] Plugin is disabled because one of your configuration files is broken. Check console for more info.";
 	public static String bossbar_off;
 	public static String bossbar_on;
 	public static String preview_off;
