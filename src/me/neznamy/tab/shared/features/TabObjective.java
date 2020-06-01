@@ -19,7 +19,7 @@ public class TabObjective implements SimpleFeature{
 	@Override
 	public void load() {
 		rawValue = Configs.config.getString("yellow-number-in-tablist", "%ping%");
-		if (rawValue.equals("%health%")) {
+		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
 		} else {
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
