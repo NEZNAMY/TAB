@@ -25,6 +25,7 @@ public class TabObjective implements SimpleFeature{
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
 		for (ITabPlayer p : Shared.getPlayers()){
+			p.setProperty("tablist-objective", rawValue, null);
 			if (p.disabledTablistObjective) continue;
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
 			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
@@ -49,6 +50,7 @@ public class TabObjective implements SimpleFeature{
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.setProperty("tablist-objective", rawValue, null);
 		if (connectedPlayer.disabledTablistObjective) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType);
 		for (ITabPlayer all : Shared.getPlayers()){

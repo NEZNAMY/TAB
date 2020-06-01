@@ -24,6 +24,7 @@ public class BelowName implements SimpleFeature{
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
 		textProperty = new Property(null, text, null);
 		for (ITabPlayer p : Shared.getPlayers()){
+			p.setProperty("belowname-number", number, null);
 			if (p.disabledBelowname) continue;
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
@@ -52,6 +53,7 @@ public class BelowName implements SimpleFeature{
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.setProperty("belowname-number", number, null);
 		if (connectedPlayer.disabledBelowname) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (ITabPlayer all : Shared.getPlayers()){

@@ -12,9 +12,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -277,13 +275,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void updateAll() {
-		if (Shared.features.containsKey("tabobjective")) {
-			setProperty("tablist-objective", TabObjective.rawValue, null);
-		}
-		if (Shared.features.containsKey("belowname")) {
-			setProperty("belowname-number", BelowName.number, null);
-			setProperty("belowname-text", BelowName.text, null);
-		}
 		updateProperty("tabprefix");
 		updateProperty("tagprefix");
 		updateProperty("tabsuffix");
