@@ -64,7 +64,7 @@ public abstract class ITabPlayer {
 		updateAll();
 		teamName = buildTeamName();
 		updateDisabledWorlds(getWorldName());
-		if (Shared.features.containsKey("playerlist")) infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
+		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
 	}
 
 	//bukkit only
