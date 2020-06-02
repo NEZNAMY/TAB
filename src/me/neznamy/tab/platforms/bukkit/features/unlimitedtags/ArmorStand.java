@@ -77,15 +77,15 @@ public class ArmorStand{
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
 		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(createDataWatcher(displayName, viewer));
 	}
-	public Object getNMSTeleportPacket(ITabPlayer to) {
-		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(to));
+	public Object getNMSTeleportPacket(ITabPlayer viewer) {
+		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(viewer));
 	}
-	private Location getArmorStandLocationFor(ITabPlayer to) {
-		return to.getVersion().getMinorVersion() == 8 ? location.clone().add(0,-2,0) : location;
+	private Location getArmorStandLocationFor(ITabPlayer viewer) {
+		return viewer.getVersion().getMinorVersion() == 8 ? location.clone().add(0,-2,0) : location;
 	}
-	public void destroy(ITabPlayer to) {
-		nearbyPlayers.remove(to);
-		to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+	public void destroy(ITabPlayer viewer) {
+		nearbyPlayers.remove(viewer);
+		viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
 		synchronized (nearbyPlayers) {
@@ -169,10 +169,10 @@ public class ArmorStand{
 	public int getEntityId() {
 		return entityId;
 	}
-	public void removeFromRegistered(ITabPlayer removed) {
-		nearbyPlayers.remove(removed);
+	public void removeFromRegistered(ITabPlayer viewer) {
+		nearbyPlayers.remove(viewer);
 	}
-	public DataWatcher createDataWatcher(String name, ITabPlayer other) {
+	public DataWatcher createDataWatcher(String name, ITabPlayer viewer) {
 		byte flag = 0;
 		if (sneaking) flag += (byte)2;
 		flag += (byte)32;
@@ -184,13 +184,13 @@ public class ArmorStand{
 		} else {
 			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
 		}
-		boolean visible = (isNameVisiblyEmpty(name) || !other.getBukkitEntity().canSee(player)) ? false : this.visible;
+		boolean visible = (isNameVisiblyEmpty(name) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
 		} else {
 			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
 		}
-		if (other.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherSerializer.Byte), (byte)16);
+		if (viewer.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherSerializer.Byte), (byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){
