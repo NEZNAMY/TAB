@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -147,7 +148,7 @@ public class PluginHooks {
 	}
 	public static boolean LibsDisguises_isDisguised(ITabPlayer p) {
 		try {
-			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Player.class).invoke(null, p.getBukkitEntity());
+			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, p.getBukkitEntity());
 		} catch (Exception e) {
 			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using LibsDisguises", e);
 		}
