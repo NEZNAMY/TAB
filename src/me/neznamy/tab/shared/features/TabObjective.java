@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 
 public class TabObjective implements SimpleFeature{
 
-	private static final String ObjectiveName = "TAB-TabObjective";
+	private static final String ObjectiveName = "TAB-YellowNumber";
 	private static final int DisplaySlot = 0;
 	
 	public static String rawValue;
