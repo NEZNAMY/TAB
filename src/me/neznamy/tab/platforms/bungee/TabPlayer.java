@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungee;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.*;
@@ -11,12 +12,29 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.packet.Team;
 
 public class TabPlayer extends ITabPlayer{
 	
 	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
+	private static Object directionData;
+	private static Method getId;
+	
+	static {
+		try {
+			Field f = Protocol.class.getDeclaredField("TO_CLIENT");
+			f.setAccessible(true);
+			directionData = f.get(Protocol.GAME);
+			getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class);
+			getId.setAccessible(true);
+		} catch (Exception e) {
+			Shared.errorManager.criticalError("Failed to initialize fields for packet analysis", e);
+		}
+	}
 	
 	private ProxiedPlayer player;
+	private int PacketPlayOutScoreboardTeamId;
 
 	public TabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
@@ -31,6 +49,7 @@ public class TabPlayer extends ITabPlayer{
 		name = p.getName();
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 		init();
+		PacketPlayOutScoreboardTeamId = (int) getId.invoke(directionData, Team.class, version.getNetworkId());
 	}
 	@Override
 	public String getGroupFromPermPlugin() {
@@ -88,5 +107,8 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public ProxiedPlayer getBungeeEntity() {
 		return player;
+	}
+	public int getPacketPlayOutScoreboardTeamId() {
+		return PacketPlayOutScoreboardTeamId;
 	}
 }
