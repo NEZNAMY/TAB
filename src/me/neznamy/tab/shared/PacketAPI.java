@@ -7,8 +7,6 @@ import org.bukkit.entity.EntityType;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
@@ -75,7 +73,6 @@ public class PacketAPI{
 	
 	
 	
-	private static final int NAME_POSITION = ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 ? 2 : ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6 ? 10 : 5;
 	public static void createBossBar(ITabPlayer to, BossBarLine bar){
 		to.setProperty("bossbar-text-"+bar.getName(), bar.text, null);
 		to.setProperty("bossbar-progress-"+bar.getName(), bar.progress, null);
@@ -90,17 +87,11 @@ public class PacketAPI{
 		} else {
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(bar.getEntityId(), null, EntityType.WITHER, ((BossBar_legacy)Shared.features.get("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher(null);
-			w.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), (byte)32);
-			String txt = to.properties.get("bossbar-text-"+bar.getName()).get();
-			if (to.getVersion().getMinorVersion() < 7 && txt.length() > 64) txt = txt.substring(0, 64);
-			w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), txt);
+			DataWatcher.Helper.setEntityFlags(w, (byte) 32);
+			DataWatcher.Helper.setCustomName(w, to.properties.get("bossbar-text-"+bar.getName()).get());
 			float health = (float)3*bar.parseProgress(to.properties.get("bossbar-progress-"+bar.getName()).get());
 			if (health == 0) health = 1;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
-				w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
-			} else {
-				w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
-			}
+			DataWatcher.Helper.setHealth(w, health);
 			packet.setDataWatcher(w);
 			to.sendCustomBukkitPacket(packet);
 		}
@@ -135,18 +126,13 @@ public class PacketAPI{
 			boolean update = false;
 			if (text.isUpdateNeeded()) {
 				String txt = text.get();
-				if (to.getVersion().getMinorVersion() < 7 && txt.length() > 64) txt = txt.substring(0, 64);
-				w.setValue(new DataWatcherObject(NAME_POSITION, DataWatcherSerializer.String), txt);
+				DataWatcher.Helper.setCustomName(w, txt);
 				update = true;
 			}
 			if (progress.isUpdateNeeded()) {
 				float health = (float)3*bar.parseProgress(progress.get());
 				if (health == 0) health = 1;
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
-					w.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
-				} else {
-					w.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
-				}
+				DataWatcher.Helper.setHealth(w, health);
 				update = true;
 			}
 			if (update) to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(bar.getEntityId(), w.toNMS(), true));

@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -13,8 +12,6 @@ import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcherSerializer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
@@ -27,7 +24,6 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class ArmorStand{
 
-	private static final int ARMOR_STAND_BYTEFLAGS_POSITION = getArmorStandFlagsPosition();
 	private ITabPlayer owner;
 	private Player player;
 	private double yOffset;
@@ -178,38 +174,15 @@ public class ArmorStand{
 		flag += (byte)32;
 		DataWatcher datawatcher = new DataWatcher(null);
 		if (name == null) name = "";
-		datawatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flag);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(name).toString())));
-		} else {
-			datawatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), name);
-		}
+		DataWatcher.Helper.setEntityFlags(datawatcher, flag);
+		DataWatcher.Helper.setCustomName(datawatcher, name);
 		boolean visible = (isNameVisiblyEmpty(name) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
-		} else {
-			datawatcher.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
-		}
-		if (viewer.getVersion().getMinorVersion() > 8) datawatcher.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherSerializer.Byte), (byte)16);
+		DataWatcher.Helper.setCustomNameVisible(datawatcher, visible);
+		if (viewer.getVersion().getMinorVersion() > 8) DataWatcher.Helper.setArmorStandFlags(datawatcher, (byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){
 		return nearbyPlayers;
-	}
-	private static int getArmorStandFlagsPosition() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-			//1.15+
-			return 14;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
-			//1.14.x
-			return 13;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
-			//1.10.x - 1.13.x
-			return 11;
-		} else {
-			//1.8.1 - 1.9.x
-			return 10;
-		}
 	}
 	public static boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
