@@ -125,8 +125,7 @@ public class PacketAPI{
 			DataWatcher w = new DataWatcher(null);
 			boolean update = false;
 			if (text.isUpdateNeeded()) {
-				String txt = text.get();
-				DataWatcher.Helper.setCustomName(w, txt);
+				DataWatcher.Helper.setCustomName(w, text.get());
 				update = true;
 			}
 			if (progress.isUpdateNeeded()) {
