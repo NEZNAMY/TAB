@@ -37,6 +37,14 @@ public class BossBar implements SimpleFeature{
 			String color = Configs.bossbar.getString("bars." + bar + ".color");
 			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
 			String text = Configs.bossbar.getString("bars." + bar + ".text");
+			if (style == null) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.errorManager.missingAttribute("BossBar", bar, "style");
+				style = "PROGRESS";
+			}
+			if (color == null) {
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.errorManager.missingAttribute("BossBar", bar, "color");
+				color = "WHITE";
+			}
 			if (progress == null) {
 				progress = "100";
 				Shared.errorManager.missingAttribute("BossBar", bar, "progress");
