@@ -33,7 +33,6 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-@SuppressWarnings({"rawtypes"})
 public class PluginHooks {
 
 	public static boolean libsDisguises;
@@ -88,7 +87,7 @@ public class PluginHooks {
 			Object plugin = Bukkit.getPluginManager().getPlugin("AutoAFK");
 			Field f = plugin.getClass().getDeclaredField("afkList");
 			f.setAccessible(true);
-			HashMap map = (HashMap) f.get(plugin);
+			HashMap<?, ?> map = (HashMap<?, ?>) f.get(plugin);
 			return map.containsKey(p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
