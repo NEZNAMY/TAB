@@ -427,8 +427,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			registerPlaceholders();
 			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
 			if (Configs.BossBarEnabled) {
-				Shared.registerFeature("bossbar", new BossBar());
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy());
+				BossBar bb = new BossBar();
+				Shared.registerFeature("bossbar", bb);
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb));
 			}
 			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {

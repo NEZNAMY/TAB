@@ -78,35 +78,23 @@ public class BossBar implements SimpleFeature{
 
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
-			p.detectBossBarsAndSend();
+			detectBossBarsAndSend(p);
 		}
 		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing bossbar", CPUFeature.BOSSBAR, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible || p.disabledBossbar) continue;
-					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
+					for (BossBarLine bar : p.activeBossBars.toArray(new BossBarLine[0])) {
 						if (bar.hasPermission(p)) {
 							PacketAPI.updateBossBar(p, bar);
 						} else {
 							PacketAPI.removeBossBar(p, bar);
-							p.getActiveBossBars().remove(bar);
+							p.activeBossBars.remove(bar);
 						}
 					}
-					for (String name : defaultBars) {
-						BossBarLine bar = getLine(name);
-						if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
-							p.getActiveBossBars().add(bar);
-							PacketAPI.createBossBar(p, bar);
-						}
-					}
-					if (perWorld.get(p.getWorldName()) != null)
-						for (String worldbar : perWorld.get(p.getWorldName())) {
-							BossBarLine bar = getLine(worldbar);
-							if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
-								PacketAPI.createBossBar(p, bar);
-								p.activeBossBars.add(bar);
-							}
-						}
+					//permission update check
+					showBossBars(p, defaultBars);
+					showBossBars(p, perWorld.get(p.getWorldName()));
 				}
 			}
 		});
@@ -114,27 +102,27 @@ public class BossBar implements SimpleFeature{
 	@Override
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
-			for (BossBarLine line : p.getActiveBossBars()) {
+			for (BossBarLine line : p.activeBossBars) {
 				PacketAPI.removeBossBar(p, line);
 			}
-			p.getActiveBossBars().clear();
+			p.activeBossBars.clear();
 		}
 		lines.clear();
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.bossbarVisible = !bossbar_off_players.contains(connectedPlayer.getName());
-		connectedPlayer.detectBossBarsAndSend();
+		detectBossBarsAndSend(connectedPlayer);
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		for (BossBarLine line : p.getActiveBossBars()) {
+		for (BossBarLine line : p.activeBossBars) {
 			PacketAPI.removeBossBar(p, line);
 		}
-		p.detectBossBarsAndSend();
+		detectBossBarsAndSend(p);
 	}
 
 	public BossBarLine getLine(String name) {
@@ -150,6 +138,24 @@ public class BossBar implements SimpleFeature{
 		}
 		return false;
 	}
+	public void detectBossBarsAndSend(ITabPlayer p) {
+		p.activeBossBars.clear();
+		if (p.disabledBossbar || !p.bossbarVisible) return;
+		showBossBars(p, defaultBars);
+		showBossBars(p, announcements);
+		showBossBars(p, perWorld.get(p.getWorldName()));
+	}
+	private void showBossBars(ITabPlayer p, List<String> bars) {
+		if (bars == null) return;
+		for (String defaultBar : bars) {
+			BossBarLine bar = getLine(defaultBar);
+			if (bar.hasPermission(p) && !p.activeBossBars.contains(bar)) {
+				PacketAPI.createBossBar(p, bar);
+				p.activeBossBars.add(bar);
+			}
+		}
+	}
+	
 	public class BossBarLine{
 
 		private String name;

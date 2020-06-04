@@ -12,7 +12,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -141,10 +140,6 @@ public abstract class ITabPlayer {
 
 	public Scoreboard getActiveScoreboard() {
 		return activeScoreboard;
-	}
-
-	public List<BossBarLine> getActiveBossBars() {
-		return activeBossBars;
 	}
 
 	public String getWorldName() {
@@ -503,27 +498,6 @@ public abstract class ITabPlayer {
 			});
 		} else {
 			Shared.features.values().forEach(f -> f.onWorldChange(this, from, to));
-		}
-	}
-
-	public void detectBossBarsAndSend() {
-		BossBar feature = (BossBar) Shared.features.get("bossbar");
-		activeBossBars.clear();
-		if (disabledBossbar || !bossbarVisible) return;
-		showBossBars(feature.defaultBars);
-		showBossBars(feature.announcements);
-		if (feature.perWorld.get(getWorldName()) != null) {
-			showBossBars(feature.perWorld.get(getWorldName()));
-		}
-	}
-	private void showBossBars(List<String> bars) {
-		BossBar feature = (BossBar) Shared.features.get("bossbar");
-		for (String defaultBar : bars) {
-			BossBarLine bar = feature.getLine(defaultBar);
-			if (bar != null && bar.hasPermission(this)) {
-				PacketAPI.createBossBar(this, bar);
-				activeBossBars.add(bar);
-			}
 		}
 	}
 

@@ -12,6 +12,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.features.SimpleFeature;
 
@@ -19,6 +20,11 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 
 	private static final int WITHER_DISTANCE = 50;
 
+	private BossBar mainFeature;
+	
+	public BossBar_legacy(BossBar mainFeature) {
+		this.mainFeature = mainFeature;
+	}
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
@@ -45,14 +51,14 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		p.detectBossBarsAndSend();
+		mainFeature.detectBossBarsAndSend(p);
 	}
 	@EventHandler
 	public void a(PlayerRespawnEvent e) {
 		try {
 			long time = System.nanoTime();
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-			if (p != null) p.detectBossBarsAndSend();
+			if (p != null) mainFeature.detectBossBarsAndSend(p);
 			Shared.featureCpu.addTime(CPUFeature.BOSSBAR_LEGACY, System.nanoTime()-time);
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);

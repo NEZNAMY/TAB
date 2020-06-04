@@ -28,17 +28,17 @@ public class BossBarCommand extends SubCommand{
 		if (!bossbar.permToToggle || sender.hasPermission("tab.togglebar")) {
 			sender.bossbarVisible = !sender.bossbarVisible;
 			if (sender.bossbarVisible) {
-				sender.detectBossBarsAndSend();
+				if (sender != null) bossbar.detectBossBarsAndSend(sender);
 				sender.sendMessage(Configs.bossbar_on);
 				if (bossbar.remember_toggle_choice) {
 					bossbar.bossbar_off_players.remove(sender.getName());
 					Configs.playerdata.set("bossbar-off", bossbar.bossbar_off_players);
 				}
 			} else {
-				for (BossBarLine line : sender.getActiveBossBars()) {
+				for (BossBarLine line : sender.activeBossBars) {
 					PacketAPI.removeBossBar(sender, line);
 				}
-				sender.getActiveBossBars().clear();
+				sender.activeBossBars.clear();
 				sender.sendMessage(Configs.bossbar_off);
 				if (bossbar.remember_toggle_choice && !bossbar.bossbar_off_players.contains(sender.getName())) {
 					bossbar.bossbar_off_players.add(sender.getName());
