@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +25,7 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load() {
-		spyServers = Configs.config.getStringList("global-playerlist.spy-servers");
+		spyServers = Configs.config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
 		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
 		for (ITabPlayer displayed : Shared.getPlayers()) {
