@@ -13,7 +13,6 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.Team;
 
 public class TabPlayer extends ITabPlayer{
 	
@@ -34,7 +33,6 @@ public class TabPlayer extends ITabPlayer{
 	}
 	
 	private ProxiedPlayer player;
-	private int PacketPlayOutScoreboardTeamId;
 
 	public TabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
@@ -49,7 +47,6 @@ public class TabPlayer extends ITabPlayer{
 		name = p.getName();
 		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 		init();
-		PacketPlayOutScoreboardTeamId = (int) getId.invoke(directionData, Team.class, version.getNetworkId());
 	}
 	@Override
 	public String getGroupFromPermPlugin() {
@@ -108,7 +105,12 @@ public class TabPlayer extends ITabPlayer{
 	public ProxiedPlayer getBungeeEntity() {
 		return player;
 	}
-	public int getPacketPlayOutScoreboardTeamId() {
-		return PacketPlayOutScoreboardTeamId;
+	public int getPacketId(Class<? extends DefinedPacket> clazz) {
+		try {
+			return (int) getId.invoke(directionData, clazz, version.getNetworkId());
+		} catch (Exception e) {
+			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + version.getFriendlyName());
+			return 0;
+		}
 	}
 }

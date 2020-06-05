@@ -184,7 +184,7 @@ public class Main extends Plugin implements Listener, MainClass{
 						ByteBuf buf = ((ByteBuf) packet).duplicate();
 						byte packetId = buf.readByte();
 						Team team = null;
-						if (packetId == ((TabPlayer)player).getPacketPlayOutScoreboardTeamId()) {
+						if (packetId == ((TabPlayer)player).getPacketId(Team.class)) {
 							team = new Team();
 							team.read(buf, null, player.getVersion().getNetworkId());
 						}
