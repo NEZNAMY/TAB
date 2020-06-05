@@ -126,10 +126,12 @@ public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
-				if ((playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-					//remove packet sent by bungeecord
-					//changing to random non-existing player, the easiest way to cancel the removal
-					playerInfoData.uniqueId = UUID.randomUUID();
+				if (Shared.getPlayer(playerInfoData.uniqueId) != null) { //not preventing NPC removals
+					if ((playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+						//remove packet sent by bungeecord
+						//changing to random non-existing player, the easiest way to cancel the removal
+						playerInfoData.uniqueId = UUID.randomUUID();
+					}
 				}
 			}
 		}
