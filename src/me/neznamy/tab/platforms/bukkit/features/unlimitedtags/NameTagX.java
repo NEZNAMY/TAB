@@ -19,9 +19,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.CustomPacketFeature;
@@ -241,7 +239,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
 					synchronized (nearbyPlayers){
 						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+							nearby.sendPacket(as.getTeleportPacket(nearby));
 						}
 					}
 				}
@@ -259,7 +257,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
 					synchronized (nearbyPlayers){
 						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+							nearby.sendPacket(as.getTeleportPacket(nearby));
 						}
 					}
 				}
@@ -278,7 +276,7 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 						List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
 						synchronized (nearbyPlayers){
 							for (ITabPlayer nearby : nearbyPlayers) {
-								nearby.sendPacket(as.getNMSTeleportPacket(nearby));
+								nearby.sendPacket(as.getTeleportPacket(nearby));
 							}
 						}
 					}
@@ -309,10 +307,8 @@ public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, Cust
 	}
 	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
-			viewer.sendCustomBukkitPacket(as.getSpawnPacket(viewer, true));
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-				String displayName = as.property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, armorStandOwner, as.property.get()) : as.property.get();
-				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(as.getEntityId(), as.createDataWatcher(displayName, viewer).toNMS(), true));
+			for (Object packet : as.getSpawnPackets(viewer, true)) {
+				viewer.sendPacket(packet);
 			}
 		}
 	}

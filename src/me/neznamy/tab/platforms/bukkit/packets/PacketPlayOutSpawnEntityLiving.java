@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 
@@ -55,12 +56,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		if (yaw != 0) YAW.set(packet, (byte)(yaw * 256.0f / 360.0f));
 		if (pitch != 0) PITCH.set(packet, (byte)(pitch * 256.0f / 360.0f));
 		if (l != 0) L.set(packet, (byte)(l * 256.0f / 360.0f));
-		if (DATAWATCHER != null) {
-			//1.14 and lower
-			DATAWATCHER.set(packet, dataWatcher.toNMS());
-		} else {
-			//what the fuck
-		}
+		if (DATAWATCHER != null && dataWatcher != null) DATAWATCHER.set(packet, dataWatcher.toNMS());
 		if (watchableObjects != null) {
 			List<Object> list = new ArrayList<Object>();
 			for (Item o : this.watchableObjects) {
@@ -79,6 +75,13 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 			if (z != 0) Z.set(packet, floor((double)z*32));
 		}
 		return packet;
+	}
+	public Object toNMSNoEx(){
+		try {
+			return toNMS(null);
+		} catch (Exception e) {
+			return Shared.errorManager.printError(null, "Failed to create PacketPlayOutSpawnEntityLiving", e);
+		}
 	}
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;

@@ -37,7 +37,7 @@ public class ArmorStand{
 	private List<ITabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	public Property property;
 	private boolean staticOffset;
-	
+
 	public ArmorStand(ITabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
@@ -67,13 +67,22 @@ public class ArmorStand{
 			}
 		}
 	}
-	public PacketPlayOutSpawnEntityLiving getSpawnPacket(ITabPlayer viewer, boolean addToRegistered) {
+	public Object[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
-		String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, property.get()) : property.get();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
-		return new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(createDataWatcher(displayName, viewer));
+		DataWatcher dataWatcher = createDataWatcher(property.get(), viewer);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+			return new Object[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).toNMSNoEx(),
+					MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), dataWatcher.toNMS(), true)
+			};
+		} else {
+			return new Object[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(dataWatcher).toNMSNoEx()
+			};
+		}
 	}
-	public Object getNMSTeleportPacket(ITabPlayer viewer) {
+	public Object getTeleportPacket(ITabPlayer viewer) {
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(viewer));
 	}
 	private Location getArmorStandLocationFor(ITabPlayer viewer) {
@@ -86,7 +95,7 @@ public class ArmorStand{
 	public void teleport() {
 		synchronized (nearbyPlayers) {
 			for (ITabPlayer all : nearbyPlayers) {
-				Object teleportPacket = getNMSTeleportPacket(all);
+				Object teleportPacket = getTeleportPacket(all);
 				all.sendPacket(teleportPacket);
 			}
 		}
@@ -96,23 +105,20 @@ public class ArmorStand{
 		updateLocation(player.getLocation());
 		synchronized (nearbyPlayers) {
 			for (ITabPlayer viewer : nearbyPlayers) {
-				String displayName = property.hasRelationalPlaceholders() ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, property.get()) : property.get();
 				if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 					//1.14.x client sided bug, despawning completely
 					if (sneaking) {
 						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 					} else {
-						viewer.sendCustomBukkitPacket(getSpawnPacket(viewer, false));
-						if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-							viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, viewer).toNMS(), true));
+						for (Object packet : getSpawnPackets(viewer, false)) {
+							viewer.sendPacket(packet);
 						}
 					}
 				} else {
 					//respawning so there's no animation and it's instant
 					viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-					viewer.sendCustomBukkitPacket(getSpawnPacket(viewer, false));
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), createDataWatcher(displayName, viewer).toNMS(), true));
+					for (Object packet : getSpawnPackets(viewer, false)) {
+						viewer.sendPacket(packet);
 					}
 				}
 			}
@@ -133,13 +139,7 @@ public class ArmorStand{
 		synchronized (nearbyPlayers) {
 			String displayName = property.get();
 			for (ITabPlayer viewer : nearbyPlayers) {
-				String currentName;
-				if (property.hasRelationalPlaceholders()) {
-					currentName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, displayName);
-				} else {
-					currentName = displayName;
-				}
-				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(currentName, viewer).toNMS(), true));
+				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, viewer).toNMS(), true));
 			}
 		}
 	}
@@ -168,23 +168,31 @@ public class ArmorStand{
 	public void removeFromRegistered(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 	}
-	public DataWatcher createDataWatcher(String name, ITabPlayer viewer) {
+	public DataWatcher createDataWatcher(String displayName, ITabPlayer viewer) {
+		DataWatcher datawatcher = new DataWatcher(null);
+
 		byte flag = 0;
 		if (sneaking) flag += (byte)2;
 		flag += (byte)32;
-		DataWatcher datawatcher = new DataWatcher(null);
-		if (name == null) name = "";
 		DataWatcher.Helper.setEntityFlags(datawatcher, flag);
-		DataWatcher.Helper.setCustomName(datawatcher, name);
-		boolean visible = (isNameVisiblyEmpty(name) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
+
+		if (displayName == null) {
+			displayName = "";
+		} else if (displayName.contains("%rel_")) {
+			displayName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, displayName);
+		}
+		DataWatcher.Helper.setCustomName(datawatcher, displayName);
+
+		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
 		DataWatcher.Helper.setCustomNameVisible(datawatcher, visible);
+
 		if (viewer.getVersion().getMinorVersion() > 8) DataWatcher.Helper.setArmorStandFlags(datawatcher, (byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){
 		return nearbyPlayers;
 	}
-	public static boolean isNameVisiblyEmpty(String displayName) {
+	private static boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}
 }
