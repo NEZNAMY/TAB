@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -33,6 +34,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderRefresher;
 
 /**
  * bStats collects some data for plugin authors.
@@ -71,6 +73,15 @@ public class Metrics {
 		metrics.addCustomChart(new Metrics.SimplePie("server_version", new Callable<String>() {
 			public String call() {
 				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
+			}
+		}));
+		metrics.addCustomChart(new Metrics.AdvancedPie("used_unlisted_papi_placeholders_2_7_7", new Callable<Map<String, Integer>>() {
+			public Map<String, Integer> call(){
+				Map<String, Integer> map = new HashMap<String, Integer>();
+				for (String placeholder : PlaceholderRefresher.usedPAPIPlaceholders) {
+					map.put(placeholder, 1);
+				}
+				return map;
 			}
 		}));
 	}

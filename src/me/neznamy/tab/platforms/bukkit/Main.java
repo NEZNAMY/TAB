@@ -497,6 +497,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
+			PlaceholderRefresher.usedPAPIPlaceholders.add(identifier);
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (!usedExpansions.contains(plugin) && !plugin.equals("some")) {
 				usedExpansions.add(plugin);
