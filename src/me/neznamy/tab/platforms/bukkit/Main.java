@@ -659,10 +659,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		suggestPlaceholderSwitch("%player_displayname%", "%displayname%");
 		suggestPlaceholderSwitch("%server_ram_used%", "%memory-used%");
 		suggestPlaceholderSwitch("%server_ram_max%", "%memory-max%");
+		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
 
 		//both
 		suggestPlaceholderSwitch("%player_ping%", "%ping%");
-		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 		suggestPlaceholderSwitch("%player_name%", "%nick%");
 	}
