@@ -19,7 +19,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private String collisionRule;
 //	private EnumChatFormat color;
 	private Collection<String> players = Collections.emptyList();
-	private EnumTeamAction method;
+	private int method;
 	private int options;
 
 	private PacketPlayOutScoreboardTeam() {
@@ -27,7 +27,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	}
 	public static PacketPlayOutScoreboardTeam CREATE_TEAM(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
 		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = EnumTeamAction.CREATE_TEAM;
+		packet.method = 0;
 		packet.name = team;
 		packet.playerPrefix = prefix;
 		packet.playerSuffix = suffix;
@@ -39,13 +39,13 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	}
 	public static PacketPlayOutScoreboardTeam REMOVE_TEAM(String team) {
 		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = EnumTeamAction.REMOVE_TEAM;
+		packet.method = 1;
 		packet.name = team;
 		return packet;
 	}
 	public static PacketPlayOutScoreboardTeam UPDATE_TEAM_INFO(String team, String prefix, String suffix, String visibility, String collision, int options) {
 		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = EnumTeamAction.UPDATE_TEAM_INFO;
+		packet.method = 2;
 		packet.name = team;
 		packet.playerPrefix = prefix;
 		packet.playerSuffix = suffix;
@@ -56,14 +56,14 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	}
 	public static PacketPlayOutScoreboardTeam ADD_PLAYERS(String team, Collection<String> players) {
 		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = EnumTeamAction.ADD_PLAYERS;
+		packet.method = 3;
 		packet.name = team;
 		packet.players = players;
 		return packet;
 	}
 	public static PacketPlayOutScoreboardTeam REMOVE_PLAYERS(String team, Collection<String> players) {
 		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = EnumTeamAction.REMOVE_PLAYERS;
+		packet.method = 4;
 		packet.name = team;
 		packet.players = players;
 		return packet;
@@ -96,7 +96,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		}
 		if (COLLISION != null) COLLISION.set(packet, collisionRule);
 		PLAYERS.set(packet, players);
-		ACTION.set(packet, method.getNetworkId());
+		ACTION.set(packet, method);
 		SIGNATURE.set(packet, options);
 		if (VISIBILITY != null) VISIBILITY.set(packet, nametagVisibility);
 		return packet;
@@ -115,7 +115,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = cutTo(this.playerPrefix, 16);
 			suffix = cutTo(this.playerSuffix, 16);
 		}
-		return new Team(name, (byte)method.getNetworkId(), teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
+		return new Team(name, (byte)method, teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String teamDisplay = name;
@@ -131,25 +131,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = cutTo(this.playerPrefix, 16);
 			suffix = cutTo(this.playerSuffix, 16);
 		}
-		return new me.neznamy.tab.platforms.velocity.protocol.Team(name, (byte)method.getNetworkId(), teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
-	}
-	
-	public enum EnumTeamAction{
-		
-		CREATE_TEAM(0),
-		REMOVE_TEAM(1),
-		UPDATE_TEAM_INFO(2),
-		ADD_PLAYERS(3),
-		REMOVE_PLAYERS(4);
-		
-		private int networkId;
-		
-		EnumTeamAction(int networkId) {
-			this.networkId = networkId;
-		}
-		public int getNetworkId() {
-			return networkId;
-		}
+		return new me.neznamy.tab.platforms.velocity.protocol.Team(name, (byte)method, teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
 	
 	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
