@@ -125,7 +125,7 @@ public class Main implements MainClass{
 		disconnectedPlayer.disconnect();
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
-		for (Placeholder pl : Placeholders.usedPlaceholders.values()) {
+		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
 				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
@@ -244,13 +244,13 @@ public class Main implements MainClass{
 	public static void registerPlaceholders() {
 		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
 		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get();
-		Placeholders.registerInternalPlaceholder(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			Placeholders.registerInternalPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
 				public String get() {
 					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
 				}
@@ -369,7 +369,7 @@ public class Main implements MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			Placeholders.registerPAPIPlaceholder(new PlayerPlaceholder(identifier, 49){
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());

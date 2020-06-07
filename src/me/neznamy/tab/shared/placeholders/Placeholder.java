@@ -77,7 +77,7 @@ public abstract class Placeholder {
 	private String setPlaceholders(String text, ITabPlayer p) {
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
-			Placeholder pl = Placeholders.getUsedPlaceholder(s);
+			Placeholder pl = Placeholders.getPlaceholder(s);
 			if (text.contains(pl.getIdentifier())) text = pl.set(text, p);
 		}
 		return text;

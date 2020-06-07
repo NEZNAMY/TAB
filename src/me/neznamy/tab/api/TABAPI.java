@@ -201,7 +201,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		Placeholders.registerAPIPlaceholder(placeholder);
+		Placeholders.registerPlaceholder(placeholder);
 	}
 	
 	
@@ -213,7 +213,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		Placeholders.registerAPIPlaceholder(placeholder);
+		Placeholders.registerPlaceholder(placeholder);
 	}
 	
 	
@@ -225,7 +225,7 @@ public class TABAPI {
 	 * @see registerServerPlaceholder
 	 */
 	public static void registerServerConstant(ServerConstant constant) {
-		Placeholders.registerAPIPlaceholder(constant);
+		Placeholders.registerPlaceholder(constant);
 	}
 	
 	public static Scoreboard createScoreboard(String title, List<String> lines) {

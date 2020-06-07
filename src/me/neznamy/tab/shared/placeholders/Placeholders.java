@@ -13,34 +13,17 @@ public class Placeholders {
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 	
-	public static Map<String, Placeholder> registeredInternalPlaceholders;
-	
-	//used internal placeholders + used placeholderapi placeholders
-	public static Map<String, Placeholder> usedPlaceholders;
-	
 	//all placeholders used in all configuration files, including invalid ones
 	public static List<String> allUsedPlaceholderIdentifiers;
 	
-	//placeholders registered using the API, so they survive /tab reload
-	public static List<Placeholder> APIPlaceholders = new ArrayList<Placeholder>();
+	//plugin internals + PAPI + API
+	public static Map<String, Placeholder> registeredPlaceholders;
 
-	public static void clearAll() {
-		registeredInternalPlaceholders = new HashMap<String, Placeholder>();
-		usedPlaceholders = new HashMap<String, Placeholder>();
-		allUsedPlaceholderIdentifiers = new ArrayList<String>();
-	}
 	public static Collection<Placeholder> getAllPlaceholders(){
-		List<Placeholder> list = new ArrayList<>();
-		list.addAll(registeredInternalPlaceholders.values());
-		list.addAll(APIPlaceholders);
-		list.addAll(usedPlaceholders.values());
-		return list;
+		return registeredPlaceholders.values();
 	}
-	public static Placeholder getUsedPlaceholder(String identifier) {
-		return usedPlaceholders.get(identifier);
-	}
-	public static Collection<Placeholder> getAllUsed(){
-		return usedPlaceholders.values();
+	public static Placeholder getPlaceholder(String identifier) {
+		return registeredPlaceholders.get(identifier);
 	}
 	public static List<String> detectAll(String text){
 		List<String> placeholders = new ArrayList<>();
@@ -86,7 +69,7 @@ public class Placeholders {
 	public static List<Placeholder> detectPlaceholders(String rawValue) {
 		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<Placeholder>();
 		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		for (Placeholder placeholder : getAllUsed()) {
+		for (Placeholder placeholder : getAllPlaceholders()) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
 				placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
@@ -117,7 +100,7 @@ public class Placeholders {
 		}
 	}
 	public static void registerUniversalPlaceholders() {
-		registerInternalPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
+		registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
 				return p.getRank();
 			}
@@ -126,7 +109,7 @@ public class Placeholders {
 				return Configs.rankAliases.values().toArray(new String[0]);
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
+		registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -135,7 +118,7 @@ public class Placeholders {
 				return var+"";
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
+		registerPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
 			public String get() {
 				int var = Shared.getPlayers().size();
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -144,13 +127,13 @@ public class Placeholders {
 				return var+"";
 			}
 		});
-		registerInternalPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"%", 1000) {
+		registerPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"%", 1000) {
 			public String get(ITabPlayer p) {
 				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
-		registerInternalPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"online%", 1000) {
+		registerPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"online%", 1000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){
@@ -159,59 +142,59 @@ public class Placeholders {
 				return var+"";
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
+		registerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
 			public String get() {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		registerInternalPlaceholder(new ServerConstant("%memory-max%") {
+		registerPlaceholder(new ServerConstant("%memory-max%") {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
+		registerPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
 			public String get() {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		registerInternalPlaceholder(new ServerConstant("%memory-max-gb%") {
+		registerPlaceholder(new ServerConstant("%memory-max-gb%") {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
 		});
-		registerInternalPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
+		registerPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getName();
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%time%", 900) {
+		registerPlaceholder(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%date%", 60000) {
+		registerPlaceholder(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
 				return Configs.dateFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
 			}
 		});
-		registerInternalPlaceholder(new ServerPlaceholder("%online%", 1000) {
+		registerPlaceholder(new ServerPlaceholder("%online%", 1000) {
 			public String get() {
 				return Shared.getPlayers().size()+"";
 			}
 		});
-		registerInternalPlaceholder(new PlayerPlaceholder("%ping%", 2000) {
+		registerPlaceholder(new PlayerPlaceholder("%ping%", 2000) {
 			public String get(ITabPlayer p) {
 				return p.getPing()+"";
 			}
 		});
-		registerInternalPlaceholder(new PlayerPlaceholder("%player-version%", 999999999) {
+		registerPlaceholder(new PlayerPlaceholder("%player-version%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}
 		});
 		for (int i=5; i<=15; i++) {
 			final int version = i;
-			registerInternalPlaceholder(new ServerPlaceholder("%version-group:1-" + version + "-x%", 1000) {
+			registerPlaceholder(new ServerPlaceholder("%version-group:1-" + version + "-x%", 1000) {
 				public String get() {
 					int count = 0;
 					for (ITabPlayer p : Shared.getPlayers()) {
@@ -222,31 +205,25 @@ public class Placeholders {
 			});
 		}
 		if (PluginHooks.luckPerms) {
-			registerInternalPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
+			registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.LuckPerms_getPrefix(p);
 				}
 			});
-			registerInternalPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
+			registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.LuckPerms_getSuffix(p);
 				}
 			});
 		}
-		for (Placeholder placeholder : APIPlaceholders) {
-			usedPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		}
 		for (String placeholder : allUsedPlaceholderIdentifiers) {
-			if (!usedPlaceholders.containsKey(placeholder)) {
-				categorizeUsedPlaceholder(placeholder);
-			}
+			categorizeUsedPlaceholder(placeholder);
 		}
 	}
 	public static void categorizeUsedPlaceholder(String placeholder) {
 		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
 
-		if (registeredInternalPlaceholders.containsKey(placeholder)) {
-			usedPlaceholders.put(placeholder, registeredInternalPlaceholders.get(placeholder));
+		if (registeredPlaceholders.containsKey(placeholder)) {
 			return;
 		}
 		
@@ -255,7 +232,7 @@ public class Placeholders {
 			String animationName = placeholder.substring(11, placeholder.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerInternalPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()-1) {
+					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()-1) {
 						public String get() {
 							return a.getMessage();
 						}
@@ -273,20 +250,9 @@ public class Placeholders {
 		//placeholderapi or invalid
 		Shared.mainClass.registerUnknownPlaceholder(placeholder);
 	}
-	public static void registerInternalPlaceholder(Placeholder placeholder) {
-		registeredInternalPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		if (allUsedPlaceholderIdentifiers.contains(placeholder.getIdentifier())) {
-			usedPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		}
+	public static void registerPlaceholder(Placeholder placeholder) {
+		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
-	public static void registerPAPIPlaceholder(Placeholder placeholder) {
-		usedPlaceholders.put(placeholder.getIdentifier(), placeholder);
-	}
-	public static void registerAPIPlaceholder(Placeholder placeholder) {
-		APIPlaceholders.add(placeholder);
-		usedPlaceholders.put(placeholder.getIdentifier(), placeholder);
-	}
-	
 	public static void checkForRegistration(String text) {
 		for (String identifier : detectAll(text)) {
 			if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);

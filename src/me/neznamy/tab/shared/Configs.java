@@ -82,7 +82,7 @@ public class Configs {
 				Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 			}
 		}
-		Placeholders.clearAll();
+		Placeholders.allUsedPlaceholderIdentifiers.clear();
 		loadConfig();
 		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30f);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);

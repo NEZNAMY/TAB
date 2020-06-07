@@ -111,7 +111,7 @@ public enum SortingType {
 	}
 	private String setPlaceholders(String string, ITabPlayer player) {
 		if (string.contains("%")) {
-			for (Placeholder pl : Placeholders.getAllUsed()) {
+			for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 				if (string.contains(pl.getIdentifier())) {
 					string = pl.set(string, player);
 				}

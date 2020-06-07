@@ -105,7 +105,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		disconnectedPlayer.disconnect();
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
-		for (Placeholder pl : Placeholders.usedPlaceholders.values()) {
+		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
 				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
@@ -221,12 +221,12 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
 		PluginHooks.ultrapermissions = ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null;
 		if (PluginHooks.premiumVanish) {
-			Placeholders.registerInternalPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
 					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
 				}
 			});
-			Placeholders.registerInternalPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
 				public String get() {
 					int count = 0;
 					for (ITabPlayer all : Shared.getPlayers()) {
@@ -236,18 +236,18 @@ public class Main extends Plugin implements Listener, MainClass{
 				}
 			});
 		}
-		Placeholders.registerInternalPlaceholder(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			Placeholders.registerInternalPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
 				public String get() {
 					return server.getValue().getPlayers().size()+"";
 				}
 			});
-			Placeholders.registerInternalPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
 				public String get() {
 					int count = server.getValue().getPlayers().size();
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
@@ -313,7 +313,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
 			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
-			Placeholders.registerPAPIPlaceholder(new PlayerPlaceholder(identifier, 49){
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
 					String name;

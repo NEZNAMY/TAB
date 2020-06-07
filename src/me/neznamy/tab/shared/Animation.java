@@ -17,7 +17,7 @@ public class Animation {
 		this.interval = Shared.errorManager.fixAnimationInterval(name, interval);
 		this.messages =  Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
 		for (int i=0; i<messages.length; i++) {
-			for (Placeholder c : Placeholders.usedPlaceholders.values()) {
+			for (Placeholder c : Placeholders.getAllPlaceholders()) {
 				if (c instanceof ServerConstant) {
 					if (messages[i].contains(c.getIdentifier())) {
 						messages[i] = messages[i].replace(c.getIdentifier(), ((ServerConstant)c).get());
