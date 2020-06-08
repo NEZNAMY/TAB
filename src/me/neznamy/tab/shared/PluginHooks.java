@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.Zrips.CMI.CMI;
+import com.Zrips.CMI.Containers.CMIUser;
 import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -98,6 +100,18 @@ public class PluginHooks {
 			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
+		}
+	}
+	public static boolean CMI_isAFK(ITabPlayer p) {
+		try {
+			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p.getBukkitEntity());
+			if (user == null) {
+				Shared.errorManager.printError("CMI v" + getVersion("CMI") + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+				return false;
+			}
+			return user.isAfk();
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using CMI", t);
 		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
@@ -408,13 +422,13 @@ public class PluginHooks {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
 		}
 	}
-	
+
 	private static String getVersion(String bukkitPlugin) {
-		 Plugin plugin = Bukkit.getPluginManager().getPlugin(bukkitPlugin);
-		 if (plugin != null) {
-			 return plugin.getDescription().getVersion();
-		 } else {
-			 return "-1";
-		 }
+		Plugin plugin = Bukkit.getPluginManager().getPlugin(bukkitPlugin);
+		if (plugin != null) {
+			return plugin.getDescription().getVersion();
+		} else {
+			return "-1";
+		}
 	}
 }

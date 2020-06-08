@@ -14,10 +14,10 @@ public class Placeholders {
 	public static final char colorChar = '\u00a7';
 	
 	//all placeholders used in all configuration files, including invalid ones
-	public static List<String> allUsedPlaceholderIdentifiers;
+	public static List<String> allUsedPlaceholderIdentifiers = new ArrayList<String>();
 	
 	//plugin internals + PAPI + API
-	public static Map<String, Placeholder> registeredPlaceholders;
+	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 
 	public static Collection<Placeholder> getAllPlaceholders(){
 		return registeredPlaceholders.values();

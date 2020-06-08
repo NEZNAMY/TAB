@@ -78,7 +78,7 @@ public class Metrics {
 		metrics.addCustomChart(new Metrics.AdvancedPie("used_unlisted_papi_placeholders_2_7_7", new Callable<Map<String, Integer>>() {
 			public Map<String, Integer> call(){
 				Map<String, Integer> map = new HashMap<String, Integer>();
-				for (String placeholder : PlaceholderRefresher.usedPAPIPlaceholders) {
+				for (String placeholder : PlaceholderRefresher.unknownPlaceholders) {
 					map.put(placeholder, 1);
 				}
 				return map;

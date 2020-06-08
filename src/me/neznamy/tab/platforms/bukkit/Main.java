@@ -281,7 +281,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
 				}
@@ -291,7 +291,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -302,7 +302,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AutoAFK_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -313,7 +313,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
@@ -323,8 +323,19 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return new String[] {Configs.yesAfk, Configs.noAfk};
 				}
 			});
+		} else if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
+
+				public String get(ITabPlayer p) {
+					return PluginHooks.CMI_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
+				}
+				@Override
+				public String[] getChilds(){
+					return new String[] {Configs.yesAfk, Configs.noAfk};
+				}
+			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 1000) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
@@ -497,41 +508,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			PlaceholderRefresher.usedPAPIPlaceholders.add(identifier);
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
-			if (!usedExpansions.contains(plugin) && !plugin.equals("some")) {
+			if (plugin.equals("some")) return;
+			if (!usedExpansions.contains(plugin)) {
 				usedExpansions.add(plugin);
 				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
-			int server = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
-			if (server != -1) {
-				Shared.debug("Registering SERVER PAPI placeholder " + identifier + " with cooldown " + server);
-				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, server){
-					public String get() {
-						return PluginHooks.PlaceholderAPI_setPlaceholders((Player)null, identifier);
-					}
-				});
-				return;
-			}
-			int player = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, -1);
-			if (player != -1) {
-				Shared.debug("Registering PLAYER PAPI placeholder " + identifier + " with cooldown " + player);
-				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, player){
-					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p.getBukkitEntity(), identifier);
-					}
-				});
-				return;
-			}
-			Shared.debug("Registering PLAYER PAPI placeholder " + identifier);
-			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
-				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
-				}
-			});
-			return;
+			PlaceholderRefresher.registerPlaceholder(identifier);
 		}
-		//Shared.print('6', "Unknown placeholder: " + identifier);
 	}
 
 	public void convertConfig(ConfigurationFile config) {
@@ -638,28 +622,32 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@Override
 	public void suggestPlaceholders() {
 		//bukkit only
+		suggestPlaceholderSwitch("%cmi_user_afk%", "%afk%");
+		suggestPlaceholderSwitch("%cmi_user_afk_symbol%", "%afk%");
+		suggestPlaceholderSwitch("%deluxetags_tag%", "%deluxetag%");
 		suggestPlaceholderSwitch("%essentials_afk%", "%afk%");
-		suggestPlaceholderSwitch("%vault_prefix%", "%vault-prefix%");
-		suggestPlaceholderSwitch("%vault_suffix%", "%vault-suffix%");
+		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");
 		suggestPlaceholderSwitch("%luckperms_prefix%", "%luckperms-prefix%");
 		suggestPlaceholderSwitch("%luckperms_suffix%", "%luckperms-suffix%");
-		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");
+		suggestPlaceholderSwitch("%player_displayname%", "%displayname%");
+		suggestPlaceholderSwitch("%player_health%", "%health%");
+		suggestPlaceholderSwitch("%player_health_rounded%", "%health%");
+		suggestPlaceholderSwitch("%player_world%", "%world%");
 		suggestPlaceholderSwitch("%player_x%", "%xPos%");
 		suggestPlaceholderSwitch("%player_y%", "%yPos%");
 		suggestPlaceholderSwitch("%player_z%", "%zPos%");
-		suggestPlaceholderSwitch("%statistic_deaths%", "%deaths%");
-		suggestPlaceholderSwitch("%vault_eco_balance%", "%money%");
-		suggestPlaceholderSwitch("%player_health%", "%health%");
-		suggestPlaceholderSwitch("%player_health_rounded%", "%health%");
-		suggestPlaceholderSwitch("%server_tps_1%", "%tps%");
-		suggestPlaceholderSwitch("%deluxetags_tag%", "%deluxetag%");
-		suggestPlaceholderSwitch("%player_world%", "%world%");
+		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
 		suggestPlaceholderSwitch("%server_max_players%", "%maxplayers%");
 		suggestPlaceholderSwitch("%server_online%", "%online%");
-		suggestPlaceholderSwitch("%player_displayname%", "%displayname%");
-		suggestPlaceholderSwitch("%server_ram_used%", "%memory-used%");
 		suggestPlaceholderSwitch("%server_ram_max%", "%memory-max%");
-		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%server_ram_used%", "%memory-used%");
+		suggestPlaceholderSwitch("%server_tps_1%", "%tps%");
+		suggestPlaceholderSwitch("%statistic_deaths%", "%deaths%");
+		suggestPlaceholderSwitch("%supervanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%vault_eco_balance%", "%money%");
+		suggestPlaceholderSwitch("%vault_prefix%", "%vault-prefix%");
+		suggestPlaceholderSwitch("%vault_rank%", "%rank%");
+		suggestPlaceholderSwitch("%vault_suffix%", "%vault-suffix%");
 
 		//both
 		suggestPlaceholderSwitch("%player_ping%", "%ping%");
