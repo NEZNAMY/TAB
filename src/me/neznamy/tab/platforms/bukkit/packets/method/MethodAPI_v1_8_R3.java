@@ -45,6 +45,9 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_8_R3 extends MethodAPI {
 
+	//for ySpigot compatibility
+	private static final Constructor<?> newPlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class.getConstructors()[0];
+
 	public MethodAPI_v1_8_R3() {
 		DataWatcher = DataWatcher.class;
 		Entity = Entity.class;
@@ -120,10 +123,6 @@ public class MethodAPI_v1_8_R3 extends MethodAPI {
 	public Object newDataWatcher(Object entity) {
 		return new DataWatcher((Entity) entity);
 	}
-	
-	//for ySpigot compatibility
-	private static final Constructor<?> newPlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class.getConstructors()[0];
-	
 	public Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName) {
 		try {
 			//ySpigot
