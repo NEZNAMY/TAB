@@ -4,7 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

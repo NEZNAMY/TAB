@@ -16,7 +16,36 @@ import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import net.minecraft.server.v1_8_R1.*;
+import net.minecraft.server.v1_8_R1.ChatSerializer;
+import net.minecraft.server.v1_8_R1.DataWatcher;
+import net.minecraft.server.v1_8_R1.Entity;
+import net.minecraft.server.v1_8_R1.EntityArmorStand;
+import net.minecraft.server.v1_8_R1.EntityLiving;
+import net.minecraft.server.v1_8_R1.EntityWither;
+import net.minecraft.server.v1_8_R1.EnumChatFormat;
+import net.minecraft.server.v1_8_R1.EnumGamemode;
+import net.minecraft.server.v1_8_R1.EnumPlayerInfoAction;
+import net.minecraft.server.v1_8_R1.EnumScoreboardAction;
+import net.minecraft.server.v1_8_R1.EnumScoreboardHealthDisplay;
+import net.minecraft.server.v1_8_R1.IChatBaseComponent;
+import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NetworkManager;
+import net.minecraft.server.v1_8_R1.Packet;
+import net.minecraft.server.v1_8_R1.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_8_R1.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_8_R1.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R1.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_8_R1.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_8_R1.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_8_R1.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_8_R1.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_8_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_8_R1.PlayerInfoData;
+import net.minecraft.server.v1_8_R1.WatchableObject;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_8_R1 extends MethodAPI {

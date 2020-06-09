@@ -14,9 +14,31 @@ import org.bukkit.inventory.ItemStack;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_8_R2.*;
+import net.minecraft.server.v1_8_R2.DataWatcher;
+import net.minecraft.server.v1_8_R2.Entity;
+import net.minecraft.server.v1_8_R2.EntityArmorStand;
+import net.minecraft.server.v1_8_R2.EntityLiving;
+import net.minecraft.server.v1_8_R2.EntityWither;
+import net.minecraft.server.v1_8_R2.EnumChatFormat;
+import net.minecraft.server.v1_8_R2.IChatBaseComponent;
 import net.minecraft.server.v1_8_R2.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R2.IScoreboardCriteria;
+import net.minecraft.server.v1_8_R2.NBTTagCompound;
+import net.minecraft.server.v1_8_R2.Packet;
+import net.minecraft.server.v1_8_R2.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R2.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R2.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R2.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_8_R2.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_8_R2.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_8_R2.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_8_R2.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_8_R2.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_8_R2.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_8_R2.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_8_R2.WorldSettings.EnumGamemode;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

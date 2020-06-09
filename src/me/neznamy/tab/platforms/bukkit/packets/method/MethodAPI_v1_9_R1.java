@@ -14,9 +14,36 @@ import org.bukkit.inventory.ItemStack;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_9_R1.BossBattle;
+import net.minecraft.server.v1_9_R1.DataWatcher;
+import net.minecraft.server.v1_9_R1.DataWatcherObject;
+import net.minecraft.server.v1_9_R1.DataWatcherRegistry;
+import net.minecraft.server.v1_9_R1.DataWatcherSerializer;
+import net.minecraft.server.v1_9_R1.Entity;
+import net.minecraft.server.v1_9_R1.EntityArmorStand;
+import net.minecraft.server.v1_9_R1.EntityLiving;
+import net.minecraft.server.v1_9_R1.EntityWither;
+import net.minecraft.server.v1_9_R1.EnumChatFormat;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
 import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_9_R1.IScoreboardCriteria;
+import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.Packet;
+import net.minecraft.server.v1_9_R1.PacketPlayInUseEntity;
+import net.minecraft.server.v1_9_R1.PacketPlayOutBoss;
+import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_9_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_9_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_9_R1.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_9_R1.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_9_R1.WorldSettings.EnumGamemode;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

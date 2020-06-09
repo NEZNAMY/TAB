@@ -4,8 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.command.level1.*;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.command.level1.AnnounceCommand;
+import me.neznamy.tab.shared.command.level1.BossBarCommand;
+import me.neznamy.tab.shared.command.level1.CpuCommand;
+import me.neznamy.tab.shared.command.level1.DebugCommand;
+import me.neznamy.tab.shared.command.level1.GroupCommand;
+import me.neznamy.tab.shared.command.level1.NTPreviewCommand;
+import me.neznamy.tab.shared.command.level1.ParseCommand;
+import me.neznamy.tab.shared.command.level1.PlayerCommand;
+import me.neznamy.tab.shared.command.level1.PlayerUUIDCommand;
+import me.neznamy.tab.shared.command.level1.ReloadCommand;
+import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
 
 public class TabCommand extends SubCommand {
 

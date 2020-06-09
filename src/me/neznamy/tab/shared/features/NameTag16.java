@@ -1,6 +1,10 @@
 package me.neznamy.tab.shared.features;
 
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 
 public class NameTag16 implements SimpleFeature{

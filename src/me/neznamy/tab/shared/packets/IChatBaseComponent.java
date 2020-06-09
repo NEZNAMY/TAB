@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.packets;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;

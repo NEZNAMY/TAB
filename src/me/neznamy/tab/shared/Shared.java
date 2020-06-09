@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.parser.ParserException;
@@ -9,9 +11,13 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.packets.*;
-import me.neznamy.tab.shared.placeholders.*;
+import me.neznamy.tab.shared.features.CustomPacketFeature;
+import me.neznamy.tab.shared.features.RawPacketFeature;
+import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Shared {
 

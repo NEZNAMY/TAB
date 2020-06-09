@@ -3,9 +3,13 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import net.minecraft.util.io.netty.channel.*;
+import net.minecraft.util.io.netty.channel.Channel;
+import net.minecraft.util.io.netty.channel.ChannelDuplexHandler;
+import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
+import net.minecraft.util.io.netty.channel.ChannelPromise;
 
 public class Injector1_7 {
 

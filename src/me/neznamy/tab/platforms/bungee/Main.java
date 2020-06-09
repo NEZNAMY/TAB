@@ -1,31 +1,63 @@
 package me.neznamy.tab.platforms.bungee;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.Configs;
+import me.neznamy.tab.shared.ConfigurationFile;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.MainClass;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
-import me.neznamy.tab.shared.features.*;
+import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
+import me.neznamy.tab.shared.features.CustomPacketFeature;
+import me.neznamy.tab.shared.features.GhostPlayerFix;
+import me.neznamy.tab.shared.features.GlobalPlayerlist;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.SpectatorFix;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
-import me.neznamy.tab.shared.placeholders.*;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerConstant;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
-import net.md_5.bungee.api.plugin.*;
-import net.md_5.bungee.event.*;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.event.TabCompleteEvent;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.packet.Team;
 
 public class Main extends Plugin implements Listener, MainClass{
 

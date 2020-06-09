@@ -13,7 +13,30 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import net.minecraft.server.v1_7_R4.*;
+import net.minecraft.server.v1_7_R4.ChatSerializer;
+import net.minecraft.server.v1_7_R4.DataWatcher;
+import net.minecraft.server.v1_7_R4.Entity;
+import net.minecraft.server.v1_7_R4.EntityLiving;
+import net.minecraft.server.v1_7_R4.EntityWither;
+import net.minecraft.server.v1_7_R4.EnumChatFormat;
+import net.minecraft.server.v1_7_R4.EnumGamemode;
+import net.minecraft.server.v1_7_R4.IChatBaseComponent;
+import net.minecraft.server.v1_7_R4.NBTTagCompound;
+import net.minecraft.server.v1_7_R4.NetworkManager;
+import net.minecraft.server.v1_7_R4.Packet;
+import net.minecraft.server.v1_7_R4.PacketPlayInUseEntity;
+import net.minecraft.server.v1_7_R4.PacketPlayOutChat;
+import net.minecraft.server.v1_7_R4.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_7_R4.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_7_R4.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_7_R4.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_7_R4.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_7_R4.WatchableObject;
 import net.minecraft.util.io.netty.channel.Channel;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -10,7 +10,27 @@ import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_6_R1.*;
+import net.minecraft.server.v1_6_R1.ChatMessage;
+import net.minecraft.server.v1_6_R1.DataWatcher;
+import net.minecraft.server.v1_6_R1.Entity;
+import net.minecraft.server.v1_6_R1.EntityLiving;
+import net.minecraft.server.v1_6_R1.EntityWither;
+import net.minecraft.server.v1_6_R1.EnumChatFormat;
+import net.minecraft.server.v1_6_R1.EnumGamemode;
+import net.minecraft.server.v1_6_R1.NBTTagCompound;
+import net.minecraft.server.v1_6_R1.Packet;
+import net.minecraft.server.v1_6_R1.Packet201PlayerInfo;
+import net.minecraft.server.v1_6_R1.Packet206SetScoreboardObjective;
+import net.minecraft.server.v1_6_R1.Packet207SetScoreboardScore;
+import net.minecraft.server.v1_6_R1.Packet208SetScoreboardDisplayObjective;
+import net.minecraft.server.v1_6_R1.Packet209SetScoreboardTeam;
+import net.minecraft.server.v1_6_R1.Packet20NamedEntitySpawn;
+import net.minecraft.server.v1_6_R1.Packet24MobSpawn;
+import net.minecraft.server.v1_6_R1.Packet29DestroyEntity;
+import net.minecraft.server.v1_6_R1.Packet34EntityTeleport;
+import net.minecraft.server.v1_6_R1.Packet3Chat;
+import net.minecraft.server.v1_6_R1.Packet40EntityMetadata;
+import net.minecraft.server.v1_6_R1.WatchableObject;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_6_R1 extends MethodAPI {

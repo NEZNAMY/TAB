@@ -1,7 +1,13 @@
 package me.neznamy.tab.shared;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
@@ -13,14 +19,14 @@ import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public abstract class ITabPlayer {
 

@@ -6,7 +6,9 @@ import com.google.common.base.Charsets;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
-import me.neznamy.tab.shared.*;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.kyori.text.TextComponent;
 
