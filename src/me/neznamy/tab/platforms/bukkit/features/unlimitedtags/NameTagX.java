@@ -36,11 +36,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, CustomPacketFeature{
 
-	private int refresh;
-
 	@Override
 	public void load() {
-		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		int refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){

@@ -19,10 +19,8 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFeature{
 
-	public int refresh;
-
 	public void load(){
-		refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
+		int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Tablist prefix/suffix", refresh);
 		updateNames(true);
 		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", CPUFeature.TABLIST_NAMES_1, new Runnable() {

@@ -25,7 +25,6 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
 	public List<BossBarLine> lines = new ArrayList<BossBarLine>();
-	private int refresh;
 	private String toggleCommand;
 	public List<String> announcements = new ArrayList<String>();
 	public boolean remember_toggle_choice;
@@ -35,7 +34,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load() {
-		refresh = Configs.bossbar.getInt("refresh-interval-milliseconds", 1000);
+		int refresh = Configs.bossbar.getInt("refresh-interval-milliseconds", 1000);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BossBar", refresh);
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");

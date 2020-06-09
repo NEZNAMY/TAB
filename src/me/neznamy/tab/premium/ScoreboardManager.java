@@ -21,7 +21,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private String toggleCommand;
 	private List<String> disabledWorlds;
 	private String defaultScoreboard;
-	private int refresh;
 	private Map<String, String> perWorld;
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	public boolean useNumbers;
@@ -40,7 +39,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
+		int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Scoreboard", refresh);
 		perWorld = Premium.premiumconfig.getConfigurationSection("scoreboard.per-world");
 		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);

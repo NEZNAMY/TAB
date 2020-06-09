@@ -13,11 +13,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener{
 
-	public int refresh;
-
 	@Override
 	public void load() {
-		refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 100);
+		int refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 100);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("Header/Footer", refresh);
 		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
 		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing header/footer", CPUFeature.HEADER_FOOTER, new Runnable(){

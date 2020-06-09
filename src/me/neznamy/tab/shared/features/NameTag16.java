@@ -12,12 +12,10 @@ import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
-
-	public int refresh;
-
+	
 	@Override
 	public void load() {
-		refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		int refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.registerTeam();
