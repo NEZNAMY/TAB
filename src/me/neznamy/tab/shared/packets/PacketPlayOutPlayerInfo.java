@@ -135,16 +135,16 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public PlayerInfoData clone() {
 			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
 		}
-		public Object toNMS(){
+		public Object toNMS(ProtocolVersion clientVersion){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), displayName == null ? null : MethodAPI.getInstance().ICBC_fromString(displayName.toString()));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), displayName == null ? null : MethodAPI.getInstance().ICBC_fromString(displayName.toString(clientVersion)));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
 			if (displayName != null) {
 				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-					item.setDisplayName(displayName.toString());
+					item.setDisplayName(displayName.toString(clientVersion));
 				} else {
 					item.setDisplayName(displayName.toColoredText());
 				}
@@ -156,9 +156,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			item.setUuid(uniqueId);
 			return item;
 		}
-		public Object toVelocity() {
+		public Object toVelocity(ProtocolVersion clientVersion) {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName == null ? null : displayName.toString()));
+			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName == null ? null : displayName.toString(clientVersion)));
 			if (gameMode != null) item.setGameMode(gameMode.getNetworkId());
 			item.setLatency(latency);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
@@ -205,7 +205,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
 			List<Object> items = new ArrayList<Object>();
 			for (PlayerInfoData data : entries) {
-				items.add(data.toNMS());
+				items.add(data.toNMS(clientVersion));
 			}
 			PLAYERS.set(packet, items);
 			return packet;
@@ -235,7 +235,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		List items = new ArrayList();
 		for (PlayerInfoData data : entries) {
-			items.add(data.toVelocity());
+			items.add(data.toVelocity(clientVersion));
 		}
 		return new com.velocitypowered.proxy.protocol.packet.PlayerListItem(action.getNetworkId(), (List<com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item>) items);
 	}

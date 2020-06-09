@@ -5,22 +5,22 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum EnumChatFormat{
 
-	BLACK(0, '0'),
-	DARK_BLUE(1, '1'),
-	DARK_GREEN(2, '2'),
-	DARK_AQUA(3, '3'),
-	DARK_RED(4, '4'),
-	DARK_PURPLE(5, '5'),
-	GOLD(6, '6'),
-	GRAY(7, '7'),
-	DARK_GRAY(8, '8'),
-	BLUE(9, '9'),
-	GREEN(10, 'a'),
-	AQUA(11, 'b'),
-	RED(12, 'c'),
-	LIGHT_PURPLE(13, 'd'),
-	YELLOW(14, 'e'),
-	WHITE(15, 'f'),
+	BLACK(0, '0', 0x000000),
+	DARK_BLUE(1, '1', 0x0000AA),
+	DARK_GREEN(2, '2', 0x00AA00),
+	DARK_AQUA(3, '3', 0x00AAAA),
+	DARK_RED(4, '4', 0xAA0000),
+	DARK_PURPLE(5, '5', 0xAA00AA),
+	GOLD(6, '6', 0xFFAA00),
+	GRAY(7, '7', 0xAAAAAA),
+	DARK_GRAY(8, '8', 0x555555),
+	BLUE(9, '9', 0x5555FF),
+	GREEN(10, 'a', 0x55FF55),
+	AQUA(11, 'b', 0x55FFFF),
+	RED(12, 'c', 0xFF5555),
+	LIGHT_PURPLE(13, 'd', 0xFF55FF),
+	YELLOW(14, 'e', 0xFFFF55),
+	WHITE(15, 'f', 0xFFFFFF),
 	OBFUSCATED(16, 'k'),
 	BOLD(17, 'l'),
 	STRIKETHROUGH(18, 'm'),
@@ -31,7 +31,16 @@ public enum EnumChatFormat{
 	private int networkId;
 	private char character;
 	private Object nmsEquivalent;
+	public int hexColor;
+	public int red, green, blue;
 
+	private EnumChatFormat(int networkId, char character, int hexColor) {
+		this(networkId, character);
+		this.hexColor = hexColor;
+		red = (hexColor >> 16) & 0xFF;
+        green = (hexColor >> 8) & 0xFF;
+        blue = hexColor & 0xFF;
+	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;

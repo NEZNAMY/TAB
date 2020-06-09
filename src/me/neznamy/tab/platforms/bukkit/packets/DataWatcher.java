@@ -98,9 +98,9 @@ public class DataWatcher{
 		public static void setEntityFlags(DataWatcher dataWatcher, byte flags) {
 			dataWatcher.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flags);
 		}
-		public static void setCustomName(DataWatcher dataWatcher, String customName) {
+		public static void setCustomName(DataWatcher dataWatcher, String customName, ProtocolVersion clientVersion) {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(customName).toString())));
+				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(customName).toString(clientVersion))));
 			} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
 			} else {

@@ -85,9 +85,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		NAME.set(packet, name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(name).toString()));
-			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(prefix).toString()));
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(suffix).toString()));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
+			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(prefix).toString(clientVersion)));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(suffix).toString(clientVersion)));
 			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, name);
@@ -107,9 +107,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		String prefix;
 		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(this.playerPrefix).toString();
-			suffix = new IChatBaseComponent(this.playerSuffix).toString();
-			teamDisplay = new IChatBaseComponent(name).toString();
+			prefix = IChatBaseComponent.fromColoredText(this.playerPrefix).toString(clientVersion);
+			suffix = IChatBaseComponent.fromColoredText(this.playerSuffix).toString(clientVersion);
+			teamDisplay = IChatBaseComponent.fromColoredText(name).toString(clientVersion);
 			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.playerPrefix, 16);
@@ -123,9 +123,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		String prefix;
 		String suffix;
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = new IChatBaseComponent(this.playerPrefix).toString();
-			suffix = new IChatBaseComponent(this.playerSuffix).toString();
-			teamDisplay = new IChatBaseComponent(name).toString();
+			prefix = IChatBaseComponent.fromColoredText(this.playerPrefix).toString(clientVersion);
+			suffix = IChatBaseComponent.fromColoredText(this.playerSuffix).toString(clientVersion);
+			teamDisplay = IChatBaseComponent.fromColoredText(name).toString(clientVersion);
 			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.playerPrefix, 16);

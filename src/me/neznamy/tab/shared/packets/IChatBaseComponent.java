@@ -19,18 +19,20 @@ public class IChatBaseComponent {
 	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
 
 	private String text;
+	private TextColor color;
+	
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underlined;
 	private Boolean strikethrough;
 	private Boolean obfuscated;
-	private EnumChatFormat color;
+	
 	private ClickAction clickAction;
 	private Object clickValue;
 	private HoverAction hoverAction;
 	private String hoverValue;
+	
 	private List<IChatBaseComponent> extra;
-
 	private JSONObject jsonObject = new JSONObject();
 
 	public IChatBaseComponent() {
@@ -59,7 +61,7 @@ public class IChatBaseComponent {
 	public String getText() {
 		return text;
 	}
-	public EnumChatFormat getColor() {
+	public TextColor getColor() {
 		return color;
 	}
 	public boolean isBold(){
@@ -83,9 +85,8 @@ public class IChatBaseComponent {
 		jsonObject.put("text", text);
 		return this;
 	}
-	public IChatBaseComponent setColor(EnumChatFormat color) {
+	public IChatBaseComponent setColor(TextColor color) {
 		this.color = color;
-		jsonObject.put("color", color.toString().toLowerCase());
 		return this;
 	}
 	public IChatBaseComponent setBold(Boolean bold) {
@@ -186,7 +187,7 @@ public class IChatBaseComponent {
 			if (jsonObject.containsKey("underlined")) component.setUnderlined((Boolean) jsonObject.get("underlined"));
 			if (jsonObject.containsKey("strikethrough")) component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
 			if (jsonObject.containsKey("obfuscated")) component.setObfuscated((Boolean) jsonObject.get("obfuscated"));
-			if (jsonObject.containsKey("color")) component.setColor(EnumChatFormat.valueOf(((String) jsonObject.get("color")).toUpperCase()));
+			if (jsonObject.containsKey("color")) component.setColor(TextColor.fromString(((String) jsonObject.get("color")).toUpperCase()));
 			if (jsonObject.containsKey("clickEvent")) {
 				JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
 				String action = (String) clickEvent.get("action");
@@ -210,11 +211,25 @@ public class IChatBaseComponent {
 			return fromColoredText(json);
 		}
 	}
-	public String toString() {
-		if (extra == null) {
-			if (text == null) return null;
-			if (text.length() == 0) return EMPTY_COMPONENT;
+	public String toString(ProtocolVersion clientVersion) {
+		if (text == null && extra == null) return null;
+		//the core component, fixing all colors
+		if (color != null) {
+			jsonObject.put("color", color.toString(clientVersion));
 		}
+		if (extra != null) {
+			for (IChatBaseComponent extra : extra) {
+				if (extra.color != null) {
+					extra.jsonObject.put("color", extra.color.toString(clientVersion));
+				}
+			}
+		}
+		return toString();
+	}
+	
+	public String toString() {
+		if (extra == null && text.length() == 0) return EMPTY_COMPONENT;
+		
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
 			return jsonObject.toString();
@@ -233,7 +248,7 @@ public class IChatBaseComponent {
 	}
 
 	public static IChatBaseComponent fromColoredText(String message){
-		if (message == null) return null;
+		if (message == null) return new IChatBaseComponent();
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
@@ -276,9 +291,27 @@ public class IChatBaseComponent {
 						format = EnumChatFormat.WHITE;
 					default: 
 						component = new IChatBaseComponent();
-						component.setColor(format);
+						component.setColor(new TextColor(format));
 						break;
 					}
+				}
+			} else if (c == '#'){
+				try {
+					String hex = message.substring(i, i+7);
+					TextColor color = new TextColor(hex);
+					
+					if (builder.length() > 0){
+						component.setText(builder.toString());
+						components.add(component);
+						component = new IChatBaseComponent();
+						builder = new StringBuilder();
+					}
+					component = new IChatBaseComponent();
+					component.setColor(color);
+					i += 6;
+				} catch (Exception e) {
+					//invalid hex code
+					e.printStackTrace();
 				}
 			} else {
 				int pos = message.indexOf(' ', i);
@@ -295,7 +328,7 @@ public class IChatBaseComponent {
 	}
 	public String toColoredText() {
 		StringBuilder builder = new StringBuilder();
-		if (color != null) builder.append(color.getFormat());
+		if (color != null) builder.append(color.legacy.getFormat());
 		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
 		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
 		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
@@ -334,5 +367,52 @@ public class IChatBaseComponent {
 		SHOW_ITEM,
 		SHOW_ENTITY,
 		@Deprecated SHOW_ACHIEVEMENT;//Removed in 1.12
+	}
+	
+	public static class TextColor{
+		
+		private int red;
+		private int green;
+		private int blue;
+		private EnumChatFormat legacy;
+		
+		public TextColor(EnumChatFormat legacy) {
+			this.red = legacy.red;
+			this.green = legacy.green;
+			this.blue = legacy.blue;
+			this.legacy = legacy;
+		}
+				
+		public TextColor(String hexCode) {
+			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+			red = (hexColor >> 16) & 0xFF;
+	        green = (hexColor >> 8) & 0xFF;
+	        blue = hexColor & 0xFF;
+	        legacy = EnumChatFormat.BLACK;
+	        int minDiff = 999999999;
+			for (EnumChatFormat color : EnumChatFormat.values()) {
+				int r = (int) Math.pow(Math.abs(color.red - red), 3);
+				int g = (int) Math.pow(Math.abs(color.green - green), 3);
+				int b = (int) Math.pow(Math.abs(color.blue - blue), 3);
+				if (r + g + b < minDiff) {
+					minDiff = r + g + b;
+					legacy = color;
+				}
+			}
+		}
+		public String toString(ProtocolVersion clientVersion) {
+			if (clientVersion.getMinorVersion() >= 16) {
+				return "#" + Integer.toHexString((red << 16) + (green << 8) + blue);
+			} else {
+				return legacy.toString().toLowerCase();
+			}
+		}
+		public static TextColor fromString(String string) {
+			if (string.startsWith("#")) {
+				return new TextColor(string);
+			} else {
+				return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
+			}
+		}
 	}
 }

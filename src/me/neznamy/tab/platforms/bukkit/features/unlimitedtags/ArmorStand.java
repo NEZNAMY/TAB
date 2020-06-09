@@ -181,7 +181,7 @@ public class ArmorStand{
 		} else if (displayName.contains("%rel_")) {
 			displayName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, displayName);
 		}
-		DataWatcher.Helper.setCustomName(datawatcher, displayName);
+		DataWatcher.Helper.setCustomName(datawatcher, displayName, viewer.getVersion());
 
 		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
 		DataWatcher.Helper.setCustomNameVisible(datawatcher, visible);

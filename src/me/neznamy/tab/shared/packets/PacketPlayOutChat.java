@@ -27,18 +27,18 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	}
 	public Object toNMS(ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.toNMS());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString(clientVersion)), type.toNMS());
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString()), type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString(clientVersion)), type.getId());
 		} else {
-			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(), type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(clientVersion), type.getId());
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new Chat(message.toString(), type.getId());
+		return new Chat(message.toString(clientVersion), type.getId());
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(), type.getId());
+		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(clientVersion), type.getId());
 	}
 	
 	public enum ChatMessageType{

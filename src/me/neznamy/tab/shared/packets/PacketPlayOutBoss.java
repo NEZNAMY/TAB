@@ -93,7 +93,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			PROGRESS.set(packet, pct);
 		}
 		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(new IChatBaseComponent(name).toString()));
+			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
 			COLOR.set(packet, color.toNMS());
@@ -113,7 +113,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setHealth(pct);
 		}
 		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			packet.setTitle(new IChatBaseComponent(name).toString());
+			packet.setTitle(IChatBaseComponent.fromColoredText(name).toString(clientVersion));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
 			packet.setColor(color.toBungee());
@@ -133,7 +133,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			packet.setPercent(pct);
 		}
 		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			packet.setName(new IChatBaseComponent(name).toString());
+			packet.setName(IChatBaseComponent.fromColoredText(name).toString(clientVersion));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
 			packet.setColor(color.toBungee());

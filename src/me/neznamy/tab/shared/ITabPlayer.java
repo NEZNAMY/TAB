@@ -207,7 +207,13 @@ public abstract class ITabPlayer {
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
-		return new IChatBaseComponent((prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format);
+		String text = (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format;
+		if (viewer.getVersion().getMinorVersion() >= 16) {
+			return IChatBaseComponent.fromColoredText(text);
+		} else {
+			//fucking lunar client
+			return new IChatBaseComponent(text);
+		}
 	}
 
 	public void updateTeam(boolean force) {
