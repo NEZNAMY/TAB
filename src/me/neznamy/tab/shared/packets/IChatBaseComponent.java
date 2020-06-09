@@ -393,14 +393,15 @@ public class IChatBaseComponent {
 			red = (hexColor >> 16) & 0xFF;
 	        green = (hexColor >> 8) & 0xFF;
 	        blue = hexColor & 0xFF;
-	        legacy = EnumChatFormat.BLACK;
-	        int minDiff = 999999999;
+	        double minDist = 9999;
+	        double dist;
 			for (EnumChatFormat color : EnumChatFormat.values()) {
-				int r = (int) Math.pow(Math.abs(color.red - red), 3);
-				int g = (int) Math.pow(Math.abs(color.green - green), 3);
-				int b = (int) Math.pow(Math.abs(color.blue - blue), 3);
-				if (r + g + b < minDiff) {
-					minDiff = r + g + b;
+				int r = (int) Math.pow(color.red - red, 2);
+				int g = (int) Math.pow(color.green - green, 2);
+				int b = (int) Math.pow(color.blue - blue, 2);
+				dist = Math.sqrt(r + g + b);
+				if (dist < minDist) {
+					minDist = dist;
 					legacy = color;
 				}
 			}
