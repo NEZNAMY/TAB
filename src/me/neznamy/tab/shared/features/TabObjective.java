@@ -33,7 +33,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
 			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(500, "refreshing tablist objective", CPUFeature.YELLOW_NUMBER, new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(500, "refreshing yellow number", CPUFeature.YELLOW_NUMBER, new Runnable() {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
