@@ -99,13 +99,13 @@ public class Metrics {
 	private static boolean logFailedRequests;
 
 	// Should the sent data be logged?
-	private static boolean logSentData;
+	private boolean logSentData;
 
 	// Should the response text be logged?
-	private static boolean logResponseStatusText;
+	private boolean logResponseStatusText;
 
 	// The uuid of the server
-	private static String serverUUID;
+	private String serverUUID;
 
 	// The plugin
 	private final Plugin plugin;
@@ -321,7 +321,7 @@ public class Metrics {
 		}).start();
 	}
 
-	private static void sendData(Plugin plugin, JSONObject data) throws Exception {
+	private void sendData(Plugin plugin, JSONObject data) throws Exception {
 		if (data == null) {
 			throw new IllegalArgumentException("Data cannot be null!");
 		}
