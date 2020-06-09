@@ -15,7 +15,7 @@ public class BelowName implements Loadable, JoinEventListener {
 	private static final String ObjectiveName = "TAB-BelowName";
 	private static final int DisplaySlot = 2;
 	
-	public static String number;
+	private String number;
 	private Property textProperty;
 	
 	@Override
