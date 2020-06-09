@@ -15,14 +15,13 @@ public class BelowName implements Loadable, JoinEventListener {
 	private static final String ObjectiveName = "TAB-BelowName";
 	private static final int DisplaySlot = 2;
 	
-	private int refresh;
 	public static String number;
 	private Property textProperty;
 	
 	@Override
 	public void load() {
 		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
-		refresh =  Configs.config.getInt("classic-vanilla-belowname.refresh-interval-milliseconds", 200);
+		int refresh =  Configs.config.getInt("classic-vanilla-belowname.refresh-interval-milliseconds", 200);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
 		textProperty = new Property(null, Configs.config.getString("classic-vanilla-belowname.text", "Health"), null);
 		for (ITabPlayer p : Shared.getPlayers()){
