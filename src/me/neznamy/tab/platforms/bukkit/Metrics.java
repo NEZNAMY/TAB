@@ -379,7 +379,7 @@ public class Metrics {
 
 	public static abstract class CustomChart {
 
-		final String chartId;
+		private final String chartId;
 
 		CustomChart(String chartId) {
 			if (chartId == null || chartId.isEmpty()) {
