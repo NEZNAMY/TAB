@@ -168,6 +168,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	@EventHandler
 	public void a(ChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
+		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
 			Shared.sendPluginInfo(sender);
 			return;
@@ -245,7 +246,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public static void registerPlaceholders() {
+	public void registerPlaceholders() {
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 		PluginHooks.luckPerms = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null;
 		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();

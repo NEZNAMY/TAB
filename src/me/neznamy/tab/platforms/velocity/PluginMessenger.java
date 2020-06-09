@@ -20,8 +20,8 @@ public class PluginMessenger{
 	
 	public PluginMessenger(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
-		Main.server.getChannelRegistrar().register(mc);
-		Main.server.getEventManager().register(plugin, this);
+		plugin.server.getChannelRegistrar().register(mc);
+		plugin.server.getEventManager().register(plugin, this);
 		
 	}
 	public void requestPlaceholder(ITabPlayer player, String placeholder) {

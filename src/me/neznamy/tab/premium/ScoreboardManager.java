@@ -148,11 +148,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		return scoreboard;
 	}
+	@Override
 	public boolean onCommand(ITabPlayer sender, String message) {
-		if (sender == null) {
-			Shared.errorManager.printError("Command sender is null");
-			return false;
-		}
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"scoreboard"});

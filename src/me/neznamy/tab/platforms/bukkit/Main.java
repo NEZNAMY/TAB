@@ -191,9 +191,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
-			String from = e.getFrom().getName();
-			String to = p.world = e.getPlayer().getWorld().getName();
-			p.onWorldChange(from, to);
+			p.onWorldChange(e.getFrom().getName(), p.world = e.getPlayer().getWorld().getName());
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerChangedWorldEvent", t);
 		}
@@ -232,7 +230,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public static void registerPlaceholders() {
+	public void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
 			try {

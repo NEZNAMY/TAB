@@ -72,14 +72,12 @@ import net.kyori.text.serializer.gson.GsonComponentSerializer;
 @Plugin(id = "tab", name = "TAB", version = "2.7.7", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
-	public static ProxyServer server;
-	public static Logger logger;
+	public ProxyServer server;
 	private PluginMessenger plm;
 
 	@Inject
 	public Main(ProxyServer server, Logger logger) {
-		Main.server = server;
-		Main.logger = logger;
+		this.server = server;
 	}
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
@@ -264,7 +262,7 @@ public class Main implements MainClass{
 		if (component == null) return null;
 		return GsonComponentSerializer.INSTANCE.serialize(component);
 	}
-	public static void registerPlaceholders() {
+	public void registerPlaceholders() {
 		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
 		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get();
 		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
@@ -465,7 +463,7 @@ public class Main implements MainClass{
 		//bungee only
 		suggestPlaceholderSwitch("%premiumvanish_bungeeplayercount%", "%canseeonline%");
 		suggestPlaceholderSwitch("%bungee_total%", "%online%");
-		for (RegisteredServer server : Main.server.getAllServers()) {
+		for (RegisteredServer server : server.getAllServers()) {
 			suggestPlaceholderSwitch("%bungee_" + server.getServerInfo().getName() + "%", "%online_" + server.getServerInfo().getName() + "%");
 		}
 

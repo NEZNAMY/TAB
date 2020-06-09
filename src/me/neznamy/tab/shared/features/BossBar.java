@@ -139,6 +139,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		return null;
 	}
+	@Override
 	public boolean onCommand(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"bossbar"});
