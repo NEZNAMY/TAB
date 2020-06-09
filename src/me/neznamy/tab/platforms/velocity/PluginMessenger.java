@@ -42,22 +42,20 @@ public class PluginMessenger{
 		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
 		String subChannel = in.readUTF();
-		if (subChannel.equalsIgnoreCase("Placeholder")){
-			if (event.getTarget() instanceof Player){
-				event.setResult(ForwardResult.handled());
-				ITabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
-				if (receiver == null) return;
-				String placeholder = in.readUTF();
-				String output = in.readUTF();
-				long cpu = in.readLong();
-				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
-				if (pl != null) {
-					pl.lastValue.put(receiver.getName(), output);
-					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
-					Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
-				} else {
-					Shared.debug("Received output for unknown placeholder " + placeholder);
-				}
+		if (event.getTarget() instanceof Player && subChannel.equalsIgnoreCase("Placeholder")){
+			event.setResult(ForwardResult.handled());
+			ITabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
+			if (receiver == null) return;
+			String placeholder = in.readUTF();
+			String output = in.readUTF();
+			long cpu = in.readLong();
+			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
+			if (pl != null) {
+				pl.lastValue.put(receiver.getName(), output);
+				pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
+				Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
+			} else {
+				Shared.debug("Received output for unknown placeholder " + placeholder);
 			}
 		}
 	}

@@ -36,24 +36,22 @@ public class PluginMessenger implements Listener {
 		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
 		String subChannel = in.readUTF();
-		if (subChannel.equalsIgnoreCase("Placeholder")){
-			if (event.getReceiver() instanceof ProxiedPlayer){
-				event.setCancelled(true);
-				ITabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
-				if (receiver == null) return;
-				String placeholder = in.readUTF();
-				String output = in.readUTF();
-				long cpu = in.readLong();
-				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
-				if (pl != null) {
-					pl.lastValue.put(receiver.getName(), output);
-					pl.lastValue.put("null", output);
-					pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
-					pl.lastRefresh.put("null", System.currentTimeMillis());
-					Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
-				} else {
-					Shared.debug("Received output for unknown placeholder " + placeholder);
-				}
+		if (event.getReceiver() instanceof ProxiedPlayer && subChannel.equalsIgnoreCase("Placeholder")){
+			event.setCancelled(true);
+			ITabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+			if (receiver == null) return;
+			String placeholder = in.readUTF();
+			String output = in.readUTF();
+			long cpu = in.readLong();
+			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
+			if (pl != null) {
+				pl.lastValue.put(receiver.getName(), output);
+				pl.lastValue.put("null", output);
+				pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
+				pl.lastRefresh.put("null", System.currentTimeMillis());
+				Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
+			} else {
+				Shared.debug("Received output for unknown placeholder " + placeholder);
 			}
 		}
 	}

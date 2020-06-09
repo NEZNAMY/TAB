@@ -18,10 +18,8 @@ public class Animation {
 		this.messages =  Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
 		for (int i=0; i<messages.length; i++) {
 			for (Placeholder c : Placeholders.getAllPlaceholders()) {
-				if (c instanceof ServerConstant) {
-					if (messages[i].contains(c.getIdentifier())) {
-						messages[i] = messages[i].replace(c.getIdentifier(), ((ServerConstant)c).get());
-					}
+				if (c instanceof ServerConstant && messages[i].contains(c.getIdentifier())) {
+					messages[i] = messages[i].replace(c.getIdentifier(), ((ServerConstant)c).get());
 				}
 			}
 		}

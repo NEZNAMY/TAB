@@ -206,9 +206,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
-			if (players.contains(p)) {
-				if (p.properties.get("sb-"+teamname).get().length() > 0)
-					PacketAPI.removeScoreboardScore(p, player, teamname);
+			if (players.contains(p) && p.properties.get("sb-"+teamname).get().length() > 0) {
+				PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
 		public void unregister() {

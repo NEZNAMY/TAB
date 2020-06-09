@@ -270,18 +270,14 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
-		if (maxPlayer == p) {
-			if (recalculateMaxWidth(p)) {
-				updateAllNames(null);
-			}
+		if (maxPlayer == p && recalculateMaxWidth(p)) {
+			updateAllNames(null);
 		}
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (maxPlayer == p) {
-			if (recalculateMaxWidth(null)) {
-				updateAllNames(null);
-			}
+		if (maxPlayer == p && recalculateMaxWidth(null)) {
+			updateAllNames(null);
 		}
 	}
 	

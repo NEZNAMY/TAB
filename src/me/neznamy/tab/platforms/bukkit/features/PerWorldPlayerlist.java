@@ -106,8 +106,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 				List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
 				for (PlayerInfoData data : info.entries) {
 					ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
-					if (added != null) {
-						if (!shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) toRemove.add(data);
+					if (added != null && !shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) {
+						toRemove.add(data);
 					}
 				}
 				List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();

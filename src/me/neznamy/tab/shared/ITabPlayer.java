@@ -523,11 +523,9 @@ public abstract class ITabPlayer {
 	}
 	public void forceUpdateDisplay() {
 		if (Shared.features.containsKey("playerlist") && !disabledTablistNames) updatePlayerListName();
-		if ((Shared.features.containsKey("nametag16")) || Shared.features.containsKey("nametagx")) {
-			if (!disabledNametag) {
-				unregisterTeam();
-				registerTeam();
-			}
+		if ((Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) && !disabledNametag) {
+			unregisterTeam();
+			registerTeam();
 		}
 		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((NameTagX)Shared.features.get("nametagx")).restartArmorStands(this);
 	}

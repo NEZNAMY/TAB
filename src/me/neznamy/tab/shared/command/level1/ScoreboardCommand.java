@@ -42,26 +42,22 @@ public class ScoreboardCommand extends SubCommand{
 			}
 		}
 		if (args.length == 1) {
-			if (args[0].equalsIgnoreCase("on")) {
-				if (sender.hiddenScoreboard) {
-					scoreboard.send(sender);
-					sender.sendMessage(scoreboard.scoreboard_on);
-					sender.hiddenScoreboard = false;
-					if (scoreboard.remember_toggle_choice) {
-						scoreboard.sb_off_players.remove(sender.getName());
-						Configs.playerdata.set("scoreboard-off", scoreboard.sb_off_players);
-					}
+			if (args[0].equalsIgnoreCase("on") && sender.hiddenScoreboard) {
+				scoreboard.send(sender);
+				sender.sendMessage(scoreboard.scoreboard_on);
+				sender.hiddenScoreboard = false;
+				if (scoreboard.remember_toggle_choice) {
+					scoreboard.sb_off_players.remove(sender.getName());
+					Configs.playerdata.set("scoreboard-off", scoreboard.sb_off_players);
 				}
 			}
-			if (args[0].equalsIgnoreCase("off")){
-				if (!sender.hiddenScoreboard) {
-					scoreboard.onQuit(sender);
-					sender.sendMessage(scoreboard.scoreboard_off);
-					sender.hiddenScoreboard = true;
-					if (scoreboard.remember_toggle_choice) {
-						scoreboard.sb_off_players.add(sender.getName());
-						Configs.playerdata.set("scoreboard-off", scoreboard.sb_off_players);
-					}
+			if (args[0].equalsIgnoreCase("off") && !sender.hiddenScoreboard){
+				scoreboard.onQuit(sender);
+				sender.sendMessage(scoreboard.scoreboard_off);
+				sender.hiddenScoreboard = true;
+				if (scoreboard.remember_toggle_choice) {
+					scoreboard.sb_off_players.add(sender.getName());
+					Configs.playerdata.set("scoreboard-off", scoreboard.sb_off_players);
 				}
 			}
 		}

@@ -28,10 +28,8 @@ public class Property {
 	}
 	private String analyze(String value) {
 		for (Placeholder c : Placeholders.getAllPlaceholders()) {
-			if (c instanceof ServerConstant) {
-				if (value.contains(c.getIdentifier())) {
-					value = value.replace(c.getIdentifier(), ((ServerConstant)c).get());
-				}
+			if (c instanceof ServerConstant && value.contains(c.getIdentifier())) {
+				value = value.replace(c.getIdentifier(), ((ServerConstant)c).get());
 			}
 		}
 		placeholders = Placeholders.detectPlaceholders(value);

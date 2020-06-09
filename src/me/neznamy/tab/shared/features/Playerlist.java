@@ -62,12 +62,10 @@ public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFe
 			if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
 				playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
 				if (ADD) {
-					if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
-						//preventing plugins from changing player name as nametag feature would not work correctly
-						if (!playerInfoData.name.equals(packetPlayer.getName())) {
-							Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
-							playerInfoData.name = packetPlayer.getName();
-						}
+					//preventing plugins from changing player name as nametag feature would not work correctly
+					if ((Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
+						Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
+						playerInfoData.name = packetPlayer.getName();
 					}
 				}
 			}

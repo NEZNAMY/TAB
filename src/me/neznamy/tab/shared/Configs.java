@@ -82,10 +82,8 @@ public class Configs {
 	public static final File papiErrorFile = new File(ConfigurationFile.dataFolder, "PlaceholderAPI.errors.txt");
 
 	public static void loadFiles() throws Exception {
-		if (errorFile.exists()) {
-			if (errorFile.length() > 10) {
-				Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
-			}
+		if (errorFile.exists() && errorFile.length() > 10) {
+			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
 		loadConfig();
