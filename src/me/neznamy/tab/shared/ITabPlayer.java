@@ -208,11 +208,11 @@ public abstract class ITabPlayer {
 			format = prefix.get() + name.get() + suffix.get();
 		}
 		String text = (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format;
-		if (viewer.getVersion().getMinorVersion() >= 16) {
+		if (viewer.getVersion().getMinorVersion() >= 9) {
 			return IChatBaseComponent.fromColoredText(text);
 		} else {
 			//fucking lunar client
-			return new IChatBaseComponent(text);
+			return new IChatBaseComponent(new IChatBaseComponent(text).toColoredText());
 		}
 	}
 
