@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.interfaces;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.cpu.CPUFeature;

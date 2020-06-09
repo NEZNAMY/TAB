@@ -9,12 +9,15 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class Playerlist implements SimpleFeature, CustomPacketFeature{
+public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFeature{
 
 	public int refresh;
 
@@ -30,12 +33,6 @@ public class Playerlist implements SimpleFeature, CustomPacketFeature{
 	}
 	public void unload(){
 		updateNames(true);
-	}
-	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

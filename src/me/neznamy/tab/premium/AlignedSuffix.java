@@ -6,11 +6,14 @@ import java.util.Map;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class AlignedSuffix implements SimpleFeature{
+public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
 	private int maxWidth;
 	private ITabPlayer maxPlayer;

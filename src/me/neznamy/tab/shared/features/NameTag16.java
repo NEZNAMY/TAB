@@ -6,8 +6,12 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
-public class NameTag16 implements SimpleFeature{
+public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
 	public int refresh;
 

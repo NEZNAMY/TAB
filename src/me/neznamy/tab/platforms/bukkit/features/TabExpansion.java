@@ -8,9 +8,9 @@ import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
 
-public class TabExpansion implements SimpleFeature{
+public class TabExpansion implements Loadable{
 
 	private PlaceholderExpansion exp;
 
@@ -58,14 +58,5 @@ public class TabExpansion implements SimpleFeature{
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
 			// java.lang.IllegalStateException: ExpansionUnregisterEvent may only be triggered synchronously.
 		}
-	}
-	@Override
-	public void onJoin(ITabPlayer p) {
-	}
-	@Override
-	public void onQuit(ITabPlayer p) {
-	}
-	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
 	}
 }

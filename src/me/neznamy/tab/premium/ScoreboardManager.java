@@ -10,9 +10,12 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
-public class ScoreboardManager implements SimpleFeature{
+public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
 	private String toggleCommand;
 	private List<String> disabledWorlds;

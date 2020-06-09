@@ -14,9 +14,10 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
-public class BossBar_legacy implements Listener, SimpleFeature {
+public class BossBar_legacy implements Listener, Loadable, WorldChangeListener{
 
 	private static final int WITHER_DISTANCE = 50;
 
@@ -42,12 +43,6 @@ public class BossBar_legacy implements Listener, SimpleFeature {
 	@Override
 	public void unload() {
 		HandlerList.unregisterAll(this);
-	}
-	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

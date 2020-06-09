@@ -22,16 +22,19 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.CustomPacketFeature;
-import me.neznamy.tab.shared.features.RawPacketFeature;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class NameTagX implements Listener, SimpleFeature, RawPacketFeature, CustomPacketFeature{
+public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, CustomPacketFeature{
 
 	private int refresh;
 

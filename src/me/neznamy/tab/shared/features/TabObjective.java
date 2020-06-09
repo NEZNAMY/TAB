@@ -5,9 +5,12 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
-public class TabObjective implements SimpleFeature{
+public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener{
 
 	private static final String ObjectiveName = "TAB-YellowNumber";
 	private static final int DisplaySlot = 0;
@@ -57,9 +60,6 @@ public class TabObjective implements SimpleFeature{
 			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, getValue(connectedPlayer));
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

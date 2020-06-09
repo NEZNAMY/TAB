@@ -13,10 +13,13 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
-public class BossBar implements SimpleFeature{
+public class BossBar implements Loadable, JoinEventListener, WorldChangeListener{
 
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
@@ -120,9 +123,6 @@ public class BossBar implements SimpleFeature{
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.bossbarVisible = !bossbar_off_players.contains(connectedPlayer.getName());
 		detectBossBarsAndSend(connectedPlayer);
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

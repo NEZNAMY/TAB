@@ -10,13 +10,18 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class GlobalPlayerlist implements SimpleFeature, CustomPacketFeature{
+public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CustomPacketFeature{
 
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;

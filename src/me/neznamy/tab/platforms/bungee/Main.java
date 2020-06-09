@@ -27,7 +27,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.CustomPacketFeature;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.HeaderFooter;
@@ -36,6 +35,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -136,7 +136,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		disconnectedPlayer.disconnect();
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
+		Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
 		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
@@ -153,7 +153,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				Shared.features.values().forEach(f -> f.onJoin(p));
+				Shared.joinListeners.values().forEach(f -> f.onJoin(p));
 			} else {
 				p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				String from = p.getWorldName();

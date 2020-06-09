@@ -13,15 +13,17 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.CustomPacketFeature;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 @SuppressWarnings({"deprecation", "unchecked"})
-public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
+public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, CustomPacketFeature{
 
 	private boolean allowBypass;
 	private List<String> ignoredWorlds;
@@ -45,9 +47,6 @@ public class PerWorldPlayerlist implements SimpleFeature, CustomPacketFeature{
 	public void onJoin(ITabPlayer connectedPlayer) {
 		hidePlayer(connectedPlayer.getBukkitEntity());
 		showInSameWorldGroup(connectedPlayer.getBukkitEntity());
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {

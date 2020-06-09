@@ -12,8 +12,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.CustomPacketFeature;
-import me.neznamy.tab.shared.features.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 

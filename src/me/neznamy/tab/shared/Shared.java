@@ -11,9 +11,12 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.features.CustomPacketFeature;
-import me.neznamy.tab.shared.features.RawPacketFeature;
-import me.neznamy.tab.shared.features.SimpleFeature;
+import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
@@ -28,10 +31,15 @@ public class Shared {
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	
-	public static final Map<String, SimpleFeature> features = new ConcurrentHashMap<String, SimpleFeature>();
+	public static final Map<String, Object> features = new ConcurrentHashMap<String, Object>();
 	public static final Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
 	public static final Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
-
+	public static final Map<String, Loadable> loadableFeatures = new ConcurrentHashMap<String, Loadable>();
+	public static final Map<String, JoinEventListener> joinListeners = new ConcurrentHashMap<String, JoinEventListener>();
+	public static final Map<String, QuitEventListener> quitListeners = new ConcurrentHashMap<String, QuitEventListener>();
+	public static final Map<String, WorldChangeListener> worldChangeListeners = new ConcurrentHashMap<String, WorldChangeListener>();
+	
+	
 	public static boolean disabled;
 	public static MainClass mainClass;
 	public static String separatorType;
@@ -86,7 +94,7 @@ public class Shared {
 			bukkitBridgePlaceholderCpu = new CPUManager();
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
-			features.values().forEach(f -> f.load());
+			loadableFeatures.values().forEach(f -> f.load());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
@@ -104,10 +112,14 @@ public class Shared {
 			featureCpu.cancelAllTasks();
 			placeholderCpu.cancelAllTasks();
 			bukkitBridgePlaceholderCpu.cancelAllTasks();
-			features.values().forEach(f -> f.unload());
-			features.clear();
+			loadableFeatures.values().forEach(f -> f.unload());
+			loadableFeatures.clear();
 			custompacketfeatures.clear();
 			rawpacketfeatures.clear();
+			joinListeners.clear();
+			quitListeners.clear();
+			worldChangeListeners.clear();
+			features.clear();
 			data.clear();
 			entityIdMap.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -116,14 +128,24 @@ public class Shared {
 		}
 	}
 	public static void registerFeature(String featureName, Object featureHandler) {
-		if (featureHandler instanceof SimpleFeature) {
-			features.put(featureName, (SimpleFeature) featureHandler);
+		features.put(featureName, featureHandler);
+		if (featureHandler instanceof Loadable) {
+			loadableFeatures.put(featureName, (Loadable) featureHandler);
 		}
 		if (featureHandler instanceof CustomPacketFeature) {
 			custompacketfeatures.put(featureName, (CustomPacketFeature) featureHandler);
 		}
 		if (featureHandler instanceof RawPacketFeature) {
 			rawpacketfeatures.put(featureName, (RawPacketFeature) featureHandler);
+		}
+		if (featureHandler instanceof JoinEventListener) {
+			joinListeners.put(featureName, (JoinEventListener) featureHandler);
+		}
+		if (featureHandler instanceof QuitEventListener) {
+			quitListeners.put(featureName, (QuitEventListener) featureHandler);
+		}
+		if (featureHandler instanceof WorldChangeListener) {
+			worldChangeListeners.put(featureName, (WorldChangeListener) featureHandler);
 		}
 	}
 }

@@ -11,7 +11,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 
 public class PetFix implements RawPacketFeature{
 

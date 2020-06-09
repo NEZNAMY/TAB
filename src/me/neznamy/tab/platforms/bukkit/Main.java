@@ -155,7 +155,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.featureCpu.runMeasuredTask("player joined the server", CPUFeature.OTHER, new Runnable() {
 
 				public void run() {
-					Shared.features.values().forEach(f -> f.onJoin(p));
+					Shared.joinListeners.values().forEach(f -> f.onJoin(p));
 				}
 			});
 		} catch (Throwable ex) {
@@ -170,7 +170,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) return;
 			disconnectedPlayer.disconnect();
-			Shared.features.values().forEach(f -> f.onQuit(disconnectedPlayer));
+			Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
 			for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 				if (pl instanceof PlayerPlaceholder) {
 					((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
@@ -243,7 +243,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
 				if (provider != null) PluginHooks.idisguise = provider.getProvider();
 			} catch (ClassNotFoundException e) {
-				
+
 			}
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
@@ -578,11 +578,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
 				for (Object group : config.getConfigurationSection("Groups").keySet()) {
 					String tagprefix = config.getString("Groups." + group + ".tagprefix");
-					if (tagprefix != null) {
-						if (!tagprefix.contains("%eglow_glowcolor%")) {
-							Shared.print('2', "eGlow is installed but %eglow_glowcolor% is not used in tagprefix of group " + group + ". Adding it to make eGlow work properly");
-							config.set("Groups." + group + ".tagprefix", tagprefix + "%eglow_glowcolor%");
-						}
+					if (tagprefix != null && !tagprefix.contains("%eglow_glowcolor%")) {
+						Shared.print('2', "eGlow is installed but %eglow_glowcolor% is not used in tagprefix of group " + group + ". Adding it to make eGlow work properly");
+						config.set("Groups." + group + ".tagprefix", tagprefix + "%eglow_glowcolor%");
 					}
 				}
 			}

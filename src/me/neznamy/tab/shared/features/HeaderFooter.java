@@ -6,9 +6,12 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
-public class HeaderFooter implements SimpleFeature{
+public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener{
 
 	public int refresh;
 
@@ -33,9 +36,6 @@ public class HeaderFooter implements SimpleFeature{
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		refreshHeaderFooter(connectedPlayer, true);
-	}
-	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
