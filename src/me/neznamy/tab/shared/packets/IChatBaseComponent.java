@@ -13,7 +13,7 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
 	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
@@ -113,6 +113,13 @@ public class IChatBaseComponent {
 		this.obfuscated = obfuscated;
 		return this;
 	}
+	
+	public ClickAction getClickAction() {
+		return clickAction;
+	}
+	public Object getClickValue() {
+		return clickValue;
+	}
 
 	public IChatBaseComponent onClickOpenUrl(String url) {
 		return onClick(ClickAction.OPEN_URL, url);
@@ -136,6 +143,13 @@ public class IChatBaseComponent {
 		return this;
 	}
 
+	public HoverAction getHoverAction() {
+		return hoverAction;
+	}
+	public String getHoverValue() {
+		return hoverValue;
+	}
+	
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
