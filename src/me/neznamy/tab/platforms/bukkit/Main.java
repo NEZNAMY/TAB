@@ -54,6 +54,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -207,11 +208,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		if (Shared.features.containsKey("bossbar")) {
-			if (((BossBar)Shared.features.get("bossbar")).onChat(sender, e.getMessage())) e.setCancelled(true);
-		}
-		if (Shared.features.containsKey("scoreboard")) {
-			if (((ScoreboardManager)Shared.features.get("scoreboard")).onCommand(sender, e.getMessage())) e.setCancelled(true);
+		for (CommandListener listener : Shared.commandListeners.values()) {
+			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}
 	private static void inject(UUID player) {
@@ -231,8 +229,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return true;
 				}
 			}
-		} else {
-			//PacketPlayOutScoreboardTeam.SIGNATURE.set(packetPlayOutScoreboardTeam, 0);
 		}
 		return false;
 	}

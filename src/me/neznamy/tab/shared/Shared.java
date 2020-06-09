@@ -11,6 +11,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUManager;
+import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -38,7 +39,7 @@ public class Shared {
 	public static final Map<String, JoinEventListener> joinListeners = new ConcurrentHashMap<String, JoinEventListener>();
 	public static final Map<String, QuitEventListener> quitListeners = new ConcurrentHashMap<String, QuitEventListener>();
 	public static final Map<String, WorldChangeListener> worldChangeListeners = new ConcurrentHashMap<String, WorldChangeListener>();
-	
+	public static final Map<String, CommandListener> commandListeners = new ConcurrentHashMap<String, CommandListener>();
 	
 	public static boolean disabled;
 	public static MainClass mainClass;
@@ -146,6 +147,9 @@ public class Shared {
 		}
 		if (featureHandler instanceof WorldChangeListener) {
 			worldChangeListeners.put(featureName, (WorldChangeListener) featureHandler);
+		}
+		if (featureHandler instanceof CommandListener) {
+			commandListeners.put(featureName, (CommandListener) featureHandler);
 		}
 	}
 }

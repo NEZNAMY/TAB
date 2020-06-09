@@ -13,13 +13,14 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
-public class BossBar implements Loadable, JoinEventListener, WorldChangeListener{
+public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener{
 
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
@@ -138,7 +139,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		return null;
 	}
-	public boolean onChat(ITabPlayer sender, String message) {
+	public boolean onCommand(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"bossbar"});
 			return true;

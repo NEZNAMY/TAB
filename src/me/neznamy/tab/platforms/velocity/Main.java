@@ -194,11 +194,8 @@ public class Main implements MainClass{
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		if (Shared.features.containsKey("bossbar")) {
-			if (((BossBar)Shared.features.get("bossbar")).onChat(sender, e.getMessage())) e.setCancelled(true);
-		}
-		if (Shared.features.containsKey("scoreboard")) {
-			if (((ScoreboardManager)Shared.features.get("scoreboard")).onCommand(sender, e.getMessage())) e.setCancelled(true);
+		for (CommandListener listener : Shared.commandListeners.values()) {
+			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}*/
 	private void inject(UUID uuid) {
