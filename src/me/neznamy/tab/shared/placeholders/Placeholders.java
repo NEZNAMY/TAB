@@ -169,12 +169,12 @@ public class Placeholders {
 		});
 		registerPlaceholder(new ServerPlaceholder("%time%", 900) {
 			public String get() {
-				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
+				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)(Configs.timeOffset*3600000)));
 			}
 		});
 		registerPlaceholder(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
-				return Configs.dateFormat.format(new Date(System.currentTimeMillis() + (int)Configs.timeOffset*3600000));
+				return Configs.dateFormat.format(new Date(System.currentTimeMillis() + (int)(Configs.timeOffset*3600000)));
 			}
 		});
 		registerPlaceholder(new ServerPlaceholder("%online%", 1000) {
