@@ -161,7 +161,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	}
 	public void fixArmorStandHeights(ITabPlayer p) {
 		p.armorStands.forEach(a -> a.refreshName());
-		double currentY = -Configs.SECRET_NTX_space;;
+		double currentY = -Configs.SECRET_NTX_space;
 		for (ArmorStand as : p.getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
 			if (as.property.get().length() != 0) {
