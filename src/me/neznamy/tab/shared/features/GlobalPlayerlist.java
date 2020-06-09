@@ -131,12 +131,11 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
-				if (Shared.getPlayer(playerInfoData.uniqueId) != null) { //not preventing NPC removals
-					if ((playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-						//remove packet sent by bungeecord
-						//changing to random non-existing player, the easiest way to cancel the removal
-						playerInfoData.uniqueId = UUID.randomUUID();
-					}
+					//not preventing NPC removals
+				if (Shared.getPlayer(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+					//remove packet sent by bungeecord
+					//changing to random non-existing player, the easiest way to cancel the removal
+					playerInfoData.uniqueId = UUID.randomUUID();
 				}
 			}
 		}

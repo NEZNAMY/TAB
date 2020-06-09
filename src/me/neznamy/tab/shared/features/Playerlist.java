@@ -61,17 +61,13 @@ public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFe
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packetPlayer != null && !packetPlayer.disabledTablistNames && packetPlayer.isConnected()) {
 				playerInfoData.displayName = packetPlayer.getTabFormat(receiver);
-				if (ADD) {
-					//preventing plugins from changing player name as nametag feature would not work correctly
-					if ((Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
-						Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
-						playerInfoData.name = packetPlayer.getName();
-					}
+				//preventing plugins from changing player name as nametag feature would not work correctly
+				if (ADD && (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
+					Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
+					playerInfoData.name = packetPlayer.getName();
 				}
 			}
-			if (ADD) {
-				if (packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
-			}
+			if (ADD && packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
 		}
 		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
