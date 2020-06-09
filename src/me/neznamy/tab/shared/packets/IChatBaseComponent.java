@@ -296,9 +296,10 @@ public class IChatBaseComponent {
 					}
 				}
 			} else if (c == '#'){
+				i++;
 				try {
-					String hex = message.substring(i, i+7);
-					TextColor color = new TextColor(hex);
+					String hex = message.substring(i-1, i+6);
+					TextColor color = new TextColor(hex); //the validation check is in contructor
 					
 					if (builder.length() > 0){
 						component.setText(builder.toString());
@@ -308,10 +309,14 @@ public class IChatBaseComponent {
 					}
 					component = new IChatBaseComponent();
 					component.setColor(color);
-					i += 6;
+					i += 5;
 				} catch (Exception e) {
 					//invalid hex code
-					e.printStackTrace();
+					int pos = message.indexOf(' ', i);
+					if (pos == -1) {
+						pos = message.length();
+					}
+					builder.append(c);
 				}
 			} else {
 				int pos = message.indexOf(' ', i);
