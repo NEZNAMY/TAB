@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -12,7 +11,6 @@ import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import net.minecraft.server.v1_7_R4.ChatSerializer;
 import net.minecraft.server.v1_7_R4.DataWatcher;
 import net.minecraft.server.v1_7_R4.Entity;
@@ -22,7 +20,6 @@ import net.minecraft.server.v1_7_R4.EnumChatFormat;
 import net.minecraft.server.v1_7_R4.EnumGamemode;
 import net.minecraft.server.v1_7_R4.IChatBaseComponent;
 import net.minecraft.server.v1_7_R4.NBTTagCompound;
-import net.minecraft.server.v1_7_R4.NetworkManager;
 import net.minecraft.server.v1_7_R4.Packet;
 import net.minecraft.server.v1_7_R4.PacketPlayInUseEntity;
 import net.minecraft.server.v1_7_R4.PacketPlayOutChat;
@@ -37,13 +34,10 @@ import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_7_R4.WatchableObject;
-import net.minecraft.util.io.netty.channel.Channel;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_7_R4 extends MethodAPI {
 
-	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class, Channel.class).get(0);
-	
 	public MethodAPI_v1_7_R4() {
 		DataWatcher = DataWatcher.class;
 		Entity = Entity.class;
@@ -73,7 +67,7 @@ public class MethodAPI_v1_7_R4 extends MethodAPI {
 		return ((CraftPlayer)p).getHandle().ping;
 	}
 	public Object getChannel(Player p) throws Exception {
-		return CHANNEL.get(((CraftPlayer)p).getHandle().playerConnection.networkManager);
+		return null;
 	}
 	public double[] getRecentTps() {
 		return ((CraftServer)Bukkit.getServer()).getServer().recentTps;

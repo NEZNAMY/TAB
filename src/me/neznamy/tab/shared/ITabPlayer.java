@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
@@ -42,7 +43,7 @@ public abstract class ITabPlayer {
 	private long lastRefreshGroup;
 	public List<ArmorStand> armorStands = Collections.synchronizedList(new ArrayList<ArmorStand>());
 	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
-	public Object channel;
+	public Channel channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible;
 	private PlayerInfoData infoData;
@@ -124,7 +125,7 @@ public abstract class ITabPlayer {
 		return version;
 	}
 
-	public Object getChannel() {
+	public Channel getChannel() {
 		return channel;
 	}
 

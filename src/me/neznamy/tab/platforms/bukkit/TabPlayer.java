@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -20,7 +21,7 @@ public class TabPlayer extends ITabPlayer{
 	public TabPlayer(Player p) throws Exception {
 		player = p;
 		world = p.getWorld().getName();
-		channel = MethodAPI.getInstance().getChannel(player);
+		channel = (Channel) MethodAPI.getInstance().getChannel(player);
 		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();

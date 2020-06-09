@@ -135,8 +135,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			for (ITabPlayer p : Shared.getPlayers()) {
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 					Injector.uninject(p.getUniqueId());
-				} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) {
-					Injector1_7.uninject(p.getUniqueId());
 				}
 			}
 			Shared.unload();
@@ -213,8 +211,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	private static void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 7) {
-			Injector1_7.inject(player);
 		}
 	}
 
