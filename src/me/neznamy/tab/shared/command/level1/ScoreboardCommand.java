@@ -20,7 +20,7 @@ public class ScoreboardCommand extends SubCommand{
 	public void execute(ITabPlayer sender, String[] args) {
 		ScoreboardManager scoreboard = (ScoreboardManager) Shared.features.get("scoreboard");
 		if (scoreboard == null) {
-			sender.sendMessage(Placeholders.color("&Scoreboard feature is not enabled, therefore toggle command cannot be used."));
+			sender.sendMessage(Placeholders.color("&cScoreboard feature is not enabled, therefore toggle command cannot be used."));
 			return;
 		}
 		if (args.length == 0) {
