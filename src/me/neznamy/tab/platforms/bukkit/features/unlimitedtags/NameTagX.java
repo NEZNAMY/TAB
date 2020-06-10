@@ -153,9 +153,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			Property p = pl.properties.get(line);
 			pl.armorStands.add(new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
-		for (Entry<String, Double> line : Premium.staticLines.entrySet()) {
+		for (Entry<String, Object> line : Premium.staticLines.entrySet()) {
 			Property p = pl.properties.get(line.getKey());
-			pl.armorStands.add(new ArmorStand(pl, p, line.getValue(), true));
+			pl.armorStands.add(new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
 	}

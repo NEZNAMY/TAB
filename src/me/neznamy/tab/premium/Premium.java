@@ -17,7 +17,7 @@ public class Premium {
 	public static String sortingPlaceholder;
 	public static boolean caseSensitive;
 	public static List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
-	public static Map<String, Double> staticLines = new HashMap<String, Double>();
+	public static Map<String, Object> staticLines = new HashMap<String, Object>();
 	public static boolean allignTabsuffix;
 
 	public static boolean is() {
