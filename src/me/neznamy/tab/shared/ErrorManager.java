@@ -19,9 +19,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
 public class ErrorManager {
 
-	private static final String newline = System.getProperty("line.separator");
-	private SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
-	private List<String> oneTimeMessages = new ArrayList<String>();
+	private final String newline = System.getProperty("line.separator");
+	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
+	private final List<String> oneTimeMessages = new ArrayList<String>();
 	private int startupWarns = 0;
 
 	public void printError(String message) {
@@ -45,15 +45,16 @@ public class ErrorManager {
 			if (!file.exists()) file.createNewFile();
 			if (file.length() < 1000000) { //not going over 1 MB
 				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
+				String currentTime = getCurrentTime();
 				if (message != null) {
-					buf.write(getCurrentTime() + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
+					buf.write(currentTime + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
 				}
 				if (t != null) {
-					buf.write(getCurrentTime() + t.getClass().getName() +": " + t.getMessage() + newline);
+					buf.write(currentTime + t.getClass().getName() +": " + t.getMessage() + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
-						buf.write(getCurrentTime() + "       at " + ste.toString() + newline);
+						buf.write(currentTime + "       at " + ste.toString() + newline);
 						if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c       at " + ste.toString());
 					}
 				}
