@@ -18,12 +18,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
@@ -208,12 +210,21 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}
+	@EventHandler
+	public void a(EntityPotionEffectEvent e) {
+		if (e.getEntity() instanceof Player) {
+			ITabPlayer player = Shared.getPlayer(e.getEntity().getUniqueId());	
+			if (player == null) return;
+			if (e.getNewEffect() != null && e.getNewEffect().getType().equals(PotionEffectType.INVISIBILITY) || e.getOldEffect() != null && e.getOldEffect().getType().equals(PotionEffectType.INVISIBILITY))
+				player.nameTagVisible = player.hasInvisibility();
+		}	
+	}
 	private static void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
 		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
@@ -226,6 +237,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		}
 		return false;
 	}
+	
 	public void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
