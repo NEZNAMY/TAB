@@ -27,7 +27,7 @@ public enum EnumChatFormat{
 	UNDERLINE(19, 'n'),
 	ITALIC(20, 'o'),
 	RESET(21, 'r');
-	
+
 	private int networkId;
 	private char character;
 	private Object nmsEquivalent;
@@ -38,8 +38,8 @@ public enum EnumChatFormat{
 		this(networkId, character);
 		this.hexColor = hexColor;
 		red = (hexColor >> 16) & 0xFF;
-        green = (hexColor >> 8) & 0xFF;
-        blue = hexColor & 0xFF;
+		green = (hexColor >> 8) & 0xFF;
+		blue = hexColor & 0xFF;
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private EnumChatFormat(int networkId, char character) {
