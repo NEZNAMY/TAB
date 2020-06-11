@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -37,7 +38,8 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledTablistObjective) continue;
-					if (p.properties.get("tablist-objective") != null && p.properties.get("tablist-objective").isUpdateNeeded()) {
+					Property pr = p.properties.get("tablist-objective");
+					if (pr != null && pr.isUpdateNeeded()) {
 						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
 					}
 				}

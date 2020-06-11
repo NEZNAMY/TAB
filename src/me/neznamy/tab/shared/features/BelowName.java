@@ -33,7 +33,8 @@ public class BelowName implements Loadable, JoinEventListener {
 			public void run(){
 				for (ITabPlayer p : Shared.getPlayers()){
 					if (p.disabledBelowname) continue;
-					if (p.properties.get("belowname-number").isUpdateNeeded()) {
+					Property pr = p.properties.get("belowname-number");
+					if (pr != null && pr.isUpdateNeeded()) {
 						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getNumber(p));
 					}
 				}
