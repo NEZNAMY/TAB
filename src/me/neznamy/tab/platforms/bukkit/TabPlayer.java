@@ -33,7 +33,6 @@ public class TabPlayer extends ITabPlayer{
 			version = PluginHooks.ViaVersion_getPlayerVersion(this);
 			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
 		}
-		nameTagVisible = !hasInvisibility();
 		init();
 	}
 	@Override

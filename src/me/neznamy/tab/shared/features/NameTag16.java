@@ -28,7 +28,10 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			}
 		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport)
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport) {
+			for (ITabPlayer p : Shared.getPlayers()) {
+				p.nameTagVisible = !p.hasInvisibility();
+			}
 			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAG_INVISFIX, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
@@ -40,6 +43,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 					}
 				}
 			});
+		}
 	}
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
