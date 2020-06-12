@@ -17,7 +17,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 	private String playerSuffix;
 	private String nametagVisibility;
 	private String collisionRule;
-//	private EnumChatFormat color;
+	private EnumChatFormat color;
 	private Collection<String> players = Collections.emptyList();
 	private int method;
 	private int options;
@@ -73,6 +73,10 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		this.options = options;
 		return this;
 	}
+	public PacketPlayOutScoreboardTeam setColor(EnumChatFormat color) {
+		this.color = color;
+		return this;
+	}
 	
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
@@ -88,7 +92,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
 			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(prefix).toString(clientVersion)));
 			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(suffix).toString(clientVersion)));
-			CHATFORMAT.set(packet, EnumChatFormat.lastColorsOf(prefix).toNMS());
+			CHATFORMAT.set(packet, color != null ? color.toNMS() : EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, name);
 			PREFIX.set(packet, prefix);

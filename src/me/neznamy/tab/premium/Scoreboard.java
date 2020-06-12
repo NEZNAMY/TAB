@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -211,16 +213,15 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 			}
 		}
 		public void unregister() {
-			for (ITabPlayer p : players) {
-				if (p.properties.get("sb-"+teamname).get().length() > 0)
-					PacketAPI.removeScoreboardScore(p, player, teamname);
-			}
+			players.forEach(p -> unregister(p));
 		}
 		public void updatePrefixSuffix() {
 			for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 				List<String> prefixsuffix = replaceText(p, false, false);
 				if (prefixsuffix == null) continue;
-				PacketAPI.updateScoreboardTeamPrefixSuffix(p, teamname, prefixsuffix.get(0), prefixsuffix.get(1), false, false);
+				PacketPlayOutScoreboardTeam update = PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69);
+				update.setColor(EnumChatFormat.RESET);
+				p.sendCustomPacket(update);
 			}
 		}
 	}

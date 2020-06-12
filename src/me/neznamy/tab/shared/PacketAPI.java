@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -30,11 +31,11 @@ public class PacketAPI{
 	}
 	
 	//scoreboard team
-	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players) {
+	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.separatorType.equals("world")) {
 			unregisterScoreboardTeam(to, teamName);
 		}
-		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69));
+		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
 	}
 	public static void unregisterScoreboardTeam(ITabPlayer to, String teamName) {
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
@@ -60,7 +61,7 @@ public class PacketAPI{
 
 	//scoreboard score
 	public static void registerScoreboardScore(ITabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer));
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), EnumChatFormat.RESET);
 		setScoreboardScore(p, fakeplayer, objective, score);
 	}
 	public static void removeScoreboardScore(ITabPlayer p, String fakeplayer, String objective) {
