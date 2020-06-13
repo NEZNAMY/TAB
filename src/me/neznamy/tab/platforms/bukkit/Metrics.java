@@ -62,14 +62,6 @@ public class Metrics {
 				return Shared.mainClass.getPermissionPlugin();
 			}
 		}));
-		metrics.addCustomChart(new Metrics.SimplePie("protocol_hack", new Callable<String>() {
-			public String call() {
-				if (PluginHooks.viaversion && PluginHooks.protocolsupport) return "ViaVersion + ProtocolSupport";
-				if (PluginHooks.viaversion) return "ViaVersion";
-				if (PluginHooks.protocolsupport) return "ProtocolSupport";
-				return "None";
-			}
-		}));
 		metrics.addCustomChart(new Metrics.SimplePie("server_version", new Callable<String>() {
 			public String call() {
 				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
