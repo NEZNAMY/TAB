@@ -232,6 +232,14 @@ public class TABAPI {
 		Placeholders.registerPlaceholder(constant);
 	}
 	
+	
+	/**
+	 * Creates a new scoreboard
+	 * @param title - the scoreboard title
+	 * @param lines - up to 15 lines of text (supports placeholders)
+	 * @return The new scoreboard
+	 * @since 2.7.7
+	 */
 	public static Scoreboard createScoreboard(String title, List<String> lines) {
 		if (!Premium.is()) throw new IllegalArgumentException("Not supported in free version");
 		for (String line : lines) {
