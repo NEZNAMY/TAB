@@ -42,9 +42,9 @@ public class Premium {
 		Collections.reverse(Premium.dynamicLines);
 		staticLines = premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
-		Map<Integer, Integer> widths = premiumconfig.getConfigurationSection("extra-character-widths");
-		for (Entry<Integer, Integer> entry : widths.entrySet()) {
-			AlignedSuffix.widths.put((char)(int)entry.getKey(), entry.getValue());
+		Map<Integer, ?> widths = premiumconfig.getConfigurationSection("extra-character-widths");
+		for (Entry<Integer, ?> entry : widths.entrySet()) {
+			AlignedSuffix.widths.put((char)(int)entry.getKey(), (int)entry.getValue());
 		}
 	}
 }
