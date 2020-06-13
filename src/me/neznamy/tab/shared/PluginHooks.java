@@ -282,12 +282,7 @@ public class PluginHooks {
 			String playername = (player == null ? "null" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				if (placeholder.contains("%pinataparty")) {
-					//i'm done with arguing with that person about whose fault it is, just pretending like it works
-					return "0";
-				} else {
-					Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
-				}
+				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
 			} else {
 				placeholderAPI = false;
 			}
