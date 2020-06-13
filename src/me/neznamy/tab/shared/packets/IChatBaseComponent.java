@@ -296,7 +296,6 @@ public class IChatBaseComponent {
 					}
 				}
 			} else if (c == '#'){
-				i++;
 				try {
 					String hex = message.substring(i-1, i+6);
 					TextColor color = new TextColor(hex); //the validation check is in contructor
@@ -309,20 +308,12 @@ public class IChatBaseComponent {
 					}
 					component = new IChatBaseComponent();
 					component.setColor(color);
-					i += 5;
+					i += 6;
 				} catch (Exception e) {
 					//invalid hex code
-					int pos = message.indexOf(' ', i);
-					if (pos == -1) {
-						pos = message.length();
-					}
 					builder.append(c);
 				}
 			} else {
-				int pos = message.indexOf(' ', i);
-				if (pos == -1) {
-					pos = message.length();
-				}
 				builder.append(c);
 			}
 		}
