@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -19,9 +20,12 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	private int maxWidth;
 	private ITabPlayer maxPlayer;
 	private Map<Character, Integer> widths = new HashMap<Character, Integer>();
+	private Playerlist playerlist;
 
 	@SuppressWarnings("unchecked")
-	public AlignedSuffix() {
+	public AlignedSuffix(Playerlist playerlist) {
+		this.playerlist = playerlist;
+		
 		//32-47
 		widths.put(' ', 3);
 		widths.put('!', 1);
@@ -295,7 +299,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == exception) continue;
-					all.updatePlayerListName();
+					playerlist.updatePlayerListName(all);
 				}
 			}
 		});

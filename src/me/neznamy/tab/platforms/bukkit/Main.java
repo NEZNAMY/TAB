@@ -476,8 +476,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
-				if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
-				Shared.registerFeature("playerlist", new Playerlist());
+				Playerlist playerlist = new Playerlist();
+				Shared.registerFeature("playerlist", playerlist);
+				if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+				
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());

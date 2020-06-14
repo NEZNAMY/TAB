@@ -340,8 +340,9 @@ public class Main implements MainClass{
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true))				Shared.registerFeature("nametag16", new NameTag16());
 		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 	Shared.registerFeature("tabobjective", new TabObjective());
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-			Shared.registerFeature("playerlist", new Playerlist());
-			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix());
+			Playerlist playerlist = new Playerlist();
+			Shared.registerFeature("playerlist", playerlist);
+			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());

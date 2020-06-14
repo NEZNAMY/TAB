@@ -14,18 +14,15 @@ import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -170,51 +167,6 @@ public abstract class ITabPlayer {
 			p.setSource(source);
 		}
 		return rawValue;
-	}
-
-	public boolean isListNameUpdateNeeded() {
-		getGroup();
-		boolean tabprefix = properties.get("tabprefix").isUpdateNeeded();
-		boolean customtabname = properties.get("customtabname").isUpdateNeeded();
-		boolean tabsuffix = properties.get("tabsuffix").isUpdateNeeded();
-		return (tabprefix || customtabname || tabsuffix);
-	}
-
-	public void updatePlayerListName() {
-		isListNameUpdateNeeded(); //triggering updates to replaced values
-		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, getInfoData()), all.getVersion()));
-		}
-	}
-
-	public IChatBaseComponent getTabFormat(ITabPlayer viewer) {
-		if (!Shared.features.containsKey("playerlist")) return null;
-		Property prefix = properties.get("tabprefix");
-		Property name = properties.get("customtabname");
-		Property suffix = properties.get("tabsuffix");
-		if (prefix == null || name == null || suffix == null) {
-			Shared.errorManager.printError("TabFormat not initialized for " + getName());
-			return null;
-		}
-		String format;
-		if (Premium.allignTabsuffix) {
-			AlignedSuffix asuffix = ((AlignedSuffix)Shared.features.get("alignedsuffix"));
-			if (asuffix != null) {
-				format = asuffix.fixTextWidth(this, prefix.get() + name.get(), suffix.get());
-			} else {
-				Shared.errorManager.printError("Aligned suffix is enabled, but the feature is not loaded!");
-				format = prefix.get() + name.get() + suffix.get();
-			}
-		} else {
-			format = prefix.get() + name.get() + suffix.get();
-		}
-		String text = (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, this, format) : format;
-		if (viewer.getVersion().getMinorVersion() >= 9) {
-			return IChatBaseComponent.fromColoredText(text);
-		} else {
-			//fucking lunar client
-			return new IChatBaseComponent(new IChatBaseComponent(text).toColoredText());
-		}
 	}
 
 	public void updateTeam(boolean force) {
@@ -530,7 +482,8 @@ public abstract class ITabPlayer {
 		}
 	}
 	public void forceUpdateDisplay() {
-		if (Shared.features.containsKey("playerlist") && !disabledTablistNames) updatePlayerListName();
+		Playerlist playerlist = (Playerlist) Shared.features.get("playerlist");
+		if (playerlist != null && !disabledTablistNames) playerlist.updatePlayerListName(this);
 		if ((Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) && !disabledNametag) {
 			unregisterTeam();
 			registerTeam();
