@@ -543,7 +543,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				usedExpansions.add(plugin);
 				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
-			PlaceholderRefresher.registerPlaceholder(identifier);
+			PlaceholderRefresher.registerPAPIPlaceholder(identifier);
 		}
 	}
 

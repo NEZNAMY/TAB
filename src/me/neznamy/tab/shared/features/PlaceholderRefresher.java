@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.shared.Configs;
@@ -15,16 +16,25 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
+//THIS CLASS IS IN PROGRESS
+@SuppressWarnings("unchecked")
 public class PlaceholderRefresher {
 
+	private static final int DEFAULT_COOLDOWN = 50;
+	
 	//for metrics
-	public static List<String> unknownPlaceholders = new ArrayList<String>();
+	public static List<String> unknownPlaceholders;
 	
-	public static Map<String, Integer> serverPlaceholders = new HashMap<String, Integer>();
-	public static List<String> serverConstants = new ArrayList<String>();
-	public static Map<String, Integer> playerPlaceholders = new HashMap<String, Integer>();
+	public static Map<String, Integer> serverPlaceholders;
+	public static List<String> serverConstants;
+	public static Map<String, Integer> playerPlaceholders;
 	
-	static {
+	public static void init(){
+		unknownPlaceholders = new ArrayList<String>();
+		serverPlaceholders = new HashMap<String, Integer>();
+		serverConstants = new ArrayList<String>();
+		playerPlaceholders = new HashMap<String, Integer>();
+		
 		serverPlaceholders.put("%bungee_total%", 1000);
 		serverPlaceholders.put("%server_online%", 1000); 		//%online%
 		serverPlaceholders.put("%server_uptime%", 1000);
@@ -55,13 +65,21 @@ public class PlaceholderRefresher {
 		playerPlaceholders.put("%cmi_user_display_name%", 1000);
 		playerPlaceholders.put("%factionsuuid_faction_name%", 1000);
 		playerPlaceholders.put("%multiverse_world_alias%", 2000);
+		
+		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.server")).entrySet()) {
+			serverPlaceholders.put(placeholder.getKey(), placeholder.getValue());
+			Shared.debug("Loaded cooldown " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
+		}
+		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.player")).entrySet()) {
+			playerPlaceholders.put(placeholder.getKey(), placeholder.getValue());
+			Shared.debug("Loaded cooldown " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
+		}
 	}
 	
-	public static void registerPlaceholder(String identifier) {
+	public static void registerPAPIPlaceholder(String identifier) {
 		if (serverPlaceholders.containsKey(identifier)) {
-			int cooldown = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, serverPlaceholders.get(identifier));
-			Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
-			Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, cooldown){
+			Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + serverPlaceholders.get(identifier));
+			Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, serverPlaceholders.get(identifier)){
 				public String get() {
 					return PluginHooks.PlaceholderAPI_setPlaceholders((UUID)null, identifier);
 				}
@@ -78,9 +96,8 @@ public class PlaceholderRefresher {
 			return;
 		}
 		if (playerPlaceholders.containsKey(identifier)) {
-			int cooldown = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, playerPlaceholders.get(identifier));
-			Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
-			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+			Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + playerPlaceholders.get(identifier));
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, playerPlaceholders.get(identifier)){
 				public String get(ITabPlayer p) {
 					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getBukkitEntity(), identifier);
 				}
@@ -88,19 +105,8 @@ public class PlaceholderRefresher {
 			return;
 		}
 		unknownPlaceholders.add(identifier);
-		int cooldown = Configs.getSecretOption("papi-placeholder-cooldowns.server." + identifier, -1);
-		if (cooldown != -1) {
-			Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
-			Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, cooldown){
-				public String get() {
-					return PluginHooks.PlaceholderAPI_setPlaceholders((UUID)null, identifier);
-				}
-			});
-			return;
-		}
-		cooldown = Configs.getSecretOption("papi-placeholder-cooldowns.player." + identifier, 50);
-		Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
-		Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+		Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + DEFAULT_COOLDOWN);
+		Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, DEFAULT_COOLDOWN){
 			public String get(ITabPlayer p) {
 				return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
 			}
