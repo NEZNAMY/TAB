@@ -112,13 +112,7 @@ public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPack
 		}
 		String format;
 		if (Premium.allignTabsuffix) {
-			AlignedSuffix asuffix = ((AlignedSuffix)Shared.features.get("alignedsuffix"));
-			if (asuffix != null) {
-				format = asuffix.fixTextWidth(p, prefix.get() + name.get(), suffix.get());
-			} else {
-				Shared.errorManager.printError("Aligned suffix is enabled, but the feature is not loaded!");
-				format = prefix.get() + name.get() + suffix.get();
-			}
+			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(p, prefix.get() + name.get(), suffix.get());
 		} else {
 			format = prefix.get() + name.get() + suffix.get();
 		}
