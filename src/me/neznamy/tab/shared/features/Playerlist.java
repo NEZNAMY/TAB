@@ -36,7 +36,6 @@ public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPack
 		if (!Configs.disabledTablistNames.contains("NORESET")) p.updatePlayerListName();
 	}
 	private void updateNames(boolean force){
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) return;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledTablistNames && (p.isListNameUpdateNeeded() || force)) updatedPlayers.add(p.getInfoData());
