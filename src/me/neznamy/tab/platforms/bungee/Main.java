@@ -204,23 +204,14 @@ public class Main extends Plugin implements Listener, MainClass{
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
-						Team team = (Team) packet;
-						if (killPacket(team)) {
-							return;
-						}
+						if (killPacket((Team) packet)) return;
 					}
 					if (packet instanceof ByteBuf && Shared.features.containsKey("nametag16")) {
 						ByteBuf buf = ((ByteBuf) packet).duplicate();
-						byte packetId = buf.readByte();
-						Team team = null;
-						if (packetId == ((TabPlayer)player).getPacketId(Team.class)) {
-							team = new Team();
+						if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
+							Team team = new Team();
 							team.read(buf, null, player.getVersion().getNetworkId());
-						}
-						if (team != null) {
-							if (killPacket(team)) {
-								return;
-							}
+							if (killPacket(team)) return;
 						}
 					}
 				} catch (Throwable e){
