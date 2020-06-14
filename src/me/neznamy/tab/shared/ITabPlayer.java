@@ -62,7 +62,6 @@ public abstract class ITabPlayer {
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 	public boolean lastCollision;
 	public boolean lastVisibility;
-	private boolean connected = true;
 
 	public void init() {
 		updateGroupIfNeeded(false);
@@ -537,12 +536,5 @@ public abstract class ITabPlayer {
 			registerTeam();
 		}
 		if (Shared.features.containsKey("nametagx") && !disabledNametag) ((NameTagX)Shared.features.get("nametagx")).restartArmorStands(this);
-	}
-	public boolean isConnected() {
-		return connected;
-	}
-	public void disconnect() {
-		connected = false;
-		//TODO add more stuff such as memory flush to prevent memory leaks
 	}
 }

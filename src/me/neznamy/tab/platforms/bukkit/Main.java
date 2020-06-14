@@ -49,7 +49,7 @@ import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
-import me.neznamy.tab.shared.features.PlaceholderRefresher;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -57,7 +57,6 @@ import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
@@ -168,14 +167,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) return;
-			disconnectedPlayer.disconnect();
 			Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
-			for (Placeholder pl : Placeholders.getAllPlaceholders()) {
-				if (pl instanceof PlayerPlaceholder) {
-					((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
-					((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
-				}
-			}
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerQuitEvent", t);
 		}
@@ -496,6 +488,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.registerFeature("papihook", new TabExpansion());
 				new ExpansionDownloader();
 			}
+			Shared.registerFeature("placeholders", new PlaceholderManager());
 			new UpdateChecker();
 
 			for (Player p : getOnlinePlayers()) {
@@ -542,7 +535,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				usedExpansions.add(plugin);
 				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
-			PlaceholderRefresher.registerPAPIPlaceholder(identifier);
+			((PlaceholderManager)Shared.features.get("placeholders")).registerPAPIPlaceholder(identifier);
 		}
 	}
 

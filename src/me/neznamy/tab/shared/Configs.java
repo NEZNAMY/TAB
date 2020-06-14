@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.features.PlaceholderRefresher;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
@@ -105,7 +104,6 @@ public class Configs {
 		}
 		checkAnimations(config.getValues());
 		checkAnimations(bossbar.getValues());
-		PlaceholderRefresher.init();
 		Shared.mainClass.suggestPlaceholders();
 	}
 	@SuppressWarnings("unchecked")

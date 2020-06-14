@@ -11,6 +11,8 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
@@ -18,18 +20,18 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 //THIS CLASS IS IN PROGRESS
 @SuppressWarnings("unchecked")
-public class PlaceholderRefresher {
+public class PlaceholderManager implements QuitEventListener{
 
-	private static final int DEFAULT_COOLDOWN = 50;
+	private final int DEFAULT_COOLDOWN = 50;
 	
 	//for metrics
-	public static List<String> unknownPlaceholders;
+	public List<String> unknownPlaceholders;
 	
-	public static Map<String, Integer> serverPlaceholders;
-	public static List<String> serverConstants;
-	public static Map<String, Integer> playerPlaceholders;
+	public Map<String, Integer> serverPlaceholders;
+	public List<String> serverConstants;
+	public Map<String, Integer> playerPlaceholders;
 	
-	public static void init(){
+	public PlaceholderManager(){
 		unknownPlaceholders = new ArrayList<String>();
 		serverPlaceholders = new HashMap<String, Integer>();
 		serverConstants = new ArrayList<String>();
@@ -84,7 +86,7 @@ public class PlaceholderRefresher {
 		}
 	}
 	
-	public static void registerPAPIPlaceholder(String identifier) {
+	public void registerPAPIPlaceholder(String identifier) {
 		if (serverPlaceholders.containsKey(identifier)) {
 			Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + serverPlaceholders.get(identifier));
 			Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, serverPlaceholders.get(identifier)){
@@ -119,5 +121,15 @@ public class PlaceholderRefresher {
 				return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
 			}
 		});
+	}
+
+	@Override
+	public void onQuit(ITabPlayer disconnectedPlayer) {
+		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
+			if (pl instanceof PlayerPlaceholder) {
+				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
+				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
+			}
+		}
 	}
 }

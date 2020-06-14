@@ -31,6 +31,7 @@ import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -39,7 +40,6 @@ import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
@@ -135,15 +135,8 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Shared.disabled) return;
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
-		disconnectedPlayer.disconnect();
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
-		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
-			if (pl instanceof PlayerPlaceholder) {
-				((PlayerPlaceholder)pl).lastRefresh.remove(disconnectedPlayer.getName());
-				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
-			}
-		}
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void a(ServerSwitchEvent e){
@@ -300,6 +293,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		Shared.registerFeature("placeholders", new PlaceholderManager());
 		new UpdateChecker();
 		
 		for (ProxiedPlayer p : getProxy().getPlayers()) {

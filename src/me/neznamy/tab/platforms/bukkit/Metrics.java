@@ -34,7 +34,7 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderRefresher;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * bStats collects some data for plugin authors.
@@ -97,7 +97,7 @@ public class Metrics {
 		metrics.addCustomChart(new Metrics.AdvancedPie("used_unlisted_papi_placeholders_2_7_7", new Callable<Map<String, Integer>>() {
 			public Map<String, Integer> call(){
 				Map<String, Integer> map = new HashMap<String, Integer>();
-				for (String placeholder : PlaceholderRefresher.unknownPlaceholders) {
+				for (String placeholder : ((PlaceholderManager)Shared.features.get("placeholders")).unknownPlaceholders) {
 					map.put(placeholder, 1);
 				}
 				return map;
