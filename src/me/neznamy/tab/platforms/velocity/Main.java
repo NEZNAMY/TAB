@@ -147,7 +147,7 @@ public class Main implements MainClass{
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
+		Shared.quitListeners.forEach(f -> f.onQuit(disconnectedPlayer));
 	}
 	@Subscribe
 	public void a(ServerConnectedEvent e){
@@ -163,7 +163,7 @@ public class Main implements MainClass{
 
 					@Override
 					public void run() {
-						Shared.joinListeners.values().forEach(f -> f.onJoin(p));
+						Shared.joinListeners.forEach(f -> f.onJoin(p));
 					}
 				});
 			} else {
@@ -204,7 +204,7 @@ public class Main implements MainClass{
 					if (packet instanceof MinecraftPacket) {
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromVelocity(packet);
 						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 								long time = System.nanoTime();
 								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);

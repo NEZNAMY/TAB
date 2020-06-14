@@ -136,7 +136,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
+		Shared.quitListeners.forEach(f -> f.onQuit(disconnectedPlayer));
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void a(ServerSwitchEvent e){
@@ -146,7 +146,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				ITabPlayer p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
-				Shared.joinListeners.values().forEach(f -> f.onJoin(p));
+				Shared.joinListeners.forEach(f -> f.onJoin(p));
 			} else {
 				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				p.onWorldChange(p.getWorldName(), p.world = e.getPlayer().getServer().getInfo().getName());
@@ -163,7 +163,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		for (CommandListener listener : Shared.commandListeners.values()) {
+		for (CommandListener listener : Shared.commandListeners) {
 			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}
@@ -185,7 +185,7 @@ public class Main extends Plugin implements Listener, MainClass{
 					if (packet instanceof DefinedPacket) {
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
 						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 								long time = System.nanoTime();
 								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);

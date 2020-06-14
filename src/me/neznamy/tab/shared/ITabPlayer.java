@@ -459,11 +459,11 @@ public abstract class ITabPlayer {
 
 				@Override
 				public void run() {
-					Shared.worldChangeListeners.values().forEach(f -> f.onWorldChange(player, from, to));
+					Shared.worldChangeListeners.forEach(f -> f.onWorldChange(player, from, to));
 				}
 			});
 		} else {
-			Shared.worldChangeListeners.values().forEach(f -> f.onWorldChange(this, from, to));
+			Shared.worldChangeListeners.forEach(f -> f.onWorldChange(this, from, to));
 		}
 	}
 

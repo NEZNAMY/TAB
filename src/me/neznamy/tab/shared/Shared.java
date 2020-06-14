@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,13 +36,13 @@ public class Shared {
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	
 	public static final Map<String, Object> features = new ConcurrentHashMap<String, Object>();
-	public static final Map<String, PlayerInfoPacketListener> playerInfoListeners = new ConcurrentHashMap<String, PlayerInfoPacketListener>();
-	public static final Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
-	public static final Map<String, Loadable> loadableFeatures = new ConcurrentHashMap<String, Loadable>();
-	public static final Map<String, JoinEventListener> joinListeners = new ConcurrentHashMap<String, JoinEventListener>();
-	public static final Map<String, QuitEventListener> quitListeners = new ConcurrentHashMap<String, QuitEventListener>();
-	public static final Map<String, WorldChangeListener> worldChangeListeners = new ConcurrentHashMap<String, WorldChangeListener>();
-	public static final Map<String, CommandListener> commandListeners = new ConcurrentHashMap<String, CommandListener>();
+	public static final List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
+	public static final List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
+	public static final List<Loadable> loadableFeatures = new ArrayList<Loadable>();
+	public static final List<JoinEventListener> joinListeners = new ArrayList<JoinEventListener>();
+	public static final List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
+	public static final List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
+	public static final List<CommandListener> commandListeners = new ArrayList<CommandListener>();
 	
 	public static boolean disabled;
 	public static MainClass mainClass;
@@ -96,7 +98,7 @@ public class Shared {
 			bukkitBridgePlaceholderCpu = new CPUManager();
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
-			loadableFeatures.values().forEach(f -> f.load());
+			loadableFeatures.forEach(f -> f.load());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
@@ -114,7 +116,7 @@ public class Shared {
 			featureCpu.cancelAllTasks();
 			placeholderCpu.cancelAllTasks();
 			bukkitBridgePlaceholderCpu.cancelAllTasks();
-			loadableFeatures.values().forEach(f -> f.unload());
+			loadableFeatures.forEach(f -> f.unload());
 			loadableFeatures.clear();
 			playerInfoListeners.clear();
 			rawpacketfeatures.clear();
@@ -132,25 +134,25 @@ public class Shared {
 	public static void registerFeature(String featureName, Object featureHandler) {
 		features.put(featureName, featureHandler);
 		if (featureHandler instanceof Loadable) {
-			loadableFeatures.put(featureName, (Loadable) featureHandler);
+			loadableFeatures.add((Loadable) featureHandler);
 		}
 		if (featureHandler instanceof PlayerInfoPacketListener) {
-			playerInfoListeners.put(featureName, (PlayerInfoPacketListener) featureHandler);
+			playerInfoListeners.add((PlayerInfoPacketListener) featureHandler);
 		}
 		if (featureHandler instanceof RawPacketFeature) {
-			rawpacketfeatures.put(featureName, (RawPacketFeature) featureHandler);
+			rawpacketfeatures.add((RawPacketFeature) featureHandler);
 		}
 		if (featureHandler instanceof JoinEventListener) {
-			joinListeners.put(featureName, (JoinEventListener) featureHandler);
+			joinListeners.add((JoinEventListener) featureHandler);
 		}
 		if (featureHandler instanceof QuitEventListener) {
-			quitListeners.put(featureName, (QuitEventListener) featureHandler);
+			quitListeners.add((QuitEventListener) featureHandler);
 		}
 		if (featureHandler instanceof WorldChangeListener) {
-			worldChangeListeners.put(featureName, (WorldChangeListener) featureHandler);
+			worldChangeListeners.add((WorldChangeListener) featureHandler);
 		}
 		if (featureHandler instanceof CommandListener) {
-			commandListeners.put(featureName, (CommandListener) featureHandler);
+			commandListeners.add((CommandListener) featureHandler);
 		}
 	}
 }

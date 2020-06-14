@@ -36,7 +36,7 @@ public class Injector {
 					try{
 						ITabPlayer player = Shared.getPlayer(uuid);
 						if (player != null && player.getVersion() != ProtocolVersion.UNKNOWN) {
-							for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
+							for (RawPacketFeature f : Shared.rawpacketfeatures) {
 								long time = System.nanoTime();
 								try {
 									if (packet != null) packet = f.onPacketReceive(player, packet);
@@ -75,7 +75,7 @@ public class Injector {
 							Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
 						}
 
-						for (RawPacketFeature f : Shared.rawpacketfeatures.values()) {
+						for (RawPacketFeature f : Shared.rawpacketfeatures) {
 							long time = System.nanoTime();
 							try {
 								if (packet != null) packet = f.onPacketSend(player, packet);
@@ -87,7 +87,7 @@ public class Injector {
 
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
 						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 								long time = System.nanoTime();
 								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);

@@ -153,7 +153,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.featureCpu.runMeasuredTask("player joined the server", CPUFeature.OTHER, new Runnable() {
 
 				public void run() {
-					Shared.joinListeners.values().forEach(f -> f.onJoin(p));
+					Shared.joinListeners.forEach(f -> f.onJoin(p));
 				}
 			});
 		} catch (Throwable ex) {
@@ -167,7 +167,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) return;
-			Shared.quitListeners.values().forEach(f -> f.onQuit(disconnectedPlayer));
+			Shared.quitListeners.forEach(f -> f.onQuit(disconnectedPlayer));
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerQuitEvent", t);
 		}
@@ -196,7 +196,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		for (CommandListener listener : Shared.commandListeners.values()) {
+		for (CommandListener listener : Shared.commandListeners) {
 			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}
