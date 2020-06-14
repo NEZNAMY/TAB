@@ -13,17 +13,16 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 @SuppressWarnings({"deprecation", "unchecked"})
-public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, CustomPacketFeature{
+public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
 	private boolean allowBypass;
 	private List<String> ignoredWorlds;
@@ -99,25 +98,21 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	}
 	//fixing bukkit api bug making players not hide when hidePlayer is called too early
 	@Override
-	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
-		if (packet instanceof PacketPlayOutPlayerInfo) {
-			PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
-			if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-				List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
-				for (PlayerInfoData data : info.entries) {
-					ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
-					if (added != null && !shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) {
-						toRemove.add(data);
-					}
-				}
-				List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();
-				Arrays.asList(info.entries).forEach(d -> newList.add(d));
-				newList.removeAll(toRemove);
-				info.entries = newList.toArray(new PlayerInfoData[0]);
-				if (info.entries.length == 0) return null;
+	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
+		List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
+		for (PlayerInfoData data : info.entries) {
+			ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
+			if (added != null && !shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) {
+				toRemove.add(data);
 			}
 		}
-		return packet;
+		List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();
+		Arrays.asList(info.entries).forEach(d -> newList.add(d));
+		newList.removeAll(toRemove);
+		info.entries = newList.toArray(new PlayerInfoData[0]);
+		if (info.entries.length == 0) return null;
+		return info;
 	}
 	@Override
 	public CPUFeature getCPUName() {

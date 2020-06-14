@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class Configs {
 
 	public static ConfigurationFile config;
-	public static boolean modifyNPCnames;
 	public static boolean collisionRule;
 	public static List<String> revertedCollision;
 	public static Map<String, String> sortedGroups;

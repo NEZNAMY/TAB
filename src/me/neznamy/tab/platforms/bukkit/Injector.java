@@ -12,10 +12,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class Injector {
 
@@ -86,16 +85,14 @@ public class Injector {
 							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 						}
 
-						UniversalPacketPlayOut customPacket = null;
-						customPacket = PacketPlayOutPlayerInfo.fromNMS(packet);
-						if (customPacket != null) {
-							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
+						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
+						if (info != null) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
 								long time = System.nanoTime();
-								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
-							if (customPacket != null) packet = customPacket.toNMS(player.getVersion());
-							else packet = null;
+							packet = (info == null ? null : info.toNMS(player.getVersion()));
 						}
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);

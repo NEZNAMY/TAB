@@ -12,9 +12,9 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
@@ -34,7 +34,7 @@ public class Shared {
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	
 	public static final Map<String, Object> features = new ConcurrentHashMap<String, Object>();
-	public static final Map<String, CustomPacketFeature> custompacketfeatures = new ConcurrentHashMap<String, CustomPacketFeature>();
+	public static final Map<String, PlayerInfoPacketListener> playerInfoListeners = new ConcurrentHashMap<String, PlayerInfoPacketListener>();
 	public static final Map<String, RawPacketFeature> rawpacketfeatures = new ConcurrentHashMap<String, RawPacketFeature>();
 	public static final Map<String, Loadable> loadableFeatures = new ConcurrentHashMap<String, Loadable>();
 	public static final Map<String, JoinEventListener> joinListeners = new ConcurrentHashMap<String, JoinEventListener>();
@@ -116,7 +116,7 @@ public class Shared {
 			bukkitBridgePlaceholderCpu.cancelAllTasks();
 			loadableFeatures.values().forEach(f -> f.unload());
 			loadableFeatures.clear();
-			custompacketfeatures.clear();
+			playerInfoListeners.clear();
 			rawpacketfeatures.clear();
 			joinListeners.clear();
 			quitListeners.clear();
@@ -134,8 +134,8 @@ public class Shared {
 		if (featureHandler instanceof Loadable) {
 			loadableFeatures.put(featureName, (Loadable) featureHandler);
 		}
-		if (featureHandler instanceof CustomPacketFeature) {
-			custompacketfeatures.put(featureName, (CustomPacketFeature) featureHandler);
+		if (featureHandler instanceof PlayerInfoPacketListener) {
+			playerInfoListeners.put(featureName, (PlayerInfoPacketListener) featureHandler);
 		}
 		if (featureHandler instanceof RawPacketFeature) {
 			rawpacketfeatures.put(featureName, (RawPacketFeature) featureHandler);

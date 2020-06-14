@@ -9,15 +9,14 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFeature{
+public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPacketListener{
 
 	public void load(){
 		int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
@@ -49,13 +48,11 @@ public class Playerlist implements Loadable, WorldChangeListener, CustomPacketFe
 		}
 	}
 	@Override
-	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
-		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
-		if (receiver.getVersion().getMinorVersion() < 8) return packet;
-		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
+	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (receiver.getVersion().getMinorVersion() < 8) return info;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
-		if (!UPDATE_NAME && !ADD) return packet;
+		if (!UPDATE_NAME && !ADD) return info;
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);

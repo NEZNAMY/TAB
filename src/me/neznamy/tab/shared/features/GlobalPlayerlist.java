@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -19,9 +19,8 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CustomPacketFeature{
+public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
@@ -125,10 +124,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
 	}
 	@Override
-	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
-		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
-		if (receiver.getVersion().getMinorVersion() < 8) return packet;
-		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
+	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (receiver.getVersion().getMinorVersion() < 8) return info;
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 					//not preventing NPC removals

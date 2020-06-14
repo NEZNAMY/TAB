@@ -36,7 +36,7 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -193,16 +193,14 @@ public class Main extends Plugin implements Listener, MainClass{
 				}
 				try{
 					if (packet instanceof DefinedPacket) {
-						UniversalPacketPlayOut customPacket = null;
-						customPacket = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
-						if (customPacket != null) {
-							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
+						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
+						if (info != null) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
 								long time = System.nanoTime();
-								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
-							if (customPacket != null) packet = customPacket.toBungee(player.getVersion());
-							else packet = null;
+							packet = (info == null ? null : info.toBungee(player.getVersion()));
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {

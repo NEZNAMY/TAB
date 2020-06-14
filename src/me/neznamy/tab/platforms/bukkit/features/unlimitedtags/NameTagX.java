@@ -22,23 +22,25 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, CustomPacketFeature{
+public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener{
 
+	private boolean modifyNPCnames;
+	
 	@Override
 	public void load() {
 		int refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
+		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
@@ -114,7 +116,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(armorStandIds));
 					}
 				} catch (InterruptedException e) {
-					
+
 				}
 			}
 		});
@@ -286,21 +288,14 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		});
 	}
 	@Override
-	public UniversalPacketPlayOut onPacketSend(ITabPlayer receiver, UniversalPacketPlayOut packet) {
-		if (!Configs.modifyNPCnames) return packet;
-		if (!(packet instanceof PacketPlayOutPlayerInfo)) return packet;
-		if (receiver.getVersion().getMinorVersion() < 8) return packet;
-		PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) packet;
-		if (info.action == EnumPlayerInfoAction.ADD_PLAYER) {
-			for (PlayerInfoData playerInfoData : info.entries) {
-				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null) {
-					if (playerInfoData.name.length() <= 15) {
-						if (playerInfoData.name.length() <= 14) {
-							playerInfoData.name += Placeholders.colorChar + "r";
-						} else {
-							playerInfoData.name += " ";
-						}
-					}
+	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
+		for (PlayerInfoData playerInfoData : info.entries) {
+			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {
+				if (playerInfoData.name.length() <= 14) {
+					playerInfoData.name += Placeholders.colorChar + "r";
+				} else {
+					playerInfoData.name += " ";
 				}
 			}
 		}

@@ -55,7 +55,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
-import me.neznamy.tab.shared.features.interfaces.CustomPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -210,22 +210,16 @@ public class Main implements MainClass{
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				try{
+				try {
 					if (packet instanceof MinecraftPacket) {
-						UniversalPacketPlayOut customPacket = null;
-						customPacket = PacketPlayOutPlayerInfo.fromVelocity(packet);
-						if (customPacket != null) {
-							for (CustomPacketFeature f : Shared.custompacketfeatures.values()) {
+						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromVelocity(packet);
+						if (info != null) {
+							for (PlayerInfoPacketListener f : Shared.playerInfoListeners.values()) {
 								long time = System.nanoTime();
-								if (customPacket != null) customPacket = f.onPacketSend(player, customPacket);
+								if (info != null) info = f.onPacketSend(player, info);
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
-/*							PacketPlayOutPlayerInfo info = (PacketPlayOutPlayerInfo) customPacket;
-							if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-								System.out.println("[" + player.getName() + "] " + info.toString());
-							}*/
-							if (customPacket != null) packet = customPacket.toVelocity(player.getVersion());
-							else packet = null;
+							packet = (info == null ? null : info.toVelocity(player.getVersion()));
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
