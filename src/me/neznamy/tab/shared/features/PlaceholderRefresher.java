@@ -38,33 +38,41 @@ public class PlaceholderRefresher {
 		serverPlaceholders.put("%bungee_total%", 1000);
 		serverPlaceholders.put("%server_online%", 1000); 		//%online%
 		serverPlaceholders.put("%server_uptime%", 1000);
+		serverPlaceholders.put("%server_tps%", 1000);			//%tps%
 		serverPlaceholders.put("%server_tps_1_colored%", 1000);
 		serverPlaceholders.put("%supervanish_playercount%", 1000); //%canseeonline%
+		serverPlaceholders.put("%premiumvanish_bungeeplayercount%", 1000);
 		
 		serverConstants.add("%server_max_players%");			//%maxplayers%
 		
-		playerPlaceholders.put("%luckperms_primary_group_name%", 1000); //%rank%
-		playerPlaceholders.put("%cmi_user_afk_symbol%", 500); 	//%afk%
-		playerPlaceholders.put("%cmi_user_afk%", 500); 			//%afk%
-		playerPlaceholders.put("%luckperms_prefix%", 1000); 	//%luckperms-prefix%
-		playerPlaceholders.put("%luckperms_suffix%", 1000); 	//%luckperms-suffix%
-		playerPlaceholders.put("%player_name%", 10000); //nick plugins changing player name, so not a constant
-		playerPlaceholders.put("%vault_prefix%", 1000);			//%vault-prefix%
-		playerPlaceholders.put("%vault_suffix%", 1000);			//%vault-prefix%
-		playerPlaceholders.put("%vault_rank%", 1000);			//%rank%
-		playerPlaceholders.put("%player_displayname%", 1000);	//%displayname%
+		playerPlaceholders.put("%cmi_user_afk%", 1000); 		//%afk%
+		playerPlaceholders.put("%cmi_user_afk_symbol%", 1000); 	//%afk%
+		playerPlaceholders.put("%cmi_user_display_name%", 1000);
+		playerPlaceholders.put("%cmi_user_vanished_symbol%", 1000);
 		playerPlaceholders.put("%deluxetags_tag%", 1000);		//%deluxetag%
-		playerPlaceholders.put("%player_ping%", 1000);			//%ping%
 		playerPlaceholders.put("%eglow_glowcolor%", 100);
+		playerPlaceholders.put("%essentials_nickname%", 1000);	//%essentialsnick%
 		playerPlaceholders.put("%factionsuuid_faction_name%", 1000);
-		playerPlaceholders.put("%vault_eco_balance_formatted%", 1000);
+		playerPlaceholders.put("%factionsuuid_faction_name%", 1000);
+		playerPlaceholders.put("%luckperms_prefix%", 1000); 	//%luckperms-prefix%
+		playerPlaceholders.put("%luckperms_primary_group_name%", 1000); //%rank%
+		playerPlaceholders.put("%luckperms_suffix%", 1000); 	//%luckperms-suffix%
+		playerPlaceholders.put("%multiverse_world_alias%", 2000);
+		playerPlaceholders.put("%player_colored_ping%", 1000);
+		playerPlaceholders.put("%player_displayname%", 1000);	//%displayname%
+		playerPlaceholders.put("%player_health%", 100); 		//%health%
+		playerPlaceholders.put("%player_health_rounded%", 100); //%health%
+		playerPlaceholders.put("%player_name%", 10000); 		//nick plugins changing player name, so not a constant
+		playerPlaceholders.put("%player_ping%", 1000);			//%ping%
+		playerPlaceholders.put("%player_x%", 200);				//%xPos%
+		playerPlaceholders.put("%player_y%", 200);				//%yPos%
+		playerPlaceholders.put("%player_z%", 200);				//%zPos%
 		playerPlaceholders.put("%vault_eco_balance_commas%", 1000);
 		playerPlaceholders.put("%vault_eco_balance_fixed%", 1000);
-		playerPlaceholders.put("%cmi_user_vanished_symbol%", 1000);
-		playerPlaceholders.put("%player_colored_ping%", 1000);
-		playerPlaceholders.put("%cmi_user_display_name%", 1000);
-		playerPlaceholders.put("%factionsuuid_faction_name%", 1000);
-		playerPlaceholders.put("%multiverse_world_alias%", 2000);
+		playerPlaceholders.put("%vault_eco_balance_formatted%", 1000);
+		playerPlaceholders.put("%vault_prefix%", 1000);			//%vault-prefix%
+		playerPlaceholders.put("%vault_rank%", 1000);			//%rank%
+		playerPlaceholders.put("%vault_suffix%", 1000);			//%vault-suffix%
 		
 		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.server")).entrySet()) {
 			serverPlaceholders.put(placeholder.getKey(), placeholder.getValue());
