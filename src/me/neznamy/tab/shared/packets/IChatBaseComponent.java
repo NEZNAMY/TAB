@@ -297,7 +297,7 @@ public class IChatBaseComponent {
 				}
 			} else if (c == '#'){
 				try {
-					String hex = message.substring(i-1, i+6);
+					String hex = message.substring(i+1, i+7);
 					TextColor color = new TextColor(hex); //the validation check is in contructor
 					
 					if (builder.length() > 0){
@@ -380,7 +380,7 @@ public class IChatBaseComponent {
 		}
 				
 		public TextColor(String hexCode) {
-			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+			int hexColor = Integer.parseInt(hexCode, 16);
 			red = (hexColor >> 16) & 0xFF;
 	        green = (hexColor >> 8) & 0xFF;
 	        blue = hexColor & 0xFF;
