@@ -142,17 +142,14 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void a(ServerSwitchEvent e){
 		try{
 			if (Shared.disabled) return;
-			ITabPlayer p;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				p = new TabPlayer(e.getPlayer());
+				ITabPlayer p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				Shared.joinListeners.values().forEach(f -> f.onJoin(p));
 			} else {
-				p = Shared.getPlayer(e.getPlayer().getUniqueId());
-				String from = p.getWorldName();
-				String to = p.world = e.getPlayer().getServer().getInfo().getName();
-				p.onWorldChange(from, to);
+				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+				p.onWorldChange(p.getWorldName(), p.world = e.getPlayer().getServer().getInfo().getName());
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);

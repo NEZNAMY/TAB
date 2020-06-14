@@ -153,10 +153,9 @@ public class Main implements MainClass{
 	public void a(ServerConnectedEvent e){
 		try{
 			if (Shared.disabled) return;
-			ITabPlayer p;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				//join
-				p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
+				ITabPlayer p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise
@@ -169,10 +168,8 @@ public class Main implements MainClass{
 				});
 			} else {
 				//server change
-				p = Shared.getPlayer(e.getPlayer().getUniqueId());
-				String from = p.getWorldName();
-				String to = p.world = e.getServer().getServerInfo().getName();
-				p.onWorldChange(from, to);
+				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+				p.onWorldChange(p.getWorldName(), p.world = e.getServer().getServerInfo().getName());
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
