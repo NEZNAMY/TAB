@@ -10,6 +10,12 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
+	private static final Field OBJECTIVENAME = getField(fields, "a");
+	private static final Field DISPLAYNAME = getField(fields, "b");
+	private static Field RENDERTYPE;
+	private static final Field METHOD;
+	
 	private String objectiveName;
 	private String displayName;
 	private EnumScoreboardHealthDisplay renderType;
@@ -84,11 +90,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 			return me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay.valueOf(toString());
 		}
 	}
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
-	private static final Field OBJECTIVENAME = getField(fields, "a");
-	private static final Field DISPLAYNAME = getField(fields, "b");
-	private static Field RENDERTYPE;
-	private static final Field METHOD;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {

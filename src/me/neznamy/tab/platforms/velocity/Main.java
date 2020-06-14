@@ -72,6 +72,8 @@ import net.kyori.text.serializer.gson.GsonComponentSerializer;
 @Plugin(id = "tab", name = "TAB", version = "2.7.7", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
+	private static Method map;
+	
 	public ProxyServer server;
 	private PluginMessenger plm;
 
@@ -279,7 +281,6 @@ public class Main implements MainClass{
 		}
 		Placeholders.registerUniversalPlaceholders();
 	}
-	private static Method map;
 	
 	public static PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);

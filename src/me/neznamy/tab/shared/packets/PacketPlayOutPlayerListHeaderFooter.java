@@ -11,6 +11,10 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 
+	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
+	private static final Field HEADER = getObjectAt(fields, 0);
+	private static final Field FOOTER = getObjectAt(fields, 1);
+	
 	public IChatBaseComponent header;
 	public IChatBaseComponent footer;
 
@@ -34,8 +38,4 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new HeaderAndFooter(header.toString(clientVersion), footer.toString(clientVersion));
 	}
-
-	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
-	private static final Field HEADER = getObjectAt(fields, 0);
-	private static final Field FOOTER = getObjectAt(fields, 1);
 }

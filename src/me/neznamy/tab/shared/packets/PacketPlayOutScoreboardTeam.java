@@ -11,6 +11,18 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
+	private static final Field NAME = getField(fields, "a");
+	private static final Field DISPLAYNAME = getField(fields, "b");
+	private static final Field PREFIX = getField(fields, "c");
+	private static final Field SUFFIX = getField(fields, "d");
+	private static Field VISIBILITY; //1.8+
+	private static Field CHATFORMAT; //1.13+
+	private static Field COLLISION; //1.9+
+	public static final Field PLAYERS;
+	private static final Field ACTION;
+	public static final Field SIGNATURE;
+	
 	private String name;
 //	private String displayName;
 	private String playerPrefix;
@@ -137,18 +149,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		}
 		return new me.neznamy.tab.platforms.velocity.protocol.Team(name, (byte)method, teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
-	
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
-	private static final Field NAME = getField(fields, "a");
-	private static final Field DISPLAYNAME = getField(fields, "b");
-	private static final Field PREFIX = getField(fields, "c");
-	private static final Field SUFFIX = getField(fields, "d");
-	private static Field VISIBILITY; //1.8+
-	private static Field CHATFORMAT; //1.13+
-	private static Field COLLISION; //1.9+
-	public static final Field PLAYERS;
-	private static final Field ACTION;
-	public static final Field SIGNATURE;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {

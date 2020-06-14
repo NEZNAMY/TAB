@@ -24,7 +24,15 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
+	
+	private static final Field ACTION;
+	private static Field PLAYERS;
 
+	private static final Field PING;
+	private static final Field GAMEMODE;
+	private static final Field PROFILE;
+	private static final Field LISTNAME;
+	
 	public EnumPlayerInfoAction action;
 	public PlayerInfoData[] entries;
 
@@ -283,14 +291,6 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	public String toString() {
 		return "PacketPlayOutPlayerInfo{action=" + action + ",entries=" + Arrays.toString(entries) + "}";
 	}
-
-	private static Field ACTION;
-	private static Field PLAYERS;
-
-	private static Field PING;
-	private static Field GAMEMODE;
-	private static Field PROFILE;
-	private static Field LISTNAME;
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {

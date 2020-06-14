@@ -11,6 +11,17 @@ import net.md_5.bungee.protocol.packet.BossBar;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutBoss);
+	private static final Field UUID = fields.get("a");
+	private static final Field ACTION = fields.get("b");
+	private static final Field NAME = fields.get("c");
+	private static final Field PROGRESS = fields.get("d");
+	private static final Field COLOR = fields.get("e");
+	private static final Field STYLE = fields.get("f");
+	private static final Field DARKEN_SKY = fields.get("g");
+	private static final Field PLAY_MUSIC = fields.get("h");
+	private static final Field CREATE_FOG = fields.get("i");
+	
 	private UUID id;
 	private Action operation;
 	private String name;
@@ -227,14 +238,4 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			return bungeeEquivalent;
 		}
 	}
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutBoss);
-	private static final Field UUID = fields.get("a");
-	private static final Field ACTION = fields.get("b");
-	private static final Field NAME = fields.get("c");
-	private static final Field PROGRESS = fields.get("d");
-	private static final Field COLOR = fields.get("e");
-	private static final Field STYLE = fields.get("f");
-	private static final Field DARKEN_SKY = fields.get("g");
-	private static final Field PLAY_MUSIC = fields.get("h");
-	private static final Field CREATE_FOG = fields.get("i");
 }

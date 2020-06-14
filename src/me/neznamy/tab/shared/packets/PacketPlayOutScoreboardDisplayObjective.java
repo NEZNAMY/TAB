@@ -8,7 +8,11 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut{
-
+	
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
+	private static final Field POSITION = getField(fields, "a");
+	private static final Field OBJECTIVENAME = getField(fields, "b");
+	
 	private int slot;
 	private String objectiveName;
 
@@ -28,8 +32,4 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay((byte)slot, objectiveName);
 	}
-
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
-	private static final Field POSITION = getField(fields, "a");
-	private static final Field OBJECTIVENAME = getField(fields, "b");
 }

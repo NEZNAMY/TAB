@@ -9,6 +9,12 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 
+	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardScore);
+	private static final Field PLAYER = getField(fields, "a");
+	private static final Field OBJECTIVENAME = getField(fields, "b");
+	private static final Field SCORE = getField(fields, "c");
+	private static final Field ACTION = getField(fields, "d");
+	
 	private Action action;
 	private String objectiveName;
 	private String player;
@@ -67,9 +73,4 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 			return ordinal;
 		}
 	}
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardScore);
-	private static Field PLAYER = getField(fields, "a");
-	private static Field OBJECTIVENAME = getField(fields, "b");
-	private static Field SCORE = getField(fields, "c");
-	private static Field ACTION = getField(fields, "d");
 }

@@ -16,7 +16,25 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
+	
+	private static final Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
+	private static final Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
+	private static final Field ENTITYID = getField(fields, "a");
+	private static final Field UUID = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, UUID.class), 0);
+	private static final Field ENTITYTYPE;
+	private static final Field X;
+	private static final Field Y;
+	private static final Field Z;
+	private static final Field MOTX;
+	private static final Field MOTY;
+	private static final Field MOTZ;
+	private static final Field YAW;
+	private static final Field PITCH;
+	private static final Field L;
+	public static final Field DATAWATCHER = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, MethodAPI.DataWatcher), 0);
+	private static final Field DATAWATCHERITEMS = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, List.class), 0);
+	
 	private int entityId;
 	private UUID uuid;
 	private int entityType;
@@ -91,24 +109,6 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		int i = (int)paramDouble;
 		return paramDouble < i ? i - 1 : i;
 	}
-
-	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
-
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
-	private static Field ENTITYID = getField(fields, "a");
-	private static Field UUID = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, UUID.class), 0);
-	private static Field ENTITYTYPE;
-	private static Field X;
-	private static Field Y;
-	private static Field Z;
-	private static Field MOTX;
-	private static Field MOTY;
-	private static Field MOTZ;
-	private static Field YAW;
-	private static Field PITCH;
-	private static Field L;
-	public static Field DATAWATCHER = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, MethodAPI.DataWatcher), 0);
-	private static Field DATAWATCHERITEMS = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, List.class), 0);
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {

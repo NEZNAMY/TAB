@@ -43,20 +43,6 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class Metrics {
 
-	public static void start(Plugin plugin) {
-		Metrics metrics = new Metrics(plugin);
-		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
-			public String call() {
-				return Shared.mainClass.getPermissionPlugin();
-			}
-		}));
-		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {
-			public String call() {
-				return Shared.features.containsKey("globalplayerlist") ? "Yes" : "No";
-			}
-		}));
-	}
-
 	// The version of this bStats class
 	public static final int B_STATS_VERSION = 1;
 
@@ -87,6 +73,20 @@ public class Metrics {
 	// A list with all custom charts
 	private final List<CustomChart> charts = new ArrayList<CustomChart>();
 
+	public static void start(Plugin plugin) {
+		Metrics metrics = new Metrics(plugin);
+		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
+			public String call() {
+				return Shared.mainClass.getPermissionPlugin();
+			}
+		}));
+		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {
+			public String call() {
+				return Shared.features.containsKey("globalplayerlist") ? "Yes" : "No";
+			}
+		}));
+	}
+	
 	public Metrics(Plugin plugin) {
 		this.plugin = plugin;
 
