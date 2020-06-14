@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.Shared;
@@ -42,9 +41,5 @@ public class Premium {
 		Collections.reverse(Premium.dynamicLines);
 		staticLines = premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
-		Map<Integer, ?> widths = premiumconfig.getConfigurationSection("extra-character-widths");
-		for (Entry<Integer, ?> entry : widths.entrySet()) {
-			AlignedSuffix.widths.put((char)(int)entry.getKey(), (int)entry.getValue());
-		}
 	}
 }

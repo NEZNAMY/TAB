@@ -2,6 +2,7 @@ package me.neznamy.tab.premium;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -17,8 +18,9 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 
 	private int maxWidth;
 	private ITabPlayer maxPlayer;
-	public static final Map<Character, Integer> widths = new HashMap<Character, Integer>();
+	private Map<Character, Integer> widths = new HashMap<Character, Integer>();
 
+	@SuppressWarnings("unchecked")
 	public AlignedSuffix() {
 		//32-47
 		widths.put(' ', 3);
@@ -165,6 +167,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put((char)10084, 7);
 		widths.put((char)10004, 8);
 		widths.put((char)10008, 6); //X mark
+		
+		Map<Integer, ?> section = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
+		for (Entry<Integer, ?> entry : section.entrySet()) {
+			widths.put((char)(int)entry.getKey(), (int)entry.getValue());
+		}
 	}
 	public String fixTextWidth(ITabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
