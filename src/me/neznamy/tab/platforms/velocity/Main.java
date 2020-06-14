@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
@@ -78,7 +76,7 @@ public class Main implements MainClass{
 	private PluginMessenger plm;
 
 	@Inject
-	public Main(ProxyServer server, Logger logger) {
+	public Main(ProxyServer server) {
 		this.server = server;
 	}
 	@Subscribe
