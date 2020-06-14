@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener{
@@ -50,7 +51,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 		}
 	}
 	@Override
@@ -66,14 +67,14 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
-			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 			return;
 		}
 		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
 			onJoin(p);
 			return;
 		}
-		PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+		p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 		onJoin(p);
 	}
 	public int getValue(ITabPlayer p) {

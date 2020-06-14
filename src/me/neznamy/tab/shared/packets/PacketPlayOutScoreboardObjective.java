@@ -21,16 +21,31 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	private EnumScoreboardHealthDisplay renderType;
 	private int method;
 
-	public PacketPlayOutScoreboardObjective(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType, int method) {
-		this.objectiveName = objectiveName;
-		this.displayName = displayName;
-		this.renderType = renderType;
-		this.method = method;
+	private PacketPlayOutScoreboardObjective() {
+		
 	}
-	public PacketPlayOutScoreboardObjective(String objectiveName) {
-		this.objectiveName = objectiveName;
-		this.displayName = "";
-		this.method = 1; // REMOVE
+	public static PacketPlayOutScoreboardObjective REGISTER(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
+		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
+		packet.objectiveName = objectiveName;
+		packet.displayName = displayName;
+		packet.renderType = renderType;
+		packet.method = 0;
+		return packet;
+	}
+	public static PacketPlayOutScoreboardObjective UNREGISTER(String objectiveName) {
+		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
+		packet.objectiveName = objectiveName;
+		packet.displayName = ""; //error on <1.7
+		packet.method = 1;
+		return packet;
+	}
+	public static PacketPlayOutScoreboardObjective UPDATE_TITLE(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
+		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
+		packet.objectiveName = objectiveName;
+		packet.displayName = displayName;
+		packet.renderType = renderType;
+		packet.method = 2;
+		return packet;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String displayName = this.displayName;

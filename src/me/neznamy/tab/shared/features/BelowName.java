@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class BelowName implements Loadable, JoinEventListener {
@@ -40,7 +41,7 @@ public class BelowName implements Loadable, JoinEventListener {
 				}
 				if (textProperty.isUpdateNeeded()) {
 					for (ITabPlayer all : Shared.getPlayers()) {
-						PacketAPI.changeScoreboardObjectiveTitle(all, ObjectiveName, textProperty.get(), EnumScoreboardHealthDisplay.INTEGER);
+						all.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, textProperty.get(), EnumScoreboardHealthDisplay.INTEGER));
 					}
 				}
 			}
@@ -50,7 +51,7 @@ public class BelowName implements Loadable, JoinEventListener {
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;
-			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 		}
 	}
 	@Override
@@ -65,14 +66,14 @@ public class BelowName implements Loadable, JoinEventListener {
 	}
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledBelowname && !p.isDisabledWorld(Configs.disabledBelowname, from)) {
-			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 			return;
 		}
 		if (!p.disabledBelowname && p.isDisabledWorld(Configs.disabledBelowname, from)) {
 			onJoin(p);
 			return;
 		}
-		PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+		p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 		onJoin(p);
 	}
 	private int getNumber(ITabPlayer p) {

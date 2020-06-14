@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -113,7 +114,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 	}
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
-			PacketAPI.unregisterScoreboardObjective(p, ObjectiveName);
+			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 			for (Score s : scores) {
 				s.unregister(p);
 			}
@@ -124,7 +125,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
 			Property title = p.properties.get("scoreboard-title");
 			if (title.isUpdateNeeded()) {
-				PacketAPI.changeScoreboardObjectiveTitle(p, ObjectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER);
+				p.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER));
 			}
 		}
 		for (Score s : scores.toArray(new Score[0])) {
