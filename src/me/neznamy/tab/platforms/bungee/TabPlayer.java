@@ -48,7 +48,6 @@ public class TabPlayer extends ITabPlayer{
 		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();
-		version = ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 		init();
 	}
 	@Override
@@ -110,10 +109,14 @@ public class TabPlayer extends ITabPlayer{
 	}
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
-			return (int) getId.invoke(directionData, clazz, version.getNetworkId());
+			return (int) getId.invoke(directionData, clazz, getVersion().getNetworkId());
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + version.getFriendlyName());
+			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + getVersion().getFriendlyName());
 			return 0;
 		}
+	}
+	@Override
+	public ProtocolVersion getVersion() {
+		return ProtocolVersion.fromNumber(getBungeeEntity().getPendingConnection().getVersion());
 	}
 }

@@ -42,7 +42,7 @@ public abstract class ITabPlayer {
 	public Map<String, Property> properties = new HashMap<String, Property>();
 	private long lastRefreshGroup;
 	public List<ArmorStand> armorStands = Collections.synchronizedList(new ArrayList<ArmorStand>());
-	public ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
+	protected ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	public Channel channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible;
@@ -516,14 +516,14 @@ public abstract class ITabPlayer {
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		try {
-			sendPacket(PacketAPI.buildPacket(packet, version));
+			sendPacket(PacketAPI.buildPacket(packet, getVersion()));
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	public void sendCustomBukkitPacket(PacketPlayOut packet) {
 		try {
-			sendPacket(packet.toNMS(version));
+			sendPacket(packet.toNMS(getVersion()));
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
