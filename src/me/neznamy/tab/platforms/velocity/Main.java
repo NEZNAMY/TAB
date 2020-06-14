@@ -83,7 +83,7 @@ public class Main implements MainClass{
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		try {
 			Class.forName("org.yaml.snakeyaml.Yaml");
-			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.v1_15_2;
+			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.values()[1];
 			Shared.mainClass = this;
 			Shared.separatorType = "server";
 			Shared.command = new TabCommand();

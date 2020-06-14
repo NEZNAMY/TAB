@@ -65,7 +65,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	private PluginMessenger plm;
 	
 	public void onEnable(){
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.v1_15_2;
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
 		getProxy().getPluginManager().registerListener(this, this);
