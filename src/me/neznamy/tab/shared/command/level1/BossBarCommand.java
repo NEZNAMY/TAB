@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.BossBar;
@@ -36,7 +35,7 @@ public class BossBarCommand extends SubCommand{
 				}
 			} else {
 				for (BossBarLine line : sender.activeBossBars) {
-					PacketAPI.removeBossBar(sender, line);
+					bossbar.removeBossBar(sender, line);
 				}
 				sender.activeBossBars.clear();
 				sender.sendMessage(Configs.bossbar_off);

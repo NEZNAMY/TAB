@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -38,11 +37,11 @@ public class AnnounceBarCommand extends SubCommand{
 								}
 								feature.announcements.add(barname);
 								for (ITabPlayer all : Shared.getPlayers()) {
-									PacketAPI.createBossBar(all, bar);
+									feature.createBossBar(all, bar);
 								}
 								Thread.sleep(duration*1000);
 								for (ITabPlayer all : Shared.getPlayers()) {
-									PacketAPI.removeBossBar(all, bar);
+									feature.removeBossBar(all, bar);
 								}
 								feature.announcements.remove(barname);
 							} catch (Exception e) {
