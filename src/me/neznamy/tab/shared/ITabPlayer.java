@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BossBar.BossBarLine;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -464,13 +465,14 @@ public abstract class ITabPlayer {
 	}
 
 	public void unregisterTeam() {
-		for (ITabPlayer p : Shared.getPlayers()) {
-			PacketAPI.unregisterScoreboardTeam(p, teamName);
+		PacketPlayOutScoreboardTeam packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69);
+		for (ITabPlayer viewer : Shared.getPlayers()) {
+			viewer.sendCustomPacket(packet);
 		}
 	}
 	
 	public void unregisterTeam(ITabPlayer viewer) {
-		PacketAPI.unregisterScoreboardTeam(viewer, teamName);
+		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 	}
 
 	private void updateDisabledWorlds(String world) {
