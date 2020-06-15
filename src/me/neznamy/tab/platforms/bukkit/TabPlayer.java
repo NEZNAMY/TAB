@@ -49,6 +49,7 @@ public class TabPlayer extends ITabPlayer{
 			if (groups.length == 0) return "null";
 			return groups[0];
 		}
+		if (PluginHooks.networkmanager != null) return PluginHooks.NetworkManager_getPrimaryGroup(this);
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
 		return "null";
 	}
@@ -58,6 +59,7 @@ public class TabPlayer extends ITabPlayer{
 		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
 		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
 		if (PluginHooks.ultrapermissions) return PluginHooks.UltraPermissions_getAllGroups(this);
+		if (PluginHooks.networkmanager != null) return PluginHooks.NetworkManager_getAllGroups(this);
 		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
 		return new String[] {"null"};
 	}

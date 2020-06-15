@@ -239,6 +239,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		PluginHooks.ultrapermissions = Bukkit.getPluginManager().isPluginEnabled("UltraPermissions");
+		PluginHooks.networkmanager = Bukkit.getPluginManager().getPlugin("NetworkManager");
 
 		usedExpansions = new ArrayList<String>();
 
@@ -512,6 +513,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (PluginHooks.permissionsEx) return "PermissionsEx";
 		if (PluginHooks.groupManager != null) return "GroupManager";
 		if (PluginHooks.ultrapermissions) return "UltraPermissions";
+		if (PluginHooks.networkmanager != null) return "NetworkManager";
 		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
 		return "Unknown/None";
 	}

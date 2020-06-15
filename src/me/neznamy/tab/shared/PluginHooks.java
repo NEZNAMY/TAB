@@ -33,6 +33,8 @@ import net.luckperms.api.node.types.InheritanceNode;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
+import nl.chimpgamer.networkmanager.api.models.permissions.PermissionPlayer;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginHooks {
@@ -46,6 +48,7 @@ public class PluginHooks {
 	public static boolean viaversion;
 	public static boolean protocolsupport;
 	public static boolean ultrapermissions;
+	public static Object networkmanager;
 	public static Object essentials;
 	public static Object idisguise;
 	public static Object groupManager;
@@ -260,6 +263,26 @@ public class PluginHooks {
 			}
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
+		}
+	}
+	public static String[] NetworkManager_getAllGroups(ITabPlayer p) {
+		try {
+			PermissionPlayer user = ((NetworkManagerPlugin)networkmanager).getPermissionManager().getPermissionPlayer(p.getUniqueId());
+			List<String> groups = new ArrayList<String>();
+			for (nl.chimpgamer.networkmanager.api.models.permissions.Group group : user.getGroups()) {
+				groups.add(group.getName());
+			}
+			return groups.toArray(new String[0]);
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission group of " + p.getName() + " using NetworkManager", t);
+		}
+	}
+	public static String NetworkManager_getPrimaryGroup(ITabPlayer p) {
+		try {
+			PermissionPlayer user = ((NetworkManagerPlugin)networkmanager).getPermissionManager().getPermissionPlayer(p.getUniqueId());
+			return user.getPrimaryGroup().getName();
+		} catch (Throwable t) {
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using NetworkManager", t);
 		}
 	}
 	@SuppressWarnings("deprecation")
