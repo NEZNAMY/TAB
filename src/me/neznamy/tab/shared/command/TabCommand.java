@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -76,21 +74,5 @@ public class TabCommand extends SubCommand {
 			  sendMessage(sender, "      - &7Clears all data about player/group");
 			  sendMessage(sender, "&m                                                                                ");
 		}
-	}
-	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		String argument = arguments[0].toLowerCase();
-		if (arguments.length == 1) {
-			List<String> suggestions = new ArrayList<String>();
-			for (String subcommand : subcommands.keySet()) {
-				if (subcommand.startsWith(argument)) suggestions.add(subcommand);
-			}
-			return suggestions;
-		}
-		SubCommand subcommand = subcommands.get(argument);
-		if (subcommand != null) {
-			return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
-		}
-		return new ArrayList<String>();
 	}
 }

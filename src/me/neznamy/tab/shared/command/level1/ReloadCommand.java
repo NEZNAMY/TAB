@@ -1,8 +1,5 @@
 package me.neznamy.tab.shared.command.level1;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -25,9 +22,5 @@ public class ReloadCommand extends SubCommand{
 		} else {
 			sendMessage(sender, Configs.reloaded);
 		}
-	}
-	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		return new ArrayList<String>();
 	}
 }

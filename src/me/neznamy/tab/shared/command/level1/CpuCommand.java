@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -77,9 +75,5 @@ public class CpuCommand extends SubCommand {
 		if (percent > 10) return "&c" + usage;
 		if (percent > 5) return "&e" + usage;
 		return "&a" + usage;
-	}
-	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		return new ArrayList<String>();
 	}
 }

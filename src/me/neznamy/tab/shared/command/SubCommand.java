@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,21 @@ public abstract class SubCommand {
 		}
 		return suggestions;
 	}
+	public List<String> complete(ITabPlayer sender, String[] arguments) {
+		String argument = arguments[0].toLowerCase();
+		if (arguments.length == 1) {
+			List<String> suggestions = new ArrayList<String>();
+			for (String subcommand : subcommands.keySet()) {
+				if (subcommand.startsWith(argument)) suggestions.add(subcommand);
+			}
+			return suggestions;
+		}
+		SubCommand subcommand = subcommands.get(argument);
+		if (subcommand != null) {
+			return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
+		}
+		return new ArrayList<String>();
+	}
+	
 	public abstract void execute(ITabPlayer sender, String[] args);
-	public abstract List<String> complete(ITabPlayer sender, String[] arguments);
 }

@@ -1,8 +1,5 @@
 package me.neznamy.tab.shared.command.level1;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -61,9 +58,5 @@ public class ScoreboardCommand extends SubCommand{
 				}
 			}
 		}
-	}
-	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		return new ArrayList<String>();
 	}
 }

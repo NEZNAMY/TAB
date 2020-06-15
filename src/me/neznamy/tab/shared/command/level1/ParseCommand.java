@@ -1,8 +1,5 @@
 package me.neznamy.tab.shared.command.level1;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.command.SubCommand;
@@ -34,9 +31,5 @@ public class ParseCommand extends SubCommand{
 		} else {
 			sendMessage(sender, "Usage: /tab parse <placeholder>");
 		}
-	}
-	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		return new ArrayList<String>();
 	}
 }
