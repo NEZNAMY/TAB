@@ -456,6 +456,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 			plm = new PluginMessenger(this);
 		} else {
+			Shared.registerFeature("placeholders", new PlaceholderManager());
 			registerPlaceholders();
 			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
 			if (Configs.BossBarEnabled) {
@@ -490,7 +491,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.registerFeature("papihook", new TabExpansion());
 				new ExpansionDownloader();
 			}
-			Shared.registerFeature("placeholders", new PlaceholderManager());
 			new UpdateChecker();
 
 			for (Player p : getOnlinePlayers()) {

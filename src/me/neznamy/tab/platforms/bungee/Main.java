@@ -276,6 +276,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	 */
 
 	public void loadFeatures(boolean inject) throws Exception{
+		Shared.registerFeature("placeholders", new PlaceholderManager());
 		registerPlaceholders();
 		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
@@ -291,7 +292,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
-		Shared.registerFeature("placeholders", new PlaceholderManager());
 		new UpdateChecker();
 		
 		for (ProxiedPlayer p : getProxy().getPlayers()) {
