@@ -85,23 +85,23 @@ public abstract class ITabPlayer {
 	public abstract void sendPacket(Object nmsPacket);
 
 	public abstract void sendMessage(String message);
-	
+
 	public abstract void sendRawMessage(String message);
 
 	public abstract Object getSkin();
-	
+
 	public org.bukkit.entity.Player getBukkitEntity() {
 		throw new IllegalStateException("Wrong platform");
 	}
-	
+
 	public ProxiedPlayer getBungeeEntity() {
 		throw new IllegalStateException("Wrong platform");
 	}
-	
+
 	public com.velocitypowered.api.proxy.Player getVelocityEntity() {
 		throw new IllegalStateException("Wrong platform");
 	}
-	
+
 	public boolean getTeamPush() {
 		return Configs.getCollisionRule(world);
 	}
@@ -180,7 +180,7 @@ public abstract class ITabPlayer {
 			registerTeam();
 		}
 	}
-	
+
 	private boolean getTeamVisibility() {
 		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
 		return !Shared.features.containsKey("nametagx") && nameTagVisible;
@@ -305,7 +305,7 @@ public abstract class ITabPlayer {
 		updateRawValue("header");
 		updateRawValue("footer");
 	}
-	
+
 	private void updateRawValue(String name) {
 		String worldGroup = getWorldGroupOf(getWorldName());
 		StringBuilder rawValue = new StringBuilder();
@@ -359,16 +359,16 @@ public abstract class ITabPlayer {
 			name = name.substring(0, 15);
 		}
 		main:
-		for (int i = 65; i <= 255; i++) {
-			String potentialTeamName = name + (char)i;
-			for (ITabPlayer all : Shared.getPlayers()) {
-				if (all == this) continue;
-				if (all.getTeamName().equals(potentialTeamName)) {
-					continue main;
+			for (int i = 65; i <= 255; i++) {
+				String potentialTeamName = name + (char)i;
+				for (ITabPlayer all : Shared.getPlayers()) {
+					if (all == this) continue;
+					if (all.getTeamName().equals(potentialTeamName)) {
+						continue main;
+					}
 				}
+				return potentialTeamName;
 			}
-			return potentialTeamName;
-		}
 		return getName();
 	}
 
@@ -421,7 +421,7 @@ public abstract class ITabPlayer {
 			viewer.sendCustomPacket(packet);
 		}
 	}
-	
+
 	public void unregisterTeam(ITabPlayer viewer) {
 		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 	}
@@ -448,23 +448,19 @@ public abstract class ITabPlayer {
 			return false;
 		}
 	}
-	
+
 	public void onWorldChange(String from, String to) {
 		updateDisabledWorlds(to);
 		updateGroupIfNeeded(false);
 		updateAll();
-		if (Shared.separatorType.equals("server")) {
-			ITabPlayer player = this;
-			Shared.featureCpu.runTaskLater(50, "processing world change", CPUFeature.WORLD_SWITCH, new Runnable() {
+		ITabPlayer player = this;
+		Shared.featureCpu.runMeasuredTask("processing world change", CPUFeature.WORLD_SWITCH, new Runnable() {
 
-				@Override
-				public void run() {
-					Shared.worldChangeListeners.forEach(f -> f.onWorldChange(player, from, to));
-				}
-			});
-		} else {
-			Shared.worldChangeListeners.forEach(f -> f.onWorldChange(this, from, to));
-		}
+			@Override
+			public void run() {
+				Shared.worldChangeListeners.forEach(f -> f.onWorldChange(player, from, to));
+			}
+		});
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
