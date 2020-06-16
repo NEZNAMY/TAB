@@ -20,6 +20,7 @@ public enum CPUFeature {
 	NAMETAG("NameTags"),
 	NAMETAG_INVISFIX("NameTags - invisfix"),
 	NAMETAG_ANTIOVERRIDE("NameTags - Anti override"),
+	NAMETAG_WATERFALLFIX("NameTags - Waterfall fix"),
 	NAMETAGX_INVISCHECK("NameTagX - visibility update"),
 	NAMETAGX_PACKET_LISTENING("NameTagX - Packet Listening"),
 	NAMETAGX_PACKET_NAMED_ENTITY_SPAWN("NameTagX - NamedEntitySpawn"),

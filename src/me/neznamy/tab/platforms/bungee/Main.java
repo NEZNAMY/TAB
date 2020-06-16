@@ -25,6 +25,7 @@ import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
@@ -58,6 +59,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class Main extends Plugin implements Listener, MainClass{
@@ -203,6 +205,18 @@ public class Main extends Plugin implements Listener, MainClass{
 							team.read(buf, null, player.getVersion().getNetworkId());
 							if (killPacket(team)) return;
 						}
+					}
+					if (packet instanceof Login) {
+						//registering all teams again because client reset packet is sent
+						Shared.featureCpu.runTaskLater(100, "Reapplying nametags", CPUFeature.NAMETAG_WATERFALLFIX, new Runnable() {
+
+							@Override
+							public void run() {
+								for (ITabPlayer all : Shared.getPlayers()) {
+									all.registerTeam(player);
+								}
+							}
+						});
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
