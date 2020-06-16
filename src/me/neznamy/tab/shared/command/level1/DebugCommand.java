@@ -59,85 +59,67 @@ public class DebugCommand extends SubCommand {
 			if (Premium.is()) {
 				sortingType = Premium.sortingType.toString();
 				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + Premium.sortingPlaceholder;
+			} else if (Configs.sortedGroups.isEmpty()) {
+				sortingType = "Tabprefix";
+			} else if (Configs.sortByPermissions) {
+				sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
 			} else {
-				if (Configs.sortedGroups.isEmpty()) {
-					sortingType = "Tabprefix";
-				} else {
-					if (Configs.sortByPermissions) {
-						sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
-					} else {
-						sortingType = "Groups";
-					}
-				}
+				sortingType = "Groups";
 			}
 		} else {
 			sortingType = "&cDISABLED";
 		}
 		sendMessage(sender, "&6Sorting system: &a" + sortingType);
 		sendMessage(sender, "&7&m>-------------------------------<");
-		if (analyzed != null) {
-			sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
-			if (Configs.groupsByPermissions) {
-				sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
-			} else if (Configs.usePrimaryGroup) {
-				sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
+		if (analyzed == null) return;
+		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
+		if (Configs.groupsByPermissions) {
+			sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
+		} else if (Configs.usePrimaryGroup) {
+			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
+		} else {
+			sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
+			sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
+		}
+
+		if (sorting) {
+			if (analyzed.disabledNametag) {
+				sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
 			} else {
-				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
-				sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
-			}
-			
-			if (sorting) {
-				if (analyzed.disabledNametag) {
-					sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
-				} else {
-					sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
-				}
-			}
-			if (Shared.features.containsKey("playerlist")) {
-				if (analyzed.disabledTablistNames) {
-					sendMessage(sender, "&atabprefix: &cDisabled in player's world");
-					sendMessage(sender, "&atabsuffix: &cDisabled in player's world");
-					sendMessage(sender, "&atabname: &cDisabled in player's world");
-				} else {
-					sendRawMessage(sender, property(analyzed, "tabprefix"));
-					sendRawMessage(sender, property(analyzed, "tabsuffix"));
-					sendRawMessage(sender, property(analyzed, "customtabname"));
-				}
-			} else {
-				sendMessage(sender, "&atabprefix: &cDisabled");
-				sendMessage(sender, "&atabsuffix: &cDisabled");
-				sendMessage(sender, "&atabname: &cDisabled");
-			}
-			if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
-				if (analyzed.disabledNametag) {
-					sendMessage(sender, "&atagprefix: &cDisabled in player's world");
-					sendMessage(sender, "&atagsuffix: &cDisabled in player's world");
-				} else {
-					sendRawMessage(sender, property(analyzed, "tagprefix"));
-					sendRawMessage(sender, property(analyzed, "tagsuffix"));
-				}
-			} else {
-				sendMessage(sender, "&atagprefix: &cDisabled");
-				sendMessage(sender, "&atagsuffix: &cDisabled");
-			}
-			if (Shared.features.containsKey("nametagx")) {
-				if (analyzed.disabledNametag) {
-					sendMessage(sender, "&aabovename: &cDisabled in player's world");
-					sendMessage(sender, "&abelowname: &cDisabled in player's world");
-					sendMessage(sender, "&atagname: &cDisabled in player's world");
-				} else {
-					sendRawMessage(sender, property(analyzed, "abovename"));
-					sendRawMessage(sender, property(analyzed, "belowname"));
-					sendRawMessage(sender, property(analyzed, "customtagname"));
-				}
+				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
 			}
 		}
+		if (Shared.features.containsKey("playerlist")) {
+			showProperty(sender, analyzed, "tabprefix", analyzed.disabledTablistNames);
+			showProperty(sender, analyzed, "tabsuffix", analyzed.disabledTablistNames);
+			showProperty(sender, analyzed, "customtabname", analyzed.disabledTablistNames);
+		} else {
+			sendMessage(sender, "&atabprefix: &cDisabled");
+			sendMessage(sender, "&atabsuffix: &cDisabled");
+			sendMessage(sender, "&atabname: &cDisabled");
+		}
+		if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
+			showProperty(sender, analyzed, "tagprefix", analyzed.disabledNametag);
+			showProperty(sender, analyzed, "tagsuffix", analyzed.disabledNametag);
+		} else {
+			sendMessage(sender, "&atagprefix: &cDisabled");
+			sendMessage(sender, "&atagsuffix: &cDisabled");
+		}
+		if (Shared.features.containsKey("nametagx")) {
+			showProperty(sender, analyzed, "abovename", analyzed.disabledNametag);
+			showProperty(sender, analyzed, "belowname", analyzed.disabledNametag);
+			showProperty(sender, analyzed, "customtagname", analyzed.disabledNametag);
+		}
 	}
-	private String property(ITabPlayer analyzed, String name) {
-		Property pr = analyzed.properties.get(name);
-		String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
-		return Placeholders.color("&a%name%: &e\"&r%rawValue%&r&e\" &7(%rawValueLength%) &9(Source: %source%)")
-				.replace("%name%", name).replace("%rawValue%", rawValue).replace("%rawValueLength%", rawValue.length()+"").replace("%source%", pr.getSource());
+	private void showProperty(ITabPlayer sender, ITabPlayer analyzed, String property, boolean disabled) {
+		if (disabled) {
+			sendMessage(sender, "&a" + property + ": &cDisabled in player's world");
+		} else {
+			Property pr = analyzed.properties.get(property);
+			String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
+			String value = Placeholders.color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
+			sendRawMessage(sender, value);
+		}
 	}
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
