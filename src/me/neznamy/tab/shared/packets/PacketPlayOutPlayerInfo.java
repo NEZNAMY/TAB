@@ -146,7 +146,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toNMS(ProtocolVersion clientVersion){
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), displayName == null ? null : MethodAPI.getInstance().ICBC_fromString(displayName.toString(clientVersion)));
+			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), displayName == null ? null : MethodAPI.getInstance().stringToComponent(displayName.toString(clientVersion)));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
@@ -178,7 +178,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
 			GameProfile profile = (GameProfile) PROFILE.get(nmsData);
 			Object nmsComponent = LISTNAME.get(nmsData);
-			IChatBaseComponent listName = IChatBaseComponent.fromString(MethodAPI.getInstance().ICBC_toString(nmsComponent));
+			IChatBaseComponent listName = IChatBaseComponent.fromString(MethodAPI.getInstance().componentToString(nmsComponent));
 			return new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
 		}
 		public static PlayerInfoData fromBungee(Object nmsData, ProtocolVersion clientVersion){

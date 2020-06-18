@@ -51,8 +51,8 @@ public abstract class MethodAPI {
 	public static MethodAPI getInstance() {
 		return instance;
 	}
-	public abstract Object ICBC_fromString(String string);
-	public abstract String ICBC_toString(Object component);
+	public abstract Object stringToComponent(String string);
+	public abstract String componentToString(Object component);
 	public abstract int getPing(Player p);
 	public abstract Object getChannel(Player p) throws Exception;
 	public abstract double[] getRecentTps();
@@ -70,14 +70,14 @@ public abstract class MethodAPI {
 	public abstract Object newDataWatcher(Object entity);
 	public abstract Object newPlayerInfoData(Object profile, int ping, Object enumGamemode, Object listName);
 	public abstract Object newDataWatcherItem(DataWatcherObject type, Object value, boolean needsUpdate);
-	public abstract void DataWatcher_register(Object dataWatcher, DataWatcherObject type, Object value);
+	public abstract void registerDataWatcherObject(Object dataWatcher, DataWatcherObject type, Object value);
 	public abstract Object newEntityArmorStand();
 	public abstract Object newEntityWither();
 	public abstract int getEntityId(Object entityliving);
 	public abstract Object newPacketPlayOutEntityTeleport(Object entityliving, Location loc);
 	public abstract Object newPacketPlayOutScoreboardScore();
-	public abstract Object newPacketPlayOutScoreboardScore_legacy(String removedPlayer);
-	public abstract Object newPacketPlayOutScoreboardScore_1_13(Object action, String objectiveName, String player, int score);
+	public abstract Object newPacketPlayOutScoreboardScore(String removedPlayer); //<1.13
+	public abstract Object newPacketPlayOutScoreboardScore(Object action, String objectiveName, String player, int score); //1.13+
 	public abstract List<Object> getDataWatcherItems(Object dataWatcher);
 	public abstract Item readDataWatcherItem(Object nmsItem);
 	public abstract String serialize(ItemStack item);

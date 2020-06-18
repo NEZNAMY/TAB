@@ -27,9 +27,9 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	}
 	public Object toNMS(ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString(clientVersion)), type.toNMS());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().stringToComponent(message.toString(clientVersion)), type.toNMS());
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
-			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().ICBC_fromString(message.toString(clientVersion)), type.getId());
+			return MethodAPI.getInstance().newPacketPlayOutChat(MethodAPI.getInstance().stringToComponent(message.toString(clientVersion)), type.getId());
 		} else {
 			return MethodAPI.getInstance().newPacketPlayOutChat(message.toString(clientVersion), type.getId());
 		}

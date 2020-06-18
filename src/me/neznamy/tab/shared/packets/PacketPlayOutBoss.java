@@ -104,7 +104,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 			PROGRESS.set(packet, pct);
 		}
 		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			NAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
+			NAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
 			COLOR.set(packet, color.toNMS());

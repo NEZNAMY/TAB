@@ -28,8 +28,8 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerListHeaderFooter();
-		HEADER.set(packet, MethodAPI.getInstance().ICBC_fromString(header.toString(clientVersion)));
-		FOOTER.set(packet, MethodAPI.getInstance().ICBC_fromString(footer.toString(clientVersion)));
+		HEADER.set(packet, MethodAPI.getInstance().stringToComponent(header.toString(clientVersion)));
+		FOOTER.set(packet, MethodAPI.getInstance().stringToComponent(footer.toString(clientVersion)));
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {

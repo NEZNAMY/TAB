@@ -55,7 +55,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(displayName).toString(clientVersion)));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(displayName).toString(clientVersion)));
 		} else {
 			DISPLAYNAME.set(packet, displayName);
 		}

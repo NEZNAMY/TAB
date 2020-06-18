@@ -29,10 +29,10 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			return MethodAPI.getInstance().newPacketPlayOutScoreboardScore_1_13(action.toNMS(), objectiveName, player, score);
+			return MethodAPI.getInstance().newPacketPlayOutScoreboardScore(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
-				return MethodAPI.getInstance().newPacketPlayOutScoreboardScore_legacy(player);
+				return MethodAPI.getInstance().newPacketPlayOutScoreboardScore(player);
 			} else {
 				packet = MethodAPI.getInstance().newPacketPlayOutScoreboardScore();
 				PLAYER.set(packet, player);

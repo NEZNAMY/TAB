@@ -66,11 +66,11 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
-	public Object ICBC_fromString(String string) {
+	public Object stringToComponent(String string) {
 		if (string == null) return null;
 		return ChatSerializer.a(string);
 	}
-	public String ICBC_toString(Object component) {
+	public String componentToString(Object component) {
 		if (component == null) return null;
 		return ChatSerializer.a((IChatBaseComponent) component);
 	}
@@ -127,7 +127,7 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 		item.a(needsUpdate);
 		return item;
 	}
-	public void DataWatcher_register(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value) {
+	public void registerDataWatcherObject(Object dataWatcher, me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject type, Object value) {
 		((DataWatcher)dataWatcher).a(type.position, value);
 	}
 	public Object newEntityArmorStand() {
@@ -151,10 +151,10 @@ public class MethodAPI_v1_8_R2 extends MethodAPI {
 	public Object newPacketPlayOutScoreboardScore() {
 		return new PacketPlayOutScoreboardScore();
 	}
-	public Object newPacketPlayOutScoreboardScore_legacy(String removedPlayer) {
+	public Object newPacketPlayOutScoreboardScore(String removedPlayer) {
 		return new PacketPlayOutScoreboardScore(removedPlayer);
 	}
-	public Object newPacketPlayOutScoreboardScore_1_13(Object action, String objectiveName, String player, int score) {
+	public Object newPacketPlayOutScoreboardScore(Object action, String objectiveName, String player, int score) {
 		return null;
 	}
 	public List getDataWatcherItems(Object dataWatcher) {

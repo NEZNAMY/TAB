@@ -51,7 +51,7 @@ public class DataWatcher{
 	}
 	public Object toNMS(){
 		Object nmsWatcher = MethodAPI.getInstance().newDataWatcher(entity);
-		for (Item item : dataValues.values()) MethodAPI.getInstance().DataWatcher_register(nmsWatcher, item.type, item.value);
+		for (Item item : dataValues.values()) MethodAPI.getInstance().registerDataWatcherObject(nmsWatcher, item.type, item.value);
 		return nmsWatcher;
 	}
 	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
@@ -100,7 +100,7 @@ public class DataWatcher{
 		}
 		public static void setCustomName(DataWatcher dataWatcher, String customName, ProtocolVersion clientVersion) {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(customName).toString(clientVersion))));
+				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(customName).toString(clientVersion))));
 			} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
 			} else {

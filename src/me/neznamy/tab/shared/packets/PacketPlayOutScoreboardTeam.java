@@ -101,9 +101,9 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
 		NAME.set(packet, name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
-			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(prefix).toString(clientVersion)));
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().ICBC_fromString(IChatBaseComponent.fromColoredText(suffix).toString(clientVersion)));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(name).toString(clientVersion)));
+			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(prefix).toString(clientVersion)));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(suffix).toString(clientVersion)));
 			CHATFORMAT.set(packet, color != null ? color.toNMS() : EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, name);
