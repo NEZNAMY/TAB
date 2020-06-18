@@ -20,18 +20,18 @@ public class IChatBaseComponent {
 
 	private String text;
 	private TextColor color;
-	
+
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underlined;
 	private Boolean strikethrough;
 	private Boolean obfuscated;
-	
+
 	private ClickAction clickAction;
 	private Object clickValue;
 	private HoverAction hoverAction;
 	private String hoverValue;
-	
+
 	private List<IChatBaseComponent> extra;
 	private JSONObject jsonObject = new JSONObject();
 
@@ -114,7 +114,7 @@ public class IChatBaseComponent {
 		this.obfuscated = obfuscated;
 		return this;
 	}
-	
+
 	public ClickAction getClickAction() {
 		return clickAction;
 	}
@@ -150,7 +150,7 @@ public class IChatBaseComponent {
 	public String getHoverValue() {
 		return hoverValue;
 	}
-	
+
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
@@ -226,10 +226,10 @@ public class IChatBaseComponent {
 		}
 		return toString();
 	}
-	
+
 	public String toString() {
 		if (extra == null && text.length() == 0) return EMPTY_COMPONENT;
-		
+
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
 			return jsonObject.toString();
@@ -299,7 +299,7 @@ public class IChatBaseComponent {
 				try {
 					String hex = message.substring(i+1, i+7);
 					TextColor color = new TextColor(hex); //the validation check is in contructor
-					
+
 					if (builder.length() > 0){
 						component.setText(builder.toString());
 						components.add(component);
@@ -364,28 +364,28 @@ public class IChatBaseComponent {
 		SHOW_ENTITY,
 		@Deprecated SHOW_ACHIEVEMENT;//Removed in 1.12
 	}
-	
+
 	public static class TextColor{
-		
+
 		private int red;
 		private int green;
 		private int blue;
 		private EnumChatFormat legacy;
-		
+
 		public TextColor(EnumChatFormat legacy) {
 			this.red = legacy.red;
 			this.green = legacy.green;
 			this.blue = legacy.blue;
 			this.legacy = legacy;
 		}
-				
+
 		public TextColor(String hexCode) {
 			int hexColor = Integer.parseInt(hexCode, 16);
 			red = (hexColor >> 16) & 0xFF;
-	        green = (hexColor >> 8) & 0xFF;
-	        blue = hexColor & 0xFF;
-	        double minDist = 9999;
-	        double dist;
+			green = (hexColor >> 8) & 0xFF;
+			blue = hexColor & 0xFF;
+			double minDist = 9999;
+			double dist;
 			for (EnumChatFormat color : EnumChatFormat.values()) {
 				int r = (int) Math.pow(color.red - red, 2);
 				int g = (int) Math.pow(color.green - green, 2);
