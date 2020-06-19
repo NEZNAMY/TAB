@@ -69,7 +69,6 @@ public class Configs {
 	public static String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
 
 	public static ConfigurationFile advancedconfig;
-	public static boolean sortByPermissions = false;
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
 	public static boolean bukkitBridgeMode;

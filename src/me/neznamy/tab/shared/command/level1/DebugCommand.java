@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
@@ -57,11 +58,9 @@ public class DebugCommand extends SubCommand {
 
 		if (sorting) {
 			if (Premium.is()) {
-				sortingType = Premium.sortingType.toString();
-				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + Premium.sortingPlaceholder;
-			} else if (Configs.sortedGroups.isEmpty()) {
-				sortingType = "Tabprefix";
-			} else if (Configs.sortByPermissions) {
+				sortingType = SortingType.INSTANCE.toString();
+				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + SortingType.sortingPlaceholder;
+			} else if (SortingType.INSTANCE == SortingType.GROUP_PERMISSIONS) {
 				sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
 			} else {
 				sortingType = "Groups";

@@ -17,6 +17,9 @@ public enum SortingType {
 	GROUP_PERMISSIONS_THEN_PLACEHOLDER_A_TO_Z;
 	
 	private final int DEFAULT_NUMBER = 5000000;
+	public static SortingType INSTANCE;
+	public static String sortingPlaceholder;
+	public static boolean caseSensitiveSorting;
 	
 	public String getTeamName(ITabPlayer p) {
 		String teamName = null;
@@ -32,37 +35,37 @@ public enum SortingType {
 			teamName = p.properties.get("tabprefix").get();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = String.valueOf(DEFAULT_NUMBER + intValue);
 			break;
 		case PLACEHOLDER_HIGH_TO_LOW:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = String.valueOf(DEFAULT_NUMBER - intValue);
 			break;
 		case PLACEHOLDER_A_TO_Z:
-			teamName = setPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = setPlaceholders(sortingPlaceholder, p);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = getGroupChars(p.getGroup()) + String.valueOf(DEFAULT_NUMBER + intValue);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = getGroupChars(p.getGroup()) + String.valueOf(DEFAULT_NUMBER - intValue);
 			break;
 		case GROUPS_THEN_PLACEHOLDER_A_TO_Z:
-			teamName = getGroupChars(p.getGroup()) + setPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = getGroupChars(p.getGroup()) + setPlaceholders(sortingPlaceholder, p);
 			break;
 		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_LOW_TO_HIGH:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = getGroupPermissionChars(p) + String.valueOf(DEFAULT_NUMBER + intValue);
 			break;
 		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_HIGH_TO_LOW:
-			intValue = Shared.errorManager.parseInteger(setPlaceholders(Premium.sortingPlaceholder, p), 0, "numeric sorting placeholder");
+			intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 			teamName = getGroupPermissionChars(p) + String.valueOf(DEFAULT_NUMBER - intValue);
 			break;
 		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_A_TO_Z:
-			teamName = getGroupPermissionChars(p) + setPlaceholders(Premium.sortingPlaceholder, p);
+			teamName = getGroupPermissionChars(p) + setPlaceholders(sortingPlaceholder, p);
 			break;
 		}
 		if (teamName.length() > 12) {
@@ -75,7 +78,7 @@ public enum SortingType {
 		main:
 		for (int i = 65; i <= 255; i++) {
 			String potentialTeamName = teamName;
-			if (!Premium.caseSensitive) potentialTeamName = potentialTeamName.toLowerCase();
+			if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 			potentialTeamName += (char)i;
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all == p) continue;
@@ -87,7 +90,7 @@ public enum SortingType {
 		}
 		return "InvalidTeam";
 	}
-	public static String getGroupChars(String group) {
+	public String getGroupChars(String group) {
 		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 4 chars
 		if (chars == null) {
 			chars = "";
@@ -95,7 +98,7 @@ public enum SortingType {
 		}
 		return chars;
 	}
-	public static String getGroupPermissionChars(ITabPlayer p) {
+	public String getGroupPermissionChars(ITabPlayer p) {
 		String chars = null;
 		for (String localgroup : Configs.sortedGroups.keySet()) {
 			if (p.hasPermission("tab.sort." + localgroup)) {

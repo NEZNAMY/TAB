@@ -63,7 +63,7 @@ public abstract class ITabPlayer {
 	public void init() {
 		updateGroupIfNeeded(false);
 		updateAll();
-		teamName = buildTeamName();
+		teamName = SortingType.INSTANCE.getTeamName(this);
 		updateDisabledWorlds(getWorldName());
 		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
 	}
@@ -171,7 +171,7 @@ public abstract class ITabPlayer {
 
 	public void updateTeam(boolean force) {
 		if (disabledNametag) return;
-		String newName = buildTeamName();
+		String newName = SortingType.INSTANCE.getTeamName(this);
 		if (teamName.equals(newName)) {
 			updateTeamData(force);
 		} else {
@@ -336,40 +336,6 @@ public abstract class ITabPlayer {
 			}
 		}
 		return world;
-	}
-
-	public String buildTeamName() {
-		if (Premium.is()) {
-			return Premium.sortingType.getTeamName(this);
-		}
-		String name;
-		if (Configs.sortByPermissions) {
-			name = SortingType.getGroupPermissionChars(this);
-		} else {
-			name = SortingType.getGroupChars(permissionGroup);
-		}
-		if (name == null && !permissionGroup.equals("null")) {
-			Shared.errorManager.oneTimeConsoleError("Group \"&e" + permissionGroup + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + permissionGroup + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
-		}
-		if (name.length() > 12) {
-			name = name.substring(0, 12);
-		}
-		name += getName();
-		if (name.length() > 15) {
-			name = name.substring(0, 15);
-		}
-		main:
-			for (int i = 65; i <= 255; i++) {
-				String potentialTeamName = name + (char)i;
-				for (ITabPlayer all : Shared.getPlayers()) {
-					if (all == this) continue;
-					if (all.getTeamName().equals(potentialTeamName)) {
-						continue main;
-					}
-				}
-				return potentialTeamName;
-			}
-		return getName();
 	}
 
 	public void updateTeamData(boolean force) {

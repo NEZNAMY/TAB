@@ -11,10 +11,8 @@ import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.Shared;
 
 public class Premium {
+	
 	public static ConfigurationFile premiumconfig;
-	public static SortingType sortingType;
-	public static String sortingPlaceholder;
-	public static boolean caseSensitive;
 	public static List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public static Map<String, Object> staticLines = new HashMap<String, Object>();
 	public static boolean allignTabsuffix;
@@ -28,13 +26,13 @@ public class Premium {
 		premiumconfig = new ConfigurationFile("premiumconfig.yml", null);
 		String type = premiumconfig.getString("sorting-type", "GROUPS");
 		try {
-			sortingType = SortingType.valueOf(type.toUpperCase());
+			SortingType.INSTANCE = SortingType.valueOf(type.toUpperCase());
 		} catch (Throwable e) {
 			Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid type of sorting type. Valid options are: &e" + Arrays.deepToString(SortingType.values()) + ". &bUsing GROUPS");
-			sortingType = SortingType.GROUPS;
+			SortingType.INSTANCE = SortingType.GROUPS;
 		}
-		sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
-		caseSensitive = premiumconfig.getBoolean("case-sentitive-sorting", true);
+		SortingType.sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
+		SortingType.caseSensitiveSorting = premiumconfig.getBoolean("case-sentitive-sorting", true);
 		List<String> realList = premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 		Premium.dynamicLines = new ArrayList<String>();
 		Premium.dynamicLines.addAll(realList);
