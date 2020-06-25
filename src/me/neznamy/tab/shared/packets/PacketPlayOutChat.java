@@ -12,11 +12,11 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	private ChatMessageType type;
 	
 	public PacketPlayOutChat(String message) {
-		this.message = IChatBaseComponent.fromColoredText(message);
+		this.message = IChatBaseComponent.optimizedComponent(message);
 		this.type = ChatMessageType.CHAT;
 	}
 	public PacketPlayOutChat(String message, ChatMessageType type) {
-		this.message = IChatBaseComponent.fromColoredText(message);
+		this.message = IChatBaseComponent.optimizedComponent(message);
 		this.type = type;
 	}
 	public PacketPlayOutChat(IChatBaseComponent message) {

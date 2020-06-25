@@ -349,6 +349,10 @@ public class IChatBaseComponent {
 		}
 		return builder.toString();
 	}
+	
+	public static IChatBaseComponent optimizedComponent(String text){
+		return text.contains("#") ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
+	}
 	public enum ClickAction{
 		OPEN_URL,
 		@Deprecated OPEN_FILE,//Cannot be sent by server

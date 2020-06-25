@@ -103,11 +103,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 		}
 		if (viewer.getVersion().getMinorVersion() >= 9) {
-			if (format.contains("#")) {
-				return IChatBaseComponent.fromColoredText(format);
-			} else {
-				return new IChatBaseComponent(format);
-			}
+			return IChatBaseComponent.optimizedComponent(format);
 		} else {
 			//fucking lunar client
 			return new IChatBaseComponent(new IChatBaseComponent(format).toColoredText());

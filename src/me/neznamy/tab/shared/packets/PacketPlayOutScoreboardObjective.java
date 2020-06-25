@@ -55,7 +55,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(displayName).toString(clientVersion)));
+			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion)));
 		} else {
 			DISPLAYNAME.set(packet, displayName);
 		}
@@ -66,7 +66,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
-			displayName = IChatBaseComponent.fromColoredText(displayName).toString(clientVersion);
+			displayName = IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion);
 		} else {
 			displayName = cutTo(displayName, 32);
 		}
@@ -75,7 +75,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
-			displayName = IChatBaseComponent.fromColoredText(displayName).toString(clientVersion);
+			displayName = IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion);
 		} else {
 			displayName = cutTo(displayName, 32);
 		}

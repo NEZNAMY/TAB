@@ -100,7 +100,7 @@ public class DataWatcher{
 		}
 		public static void setCustomName(DataWatcher dataWatcher, String customName, ProtocolVersion clientVersion) {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().stringToComponent(IChatBaseComponent.fromColoredText(customName).toString(clientVersion))));
+				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
 			} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 				dataWatcher.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
 			} else {

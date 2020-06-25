@@ -104,7 +104,7 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public PlayerInfoData getInfoData() {
 		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
-		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.fromColoredText(name));
+		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, new IChatBaseComponent(name));
 	}
 	@Override
 	public Player getBukkitEntity() {
