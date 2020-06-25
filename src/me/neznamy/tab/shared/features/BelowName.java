@@ -96,6 +96,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void refresh(ITabPlayer refreshed) {
 		if (refreshed.disabledBelowname) return;
+		if (refreshed.properties.get(propertyName) == null) return; //player not initialized yet
 		int number = getNumber(refreshed);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, number);
