@@ -403,6 +403,11 @@ public class IChatBaseComponent {
 		}
 		public String toString(ProtocolVersion clientVersion) {
 			if (clientVersion.getMinorVersion() >= 16) {
+				EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
+				if (legacyEquivalent != null) {
+					//not sending old colors as RGB to 1.16 clients if not needed, also viaversion blocks that as well
+					return legacyEquivalent.toString().toLowerCase();
+				}
 				return "#" + Integer.toHexString((red << 16) + (green << 8) + blue);
 			} else {
 				return legacy.toString().toLowerCase();

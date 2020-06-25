@@ -73,4 +73,10 @@ public enum EnumChatFormat{
 	public String getFormat() {
 		return Placeholders.colorChar + "" + character;
 	}
+	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
+		for (EnumChatFormat format : values()) {
+			if (format.red == red && format.green == green && format.blue == blue) return format;
+		}
+		return null;
+	}
 }
