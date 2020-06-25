@@ -82,6 +82,8 @@ public class Configs {
 		}
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
 		Placeholders.usedPlaceholders.clear();
+		Placeholders.registeredPlaceholders.clear();
+		Placeholders.registeredRelationalPlaceholders.clear();
 		loadConfig();
 		loadAnimations();
 		loadBossbar();
