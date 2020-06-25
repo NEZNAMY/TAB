@@ -2,29 +2,29 @@ package me.neznamy.tab.shared.cpu;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 
 public class CPUManager {
 
-	private static final int bufferSizeMillis = 100;
-	private static final int dataMemorySize = 600;
-	
-	private ConcurrentMap<Object, Long> lastSecond = new ConcurrentHashMap<Object, Long>();
-	private List<ConcurrentMap<Object, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<Object, Long>>());
+	private final int bufferSizeMillis = 100;
+	private final int dataMemorySize = 600;
+
+	private ConcurrentMap<String, Long> lastSecond = new ConcurrentHashMap<String, Long>();
+	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 
 	private ExecutorService exe = Executors.newCachedThreadPool();
-	
+
 	public CPUManager() {
 		exe.submit(new Runnable() {
 
@@ -34,11 +34,11 @@ public class CPUManager {
 					while (true) {
 						Thread.sleep(bufferSizeMillis);
 						lastMinute.add(lastSecond);
-						lastSecond = new ConcurrentHashMap<Object, Long>();
+						lastSecond = new ConcurrentHashMap<String, Long>();
 						if (lastMinute.size() > dataMemorySize) lastMinute.remove(0);
 					}
 				} catch (InterruptedException pluginDisabled) {
-					
+
 				}
 			}
 		});
@@ -119,8 +119,8 @@ public class CPUManager {
 		Map<Object, Long> nanoMap = new HashMap<Object, Long>();
 		Object key;
 		synchronized (lastMinute) {
-			for (ConcurrentMap<Object, Long> second : lastMinute) {
-				for (Entry<Object, Long> nanos : second.entrySet()) {
+			for (ConcurrentMap<String, Long> second : lastMinute) {
+				for (Entry<String, Long> nanos : second.entrySet()) {
 					key = nanos.getKey();
 					if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
 					nanoMap.put(key, nanoMap.get(key)+nanos.getValue());
@@ -139,26 +139,26 @@ public class CPUManager {
 		}
 		return sortByValue(percentMap);
 	}
-	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
-		list.sort(Entry.comparingByValue());
-		Map<K, V> result = new LinkedHashMap<>();
-		for (int i=list.size()-1; i>=0; i--) {
-			Entry<K, V> entry = list.get(i);
-			result.put(entry.getKey(), entry.getValue());
-		}
-		return result;
+	private <K, V extends Comparable<V>> Map<K, V> sortByValue(final Map<K, V> map) {
+	    Comparator<K> valueComparator =  new Comparator<K>() {
+	        public int compare(K k1, K k2) {
+	            int compare = map.get(k2).compareTo(map.get(k1));
+	            if (compare == 0) return 1;
+	            else return compare;
+	        }
+	    };
+	    Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+	    sortedByValues.putAll(map);
+	    return sortedByValues;
 	}
+
 	public void addTime(CPUFeature feature, long nanoseconds) {
 		addTime0(feature.toString(), nanoseconds);
 	}
-	public void addTime(Placeholder placeholder, long nanoseconds) {
-		addTime0(placeholder.getIdentifier(), nanoseconds);
+	public void addTime(String placeholder, long nanoseconds) {
+		addTime0(placeholder, nanoseconds);
 	}
-	public void addTime(String relationalPlaceholderIdentifier, long nanoseconds) {
-		addTime0(relationalPlaceholderIdentifier, nanoseconds);
-	}
-	private void addTime0(Object key, long nanoseconds) {
+	private void addTime0(String key, long nanoseconds) {
 		Long current = lastSecond.get(key);
 		if (current == null) {
 			lastSecond.put(key, nanoseconds);

@@ -6,6 +6,7 @@ import java.util.List;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
 public class Property {
 
@@ -15,16 +16,15 @@ public class Property {
 	public String lastReplacedValue;
 	private String source;
 
-	private List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	private boolean hasRelationalPlaceholders;
-	private long lastUpdate;
-	private boolean Static;
+	public List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	public List<RelationalPlaceholder> relPlaceholders = new ArrayList<RelationalPlaceholder>();
 
 	public Property(ITabPlayer owner, String rawValue, String source) {
 		if (rawValue == null) rawValue = "";
 		this.owner = owner;
 		this.source = source;
 		this.rawValue = analyze(rawValue);
+		update();
 	}
 	private String analyze(String value) {
 		for (Placeholder c : Placeholders.getAllPlaceholders()) {
@@ -33,24 +33,7 @@ public class Property {
 			}
 		}
 		placeholders = Placeholders.detectPlaceholders(value);
-		hasRelationalPlaceholders = value.contains("%rel_");
-		for (Placeholder placeholder : placeholders) {
-			for (String child : placeholder.getChilds()) {
-				if (String.valueOf(child).contains("%rel_")) hasRelationalPlaceholders = true;
-			}
-		}
-		if (placeholders.isEmpty() && !hasRelationalPlaceholders) {
-			//no placeholders, this is a static string
-			//performing final changes before saving it
-			for (String removed : Configs.removeStrings) {
-				if (value.contains(removed)) value = value.replace(removed, "");
-			}
-			lastReplacedValue = Placeholders.color(value);
-			Static = true;
-		} else {
-			lastReplacedValue = null;
-			Static = false;
-		}
+		relPlaceholders = Placeholders.detectRelationalPlaceholders(value);
 		return value;
 	}
 	public void setTemporaryValue(String temporaryValue) {
@@ -60,17 +43,15 @@ public class Property {
 		} else {
 			rawValue = analyze(rawValue);
 		}
+		update();
 	}
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
 		rawValue = newValue;
 		if (temporaryValue == null) {
 			rawValue = analyze(rawValue);
+			update();
 		}
-	}
-	public String get() {
-		if (lastReplacedValue == null) isUpdateNeeded();
-		return lastReplacedValue;
 	}
 	public String getCurrentRawValue() {
 		return temporaryValue != null ? temporaryValue : rawValue;
@@ -87,33 +68,34 @@ public class Property {
 	public void setSource(String source) {
 		this.source = source;
 	}
-	public boolean isUpdateNeeded() {
-		if (Static) return false;
+	public String updateAndGet() {
+		update();
+		return get();
+	}
+	public boolean update() {
 		String string = getCurrentRawValue();
-
-		//placeholders
 		for (Placeholder pl : placeholders) {
 			string = pl.set(string, owner);
 		}
-		
 		string = Placeholders.color(string);
-		
-		//removing strings
 		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}
-		if (lastReplacedValue == null || !string.equals(lastReplacedValue) || (hasRelationalPlaceholders() && System.currentTimeMillis()-lastUpdate > (float) Configs.SECRET_relational_placeholders_refresh *1000)) {
+		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
-			lastUpdate = System.currentTimeMillis();
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
-	public boolean hasRelationalPlaceholders() {
-		return hasRelationalPlaceholders && PluginHooks.placeholderAPI;
+	public String get() {
+		return lastReplacedValue;
 	}
-	public List<Placeholder> getUsedPlaceholders(){
-		return placeholders;
+	public String getFormat(ITabPlayer viewer) {
+		if (viewer == null) return lastReplacedValue;
+		String format = lastReplacedValue;
+		for (RelationalPlaceholder pl : relPlaceholders) {
+			format = format.replace(pl.identifier, pl.get(viewer, owner));
+		}
+		return format;
 	}
 }

@@ -19,8 +19,8 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 	public IChatBaseComponent footer;
 
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
-		this.header = IChatBaseComponent.fromColoredText(header);
-		this.footer = IChatBaseComponent.fromColoredText(footer);
+		this.header = header.contains("#") ? IChatBaseComponent.fromColoredText(header) : new IChatBaseComponent(header);
+		this.footer = footer.contains("#") ? IChatBaseComponent.fromColoredText(footer) : new IChatBaseComponent(footer);
 	}
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;

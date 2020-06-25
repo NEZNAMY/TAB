@@ -1,11 +1,12 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -46,8 +47,8 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -55,6 +56,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -69,16 +71,16 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public static Main instance;
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
-	public static List<String> usedExpansions;
-	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	public Set<String> usedExpansions;
+	public final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.mainClass = this;
+		instance = this;
 		Shared.separatorType = "world";
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 		if (MethodAPI.getInstance() != null){
-			instance = this;
 			Bukkit.getPluginManager().registerEvents(this, this);
 			Shared.command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
@@ -151,10 +153,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			inject(e.getPlayer().getUniqueId());
-			Shared.featureCpu.runMeasuredTask("player joined the server", CPUFeature.OTHER, new Runnable() {
+			Shared.featureCpu.runMeasuredTask("processing player join", CPUFeature.OTHER, new Runnable() {
 
 				public void run() {
 					Shared.joinListeners.forEach(f -> f.onJoin(p));
+					p.onJoinFinished = true;
 				}
 			});
 		} catch (Throwable ex) {
@@ -201,14 +204,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
 		}
 	}
-	private static void inject(UUID player) {
+	private void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
+	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
 		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
 			for (ITabPlayer p : Shared.getPlayers()) {
@@ -242,7 +245,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.ultrapermissions = Bukkit.getPluginManager().isPluginEnabled("UltraPermissions");
 		PluginHooks.networkmanager = Bukkit.getPluginManager().getPlugin("NetworkManager");
 
-		usedExpansions = new ArrayList<String>();
+		usedExpansions = new HashSet<String>();
 
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
@@ -251,43 +254,54 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return "-";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 100) {
 			public String get(ITabPlayer p) {
 				return (p.getBukkitEntity()).getLocation().getBlockX()+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%yPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%yPos%", 100) {
 			public String get(ITabPlayer p) {
 				return (p.getBukkitEntity()).getLocation().getBlockY()+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%zPos%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%zPos%", 100) {
 			public String get(ITabPlayer p) {
 				return (p.getBukkitEntity()).getLocation().getBlockZ()+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 0) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(ITabPlayer p) {
 				return (p.getBukkitEntity()).getDisplayName();
 			}
 		});
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.registerPlaceholder(new PlayerPlaceholder("%deaths%", 5000) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) Placeholders.registerPlaceholder(new PlayerPlaceholder("%deaths%", 1000) {
 			public String get(ITabPlayer p) {
 				return (p.getBukkitEntity()).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
-			public String get(ITabPlayer p) {
-				String name = null;
-				if (PluginHooks.essentials != null) {
-					name = PluginHooks.Essentials_getNickname(p);
+		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
+				public String get(ITabPlayer p) {
+					String name = null;
+					if (PluginHooks.essentials != null) {
+						name = PluginHooks.Essentials_getNickname(p);
+					}
+					if (name == null || name.length() == 0) return p.getName();
+					return Configs.SECRET_essentials_nickname_prefix + name;
 				}
-				if (name == null || name.length() == 0) return p.getName();
-				return Configs.SECRET_essentials_nickname_prefix + name;
-			}
-		});
+			});
+		} else {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 999999) {
+
+				@Override
+				public String get(ITabPlayer p) {
+					return p.getName();
+				}
+			});
+		}
+
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%deluxetag%", 0) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%deluxetag%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
 				}
@@ -428,7 +442,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.registerUniversalPlaceholders();
 	}
 	@SuppressWarnings("unchecked")
-	public static Player[] getOnlinePlayers(){
+	public Player[] getOnlinePlayers(){
 		try {
 			Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
 			if (players instanceof Player[]) {
@@ -442,7 +456,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			return Shared.errorManager.printError(new Player[0], "Failed to get online players");
 		}
 	}
-	public static double Vault_getMoney(ITabPlayer p) {
+	public double Vault_getMoney(ITabPlayer p) {
 		return ((Economy)PluginHooks.Vault_economy).getBalance(p.getBukkitEntity());
 	}
 
@@ -481,8 +495,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
 				Playerlist playerlist = new Playerlist();
 				Shared.registerFeature("playerlist", playerlist);
-				if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
-				
+				if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());
@@ -491,8 +505,9 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (Configs.SECRET_remove_ghost_players) 																						Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
 				Shared.registerFeature("papihook", new TabExpansion());
-				new ExpansionDownloader();
+				new ExpansionDownloader(usedExpansions);
 			}
+			Shared.registerFeature("group-refresh", new GroupRefresher());
 			new UpdateChecker();
 
 			for (Player p : getOnlinePlayers()) {
@@ -536,7 +551,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;
-			if (!usedExpansions.contains(plugin)) {
+			if (!usedExpansions.contains(plugin) && !plugin.equals("rel")) {
 				usedExpansions.add(plugin);
 				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
@@ -562,6 +577,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			removeOld(config, "factions-nofaction");
 			removeOld(config, "date-format");
 			removeOld(config, "time-format");
+			removeOld(config, "nametag-refresh-interval-milliseconds");
+			removeOld(config, "tablist-refresh-interval-milliseconds");
+			removeOld(config, "header-footer-refresh-interval-milliseconds");
+			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
 				for (Object group : config.getConfigurationSection("Groups").keySet()) {
 					String tagprefix = config.getString("Groups." + group + ".tagprefix");
@@ -624,19 +643,21 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			if (scoreboardsConverted) {
 				Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 			}
+			removeOld(config, "scoreboard.refresh-interval-milliseconds");
 		}
-		if (config.getName().equals("advancedconfig.yml")) {
-			if (config.getObject("per-world-playerlist") instanceof Boolean) {
-				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
-				rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
-				rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
-				Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
-				sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
-				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
-				sharedWorlds.put("DoNotDoThis", Arrays.asList("ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt"));
-				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
-				Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
-			}
+		if (config.getName().equals("advancedconfig.yml") && config.getObject("per-world-playerlist") instanceof Boolean) {
+			rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
+			rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
+			rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
+			Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
+			sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
+			sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
+			sharedWorlds.put("DoNotDoThis", Arrays.asList("ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt"));
+			config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
+			Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
+		}
+		if (config.getName().equals("bossbar.yml")) {
+			removeOld(config, "refresh-interval-milliseconds");
 		}
 	}
 	@Override

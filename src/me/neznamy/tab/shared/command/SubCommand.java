@@ -11,9 +11,12 @@ import me.neznamy.tab.shared.Shared;
 
 public abstract class SubCommand {
 
+	protected final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
+	protected final String[] extraProperties = {"abovename", "belowname", "customtagname"};
+	
 	private String name;
 	private String permission;
-	protected Map<String, SubCommand> subcommands = new HashMap<String, SubCommand>();
+	public Map<String, SubCommand> subcommands = new HashMap<String, SubCommand>();
 	
 	public SubCommand(String name, String permission) {
 		this.name = name;
@@ -31,14 +34,14 @@ public abstract class SubCommand {
 		if (sender.hasPermission("tab.admin")) return true;
 		return sender.hasPermission(permission);
 	}
-	public static void sendMessage(ITabPlayer sender, String message) {
+	public void sendMessage(ITabPlayer sender, String message) {
 		if (sender != null) {
 			sender.sendMessage(message);
 		} else {
 			Shared.mainClass.sendConsoleMessage(message);
 		}
 	}
-	public static void sendRawMessage(ITabPlayer sender, String message) {
+	public void sendRawMessage(ITabPlayer sender, String message) {
 		if (sender != null) {
 			sender.sendRawMessage(message);
 		} else {

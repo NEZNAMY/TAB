@@ -14,14 +14,15 @@ public class NTPreviewCommand extends SubCommand{
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		if (Shared.features.containsKey("nametagx")) {
+		NameTagX feature;
+		if ((feature = (NameTagX) Shared.features.get("nametagx")) != null) {
 			if (sender != null) {
 				if (sender.previewingNametag) {
 					sender.getArmorStands().forEach(a -> a.destroy(sender));
 					sender.getArmorStands().forEach(a -> a.getNearbyPlayers().remove(sender));
 					sendMessage(sender, Configs.preview_off);
 				} else {
-					NameTagX.spawnArmorStand(sender, sender);
+					feature.spawnArmorStand(sender, sender);
 					sendMessage(sender, Configs.preview_on);
 				}
 				sender.previewingNametag = !sender.previewingNametag;

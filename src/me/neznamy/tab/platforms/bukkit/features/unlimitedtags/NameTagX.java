@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -27,42 +28,45 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
-public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener{
+public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener, Refreshable{
 
 	private boolean modifyNPCnames;
-	
+	private Set<String> usedPlaceholders;
+
+	public NameTagX() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
+		for (String line : Premium.dynamicLines) {
+			usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line));
+		}
+		for (String line : Premium.staticLines.keySet()) {
+			usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line));
+		}
+		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
+
+	}
 	@Override
 	public void load() {
-		int refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
-			onJoin(all);
+			updateProperties(all);
 			if (all.disabledNametag) continue;
+			all.registerTeam();
+			loadArmorStands(all);
 			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
 				spawnArmorStand(all, worldPlayer);
 			}
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", CPUFeature.NAMETAG, new Runnable() {
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					p.updateTeam(false);
-					synchronized(p.armorStands) {
-						p.armorStands.forEach(a -> a.refreshName());
-						fixArmorStandHeights(p);
-					}
-				}
-			}
-		});
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAGX_INVISCHECK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
@@ -84,13 +88,28 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		if (connectedPlayer.disabledNametag) return;
-		connectedPlayer.registerTeam();
+		updateProperties(connectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
-			if (all == connectedPlayer) continue; //already registered 2 lines above
+			if (all == connectedPlayer) continue;
 			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
 		}
-		loadArmorStands(connectedPlayer);
+		if (connectedPlayer.disabledNametag) return;
+		connectedPlayer.registerTeam();
+		if (connectedPlayer.armorStands.isEmpty()) {
+			//armor stands force loaded before due to an inefficient placeholder
+			loadArmorStands(connectedPlayer);
+		}
+	}
+	private void updateProperties(ITabPlayer p) {
+		p.properties.get("tagprefix").update();
+		p.properties.get("customtagname").update();
+		p.properties.get("tagsuffix").update();
+		for (String line : Premium.dynamicLines) {
+			p.properties.get(line).update();
+		}
+		for (String line : Premium.staticLines.keySet()) {
+			p.properties.get(line).update();
+		}
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
@@ -128,10 +147,10 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			p.updateTeam(true);
+			p.updateTeam();
 			List<ArmorStand> list = new ArrayList<ArmorStand>();
 			list.addAll(p.armorStands);
-			list.forEach(a -> a.refreshName());
+			list.forEach(a -> a.refresh());
 			fixArmorStandHeights(p);
 		}
 	}
@@ -143,9 +162,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 			if (p == worldPlayer) continue;
 			if (!worldPlayer.getWorldName().equals(p.getWorldName())) continue;
-			NameTagX.spawnArmorStand(p, worldPlayer);
+			spawnArmorStand(p, worldPlayer);
 		}
-		if (p.previewingNametag) NameTagX.spawnArmorStand(p, p);
+		if (p.previewingNametag) spawnArmorStand(p, p);
 	}
 	public void loadArmorStands(ITabPlayer pl) {
 		pl.armorStands.clear();
@@ -162,7 +181,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		fixArmorStandHeights(pl);
 	}
 	public void fixArmorStandHeights(ITabPlayer p) {
-		p.armorStands.forEach(a -> a.refreshName());
+		p.armorStands.forEach(a -> a.refresh());
 		double currentY = -Configs.SECRET_NTX_space;
 		for (ArmorStand as : p.getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
@@ -199,6 +218,16 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 				public void run() {
+					if (!spawnedPlayer.onJoinFinished) {
+						//player not loaded due to an inefficient placeholder
+						for (Placeholder p : Placeholders.usedPlaceholders) {
+							if (p instanceof PlayerPlaceholder) {
+								((PlayerPlaceholder)p).update(spawnedPlayer);
+							}
+						}
+						updateProperties(spawnedPlayer);
+						loadArmorStands(spawnedPlayer);
+					}
 					spawnArmorStand(spawnedPlayer, receiver);
 				}
 			});
@@ -301,11 +330,32 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		}
 		return info;
 	}
-	public static void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
+	public void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
 		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
 			for (Object packet : as.getSpawnPackets(viewer, true)) {
 				viewer.sendPacket(packet);
 			}
 		}
+	}
+	@Override
+	public void refresh(ITabPlayer refreshed) {
+		if (refreshed.disabledNametag) return;
+		refreshed.updateTeam();
+		boolean fix = false;
+		for (ArmorStand as : refreshed.armorStands.toArray(new ArmorStand[0])) {
+			if (as.property.update()) {
+				as.refresh();
+				fix = true;
+			}
+		}
+		if (fix) fixArmorStandHeights(refreshed);
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.NAMETAG;
 	}
 }

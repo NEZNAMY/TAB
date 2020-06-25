@@ -15,11 +15,11 @@ import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 
 public class PetFix implements RawPacketFeature{
 
-	private static final int PET_OWNER_POSITION = getPetOwnerPosition();
+	private final int PET_OWNER_POSITION = getPetOwnerPosition();
 	
-	private static int getPetOwnerPosition() {
+	private int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-			//1.15+
+			//1.15.x, 1.16.x
 			return 17;
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
 			//1.14.x
@@ -41,6 +41,7 @@ public class PetFix implements RawPacketFeature{
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable{
 		if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) MethodAPI.PacketPlayOutEntityMetadata_LIST.get(packet);
+			if (items == null) return packet;
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
 				Item i = Item.fromNMS(item);

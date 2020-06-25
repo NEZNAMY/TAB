@@ -81,7 +81,7 @@ public class DataWatcher{
 		
 		private static int getArmorStandFlagsPosition() {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-				//1.15+
+				//1.15.x, hopefully 1.16.x too
 				return 14;
 			} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
 				//1.14.x

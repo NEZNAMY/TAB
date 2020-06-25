@@ -25,7 +25,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	@SuppressWarnings("unchecked")
 	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
-		
+
 		//32-47
 		widths.put(' ', 3);
 		widths.put('!', 1);
@@ -43,7 +43,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('-', 5);
 		widths.put('.', 1);
 		widths.put('/', 5);
-		
+
 		//48-57
 		widths.put('0', 5);
 		widths.put('1', 5);
@@ -55,7 +55,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('7', 5);
 		widths.put('8', 5);
 		widths.put('9', 5);
-		
+
 		//58-64
 		widths.put(':', 1);
 		widths.put(';', 1);
@@ -64,7 +64,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('>', 4);
 		widths.put('?', 5);
 		widths.put('@', 6);
-		
+
 		//65-90
 		widths.put('A', 5);
 		widths.put('B', 5);
@@ -93,7 +93,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('X', 5);
 		widths.put('Y', 5);
 		widths.put('Z', 5);
-		
+
 		//91-96
 		widths.put('[', 3);
 		widths.put('\\', 5);
@@ -129,13 +129,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('x', 5);
 		widths.put('y', 5);
 		widths.put('z', 5);
-		
+
 		//123-126
 		widths.put('{', 4);
 		widths.put('|', 1);
 		widths.put('}', 4);
 		widths.put('~', 6);
-		
+
 		//extra
 		widths.put('á', 5);
 		widths.put('ä', 5);
@@ -162,16 +162,27 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		widths.put('ů', 5);
 		widths.put('ý', 5);
 		widths.put('ž', 5);
+		
+		widths.put((char)1769, 7); //7.5
+		widths.put((char)9679, 3); //3.5
 		widths.put((char)9734, 3); //3.5
-		widths.put((char)9876, 7); //crossed swords
+		widths.put((char)9818, 4);
+		widths.put((char)9835, 4);
+		widths.put((char)9876, 7);
+		widths.put((char)10004, 8);
+		widths.put((char)10006, 7); //7.5
+		widths.put((char)10008, 6);
+		widths.put((char)10031, 8); //7.5
+		widths.put((char)10051, 8);
+		widths.put((char)10084, 7);
+		widths.put((char)12300, 8);
+		widths.put((char)12301, 8);
 		widths.put((char)12302, 8);
 		widths.put((char)12303, 8);
-		widths.put((char)12304, 8); //better [
-		widths.put((char)12305, 8); //better ]
-		widths.put((char)10084, 7);
-		widths.put((char)10004, 8);
-		widths.put((char)10008, 6); //X mark
-		
+		widths.put((char)12304, 8);
+		widths.put((char)12305, 8);
+		widths.put((char)12484, 8);
+
 		Map<Integer, ?> section = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
 		for (Entry<Integer, ?> entry : section.entrySet()) {
 			widths.put((char)(int)entry.getKey(), (int)entry.getValue());
@@ -231,9 +242,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		return width;
 	}
 	private int getPlayerNameWidth(ITabPlayer p) {
-		String format = p.properties.get("tabprefix").get() + 
-				p.properties.get("customtabname").get() +
-				p.properties.get("tabsuffix").get();
+		String format = p.properties.get("tabprefix").get() + p.properties.get("customtabname").get() + p.properties.get("tabsuffix").get();
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	private String buildSpaces(int pixelWidth) {
@@ -291,7 +300,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			updateAllNames(null);
 		}
 	}
-	
+
 	private void updateAllNames(ITabPlayer exception) {
 		Shared.featureCpu.runMeasuredTask("aligning tabsuffix", CPUFeature.ALIGNED_TABSUFFIX, new Runnable() {
 
@@ -299,7 +308,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == exception) continue;
-					playerlist.updatePlayerListName(all);
+					playerlist.refresh(all);
 				}
 			}
 		});

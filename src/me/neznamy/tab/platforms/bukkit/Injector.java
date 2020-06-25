@@ -9,7 +9,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -19,7 +18,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 public class Injector {
 
 	public static void inject(UUID uuid) {
-		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		Channel channel = Shared.getPlayer(uuid).channel;
 		if (!channel.pipeline().names().contains("packet_handler")) {
 			//fake player or waterfall bug
 			return;
@@ -35,7 +34,7 @@ public class Injector {
 					}
 					try{
 						ITabPlayer player = Shared.getPlayer(uuid);
-						if (player != null && player.getVersion() != ProtocolVersion.UNKNOWN) {
+						if (player != null) {
 							for (RawPacketFeature f : Shared.rawpacketfeatures) {
 								long time = System.nanoTime();
 								try {
@@ -59,7 +58,7 @@ public class Injector {
 					}
 					try{
 						ITabPlayer player = Shared.getPlayer(uuid);
-						if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
+						if (player == null) {
 							super.write(context, packet, channelPromise);
 							return;
 						}
@@ -67,7 +66,7 @@ public class Injector {
 							long time = System.nanoTime();
 							if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								//nametag anti-override
-								if (Main.killPacket(packet)) {
+								if (Main.instance.killPacket(packet)) {
 									Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
 									return;
 								}
@@ -105,7 +104,7 @@ public class Injector {
 		}
 	}
 	public static void uninject(UUID uuid) {
-		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		Channel channel = Shared.getPlayer(uuid).channel;
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 	}
 }

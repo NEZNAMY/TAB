@@ -85,7 +85,7 @@ public class DebugCommand extends SubCommand {
 			if (analyzed.disabledNametag) {
 				sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
 			} else {
-				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
+				sendMessage(sender, "&eTeam name: &a" + analyzed.teamName);
 			}
 		}
 		if (Shared.features.containsKey("playerlist")) {

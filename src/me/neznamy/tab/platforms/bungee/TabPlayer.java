@@ -117,6 +117,6 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@Override
 	public ProtocolVersion getVersion() {
-		return ProtocolVersion.fromNumber(getBungeeEntity().getPendingConnection().getVersion());
+		return ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 	}
 }

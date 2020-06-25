@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class TABAPI {
@@ -79,7 +80,7 @@ public class TABAPI {
 		if (p == null) return;
 		Placeholders.checkForRegistration(value);
 		p.properties.get(type.toString()).changeRawValue(value);
-		PlayerCommand.savePlayer(null, p.getName(), type.toString(), value);
+		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, p.getName(), type.toString(), value);
 		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
 			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
 		}
@@ -167,7 +168,7 @@ public class TABAPI {
 	 */
 	public static void hideNametag(UUID player) {
 		hiddenNametag.add(player);
-		Shared.getPlayer(player).updateTeamData(true);
+		Shared.getPlayer(player).updateTeamData();
 	}
 	
 	
@@ -180,7 +181,7 @@ public class TABAPI {
 	 */
 	public static void showNametag(UUID player) {
 		hiddenNametag.remove(player);
-		Shared.getPlayer(player).updateTeamData(true);
+		Shared.getPlayer(player).updateTeamData();
 	}
 	
 	
@@ -230,6 +231,10 @@ public class TABAPI {
 	 */
 	public static void registerServerConstant(ServerConstant constant) {
 		Placeholders.registerPlaceholder(constant);
+	}
+	
+	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
+		Placeholders.registerPlaceholder(placeholder);
 	}
 	
 	

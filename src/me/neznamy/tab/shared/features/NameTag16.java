@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Set;
+
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
@@ -9,24 +11,23 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
-public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
-	
+public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
+
+	private Set<String> usedPlaceholders;
+
+	public NameTag16() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+	}
 	@Override
-	public void load() {
-		int refresh = Configs.config.getInt("nametag-refresh-interval-milliseconds", 1000);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("NameTags", refresh);
+	public void load(){
 		for (ITabPlayer p : Shared.getPlayers()) {
+			p.properties.get("tagprefix").update();
+			p.properties.get("tagsuffix").update();
 			if (!p.disabledNametag) p.registerTeam();
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing nametags", CPUFeature.NAMETAG, new Runnable() {
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.disabledNametag) p.updateTeam(false);
-				}
-			}
-		});
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport) {
 			for (ITabPlayer p : Shared.getPlayers()) {
@@ -38,13 +39,14 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 						boolean visible = !p.hasInvisibility();
 						if (p.nameTagVisible != visible) {
 							p.nameTagVisible = visible;
-							p.updateTeam(false);
+							p.updateTeam();
 						}
 					}
 				}
 			});
 		}
 	}
+	@Override
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
@@ -52,6 +54,8 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.properties.get("tagprefix").update();
+		connectedPlayer.properties.get("tagsuffix").update();
 		if (connectedPlayer.disabledNametag) return;
 		connectedPlayer.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
@@ -70,7 +74,22 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			p.updateTeam(true);
+			p.updateTeam();
 		}
+	}
+	@Override
+	public void refresh(ITabPlayer refreshed) {
+		if (refreshed.disabledNametag) return;
+		boolean prefix = refreshed.properties.get("tagprefix").update();
+		boolean suffix = refreshed.properties.get("tagsuffix").update();
+		if (prefix || suffix) refreshed.updateTeam();
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.NAMETAG;
 	}
 }

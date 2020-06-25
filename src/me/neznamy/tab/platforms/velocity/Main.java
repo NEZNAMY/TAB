@@ -37,6 +37,7 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -46,9 +47,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -56,6 +57,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -67,10 +69,10 @@ import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.serializer.gson.GsonComponentSerializer;
 
-@Plugin(id = "tab", name = "TAB", version = "2.7.7", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.8.0", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
 
-	private static Method map;
+	private Method map;
 	
 	public ProxyServer server;
 	private PluginMessenger plm;
@@ -137,7 +139,7 @@ public class Main implements MainClass{
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
+			for (ITabPlayer p : Shared.getPlayers()) p.channel.pipeline().remove(Shared.DECODER_NAME);
 			Shared.unload();
 		}
 	}
@@ -164,6 +166,7 @@ public class Main implements MainClass{
 					@Override
 					public void run() {
 						Shared.joinListeners.forEach(f -> f.onJoin(p));
+						p.onJoinFinished = true;
 					}
 				});
 			} else {
@@ -187,7 +190,7 @@ public class Main implements MainClass{
 		}
 	}*/
 	private void inject(UUID uuid) {
-		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		Channel channel = Shared.getPlayer(uuid).channel;
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
@@ -196,7 +199,7 @@ public class Main implements MainClass{
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				ITabPlayer player = Shared.getPlayer(uuid);
-				if (player == null || player.getVersion() == me.neznamy.tab.shared.ProtocolVersion.UNKNOWN) {
+				if (player == null) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
@@ -264,7 +267,7 @@ public class Main implements MainClass{
 		Placeholders.registerUniversalPlaceholders();
 	}
 	
-	public static PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
+	public PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
 	}
 	public void registerPackets() {
@@ -280,7 +283,7 @@ public class Main implements MainClass{
 			Supplier<ScoreboardDisplay> display = ScoreboardDisplay::new;
 			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardDisplay.class, display, 
 					new PacketMapping[] {
-							map(0x3D, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x3D, ProtocolVersion.MINECRAFT_1_7_2, false),
 							map(0x38, ProtocolVersion.MINECRAFT_1_9, false),
 							map(0x3A, ProtocolVersion.MINECRAFT_1_12, false),
 							map(0x3B, ProtocolVersion.MINECRAFT_1_12_1, false),
@@ -291,7 +294,7 @@ public class Main implements MainClass{
 			Supplier<ScoreboardObjective> objective = ScoreboardObjective::new;
 			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardObjective.class, objective, 
 					new PacketMapping[] {
-							map(0x3B, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x3B, ProtocolVersion.MINECRAFT_1_7_2, false),
 							map(0x3F, ProtocolVersion.MINECRAFT_1_9, false),
 							map(0x41, ProtocolVersion.MINECRAFT_1_12, false),
 							map(0x42, ProtocolVersion.MINECRAFT_1_12_1, false),
@@ -302,7 +305,7 @@ public class Main implements MainClass{
 			Supplier<ScoreboardScore> score = ScoreboardScore::new;
 			register.invoke(StateRegistry.PLAY.clientbound, ScoreboardScore.class, score, 
 					new PacketMapping[] {
-							map(0x3C, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x3C, ProtocolVersion.MINECRAFT_1_7_2, false),
 							map(0x42, ProtocolVersion.MINECRAFT_1_9, false),
 							map(0x44, ProtocolVersion.MINECRAFT_1_12, false),
 							map(0x45, ProtocolVersion.MINECRAFT_1_12_1, false),
@@ -313,7 +316,7 @@ public class Main implements MainClass{
 			Supplier<Team> team = Team::new;
 			register.invoke(StateRegistry.PLAY.clientbound, Team.class, team, 
 					new PacketMapping[] {
-							map(0x3E, ProtocolVersion.MINECRAFT_1_8, false),
+							map(0x3E, ProtocolVersion.MINECRAFT_1_7_2, false),
 							map(0x41, ProtocolVersion.MINECRAFT_1_9, false),
 							map(0x43, ProtocolVersion.MINECRAFT_1_12, false),
 							map(0x44, ProtocolVersion.MINECRAFT_1_12_1, false),
@@ -343,10 +346,11 @@ public class Main implements MainClass{
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();
 			Shared.registerFeature("playerlist", playerlist);
-			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		Shared.registerFeature("group-refresh", new GroupRefresher());
 		new UpdateChecker();
 		
 		for (Player p : server.getAllPlayers()) {
@@ -372,13 +376,28 @@ public class Main implements MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
+		SortingType.INSTANCE = SortingType.GROUPS;
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
+			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
+			if (plugin.equals("some")) return;
+			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
+			PlaceholderManager pl = ((PlaceholderManager)Shared.features.get("placeholders"));
+			int cooldown = 100;
+			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
+			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			if (pl.serverConstantList.contains(identifier)) cooldown = 9999999;
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
-					return lastValue.get(p.getName());
+					String name;
+					if (p == null) {
+						name = "null";
+					} else {
+						name = p.getName();
+					}
+					return lastValue.get(name);
 				}
 			});
 			return;
@@ -402,6 +421,10 @@ public class Main implements MainClass{
 			}
 			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
 			rename(config, "belowname", "classic-vanilla-belowname");
+			removeOld(config, "nametag-refresh-interval-milliseconds");
+			removeOld(config, "tablist-refresh-interval-milliseconds");
+			removeOld(config, "header-footer-refresh-interval-milliseconds");
+			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
@@ -437,6 +460,10 @@ public class Main implements MainClass{
 			if (scoreboardsConverted) {
 				Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 			}
+			removeOld(config, "scoreboard.refresh-interval-milliseconds");
+		}
+		if (config.getName().equals("bossbar.yml")) {
+			removeOld(config, "refresh-interval-milliseconds");
 		}
 	}
 	@Override

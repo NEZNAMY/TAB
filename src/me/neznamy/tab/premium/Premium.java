@@ -15,7 +15,7 @@ public class Premium {
 	public static ConfigurationFile premiumconfig;
 	public static List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public static Map<String, Object> staticLines = new HashMap<String, Object>();
-	public static boolean allignTabsuffix;
+	public static boolean alignTabsuffix;
 
 	public static boolean is() {
 		return false;
@@ -38,6 +38,6 @@ public class Premium {
 		Premium.dynamicLines.addAll(realList);
 		Collections.reverse(Premium.dynamicLines);
 		staticLines = premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
-		allignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
+		alignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
 	}
 }

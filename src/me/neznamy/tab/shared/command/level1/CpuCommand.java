@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class CpuCommand extends SubCommand {
 
@@ -36,13 +38,16 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		sendMessage(sender, "&8&l║ &6Placeholders:");
 		for (Entry<Object, Float> entry : placeholders.entrySet()) {
-			if (entry.getValue() > 0.05) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
+			Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
+			String refresh = "";
+			if (p != null) refresh = " &8(" + p.cooldown + ")&7";
+			sendMessage(sender, "&8&l║ &7" + entry.getKey() + refresh + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		if (Shared.separatorType.equals("server")) {
 			sendMessage(sender, "&8&l║ &6Placeholder usage on Bukkit servers:");
 			for (Entry<Object, Float> entry : bridgeplaceholders.entrySet()) {
-				if (entry.getValue() > 0.05) sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
+				sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 			}
 			sendMessage(sender, "&8&l║&8&m                                                    ");
 		}
@@ -58,19 +63,19 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}
-	private static String colorizePlaceholder(String usage) {
+	private String colorizePlaceholder(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 1) return "&c" + usage;
 		if (percent > 0.3) return "&e" + usage;
 		return "&a" + usage;
 	}
-	private static String colorizeFeature(String usage) {
+	private String colorizeFeature(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 5) return "&c" + usage;
 		if (percent > 1) return "&e" + usage;
 		return "&a" + usage;
 	}
-	private static String colorizeTotalUsage(String usage) {
+	private String colorizeTotalUsage(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 10) return "&c" + usage;
 		if (percent > 5) return "&e" + usage;

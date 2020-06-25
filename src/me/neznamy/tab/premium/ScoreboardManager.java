@@ -39,8 +39,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("Scoreboard", refresh);
 		perWorld = Premium.premiumconfig.getConfigurationSection("scoreboard.per-world");
 		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
@@ -62,14 +60,17 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				lines = new ArrayList<String>();
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "lines");
 			}
-			scoreboards.put(scoreboard+"", new Scoreboard(scoreboard+"", title, lines, condition, childBoard));
+			Scoreboard sb = new Scoreboard(scoreboard+"", title, lines, condition, childBoard);
+			scoreboards.put(scoreboard+"", sb);
+			Shared.registerFeature("scoreboard-" + scoreboard, sb);
 		}	
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing scoreboard", CPUFeature.SCOREBOARD, new Runnable() {
+		Shared.featureCpu.startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", CPUFeature.SCOREBOARD_CONDITIONS, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
+					if (!p.onJoinFinished) continue;
 					Scoreboard board = p.getActiveScoreboard();
 					if (board != null && board.getName().equals("API")) continue;
 					String current = board == null ? "null" : board.getName();
@@ -79,12 +80,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 						p.setActiveScoreboard(null);
 						send(p);
 					}
-				}
-				for (Scoreboard board : scoreboards.values()) {
-					board.refresh();
-				}
-				for (Scoreboard board : APIscoreboards) {
-					board.refresh();
 				}
 			}
 		});

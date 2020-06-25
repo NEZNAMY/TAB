@@ -7,5 +7,4 @@ public interface Scoreboard {
 	public void sendTo(UUID player);
 	public void removeFrom(UUID player);
 	public void unregister();
-	public void refresh();
 }

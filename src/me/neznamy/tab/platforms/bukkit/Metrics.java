@@ -66,12 +66,12 @@ public class Metrics {
 	private String serverUUID;
 
 	// The plugin
-	private final Plugin plugin;
+	private final Main plugin;
 
 	// A list with all custom charts
 	private final List<CustomChart> charts = new ArrayList<CustomChart>();
 
-	public static void start(Plugin plugin) {
+	public static void start(Main plugin) {
 		Metrics metrics = new Metrics(plugin);
 		metrics.addCustomChart(new Metrics.SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
 			public String call() {
@@ -105,7 +105,7 @@ public class Metrics {
 		}));
 	}
 	
-	public Metrics(Plugin plugin) {
+	public Metrics(Main plugin) {
 		if (plugin == null) {
 			throw new IllegalArgumentException("Plugin cannot be null!");
 		}
@@ -242,7 +242,7 @@ public class Metrics {
 	 */
 	private JSONObject getServerData() {
 		// Minecraft specific data
-		int playerAmount = Main.getOnlinePlayers().length;
+		int playerAmount = plugin.getOnlinePlayers().length;
 		int onlineMode = Bukkit.getOnlineMode() ? 1 : 0;
 		String bukkitVersion = Bukkit.getVersion();
 

@@ -16,7 +16,6 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -44,15 +43,12 @@ public class ArmorStand{
 		player = owner.getBukkitEntity();
 		this.yOffset = yOffset;
 		this.property = property;
-		visible = getVisibility();
-		refreshName();
+		refresh();
 		updateLocation(player.getLocation());
 	}
-	public void refreshName() {
-		if (property.isUpdateNeeded()) {
-			visible = getVisibility();
-			updateMetadata();
-		}
+	public void refresh() {
+		visible = getVisibility();
+		updateMetadata();
 	}
 	public boolean hasStaticOffset() {
 		return staticOffset;
@@ -70,7 +66,7 @@ public class ArmorStand{
 	public Object[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
-		DataWatcher dataWatcher = createDataWatcher(property.get(), viewer);
+		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			return new Object[] {
 					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).toNMSNoEx(),
@@ -137,9 +133,8 @@ public class ArmorStand{
 	}
 	private void updateMetadata() {
 		synchronized (nearbyPlayers) {
-			String displayName = property.get();
 			for (ITabPlayer viewer : nearbyPlayers) {
-				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(displayName, viewer).toNMS(), true));
+				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer).toNMS(), true));
 			}
 		}
 	}
@@ -176,11 +171,7 @@ public class ArmorStand{
 		flag += (byte)32;
 		DataWatcher.Helper.setEntityFlags(datawatcher, flag);
 
-		if (displayName == null) {
-			displayName = "";
-		} else if (displayName.contains("%rel_")) {
-			displayName = PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, owner, displayName);
-		}
+		if (displayName == null) displayName = "";
 		DataWatcher.Helper.setCustomName(datawatcher, displayName, viewer.getVersion());
 
 		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
@@ -192,7 +183,7 @@ public class ArmorStand{
 	public List<ITabPlayer> getNearbyPlayers(){
 		return nearbyPlayers;
 	}
-	private static boolean isNameVisiblyEmpty(String displayName) {
+	private boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}
 }

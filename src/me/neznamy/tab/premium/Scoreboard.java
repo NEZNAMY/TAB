@@ -3,12 +3,15 @@ package me.neznamy.tab.premium;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -16,11 +19,11 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
+public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 
-	private static final String ObjectiveName = "TAB-Scoreboard";
-	private static final int DisplaySlot = 1;
-	
+	private final String ObjectiveName = "TAB-Scoreboard";
+	private final int DisplaySlot = 1;
+
 	private ScoreboardManager manager;
 	private String name;
 	private String title;
@@ -29,19 +32,23 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
 	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
+	private Set<String> usedPlaceholders;
 
 	public Scoreboard(String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(name, title, lines);
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
 		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
 	}
 	public Scoreboard(String name, String title, List<String> lines) {
 		this.manager = (ScoreboardManager) Shared.features.get("scoreboard");
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
-			scores.add(new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i)));
+			Score score = new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i));
+			scores.add(score);
+			Shared.registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
 	}
 	public String getName() {
@@ -97,8 +104,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title, null);
-			String replacedTitle = p.properties.get("scoreboard-title").get();
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, replacedTitle, DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.properties.get("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (Score s : scores) {
 				s.register(p);
 			}
@@ -121,18 +127,20 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 			players.remove(p);
 		}
 	}
-	public void refresh() {
-		for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
-			Property title = p.properties.get("scoreboard-title");
-			if (title.isUpdateNeeded()) {
-				p.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, title.get(), EnumScoreboardHealthDisplay.INTEGER));
-			}
-		}
-		for (Score s : scores.toArray(new Score[0])) {
-			s.updatePrefixSuffix();
-		}
+
+	@Override
+	public void refresh(ITabPlayer refreshed) {
+		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
-	
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.SCOREBOARD_TITLE;
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+
 	//implementing interface
 	public void sendTo(UUID player) {
 		ITabPlayer p = Shared.getPlayer(player);
@@ -140,66 +148,68 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 		p.setActiveScoreboard(this);
 		register(p);
 	}
-	
+
 	public void removeFrom(UUID player) {
 		ITabPlayer p = Shared.getPlayer(player);
 		p.setActiveScoreboard(null);
 		unregister(p);
 	}
-	
-	
-	
-	
-	
-	public class Score{
+
+
+
+
+
+	private class Score implements Refreshable {
 
 		private int score;
 		private String rawtext;
 		private String teamname;
 		private String player;
+		private Set<String> usedPlaceholders;
 
 		public Score(int score, String teamname, String player, String rawtext) {
 			this.score = score;
 			this.teamname = teamname;
 			this.player = player;
 			this.rawtext = rawtext;
+			usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawtext);
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
 			Property scoreproperty = p.properties.get("sb-"+teamname);
 			boolean emptyBefore = scoreproperty.get().length() == 0;
-			if (scoreproperty.isUpdateNeeded() || force) {
-				String replaced = scoreproperty.get();
-				String prefix;
-				String suffix;
-				if (replaced.length() > 16) {
-					prefix = replaced.substring(0, 16);
-					suffix = replaced.substring(16, replaced.length());
-					if (prefix.toCharArray()[15] == Placeholders.colorChar) {
-						prefix = prefix.substring(0, 15);
-						suffix = Placeholders.colorChar + suffix;
-					}
-					suffix = Placeholders.getLastColors(prefix) + suffix;
-				} else {
-					prefix = replaced;
-					suffix = "";
+			if (!scoreproperty.update() && !force) return null;
+			String replaced = scoreproperty.get();
+			String prefix;
+			String suffix;
+			if (replaced.length() > 16 && p.getVersion().getMinorVersion() < 13) {
+				prefix = replaced.substring(0, 16);
+				suffix = replaced.substring(16, replaced.length());
+				if (prefix.charAt(15) == Placeholders.colorChar) {
+					prefix = prefix.substring(0, 15);
+					suffix = Placeholders.colorChar + suffix;
 				}
-				if (replaced.length() > 0) {
-					if (emptyBefore) {
-						//was "", now it is not
-						int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
-						PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, ObjectiveName, score);
-						return null;
-					} else {
-						return Arrays.asList(prefix, suffix);
-					}
-				} else {
-					if (!suppressToggle) {
-						//new string is "", but before it was not
-						PacketAPI.removeScoreboardScore(p, player, teamname);
-					}
+				suffix = Placeholders.getLastColors(prefix) + suffix;
+			} else {
+				prefix = replaced;
+				suffix = "";
+			}
+			if (replaced.length() > 0) {
+				if (emptyBefore) {
+					//was "", now it is not
+					int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
+					PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, ObjectiveName, score);
 					return null;
+				} else {
+					return Arrays.asList(prefix, suffix);
 				}
-			} else return null; //update not needed
+			} else {
+				if (!suppressToggle) {
+					//new string is "", but before it was not
+					PacketAPI.removeScoreboardScore(p, player, teamname);
+				}
+				return null;
+			}
+
 		}
 		public void register(ITabPlayer p) {
 			p.setProperty("sb-"+teamname, rawtext, null);
@@ -213,17 +223,22 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard{
 				PacketAPI.removeScoreboardScore(p, player, teamname);
 			}
 		}
-		public void unregister() {
-			players.forEach(p -> unregister(p));
+		@Override
+		public void refresh(ITabPlayer refreshed) {
+			if (!players.contains(refreshed)) return; //player has different scoreboard displayed
+			List<String> prefixsuffix = replaceText(refreshed, false, false);
+			if (prefixsuffix == null) return;
+			PacketPlayOutScoreboardTeam update = PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69);
+			update.setColor(EnumChatFormat.RESET);
+			refreshed.sendCustomPacket(update);
 		}
-		public void updatePrefixSuffix() {
-			for (ITabPlayer p : players.toArray(new ITabPlayer[0])) {
-				List<String> prefixsuffix = replaceText(p, false, false);
-				if (prefixsuffix == null) continue;
-				PacketPlayOutScoreboardTeam update = PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69);
-				update.setColor(EnumChatFormat.RESET);
-				p.sendCustomPacket(update);
-			}
+		@Override
+		public CPUFeature getRefreshCPU() {
+			return CPUFeature.SCOREBOARD_LINES;
+		}
+		@Override
+		public Set<String> getUsedPlaceholders() {
+			return usedPlaceholders;
 		}
 	}
 }

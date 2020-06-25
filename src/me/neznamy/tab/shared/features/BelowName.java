@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Set;
+
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -8,44 +10,55 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class BelowName implements Loadable, JoinEventListener {
+public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
 
-	private static final String ObjectiveName = "TAB-BelowName";
-	private static final int DisplaySlot = 2;
+	private final String ObjectiveName = "TAB-BelowName";
+	private final int DisplaySlot = 2;
+	private final String propertyName = "belowname-number";
 	
 	private String number;
 	private Property textProperty;
+	private Set<String> usedPlaceholders;
 	
-	@Override
-	public void load() {
+	public BelowName() {
 		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
-		int refresh =  Configs.config.getInt("classic-vanilla-belowname.refresh-interval-milliseconds", 200);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("BelowName", refresh);
-		textProperty = new Property(null, Configs.config.getString("classic-vanilla-belowname.text", "Health"), null);
-		for (ITabPlayer p : Shared.getPlayers()){
-			p.setProperty("belowname-number", number, null);
-			if (p.disabledBelowname) continue;
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
-		}
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing belowname", CPUFeature.BELOWNAME, new Runnable() {
-			public void run(){
-				for (ITabPlayer p : Shared.getPlayers()){
-					if (p.disabledBelowname) continue;
-					Property pr = p.properties.get("belowname-number");
-					if (pr != null && pr.isUpdateNeeded()) {
-						for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getNumber(p));
-					}
-				}
-				if (textProperty.isUpdateNeeded()) {
-					for (ITabPlayer all : Shared.getPlayers()) {
-						all.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, textProperty.get(), EnumScoreboardHealthDisplay.INTEGER));
-					}
-				}
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
+		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
+		textProperty = new Property(null, text, null);
+		Shared.registerFeature("belowname-text", new Refreshable() {
+			
+			private Set<String> usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
+			
+			@Override
+			public void refresh(ITabPlayer refreshed) {
+				if (refreshed.disabledBelowname) return;
+				refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, textProperty.updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+			}
+
+			@Override
+			public Set<String> getUsedPlaceholders() {
+				return usedPlaceholders;
+			}
+
+			@Override
+			public CPUFeature getRefreshCPU() {
+				return CPUFeature.BELOWNAME_TEXT;
 			}
 		});
+	}
+	@Override
+	public void load() {
+		for (ITabPlayer p : Shared.getPlayers()){
+			p.setProperty(propertyName, number, null);
+			if (p.disabledBelowname) continue;
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		}
 	}
 	@Override
 	public void unload() {
@@ -56,7 +69,7 @@ public class BelowName implements Loadable, JoinEventListener {
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		connectedPlayer.setProperty("belowname-number", number, null);
+		connectedPlayer.setProperty(propertyName, number, null);
 		if (connectedPlayer.disabledBelowname) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (ITabPlayer all : Shared.getPlayers()){
@@ -64,6 +77,7 @@ public class BelowName implements Loadable, JoinEventListener {
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getNumber(all));
 		}
 	}
+	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledBelowname && !p.isDisabledWorld(Configs.disabledBelowname, from)) {
 			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
@@ -77,6 +91,22 @@ public class BelowName implements Loadable, JoinEventListener {
 		onJoin(p);
 	}
 	private int getNumber(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get("belowname-number").get(), 0, "BelowName");
+		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "BelowName");
+	}
+	@Override
+	public void refresh(ITabPlayer refreshed) {
+		if (refreshed.disabledBelowname) return;
+		int number = getNumber(refreshed);
+		for (ITabPlayer all : Shared.getPlayers()) {
+			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, number);
+		}
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.BELOWNAME_NUMBER;
 	}
 }

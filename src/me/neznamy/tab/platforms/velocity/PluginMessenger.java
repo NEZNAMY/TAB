@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.Set;
+
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -11,6 +13,8 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
@@ -52,8 +56,20 @@ public class PluginMessenger{
 			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			if (pl != null) {
 				pl.lastValue.put(receiver.getName(), output);
-				pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
-				Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
+				pl.lastValue.put("null", output);
+				Set<Refreshable> update = PlaceholderManager.getPlaceholderUsage(pl.getIdentifier());
+				Shared.featureCpu.runTask("refreshing", new Runnable() {
+
+					@Override
+					public void run() {
+						for (Refreshable r : update) {
+							long startTime = System.nanoTime();
+							r.refresh(receiver);
+							Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+						}
+					}
+				});
+				Shared.bukkitBridgePlaceholderCpu.addTime(pl.getIdentifier(), cpu);
 			} else {
 				Shared.debug("Received output for unknown placeholder " + placeholder);
 			}

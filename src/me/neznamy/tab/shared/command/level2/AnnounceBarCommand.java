@@ -7,9 +7,8 @@ import java.util.List;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.BossBar.BossBarLine;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
 public class AnnounceBarCommand extends SubCommand{
 
@@ -26,22 +25,22 @@ public class AnnounceBarCommand extends SubCommand{
 				int duration;
 				try {
 					duration = Integer.parseInt(args[1]);
-					Shared.featureCpu.runMeasuredTask("announcing bossbar", CPUFeature.BOSSBAR_ANNOUNCEMENT, new Runnable() {
+					Shared.featureCpu.runTask("announcing bossbar", new Runnable() {
 
 						public void run() {
 							try {
-								BossBarLine bar = feature.getLine(barname);
+								BossBarLine bar = feature.lines.get(barname);
 								if (bar == null) {
 									sender.sendMessage("Bar not found");
 									return;
 								}
 								feature.announcements.add(barname);
 								for (ITabPlayer all : Shared.getPlayers()) {
-									feature.createBossBar(all, bar);
+									bar.create(all);
 								}
 								Thread.sleep(duration*1000);
 								for (ITabPlayer all : Shared.getPlayers()) {
-									feature.removeBossBar(all, bar);
+									bar.remove(all);
 								}
 								feature.announcements.remove(barname);
 							} catch (Exception e) {
@@ -66,10 +65,10 @@ public class AnnounceBarCommand extends SubCommand{
 		if (b == null) return new ArrayList<String>();
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 1) {
-			for (BossBarLine bar : b.lines) {
-				if (bar.getName().toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar.getName());
+			for (String bar : b.lines.keySet()) {
+				if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);
 			}
-		} else if (arguments.length == 2 && b.getLine(arguments[0]) != null){
+		} else if (arguments.length == 2 && b.lines.get(arguments[0]) != null){
 			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
 				if (time.startsWith(arguments[1])) suggestions.add(time);
 			}

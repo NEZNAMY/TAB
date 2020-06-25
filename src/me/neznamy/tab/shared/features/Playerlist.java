@@ -2,53 +2,55 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
-public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPacketListener{
+public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
 
-	public void load(){
-		int refresh = Configs.config.getInt("tablist-refresh-interval-milliseconds", 1000);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("Tablist prefix/suffix", refresh);
-		updateNames(true);
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing tablist prefix/suffix", CPUFeature.TABLIST_NAMES_1, new Runnable() {
-			public void run() {
-				updateNames(false);
-			}
-		});
+	private Set<String> usedPlaceholders;
+	
+	public Playerlist() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
 	}
+	@Override
+	public void load(){
+		for (ITabPlayer all : Shared.getPlayers()) {
+			refresh(all);
+		}
+	}
+	@Override
 	public void unload(){
-		updateNames(true);
+		updateNames();
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (!Configs.disabledTablistNames.contains("NORESET")) updatePlayerListName(p);
+		refresh(p);
 	}
-	private void updateNames(boolean force){
+	private void updateNames(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (ITabPlayer p : Shared.getPlayers()) {
-			if (!p.disabledTablistNames && (isListNameUpdateNeeded(p) || force)) updatedPlayers.add(p.getInfoData());
+			if (!p.disabledTablistNames) updatedPlayers.add(p.getInfoData());
 		}
-		if (!updatedPlayers.isEmpty()) {
-			for (ITabPlayer all : Shared.getPlayers()) {
-				all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), all.getVersion()));
-			}
+		for (ITabPlayer all : Shared.getPlayers()) {
+			all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), all.getVersion()));
 		}
 	}
 	@Override
@@ -86,22 +88,6 @@ public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPack
 	public CPUFeature getCPUName() {
 		return CPUFeature.TABLIST_NAMES_2;
 	}
-	
-	public boolean isListNameUpdateNeeded(ITabPlayer p) {
-		p.getGroup();
-		boolean tabprefix = p.properties.get("tabprefix").isUpdateNeeded();
-		boolean customtabname = p.properties.get("customtabname").isUpdateNeeded();
-		boolean tabsuffix = p.properties.get("tabsuffix").isUpdateNeeded();
-		return (tabprefix || customtabname || tabsuffix);
-	}
-
-	public void updatePlayerListName(ITabPlayer p) {
-		isListNameUpdateNeeded(p); //triggering updates to replaced values
-		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, p.getInfoData()), all.getVersion()));
-		}
-	}
-
 	public IChatBaseComponent getTabFormat(ITabPlayer p, ITabPlayer viewer) {
 		Property prefix = p.properties.get("tabprefix");
 		Property name = p.properties.get("customtabname");
@@ -111,17 +97,44 @@ public class Playerlist implements Loadable, WorldChangeListener, PlayerInfoPack
 			return null;
 		}
 		String format;
-		if (Premium.allignTabsuffix) {
-			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(p, prefix.get() + name.get(), suffix.get());
+		if (Premium.alignTabsuffix) {
+			format = ((AlignedSuffix)Shared.features.get("alignedsuffix")).fixTextWidth(p, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
 		} else {
-			format = prefix.get() + name.get() + suffix.get();
+			format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 		}
-		String text = (prefix.hasRelationalPlaceholders() || name.hasRelationalPlaceholders() || suffix.hasRelationalPlaceholders()) ? PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, p, format) : format;
 		if (viewer.getVersion().getMinorVersion() >= 9) {
-			return IChatBaseComponent.fromColoredText(text);
+			if (format.contains("#")) {
+				return IChatBaseComponent.fromColoredText(format);
+			} else {
+				return new IChatBaseComponent(format);
+			}
 		} else {
 			//fucking lunar client
-			return new IChatBaseComponent(new IChatBaseComponent(text).toColoredText());
+			return new IChatBaseComponent(new IChatBaseComponent(format).toColoredText());
 		}
+	}
+	@Override
+	public void refresh(ITabPlayer refreshed) {
+		if (refreshed.disabledTablistNames) return;
+		boolean prefix = refreshed.properties.get("tabprefix").update();
+		boolean name = refreshed.properties.get("customtabname").update();
+		boolean suffix = refreshed.properties.get("tabsuffix").update();
+		if (prefix || name || suffix) {
+			for (ITabPlayer all : Shared.getPlayers()) {
+				all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()), all.getVersion()));
+			}
+		}
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.TABLIST_NAMES_1;
+	}
+	@Override
+	public void onJoin(ITabPlayer connectedPlayer) {
+		refresh(connectedPlayer);
 	}
 }

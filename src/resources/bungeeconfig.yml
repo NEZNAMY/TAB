@@ -18,10 +18,6 @@ global-playerlist:
       - server1
       - server2
 
-nametag-refresh-interval-milliseconds: 1000
-tablist-refresh-interval-milliseconds: 1000
-header-footer-refresh-interval-milliseconds: 100
-
 header:
   - "&3&lServer name"
   - "&6&lRank: %rank%"
@@ -72,7 +68,6 @@ Users:
     tagprefix: "&6&lTAB &r&a"
 classic-vanilla-belowname:
   enabled: true
-  refresh-interval-milliseconds: 200
   number: "%ping%"
   text: "&aPing"
 

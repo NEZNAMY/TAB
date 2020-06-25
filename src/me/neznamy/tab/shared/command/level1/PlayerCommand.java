@@ -11,9 +11,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class PlayerCommand extends SubCommand {
 	
-	private static final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
-	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
-	
 	public PlayerCommand() {
 		super("player", null);
 	}
@@ -72,7 +69,7 @@ public class PlayerCommand extends SubCommand {
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
-	public static void savePlayer(ITabPlayer sender, String player, String type, String value){
+	public void savePlayer(ITabPlayer sender, String player, String type, String value){
 		ITabPlayer pl = Shared.getPlayer(player);
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player + "." + type, value);

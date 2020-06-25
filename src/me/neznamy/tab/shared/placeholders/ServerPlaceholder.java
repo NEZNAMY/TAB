@@ -1,29 +1,32 @@
 package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Shared;
 
 public abstract class ServerPlaceholder extends Placeholder{
 
-	private long lastRefresh;
-	private String lastValue;
+	private String lastValue = "";
 
 	public ServerPlaceholder(String identifier, int cooldown) {
 		super(identifier, cooldown);
 	}
-	public abstract String get();
-	
-	@Override
-	protected String getValue(ITabPlayer p) {
-		long startTime = System.nanoTime();
-		if (System.currentTimeMillis() - lastRefresh >= cooldown) {
-			String value = get();
-			if (value == null || !value.equals("ERROR")) {
-				lastValue = value;
-			}
-			lastRefresh = System.currentTimeMillis();
+	public boolean update() {
+		String newValue = get();
+		if (newValue == null) newValue = "";
+		if (!newValue.equals("ERROR") && !lastValue.equals(newValue)) {
+			lastValue = newValue;
+			return true;
 		}
-		Shared.placeholderCpu.addTime(this, System.nanoTime()-startTime);
+		return false;
+	}
+	public String getLastValue() {
 		return lastValue;
 	}
+	@Override
+	public String getLastValue(ITabPlayer p) {
+		return lastValue;
+	}
+	public String get(ITabPlayer p) {
+		return get();
+	}
+	public abstract String get();
 }

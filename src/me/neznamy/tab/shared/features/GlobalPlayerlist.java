@@ -85,6 +85,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 	}
+	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {

@@ -12,14 +12,14 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.BossBar.BossBarLine;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 public class BossBar_legacy implements Listener, Loadable, WorldChangeListener{
 
-	private static final int WITHER_DISTANCE = 50;
+	private final int WITHER_DISTANCE = 50;
 
 	private BossBar mainFeature;
 	
@@ -29,12 +29,12 @@ public class BossBar_legacy implements Listener, Loadable, WorldChangeListener{
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
-		//bar disappears in client after 1 second of not seeing boss entity
+		//bar disappears in client after ~1 second of not seeing boss entity
 		Shared.featureCpu.startRepeatingMeasuredTask(900, "refreshing bossbar", CPUFeature.BOSSBAR_LEGACY, new Runnable() {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.getEntity(), getWitherLocation(all)));
+						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.nmsEntity, getWitherLocation(all)));
 					}
 				}
 			}

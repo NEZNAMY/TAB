@@ -10,52 +10,58 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 
-public class TabExpansion implements Loadable{
-
-	private PlaceholderExpansion exp;
+public class TabExpansion extends PlaceholderExpansion implements Loadable{
 
 	@Override
 	public void load() {
-		exp = new PlaceholderExpansion() {
-
-			public boolean persist(){
-				return true;
-			}
-			public boolean canRegister(){
-				return true;
-			}
-			public String getAuthor(){
-				return Main.instance.getDescription().getAuthors().toString();
-			}
-			public String getIdentifier(){
-				return "tab";
-			}
-			public String getVersion(){
-				return Main.instance.getDescription().getVersion();
-			}
-			public String onPlaceholderRequest(Player player, String identifier){
-				if (player == null) return "";
-				ITabPlayer p = Shared.getPlayer(player.getUniqueId());
-				if (p == null) return "";
-				for (EnumProperty property : EnumProperty.values()) {
-					if (identifier.equals(property.toString())) {
-						return p.properties.get(property.toString()).lastReplacedValue;
-					}
-					if (identifier.equals(property.toString() + "_raw")) {
-						return p.properties.get(property.toString()).getCurrentRawValue();
-					}
-				}
-				return null;
-			}
-		};
-		exp.register();
+		register();
 	}
 	@Override
 	public void unload() {
 		try {
-			PlaceholderAPI.unregisterExpansion(exp);
+			PlaceholderAPI.unregisterExpansion(this);
 		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
 			// java.lang.IllegalStateException: ExpansionUnregisterEvent may only be triggered synchronously.
 		}
+	}
+	@Override
+	public boolean persist(){
+		return true;
+	}
+
+	@Override
+	public boolean canRegister(){
+		return true;
+	}
+
+	@Override
+	public String getAuthor(){
+		return Main.instance.getDescription().getAuthors().toString();
+	}
+
+	@Override
+	public String getIdentifier(){
+		return "tab";
+	}
+
+	@Override
+	public String getVersion(){
+		return Main.instance.getDescription().getVersion();
+	}
+
+	@Override
+	public String onPlaceholderRequest(Player player, String identifier){
+		if (player == null) return "";
+		ITabPlayer p = Shared.getPlayer(player.getUniqueId());
+		if (p == null) return "";
+		for (EnumProperty property : EnumProperty.values()) {
+			if (identifier.equals(property.toString())) {
+				return p.properties.get(property.toString()).lastReplacedValue;
+			}
+			if (identifier.equals(property.toString() + "_raw")) {
+				return p.properties.get(property.toString()).getCurrentRawValue();
+			}
+		}
+		return null;
 	}
 }

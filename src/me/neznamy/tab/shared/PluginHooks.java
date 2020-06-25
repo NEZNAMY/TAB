@@ -312,22 +312,19 @@ public class PluginHooks {
 			return "ERROR";
 		}
 	}
-	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String text) {
-		if (!placeholderAPI) return text;
+	public static String PlaceholderAPI_setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String placeholder) {
+		if (!placeholderAPI) return placeholder;
 		try {
-			long startTime = System.nanoTime();
-			String value = PlaceholderAPI.setRelationalPlaceholders(viewer.getBukkitEntity(), target.getBukkitEntity(), text);
-			Shared.placeholderCpu.addTime("PlaceholderAPI-Relational", System.nanoTime()-startTime);
-			return value;
+			return PlaceholderAPI.setRelationalPlaceholders(viewer.getBukkitEntity(), target.getBukkitEntity(), placeholder);
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
-				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational text " + text + " for viewer " + viewer.getName() + " and target " + target.getName(), t);
+				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting relational placeholder " + placeholder + " for viewer " + viewer.getName() + " and target " + target.getName(), t, false, Configs.papiErrorFile);
 			} else {
 				placeholderAPI = false;
 			}
 		}
-		return text;
+		return placeholder;
 	}
 	public static int PremiumVanish_getVisiblePlayerCount() {
 		try {
@@ -389,7 +386,7 @@ public class PluginHooks {
 	}
 	public static double Vault_getMoney(ITabPlayer p) {
 		try {
-			return me.neznamy.tab.platforms.bukkit.Main.Vault_getMoney(p); //preventing errors on bungee version
+			return me.neznamy.tab.platforms.bukkit.Main.instance.Vault_getMoney(p); //preventing errors on bungee version
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(0, "Failed to get money of " + p.getName() + " using Vault", e);
 		}

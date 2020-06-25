@@ -13,9 +13,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -24,6 +26,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 @SuppressWarnings("unchecked")
@@ -261,5 +264,34 @@ public class ConfigurationFile{
 			Shared.errorManager.criticalError("Failed to read file " + file, ex);
 		}
 		return list;
+	}
+	public Set<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
+		Set<String> base = getUsedPlaceholders(values, simpleKeys);
+		for (String placeholder : base.toArray(new String[0])) {
+			List<Placeholder> pl = Placeholders.detectPlaceholders(placeholder);
+			for (Placeholder p : pl) {
+				base.add(p.getIdentifier());
+			}
+		}
+		return base;
+	}
+	private Set<String> getUsedPlaceholders(Map<String, Object> map, String... simpleKeys){
+		Set<String> values = new HashSet<String>();
+		for (Entry<String, Object> entry : map.entrySet()) {
+			for (String simpleKey : simpleKeys) {
+				if (entry.getKey().equals(simpleKey)) values.addAll(Placeholders.detectAll(entry.getValue().toString()));
+			}
+			if (entry.getValue() instanceof Map) {
+				values.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
+			}
+			if (entry.getValue() instanceof List) {
+				for (Object obj : (List<Object>)entry.getValue()) {
+					for (String simpleKey : simpleKeys) {
+						if (obj.toString().equals(simpleKey)) values.addAll(Placeholders.detectAll(entry.getValue().toString()));
+					}
+				}
+			}
+		}
+		return values;
 	}
 }

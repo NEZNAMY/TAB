@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import java.io.File;
 import java.util.ConcurrentModificationException;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 
@@ -11,7 +12,7 @@ import me.neznamy.tab.shared.Shared;
 
 public class ExpansionDownloader{
 
-	public ExpansionDownloader() {
+	public ExpansionDownloader(Set<String> expansions) {
 		Main instance = Main.instance;
 		Bukkit.getScheduler().runTaskLater(instance, new Runnable() {
 
@@ -23,14 +24,14 @@ public class ExpansionDownloader{
 					public void run() {
 						try {
 							Thread.sleep(5000);
-							Shared.debug("All used expansions: " + Main.usedExpansions);
+							Shared.debug("All used expansions: " + expansions);
 							Shared.debug("Installed expansions: " + PlaceholderAPI.getRegisteredIdentifiers());
-							Main.usedExpansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-							Shared.debug("Expansions to install: " + Main.usedExpansions);
-							if (!Main.usedExpansions.isEmpty()) {
+							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+							Shared.debug("Expansions to install: " + expansions);
+							if (!expansions.isEmpty()) {
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
-								for (String expansion : Main.usedExpansions) {
+								for (String expansion : expansions) {
 									instance.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
 									runSyncCommand("papi ecloud download " + expansion);
 									Thread.sleep(5000);

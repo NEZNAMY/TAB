@@ -92,7 +92,7 @@ public abstract class MethodAPI {
 
 	static {
 		try {
-			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.serverPackage).getConstructor().newInstance();
+			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.instance.serverPackage).getConstructor().newInstance();
 			PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
 			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 			PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(PacketPlayOutNamedEntitySpawn).get("a");

@@ -115,20 +115,6 @@ animations:
     texts:
       - "&aPing: &2&n%ping%&r &ams"
       - "&bServer TPS: &8%tps%"
-  versions:
-    change-interval: 1000
-    texts:
-      - "Online players with MC 1.15.x : %version-group:1-15-x%"
-      - "Online players with MC 1.14.x : %version-group:1-14-x%"
-      - "Online players with MC 1.13.x : %version-group:1-13-x%"
-      - "Online players with MC 1.12.x : %version-group:1-12-x%"
-      - "Online players with MC 1.11.x : %version-group:1-11-x%"
-      - "Online players with MC 1.10.x : %version-group:1-10-x%"
-      - "Online players with MC 1.9.x : %version-group:1-9-x%"
-      - "Online players with MC 1.8.x : %version-group:1-8-x%"
-      - "Online players with MC 1.7.x : %version-group:1-7-x%"
-      - "Online players with MC 1.6.x : %version-group:1-6-x%"
-      - "Online players with MC 1.5.x : %version-group:1-5-x%"
   admin_prefix:
     change-interval: 1000
     texts:

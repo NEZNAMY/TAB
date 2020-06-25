@@ -50,7 +50,7 @@ import net.minecraft.server.v1_8_R1.WatchableObject;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class MethodAPI_v1_8_R1 extends MethodAPI {
 
-	private static final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class, Channel.class).get(0);
+	private final Field CHANNEL = PacketPlayOut.getFields(NetworkManager.class, Channel.class).get(0);
 	
 	public MethodAPI_v1_8_R1() {
 		DataWatcher = DataWatcher.class;

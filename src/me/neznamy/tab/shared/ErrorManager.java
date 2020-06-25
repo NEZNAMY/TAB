@@ -301,8 +301,10 @@ public class ErrorManager {
 	private String checkForIndent(List<String> lines) {
 		int lineId = -1;
 		for (String line : lines) {
-			line = line.split("#")[0];
 			lineId++;
+			if (line.isEmpty()) continue;
+			if (line.startsWith("#")) continue;
+			line = line.split("#")[0];
 			if (line.length() == 0 || line.replace(" ", "").length() == 0 || isComment(line)) continue;
 			int currentLineIndent = getIndentCount(line);
 			String prevLine = lineId == 0 ? "" : lines.get(lineId-1);

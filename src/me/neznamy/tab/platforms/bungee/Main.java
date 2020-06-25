@@ -17,6 +17,7 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -27,9 +28,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.BossBar;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -37,6 +38,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -111,7 +113,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	public void onDisable() {
 		if (!Shared.disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) ((Channel) p.getChannel()).pipeline().remove(Shared.DECODER_NAME);
+			for (ITabPlayer p : Shared.getPlayers()) p.channel.pipeline().remove(Shared.DECODER_NAME);
 			Shared.unload();
 		}
 	}
@@ -149,6 +151,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				inject(p.getUniqueId());
 				Shared.joinListeners.forEach(f -> f.onJoin(p));
+				p.onJoinFinished = true;
 			} else {
 				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				p.onWorldChange(p.getWorldName(), p.world = e.getPlayer().getServer().getInfo().getName());
@@ -170,7 +173,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 	}
 	private void inject(UUID uuid) {
-		Channel channel = (Channel) Shared.getPlayer(uuid).getChannel();
+		Channel channel = Shared.getPlayer(uuid).channel;
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
@@ -179,7 +182,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				ITabPlayer player = Shared.getPlayer(uuid);
-				if (player == null || player.getVersion() == ProtocolVersion.UNKNOWN) {
+				if (player == null) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
@@ -195,28 +198,30 @@ public class Main extends Plugin implements Listener, MainClass{
 							packet = (info == null ? null : info.toBungee(player.getVersion()));
 						}
 					}
-					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
-						if (killPacket((Team) packet)) return;
-					}
-					if (packet instanceof ByteBuf && Shared.features.containsKey("nametag16")) {
-						ByteBuf buf = ((ByteBuf) packet).duplicate();
-						if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
-							Team team = new Team();
-							team.read(buf, null, player.getVersion().getNetworkId());
-							if (killPacket(team)) return;
+					if (Shared.features.containsKey("nametag16")) {
+						if (packet instanceof Team) {
+							if (killPacket((Team) packet)) return;
 						}
-					}
-					if (packet instanceof Login) {
-						//registering all teams again because client reset packet is sent
-						Shared.featureCpu.runTaskLater(100, "Reapplying nametags", CPUFeature.NAMETAG_WATERFALLFIX, new Runnable() {
-
-							@Override
-							public void run() {
-								for (ITabPlayer all : Shared.getPlayers()) {
-									all.registerTeam(player);
-								}
+						if (packet instanceof ByteBuf) {
+							ByteBuf buf = ((ByteBuf) packet).duplicate();
+							if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
+								Team team = new Team();
+								team.read(buf, null, player.getVersion().getNetworkId());
+								if (killPacket(team)) return;
 							}
-						});
+						}
+						if (packet instanceof Login) {
+							//registering all teams again because client reset packet is sent
+							Shared.featureCpu.runTaskLater(100, "Reapplying nametags", CPUFeature.NAMETAG_WATERFALLFIX, new Runnable() {
+
+								@Override
+								public void run() {
+									for (ITabPlayer all : Shared.getPlayers()) {
+										all.registerTeam(player);
+									}
+								}
+							});
+						}
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
@@ -302,10 +307,11 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();
 			Shared.registerFeature("playerlist", playerlist);
-			if (Premium.allignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		Shared.registerFeature("group-refresh", new GroupRefresher());
 		new UpdateChecker();
 		
 		for (ProxiedPlayer p : getProxy().getPlayers()) {
@@ -335,11 +341,19 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
+		SortingType.INSTANCE = SortingType.GROUPS;
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
+			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
+			if (plugin.equals("some")) return;
 			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
-			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, 49){
+			PlaceholderManager pl = ((PlaceholderManager)Shared.features.get("placeholders"));
+			int cooldown = 100;
+			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
+			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			if (pl.serverConstantList.contains(identifier)) cooldown = 9999999;
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(ITabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
 					String name;
@@ -372,6 +386,10 @@ public class Main extends Plugin implements Listener, MainClass{
 			}
 			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
 			rename(config, "belowname", "classic-vanilla-belowname");
+			removeOld(config, "nametag-refresh-interval-milliseconds");
+			removeOld(config, "tablist-refresh-interval-milliseconds");
+			removeOld(config, "header-footer-refresh-interval-milliseconds");
+			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
@@ -407,6 +425,10 @@ public class Main extends Plugin implements Listener, MainClass{
 			if (scoreboardsConverted) {
 				Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 			}
+			removeOld(config, "scoreboard.refresh-interval-milliseconds");
+		}
+		if (config.getName().equals("bossbar.yml")) {
+			removeOld(config, "refresh-interval-milliseconds");
 		}
 	}
 	@Override

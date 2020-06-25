@@ -5,7 +5,8 @@ import me.neznamy.tab.platforms.bukkit.Main;
 public enum ProtocolVersion {
 
 	UNKNOWN		(999, "Unknown"),
-	v1_16_pre7	(732, "1.16-pre7"),
+	v1_16_1		(736, "1.16.1"),
+	v1_16		(735, "1.16"),
 	v1_15_2		(578, "1.15.2"),
 	v1_15_1		(575, "1.15.1"),
 	v1_15		(573, "1.15"),
@@ -60,9 +61,9 @@ public enum ProtocolVersion {
 		this.friendlyName = friendlyName;
 		if (toString().equals("UNKNOWN")) {
 			try {
-				minorVersion = Integer.parseInt(Main.serverPackage.split("_")[1]);
+				minorVersion = Integer.parseInt(Main.instance.serverPackage.split("_")[1]);
 			} catch (Throwable t) {
-				minorVersion = 15;
+				minorVersion = 16;
 			}
 		} else {
 			minorVersion = Integer.parseInt(toString().split("_")[1]);

@@ -11,9 +11,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class GroupCommand extends SubCommand {
 	
-	private static final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
-	private static final String[] extraProperties = {"abovename", "belowname", "customtagname"};
-	
 	public GroupCommand() {
 		super("group", null);
 	}

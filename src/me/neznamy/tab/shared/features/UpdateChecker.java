@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.Shared;
 
 public class UpdateChecker {
 
-	private static final int currentVersionId = 277;
+	private final int currentVersionId = 277;
 	
 	public UpdateChecker() {
 		new Thread(new Runnable() {
@@ -33,7 +33,7 @@ public class UpdateChecker {
 						}
 					}
 				} catch (Exception e) {
-					Shared.debug("&a[TAB] Failed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+					Shared.debug("&cFailed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 				}
 			}
 		}).start();

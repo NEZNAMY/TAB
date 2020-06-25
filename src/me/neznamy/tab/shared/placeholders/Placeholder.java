@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.Shared;
 
 public abstract class Placeholder {
 
-	protected int cooldown;
+	public int cooldown;
 	protected String identifier;
 	private Map<String, Object> replacements = new HashMap<String, Object>();
 	private List<String> outputPlaceholders = new ArrayList<String>();
@@ -41,7 +41,7 @@ public abstract class Placeholder {
 	}
 	public String set(String s, ITabPlayer p) {
 		try {
-			String value = getValue(p);
+			String value = getLastValue(p);
 			if (value == null) value = "";
 			value = Placeholders.color(value);
 			String newValue = setPlaceholders(findReplacement(value, p), p);
@@ -82,5 +82,5 @@ public abstract class Placeholder {
 		}
 		return text;
 	}
-	protected abstract String getValue(ITabPlayer p);
+	public abstract String getLastValue(ITabPlayer p);
 }

@@ -48,7 +48,6 @@ scoreboard:
     - disabledworld
   #set to NONE to have no default scoreboard
   default-scoreboard: "admin"
-  refresh-interval-milliseconds: 50
   per-world:
     testworld: "twscoreboard"
   

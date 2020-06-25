@@ -1,56 +1,59 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Set;
+
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
-public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener{
+public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
+	private Set<String> usedPlaceholders;
+	
+	public HeaderFooter() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
+	}
 	@Override
 	public void load() {
-		int refresh = Configs.config.getInt("header-footer-refresh-interval-milliseconds", 100);
-		if (refresh < 50) Shared.errorManager.refreshTooLow("Header/Footer", refresh);
-		for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, true);
-		Shared.featureCpu.startRepeatingMeasuredTask(refresh, "refreshing header/footer", CPUFeature.HEADER_FOOTER, new Runnable(){
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) refreshHeaderFooter(p, false);
-			}
-		});
+		for (ITabPlayer p : Shared.getPlayers()) refresh(p);
 	}
 	@Override
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
-			if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < ProtocolVersion.v1_8.getMinorVersion()) continue;
+			if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 		}
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		refreshHeaderFooter(connectedPlayer, true);
+		refresh(connectedPlayer);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (p.getVersion().getMinorVersion() < ProtocolVersion.v1_8.getMinorVersion()) return;
+		if (p.getVersion().getMinorVersion() < 8) return;
 		if (p.disabledHeaderFooter) {
-			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from))
-				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
+			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
 		} else {
-			refreshHeaderFooter(p, true);
+			refresh(p);
 		}
 	}
-	public void refreshHeaderFooter(ITabPlayer p, boolean force) {
-		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < ProtocolVersion.v1_8.getMinorVersion()) return;
-		Property headerp = p.properties.get("header");
-		Property footerp = p.properties.get("footer");
-		boolean header = headerp.isUpdateNeeded();
-		boolean footer = footerp.isUpdateNeeded();
-		if (header || footer || force) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(headerp.get(), footerp.get()));
+	@Override
+	public void refresh(ITabPlayer p) {
+		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").updateAndGet(), p.properties.get("footer").updateAndGet()));
+	}
+	@Override
+	public Set<String> getUsedPlaceholders() {
+		return usedPlaceholders;
+	}
+	@Override
+	public CPUFeature getRefreshCPU() {
+		return CPUFeature.HEADER_FOOTER;
 	}
 }

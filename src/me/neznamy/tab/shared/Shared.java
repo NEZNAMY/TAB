@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -30,19 +32,20 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.7.8-pre9";
+	public static final String pluginVersion = "2.8.0";
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	
-	public static final Map<String, Object> features = new ConcurrentHashMap<String, Object>();
-	public static final List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
-	public static final List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
-	public static final List<Loadable> loadableFeatures = new ArrayList<Loadable>();
-	public static final List<JoinEventListener> joinListeners = new ArrayList<JoinEventListener>();
-	public static final List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
-	public static final List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
-	public static final List<CommandListener> commandListeners = new ArrayList<CommandListener>();
+	public static Map<String, Object> features = new ConcurrentHashMap<String, Object>();
+	public static List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
+	public static List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
+	public static List<Loadable> loadableFeatures = new ArrayList<Loadable>();
+	public static List<JoinEventListener> joinListeners = new ArrayList<JoinEventListener>();
+	public static List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
+	public static List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
+	public static List<CommandListener> commandListeners = new ArrayList<CommandListener>();
+	public static List<Refreshable> refreshables = new ArrayList<Refreshable>();
 	
 	public static boolean disabled;
 	public static MainClass mainClass;
@@ -99,6 +102,7 @@ public class Shared {
 			Configs.loadFiles();
 			mainClass.loadFeatures(inject);
 			loadableFeatures.forEach(f -> f.load());
+			getPlayers().forEach(p -> p.onJoinFinished = true);
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {
@@ -117,13 +121,15 @@ public class Shared {
 			placeholderCpu.cancelAllTasks();
 			bukkitBridgePlaceholderCpu.cancelAllTasks();
 			loadableFeatures.forEach(f -> f.unload());
-			loadableFeatures.clear();
-			playerInfoListeners.clear();
-			rawpacketfeatures.clear();
-			joinListeners.clear();
-			quitListeners.clear();
-			worldChangeListeners.clear();
-			features.clear();
+			loadableFeatures = new ArrayList<>();
+			playerInfoListeners = new ArrayList<>();
+			rawpacketfeatures = new ArrayList<>();
+			joinListeners = new ArrayList<>();
+			quitListeners = new ArrayList<>();
+			worldChangeListeners = new ArrayList<>();
+			commandListeners = new ArrayList<>();
+			refreshables = new ArrayList<>();
+			features = new HashMap<>();
 			data.clear();
 			entityIdMap.clear();
 			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -153,6 +159,9 @@ public class Shared {
 		}
 		if (featureHandler instanceof CommandListener) {
 			commandListeners.add((CommandListener) featureHandler);
+		}
+		if (featureHandler instanceof Refreshable) {
+			refreshables.add((Refreshable) featureHandler);
 		}
 	}
 }

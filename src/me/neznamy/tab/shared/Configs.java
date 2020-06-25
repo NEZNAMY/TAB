@@ -4,12 +4,9 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
@@ -84,81 +81,15 @@ public class Configs {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
+		Placeholders.usedPlaceholders.clear();
 		loadConfig();
-		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30f);
-		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
-		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
-		SECRET_safe_register = getSecretOption("safe-team-register", true);
-		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
-		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
-		SECRET_debugMode = getSecretOption("debug", false);
-		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
-		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
 		if (Premium.is()) {
 			Premium.loadPremiumConfig();
-			checkAnimations(Premium.premiumconfig.getValues());
 		}
-		checkAnimations(config.getValues());
-		checkAnimations(bossbar.getValues());
 		Shared.mainClass.suggestPlaceholders();
-	}
-	@SuppressWarnings("unchecked")
-	private static void checkAnimations(Map<?, Object> values) {
-		try {
-			for (Entry<?, Object> entry : values.entrySet()) {
-				String key = entry.getKey()+"";
-				Object value = entry.getValue();
-				if (value instanceof String || value instanceof List) {
-					if (config.getBoolean("enable-header-footer", true)) {
-						int refresh = config.getInt("header-footer-refresh-interval-milliseconds", 100);
-						checkAnimation(key, "header", value, "header", refresh);
-						checkAnimation(key, "footer", value, "footer", refresh);
-					}
-					if (config.getBoolean("change-nametag-prefix-suffix", true)) {
-						int refresh = config.getInt("nametag-refresh-interval-milliseconds", 1000);
-						checkAnimation(key, "tagprefix", value, "tagprefix", refresh);
-						checkAnimation(key, "tagsuffix", value, "tagsuffix", refresh);
-					}
-					if (config.getBoolean("change-tablist-prefix-suffix", true)) {
-						int refresh = config.getInt("tablist-refresh-interval-milliseconds", 1000);
-						checkAnimation(key, "tabprefix", value, "tabprefix", refresh);
-						checkAnimation(key, "tabsuffix", value, "tabsuffix", refresh);
-					}
-					if (Premium.is()) {
-						int refresh = Premium.premiumconfig.getInt("scoreboard.refresh-interval-milliseconds", 50);
-						checkAnimation(key, "title", value, "scoreboard title", refresh);
-						checkAnimation(key, "lines", value, "scoreboard", refresh);
-					}
-					if (BossBarEnabled) {
-						int refresh = bossbar.getInt("refresh-interval-milliseconds", 1000);
-						checkAnimation(key, "style", value, "bossbar style", refresh);
-						checkAnimation(key, "color", value, "bossbar color", refresh);
-						checkAnimation(key, "progress", value, "bossbar progress", refresh);
-						checkAnimation(key, "text", value, "bossbar text", refresh);
-					}
-				}
-				if (value instanceof Map) checkAnimations((Map<String, Object>) value);
-			}
-		} catch (ConcurrentModificationException e) {
-			//one of the .getInt methods inserted that missing configuration option which results in concurrent modification
-			//ignoring the entire check, default values are usually correct and users will eventually see warning on next startup
-		}
-	}
-	private static void checkAnimation(String key, String searching, Object value, String position, int refresh) {
-		if (key.contains(searching)) {
-			for (Animation a : animations) {
-				if (value.toString().contains("%animation:" + a.getName() + "%")){
-					if (a.getInterval() < refresh) {
-						Shared.errorManager.startupWarn("Animation &e\"" + a.getName() + "\" &cused in " + position + " is refreshing faster (every &e" + a.getInterval() + "ms&c) than " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
-					} else if (a.getInterval() % refresh != 0) {
-						Shared.errorManager.startupWarn("Animation &e\"" + a.getName() + "\" &cused in " + position + " has refresh (every &e" + a.getInterval() + "ms&c) not divisible by refresh of " + position + " (every &e" + refresh + "ms&c). This will result in animation skipping frames !");
-					}
-				}
-			}
-		}
 	}
 	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
@@ -190,6 +121,16 @@ public class Configs {
 		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-objective", Arrays.asList("disabled" + Shared.separatorType));
 		disabledBossbar = config.getStringList("disable-features-in-"+Shared.separatorType+"s.bossbar", Arrays.asList("disabled" + Shared.separatorType));
 		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
+		
+		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30f);
+		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
+		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
+		SECRET_safe_register = getSecretOption("safe-team-register", true);
+		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
+		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
+		SECRET_debugMode = getSecretOption("debug", false);
+		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
+		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new ConfigurationFile("animations.yml", null);

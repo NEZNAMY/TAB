@@ -4,8 +4,8 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.BossBar;
-import me.neznamy.tab.shared.features.BossBar.BossBarLine;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class BossBarCommand extends SubCommand{
@@ -32,7 +32,7 @@ public class BossBarCommand extends SubCommand{
 				}
 			} else {
 				for (BossBarLine line : sender.activeBossBars) {
-					bossbar.removeBossBar(sender, line);
+					line.remove(sender);
 				}
 				sender.activeBossBars.clear();
 				sender.sendMessage(Configs.bossbar_off);

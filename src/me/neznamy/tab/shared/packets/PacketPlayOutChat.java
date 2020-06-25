@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
+import java.util.UUID;
+
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Chat;
@@ -35,10 +37,12 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		}
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new Chat(message.toString(clientVersion), type.getId());
+		Chat chat = new Chat(message.toString(clientVersion), type.getId());
+		chat.setSender(UUID.randomUUID()); //might kick the client if null, not tested
+		return chat;
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(clientVersion), type.getId());
+		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(clientVersion), type.getId(), UUID.randomUUID());
 	}
 	
 	public enum ChatMessageType{

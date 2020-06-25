@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +29,10 @@ public class Placeholders {
 	
 	//plugin internals + PAPI + API
 	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
+	public static Map<String, RelationalPlaceholder> registeredRelationalPlaceholders = new HashMap<String, RelationalPlaceholder>();
 
+	public static List<Placeholder> usedPlaceholders = new ArrayList<Placeholder>();
+	
 	public static Collection<Placeholder> getAllPlaceholders(){
 		return registeredPlaceholders.values();
 	}
@@ -44,6 +49,16 @@ public class Placeholders {
 		return placeholders;
 	}
 
+	public static Set<String> getUsedPlaceholderIdentifiersRecursive(String line){
+		Set<String> base = new HashSet<String>(detectAll(line));
+		for (String placeholder : base.toArray(new String[0])) {
+			List<Placeholder> pl = detectPlaceholders(placeholder);
+			for (Placeholder p : pl) {
+				base.add(p.getIdentifier());
+			}
+		}
+		return base;
+	}
 	//code taken from bukkit, so it can work on bungee too
 	public static String color(String textToTranslate){
 		if (textToTranslate == null) return null;
@@ -89,6 +104,16 @@ public class Placeholders {
 			}
 		}
 		return placeholdersTotal;
+	}
+	public static List<RelationalPlaceholder> detectRelationalPlaceholders(String rawValue) {
+		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<RelationalPlaceholder>();
+		List<RelationalPlaceholder> placeholders = new ArrayList<RelationalPlaceholder>();
+		for (String identifier : registeredRelationalPlaceholders.keySet()) {
+			if (rawValue.contains(identifier)) {
+				placeholders.add(registeredRelationalPlaceholders.get(identifier));
+			}
+		}
+		return placeholders;
 	}
 	@SuppressWarnings("unchecked")
 	public static void findAllUsed(Object object) {
@@ -201,7 +226,7 @@ public class Placeholders {
 				return p.getVersion().getFriendlyName();
 			}
 		});
-		for (int i=5; i<=15; i++) {
+		for (int i=5; i<=20; i++) {
 			final int version = i;
 			registerPlaceholder(new ServerPlaceholder("%version-group:1-" + version + "-x%", 1000) {
 				public String get() {
@@ -229,19 +254,23 @@ public class Placeholders {
 			categorizeUsedPlaceholder(placeholder);
 		}
 	}
-	public static void categorizeUsedPlaceholder(String placeholder) {
-		if (placeholder.contains("%rel_")) return; //relational placeholders are something else
+	public static void categorizeUsedPlaceholder(String identifier) {
+		if (identifier.startsWith("%rel_")) {
+			if (registeredRelationalPlaceholders.containsKey(identifier)) return;
+			Shared.mainClass.registerUnknownPlaceholder(identifier);
+		}
 
-		if (registeredPlaceholders.containsKey(placeholder)) {
+		if (registeredPlaceholders.containsKey(identifier)) {
+			if (!(registeredPlaceholders.get(identifier) instanceof ServerConstant)) usedPlaceholders.add(registeredPlaceholders.get(identifier));
 			return;
 		}
 		
-		if (placeholder.contains("animation:")) {
+		if (identifier.contains("animation:")) {
 			//animation
-			String animationName = placeholder.substring(11, placeholder.length()-1);
+			String animationName = identifier.substring(11, identifier.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()-1) {
+					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()) {
 						public String get() {
 							return a.getMessage();
 						}
@@ -249,7 +278,7 @@ public class Placeholders {
 						public String[] getChilds(){
 							return a.getAllMessages();
 						}
-					});
+					}, true);
 					return;
 				}
 			}
@@ -257,10 +286,17 @@ public class Placeholders {
 			return;
 		}
 		//placeholderapi or invalid
-		Shared.mainClass.registerUnknownPlaceholder(placeholder);
+		Shared.mainClass.registerUnknownPlaceholder(identifier);
 	}
 	public static void registerPlaceholder(Placeholder placeholder) {
+		registerPlaceholder(placeholder, false);
+	}
+	public static void registerPlaceholder(Placeholder placeholder, boolean addToUsed) {
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
+		if (!(placeholder instanceof ServerConstant) && addToUsed) usedPlaceholders.add(placeholder);
+	}
+	public static void registerPlaceholder(RelationalPlaceholder placeholder) {
+		registeredRelationalPlaceholders.put(placeholder.identifier, placeholder);
 	}
 	public static void checkForRegistration(String text) {
 		for (String identifier : detectAll(text)) {

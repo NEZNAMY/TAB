@@ -1,11 +1,15 @@
 package me.neznamy.tab.platforms.bungee;
 
+import java.util.Set;
+
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import net.md_5.bungee.api.ProxyServer;
@@ -47,9 +51,19 @@ public class PluginMessenger implements Listener {
 			if (pl != null) {
 				pl.lastValue.put(receiver.getName(), output);
 				pl.lastValue.put("null", output);
-				pl.lastRefresh.put(receiver.getName(), System.currentTimeMillis());
-				pl.lastRefresh.put("null", System.currentTimeMillis());
-				Shared.bukkitBridgePlaceholderCpu.addTime(pl, cpu);
+				Set<Refreshable> update = PlaceholderManager.getPlaceholderUsage(pl.getIdentifier());
+				Shared.featureCpu.runTask("refreshing", new Runnable() {
+
+					@Override
+					public void run() {
+						for (Refreshable r : update) {
+							long startTime = System.nanoTime();
+							r.refresh(receiver);
+							Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+						}
+					}
+				});
+				Shared.bukkitBridgePlaceholderCpu.addTime(pl.getIdentifier(), cpu);
 			} else {
 				Shared.debug("Received output for unknown placeholder " + placeholder);
 			}
