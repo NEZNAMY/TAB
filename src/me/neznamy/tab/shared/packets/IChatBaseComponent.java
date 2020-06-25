@@ -406,7 +406,7 @@ public class IChatBaseComponent {
 		}
 		public static TextColor fromString(String string) {
 			if (string.startsWith("#")) {
-				return new TextColor(string);
+				return new TextColor(string.substring(1));
 			} else {
 				return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 			}
