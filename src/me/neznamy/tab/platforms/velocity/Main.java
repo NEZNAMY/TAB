@@ -399,7 +399,7 @@ public class Main implements MainClass{
 					}
 					return lastValue.get(name);
 				}
-			});
+			}, true);
 			return;
 		}
 	}

@@ -364,7 +364,7 @@ public class Main extends Plugin implements Listener, MainClass{
 					}
 					return lastValue.get(name);
 				}
-			});
+			}, true);
 			return;
 		}
 	}
