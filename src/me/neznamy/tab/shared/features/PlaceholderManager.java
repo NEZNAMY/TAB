@@ -32,8 +32,8 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 @SuppressWarnings("unchecked")
 public class PlaceholderManager implements JoinEventListener, QuitEventListener, Loadable {
 
-	private final int DEFAULT_COOLDOWN = 100;
-	private final int DEFAULT_RELATIONAL_COOLDOWN = 500;
+	public final int DEFAULT_COOLDOWN = 100;
+	public final int DEFAULT_RELATIONAL_COOLDOWN = 500;
 
 	//for metrics
 	public List<String> unknownPlaceholders = new ArrayList<String>();
