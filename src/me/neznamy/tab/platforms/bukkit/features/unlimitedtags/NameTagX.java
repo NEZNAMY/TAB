@@ -340,7 +340,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	@Override
 	public void refresh(ITabPlayer refreshed) {
 		if (refreshed.disabledNametag) return;
-		refreshed.updateTeam();
+		boolean prefix = refreshed.properties.get("tagprefix").update();
+		boolean suffix = refreshed.properties.get("tagsuffix").update();
+		if (prefix || suffix) refreshed.updateTeam();
 		boolean fix = false;
 		for (ArmorStand as : refreshed.armorStands.toArray(new ArmorStand[0])) {
 			if (as.property.update()) {
