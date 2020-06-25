@@ -78,11 +78,11 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 		}
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
 		boolean prefix = refreshed.properties.get("tagprefix").update();
 		boolean suffix = refreshed.properties.get("tagsuffix").update();
-		if (prefix || suffix) refreshed.updateTeam();
+		if (prefix || suffix || force) refreshed.updateTeam();
 	}
 	@Override
 	public Set<String> getUsedPlaceholders() {

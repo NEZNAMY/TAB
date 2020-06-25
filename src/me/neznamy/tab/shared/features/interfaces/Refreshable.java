@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 
 public interface Refreshable {
 
-	public void refresh(ITabPlayer refreshed);
+	public void refresh(ITabPlayer refreshed, boolean force);
 	public CPUFeature getRefreshCPU();
 	public Set<String> getUsedPlaceholders();
 }

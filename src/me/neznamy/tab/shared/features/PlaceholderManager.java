@@ -161,7 +161,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 						for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
 							for (Refreshable r : entry.getValue()) {
 								long startTime = System.nanoTime();
-								r.refresh(entry.getKey());
+								r.refresh(entry.getKey(), false);
 								Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
 							}
 						}

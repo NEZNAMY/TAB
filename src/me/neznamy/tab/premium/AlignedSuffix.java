@@ -308,7 +308,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == exception) continue;
-					playerlist.refresh(all);
+					playerlist.refresh(all, true);
 				}
 			}
 		});

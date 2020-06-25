@@ -33,7 +33,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void load(){
 		for (ITabPlayer all : Shared.getPlayers()) {
-			refresh(all);
+			refresh(all, true);
 		}
 	}
 	@Override
@@ -42,7 +42,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		refresh(p);
+		refresh(p, false);
 	}
 	private void updateNames(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
@@ -110,12 +110,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledTablistNames) return;
 		boolean prefix = refreshed.properties.get("tabprefix").update();
 		boolean name = refreshed.properties.get("customtabname").update();
 		boolean suffix = refreshed.properties.get("tabsuffix").update();
-		if (prefix || name || suffix) {
+		if (prefix || name || suffix || force) {
 			for (ITabPlayer all : Shared.getPlayers()) {
 				all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()), all.getVersion()));
 			}
@@ -131,6 +131,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		refresh(connectedPlayer);
+		refresh(connectedPlayer, true);
 	}
 }

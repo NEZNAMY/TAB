@@ -20,7 +20,7 @@ public class ColorAndStyleRefresher implements Refreshable {
 		usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line.style));
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
 		Property color = refreshed.properties.get("bossbar-color-" + line.name);
 		Property style = refreshed.properties.get("bossbar-style-" + line.name);

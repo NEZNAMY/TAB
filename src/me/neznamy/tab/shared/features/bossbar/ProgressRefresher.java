@@ -22,7 +22,7 @@ public class ProgressRefresher implements Refreshable {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.progress);
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
 		Property progress = refreshed.properties.get("bossbar-progress-" + line.name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {

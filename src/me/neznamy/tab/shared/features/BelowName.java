@@ -36,7 +36,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			private Set<String> usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			
 			@Override
-			public void refresh(ITabPlayer refreshed) {
+			public void refresh(ITabPlayer refreshed, boolean force) {
 				if (refreshed.disabledBelowname) return;
 				refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, textProperty.updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 			}
@@ -94,7 +94,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "BelowName");
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledBelowname) return;
 		if (refreshed.properties.get(propertyName) == null) return; //player not initialized yet
 		int number = getNumber(refreshed);

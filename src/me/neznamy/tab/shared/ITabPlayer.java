@@ -416,6 +416,6 @@ public abstract class ITabPlayer {
 		}
 	}
 	public void forceUpdateDisplay() {
-		Shared.refreshables.forEach(r -> r.refresh(this));
+		Shared.refreshables.forEach(r -> r.refresh(this, true));
 	}
 }

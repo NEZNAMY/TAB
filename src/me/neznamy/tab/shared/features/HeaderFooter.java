@@ -21,7 +21,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()) refresh(p);
+		for (ITabPlayer p : Shared.getPlayers()) refresh(p, true);
 	}
 	@Override
 	public void unload() {
@@ -32,7 +32,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		refresh(connectedPlayer);
+		refresh(connectedPlayer, true);
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
@@ -40,11 +40,11 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		if (p.disabledHeaderFooter) {
 			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
 		} else {
-			refresh(p);
+			refresh(p, false);
 		}
 	}
 	@Override
-	public void refresh(ITabPlayer p) {
+	public void refresh(ITabPlayer p, boolean force) {
 		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").updateAndGet(), p.properties.get("footer").updateAndGet()));
 	}

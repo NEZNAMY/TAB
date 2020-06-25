@@ -338,14 +338,14 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		}
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
 		boolean prefix = refreshed.properties.get("tagprefix").update();
 		boolean suffix = refreshed.properties.get("tagsuffix").update();
-		if (prefix || suffix) refreshed.updateTeam();
+		if (prefix || suffix || force) refreshed.updateTeam();
 		boolean fix = false;
 		for (ArmorStand as : refreshed.armorStands.toArray(new ArmorStand[0])) {
-			if (as.property.update()) {
+			if (as.property.update() || force) {
 				as.refresh();
 				fix = true;
 			}

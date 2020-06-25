@@ -129,7 +129,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed) {
+	public void refresh(ITabPlayer refreshed, boolean force) {
 		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
 	@Override
@@ -224,9 +224,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			}
 		}
 		@Override
-		public void refresh(ITabPlayer refreshed) {
+		public void refresh(ITabPlayer refreshed, boolean force) {
 			if (!players.contains(refreshed)) return; //player has different scoreboard displayed
-			List<String> prefixsuffix = replaceText(refreshed, false, false);
+			List<String> prefixsuffix = replaceText(refreshed, force, false);
 			if (prefixsuffix == null) return;
 			PacketPlayOutScoreboardTeam update = PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69);
 			update.setColor(EnumChatFormat.RESET);

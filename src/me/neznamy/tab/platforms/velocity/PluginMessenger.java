@@ -64,7 +64,7 @@ public class PluginMessenger{
 					public void run() {
 						for (Refreshable r : update) {
 							long startTime = System.nanoTime();
-							r.refresh(receiver);
+							r.refresh(receiver, false);
 							Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
 						}
 					}
