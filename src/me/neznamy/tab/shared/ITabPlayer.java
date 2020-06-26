@@ -159,6 +159,7 @@ public abstract class ITabPlayer {
 
 	public void updateTeam() {
 		if (disabledNametag) return;
+		if (teamName == null) return; //player not loaded yet
 		String newName = SortingType.INSTANCE.getTeamName(this);
 		if (teamName.equals(newName)) {
 			updateTeamData();
