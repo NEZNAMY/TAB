@@ -130,6 +130,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
+		if (refreshed.properties.get("scoreboard-title") == null) return;
 		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
 	@Override
