@@ -9,12 +9,12 @@ import com.velocitypowered.proxy.protocol.ProtocolUtils;
 
 import io.netty.buffer.ByteBuf;
 
-public class ScoreboardObjective implements MinecraftPacket{
+public class ScoreboardObjective implements MinecraftPacket {
 
-	private String name;
-	private String value;
-	private HealthDisplay type;
-	private byte action;
+	public String name;
+	public String value;
+	public HealthDisplay type;
+	public byte action;
 
 	public ScoreboardObjective() {
 	}
@@ -29,10 +29,13 @@ public class ScoreboardObjective implements MinecraftPacket{
 	@Override
 	public void decode(ByteBuf buf, ProtocolUtils.Direction direction, ProtocolVersion version) {
 		name = ProtocolUtils.readString(buf);
-		action = buf.readByte();
-		if (action == 0 || action == 2){
+		if (version.getProtocol() <= ProtocolVersion.MINECRAFT_1_7_6.getProtocol()) {
 			value = ProtocolUtils.readString(buf);
-			if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_13.getProtocol()){
+		}
+		action = buf.readByte();
+		if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol() && (action == 0 || action == 2)) {
+			value = ProtocolUtils.readString(buf);
+			if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_13.getProtocol()) {
 				type = HealthDisplay.values()[ProtocolUtils.readVarInt(buf)];
 			} else {
 				type = HealthDisplay.fromString(ProtocolUtils.readString(buf));
@@ -43,10 +46,13 @@ public class ScoreboardObjective implements MinecraftPacket{
 	@Override
 	public void encode(ByteBuf buf, ProtocolUtils.Direction direction, ProtocolVersion version) {
 		ProtocolUtils.writeString(buf, name);
-		buf.writeByte(action);
-		if (action == 0 || action == 2){
+		if (version.getProtocol() <= ProtocolVersion.MINECRAFT_1_7_6.getProtocol()) {
 			ProtocolUtils.writeString(buf, value);
-			if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_13.getProtocol()){
+		}
+		buf.writeByte(action);
+		if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol() && (action == 0 || action == 2)) {
+			ProtocolUtils.writeString(buf, value);
+			if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_13.getProtocol()) {
 				ProtocolUtils.writeVarInt(buf, type.ordinal());
 			} else {
 				ProtocolUtils.writeString(buf, type.toString());

@@ -7,10 +7,10 @@ import com.velocitypowered.proxy.protocol.ProtocolUtils;
 
 import io.netty.buffer.ByteBuf;
 
-public class ScoreboardDisplay implements MinecraftPacket{
+public class ScoreboardDisplay implements MinecraftPacket {
 
-	private byte position;
-	private String name;
+	public byte position;
+	public String name;
 
 	public ScoreboardDisplay() {
 	}

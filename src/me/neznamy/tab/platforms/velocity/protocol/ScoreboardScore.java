@@ -7,8 +7,7 @@ import com.velocitypowered.proxy.protocol.ProtocolUtils;
 
 import io.netty.buffer.ByteBuf;
 
-public class ScoreboardScore implements MinecraftPacket
-{
+public class ScoreboardScore implements MinecraftPacket {
 
 	private String itemName;
 	private byte action;
@@ -29,9 +28,14 @@ public class ScoreboardScore implements MinecraftPacket
 	public void decode(ByteBuf buf, ProtocolUtils.Direction direction, ProtocolVersion version) {
 		itemName = ProtocolUtils.readString(buf);
 		action = buf.readByte();
-		scoreName = ProtocolUtils.readString(buf);
-		if (action != 1){
-			value = ProtocolUtils.readVarInt(buf);
+		if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol()) {
+			scoreName = ProtocolUtils.readString(buf);
+			if (action != 1) {
+				value = ProtocolUtils.readVarInt(buf);
+			}
+		} else if (action != 1) {
+			scoreName = ProtocolUtils.readString(buf);
+			value = buf.readInt();
 		}
 	}
 
@@ -39,9 +43,14 @@ public class ScoreboardScore implements MinecraftPacket
 	public void encode(ByteBuf buf, ProtocolUtils.Direction direction, ProtocolVersion version) {
 		ProtocolUtils.writeString(buf, itemName);
 		buf.writeByte(action);
-		ProtocolUtils.writeString(buf, scoreName);
-		if (action != 1){
-			ProtocolUtils.writeVarInt(buf, value);
+		if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol()) {
+			ProtocolUtils.writeString(buf, scoreName);
+			if (action != 1) {
+				ProtocolUtils.writeVarInt(buf, value);
+			}
+		} else if (action != 1) {
+			ProtocolUtils.writeString(buf, scoreName);
+			buf.writeInt(value);
 		}
 	}
 
