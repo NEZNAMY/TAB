@@ -22,7 +22,7 @@ public class ParseCommand extends SubCommand{
 				if (i>0) replaced += " ";
 				replaced += args[i];
 			}
-			sendRawMessage(sender, Placeholders.colorChar + "6Replacing placeholder &e" + replaced + (sender == null ? "" : + Placeholders.colorChar + "6 for player " + Placeholders.colorChar + "e" + sender.getName()));
+			sendRawMessage(sender, Placeholders.colorChar + "6Replacing placeholder " + Placeholders.colorChar + "e" + replaced + (sender == null ? "" : + Placeholders.colorChar + "6 for player " + Placeholders.colorChar + "e" + sender.getName()));
 			for (Placeholder p : Placeholders.getAllPlaceholders()) {
 				if (replaced.contains(p.getIdentifier())) replaced = p.set(replaced, sender);
 			}
