@@ -215,6 +215,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 					return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, target, identifier);
 				}
 			});
+			return;
 		}
 		unknownPlaceholders.add(identifier);
 		if (identifier.contains("%rel_")) {
