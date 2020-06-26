@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.command.level1;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -20,13 +22,17 @@ public class ParseCommand extends SubCommand{
 				if (i>0) replaced += " ";
 				replaced += args[i];
 			}
-			sendMessage(sender, "&6Replacing placeholder &e" + replaced + (sender == null ? "" : "&6 for player &e" + sender.getName()));
+			sendRawMessage(sender, Placeholders.colorChar + "6Replacing placeholder &e" + replaced + (sender == null ? "" : + Placeholders.colorChar + "6 for player " + Placeholders.colorChar + "e" + sender.getName()));
 			for (Placeholder p : Placeholders.getAllPlaceholders()) {
 				if (replaced.contains(p.getIdentifier())) replaced = p.set(replaced, sender);
 			}
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
-			
-			sendMessage(sender, "With colors: " + replaced);
+			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
+			if (sender != null) {
+				sender.sendCustomPacket(new PacketPlayOutChat(colored));
+			} else {
+				sendRawMessage(sender, colored.toColoredText());
+			}
 			sendRawMessage(sender, "Without colors: " + replaced.replace(Placeholders.colorChar, '&'));
 		} else {
 			sendMessage(sender, "Usage: /tab parse <placeholder>");
