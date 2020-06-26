@@ -114,18 +114,17 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				int loopTime = atomic.addAndGet(50);
 				Collection<ITabPlayer> players = Shared.getPlayers();
 				Map<ITabPlayer, Set<Refreshable>> update = new HashMap<ITabPlayer, Set<Refreshable>>();
-				for (ITabPlayer all : players) {
-					update.put(all, new HashSet<Refreshable>());
-				}
 				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
 					if (loopTime % relPlaceholder.refresh != 0) continue;
 					long startTime = System.nanoTime();
 					for (ITabPlayer p1 : players) {
 						for (ITabPlayer p2 : players) {
 							if (relPlaceholder.update(p1, p2)) {
+								if (!update.containsKey(p2)) update.put(p2, new HashSet<Refreshable>());
 								update.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
 							}
 							if (relPlaceholder.update(p2, p1)) {
+								if (!update.containsKey(p1)) update.put(p1, new HashSet<Refreshable>());
 								update.get(p1).addAll(getPlaceholderUsage(relPlaceholder.identifier));
 							}
 						}
@@ -139,6 +138,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 						long startTime = System.nanoTime();
 						for (ITabPlayer all : players) {
 							if (((PlayerPlaceholder)placeholder).update(all)) {
+								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
 							}
 						}
@@ -148,6 +148,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 						long startTime = System.nanoTime();
 						if (((ServerPlaceholder)placeholder).update()) {
 							for (ITabPlayer all : players) {
+								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
 							}
 						}
