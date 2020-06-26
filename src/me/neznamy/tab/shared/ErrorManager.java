@@ -142,18 +142,24 @@ public class ErrorManager {
 	public int fixAnimationInterval(String name, int interval) {
 		if (interval == 0) {
 			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
-			interval = 1000;
+			return 1000;
 		}
 		if (interval < 0) {
 			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+". Refresh cannot be negative! &bUsing 1000.");
-			interval = 1000;
+			return 1000;
+		}
+		if (interval % 50 != 0) {
+			int newInterval = interval - interval%50;
+			if (newInterval == 0) newInterval = 50;
+			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+" which is not divisible by 50! Using " + newInterval + ".");
+			return newInterval;
 		}
 		return interval;
 	}
 	public List<String> fixAnimationFrames(String name, List<String> list) {
 		if (list == null) {
 			startupWarn("Animation \"&e" + name + "&c\" does not have any texts! &bIgnoring.");
-			list = Arrays.asList("<Invalid Animation>");
+			return Arrays.asList("<Invalid Animation>");
 		}
 		return list;
 	}
@@ -161,11 +167,11 @@ public class ErrorManager {
 	public int fixBossBarRefresh(String name, int refresh) {
 		if (refresh == 0) {
 			startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
-			refresh = 1000;
+			return 1000;
 		}
 		if (refresh < 0) {
 			startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of "+refresh+". Refresh cannot be negative! &bUsing 1000.");
-			refresh = 1000;
+			return 1000;
 		}
 		return refresh;
 	}
@@ -366,7 +372,7 @@ public class ErrorManager {
 		try {
 			return new SimpleDateFormat(value);
 		} catch (Exception e) {
-			startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes ?");
+			startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
 			return new SimpleDateFormat(defaultValue);
 		}
 	}
