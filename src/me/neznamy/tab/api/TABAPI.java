@@ -41,6 +41,7 @@ public class TABAPI {
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {
 		if (Shared.mainClass instanceof me.neznamy.tab.platforms.bukkit.Main) {
+			if (isUnlimitedNameTagModeEnabled()) return;
 			Configs.config.set("change-nametag-prefix-suffix", true);
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 			Shared.unload();
