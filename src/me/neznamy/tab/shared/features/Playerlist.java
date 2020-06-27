@@ -8,7 +8,6 @@ import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -50,7 +49,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			if (!p.disabledTablistNames) updatedPlayers.add(p.getInfoData());
 		}
 		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), all.getVersion()));
+			all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers));
 		}
 	}
 	@Override
@@ -117,7 +116,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		boolean suffix = refreshed.properties.get("tabsuffix").update();
 		if (prefix || name || suffix || force) {
 			for (ITabPlayer all : Shared.getPlayers()) {
-				all.sendPacket(PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()), all.getVersion()));
+				all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()));
 			}
 		}
 	}
