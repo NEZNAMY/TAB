@@ -7,6 +7,8 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class ParseCommand extends SubCommand{
 
@@ -22,9 +24,18 @@ public class ParseCommand extends SubCommand{
 				if (i>0) replaced += " ";
 				replaced += args[i];
 			}
-			sendRawMessage(sender, Placeholders.colorChar + "6Replacing placeholder " + Placeholders.colorChar + "e" + replaced + (sender == null ? "" : + Placeholders.colorChar + "6 for player " + Placeholders.colorChar + "e" + sender.getName()));
+			String message = Placeholders.color("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace("%placeholder%", replaced);
+			sendRawMessage(sender, message);
 			for (Placeholder p : Placeholders.getAllPlaceholders()) {
-				if (replaced.contains(p.getIdentifier())) replaced = p.set(replaced, sender);
+				if (replaced.contains(p.getIdentifier())) {
+					if (p instanceof ServerPlaceholder) {
+						((ServerPlaceholder)p).update();
+					}
+					if (p instanceof PlayerPlaceholder) {
+						((PlayerPlaceholder)p).update(sender);
+					}
+					replaced = p.set(replaced, sender);
+				}
 			}
 			if (PluginHooks.placeholderAPI) replaced = PluginHooks.PlaceholderAPI_setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
 			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
