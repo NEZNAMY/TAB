@@ -250,6 +250,10 @@ public class IChatBaseComponent {
 
 	public static IChatBaseComponent fromColoredText(String message){
 		if (message == null) return new IChatBaseComponent();
+		if (message.contains("&#")) {
+			//adding support for &#RRGGBB
+			message = message.replace("&#", "#");
+		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
