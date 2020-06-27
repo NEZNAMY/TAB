@@ -212,7 +212,10 @@ public class IChatBaseComponent {
 		}
 	}
 	public String toString(ProtocolVersion clientVersion) {
-		if (text == null && extra == null) return null;
+		if (extra == null) {
+			if (text == null) return null;
+			if (text.length() == 0) return EMPTY_COMPONENT;
+		}
 		//the core component, fixing all colors
 		if (color != null) {
 			jsonObject.put("color", color.toString(clientVersion));
@@ -228,8 +231,6 @@ public class IChatBaseComponent {
 	}
 
 	public String toString() {
-		if (extra == null && text.length() == 0) return EMPTY_COMPONENT;
-
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
 			//1.7+
 			return jsonObject.toString();
