@@ -351,7 +351,7 @@ public class IChatBaseComponent {
 	}
 	
 	public static IChatBaseComponent optimizedComponent(String text){
-		return text.contains("#") ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
+		return text != null && text.contains("#") ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
 	}
 	public enum ClickAction{
 		OPEN_URL,
