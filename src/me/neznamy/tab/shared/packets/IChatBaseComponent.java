@@ -299,7 +299,7 @@ public class IChatBaseComponent {
 			} else if (c == '#'){
 				try {
 					String hex = message.substring(i+1, i+7);
-					TextColor color = new TextColor(hex); //the validation check is in contructor
+					TextColor color = new TextColor(hex); //the validation check is in constructor
 
 					if (builder.length() > 0){
 						component.setText(builder.toString());
