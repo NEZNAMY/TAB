@@ -114,6 +114,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				int loopTime = atomic.addAndGet(50);
 				Collection<ITabPlayer> players = Shared.getPlayers();
 				Map<ITabPlayer, Set<Refreshable>> update = new HashMap<ITabPlayer, Set<Refreshable>>();
+				boolean somethingChanged = false;
 				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
 					if (loopTime % relPlaceholder.refresh != 0) continue;
 					long startTime = System.nanoTime();
@@ -122,10 +123,12 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 							if (relPlaceholder.update(p1, p2)) {
 								if (!update.containsKey(p2)) update.put(p2, new HashSet<Refreshable>());
 								update.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								somethingChanged = true;
 							}
 							if (relPlaceholder.update(p2, p1)) {
 								if (!update.containsKey(p1)) update.put(p1, new HashSet<Refreshable>());
 								update.get(p1).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								somethingChanged = true;
 							}
 						}
 					}
@@ -140,6 +143,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 							if (((PlayerPlaceholder)placeholder).update(all)) {
 								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+								somethingChanged = true;
 							}
 						}
 						Shared.placeholderCpu.addTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
@@ -147,15 +151,17 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 					if (placeholder instanceof ServerPlaceholder) {
 						long startTime = System.nanoTime();
 						if (((ServerPlaceholder)placeholder).update()) {
+							Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
+							somethingChanged = true;
 							for (ITabPlayer all : players) {
 								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
-								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+								update.get(all).addAll(usage);
 							}
 						}
 						Shared.placeholderCpu.addTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
 					}
 				}
-				Shared.featureCpu.runTask("refreshing", new Runnable() {
+				if (somethingChanged) Shared.featureCpu.runTask("refreshing", new Runnable() {
 
 					@Override
 					public void run() {
