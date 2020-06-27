@@ -287,7 +287,7 @@ public class ConfigurationFile{
 			if (entry.getValue() instanceof List) {
 				for (Object obj : (List<Object>)entry.getValue()) {
 					for (String simpleKey : simpleKeys) {
-						if (obj.toString().equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
+						if (String.valueOf(obj).equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
 					}
 				}
 			}
