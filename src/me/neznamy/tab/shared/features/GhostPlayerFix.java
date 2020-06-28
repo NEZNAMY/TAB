@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -12,14 +11,14 @@ public class GhostPlayerFix implements QuitEventListener{
 
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		Object packet = PacketAPI.buildPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()), null);
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData());
 		Shared.featureCpu.runTaskLater(100, "removing players", CPUFeature.GHOST_PLAYER_FIX, new Runnable() {
 
 			@Override
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == disconnectedPlayer) continue;
-					all.sendPacket(packet);
+					all.sendCustomPacket(packet);
 				}
 			}
 		});

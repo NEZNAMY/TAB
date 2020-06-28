@@ -404,7 +404,7 @@ public abstract class ITabPlayer {
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		try {
-			sendPacket(PacketAPI.buildPacket(packet, getVersion()));
+			sendPacket(Shared.mainClass.buildPacket(packet, getVersion()));
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
