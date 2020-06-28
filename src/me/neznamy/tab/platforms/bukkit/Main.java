@@ -561,10 +561,10 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
-			ticks2Millis(config, "nametag-refresh-interval-ticks", "nametag-refresh-interval-milliseconds");
-			ticks2Millis(config, "tablist-refresh-interval-ticks", "tablist-refresh-interval-milliseconds");
-			ticks2Millis(config, "header-footer-refresh-interval-ticks", "header-footer-refresh-interval-milliseconds");
-			ticks2Millis(config, "belowname.refresh-interval-ticks", "belowname.refresh-interval-milliseconds");
+			removeOld(config, "nametag-refresh-interval-ticks");
+			removeOld(config, "tablist-refresh-interval-ticks");
+			removeOld(config, "header-footer-refresh-interval-ticks");
+			removeOld(config, "belowname.refresh-interval-ticks");
 			removeOld(config, "placeholders.deluxetag-yes");
 			removeOld(config, "placeholders.deluxetag-no");
 			removeOld(config, "placeholders.faction-yes");
@@ -610,7 +610,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			rename(config, "belowname", "classic-vanilla-belowname");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
-			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+			removeOld(config, "scoreboard.refresh-interval-ticks");
 			if (!config.hasConfigOption("placeholder-output-replacements")) {
 				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
 				Map<String, String> essVanished = new HashMap<String, String>();

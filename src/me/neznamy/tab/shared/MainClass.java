@@ -16,11 +16,6 @@ public interface MainClass {
 	public String getServerVersion();
 	public void suggestPlaceholders();
 	
-	public default void ticks2Millis(ConfigurationFile config, String oldKey, String newKey) {
-		if (config.hasConfigOption(oldKey)) {
-			convert(config, oldKey, config.getObject(oldKey), newKey, config.getInt(oldKey) * 50);
-		}
-	}
 	public default void removeOld(ConfigurationFile config, String oldKey) {
 		if (config.hasConfigOption(oldKey)) {
 			config.set(oldKey, null);

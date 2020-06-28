@@ -427,7 +427,7 @@ public class Main implements MainClass{
 			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
-			ticks2Millis(config, "scoreboard.refresh-interval-ticks", "scoreboard.refresh-interval-milliseconds");
+			removeOld(config, "scoreboard.refresh-interval-ticks");
 			if (!config.hasConfigOption("placeholder-output-replacements")) {
 				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
 				Map<String, String> essVanished = new HashMap<String, String>();
