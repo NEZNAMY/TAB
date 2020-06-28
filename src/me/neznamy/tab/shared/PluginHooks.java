@@ -157,7 +157,7 @@ public class PluginHooks {
 	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
 		try {
-			return (boolean) idisguise.getClass().getMethod("isDisguised", Player.class).invoke(idisguise, p.getBukkitEntity());
+			return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(p.getBukkitEntity());
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using iDisguise", t);
 		}

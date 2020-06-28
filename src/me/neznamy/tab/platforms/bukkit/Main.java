@@ -225,12 +225,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	public void registerPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			try {
-				RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
-				if (provider != null) PluginHooks.idisguise = provider.getProvider();
-			} catch (ClassNotFoundException e) {
-
-			}
+			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(de.robingrether.idisguise.api.DisguiseAPI.class);
+			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
 		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
