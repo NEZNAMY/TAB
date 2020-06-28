@@ -45,10 +45,10 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	public NameTagX() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
 		for (String line : Premium.dynamicLines) {
-			usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (String line : Premium.staticLines.keySet()) {
-			usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 
