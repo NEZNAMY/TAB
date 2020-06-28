@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.Zrips.CMI.CMI;
+import com.Zrips.CMI.Containers.CMIUser;
 import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -105,14 +107,13 @@ public class PluginHooks {
 	}
 	public static boolean CMI_isAFK(ITabPlayer p) {
 		try {
-			Object CMI = Class.forName("com.Zrips.CMI.CMI").getMethod("getInstance").invoke(null);
-			Object playerManager = CMI.getClass().getMethod("getPlayerManager").invoke(CMI);
-			Object user = playerManager.getClass().getMethod("getUser", Player.class).invoke(playerManager, p.getBukkitEntity());
+			//cannot be accessed via reflection due to a java issue
+			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p.getBukkitEntity());
 			if (user == null) {
 				Shared.errorManager.printError("CMI v" + getVersion("CMI") + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 				return false;
 			}
-			return (boolean) user.getClass().getMethod("isAfk").invoke(user, user);
+			return user.isAfk();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using CMI", t);
 		}
