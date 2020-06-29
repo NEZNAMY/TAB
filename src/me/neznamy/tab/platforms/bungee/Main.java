@@ -270,6 +270,11 @@ public class Main extends Plugin implements Listener, MainClass{
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}
 		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
+			public String get(ITabPlayer p) {
+				return (p.getBungeeEntity()).getDisplayName();
+			}
+		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
 				public String get() {
