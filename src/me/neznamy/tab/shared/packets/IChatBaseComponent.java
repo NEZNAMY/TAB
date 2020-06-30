@@ -254,6 +254,15 @@ public class IChatBaseComponent {
 			//adding support for &#RRGGBB
 			message = message.replace("&#", "#");
 		}
+		if (message.contains("{#")) {
+			//adding support for {#RRGGBB}
+			int index = message.indexOf("{#");
+			if (message.length() - index > 8) {
+				if (message.charAt(index+8) == '}') {
+					message = message.substring(0, index) + message.substring(index + 1, index + 8) + message.substring(index + 9, message.length());
+				}
+			}
+		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
