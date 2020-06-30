@@ -181,13 +181,13 @@ public class IChatBaseComponent {
 			if (json == null) return null;
 			JSONObject jsonObject = ((JSONObject) new JSONParser().parse(json));
 			IChatBaseComponent component = new IChatBaseComponent();
-			if (jsonObject.containsKey("text")) component.setText((String) jsonObject.get("text"));
-			if (jsonObject.containsKey("bold")) component.setBold((Boolean) jsonObject.get("bold"));
-			if (jsonObject.containsKey("italic")) component.setItalic((Boolean) jsonObject.get("italic"));
-			if (jsonObject.containsKey("underlined")) component.setUnderlined((Boolean) jsonObject.get("underlined"));
-			if (jsonObject.containsKey("strikethrough")) component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
-			if (jsonObject.containsKey("obfuscated")) component.setObfuscated((Boolean) jsonObject.get("obfuscated"));
-			if (jsonObject.containsKey("color")) component.setColor(TextColor.fromString(((String) jsonObject.get("color")).toUpperCase()));
+			component.setText((String) jsonObject.get("text"));
+			component.setBold((Boolean) jsonObject.get("bold"));
+			component.setItalic((Boolean) jsonObject.get("italic"));
+			component.setUnderlined((Boolean) jsonObject.get("underlined"));
+			component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
+			component.setObfuscated((Boolean) jsonObject.get("obfuscated"));
+			component.setColor(TextColor.fromString(((String) jsonObject.get("color"))));
 			if (jsonObject.containsKey("clickEvent")) {
 				JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
 				String action = (String) clickEvent.get("action");
@@ -428,6 +428,7 @@ public class IChatBaseComponent {
 			}
 		}
 		public static TextColor fromString(String string) {
+			if (string == null) return null;
 			if (string.startsWith("#")) {
 				return new TextColor(string.substring(1));
 			} else {
