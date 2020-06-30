@@ -78,7 +78,7 @@ public abstract class Placeholder {
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
 			Placeholder pl = Placeholders.getPlaceholder(s);
-			if (text.contains(pl.getIdentifier())) text = pl.set(text, p);
+			if (pl != null && text.contains(pl.getIdentifier())) text = pl.set(text, p);
 		}
 		return text;
 	}
