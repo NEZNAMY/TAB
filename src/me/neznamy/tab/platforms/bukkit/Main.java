@@ -345,17 +345,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					return new String[] {Configs.yesAfk, Configs.noAfk};
 				}
 			});
-		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
@@ -372,6 +361,17 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 				public String get(ITabPlayer p) {
 					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
+				}
+				@Override
+				public String[] getChilds(){
+					return new String[] {Configs.yesAfk, Configs.noAfk};
+				}
+			});
+		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
+
+				public String get(ITabPlayer p) {
+					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
 				}
 				@Override
 				public String[] getChilds(){
