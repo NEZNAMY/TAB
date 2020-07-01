@@ -314,6 +314,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			}
 		});
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
+			Shared.debug("Loaded AFK provider: xAntiAFK");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 				public String get(ITabPlayer p) {
 					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
@@ -324,6 +325,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
+			Shared.debug("Loaded AFK provider: AFKPlus");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
@@ -335,6 +337,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
+			Shared.debug("Loaded AFK provider: AutoAFK");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
@@ -346,6 +349,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
+			Shared.debug("Loaded AFK provider: CMI");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
@@ -357,6 +361,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			Shared.debug("Loaded AFK provider: Essentials");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
@@ -368,6 +373,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
+			Shared.debug("Loaded AFK provider: AntiAFKPlus");
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 
 				public String get(ITabPlayer p) {
@@ -379,6 +385,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				}
 			});
 		} else {
+			Shared.debug("Loaded AFK provider: <None>");
 			Placeholders.registerPlaceholder(new ServerConstant("%afk%") {
 				public String get() {
 					return "";
