@@ -234,6 +234,11 @@ public class TABAPI {
 		Placeholders.registerPlaceholder(constant);
 	}
 	
+	/**
+	 * Registers a relational placeholder
+	 * @param placeholder - Placeholder handler
+	 * @since 2.8.0
+	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
 		Placeholders.registerPlaceholder(placeholder);
 	}
