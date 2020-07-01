@@ -23,6 +23,7 @@ public abstract class PlayerPlaceholder extends Placeholder{
 		return false;
 	}
 	public String getLastValue(ITabPlayer p) {
+		if (!lastValue.containsKey(p.getName())) update(p);
 		return lastValue.get(p.getName());
 	}
 	public abstract String get(ITabPlayer p);

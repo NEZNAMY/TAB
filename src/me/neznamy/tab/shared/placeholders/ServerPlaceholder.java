@@ -4,7 +4,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 
 public abstract class ServerPlaceholder extends Placeholder{
 
-	private String lastValue = "";
+	private String lastValue;
 
 	public ServerPlaceholder(String identifier, int cooldown) {
 		super(identifier, cooldown);
@@ -12,7 +12,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	public boolean update() {
 		String newValue = get();
 		if (newValue == null) newValue = "";
-		if (!newValue.equals("ERROR") && !lastValue.equals(newValue)) {
+		if (!newValue.equals("ERROR") && (lastValue == null || !lastValue.equals(newValue))) {
 			lastValue = newValue;
 			return true;
 		}
@@ -23,6 +23,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	}
 	@Override
 	public String getLastValue(ITabPlayer p) {
+		if (lastValue == null) update();
 		return lastValue;
 	}
 	public String get(ITabPlayer p) {

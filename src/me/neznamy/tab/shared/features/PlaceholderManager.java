@@ -11,14 +11,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -30,7 +27,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 //THIS CLASS IS IN PROGRESS
 @SuppressWarnings("unchecked")
-public class PlaceholderManager implements JoinEventListener, QuitEventListener, Loadable {
+public class PlaceholderManager implements QuitEventListener {
 
 	public final int DEFAULT_COOLDOWN = 100;
 	public final int DEFAULT_RELATIONAL_COOLDOWN = 500;
@@ -266,40 +263,5 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				pl.lastValue.remove(disconnectedPlayer.getName() + "-" + all.getName());
 			}
 		}
-	}
-
-	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-		for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
-			long startTime = System.nanoTime();
-			for (ITabPlayer viewer : Shared.getPlayers()) {
-				relPlaceholder.update(viewer, connectedPlayer);
-				relPlaceholder.update(connectedPlayer, viewer);
-			}
-			Shared.placeholderCpu.addTime(relPlaceholder.identifier, System.nanoTime()-startTime);
-		}
-		for (Placeholder pl : Placeholders.usedPlaceholders) {
-			if (pl instanceof PlayerPlaceholder) {
-				long startTime = System.nanoTime();
-				((PlayerPlaceholder)pl).update(connectedPlayer);
-				Shared.placeholderCpu.addTime(pl.getIdentifier(), System.nanoTime()-startTime);
-			}
-		}
-	}
-	@Override
-	public void load() {
-		for (Placeholder pl : Placeholders.usedPlaceholders) {
-			if (pl instanceof ServerPlaceholder) {
-				long startTime = System.nanoTime();
-				((ServerPlaceholder)pl).update();
-				Shared.placeholderCpu.addTime(pl.getIdentifier(), System.nanoTime()-startTime);
-			}
-		}
-		for (ITabPlayer all : Shared.getPlayers()) {
-			onJoin(all);
-		}
-	}
-	@Override
-	public void unload() {
 	}
 }

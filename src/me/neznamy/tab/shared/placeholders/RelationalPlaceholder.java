@@ -25,6 +25,7 @@ public abstract class RelationalPlaceholder {
 		return false;
 	}
 	public String getLastValue(ITabPlayer viewer, ITabPlayer target) {
+		if (!lastValue.containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		return lastValue.get(viewer.getName() + "-" + target.getName());
 	}
 
