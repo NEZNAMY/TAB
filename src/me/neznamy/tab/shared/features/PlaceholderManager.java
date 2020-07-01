@@ -285,7 +285,6 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				Shared.placeholderCpu.addTime(pl.getIdentifier(), System.nanoTime()-startTime);
 			}
 		}
-		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
 	}
 	@Override
 	public void load() {

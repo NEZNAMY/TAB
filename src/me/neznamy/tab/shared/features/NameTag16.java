@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import java.util.Set;
 
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
@@ -24,6 +25,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	@Override
 	public void load(){
 		for (ITabPlayer p : Shared.getPlayers()) {
+			p.teamName = SortingType.INSTANCE.getTeamName(p);
 			p.properties.get("tagprefix").update();
 			p.properties.get("tagsuffix").update();
 			if (!p.disabledNametag) p.registerTeam();
@@ -54,6 +56,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
 		connectedPlayer.properties.get("tagprefix").update();
 		connectedPlayer.properties.get("tagsuffix").update();
 		if (connectedPlayer.disabledNametag) return;

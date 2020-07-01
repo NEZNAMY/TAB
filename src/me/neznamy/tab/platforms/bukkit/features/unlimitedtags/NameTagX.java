@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
@@ -57,6 +58,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
+			all.teamName = SortingType.INSTANCE.getTeamName(all);
 			updateProperties(all);
 			if (all.disabledNametag) continue;
 			all.registerTeam();
@@ -88,6 +90,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
+		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
 		updateProperties(connectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
