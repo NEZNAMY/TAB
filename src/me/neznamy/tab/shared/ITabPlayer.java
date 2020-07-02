@@ -355,7 +355,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void unregisterTeam() {
-		Shared.debug("Unregistering team " + teamName + " for everyone");
 		Object packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			viewer.sendPacket(packet);
@@ -363,7 +362,6 @@ public abstract class ITabPlayer {
 	}
 
 	public void unregisterTeam(ITabPlayer viewer) {
-		Shared.debug("Unregistering team " + teamName + " for " + viewer.getName());
 		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 	}
 
