@@ -287,6 +287,21 @@ public class IChatBaseComponent {
 				}
 			}
 		}
+		
+		if (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
+			String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
+			//adding support for &x&R&R&G&G&B&B
+			int begin = message.indexOf(sequence);
+			message = message.replace(sequence, "#");
+			message = message.substring(0, begin) + 
+					message.charAt(begin) + 
+					message.charAt(begin + 2) + 
+					message.charAt(begin + 4) + 
+					message.charAt(begin + 6) + 
+					message.charAt(begin + 8) + 
+					message.charAt(begin + 10) + 
+					message.substring(begin + 12, message.length());
+		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
@@ -389,7 +404,7 @@ public class IChatBaseComponent {
 	}
 	
 	public static IChatBaseComponent optimizedComponent(String text){
-		return text != null && text.contains("#") ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
+		return text != null && (text.contains("#") || text.contains("&x") || text.contains(Placeholders.colorChar + "x")) ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
 	}
 	public enum ClickAction{
 		OPEN_URL,
