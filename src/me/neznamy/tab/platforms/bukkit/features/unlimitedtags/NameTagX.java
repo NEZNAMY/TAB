@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -34,9 +34,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener, Refreshable{
 
@@ -221,16 +219,6 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 				public void run() {
-					if (!spawnedPlayer.onJoinFinished) {
-						//player not loaded due to an inefficient placeholder
-						for (Placeholder p : Placeholders.usedPlaceholders) {
-							if (p instanceof PlayerPlaceholder) {
-								((PlayerPlaceholder)p).update(spawnedPlayer);
-							}
-						}
-						updateProperties(spawnedPlayer);
-						loadArmorStands(spawnedPlayer);
-					}
 					spawnArmorStand(spawnedPlayer, receiver);
 				}
 			});
