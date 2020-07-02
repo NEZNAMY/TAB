@@ -36,7 +36,6 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -544,7 +543,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		Configs.advancedconfig = new ConfigurationFile("advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
-		SortingType.INSTANCE = (Configs.advancedconfig.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);

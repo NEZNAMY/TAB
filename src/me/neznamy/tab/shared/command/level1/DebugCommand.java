@@ -59,7 +59,7 @@ public class DebugCommand extends SubCommand {
 		if (sorting) {
 			if (Premium.is()) {
 				sortingType = SortingType.INSTANCE.toString();
-				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + SortingType.sortingPlaceholder;
+				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + SortingType.INSTANCE.sortingPlaceholder;
 			} else if (SortingType.INSTANCE == SortingType.GROUP_PERMISSIONS) {
 				sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
 			} else {

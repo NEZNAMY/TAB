@@ -10,6 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
@@ -90,6 +91,7 @@ public class Configs {
 		if (Premium.is()) {
 			Premium.loadPremiumConfig();
 		}
+		SortingType.initialize();
 		Shared.mainClass.suggestPlaceholders();
 	}
 	@SuppressWarnings("unchecked")

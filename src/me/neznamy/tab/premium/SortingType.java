@@ -1,5 +1,8 @@
 package me.neznamy.tab.premium;
 
+import java.util.Arrays;
+import java.util.List;
+
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -18,8 +21,30 @@ public enum SortingType {
 	
 	private final int DEFAULT_NUMBER = 5000000;
 	public static SortingType INSTANCE;
-	public static String sortingPlaceholder;
-	public static boolean caseSensitiveSorting;
+	public String sortingPlaceholder;
+	private boolean caseSensitiveSorting;
+	private List<String> usedPlaceholders;
+	
+	public static void initialize() {
+		if (Premium.is()) {
+			String type = Premium.premiumconfig.getString("sorting-type", "GROUPS");
+			try {
+				INSTANCE = valueOf(type.toUpperCase());
+			} catch (Throwable e) {
+				Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid type of sorting type. Valid options are: &e" + Arrays.deepToString(values()) + ". &bUsing GROUPS");
+				INSTANCE = GROUPS;
+			}
+			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
+			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
+			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
+		} else {
+			if (Configs.advancedconfig != null) {
+				INSTANCE = (Configs.advancedconfig.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
+			} else {
+				INSTANCE = GROUPS;
+			}
+		}
+	}
 	
 	public String getTeamName(ITabPlayer p) {
 		String teamName = null;
@@ -137,8 +162,9 @@ public enum SortingType {
 	}
 	private String setPlaceholders(String string, ITabPlayer player) {
 		if (string.contains("%")) {
-			for (Placeholder pl : Placeholders.getAllPlaceholders()) {
-				if (string.contains(pl.getIdentifier())) {
+			for (String identifier : usedPlaceholders) {
+				Placeholder pl = Placeholders.getPlaceholder(identifier);
+				if (pl != null && string.contains(pl.getIdentifier())) {
 					string = pl.set(string, player);
 				}
 			}

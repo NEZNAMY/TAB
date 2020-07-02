@@ -17,7 +17,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -346,7 +345,6 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void loadConfig() throws Exception {
 		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
-		SortingType.INSTANCE = SortingType.GROUPS;
 	}
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {

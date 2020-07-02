@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ConfigurationFile;
-import me.neznamy.tab.shared.Shared;
 
 public class Premium {
 	
@@ -24,15 +23,6 @@ public class Premium {
 	@SuppressWarnings("unchecked")
 	public static void loadPremiumConfig() throws Exception {
 		premiumconfig = new ConfigurationFile("premiumconfig.yml", null);
-		String type = premiumconfig.getString("sorting-type", "GROUPS");
-		try {
-			SortingType.INSTANCE = SortingType.valueOf(type.toUpperCase());
-		} catch (Throwable e) {
-			Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid type of sorting type. Valid options are: &e" + Arrays.deepToString(SortingType.values()) + ". &bUsing GROUPS");
-			SortingType.INSTANCE = SortingType.GROUPS;
-		}
-		SortingType.sortingPlaceholder = premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
-		SortingType.caseSensitiveSorting = premiumconfig.getBoolean("case-sentitive-sorting", true);
 		List<String> realList = premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 		Premium.dynamicLines = new ArrayList<String>();
 		Premium.dynamicLines.addAll(realList);
