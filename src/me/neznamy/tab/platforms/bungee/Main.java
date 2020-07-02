@@ -66,7 +66,7 @@ import net.md_5.bungee.protocol.packet.Team;
 public class Main extends Plugin implements Listener, MainClass{
 
 	private PluginMessenger plm;
-	
+
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.mainClass = this;
@@ -211,12 +211,22 @@ public class Main extends Plugin implements Listener, MainClass{
 						}
 						if (packet instanceof Login) {
 							//registering all teams again because client reset packet is sent
-							Shared.featureCpu.runTaskLater(100, "Reapplying nametags", CPUFeature.NAMETAG_WATERFALLFIX, new Runnable() {
+							Shared.featureCpu.runTaskLater(100, "Reapplying scoreboard components", CPUFeature.WATERFALLFIX, new Runnable() {
 
 								@Override
 								public void run() {
-									for (ITabPlayer all : Shared.getPlayers()) {
-										all.registerTeam(player);
+									if (Shared.features.containsKey("nametag16")) {
+										for (ITabPlayer all : Shared.getPlayers()) {
+											all.registerTeam(player);
+										}
+									}
+									TabObjective objective = (TabObjective) Shared.features.get("tabobjective");
+									if (objective != null) {
+										objective.onJoin(player);
+									}
+									BelowName belowname = (BelowName) Shared.features.get("belowname");
+									if (belowname != null) {
+										belowname.onJoin(player);
 									}
 								}
 							});
@@ -317,7 +327,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		Shared.registerFeature("group-refresh", new GroupRefresher());
 		new UpdateChecker();
-		
+
 		for (ProxiedPlayer p : getProxy().getPlayers()) {
 			ITabPlayer t = new TabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);

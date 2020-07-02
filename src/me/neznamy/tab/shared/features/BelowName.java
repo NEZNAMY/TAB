@@ -89,8 +89,6 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			onJoin(p);
 			return;
 		}
-		p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
-		onJoin(p);
 	}
 	private int getNumber(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "BelowName");

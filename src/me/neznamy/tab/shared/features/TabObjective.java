@@ -72,8 +72,6 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			onJoin(p);
 			return;
 		}
-		p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
-		onJoin(p);
 	}
 	public int getValue(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "Yellow number in tablist");

@@ -23,7 +23,6 @@ public enum CPUFeature {
 	NAMETAG("NameTags"),
 	NAMETAG_INVISFIX("NameTags - invisfix"),
 	NAMETAG_ANTIOVERRIDE("NameTags - anti override"),
-	NAMETAG_WATERFALLFIX("NameTags - waterfall fix"),
 	NAMETAGX_INVISCHECK("NameTagX - visibility update"),
 	NAMETAGX_PACKET_LISTENING("NameTagX - Packet Listening"),
 	NAMETAGX_PACKET_NAMED_ENTITY_SPAWN("NameTagX - NamedEntitySpawn"),
@@ -57,6 +56,8 @@ public enum CPUFeature {
 	GROUP_REFRESHING("Permission group refreshing"),
 	
 	PLACEHOLDER_REFRESHING("Refreshing placeholders"),
+	
+	WATERFALLFIX("Waterfall fix"),
 	
 	//onjoin, 
 	OTHER("Other");
