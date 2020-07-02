@@ -48,7 +48,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		refresh(p, false);
+		refresh(p, true);
 	}
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
