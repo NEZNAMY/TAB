@@ -278,7 +278,7 @@ public class IChatBaseComponent {
 			//adding support for &#RRGGBB
 			message = message.replace("&#", "#");
 		}
-		if (message.contains("{#")) {
+		while (message.contains("{#")) {
 			//adding support for {#RRGGBB}
 			int index = message.indexOf("{#");
 			if (message.length() - index > 8) {
@@ -287,12 +287,11 @@ public class IChatBaseComponent {
 				}
 			}
 		}
-		
-		if (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
-			String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
+		while (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
 			//adding support for &x&R&R&G&G&B&B
+			String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
 			int begin = message.indexOf(sequence);
-			message = message.replace(sequence, "#");
+			message = message.replaceFirst(sequence, "#");
 			message = message.substring(0, begin) + 
 					message.charAt(begin) + 
 					message.charAt(begin + 2) + 
