@@ -74,17 +74,21 @@ public class PlaceholderManager implements QuitEventListener {
 		playerPlaceholderRefreshIntervals.put("%player_health_rounded%", 100);	//%health%
 		playerPlaceholderRefreshIntervals.put("%player_name%", 10000); 			//nick plugins changing player name, so not a constant
 		playerPlaceholderRefreshIntervals.put("%player_ping%", 1000);			//%ping%
+		playerPlaceholderRefreshIntervals.put("%player_world%", 1000);			//%world%
 		playerPlaceholderRefreshIntervals.put("%player_x%", 200);				//%xPos%
 		playerPlaceholderRefreshIntervals.put("%player_y%", 200);				//%yPos%
 		playerPlaceholderRefreshIntervals.put("%player_z%", 200);				//%zPos%
 		playerPlaceholderRefreshIntervals.put("%statistic_deaths%", 1000);		//%deaths%
 		playerPlaceholderRefreshIntervals.put("%statistic_player_kills%", 1000);
+		playerPlaceholderRefreshIntervals.put("%uperms_prefix%", 1000);			//%vault-prefix%
+		playerPlaceholderRefreshIntervals.put("%uperms_suffix%", 1000);			//%vault-suffix%
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance%", 1000);
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_commas%", 1000);
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_fixed%", 1000);
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_formatted%", 1000);
 		playerPlaceholderRefreshIntervals.put("%vault_prefix%", 1000);			//%vault-prefix%
 		playerPlaceholderRefreshIntervals.put("%vault_rank%", 1000);			//%rank%
+		playerPlaceholderRefreshIntervals.put("%vault_rankprefix%", 1000);		//%vault-prefix%
 		playerPlaceholderRefreshIntervals.put("%vault_suffix%", 1000);			//%vault-suffix%
 
 		relationalPlaceholderRefreshIntervals.put("%rel_factionsuuid_relation_color%", 500);
@@ -240,8 +244,9 @@ public class PlaceholderManager implements QuitEventListener {
 					}
 				}, true);
 			} else {
-				Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + DEFAULT_COOLDOWN);
-				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, DEFAULT_COOLDOWN){
+				int cooldown = identifier.startsWith("%cmi_") ? DEFAULT_COOLDOWN * 10 : DEFAULT_COOLDOWN; //inefficient plugin
+				Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
+				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 					public String get(ITabPlayer p) {
 						return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
 					}

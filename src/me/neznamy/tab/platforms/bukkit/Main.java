@@ -692,6 +692,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		suggestPlaceholderSwitch("%server_tps_1%", "%tps%");
 		suggestPlaceholderSwitch("%statistic_deaths%", "%deaths%");
 		suggestPlaceholderSwitch("%supervanish_playercount%", "%canseeonline%");
+		suggestPlaceholderSwitch("%uperms_prefix%", "%vault-prefix%");
+		suggestPlaceholderSwitch("%uperms_suffix%", "%vault-suffix%");
 		suggestPlaceholderSwitch("%vault_eco_balance%", "%money%");
 		suggestPlaceholderSwitch("%vault_prefix%", "%vault-prefix%");
 		suggestPlaceholderSwitch("%vault_rank%", "%rank%");
