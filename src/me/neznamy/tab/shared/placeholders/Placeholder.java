@@ -43,7 +43,6 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			value = Placeholders.color(value);
 			String newValue = setPlaceholders(findReplacement(value, p), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
