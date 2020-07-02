@@ -356,9 +356,9 @@ public abstract class ITabPlayer {
 
 	public void unregisterTeam() {
 		Shared.debug("Unregistering team " + teamName + " for everyone");
-		PacketPlayOutScoreboardTeam packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69);
+		Object packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer viewer : Shared.getPlayers()) {
-			viewer.sendCustomPacket(packet);
+			viewer.sendPacket(packet);
 		}
 	}
 
@@ -405,11 +405,7 @@ public abstract class ITabPlayer {
 	}
 
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		try {
-			sendPacket(Shared.mainClass.buildPacket(packet, getVersion()));
-		} catch (Throwable e) {
-			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-		}
+		sendPacket(packet.build(getVersion()));
 	}
 	public void sendCustomBukkitPacket(PacketPlayOut packet) {
 		try {

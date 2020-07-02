@@ -6,6 +6,7 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -62,9 +63,10 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 	@Override
 	public void unload() {
+		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;
-			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
+			p.sendPacket(unregister);
 		}
 	}
 	@Override

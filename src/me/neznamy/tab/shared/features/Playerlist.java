@@ -37,20 +37,18 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void unload(){
-		updateNames();
-	}
-	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
-		refresh(p, false);
-	}
-	private void updateNames(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledTablistNames) updatedPlayers.add(p.getInfoData());
 		}
+		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers));
+			all.sendPacket(packet);
 		}
+	}
+	@Override
+	public void onWorldChange(ITabPlayer p, String from, String to) {
+		refresh(p, false);
 	}
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
@@ -92,7 +90,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		Property name = p.properties.get("customtabname");
 		Property suffix = p.properties.get("tabsuffix");
 		if (prefix == null || name == null || suffix == null) {
-			Shared.errorManager.printError("TabFormat not initialized for " + p.getName());
+//			Shared.errorManager.printError("TabFormat not initialized for " + p.getName());
 			return null;
 		}
 		String format;
@@ -115,8 +113,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		boolean name = refreshed.properties.get("customtabname").update();
 		boolean suffix = refreshed.properties.get("tabsuffix").update();
 		if (prefix || name || suffix || force) {
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer all : Shared.getPlayers()) {
-				all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()));
+				all.sendPacket(packet);
 			}
 		}
 	}
@@ -130,6 +129,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		refresh(connectedPlayer, true);
+		Shared.featureCpu.runTaskLater(50, "refreshing tablist name", CPUFeature.TABLIST_NAMES_1, new Runnable() {
+
+			@Override
+			public void run() {
+				refresh(connectedPlayer, true);
+			}
+		});
 	}
 }

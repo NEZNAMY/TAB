@@ -8,6 +8,7 @@ import java.util.UUID;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -33,10 +34,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
 		for (ITabPlayer displayed : Shared.getPlayers()) {
-			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
+			Object displayedAddPacket = getAddPacket(displayed).build(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer viewer : Shared.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
-				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket);
+				if (shouldSee(viewer, displayed)) viewer.sendPacket(displayedAddPacket);
 			}
 		}
 	}
@@ -65,20 +66,20 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	@Override
 	public void unload() {
 		for (ITabPlayer displayed : Shared.getPlayers()) {
-			PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
+			Object displayedRemovePacket = getRemovePacket(displayed).build(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer viewer : Shared.getPlayers()) {
-				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendCustomPacket(displayedRemovePacket);
+				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendPacket(displayedRemovePacket);
 			}
 		}
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		PacketPlayOutPlayerInfo addConnected = getAddPacket(connectedPlayer);
+		Object addConnected = getAddPacket(connectedPlayer).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
 			if (shouldSee(all, connectedPlayer)) {
-				all.sendCustomPacket(addConnected);
+				all.sendPacket(addConnected);
 			}
 			if (shouldSee(connectedPlayer, all)) {
 				connectedPlayer.sendCustomPacket(getAddPacket(all));
@@ -87,10 +88,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
+		Object remove = getRemovePacket(disconnectedPlayer).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
-			all.sendCustomPacket(remove);
+			all.sendPacket(remove);
 		}
 	}
 	@Override
@@ -100,14 +101,14 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 
 			@Override
 			public void run() {
-				PacketPlayOutPlayerInfo addChanged = getAddPacket(p);
-				PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
+				Object addChanged = getAddPacket(p).build(ProtocolVersion.SERVER_VERSION);
+				Object removeChanged = getRemovePacket(p).build(ProtocolVersion.SERVER_VERSION);
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == p) continue;
 					if (shouldSee(all, p)) {
-						all.sendCustomPacket(addChanged);
+						all.sendPacket(addChanged);
 					} else {
-						all.sendCustomPacket(removeChanged);
+						all.sendPacket(removeChanged);
 					}
 					if (shouldSee(p, all)) {
 						p.sendCustomPacket(getAddPacket(all));
