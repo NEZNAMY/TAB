@@ -58,17 +58,11 @@ public class PluginMessenger{
 				pl.lastValue.put(receiver.getName(), output);
 				pl.lastValue.put("null", output);
 				Set<Refreshable> update = PlaceholderManager.getPlaceholderUsage(pl.getIdentifier());
-				Shared.featureCpu.runTask("refreshing", new Runnable() {
-
-					@Override
-					public void run() {
-						for (Refreshable r : update) {
-							long startTime = System.nanoTime();
-							r.refresh(receiver, false);
-							Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
-						}
-					}
-				});
+				for (Refreshable r : update) {
+					long startTime = System.nanoTime();
+					r.refresh(receiver, false);
+					Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+				}
 				Shared.bukkitBridgePlaceholderCpu.addTime(pl.getIdentifier(), cpu);
 			} else {
 				Shared.debug("Received output for unknown placeholder " + placeholder);
