@@ -33,7 +33,6 @@ public class Configs {
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
 	public static double SECRET_NTX_space;
-	public static float SECRET_relational_placeholders_refresh;
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_safe_register;
 	public static boolean SECRET_remove_ghost_players;
@@ -124,7 +123,6 @@ public class Configs {
 		disabledBossbar = config.getStringList("disable-features-in-"+Shared.separatorType+"s.bossbar", Arrays.asList("disabled" + Shared.separatorType));
 		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
 		
-		SECRET_relational_placeholders_refresh = getSecretOption("relational-placeholders-refresh", 30f);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_safe_register = getSecretOption("safe-team-register", true);

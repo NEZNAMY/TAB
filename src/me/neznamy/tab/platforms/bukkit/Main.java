@@ -584,6 +584,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			removeOld(config, "tablist-refresh-interval-milliseconds");
 			removeOld(config, "header-footer-refresh-interval-milliseconds");
 			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
+			removeOld(config, "relational-placeholders-refresh");
 			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
 				for (Object group : config.getConfigurationSection("Groups").keySet()) {
 					String tagprefix = config.getString("Groups." + group + ".tagprefix");
