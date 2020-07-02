@@ -82,7 +82,11 @@ public class IChatBaseComponent {
 
 	public IChatBaseComponent setText(String text) {
 		this.text = text;
-		jsonObject.put("text", text);
+		if (text != null) {
+			jsonObject.put("text", text);
+		} else {
+			jsonObject.remove("text");
+		}
 		return this;
 	}
 	public IChatBaseComponent setColor(TextColor color) {
@@ -91,27 +95,47 @@ public class IChatBaseComponent {
 	}
 	public IChatBaseComponent setBold(Boolean bold) {
 		this.bold = bold;
-		jsonObject.put("bold", bold);
+		if (bold != null) {
+			jsonObject.put("bold", bold);
+		} else {
+			jsonObject.remove("bold");
+		}
 		return this;
 	}
 	public IChatBaseComponent setItalic(Boolean italic) {
 		this.italic = italic;
-		jsonObject.put("italic", italic);
+		if (italic != null) {
+			jsonObject.put("italic", italic);
+		} else {
+			jsonObject.remove("italic");
+		}
 		return this;
 	}
 	public IChatBaseComponent setUnderlined(Boolean underlined) {
 		this.underlined = underlined;
-		jsonObject.put("underlined", underlined);
+		if (underlined != null) {
+			jsonObject.put("underlined", underlined);
+		} else {
+			jsonObject.remove("underlined");
+		}
 		return this;
 	}
 	public IChatBaseComponent setStrikethrough(Boolean strikethrough) {
 		this.strikethrough = strikethrough;
-		jsonObject.put("strikethrough", strikethrough);
+		if (strikethrough != null) {
+			jsonObject.put("strikethrough", strikethrough);
+		} else {
+			jsonObject.remove("strikethrough");
+		}
 		return this;
 	}
 	public IChatBaseComponent setObfuscated(Boolean obfuscated) {
-		jsonObject.put("obfuscated", obfuscated);
 		this.obfuscated = obfuscated;
+		if (obfuscated != null) {
+			jsonObject.put("obfuscated", obfuscated);
+		} else {
+			jsonObject.remove("obfuscated");
+		}
 		return this;
 	}
 
