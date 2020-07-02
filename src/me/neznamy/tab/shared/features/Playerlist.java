@@ -129,12 +129,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		Shared.featureCpu.runTaskLater(50, "refreshing tablist name", CPUFeature.TABLIST_NAMES_1, new Runnable() {
-
-			@Override
-			public void run() {
-				refresh(connectedPlayer, true);
-			}
-		});
+		refresh(connectedPlayer, true);
 	}
 }
