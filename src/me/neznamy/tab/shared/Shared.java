@@ -83,7 +83,7 @@ public class Shared {
 		mainClass.sendConsoleMessage("&" + color + "[TAB] " + message);
 	}
 	public static void debug(String message) {
-		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&7[TAB DEBUG] " + message);
+		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&9[TAB DEBUG] " + message);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		if (Premium.is() && !to.hasPermission("tab.admin")) return;
