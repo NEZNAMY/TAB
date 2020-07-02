@@ -226,18 +226,6 @@ public class Placeholders {
 				return p.getVersion().getFriendlyName();
 			}
 		});
-		for (int i=5; i<=20; i++) {
-			final int version = i;
-			registerPlaceholder(new ServerPlaceholder("%version-group:1-" + version + "-x%", 1000) {
-				public String get() {
-					int count = 0;
-					for (ITabPlayer p : Shared.getPlayers()) {
-						if (p.getVersion().getMinorVersion() == version) count++;
-					}
-					return count+"";
-				}
-			});
-		}
 		if (PluginHooks.luckPerms) {
 			registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 				public String get(ITabPlayer p) {
