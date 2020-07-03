@@ -478,8 +478,10 @@ public class Main implements MainClass{
 		}
 
 		//both
+		suggestPlaceholderSwitch("%cmi_user_ping%", "%ping%");
 		suggestPlaceholderSwitch("%player_ping%", "%ping%");
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 		suggestPlaceholderSwitch("%player_name%", "%nick%");
+		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
 	}
 }

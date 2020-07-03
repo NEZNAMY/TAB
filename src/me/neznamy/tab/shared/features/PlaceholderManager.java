@@ -59,6 +59,7 @@ public class PlaceholderManager implements QuitEventListener {
 		playerPlaceholderRefreshIntervals.put("%cmi_user_afk%", 1000); 			//%afk%
 		playerPlaceholderRefreshIntervals.put("%cmi_user_afk_symbol%", 1000); 	//%afk%
 		playerPlaceholderRefreshIntervals.put("%cmi_user_display_name%", 1000);
+		playerPlaceholderRefreshIntervals.put("%cmi_user_ping%", 1000);			//%ping%
 		playerPlaceholderRefreshIntervals.put("%cmi_user_vanished_symbol%", 1000);
 		playerPlaceholderRefreshIntervals.put("%deluxetags_tag%", 1000);		//%deluxetag%
 		playerPlaceholderRefreshIntervals.put("%eglow_glowcolor%", 100);
@@ -79,8 +80,11 @@ public class PlaceholderManager implements QuitEventListener {
 		playerPlaceholderRefreshIntervals.put("%player_y%", 200);				//%yPos%
 		playerPlaceholderRefreshIntervals.put("%player_z%", 200);				//%zPos%
 		playerPlaceholderRefreshIntervals.put("%statistic_deaths%", 1000);		//%deaths%
+		playerPlaceholderRefreshIntervals.put("%statistic_hours_played%", 1000);
 		playerPlaceholderRefreshIntervals.put("%statistic_player_kills%", 1000);
+		playerPlaceholderRefreshIntervals.put("%statistic_time_played%", 1000);
 		playerPlaceholderRefreshIntervals.put("%uperms_prefix%", 1000);			//%vault-prefix%
+		playerPlaceholderRefreshIntervals.put("%uperms_rank%", 1000);			//%rank%
 		playerPlaceholderRefreshIntervals.put("%uperms_suffix%", 1000);			//%vault-suffix%
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance%", 1000);
 		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_commas%", 1000);
@@ -90,6 +94,7 @@ public class PlaceholderManager implements QuitEventListener {
 		playerPlaceholderRefreshIntervals.put("%vault_rank%", 1000);			//%rank%
 		playerPlaceholderRefreshIntervals.put("%vault_rankprefix%", 1000);		//%vault-prefix%
 		playerPlaceholderRefreshIntervals.put("%vault_suffix%", 1000);			//%vault-suffix%
+		playerPlaceholderRefreshIntervals.put("%viaversion_player_protocol_version%", 999999); //%player-version%
 
 		relationalPlaceholderRefreshIntervals.put("%rel_factionsuuid_relation_color%", 500);
 		relationalPlaceholderRefreshIntervals.put("%rel_factions_relation_color%", 500);
