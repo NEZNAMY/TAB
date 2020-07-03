@@ -279,7 +279,7 @@ public class ConfigurationFile{
 		Set<String> values = new HashSet<String>();
 		for (Entry<String, Object> entry : map.entrySet()) {
 			for (String simpleKey : simpleKeys) {
-				if (entry.getKey().equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
+				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
 			}
 			if (entry.getValue() instanceof Map) {
 				values.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
