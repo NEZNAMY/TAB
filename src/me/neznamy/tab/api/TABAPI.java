@@ -1,25 +1,39 @@
 package me.neznamy.tab.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.command.level1.PlayerCommand;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 public class TABAPI {
 
-	public static List<UUID> hiddenNametag = new ArrayList<UUID>();
+	/**
+	 * Returns player object from given UUID
+	 * @return player object from given UUID
+	 * @param id - Player UUID
+	 * @since 2.8.3
+	 */
+	public static TabPlayer getPlayer(UUID id) {
+		return Shared.getPlayer(id);
+	}
+	
+	
+	/**
+	 * Returns player object from given name
+	 * @return player object from given name
+	 * @param name - Player name
+	 * @since 2.8.3
+	 */
+	public static TabPlayer getPlayer(String name) {
+		return Shared.getPlayer(name);
+	}
 	
 	
 	/**
@@ -31,8 +45,8 @@ public class TABAPI {
 	public static boolean isUnlimitedNameTagModeEnabled() {
 		return Shared.features.containsKey("nametagx");
 	}
-	
-	
+
+
 	/**
 	 * Enables unlimited nametag mode permanently in config
 	 * @throws IllegalStateException if called from a proxy
@@ -48,157 +62,8 @@ public class TABAPI {
 			Shared.load(false);
 		} else throw new IllegalStateException("Unlimited nametag mode is only supported on bukkit");
 	}
-	
-	
-	/**
-	 * Changes the requested property of a player temporarily (until next restart, reload or /tab reload)
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @param value The value to be used
-	 * @since 2.5.3
-	 */
-	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
-		ITabPlayer p = Shared.getPlayer(player);
-		if (p == null) return;
-		Placeholders.checkForRegistration(value);
-		p.properties.get(type.toString()).setTemporaryValue(value);
-		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
-			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
-		}
-		p.forceUpdateDisplay();
-	}
-	
-	
-	/**
-	 * Changes the requested property of a player permanently (saved into config too)
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @param value The value to be used
-	 * @since 2.5.3
-	 */
-	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
-		ITabPlayer p = Shared.getPlayer(player);
-		if (p == null) return;
-		Placeholders.checkForRegistration(value);
-		p.properties.get(type.toString()).changeRawValue(value);
-		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, p.getName(), type.toString(), value);
-		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
-			p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
-		}
-		p.forceUpdateDisplay();
-	}
-	
-	
-	/**
-	 * Returns temporary value of player's property or null if not set
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @return Temporary value of player's property or null if not set
-	 * @see hasTemporaryValue
-	 * @see setValueTemporarily
-	 * @since 2.5.3
-	 */
-	public static String getTemporaryValue(UUID player, EnumProperty type) {
-		return Shared.getPlayer(player).properties.get(type.toString()).getTemporaryValue();
-	}
-	
-	
-	/**
-	 * Returns Whether player has temporary value or not
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @return Whether player has temporary value or not
-	 * @since 2.5.3
-	 */
-	public static boolean hasTemporaryValue(UUID player, EnumProperty type) {
-		return getTemporaryValue(player, type) != null;
-	}
-	
-	
-	/**
-	 * Removes temporary value from player if set
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @since 2.5.3
-	 */
-	public static void removeTemporaryValue(UUID player, EnumProperty type) {
-		setValueTemporarily(player, type, null);
-	}
-	
-	
-	/**
-	 * Returns original value of property of player
-	 * @param player UUID of player
-	 * @param type Type of property
-	 * @return Original value of property of player
-	 * @since 2.5.3
-	 */
-	public static String getOriginalValue(UUID player, EnumProperty type) {
-		return Shared.getPlayer(player).properties.get(type.toString()).getOriginalRawValue();
-	}
-	
-	
-	/**
-	 * Sends requested header and footer to player
-	 * @param player UUID of player
-	 * @param header Header
-	 * @param footer Footer
-	 * @since 2.4.12
-	 */
-	public static void sendHeaderFooter(UUID player, String header, String footer) {
-		Shared.getPlayer(player).sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
-	}
-	
-	
-	/**
-	 * Sends empty header/footer to a player
-	 * @param player UUID of player
-	 * @since 2.4.12
-	 */
-	public static void clearHeaderFooter(UUID player) {
-		sendHeaderFooter(player, "", "");
-	}
-	
-	
-	/**
-	 * Makes player's nametag invisible until server restart/reload or /plugman reload tab
-	 * @param player UUID of player
-	 * @see showNametag 
-	 * @see hasHiddenNametag
-	 * @since 2.4.12
-	 */
-	public static void hideNametag(UUID player) {
-		hiddenNametag.add(player);
-		Shared.getPlayer(player).updateTeamData();
-	}
-	
-	
-	/**
-	 * Makes player's nametag visible again
-	 * @param player UUID of player
-	 * @see hideNametag
-	 * @see hasHiddenNametag
-	 * @since 2.4.12
-	 */
-	public static void showNametag(UUID player) {
-		hiddenNametag.remove(player);
-		Shared.getPlayer(player).updateTeamData();
-	}
-	
-	
-	/**
-	 * Return whether player has hidden nametag or not
-	 * @param player UUID of player
-	 * @return Whether player has hidden nametag or not
-	 * @since 2.4.12
-	 * @see hideNametag
-	 * @see showNametag
-	 */
-	public static boolean hasHiddenNametag(UUID player) {
-		return hiddenNametag.contains(player);
-	}
-	
-	
+
+
 	/**
 	 * Registers a player placeholder (placeholder with player-specific output)
 	 * @param placeholder - Placeholder handler
@@ -209,8 +74,8 @@ public class TABAPI {
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
 		Placeholders.registerPlaceholder(placeholder, true);
 	}
-	
-	
+
+
 	/**
 	 * Registers a server placeholder (placeholder with same output for all players)
 	 * @param placeholder - Placeholder handler
@@ -221,8 +86,8 @@ public class TABAPI {
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
 		Placeholders.registerPlaceholder(placeholder, true);
 	}
-	
-	
+
+
 	/**
 	 * Registers a server constant (constant with same output for all players)
 	 * @param constant - Constant handler
@@ -233,7 +98,7 @@ public class TABAPI {
 	public static void registerServerConstant(ServerConstant constant) {
 		Placeholders.registerPlaceholder(constant);
 	}
-	
+
 	/**
 	 * Registers a relational placeholder
 	 * @param placeholder - Placeholder handler
@@ -242,8 +107,8 @@ public class TABAPI {
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
 		Placeholders.registerPlaceholder(placeholder);
 	}
-	
-	
+
+
 	/**
 	 * Creates a new scoreboard
 	 * @param title - the scoreboard title
@@ -252,16 +117,61 @@ public class TABAPI {
 	 * @since 2.7.7
 	 */
 	public static Scoreboard createScoreboard(String title, List<String> lines) {
-		if (!Premium.is()) throw new IllegalArgumentException("Not supported in free version");
 		for (String line : lines) {
 			Placeholders.checkForRegistration(line);
 		}
 		ScoreboardManager sbm = (ScoreboardManager) Shared.features.get("scoreboard");
+		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard("API", title, lines);
 		sbm.APIscoreboards.add((me.neznamy.tab.premium.Scoreboard) sb);
 		return sb;
 	}
-	
+
+
+	@Deprecated
+	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
+		getPlayer(player).setValueTemporarily(type, value);
+	}
+	@Deprecated
+	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
+		getPlayer(player).setValuePermanently(type, value);
+	}
+	@Deprecated
+	public static String getTemporaryValue(UUID player, EnumProperty type) {
+		return getPlayer(player).getTemporaryValue(type);
+	}
+	@Deprecated
+	public static boolean hasTemporaryValue(UUID player, EnumProperty type) {
+		return getTemporaryValue(player, type) != null;
+	}
+	@Deprecated
+	public static void removeTemporaryValue(UUID player, EnumProperty type) {
+		setValueTemporarily(player, type, null);
+	}
+	@Deprecated
+	public static String getOriginalValue(UUID player, EnumProperty type) {
+		return getPlayer(player).getOriginalValue(type);
+	}
+	@Deprecated
+	public static void sendHeaderFooter(UUID player, String header, String footer) {
+		getPlayer(player).sendHeaderFooter(header, footer);
+	}
+	@Deprecated
+	public static void clearHeaderFooter(UUID player) {
+		sendHeaderFooter(player, "", "");
+	}
+	@Deprecated
+	public static void hideNametag(UUID player) {
+		getPlayer(player).hideNametag();
+	}
+	@Deprecated
+	public static void showNametag(UUID player) {
+		getPlayer(player).showNametag();
+	}
+	@Deprecated
+	public static boolean hasHiddenNametag(UUID player) {
+		return getPlayer(player).hasHiddenNametag();
+	}
 	@Deprecated
 	public static void setCustomTabNameTemporarily(UUID uniqueId, String value) {
 		setValueTemporarily(uniqueId, EnumProperty.CUSTOMTABNAME, value);
@@ -294,7 +204,6 @@ public class TABAPI {
 	public static void setBelowNameTemporarily(UUID uniqueId, String value) {
 		setValueTemporarily(uniqueId, EnumProperty.BELOWNAME, value);
 	}
-	
 	@Deprecated
 	public static void setCustomTabNamePermanently(UUID uniqueId, String value) {
 		setValuePermanently(uniqueId, EnumProperty.CUSTOMTABNAME, value);
@@ -327,7 +236,6 @@ public class TABAPI {
 	public static void setBelowNamePermanently(UUID uniqueId, String value) {
 		setValuePermanently(uniqueId, EnumProperty.BELOWNAME, value);
 	}
-	
 	@Deprecated
 	public static String getTemporaryCustomTabName(UUID uniqueId) {
 		return getTemporaryValue(uniqueId, EnumProperty.CUSTOMTABNAME);
@@ -360,7 +268,6 @@ public class TABAPI {
 	public static String getTemporaryBelowName(UUID uniqueId) {
 		return getTemporaryValue(uniqueId, EnumProperty.BELOWNAME);
 	}
-	
 	@Deprecated
 	public static boolean hasTemporaryCustomTabName(UUID uniqueId) {
 		return getTemporaryCustomTabName(uniqueId) != null;
@@ -393,7 +300,6 @@ public class TABAPI {
 	public static boolean hasTemporaryBelowName(UUID uniqueId) {
 		return getTemporaryBelowName(uniqueId) != null;
 	}
-	
 	@Deprecated
 	public static void removeTemporaryCustomTabName(UUID uniqueId) {
 		setCustomTabNameTemporarily(uniqueId, null);
@@ -426,7 +332,6 @@ public class TABAPI {
 	public static void removeTemporaryBelowName(UUID uniqueId) {
 		setBelowNameTemporarily(uniqueId, null);
 	}
-	
 	@Deprecated
 	public static String getOriginalCustomTabName(UUID uniqueId) {
 		return getOriginalValue(uniqueId, EnumProperty.CUSTOMTABNAME);
@@ -459,5 +364,5 @@ public class TABAPI {
 	public static String getOriginalBelowName(UUID uniqueId) {
 		return getOriginalValue(uniqueId, EnumProperty.BELOWNAME);
 	}
-	
+
 }

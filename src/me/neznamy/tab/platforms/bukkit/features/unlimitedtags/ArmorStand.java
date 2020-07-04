@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -140,7 +139,7 @@ public class ArmorStand{
 	}
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
-		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !TABAPI.hasHiddenNametag(owner.getUniqueId()) && property.get().length() > 0;
+		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
 	public void updateLocation(Location newLocation) {
 		double x = newLocation.getX();

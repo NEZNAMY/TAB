@@ -10,22 +10,25 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.TABAPI;
+import me.neznamy.tab.api.EnumProperty;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
+import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public abstract class ITabPlayer {
+public abstract class ITabPlayer implements TabPlayer{
 
 	public String name;
 	public UUID uniqueId;
@@ -57,6 +60,7 @@ public abstract class ITabPlayer {
 	public boolean lastCollision;
 	public boolean lastVisibility;
 	public boolean onJoinFinished;
+	public boolean hiddenNametag;
 
 	public void init() {
 		updateGroupIfNeeded(false);
@@ -171,7 +175,7 @@ public abstract class ITabPlayer {
 	}
 
 	private boolean getTeamVisibility() {
-		if (TABAPI.hasHiddenNametag(getUniqueId()) || Configs.SECRET_invisible_nametags) return false;
+		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
 		return !Shared.features.containsKey("nametagx") && nameTagVisible;
 	}
 
@@ -414,5 +418,54 @@ public abstract class ITabPlayer {
 	}
 	public void forceUpdateDisplay() {
 		Shared.refreshables.forEach(r -> r.refresh(this, true));
+	}
+	
+	
+	/*
+	 *  Implementing interface
+	 */
+	
+	public void setValueTemporarily(EnumProperty type, String value) {
+		Placeholders.checkForRegistration(value);
+		properties.get(type.toString()).setTemporaryValue(value);
+		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+			setProperty("nametag",properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
+		}
+		forceUpdateDisplay();
+	}
+	public void setValuePermanently(EnumProperty type, String value) {
+		Placeholders.checkForRegistration(value);
+		properties.get(type.toString()).changeRawValue(value);
+		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
+		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
+		}
+		forceUpdateDisplay();
+	}
+	public String getTemporaryValue(EnumProperty type) {
+		return properties.get(type.toString()).getTemporaryValue();
+	}
+	public boolean hasTemporaryValue(EnumProperty type) {
+		return getTemporaryValue(type) != null;
+	}
+	public void removeTemporaryValue(EnumProperty type) {
+		setValueTemporarily(type, null);
+	}
+	public String getOriginalValue(EnumProperty type) {
+		return properties.get(type.toString()).getOriginalRawValue();
+	}
+	public void sendHeaderFooter(String header, String footer) {
+		sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
+	}
+	public void hideNametag() {
+		hiddenNametag = true;
+		updateTeamData();
+	}
+	public void showNametag() {
+		hiddenNametag = false;
+		updateTeamData();
+	}
+	public boolean hasHiddenNametag() {
+		return hiddenNametag;
 	}
 }
