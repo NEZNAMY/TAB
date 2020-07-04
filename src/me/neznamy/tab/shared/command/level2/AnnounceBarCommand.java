@@ -37,10 +37,12 @@ public class AnnounceBarCommand extends SubCommand{
 								feature.announcements.add(barname);
 								for (ITabPlayer all : Shared.getPlayers()) {
 									bar.create(all);
+									all.activeBossBars.add(bar);
 								}
 								Thread.sleep(duration*1000);
 								for (ITabPlayer all : Shared.getPlayers()) {
 									bar.remove(all);
+									all.activeBossBars.remove(bar);
 								}
 								feature.announcements.remove(barname);
 							} catch (Exception e) {
