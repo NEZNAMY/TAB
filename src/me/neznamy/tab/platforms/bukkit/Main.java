@@ -33,6 +33,14 @@ import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.CMI;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.Essentials;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.None;
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.xAntiAFK;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
@@ -312,85 +320,23 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return Placeholders.decimal2.format(Math.min(20, MethodAPI.getInstance().getTPS()));
 			}
 		});
+		AFKProvider afk;
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
-			Shared.debug("Loaded AFK provider: xAntiAFK");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-				public String get(ITabPlayer p) {
-					return PluginHooks.xAntiAFK_isAfk(p)?Configs.yesAfk:Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new xAntiAFK();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
-			Shared.debug("Loaded AFK provider: AFKPlus");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.AFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new AFKPlus();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
-			Shared.debug("Loaded AFK provider: AutoAFK");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.AutoAFK_isAFK(p)? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new AutoAFK();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
-			Shared.debug("Loaded AFK provider: CMI");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.CMI_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new CMI();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-			Shared.debug("Loaded AFK provider: Essentials");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.Essentials_isAFK(p) ? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new Essentials();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
-			Shared.debug("Loaded AFK provider: AntiAFKPlus");
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-
-				public String get(ITabPlayer p) {
-					return PluginHooks.AntiAFKPlus_isAFK(p)? Configs.yesAfk : Configs.noAfk;
-				}
-				@Override
-				public String[] getChilds(){
-					return new String[] {Configs.yesAfk, Configs.noAfk};
-				}
-			});
+			afk = new AntiAFKPlus();
 		} else {
-			Shared.debug("Loaded AFK provider: <None>");
-			Placeholders.registerPlaceholder(new ServerConstant("%afk%") {
-				public String get() {
-					return "";
-				}
-			});
+			afk = new None();
 		}
+		afk.register();
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;

@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.Zrips.CMI.CMI;
-import com.Zrips.CMI.Containers.CMIUser;
 import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -68,54 +64,11 @@ public class PluginHooks {
 		}
 		return false;
 	}
-	public static boolean AFKPlus_isAFK(ITabPlayer p) {
-		try {
-			Object AFKPlus = Bukkit.getPluginManager().getPlugin("AFKPlus");
-			Object AFKPlusPlayer = AFKPlus.getClass().getMethod("getPlayer", UUID.class).invoke(AFKPlus, p.getUniqueId());
-			return (boolean) AFKPlusPlayer.getClass().getMethod("isAFK").invoke(AFKPlusPlayer);
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AFKPlus", t);
-		}
-	}
-	//paid plugin and i do not want to leak the jar when providing all dependencies
-	public static boolean AntiAFKPlus_isAFK(ITabPlayer p) {
-		try {
-			Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-			return (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getBukkitEntity());
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AntiAFKPlus", t);
-		}
-	}
-	//map is private
-	public static boolean AutoAFK_isAFK(ITabPlayer p) {
-		try {
-			Object plugin = Bukkit.getPluginManager().getPlugin("AutoAFK");
-			Field f = plugin.getClass().getDeclaredField("afkList");
-			f.setAccessible(true);
-			HashMap<?, ?> map = (HashMap<?, ?>) f.get(plugin);
-			return map.containsKey(p.getBukkitEntity());
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using AutoAFK", t);
-		}
-	}
 	public static String BungeePerms_getMainGroup(ITabPlayer p) {
 		try {
 			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
-		}
-	}
-	public static boolean CMI_isAFK(ITabPlayer p) {
-		try {
-			//cannot be accessed via reflection due to a java issue
-			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p.getBukkitEntity());
-			if (user == null) {
-				Shared.errorManager.printError("CMI v" + getVersion("CMI") + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
-				return false;
-			}
-			return user.isAfk();
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using CMI", t);
 		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
@@ -134,13 +87,6 @@ public class PluginHooks {
 	}
 	public static String Essentials_getNickname(ITabPlayer p) {
 		return ((Essentials)essentials).getUser(p.getBukkitEntity()).getNickname();
-	}
-	public static boolean Essentials_isAFK(ITabPlayer p) {
-		try {
-			return ((Essentials)essentials).getUser(p.getBukkitEntity()).isAfk();
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using Essentials", t);
-		}
 	}
 	public static String GroupManager_getGroup(ITabPlayer p) {
 		try {
@@ -429,13 +375,6 @@ public class PluginHooks {
 			return ver;
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ViaVersion v" + getVersion("ViaVersion"), e);
-		}
-	}
-	public static boolean xAntiAFK_isAfk(ITabPlayer p) {
-		try {
-			return (boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getBukkitEntity());
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(false, "Failed to check AFK status of " + p.getName() + " using xAntiAFK", t);
 		}
 	}
 

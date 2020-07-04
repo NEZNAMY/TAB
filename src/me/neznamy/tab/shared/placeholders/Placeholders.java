@@ -31,7 +31,7 @@ public class Placeholders {
 	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 	public static Map<String, RelationalPlaceholder> registeredRelationalPlaceholders = new HashMap<String, RelationalPlaceholder>();
 
-	public static List<Placeholder> usedPlaceholders = new ArrayList<Placeholder>();
+	public static Set<Placeholder> usedPlaceholders = new HashSet<Placeholder>();
 	
 	public static Collection<Placeholder> getAllPlaceholders(){
 		return registeredPlaceholders.values();
