@@ -33,7 +33,7 @@ public class PlayerCommand extends SubCommand {
 					ITabPlayer pl = Shared.getPlayer(player);
 					if (pl != null) {
 						pl.updateAll();
-						pl.forceUpdateDisplay();
+						pl.forceRefresh();
 					}
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", player));
 				}
@@ -77,7 +77,7 @@ public class PlayerCommand extends SubCommand {
 		Placeholders.checkForRegistration(value);
 		if (pl != null) {
 			pl.updateAll();
-			pl.forceUpdateDisplay();
+			pl.forceRefresh();
 		}
 		if (value != null){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));

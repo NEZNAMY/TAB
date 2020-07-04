@@ -92,4 +92,10 @@ public interface TabPlayer {
 	 * @see showNametag
 	 */
 	public boolean hasHiddenNametag();
+	
+	/**
+	 * Refreshes all visuals on the player
+	 * @since 2.8.3
+	 */
+	public void forceRefresh();
 }

@@ -36,7 +36,7 @@ public class PlayerUUIDCommand extends SubCommand {
 					Configs.config.set("Users." + changed.getUniqueId().toString(), null);
 					Configs.config.save();
 					changed.updateAll();
-					changed.forceUpdateDisplay();
+					changed.forceRefresh();
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
 				return;
@@ -77,7 +77,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		Configs.config.save();
 		Placeholders.checkForRegistration(value);
 		player.updateAll();
-		player.forceUpdateDisplay();
+		player.forceRefresh();
 		if (value != null){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		} else {

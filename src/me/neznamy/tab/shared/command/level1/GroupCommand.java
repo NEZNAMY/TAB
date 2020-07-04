@@ -33,7 +33,7 @@ public class GroupCommand extends SubCommand {
 					for (ITabPlayer pl : Shared.getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.updateAll();
-							pl.forceUpdateDisplay();
+							pl.forceRefresh();
 						}
 					}
 					sendMessage(sender, Configs.data_removed.replace("%category%", "group").replace("%value%", group));
@@ -78,7 +78,7 @@ public class GroupCommand extends SubCommand {
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.updateAll();
-				pl.forceUpdateDisplay();
+				pl.forceRefresh();
 			}
 		}
 		if (value != null){

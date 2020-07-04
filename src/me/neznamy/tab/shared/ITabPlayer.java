@@ -218,7 +218,7 @@ public abstract class ITabPlayer implements TabPlayer{
 			permissionGroup = newGroup;
 			if (updateDataIfChanged) {
 				updateAll();
-				forceUpdateDisplay();
+				forceRefresh();
 			}
 		}
 	}
@@ -392,9 +392,6 @@ public abstract class ITabPlayer implements TabPlayer{
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
-	public void forceUpdateDisplay() {
-		Shared.refreshables.forEach(r -> r.refresh(this, true));
-	}
 	
 	
 	/*
@@ -407,7 +404,7 @@ public abstract class ITabPlayer implements TabPlayer{
 		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		}
-		forceUpdateDisplay();
+		forceRefresh();
 	}
 	public void setValuePermanently(EnumProperty type, String value) {
 		Placeholders.checkForRegistration(value);
@@ -416,7 +413,7 @@ public abstract class ITabPlayer implements TabPlayer{
 		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		}
-		forceUpdateDisplay();
+		forceRefresh();
 	}
 	public String getTemporaryValue(EnumProperty type) {
 		return properties.get(type.toString()).getTemporaryValue();
@@ -443,5 +440,8 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 	public boolean hasHiddenNametag() {
 		return hiddenNametag;
+	}
+	public void forceRefresh() {
+		Shared.refreshables.forEach(r -> r.refresh(this, true));
 	}
 }
