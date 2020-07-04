@@ -248,7 +248,6 @@ public abstract class ITabPlayer implements TabPlayer{
 			}
 		}
 		if (rank == null) rank = permissionGroup;
-		updateRawHeaderAndFooter();
 	}
 
 	private void updateProperty(String property) {
@@ -290,33 +289,10 @@ public abstract class ITabPlayer implements TabPlayer{
 		setProperty(property, "", "None");
 	}
 
-	private void updateRawHeaderAndFooter() {
-		updateRawValue("header");
-		updateRawValue("footer");
-	}
-
-	private void updateRawValue(String name) {
-		String worldGroup = getWorldGroupOf(getWorldName());
-		StringBuilder rawValue = new StringBuilder();
-		List<String> lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Users." + getName() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Users." + getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + permissionGroup + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Groups." + permissionGroup + "." + name);
-		if (lines == null) lines = Configs.config.getStringList(name);
-		if (lines == null) lines = new ArrayList<String>();
-		int i = 0;
-		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
-			rawValue.append(line);
-		}
-		setProperty(name, rawValue.toString(), null);
-	}
+	
 
 	@SuppressWarnings("unchecked")
-	private String getWorldGroupOf(String world) {
+	public String getWorldGroupOf(String world) {
 		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.separatorType + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {

@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.shared.Configs;
@@ -11,6 +13,7 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
@@ -21,7 +24,11 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()) refresh(p, true);
+		for (ITabPlayer p : Shared.getPlayers()) {
+			updateRawValue(p, "header");
+			updateRawValue(p, "footer");
+			refresh(p, true);
+		}
 	}
 	@Override
 	public void unload() {
@@ -37,6 +44,8 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.getVersion().getMinorVersion() < 8) return;
+		updateRawValue(p, "header");
+		updateRawValue(p, "footer");
 		if (p.disabledHeaderFooter) {
 			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
 		} else {
@@ -46,6 +55,10 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void refresh(ITabPlayer p, boolean force) {
 		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
+		if (force) {
+			updateRawValue(p, "header");
+			updateRawValue(p, "footer");
+		}
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").updateAndGet(), p.properties.get("footer").updateAndGet()));
 	}
 	@Override
@@ -55,5 +68,24 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.HEADER_FOOTER;
+	}
+	private void updateRawValue(ITabPlayer p, String name) {
+		String worldGroup = p.getWorldGroupOf(p.getWorldName());
+		StringBuilder rawValue = new StringBuilder();
+		List<String> lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Users." + p.getName() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Users." + p.getUniqueId().toString() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("Groups." + p.getGroup() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList(name);
+		if (lines == null) lines = new ArrayList<String>();
+		int i = 0;
+		for (String line : lines) {
+			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
+			rawValue.append(line);
+		}
+		p.setProperty(name, rawValue.toString(), null);
 	}
 }
