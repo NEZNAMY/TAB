@@ -41,7 +41,6 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.MainClass;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -60,6 +59,8 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
@@ -249,8 +250,12 @@ public class Main implements MainClass{
 		return GsonComponentSerializer.INSTANCE.serialize(component);
 	}
 	public void registerPlaceholders() {
-		PluginHooks.luckPerms = server.getPluginManager().getPlugin("luckperms").isPresent();
-		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get();
+		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
+			Shared.permissionPlugin = new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
+		} else {
+			Shared.permissionPlugin = new None();
+		}
+
 		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
@@ -363,10 +368,6 @@ public class Main implements MainClass{
 	}
 	public void sendRawConsoleMessage(String message) {
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
-	}
-	public String getPermissionPlugin() {
-		if (PluginHooks.luckPerms) return "luckperms";
-		return "Unknown/None";
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
 		return packet.toVelocity(protocolVersion);

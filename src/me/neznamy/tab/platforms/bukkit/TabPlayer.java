@@ -36,34 +36,6 @@ public class TabPlayer extends ITabPlayer{
 		init();
 	}
 	@Override
-	public String getGroupFromPermPlugin() {
-		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-		if (PluginHooks.permissionsEx) {
-			String[] groups = PluginHooks.PermissionsEx_getGroupNames(this);
-			if (groups.length == 0) return "null";
-			return groups[0];
-		}
-		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroup(this);
-		if (PluginHooks.ultrapermissions) {
-			String[] groups = PluginHooks.UltraPermissions_getAllGroups(this);
-			if (groups.length == 0) return "null";
-			return groups[0];
-		}
-		if (PluginHooks.networkmanager != null) return PluginHooks.NetworkManager_getPrimaryGroup(this);
-		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getPrimaryGroup(this);
-		return "null";
-	}
-	@Override
-	public String[] getGroupsFromPermPlugin() {
-		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getAllGroups(this);
-		if (PluginHooks.permissionsEx) return PluginHooks.PermissionsEx_getGroupNames(this);
-		if (PluginHooks.groupManager != null) return PluginHooks.GroupManager_getGroups(this);
-		if (PluginHooks.ultrapermissions) return PluginHooks.UltraPermissions_getAllGroups(this);
-		if (PluginHooks.networkmanager != null) return PluginHooks.NetworkManager_getAllGroups(this);
-		if (PluginHooks.Vault_permission != null && !PluginHooks.Vault_getPermissionPlugin().equals("SuperPerms")) return PluginHooks.Vault_getGroups(this);
-		return new String[] {"null"};
-	}
-	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}

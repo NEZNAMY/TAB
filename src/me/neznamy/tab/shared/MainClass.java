@@ -8,7 +8,6 @@ public interface MainClass {
 	public void loadFeatures(boolean inject) throws Exception;
 	public void sendConsoleMessage(String message);
 	public void sendRawConsoleMessage(String message);
-	public String getPermissionPlugin();
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
 	public void registerUnknownPlaceholder(String identifier);

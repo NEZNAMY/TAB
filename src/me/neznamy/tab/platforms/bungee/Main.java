@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.bukkit.Bukkit;
+
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -14,6 +17,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.platforms.bungee.permission.BungeePerms;
+import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
@@ -42,6 +47,8 @@ import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
@@ -254,10 +261,18 @@ public class Main extends Plugin implements Listener, MainClass{
 		return false;
 	}
 	public void registerPlaceholders() {
-		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
-		PluginHooks.luckPerms = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null;
-		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
-		PluginHooks.ultrapermissions = ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null;
+		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;		
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+			Shared.permissionPlugin = new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
+			Shared.permissionPlugin = new UltraPermissions();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("BungeePerms")) {
+			Shared.permissionPlugin = new BungeePerms();
+		} else {
+			Shared.permissionPlugin = new None();
+		}
+		
 		if (PluginHooks.premiumVanish) {
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
@@ -341,12 +356,6 @@ public class Main extends Plugin implements Listener, MainClass{
 	@SuppressWarnings("deprecation")
 	public void sendRawConsoleMessage(String message) {
 		ProxyServer.getInstance().getConsole().sendMessage(message);
-	}
-	public String getPermissionPlugin() {
-		if (PluginHooks.luckPerms) return "LuckPerms";
-		if (PluginHooks.ultrapermissions) return "UltraPermissions";
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return "BungeePerms";
-		return "Unknown/None";
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
 		return packet.toBungee(protocolVersion);

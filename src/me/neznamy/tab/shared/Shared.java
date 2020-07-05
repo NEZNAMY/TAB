@@ -26,6 +26,7 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Shared {
@@ -55,6 +56,7 @@ public class Shared {
 	public static CPUManager bukkitBridgePlaceholderCpu;
 	public static ErrorManager errorManager;
 	public static TabCommand command;
+	public static PermissionPlugin permissionPlugin;
 	
 	public static String brokenFile = "-";
 

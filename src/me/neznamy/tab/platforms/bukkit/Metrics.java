@@ -85,8 +85,7 @@ public class Metrics {
 		}));
 		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
 			public String call() {
-				if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) return "UltraPermissions";
-				return Shared.mainClass.getPermissionPlugin();
+				return Shared.permissionPlugin.getName();
 			}
 		}));
 		metrics.addCustomChart(new Metrics.SimplePie("server_version", new Callable<String>() {

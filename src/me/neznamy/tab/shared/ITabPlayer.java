@@ -75,9 +75,6 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	//per-type
-	public abstract String getGroupFromPermPlugin();
-
-	public abstract String[] getGroupsFromPermPlugin();
 
 	public abstract boolean hasPermission(String permission);
 
@@ -148,6 +145,22 @@ public abstract class ITabPlayer implements TabPlayer{
 
 	public PlayerInfoData getInfoData() {
 		return infoData;
+	}
+	
+	public String getGroupFromPermPlugin() {
+		try {
+			return Shared.permissionPlugin.getPrimaryGroup(this);
+		} catch (Throwable e) {
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + getName() + " using " + Shared.permissionPlugin.getName(), e);
+		}
+	}
+
+	public String[] getGroupsFromPermPlugin() {
+		try {
+			return Shared.permissionPlugin.getAllGroups(this);
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + getName() + " using " + Shared.permissionPlugin.getName(), e);
+		}
 	}
 
 	public String setProperty(String identifier, String rawValue, String source) {

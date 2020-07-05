@@ -23,16 +23,16 @@ public class Placeholders {
 	public static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
-	
+
 	//all placeholders used in all configuration files, including invalid ones
 	public static List<String> allUsedPlaceholderIdentifiers = new ArrayList<String>();
-	
+
 	//plugin internals + PAPI + API
 	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 	public static Map<String, RelationalPlaceholder> registeredRelationalPlaceholders = new HashMap<String, RelationalPlaceholder>();
 
 	public static Set<Placeholder> usedPlaceholders = new HashSet<Placeholder>();
-	
+
 	public static Collection<Placeholder> getAllPlaceholders(){
 		return registeredPlaceholders.values();
 	}
@@ -226,18 +226,16 @@ public class Placeholders {
 				return p.getVersion().getFriendlyName();
 			}
 		});
-		if (PluginHooks.luckPerms) {
-			registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
-				public String get(ITabPlayer p) {
-					return PluginHooks.LuckPerms_getPrefix(p);
-				}
-			});
-			registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
-				public String get(ITabPlayer p) {
-					return PluginHooks.LuckPerms_getSuffix(p);
-				}
-			});
-		}
+		registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
+			public String get(ITabPlayer p) {
+				return PluginHooks.LuckPerms_getPrefix(p);
+			}
+		});
+		registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
+			public String get(ITabPlayer p) {
+				return PluginHooks.LuckPerms_getSuffix(p);
+			}
+		});
 		for (String placeholder : allUsedPlaceholderIdentifiers) {
 			categorizeUsedPlaceholder(placeholder);
 		}
@@ -252,7 +250,7 @@ public class Placeholders {
 			if (!(registeredPlaceholders.get(identifier) instanceof ServerConstant)) usedPlaceholders.add(registeredPlaceholders.get(identifier));
 			return;
 		}
-		
+
 		if (identifier.contains("animation:")) {
 			//animation
 			String animationName = identifier.substring(11, identifier.length()-1);

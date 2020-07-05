@@ -7,7 +7,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.kyori.text.TextComponent;
@@ -25,15 +24,6 @@ public class TabPlayer extends ITabPlayer{
 		name = p.getUsername();
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
 		init();
-	}
-	@Override
-	public String getGroupFromPermPlugin() {
-		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-		return "null";
-	}
-	@Override
-	public String[] getGroupsFromPermPlugin() {
-		return new String[] {getGroupFromPermPlugin()};
 	}
 	@Override
 	public boolean hasPermission(String permission) {

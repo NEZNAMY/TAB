@@ -77,7 +77,7 @@ public class Metrics {
 		Metrics metrics = new Metrics(plugin);
 		metrics.addCustomChart(new Metrics.SimplePie("permission_system", new Callable<String>() {
 			public String call() {
-				return Shared.mainClass.getPermissionPlugin();
+				return Shared.permissionPlugin.getName();
 			}
 		}));
 		metrics.addCustomChart(new Metrics.SimplePie("global_playerlist_enabled", new Callable<String>() {

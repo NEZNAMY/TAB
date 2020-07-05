@@ -33,6 +33,10 @@ import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.permission.GroupManager;
+import me.neznamy.tab.platforms.bukkit.permission.NetworkManager;
+import me.neznamy.tab.platforms.bukkit.permission.PermissionsEx;
+import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
@@ -67,11 +71,14 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
@@ -235,18 +242,28 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(de.robingrether.idisguise.api.DisguiseAPI.class);
 			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
-		PluginHooks.luckPerms = Bukkit.getPluginManager().isPluginEnabled("LuckPerms");
-		if (PluginHooks.luckPerms) PluginHooks.luckPermsVersion = Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion();
-		PluginHooks.groupManager = Bukkit.getPluginManager().getPlugin("GroupManager");
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		PluginHooks.permissionsEx = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		PluginHooks.deluxetags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
 		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
-		PluginHooks.ultrapermissions = Bukkit.getPluginManager().isPluginEnabled("UltraPermissions");
-		PluginHooks.networkmanager = Bukkit.getPluginManager().getPlugin("NetworkManager");
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
+			Shared.permissionPlugin = new GroupManager();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
+			Shared.permissionPlugin = new NetworkManager();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
+			Shared.permissionPlugin = new PermissionsEx();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+			Shared.permissionPlugin = new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
+			Shared.permissionPlugin = new UltraPermissions();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+			Shared.permissionPlugin = new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider());
+		} else {
+			Shared.permissionPlugin = new me.neznamy.tab.shared.permission.None();
+		}
 
 		usedExpansions = new HashSet<String>();
 
@@ -481,15 +498,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	}
 	public void sendRawConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(message);
-	}
-	public String getPermissionPlugin() {
-		if (PluginHooks.luckPerms) return "LuckPerms";
-		if (PluginHooks.permissionsEx) return "PermissionsEx";
-		if (PluginHooks.groupManager != null) return "GroupManager";
-		if (PluginHooks.ultrapermissions) return "UltraPermissions";
-		if (PluginHooks.networkmanager != null) return "NetworkManager";
-		if (PluginHooks.Vault_permission != null) return PluginHooks.Vault_getPermissionPlugin() + " (detected by Vault)";
-		return "Unknown/None";
 	}
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
 		return packet.toNMS(protocolVersion);

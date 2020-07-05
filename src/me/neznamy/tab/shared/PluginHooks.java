@@ -1,11 +1,7 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,41 +11,24 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.TechsCode.UltraPermissions.UltraPermissions;
-import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
-import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
-import me.TechsCode.UltraPermissions.storage.objects.Group;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.lucko.luckperms.LuckPerms;
-import net.alpenblock.bungeeperms.BungeePerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.InheritanceNode;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
-import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
-import nl.chimpgamer.networkmanager.api.models.permissions.PermissionPlayer;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginHooks {
 
 	public static boolean libsDisguises;
-	public static boolean luckPerms;
-	public static String luckPermsVersion;
-	public static boolean permissionsEx;
 	public static boolean placeholderAPI;
 	public static boolean deluxetags;
 	public static boolean viaversion;
 	public static boolean protocolsupport;
-	public static boolean ultrapermissions;
-	public static Object networkmanager;
 	public static Object essentials;
 	public static Object idisguise;
 	public static Object groupManager;
 	public static Object Vault_economy;
-	public static Object Vault_permission;
 	public static Object Vault_chat;
 
 	public static boolean premiumVanish;
@@ -63,13 +42,6 @@ public class PluginHooks {
 			}
 		}
 		return false;
-	}
-	public static String BungeePerms_getMainGroup(ITabPlayer p) {
-		try {
-			return BungeePerms.getInstance().getPermissionsManager().getMainGroup(BungeePerms.getInstance().getPermissionsManager().getUser(p.getUniqueId())).getName();
-		} catch (Throwable t) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using BungeePerms", t);
-		}
 	}
 	public static String DeluxeTag_getPlayerDisplayTag(ITabPlayer p) {
 		try {
@@ -88,20 +60,6 @@ public class PluginHooks {
 	public static String Essentials_getNickname(ITabPlayer p) {
 		return ((Essentials)essentials).getUser(p.getBukkitEntity()).getNickname();
 	}
-	public static String GroupManager_getGroup(ITabPlayer p) {
-		try {
-			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroup(p.getName());
-		} catch (Throwable t) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using GroupManager", t);
-		}
-	}
-	public static String[] GroupManager_getGroups(ITabPlayer p) {
-		try {
-			return ((GroupManager)groupManager).getWorldsHolder().getWorldPermissions(p.getWorldName()).getGroups(p.getName());
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using GroupManager", t);
-		}
-	}
 	public static boolean iDisguise_isDisguised(ITabPlayer p) {
 		try {
 			return ((de.robingrether.idisguise.api.DisguiseAPI)idisguise).isDisguised(p.getBukkitEntity());
@@ -116,29 +74,6 @@ public class PluginHooks {
 			return Shared.errorManager.printError(false, "Failed to check disguise status of " + p.getName() + " using LibsDisguises", e);
 		}
 	}
-	public static String[] LuckPerms_getAllGroups(ITabPlayer p) {
-		try {
-			try {
-				//LuckPerms API v5
-				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
-					return new String[] {"null"};
-				}
-				return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
-			} catch (NoClassDefFoundError e) {
-				//LuckPerms API v4
-				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
-				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
-					return new String[] {"null"};
-				}
-				return user.getAllNodes().stream().filter(me.lucko.luckperms.api.Node::isGroupNode).map(me.lucko.luckperms.api.Node::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
-			}
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using LuckPerms", t);
-		}
-	}
 	public static String LuckPerms_getPrefix(ITabPlayer p) {
 		try {
 			String prefix;
@@ -146,7 +81,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 					return "";
 				}
 				prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
@@ -154,7 +89,7 @@ public class PluginHooks {
 				//LuckPerms API v4
 				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 					return "";
 				}
 				prefix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getPrefix();
@@ -171,7 +106,7 @@ public class PluginHooks {
 				//LuckPerms API v5
 				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 					return "";
 				}
 				suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
@@ -179,7 +114,7 @@ public class PluginHooks {
 				//LuckPerms API v4
 				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
 				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+					Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 					return "";
 				}
 				suffix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p.getClass().getDeclaredField("player").get(p))).getSuffix();
@@ -187,57 +122,6 @@ public class PluginHooks {
 			return suffix == null ? "" : suffix;
 		} catch (Throwable t) {
 			return Shared.errorManager.printError("", "Failed to get suffix of " + p.getName() + " using LuckPerms", t);
-		}
-	}
-	public static String LuckPerms_getPrimaryGroup(ITabPlayer p) {
-		try {
-			try {
-				//LuckPerms API v5
-				User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
-					return "null";
-				}
-				return user.getPrimaryGroup();
-			} catch (NoClassDefFoundError e) {
-				//LuckPerms API v4
-				me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
-				if (user == null) {
-					Shared.errorManager.printError("LuckPerms v" + luckPermsVersion + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
-					return "null";
-				}
-				return user.getPrimaryGroup();
-			}
-		} catch (Throwable t) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using LuckPerms", t);
-		}
-	}
-	public static String[] NetworkManager_getAllGroups(ITabPlayer p) {
-		try {
-			PermissionPlayer user = ((NetworkManagerPlugin)networkmanager).getPermissionManager().getPermissionPlayer(p.getUniqueId());
-			List<String> groups = new ArrayList<String>();
-			for (nl.chimpgamer.networkmanager.api.models.permissions.Group group : user.getGroups()) {
-				groups.add(group.getName());
-			}
-			return groups.toArray(new String[0]);
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission group of " + p.getName() + " using NetworkManager", t);
-		}
-	}
-	public static String NetworkManager_getPrimaryGroup(ITabPlayer p) {
-		try {
-			PermissionPlayer user = ((NetworkManagerPlugin)networkmanager).getPermissionManager().getPermissionPlayer(p.getUniqueId());
-			return user.getPrimaryGroup().getName();
-		} catch (Throwable t) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using NetworkManager", t);
-		}
-	}
-	@SuppressWarnings("deprecation")
-	public static String[] PermissionsEx_getGroupNames(ITabPlayer p) {
-		try {
-			return PermissionsEx.getUser(p.getName()).getGroupNames();
-		} catch (Throwable t) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using PermissionsEx", t);
 		}
 	}
 	public static String PlaceholderAPI_setPlaceholders(UUID player, String placeholder) {
@@ -290,47 +174,6 @@ public class PluginHooks {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + p.getName() + " using ProtocolSupport v" + getVersion("ProtocolSupport"), e);
 		}
 	}
-	public static String[] UltraPermissions_getAllGroups(ITabPlayer p) {
-		try {
-			UltraPermissionsAPI api = null;
-			if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
-				api = UltraPermissionsBungee.getAPI();
-			}
-			if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
-				api = UltraPermissions.getAPI();
-			}
-			if (api == null) {
-				Shared.errorManager.printError("UltraPermissions getAPI returned null");
-				return new String[]{"null"};
-			}
-			me.TechsCode.UltraPermissions.storage.objects.User user = api.getUsers().name(p.getName());
-			if (user == null) {
-				Shared.errorManager.printError("UltraPermissions returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
-				return new String[]{"null"};
-			}
-			List<String> groups = new ArrayList<String>();
-			for (Group group : user.getGroups().bestToWorst().get()) {
-				groups.add(group.getName());
-			}
-			return groups.toArray(new String[0]);
-		} catch (Throwable e) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using UltraPermissions", e);
-		}
-	}
-	public static String Vault_getPermissionPlugin() {
-		try {
-			return ((Permission)Vault_permission).getName();
-		} catch (Throwable e) {
-			return Shared.errorManager.printError("Unknown/None", "Failed to get permission plugin name using Vault", e);
-		}
-	}
-	public static String[] Vault_getGroups(ITabPlayer p) {
-		try {
-			return ((Permission)Vault_permission).getPlayerGroups(p.getBukkitEntity());
-		} catch (Throwable e) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using Vault", e);
-		}
-	}
 	public static double Vault_getMoney(ITabPlayer p) {
 		try {
 			return me.neznamy.tab.platforms.bukkit.Main.instance.Vault_getMoney(p); //preventing errors on bungee version
@@ -352,18 +195,9 @@ public class PluginHooks {
 			return Shared.errorManager.printError("", "Failed to get suffix of " + p.getName() + " using Vault", e);
 		}
 	}
-	public static String Vault_getPrimaryGroup(ITabPlayer p) {
-		try {
-			return ((Permission)Vault_permission).getPrimaryGroup(p.getBukkitEntity());
-		} catch (Throwable e) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using Vault", e);
-		}
-	}
 	public static void Vault_loadProviders() {
 		RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
 		if (rspEconomy != null) Vault_economy = rspEconomy.getProvider();
-		RegisteredServiceProvider<Permission> rspPermission = Bukkit.getServicesManager().getRegistration(Permission.class);
-		if (rspPermission != null) Vault_permission = rspPermission.getProvider();
 		RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
 		if (rspChat != null) Vault_chat = rspChat.getProvider();
 	}

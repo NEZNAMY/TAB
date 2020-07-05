@@ -5,11 +5,9 @@ import java.lang.reflect.Method;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
@@ -49,22 +47,6 @@ public class TabPlayer extends ITabPlayer{
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		init();
-	}
-	@Override
-	public String getGroupFromPermPlugin() {
-		if (PluginHooks.luckPerms) return PluginHooks.LuckPerms_getPrimaryGroup(this);
-		if (PluginHooks.ultrapermissions) {
-			String[] groups = PluginHooks.UltraPermissions_getAllGroups(this);
-			if (groups.length == 0) return "null";
-			return groups[0];
-		}
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) return PluginHooks.BungeePerms_getMainGroup(this);
-		String[] groups = player.getGroups().toArray(new String[0]);
-		return groups[groups.length-1];
-	}
-	@Override
-	public String[] getGroupsFromPermPlugin() {
-		return new String[] {getGroupFromPermPlugin()};
 	}
 	@Override
 	public boolean hasPermission(String permission) {
