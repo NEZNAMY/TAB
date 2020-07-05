@@ -8,6 +8,7 @@ import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -137,6 +138,16 @@ public class TABAPI {
 	 */
 	public static void registerAFKProvider(AFKProvider afk) {
 		PlaceholderManager.getInstance().setAFKProvider(afk);
+	}
+	
+	
+	/**
+	 * Registers a custom permission plugin
+	 * @param permission - permission plugin provider
+	 * @since 2.8.3
+	 */
+	public static void registerPermissionPlugin(PermissionPlugin permission) {
+		Shared.permissionPlugin = permission;
 	}
 
 
