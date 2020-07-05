@@ -1,11 +1,14 @@
 package me.neznamy.tab.premium;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -23,7 +26,7 @@ public enum SortingType {
 	public static SortingType INSTANCE;
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting;
-	private List<String> usedPlaceholders;
+	private Set<String> usedPlaceholders;
 	
 	public static void initialize() {
 		if (Premium.is()) {
@@ -36,7 +39,25 @@ public enum SortingType {
 			}
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
-			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
+			INSTANCE.usedPlaceholders = new HashSet<String>(Placeholders.detectAll(INSTANCE.sortingPlaceholder));
+			Shared.registerFeature("sorting-refresh", new Refreshable(){
+
+				@Override
+				public void refresh(ITabPlayer refreshed, boolean force) {
+					refreshed.updateTeam();
+				}
+
+				@Override
+				public CPUFeature getRefreshCPU() {
+					return CPUFeature.NAMETAG;
+				}
+
+				@Override
+				public Set<String> getUsedPlaceholders() {
+					return INSTANCE.usedPlaceholders;
+				}
+				
+			});
 		} else {
 			if (Configs.advancedconfig != null) {
 				INSTANCE = (Configs.advancedconfig.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
