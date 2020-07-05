@@ -361,7 +361,7 @@ public class Main extends Plugin implements Listener, MainClass{
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;
 			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
-			PlaceholderManager pl = ((PlaceholderManager)Shared.features.get("placeholders"));
+			PlaceholderManager pl = PlaceholderManager.getInstance();
 			int cooldown = pl.DEFAULT_COOLDOWN;
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
 			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);

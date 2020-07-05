@@ -502,7 +502,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				usedExpansions.add(plugin);
 				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
-			((PlaceholderManager)Shared.features.get("placeholders")).registerPAPIPlaceholder(identifier);
+			PlaceholderManager.getInstance().registerPAPIPlaceholder(identifier);
 		}
 	}
 

@@ -183,6 +183,9 @@ public class PlaceholderManager implements QuitEventListener {
 			}
 		});
 	}
+	public static PlaceholderManager getInstance() {
+		return ((PlaceholderManager)Shared.features.get("placeholders"));
+	}
 	public static Set<Refreshable> getPlaceholderUsage(String identifier){
 		Set<Refreshable> set = new HashSet<Refreshable>();
 		for (Refreshable r : Shared.refreshables) {
