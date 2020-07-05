@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
-
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -263,11 +261,11 @@ public class Main extends Plugin implements Listener, MainClass{
 	public void registerPlaceholders() {
 		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;		
 		
-		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			Shared.permissionPlugin = new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
-		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
+		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			Shared.permissionPlugin = new UltraPermissions();
-		} else if (Bukkit.getPluginManager().isPluginEnabled("BungeePerms")) {
+		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			Shared.permissionPlugin = new BungeePerms();
 		} else {
 			Shared.permissionPlugin = new None();
