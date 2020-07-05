@@ -3,9 +3,11 @@ package me.neznamy.tab.api;
 import java.util.List;
 import java.util.UUID;
 
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -125,6 +127,16 @@ public class TABAPI {
 		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard("API", title, lines);
 		sbm.APIscoreboards.add((me.neznamy.tab.premium.Scoreboard) sb);
 		return sb;
+	}
+	
+
+	/**
+	 * Registers a custom provider for %afk% placeholder
+	 * @param afk - AFK provider
+	 * @since 2.8.3
+	 */
+	public static void registerAFKProvider(AFKProvider afk) {
+		PlaceholderManager.getInstance().setAFKProvider(afk);
 	}
 
 

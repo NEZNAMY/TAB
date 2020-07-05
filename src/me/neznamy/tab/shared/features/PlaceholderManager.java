@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
@@ -39,6 +40,8 @@ public class PlaceholderManager implements QuitEventListener {
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
+	
+	private AFKProvider afk;
 
 	public PlaceholderManager(){
 		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
@@ -276,5 +279,11 @@ public class PlaceholderManager implements QuitEventListener {
 				pl.lastValue.remove(disconnectedPlayer.getName() + "-" + all.getName());
 			}
 		}
+	}
+	public AFKProvider getAFKProvider() {
+		return afk;
+	}
+	public void setAFKProvider(AFKProvider afk) {
+		this.afk = afk;
 	}
 }
