@@ -35,6 +35,7 @@ public class ArmorStand{
 	private List<ITabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<ITabPlayer>());
 	public Property property;
 	private boolean staticOffset;
+	private boolean markerFor18x;
 
 	public ArmorStand(ITabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
@@ -42,6 +43,7 @@ public class ArmorStand{
 		player = owner.getBukkitEntity();
 		this.yOffset = yOffset;
 		this.property = property;
+		markerFor18x = ((NameTagX)Shared.features.get("nametagx")).markerFor18x;
 		refresh();
 		updateLocation(player.getLocation());
 	}
@@ -81,7 +83,7 @@ public class ArmorStand{
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(viewer));
 	}
 	private Location getArmorStandLocationFor(ITabPlayer viewer) {
-		return viewer.getVersion().getMinorVersion() == 8 ? location.clone().add(0,-2,0) : location;
+		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? location.clone().add(0,-2,0) : location;
 	}
 	public void destroy(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
@@ -176,7 +178,7 @@ public class ArmorStand{
 		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
 		DataWatcher.Helper.setCustomNameVisible(datawatcher, visible);
 
-		if (viewer.getVersion().getMinorVersion() > 8) DataWatcher.Helper.setArmorStandFlags(datawatcher, (byte)16);
+		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) DataWatcher.Helper.setArmorStandFlags(datawatcher, (byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){

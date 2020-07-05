@@ -39,6 +39,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener, Refreshable{
 
 	private boolean modifyNPCnames;
+	public boolean markerFor18x;
 	private Set<String> usedPlaceholders;
 
 	public NameTagX() {
@@ -50,7 +51,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
-
+		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 	}
 	@Override
 	public void load() {
