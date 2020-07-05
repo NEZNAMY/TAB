@@ -482,7 +482,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				Shared.registerFeature("papihook", new TabExpansion());
 				new ExpansionDownloader(usedExpansions);
 			}
-			Shared.registerFeature("group-refresh", new GroupRefresher());
+			new GroupRefresher();
 			new UpdateChecker();
 
 			for (Player p : getOnlinePlayers()) {

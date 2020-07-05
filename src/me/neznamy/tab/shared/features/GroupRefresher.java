@@ -3,12 +3,10 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
 
-public class GroupRefresher implements Loadable{
+public class GroupRefresher{
 
-	@Override
-	public void load() {
+	public GroupRefresher() {
 		Shared.featureCpu.startRepeatingMeasuredTask(1000, "refreshing permission groups", CPUFeature.GROUP_REFRESHING, new Runnable() {
 
 			@Override
@@ -18,9 +16,5 @@ public class GroupRefresher implements Loadable{
 				}
 			}
 		});
-	}
-
-	@Override
-	public void unload() {
 	}
 }

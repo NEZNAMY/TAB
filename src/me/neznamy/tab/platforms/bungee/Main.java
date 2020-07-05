@@ -340,7 +340,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
-		Shared.registerFeature("group-refresh", new GroupRefresher());
+		new GroupRefresher();
 		new UpdateChecker();
 
 		for (ProxiedPlayer p : getProxy().getPlayers()) {

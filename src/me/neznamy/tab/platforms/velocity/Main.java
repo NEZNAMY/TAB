@@ -354,7 +354,7 @@ public class Main implements MainClass{
 		}
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
 		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
-		Shared.registerFeature("group-refresh", new GroupRefresher());
+		new GroupRefresher();
 		new UpdateChecker();
 		
 		for (Player p : server.getAllPlayers()) {
