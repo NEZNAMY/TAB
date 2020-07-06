@@ -354,7 +354,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			afk = new None();
 		}
 		PlaceholderManager.getInstance().setAFKProvider(afk);
-		Shared.debug("Loaded AFK provider: " + afk.getClass().getSimpleName());
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 			public String get(ITabPlayer p) {
 				return PlaceholderManager.getInstance().getAFKProvider().isAFK(p) ? Configs.yesAfk : Configs.noAfk;

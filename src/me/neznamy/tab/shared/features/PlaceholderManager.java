@@ -284,6 +284,7 @@ public class PlaceholderManager implements QuitEventListener {
 		return afk;
 	}
 	public void setAFKProvider(AFKProvider afk) {
+		Shared.debug("Loaded AFK provider: " + afk.getClass().getSimpleName());
 		this.afk = afk;
 	}
 }
