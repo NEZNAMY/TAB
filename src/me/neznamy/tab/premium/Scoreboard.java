@@ -46,7 +46,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
-			Score score = new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i));
+			Score score = new Score(lines.size()-i, "TAB-SB-TM-"+i, Placeholders.colorChar + intToChar(i),  lines.get(i));
 			scores.add(score);
 			Shared.registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
@@ -93,10 +93,14 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 	public String getChildScoreboard() {
 		return childBoard;
 	}
-	public String getLineName(int i) {
-		String id = i+"";
-		if (id.length() == 1) id = "0" + id;
-		return Placeholders.colorChar + String.valueOf(id.toCharArray()[0]) + Placeholders.colorChar + String.valueOf(id.toCharArray()[1]) + Placeholders.colorChar + "r";
+	private String intToChar(int i) {
+		if (i < 10) return i+"";
+		if (i == 10) return "a";
+		if (i == 11) return "b";
+		if (i == 12) return "c";
+		if (i == 13) return "d";
+		if (i == 14) return "e";
+		return "f";
 	}
 	public List<ITabPlayer> getRegisteredUsers(){
 		return players;
@@ -158,8 +162,6 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 
 
 
-
-
 	private class Score implements Refreshable {
 
 		private int score;
@@ -167,6 +169,10 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		private String teamname;
 		private String player;
 		private Set<String> usedPlaceholders;
+		private boolean Static;
+		private String staticPrefix;
+		private String staticSuffix;
+		private String staticSuffixShort;
 
 		public Score(int score, String teamname, String player, String rawtext) {
 			this.score = score;
@@ -174,8 +180,42 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			this.player = player;
 			this.rawtext = rawtext;
 			usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawtext);
+			Static = usedPlaceholders.isEmpty();
+			if (Static) {
+				rawtext = Placeholders.color(rawtext);
+				if (rawtext.length() < 39) {
+					//1-38
+					staticPrefix = "";
+					this.player = player + rawtext;
+					staticSuffix = "";
+					staticSuffixShort = "";
+				} else {
+					String[] sub = substring(rawtext, 16);
+					staticPrefix = sub[0];
+					String rest = sub[1];
+					String last = Placeholders.getLastColors(staticPrefix);
+					if (last.length() == 0) last = Placeholders.colorChar + "r";
+					rest = player + last + rest;
+					sub = substring(rest, 40);
+					this.player = sub[0];
+					staticSuffix = sub[1];
+					staticSuffixShort = staticSuffix.length() > 16 ? staticSuffix.substring(0, 16) : staticSuffix;
+				}
+			}
+		}
+		private String[] substring(String string, int index) {
+			if (string.length() < index) return new String[] {string, ""};
+			if (string.charAt(index) == Placeholders.colorChar) index--;
+			return new String[] {string.substring(0, index), string.substring(index, string.length())};
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
+			if (Static) {
+				if (p.getVersion().getMinorVersion() < 13) {
+					return Arrays.asList(staticPrefix, staticSuffixShort);
+				} else {
+					return Arrays.asList(staticPrefix, staticSuffix);
+				}
+			}
 			Property scoreproperty = p.properties.get("sb-"+teamname);
 			boolean emptyBefore = scoreproperty.get().length() == 0;
 			if (!scoreproperty.update() && !force) return null;
