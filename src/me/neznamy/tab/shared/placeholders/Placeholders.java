@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,7 +137,16 @@ public class Placeholders {
 	public static void registerUniversalPlaceholders() {
 		registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(ITabPlayer p) {
-				return p.getRank();
+				Object rank = null;
+				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
+					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {
+						rank = entry.getValue();
+						break;
+					}
+				}
+				if (rank == null) rank = Configs.rankAliases.get("_OTHER_");
+				if (rank == null) rank = p.getGroup();
+				return String.valueOf(rank);
 			}
 			@Override
 			public String[] getChilds(){

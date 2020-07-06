@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
@@ -36,7 +35,6 @@ public abstract class ITabPlayer implements TabPlayer{
 	public String world;
 	private String permissionGroup = "< Not Initialized Yet >";
 	public String teamName;
-	private String rank = "&7No Rank";
 
 	public Map<String, Property> properties = new HashMap<String, Property>();
 	public List<ArmorStand> armorStands = Collections.synchronizedList(new ArrayList<ArmorStand>());
@@ -118,9 +116,6 @@ public abstract class ITabPlayer implements TabPlayer{
 
 	public ProtocolVersion getVersion() {
 		return version;
-	}
-	public String getRank() {
-		return rank;
 	}
 
 	public boolean isStaff() {
@@ -252,15 +247,6 @@ public abstract class ITabPlayer implements TabPlayer{
 		for (String property : Premium.staticLines.keySet()) {
 			if (!property.equals("nametag")) updateProperty(property);
 		}
-		rank = String.valueOf(Configs.rankAliases.get("_OTHER_"));
-		if (rank.equals("null")) rank = null;
-		for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
-			if (String.valueOf(entry.getKey()).equalsIgnoreCase(permissionGroup)) {
-				rank = String.valueOf(entry.getValue());
-				break;
-			}
-		}
-		if (rank == null) rank = permissionGroup;
 	}
 
 	private void updateProperty(String property) {
