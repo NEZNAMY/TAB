@@ -108,7 +108,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (refreshed.disabledTablistNames) return;
+//		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
 		boolean prefix = refreshed.properties.get("tabprefix").update();
 		boolean name = refreshed.properties.get("customtabname").update();
 		boolean suffix = refreshed.properties.get("tabsuffix").update();
