@@ -40,16 +40,16 @@ public class PlaceholderManager implements QuitEventListener {
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
-	
+
 	private AFKProvider afk;
 
 	public PlaceholderManager(){
 		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
 			if (placeholder.startsWith("%bungee_")) serverPlaceholderRefreshIntervals.put(placeholder, 1000);
 		}
-		
+
 		serverConstantList.add("%server_max_players%");							//%maxplayers%
-		
+
 		serverPlaceholderRefreshIntervals.put("%server_online%", 1000); 		//%online%
 		serverPlaceholderRefreshIntervals.put("%server_uptime%", 1000);
 		serverPlaceholderRefreshIntervals.put("%server_ram_used%", 200);		//%memory-used%
@@ -123,6 +123,7 @@ public class PlaceholderManager implements QuitEventListener {
 				int loopTime = atomic.addAndGet(50);
 				Collection<ITabPlayer> players = Shared.getPlayers();
 				Map<ITabPlayer, Set<Refreshable>> update = new HashMap<ITabPlayer, Set<Refreshable>>();
+				Map<ITabPlayer, Set<Refreshable>> forceUpdate = new HashMap<ITabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
 				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
 					if (loopTime % relPlaceholder.refresh != 0) continue;
@@ -130,13 +131,13 @@ public class PlaceholderManager implements QuitEventListener {
 					for (ITabPlayer p1 : players) {
 						for (ITabPlayer p2 : players) {
 							if (relPlaceholder.update(p1, p2)) {
-								if (!update.containsKey(p2)) update.put(p2, new HashSet<Refreshable>());
-								update.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
+								forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
 								somethingChanged = true;
 							}
 							if (relPlaceholder.update(p2, p1)) {
-								if (!update.containsKey(p1)) update.put(p1, new HashSet<Refreshable>());
-								update.get(p1).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
+								forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.identifier));
 								somethingChanged = true;
 							}
 						}
@@ -145,7 +146,7 @@ public class PlaceholderManager implements QuitEventListener {
 				}
 				for (Placeholder placeholder : Placeholders.usedPlaceholders) {
 					if (loopTime % placeholder.cooldown != 0) continue;
-//					System.out.println(placeholder.getIdentifier() + " - " + placeholder.cooldown);
+					//					System.out.println(placeholder.getIdentifier() + " - " + placeholder.cooldown);
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
 						for (ITabPlayer all : players) {
@@ -170,19 +171,33 @@ public class PlaceholderManager implements QuitEventListener {
 						Shared.placeholderCpu.addTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
 					}
 				}
-				if (somethingChanged) Shared.featureCpu.runTask("refreshing", new Runnable() {
-
-					@Override
-					public void run() {
-						for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
-							for (Refreshable r : entry.getValue()) {
-								long startTime = System.nanoTime();
-								r.refresh(entry.getKey(), false);
-								Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
-							}
+				if (somethingChanged) {
+					for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+						if (forceUpdate.containsKey(entry.getKey())) {
+							entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 						}
 					}
-				});
+					Shared.featureCpu.runTask("refreshing", new Runnable() {
+
+						@Override
+						public void run() {
+							for (Entry<ITabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
+								for (Refreshable r : entry.getValue()) {
+									long startTime = System.nanoTime();
+									r.refresh(entry.getKey(), true);
+									Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+								}
+							}
+							for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+								for (Refreshable r : entry.getValue()) {
+									long startTime = System.nanoTime();
+									r.refresh(entry.getKey(), false);
+									Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+								}
+							}
+						}
+					});
+				}
 			}
 		});
 	}
