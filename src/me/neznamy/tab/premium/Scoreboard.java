@@ -46,7 +46,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
-			Score score = new Score(lines.size()-i, "TAB-SB-TM-"+i, Placeholders.colorChar + intToChar(i),  lines.get(i));
+			Score score = new Score(lines.size()-i, "TAB-SB-TM-"+i, getLineName(i),  lines.get(i));
 			scores.add(score);
 			Shared.registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
@@ -93,14 +93,10 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 	public String getChildScoreboard() {
 		return childBoard;
 	}
-	private String intToChar(int i) {
-		if (i < 10) return i+"";
-		if (i == 10) return "a";
-		if (i == 11) return "b";
-		if (i == 12) return "c";
-		if (i == 13) return "d";
-		if (i == 14) return "e";
-		return "f";
+	public String getLineName(int i) {
+		String id = i+"";
+		if (id.length() == 1) id = "0" + id;
+		return Placeholders.colorChar + String.valueOf(id.charAt(0)) + Placeholders.colorChar + String.valueOf(id.charAt(1));
 	}
 	public List<ITabPlayer> getRegisteredUsers(){
 		return players;
@@ -171,8 +167,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		private Set<String> usedPlaceholders;
 		private boolean Static;
 		private String staticPrefix;
+		private String staticName;
 		private String staticSuffix;
-		private String staticSuffixShort;
 
 		public Score(int score, String teamname, String player, String rawtext) {
 			this.score = score;
@@ -183,12 +179,11 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			Static = usedPlaceholders.isEmpty();
 			if (Static) {
 				rawtext = Placeholders.color(rawtext);
-				if (rawtext.length() < 39) {
-					//1-38
+				if (rawtext.length() < 35) {
+					//1-34
 					staticPrefix = "";
-					this.player = player + rawtext;
+					staticName = player + Placeholders.colorChar + "r" + rawtext;
 					staticSuffix = "";
-					staticSuffixShort = "";
 				} else {
 					String[] sub = substring(rawtext, 16);
 					staticPrefix = sub[0];
@@ -197,9 +192,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 					if (last.length() == 0) last = Placeholders.colorChar + "r";
 					rest = player + last + rest;
 					sub = substring(rest, 40);
-					this.player = sub[0];
+					staticName = sub[0];
 					staticSuffix = sub[1];
-					staticSuffixShort = staticSuffix.length() > 16 ? staticSuffix.substring(0, 16) : staticSuffix;
+					if (staticSuffix.length() > 16) staticSuffix = staticSuffix.substring(0, 16);
 				}
 			}
 		}
@@ -209,12 +204,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			return new String[] {string.substring(0, index), string.substring(index, string.length())};
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
-			if (Static) {
-				if (p.getVersion().getMinorVersion() < 13) {
-					return Arrays.asList(staticPrefix, staticSuffixShort);
-				} else {
-					return Arrays.asList(staticPrefix, staticSuffix);
-				}
+			if (Static && p.getVersion().getMinorVersion() < 13) {
+				return Arrays.asList(staticPrefix, staticSuffix);
 			}
 			Property scoreproperty = p.properties.get("sb-"+teamname);
 			boolean emptyBefore = scoreproperty.get().length() == 0;
@@ -229,7 +220,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 					prefix = prefix.substring(0, 15);
 					suffix = Placeholders.colorChar + suffix;
 				}
-				suffix = Placeholders.getLastColors(prefix) + suffix;
+				String last = Placeholders.getLastColors(prefix);
+				if (last.length() == 0) last = Placeholders.colorChar + "r";
+				suffix = last + suffix;
 			} else {
 				prefix = replaced;
 				suffix = "";
@@ -257,12 +250,16 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			List<String> prefixsuffix = replaceText(p, true, true);
 			if (prefixsuffix == null) return;
 			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
-			PacketAPI.registerScoreboardScore(p, teamname, player, prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
+			PacketAPI.registerScoreboardScore(p, teamname, getName(p), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {
 			if (players.contains(p) && p.properties.get("sb-"+teamname).get().length() > 0) {
-				PacketAPI.removeScoreboardScore(p, player, teamname);
+				PacketAPI.removeScoreboardScore(p, getName(p), teamname);
 			}
+		}
+		private String getName(ITabPlayer p) {
+			if (Static && p.getVersion().getMinorVersion() < 13) return staticName;
+			return player;
 		}
 		@Override
 		public void refresh(ITabPlayer refreshed, boolean force) {
