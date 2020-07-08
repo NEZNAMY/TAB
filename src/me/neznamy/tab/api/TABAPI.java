@@ -151,47 +151,47 @@ public class TABAPI {
 	}
 
 
-	@Deprecated
+
 	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
 		getPlayer(player).setValueTemporarily(type, value);
 	}
-	@Deprecated
+
 	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
 		getPlayer(player).setValuePermanently(type, value);
 	}
-	@Deprecated
+
 	public static String getTemporaryValue(UUID player, EnumProperty type) {
 		return getPlayer(player).getTemporaryValue(type);
 	}
-	@Deprecated
+
 	public static boolean hasTemporaryValue(UUID player, EnumProperty type) {
 		return getTemporaryValue(player, type) != null;
 	}
-	@Deprecated
+
 	public static void removeTemporaryValue(UUID player, EnumProperty type) {
 		setValueTemporarily(player, type, null);
 	}
-	@Deprecated
+
 	public static String getOriginalValue(UUID player, EnumProperty type) {
 		return getPlayer(player).getOriginalValue(type);
 	}
-	@Deprecated
+
 	public static void sendHeaderFooter(UUID player, String header, String footer) {
 		getPlayer(player).sendHeaderFooter(header, footer);
 	}
-	@Deprecated
+
 	public static void clearHeaderFooter(UUID player) {
 		sendHeaderFooter(player, "", "");
 	}
-	@Deprecated
+
 	public static void hideNametag(UUID player) {
 		getPlayer(player).hideNametag();
 	}
-	@Deprecated
+
 	public static void showNametag(UUID player) {
 		getPlayer(player).showNametag();
 	}
-	@Deprecated
+
 	public static boolean hasHiddenNametag(UUID player) {
 		return getPlayer(player).hasHiddenNametag();
 	}
