@@ -12,8 +12,8 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
@@ -239,13 +239,16 @@ public abstract class ITabPlayer implements TabPlayer{
 		updateProperty("customtabname");
 		if (properties.get("customtabname").getCurrentRawValue().length() == 0) setProperty("customtabname", getName(), "None");
 		updateProperty("customtagname");
-		if (properties.get("customtagname").getCurrentRawValue().length() == 0) setProperty("customtagname", getName(), "None");
-		setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
-		for (String property : Premium.dynamicLines) {
-			if (!property.equals("nametag")) updateProperty(property);
-		}
-		for (String property : Premium.staticLines.keySet()) {
-			if (!property.equals("nametag")) updateProperty(property);
+		NameTagX ntx = (NameTagX) Shared.features.get("nametagx");
+		if (ntx != null) {
+			if (properties.get("customtagname").getCurrentRawValue().length() == 0) setProperty("customtagname", getName(), "None");
+			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
+			for (String property : ntx.dynamicLines) {
+				if (!property.equals("nametag")) updateProperty(property);
+			}
+			for (String property : ntx.staticLines.keySet()) {
+				if (!property.equals("nametag")) updateProperty(property);
+			}
 		}
 	}
 

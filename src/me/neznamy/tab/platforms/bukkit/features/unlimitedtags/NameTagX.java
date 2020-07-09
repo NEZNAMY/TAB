@@ -1,7 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -41,17 +45,27 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	private boolean modifyNPCnames;
 	public boolean markerFor18x;
 	private Set<String> usedPlaceholders;
+	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
+	public Map<String, Object> staticLines = new HashMap<String, Object>();
 
+	@SuppressWarnings("unchecked")
 	public NameTagX() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
-		for (String line : Premium.dynamicLines) {
+		for (String line : dynamicLines) {
 			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
-		for (String line : Premium.staticLines.keySet()) {
+		for (String line : staticLines.keySet()) {
 			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
+		if (Premium.is()) {
+			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
+			dynamicLines = new ArrayList<String>();
+			dynamicLines.addAll(realList);
+			Collections.reverse(dynamicLines);
+			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
+		}
 	}
 	@Override
 	public void load() {
@@ -106,10 +120,10 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		p.properties.get("tagprefix").update();
 		p.properties.get("customtagname").update();
 		p.properties.get("tagsuffix").update();
-		for (String line : Premium.dynamicLines) {
+		for (String line : dynamicLines) {
 			p.properties.get(line).update();
 		}
-		for (String line : Premium.staticLines.keySet()) {
+		for (String line : staticLines.keySet()) {
 			p.properties.get(line).update();
 		}
 	}
@@ -172,11 +186,11 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		pl.armorStands.clear();
 		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
 		double height = -Configs.SECRET_NTX_space;
-		for (String line : Premium.dynamicLines) {
+		for (String line : dynamicLines) {
 			Property p = pl.properties.get(line);
 			pl.armorStands.add(new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
-		for (Entry<String, Object> line : Premium.staticLines.entrySet()) {
+		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.properties.get(line.getKey());
 			pl.armorStands.add(new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
