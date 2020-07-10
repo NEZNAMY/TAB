@@ -254,6 +254,7 @@ public class Placeholders {
 		if (identifier.startsWith("%rel_")) {
 			if (registeredRelationalPlaceholders.containsKey(identifier)) return;
 			Shared.mainClass.registerUnknownPlaceholder(identifier);
+			return;
 		}
 
 		if (registeredPlaceholders.containsKey(identifier)) {
