@@ -15,17 +15,19 @@ public class NetworkManager implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(ITabPlayer p) {
-		PermissionPlayer user = ((NetworkManagerPlugin)Bukkit.getPluginManager().getPlugin("NetworkManager")).getPermissionManager().getPermissionPlayer(p.getUniqueId());
-		return user.getPrimaryGroup().getName();
+		return getUser(p).getPrimaryGroup().getName();
 	}
 
 	@Override
 	public String[] getAllGroups(ITabPlayer p) {
-		PermissionPlayer user = ((NetworkManagerPlugin)Bukkit.getPluginManager().getPlugin("NetworkManager")).getPermissionManager().getPermissionPlayer(p.getUniqueId());
 		List<String> groups = new ArrayList<String>();
-		for (Group group : user.getGroups()) {
+		for (Group group : getUser(p).getGroups()) {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
+	}
+	
+	private PermissionPlayer getUser(ITabPlayer p) {
+		return ((NetworkManagerPlugin)Bukkit.getPluginManager().getPlugin("NetworkManager")).getPermissionManager().getPermissionPlayer(p.getUniqueId());
 	}
 }
