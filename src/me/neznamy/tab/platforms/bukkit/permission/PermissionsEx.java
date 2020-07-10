@@ -7,14 +7,14 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 public class PermissionsEx implements PermissionPlugin {
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(ITabPlayer p) throws Exception {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return "null";
 		return groups[0];
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
 		return ru.tehkode.permissions.bukkit.PermissionsEx.getUser(p.getName()).getGroupNames();
+	public String[] getAllGroups(ITabPlayer p) throws Exception {
 	}
 }
