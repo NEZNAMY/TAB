@@ -44,7 +44,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
-		sendMessage(sender, "&Permission system: &a" + Shared.permissionPlugin.getName());
+		sendMessage(sender, "&6Permission plugin: &a" + Shared.permissionPlugin.getName());
 		if (Configs.groupsByPermissions) {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
 		} else if (Configs.usePrimaryGroup) {
