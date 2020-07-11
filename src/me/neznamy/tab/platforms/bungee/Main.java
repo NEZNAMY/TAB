@@ -16,6 +16,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bungee.permission.BungeePerms;
+import me.neznamy.tab.platforms.bungee.permission.NetworkManager;
 import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -267,6 +268,8 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.permissionPlugin = new UltraPermissions();
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			Shared.permissionPlugin = new BungeePerms();
+		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager") != null) {
+			Shared.permissionPlugin = new NetworkManager();
 		} else {
 			Shared.permissionPlugin = new None();
 		}
