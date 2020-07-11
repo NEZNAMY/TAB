@@ -62,6 +62,12 @@ public class TabExpansion extends PlaceholderExpansion implements Loadable{
 				return p.properties.get(property.toString()).getCurrentRawValue();
 			}
 		}
+		if (identifier.equals("scoreboard_visible")) {
+			return p.hiddenScoreboard ? "Disabled" : "Enabled";
+		}
+		if (identifier.equals("bossbar_visible")) {
+			return p.bossbarVisible ? "Enabled" : "Disabled";
+		}
 		return null;
 	}
 }
