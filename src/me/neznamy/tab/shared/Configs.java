@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class Configs {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
-		Placeholders.usedPlaceholders.clear();
+		Placeholders.usedPlaceholders = new HashSet<>();
 		Placeholders.registeredPlaceholders.clear();
 		Placeholders.registeredRelationalPlaceholders.clear();
 		loadConfig();
