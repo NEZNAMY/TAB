@@ -1,16 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.packets.method;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 
 public abstract class MethodAPI {
 
@@ -42,11 +40,6 @@ public abstract class MethodAPI {
 	public static Class<?> PacketPlayOutNamedEntitySpawn;
 	public static Class<?> PacketPlayOutEntityDestroy;
 	public static Class<?> PlayerInfoData;
-	
-	public static Field PacketPlayInUseEntity_ENTITY;
-	public static Field PacketPlayOutEntityMetadata_LIST;
-	public static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
-	public static Field PacketPlayOutEntityDestroy_ENTITIES;
 	
 	public static MethodAPI getInstance() {
 		return instance;
@@ -93,10 +86,6 @@ public abstract class MethodAPI {
 	static {
 		try {
 			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.instance.serverPackage).getConstructor().newInstance();
-			PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
-			PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
-			PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(PacketPlayOutNamedEntitySpawn).get("a");
-			PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(PacketPlayOutEntityDestroy).get("a");
 		} catch (Throwable e) {
 			//bungee or velocity
 		}

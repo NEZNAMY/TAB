@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
@@ -47,6 +49,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	private Set<String> usedPlaceholders;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new HashMap<String, Object>();
+	private Field PacketPlayInUseEntity_ENTITY;
+	private Field PacketPlayOutNamedEntitySpawn_ENTITYID;
+	private Field PacketPlayOutEntityDestroy_ENTITIES;
 
 	@SuppressWarnings("unchecked")
 	public NameTagX() {
@@ -66,6 +71,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			Collections.reverse(dynamicLines);
 			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
+		PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(MethodAPI.PacketPlayInUseEntity).get("a");
+		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
+		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
 	}
 	@Override
 	public void load() {
@@ -210,7 +218,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	@Override
 	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
 		if (sender.getVersion().getMinorVersion() == 8 && MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
-			int entityId = MethodAPI.PacketPlayInUseEntity_ENTITY.getInt(packet);
+			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
 			ITabPlayer attacked = null;
 			loop:
 				for (ITabPlayer all : Shared.getPlayers()) {
@@ -222,7 +230,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 					}
 				}
 			if (attacked != null && attacked != sender) {
-				MethodAPI.PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
+				PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
 			}
 		}
 		return packet;
@@ -230,7 +238,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
 		if (MethodAPI.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			int entity = MethodAPI.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
+			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 				public void run() {
@@ -239,7 +247,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			});
 		}
 		if (MethodAPI.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			int[] entites = (int[]) MethodAPI.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
+			int[] entites = (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet);
 			for (int id : entites) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
 				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing EntityDestroy", CPUFeature.NAMETAGX_PACKET_ENTITY_DESTROY, new Runnable() {
