@@ -88,8 +88,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
 	public Set<String> usedExpansions;
-	private Economy economy;
-	private Chat chat;
+	private Object economy;
+	private Object chat;
 	public final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
@@ -277,7 +277,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
 				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) return Placeholders.decimal2.format(((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser(p.getBukkitEntity()).getMoney().doubleValue());
-				if (economy != null) return Placeholders.decimal2.format(economy.getBalance(p.getBukkitEntity()));
+				if (economy != null) return Placeholders.decimal2.format(((Economy)economy).getBalance(p.getBukkitEntity()));
 				return "-";
 			}
 		});
@@ -396,14 +396,14 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(ITabPlayer p) {
-					String prefix = chat.getPlayerPrefix(p.getBukkitEntity());
+					String prefix = ((Chat)chat).getPlayerPrefix(p.getBukkitEntity());
 					return prefix != null ? prefix : "";
 				}
 			});
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(ITabPlayer p) {
-					String suffix = chat.getPlayerSuffix(p.getBukkitEntity());
+					String suffix = ((Chat)chat).getPlayerSuffix(p.getBukkitEntity());
 					return suffix != null ? suffix : "";
 				}
 			});
