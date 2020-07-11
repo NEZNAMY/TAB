@@ -153,7 +153,6 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		if (connectedPlayer.disabledNametag) return;
 		connectedPlayer.registerTeam();
 		loadArmorStands(connectedPlayer);
-		System.out.println("loaded armor stands");
 		if (connectedPlayer.getBukkitEntity().getVehicle() != null) {
 			Entity vehicle = connectedPlayer.getBukkitEntity().getVehicle();
 			List<Integer> list = new ArrayList<Integer>();
@@ -306,7 +305,6 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 				public void run() {
-					System.out.println("spawning " + spawnedPlayer.getName() + " for " + receiver.getName());
 					spawnArmorStand(spawnedPlayer, receiver);
 				}
 			});
