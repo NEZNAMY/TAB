@@ -35,7 +35,7 @@ public class PacketAPI{
 
 	//scoreboard score
 	public static void registerScoreboardScore(ITabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), EnumChatFormat.RESET);
+		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
 		setScoreboardScore(p, fakeplayer, objective, score);
 	}
 	public static void removeScoreboardScore(ITabPlayer p, String fakeplayer, String objective) {

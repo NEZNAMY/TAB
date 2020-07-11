@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -267,9 +266,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			if (!players.contains(refreshed)) return; //player has different scoreboard displayed
 			List<String> prefixsuffix = replaceText(refreshed, force, false);
 			if (prefixsuffix == null) return;
-			PacketPlayOutScoreboardTeam update = PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69);
-			update.setColor(EnumChatFormat.RESET);
-			refreshed.sendCustomPacket(update);
+			refreshed.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamname, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69));
 		}
 		@Override
 		public CPUFeature getRefreshCPU() {
