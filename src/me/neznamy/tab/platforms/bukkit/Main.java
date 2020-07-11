@@ -34,7 +34,6 @@ import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.permission.GroupManager;
-import me.neznamy.tab.platforms.bukkit.permission.NetworkManager;
 import me.neznamy.tab.platforms.bukkit.permission.PermissionsEx;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
@@ -72,6 +71,7 @@ import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -80,6 +80,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 public class Main extends JavaPlugin implements Listener, MainClass{
 
@@ -258,7 +259,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
 			Shared.permissionPlugin = new GroupManager();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
-			Shared.permissionPlugin = new NetworkManager();
+			Shared.permissionPlugin = new NetworkManager(((NetworkManagerPlugin)Bukkit.getPluginManager().getPlugin("NetworkManager")));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
 			Shared.permissionPlugin = new PermissionsEx();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {

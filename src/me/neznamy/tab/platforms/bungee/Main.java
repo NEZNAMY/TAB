@@ -17,7 +17,6 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.platforms.bungee.permission.BungeePerms;
-import me.neznamy.tab.platforms.bungee.permission.NetworkManager;
 import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -47,6 +46,7 @@ import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -68,6 +68,7 @@ import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.Team;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 public class Main extends Plugin implements Listener, MainClass{
 
@@ -267,7 +268,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			Shared.permissionPlugin = new BungeePerms();
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager") != null) {
-			Shared.permissionPlugin = new NetworkManager();
+			Shared.permissionPlugin = new NetworkManager(((NetworkManagerPlugin)ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager")));
 		} else {
 			Shared.permissionPlugin = new None();
 		}
