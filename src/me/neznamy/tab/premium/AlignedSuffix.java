@@ -165,6 +165,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		
 		widths.put((char)1769, 7); //7.5
 		widths.put((char)9679, 3); //3.5
+		widths.put((char)9733, 3); //3.5
 		widths.put((char)9734, 3); //3.5
 		widths.put((char)9818, 4);
 		widths.put((char)9835, 4);
