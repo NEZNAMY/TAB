@@ -197,10 +197,10 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 				}
 			}
 		}
-		private String[] substring(String string, int index) {
-			if (string.length() < index) return new String[] {string, ""};
-			if (string.charAt(index) == Placeholders.colorChar) index--;
-			return new String[] {string.substring(0, index), string.substring(index, string.length())};
+		private String[] substring(String string, int length) {
+			if (string.length() <= length) return new String[] {string, ""};
+			if (string.charAt(length-1) == Placeholders.colorChar) length--;
+			return new String[] {string.substring(0, length), string.substring(length, string.length())};
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
 			if (Static && p.getVersion().getMinorVersion() < 13) {
