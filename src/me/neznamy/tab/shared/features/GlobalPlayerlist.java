@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -43,7 +42,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (PluginHooks._isVanished(displayed)) return false;
+		if (displayed.isVanished()) return false;
 		if (spyServers.contains(viewer.getWorldName())) {
 			return true;
 		}

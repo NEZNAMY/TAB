@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -25,7 +26,6 @@ import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.MainClass;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
@@ -260,8 +260,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		return false;
 	}
 	public void registerPlaceholders() {
-		PluginHooks.premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;		
-		
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			Shared.permissionPlugin = new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
@@ -274,17 +272,17 @@ public class Main extends Plugin implements Listener, MainClass{
 			Shared.permissionPlugin = new None();
 		}
 		
-		if (PluginHooks.premiumVanish) {
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
-					return PluginHooks.PremiumVanish_getVisiblePlayerCount()+"";
+					return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size()+"";
 				}
 			});
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
 				public String get() {
 					int count = 0;
 					for (ITabPlayer all : Shared.getPlayers()) {
-						if (!PluginHooks._isVanished(all) && all.isStaff()) count++;
+						if (!all.isVanished() && all.isStaff()) count++;
 					}
 					return count+"";
 				}
@@ -310,7 +308,7 @@ public class Main extends Plugin implements Listener, MainClass{
 				public String get() {
 					int count = server.getValue().getPlayers().size();
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
-						if (PluginHooks._isVanished(Shared.getPlayer(p.getUniqueId()))) count--;
+						if (Shared.getPlayer(p.getUniqueId()).isVanished()) count--;
 					}
 					return count+"";
 				}

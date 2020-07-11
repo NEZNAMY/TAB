@@ -77,6 +77,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
@@ -86,6 +87,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 	@SuppressWarnings("unused")
 	private PluginMessenger plm;
 	public Set<String> usedExpansions;
+	private Economy economy;
+	private Chat chat;
 	public final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
@@ -237,15 +240,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		return false;
 	}
 	public void registerPlaceholders() {
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) PluginHooks.Vault_loadProviders();
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+			RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
+			if (rspEconomy != null) economy = rspEconomy.getProvider();
+			RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
+			if (rspChat != null) chat = rspChat.getProvider();
+		}
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
 			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(de.robingrether.idisguise.api.DisguiseAPI.class);
 			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
-		PluginHooks.deluxetags = Bukkit.getPluginManager().isPluginEnabled("DeluxeTags");
-		PluginHooks.essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		
@@ -269,8 +275,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
 			public String get(ITabPlayer p) {
-				if (PluginHooks.essentials != null) return Placeholders.decimal2.format(PluginHooks.Essentials_getMoney(p));
-				if (PluginHooks.Vault_economy != null) return Placeholders.decimal2.format(PluginHooks.Vault_getMoney(p));
+				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) return Placeholders.decimal2.format(((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser(p.getBukkitEntity()).getMoney().doubleValue());
+				if (economy != null) return Placeholders.decimal2.format(economy.getBalance(p.getBukkitEntity()));
 				return "-";
 			}
 		});
@@ -303,8 +309,8 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
 				public String get(ITabPlayer p) {
 					String name = null;
-					if (PluginHooks.essentials != null) {
-						name = PluginHooks.Essentials_getNickname(p);
+					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser(p.getBukkitEntity()).getNickname();
 					}
 					if (name == null || name.length() == 0) return p.getName();
 					return Configs.SECRET_essentials_nickname_prefix + name;
@@ -323,7 +329,11 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%deluxetag%", 500) {
 				public String get(ITabPlayer p) {
-					return PluginHooks.DeluxeTag_getPlayerDisplayTag(p);
+					try {
+						return (String) Class.forName("me.clip.deluxetags.DeluxeTag").getMethod("getPlayerDisplayTag", Player.class).invoke(null, p.getBukkitEntity());
+					} catch (Throwable t) {
+						return Shared.errorManager.printError("", "Failed to get DeluxeTag of " + p.getName(), t);
+					}
 				}
 			});
 		}
@@ -381,18 +391,18 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				return var+"";
 			}
 		});
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && PluginHooks.Vault_chat != null) {
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(ITabPlayer p) {
-					String prefix = PluginHooks.Vault_getPrefix(p);
+					String prefix = chat.getPlayerPrefix(p.getBukkitEntity());
 					return prefix != null ? prefix : "";
 				}
 			});
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(ITabPlayer p) {
-					String suffix = PluginHooks.Vault_getSuffix(p);
+					String suffix = chat.getPlayerSuffix(p.getBukkitEntity());
 					return suffix != null ? suffix : "";
 				}
 			});
@@ -429,9 +439,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		} catch (Exception e) {
 			return Shared.errorManager.printError(new Player[0], "Failed to get online players");
 		}
-	}
-	public double Vault_getMoney(ITabPlayer p) {
-		return ((Economy)PluginHooks.Vault_economy).getBalance(p.getBukkitEntity());
 	}
 
 	/*

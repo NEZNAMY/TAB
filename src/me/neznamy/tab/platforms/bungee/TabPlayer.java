@@ -3,11 +3,13 @@ package me.neznamy.tab.platforms.bungee;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
@@ -100,5 +102,9 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public ProtocolVersion getVersion() {
 		return ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
+	}
+	@Override
+	public boolean isVanished() {
+		return ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player);
 	}
 }

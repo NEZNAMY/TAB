@@ -13,11 +13,13 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 
 public class Placeholders {
 
@@ -238,12 +240,48 @@ public class Placeholders {
 		});
 		registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 			public String get(ITabPlayer p) {
-				return PluginHooks.LuckPerms_getPrefix(p);
+				String prefix;
+				try {
+					//LuckPerms API v5
+					User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+					if (user == null) {
+						Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+						return "";
+					}
+					prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
+				} catch (NoClassDefFoundError e) {
+					//LuckPerms API v4
+					me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+					if (user == null) {
+						Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+						return "";
+					}
+					prefix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer ? p.getBukkitEntity() : p.getBungeeEntity())).getPrefix();
+				}
+				return prefix == null ? "" : prefix;
 			}
 		});
 		registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
 			public String get(ITabPlayer p) {
-				return PluginHooks.LuckPerms_getSuffix(p);
+				String suffix;
+				try {
+					//LuckPerms API v5
+					User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+					if (user == null) {
+						Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+						return "";
+					}
+					suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
+				} catch (NoClassDefFoundError e) {
+					//LuckPerms API v4
+					me.lucko.luckperms.api.User user = LuckPerms.getApi().getUser(p.getUniqueId());
+					if (user == null) {
+						Shared.errorManager.printError("LuckPerms returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+						return "";
+					}
+					suffix = user.getCachedData().getMetaData(LuckPerms.getApi().getContextManager().getApplicableContexts(p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer ? p.getBukkitEntity() : p.getBungeeEntity())).getSuffix();
+				}
+				return suffix == null ? "" : suffix;
 			}
 		});
 		for (String placeholder : allUsedPlaceholderIdentifiers) {

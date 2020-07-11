@@ -28,7 +28,7 @@ public class PluginMessenger implements PluginMessageListener {
 		if (subChannel.equalsIgnoreCase("Placeholder")){
 			String placeholder = in.readUTF();
 			long start = System.nanoTime();
-			String output = PluginHooks.PlaceholderAPI_setPlaceholders(player, placeholder);
+			String output = PluginHooks.setPlaceholders(player, placeholder);
 			long time = System.nanoTime() - start;
 
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();

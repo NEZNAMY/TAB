@@ -217,7 +217,7 @@ public class PlaceholderManager implements QuitEventListener {
 			Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + serverPlaceholderRefreshIntervals.get(identifier));
 			Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, serverPlaceholderRefreshIntervals.get(identifier)){
 				public String get() {
-					return PluginHooks.PlaceholderAPI_setPlaceholders((UUID)null, identifier);
+					return PluginHooks.setPlaceholders((UUID)null, identifier);
 				}
 			}, true);
 			return;
@@ -226,7 +226,7 @@ public class PlaceholderManager implements QuitEventListener {
 			Shared.debug("Registering SERVER PlaceholderAPI constant " + identifier);
 			Placeholders.registerPlaceholder(new ServerConstant(identifier){
 				public String get() {
-					return PluginHooks.PlaceholderAPI_setPlaceholders((UUID)null, identifier);
+					return PluginHooks.setPlaceholders((UUID)null, identifier);
 				}
 			}, true);
 			return;
@@ -235,7 +235,7 @@ public class PlaceholderManager implements QuitEventListener {
 			Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + playerPlaceholderRefreshIntervals.get(identifier));
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, playerPlaceholderRefreshIntervals.get(identifier)){
 				public String get(ITabPlayer p) {
-					return PluginHooks.PlaceholderAPI_setPlaceholders(p.getBukkitEntity(), identifier);
+					return PluginHooks.setPlaceholders(p.getBukkitEntity(), identifier);
 				}
 			}, true);
 			return;
@@ -246,7 +246,7 @@ public class PlaceholderManager implements QuitEventListener {
 
 				@Override
 				public String get(ITabPlayer viewer, ITabPlayer target) {
-					return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, target, identifier);
+					return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
 				}
 			});
 			return;
@@ -258,7 +258,7 @@ public class PlaceholderManager implements QuitEventListener {
 
 				@Override
 				public String get(ITabPlayer viewer, ITabPlayer target) {
-					return PluginHooks.PlaceholderAPI_setRelationalPlaceholders(viewer, target, identifier);
+					return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
 				}
 			});
 		} else {
@@ -266,7 +266,7 @@ public class PlaceholderManager implements QuitEventListener {
 				Shared.debug("Registering unlisted SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + DEFAULT_COOLDOWN);
 				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, DEFAULT_COOLDOWN){
 					public String get() {
-						return PluginHooks.PlaceholderAPI_setPlaceholders((UUID)null, identifier);
+						return PluginHooks.setPlaceholders((UUID)null, identifier);
 					}
 				}, true);
 			} else {
@@ -274,7 +274,7 @@ public class PlaceholderManager implements QuitEventListener {
 				Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
 				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 					public String get(ITabPlayer p) {
-						return PluginHooks.PlaceholderAPI_setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
+						return PluginHooks.setPlaceholders(p == null ? null : p.getBukkitEntity(), identifier);
 					}
 				}, true);
 			}

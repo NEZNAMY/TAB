@@ -85,6 +85,10 @@ public abstract class ITabPlayer implements TabPlayer{
 	public abstract void sendRawMessage(String message);
 
 	public abstract Object getSkin();
+	
+	public boolean isVanished() {
+		return false;
+	}
 
 	public org.bukkit.entity.Player getBukkitEntity() {
 		throw new IllegalStateException("Wrong platform");

@@ -1,14 +1,19 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.UUID;
+
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -25,15 +30,38 @@ public class TabPlayer extends ITabPlayer{
 		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();
-		int version;
-		if (PluginHooks.protocolsupport){
-			version = PluginHooks.ProtocolSupportAPI_getProtocolVersionId(this);
-			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
-		} else if (PluginHooks.viaversion){
-			version = PluginHooks.ViaVersion_getPlayerVersion(this);
-			if (version > 0) this.version = ProtocolVersion.fromNumber(version);
-		}
+		version = ProtocolVersion.fromNumber(getProtocolVersion());
 		init();
+	}
+	private int getProtocolVersion() {
+		if (PluginHooks.protocolsupport){
+			int version = getProtocolVersionPS();
+			if (version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
+		}
+		if (PluginHooks.viaversion) {
+			return getProtocolVersionVia();
+		}
+		return ProtocolVersion.SERVER_VERSION.getNetworkId();
+	}
+	private int getProtocolVersionPS(){
+		try {
+			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, getBukkitEntity());
+			int ver = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
+			Shared.debug("ProtocolSupport returned protocol version " + ver + " for player " + getName());
+			return ver;
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ProtocolSupport", e);
+		}
+	}
+	private int getProtocolVersionVia(){
+		try {
+			Object viaAPI = Class.forName("us.myles.ViaVersion.api.Via").getMethod("getAPI").invoke(null);
+			int ver = (int) viaAPI.getClass().getMethod("getPlayerVersion", UUID.class).invoke(viaAPI, getUniqueId());
+			Shared.debug("ViaVersion returned protocol version " + ver + " for player " + getName());
+			return ver;
+		} catch (Throwable e) {
+			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion", e);
+		}
 	}
 	@Override
 	public boolean hasPermission(String permission) {
@@ -65,9 +93,16 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@Override
 	public boolean getTeamPush() {
-		if (PluginHooks.libsDisguises && PluginHooks.LibsDisguises_isDisguised(this)) return false;
-		if (PluginHooks.idisguise != null && PluginHooks.iDisguise_isDisguised(this)) return false; 
+		if (PluginHooks.libsDisguises && isDisguisedLD()) return false;
+		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return false; 
 		return Configs.getCollisionRule(world);
+	}
+	private boolean isDisguisedLD() {
+		try {
+			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
+		} catch (Exception e) {
+			return Shared.errorManager.printError(false, "Failed to check disguise status of " + getName() + " using LibsDisguises", e);
+		}
 	}
 	@Override
 	public Object getSkin() {
