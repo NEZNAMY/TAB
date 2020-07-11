@@ -69,6 +69,7 @@ enable-collision: true
 revert-collision-rule-in-worlds:
   - revertedworld
 do-not-move-spectators: false
+allow-spectator-bypass-permission: false
 unlimited-nametag-prefix-suffix-mode:
   enabled: false
   modify-npc-names: false

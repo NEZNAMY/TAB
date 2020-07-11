@@ -75,6 +75,7 @@ enable-collision: true
 revert-collision-rule-in-worlds:
   - revertedworld
 do-not-move-spectators: false
+allow-spectator-bypass-permission: false
 per-server-settings:
   server1:
     header:
