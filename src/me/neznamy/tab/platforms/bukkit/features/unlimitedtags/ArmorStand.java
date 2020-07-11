@@ -28,7 +28,6 @@ public class ArmorStand{
 	private Object nmsEntity = MethodAPI.getInstance().newEntityArmorStand();
 	private int entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
 	private UUID uuid = UUID.randomUUID();
-	private Location location;
 	private boolean sneaking;
 	private boolean visible;
 
@@ -45,7 +44,6 @@ public class ArmorStand{
 		this.property = property;
 		markerFor18x = ((NameTagX)Shared.features.get("nametagx")).markerFor18x;
 		refresh();
-		updateLocation(player.getLocation());
 	}
 	public void refresh() {
 		visible = getVisibility();
@@ -57,7 +55,6 @@ public class ArmorStand{
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		updateLocation(player.getLocation());
 		synchronized (nearbyPlayers) {
 			for (ITabPlayer all : nearbyPlayers) {
 				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
@@ -83,7 +80,7 @@ public class ArmorStand{
 		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(viewer));
 	}
 	private Location getArmorStandLocationFor(ITabPlayer viewer) {
-		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? location.clone().add(0,-2,0) : location;
+		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 	public void destroy(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
@@ -99,7 +96,6 @@ public class ArmorStand{
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
-		updateLocation(player.getLocation());
 		synchronized (nearbyPlayers) {
 			for (ITabPlayer viewer : nearbyPlayers) {
 				if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
@@ -143,10 +139,10 @@ public class ArmorStand{
 		if (Configs.SECRET_armorstands_always_visible) return true;
 		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
-	public void updateLocation(Location newLocation) {
-		double x = newLocation.getX();
-		double y = newLocation.getY() + yOffset + 2;
-		double z = newLocation.getZ();
+	public Location getLocation() {
+		double x = player.getLocation().getX();
+		double y = player.getLocation().getY() + yOffset + 2;
+		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
@@ -156,7 +152,7 @@ public class ArmorStand{
 				y -= (sneaking ? 0.30 : 0.18);
 			}
 		}
-		location = new Location(null,x,y,z);
+		return new Location(null,x,y,z);
 	}
 	public int getEntityId() {
 		return entityId;

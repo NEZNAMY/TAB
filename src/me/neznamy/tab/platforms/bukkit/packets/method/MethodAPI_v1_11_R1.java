@@ -39,6 +39,9 @@ import net.minecraft.server.v1_11_R1.PacketPlayOutEntityTeleport;
 import net.minecraft.server.v1_11_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_11_R1.PacketPlayOutAttachEntity;
+import net.minecraft.server.v1_11_R1.PacketPlayOutEntity;
+import net.minecraft.server.v1_11_R1.PacketPlayOutMount;
 import net.minecraft.server.v1_11_R1.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_11_R1.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.server.v1_11_R1.PacketPlayOutScoreboardObjective;
@@ -74,6 +77,10 @@ public class MethodAPI_v1_11_R1 extends MethodAPI {
 		PacketPlayOutBoss_Action = PacketPlayOutBoss.Action.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
+		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
+		PacketPlayOutEntity = PacketPlayOutEntity.class;
+		PacketPlayOutMount = PacketPlayOutMount.class;
+		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
 	public Object stringToComponent(String string) {

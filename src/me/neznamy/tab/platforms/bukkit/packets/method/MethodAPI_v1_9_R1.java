@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_9_R1.PacketPlayOutAttachEntity;
+import net.minecraft.server.v1_9_R1.PacketPlayOutEntity;
 import net.minecraft.server.v1_9_R1.BossBattle;
 import net.minecraft.server.v1_9_R1.DataWatcher;
 import net.minecraft.server.v1_9_R1.DataWatcherObject;
@@ -74,6 +76,9 @@ public class MethodAPI_v1_9_R1 extends MethodAPI {
 		PacketPlayOutBoss_Action = PacketPlayOutBoss.Action.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
+		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
+		PacketPlayOutEntity = PacketPlayOutEntity.class;
+		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
 	public Object stringToComponent(String string) {

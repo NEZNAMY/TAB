@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntity;
 import net.minecraft.server.v1_8_R3.DataWatcher;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
@@ -64,6 +66,9 @@ public class MethodAPI_v1_8_R3 extends MethodAPI {
 		PacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.class;
 		PacketPlayOutNamedEntitySpawn = PacketPlayOutNamedEntitySpawn.class;
 		PacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.class;
+		PacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.class;
+		PacketPlayOutEntity = PacketPlayOutEntity.class;
+		PacketPlayOutAttachEntity = PacketPlayOutAttachEntity.class;
 		PlayerInfoData = PacketPlayOutPlayerInfo.PlayerInfoData.class;
 	}
 	public Object stringToComponent(String string) {
