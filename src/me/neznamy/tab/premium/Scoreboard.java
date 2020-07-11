@@ -223,6 +223,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 				String last = Placeholders.getLastColors(prefix);
 				if (last.length() == 0) last = Placeholders.colorChar + "r";
 				suffix = last + suffix;
+				if (suffix.length() > 16) suffix = suffix.substring(0, 16);
 			} else {
 				prefix = replaced;
 				suffix = "";
