@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 
 import me.lucko.luckperms.LuckPerms;
 import me.neznamy.tab.shared.Animation;
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 

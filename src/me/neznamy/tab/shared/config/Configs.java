@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.config;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -12,6 +12,8 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
+import me.neznamy.tab.shared.Animation;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Configs {
@@ -74,10 +76,13 @@ public class Configs {
 
 	public static ConfigurationFile playerdata; 
 
-	public static final File errorFile = new File(ConfigurationFile.dataFolder, "errors.txt");
-	public static final File papiErrorFile = new File(ConfigurationFile.dataFolder, "PlaceholderAPI.errors.txt");
+	public static File dataFolder;
+	public static File errorFile;
+	public static File papiErrorFile;
 
 	public static void loadFiles() throws Exception {
+		errorFile = new File(dataFolder, "errors.txt");
+		papiErrorFile = new File(dataFolder, "PlaceholderAPI.errors.txt");
 		if (errorFile.exists() && errorFile.length() > 10) {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
@@ -136,14 +141,14 @@ public class Configs {
 		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
 	}
 	public static void loadAnimations() throws Exception {
-		animation = new ConfigurationFile("animations.yml", null);
+		animation = new YamlConfigurationFile(dataFolder, "animations.yml", null);
 		animations = new ArrayList<Animation>();
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
 	public static void loadBossbar() throws Exception {
-		bossbar = new ConfigurationFile("bossbar.yml", null);
+		bossbar = new YamlConfigurationFile(dataFolder, "bossbar.yml", null);
 		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			BossBarEnabled = false;
@@ -152,7 +157,7 @@ public class Configs {
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
 	}
 	public static void loadTranslation() throws Exception {
-		translation = new ConfigurationFile("translation.yml", null);
+		translation = new YamlConfigurationFile(dataFolder, "translation.yml", null);
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");
@@ -182,7 +187,7 @@ public class Configs {
 			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
 			try {
 				if (!file.exists()) file.createNewFile();
-				playerdata = new ConfigurationFile("playerdata.yml", null);
+				playerdata = new YamlConfigurationFile(dataFolder, "playerdata.yml", null);
 			} catch (Exception e) {
 				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
 				return Lists.newArrayList();

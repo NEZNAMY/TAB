@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;

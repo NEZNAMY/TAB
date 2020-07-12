@@ -1,85 +1,56 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
+import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 @SuppressWarnings("unchecked")
-public class ConfigurationFile{
+public abstract class ConfigurationFile {
+
+	protected List<String> header;
+	protected Map<String, Object> values;
+	protected File file;
 	
-	public static final File dataFolder = new File("plugins" + File.separatorChar + "TAB");
-	
-	private File file;
-	private Yaml yaml;
-	private List<String> header;
-	private Map<String, Object> values;
-	
-	public ConfigurationFile(String source, String destination, List<String> header) throws Exception{
-		FileInputStream input = null;
-		try {
-			this.header = header;
-			dataFolder.mkdirs();
-			file = new File(dataFolder, destination);
-			if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
-			DumperOptions options = new DumperOptions();
-			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-			yaml = new Yaml(options);
-			input = new FileInputStream(file);
-			values = yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
-			if (values == null) values = new HashMap<String, Object>();
-			input.close();
-			Shared.mainClass.convertConfig(this);
-			if (!hasHeader()) fixHeader();
-			Placeholders.findAllUsed(values);
-		} catch (ParserException | ScannerException e) {
-			input.close();
-			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
-			Shared.brokenFile = file.getPath();
-			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
-			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
-			if (fix != null) {
-				Shared.mainClass.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
-			}
-			throw e;
-		}
+	public ConfigurationFile(File dataFolder, String source, String destination, List<String> header) throws IOException {
+		this.header = header;
+		dataFolder.mkdirs();
+		file = new File(dataFolder, destination);
+		if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
 	}
-	public ConfigurationFile(String sourceAndDestination, List<String> header) throws Exception{
-		this(sourceAndDestination, sourceAndDestination, header);
-	}
+	
+	public abstract void save();
+	
 	public String getName() {
 		return file.getName();
 	}
+	
 	public Map<String, Object> getValues(){
 		return values;
 	}
+	
 	public Object getObject(String path) {
 		return getObject(path, null);
 	}
+	
 	public Object getObject(String path, Object defaultValue) {
 		try {
 			Object value = values;
@@ -97,23 +68,28 @@ public class ConfigurationFile{
 			return defaultValue;
 		}
 	}
+	
 	private Object getIgnoreCase(Map<String, Object> map, String key) {
 		for (String mapkey : map.keySet()) {
 			if (mapkey.equalsIgnoreCase(key)) return map.get(mapkey);
 		}
 		return null;
 	}
+	
 	public String getString(String path) {
 		return getString(path, null);
 	}
+	
 	public String getString(String path, String defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		return value+"";
 	}
+	
 	public List<String> getStringList(String path) {
 		return getStringList(path, null);
 	}
+	
 	public List<String> getStringList(String path, List<String> defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
@@ -128,7 +104,6 @@ public class ConfigurationFile{
 		return fixedList;
 	}
 	
-	
 	public boolean hasConfigOption(String path) {
 		return getObject(path) != null;
 	}
@@ -136,6 +111,7 @@ public class ConfigurationFile{
 	public Integer getInt(String path) {
 		return getInt(path, null);
 	}
+	
 	public Integer getInt(String path, Integer defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
@@ -147,10 +123,10 @@ public class ConfigurationFile{
 		}
 	}
 	
-	
 	public Boolean getBoolean(String path) {
 		return getBoolean(path, null);
 	}
+	
 	public Boolean getBoolean(String path, Boolean defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
@@ -161,7 +137,6 @@ public class ConfigurationFile{
 			return defaultValue;
 		}
 	}
-	
 	
 	public Double getDouble(String path, double defaultValue) {
 		Object value = getObject(path, defaultValue);
@@ -191,10 +166,12 @@ public class ConfigurationFile{
 	private void dataMismatch(String path, String expected, String found) {
 		Shared.errorManager.startupWarn("Data mismatch in &e" + file.getName() + "&c. Value of &e" + path + "&c is expected to be &e" + expected + "&c, but is &e" + found + "&c. This is a misconfiguration issue.");
 	}
+	
 	public void set(String path, Object value) {
 		set(values, path, value);
 		save();
 	}
+	
 	private Map<String, Object> set(Map<String, Object> map, String path, Object value) {
 		if (path.contains(".")) {
 			String keyWord = fixKey(map, path.split("\\.")[0]);
@@ -212,22 +189,14 @@ public class ConfigurationFile{
 		}
 		return map;
 	}
+	
 	private String fixKey(Map<?, ?> map, String key) {
 		for (Entry<?, ?> e : map.entrySet()) {
 			if (e.getKey().toString().equalsIgnoreCase(key)) return e.getKey().toString();
 		}
 		return key;
 	}
-	public void save() {
-		try {
-			Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-			yaml.dump(values, writer);
-			writer.close();
-			if (!hasHeader()) fixHeader();
-		} catch (Throwable e) {
-			Shared.errorManager.criticalError("Failed to save yaml file " + file.getPath(), e);
-		}
-	}
+	
 	public boolean hasHeader() {
 		if (header == null) return true;
 		for (String line : readAllLines()) {
@@ -235,6 +204,7 @@ public class ConfigurationFile{
 		}
 		return false;
 	}
+	
 	public void fixHeader() {
 		if (header == null) return;
 		try {
@@ -251,7 +221,8 @@ public class ConfigurationFile{
 			Shared.errorManager.criticalError("Failed to modify file " + file, ex);
 		}
 	}
-	private List<String> readAllLines() {
+	
+	protected List<String> readAllLines() {
 		List<String> list = new ArrayList<String>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
@@ -265,6 +236,7 @@ public class ConfigurationFile{
 		}
 		return list;
 	}
+	
 	public Set<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
 		Set<String> base = getUsedPlaceholders(values, simpleKeys);
 		for (String placeholder : base.toArray(new String[0])) {
@@ -275,6 +247,7 @@ public class ConfigurationFile{
 		}
 		return base;
 	}
+	
 	private Set<String> getUsedPlaceholders(Map<String, Object> map, String... simpleKeys){
 		Set<String> values = new HashSet<String>();
 		for (Entry<String, Object> entry : map.entrySet()) {

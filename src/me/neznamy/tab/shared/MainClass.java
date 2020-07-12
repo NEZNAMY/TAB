@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 

@@ -12,10 +12,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;

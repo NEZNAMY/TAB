@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.config.Configs;
 
 public class NTPreviewCommand extends SubCommand{
 

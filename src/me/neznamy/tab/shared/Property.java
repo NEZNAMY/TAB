@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.shared.placeholders.ServerConstant;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;

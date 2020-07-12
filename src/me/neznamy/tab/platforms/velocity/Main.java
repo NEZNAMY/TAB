@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,12 +38,13 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.MainClass;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
@@ -88,6 +90,7 @@ public class Main implements MainClass{
 			me.neznamy.tab.shared.ProtocolVersion.SERVER_VERSION = me.neznamy.tab.shared.ProtocolVersion.values()[1];
 			Shared.mainClass = this;
 			Shared.separatorType = "server";
+			Configs.dataFolder = new File("plugins" + File.separatorChar + "TAB");
 			Shared.command = new TabCommand();
 			server.getCommandManager().register("btab", new Command() {
 				public void execute(CommandSource sender, String[] args) {
@@ -374,7 +377,7 @@ public class Main implements MainClass{
 	}
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(Configs.dataFolder, "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 	}
 	public void registerUnknownPlaceholder(String identifier) {

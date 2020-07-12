@@ -21,13 +21,14 @@ import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
-import me.neznamy.tab.shared.Configs;
-import me.neznamy.tab.shared.ConfigurationFile;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.MainClass;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
+import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
@@ -78,6 +79,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.mainClass = this;
 		Shared.separatorType = "server";
+		Configs.dataFolder = getDataFolder();
 		getProxy().getPluginManager().registerListener(this, this);
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		Shared.command = new TabCommand();
@@ -362,7 +364,7 @@ public class Main extends Plugin implements Listener, MainClass{
 	}
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
-		Configs.config = new ConfigurationFile("bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(Configs.dataFolder, "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 	}
 	public void registerUnknownPlaceholder(String identifier) {

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.shared.config.Configs;
 
 public class PluginHooks {
 

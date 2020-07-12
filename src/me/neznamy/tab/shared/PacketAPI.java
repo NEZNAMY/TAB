@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.Arrays;
 import java.util.Collection;
 
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;

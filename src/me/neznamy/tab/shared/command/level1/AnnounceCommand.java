@@ -2,10 +2,10 @@ package me.neznamy.tab.shared.command.level1;
 
 import java.util.Arrays;
 
-import me.neznamy.tab.shared.Configs;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
+import me.neznamy.tab.shared.config.Configs;
 
 public class AnnounceCommand extends SubCommand{
 
