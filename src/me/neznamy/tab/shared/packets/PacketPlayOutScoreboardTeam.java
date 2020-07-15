@@ -126,7 +126,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = IChatBaseComponent.optimizedComponent(playerPrefix).toString(clientVersion);
 			suffix = IChatBaseComponent.optimizedComponent(playerSuffix).toString(clientVersion);
 			teamDisplay = IChatBaseComponent.optimizedComponent(name).toString(clientVersion);
-			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
+			color = EnumChatFormat.lastColorsOf(playerPrefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.playerPrefix, 16);
 			suffix = cutTo(this.playerSuffix, 16);
@@ -142,7 +142,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = IChatBaseComponent.optimizedComponent(playerPrefix).toString(clientVersion);
 			suffix = IChatBaseComponent.optimizedComponent(playerSuffix).toString(clientVersion);
 			teamDisplay = IChatBaseComponent.optimizedComponent(name).toString(clientVersion);
-			color = EnumChatFormat.lastColorsOf(prefix).getNetworkId();
+			color = EnumChatFormat.lastColorsOf(playerPrefix).getNetworkId();
 		} else {
 			prefix = cutTo(this.playerPrefix, 16);
 			suffix = cutTo(this.playerSuffix, 16);
