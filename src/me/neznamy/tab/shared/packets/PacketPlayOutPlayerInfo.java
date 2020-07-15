@@ -17,7 +17,7 @@ import me.neznamy.tab.platforms.velocity.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import net.kyori.text.Component;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;

@@ -67,9 +67,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 @Plugin(id = "tab", name = "TAB", version = "2.8.2", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main implements MainClass{
@@ -246,11 +246,11 @@ public class Main implements MainClass{
 	//making it return Object and then casting fixes it
 	public static Object componentFromString(String json) {
 		if (json == null) return null;
-		return GsonComponentSerializer.INSTANCE.deserialize(json);
+		return GsonComponentSerializer.gson().deserialize(json);
 	}
 	public static String componentToString(Component component) {
 		if (component == null) return null;
-		return GsonComponentSerializer.INSTANCE.serialize(component);
+		return GsonComponentSerializer.gson().serialize(component);
 	}
 	public void registerPlaceholders() {
 		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
