@@ -19,7 +19,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 public class BossBar_legacy implements Listener, Loadable, WorldChangeListener{
 
-	private final int WITHER_DISTANCE = 50;
+	private final int WITHER_DISTANCE = 100;
 
 	private BossBar mainFeature;
 	
