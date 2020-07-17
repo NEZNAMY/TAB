@@ -19,7 +19,7 @@ public class TextRefresher implements Refreshable {
 	
 	public TextRefresher(BossBarLine line) {
 		this.line = line;
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.text);
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
@@ -40,5 +40,9 @@ public class TextRefresher implements Refreshable {
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.text);
 	}
 }

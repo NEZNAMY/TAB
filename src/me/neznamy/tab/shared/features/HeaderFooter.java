@@ -20,7 +20,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	private Set<String> usedPlaceholders;
 	
 	public HeaderFooter() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void load() {
@@ -81,5 +81,9 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			rawValue.append(line);
 		}
 		p.setProperty(name, rawValue.toString(), null);
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
 	}
 }

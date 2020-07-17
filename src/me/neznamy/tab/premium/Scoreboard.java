@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
+public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	private final String ObjectiveName = "TAB-Scoreboard";
 	private final int DisplaySlot = 1;
@@ -38,7 +38,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
 		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
+		refreshUsedPlaceholders();
 	}
 	public Scoreboard(String name, String title, List<String> lines) {
 		this.manager = (ScoreboardManager) Shared.features.get("scoreboard");
@@ -140,6 +140,11 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
+	
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
+	}
 
 	//implementing interface
 	public void sendTo(UUID player) {
@@ -174,8 +179,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 			this.teamname = teamname;
 			this.player = player;
 			this.rawtext = rawtext;
-			usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawtext);
-			Static = usedPlaceholders.isEmpty();
+			refreshUsedPlaceholders();
 			if (Static) {
 				rawtext = Placeholders.color(rawtext);
 				if (rawtext.length() < 35) {
@@ -275,6 +279,11 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable{
 		@Override
 		public Set<String> getUsedPlaceholders() {
 			return usedPlaceholders;
+		}
+		@Override
+		public void refreshUsedPlaceholders() {
+			usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawtext);
+			Static = usedPlaceholders.isEmpty();
 		}
 	}
 }

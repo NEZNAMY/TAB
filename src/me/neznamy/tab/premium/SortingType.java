@@ -56,6 +56,11 @@ public enum SortingType {
 				public Set<String> getUsedPlaceholders() {
 					return INSTANCE.usedPlaceholders;
 				}
+
+				@Override
+				public void refreshUsedPlaceholders() {
+					INSTANCE.usedPlaceholders = new HashSet<String>(Placeholders.detectAll(INSTANCE.sortingPlaceholder));
+				}
 				
 			});
 		} else {

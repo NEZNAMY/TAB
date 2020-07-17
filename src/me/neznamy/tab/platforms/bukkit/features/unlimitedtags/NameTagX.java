@@ -69,13 +69,6 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 
 	@SuppressWarnings("unchecked")
 	public NameTagX() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
-		for (String line : dynamicLines) {
-			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
-		}
-		for (String line : staticLines.keySet()) {
-			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
-		}
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		if (Premium.is()) {
@@ -85,6 +78,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			Collections.reverse(dynamicLines);
 			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
+		refreshUsedPlaceholders();
 		PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(MethodAPI.PacketPlayInUseEntity).get("a");
 		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
 		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
@@ -482,5 +476,15 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			if (vehicle.getPassenger() != null) passengers.add(vehicle.getPassenger());
 		}
 		return passengers;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
+		for (String line : dynamicLines) {
+			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
+		}
+		for (String line : staticLines.keySet()) {
+			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
+		}
 	}
 }

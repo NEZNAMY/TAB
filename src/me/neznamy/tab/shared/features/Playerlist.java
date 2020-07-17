@@ -27,7 +27,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	private Set<String> usedPlaceholders;
 	
 	public Playerlist() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void load(){
@@ -130,5 +130,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		refresh(connectedPlayer, true);
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
 	}
 }

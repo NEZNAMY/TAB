@@ -16,8 +16,7 @@ public class ColorAndStyleRefresher implements Refreshable {
 	
 	public ColorAndStyleRefresher(BossBarLine line) {
 		this.line = line;
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.color);
-		usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line.style));
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
@@ -33,5 +32,10 @@ public class ColorAndStyleRefresher implements Refreshable {
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.color);
+		usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line.style));
 	}
 }

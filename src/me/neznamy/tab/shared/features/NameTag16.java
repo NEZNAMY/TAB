@@ -20,7 +20,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	private Set<String> usedPlaceholders;
 
 	public NameTag16() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void load(){
@@ -94,5 +94,9 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.NAMETAG;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
 	}
 }

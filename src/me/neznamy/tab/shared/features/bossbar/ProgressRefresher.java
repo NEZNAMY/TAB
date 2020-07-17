@@ -19,7 +19,7 @@ public class ProgressRefresher implements Refreshable {
 	
 	public ProgressRefresher(BossBarLine line) {
 		this.line = line;
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.progress);
+		refreshUsedPlaceholders();
 	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
@@ -42,5 +42,9 @@ public class ProgressRefresher implements Refreshable {
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.progress);
 	}
 }

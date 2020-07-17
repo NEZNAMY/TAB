@@ -29,12 +29,16 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	
 	public BelowName() {
 		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
+		refreshUsedPlaceholders();
 		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
 		textProperty = new Property(null, text, null);
 		Shared.registerFeature("belowname-text", new Refreshable() {
 			
-			private Set<String> usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
+			private Set<String> usedPlaceholders;
+			
+			{
+				refreshUsedPlaceholders();
+			}
 			
 			@Override
 			public void refresh(ITabPlayer refreshed, boolean force) {
@@ -50,6 +54,11 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			@Override
 			public CPUFeature getRefreshCPU() {
 				return CPUFeature.BELOWNAME_TEXT;
+			}
+
+			@Override
+			public void refreshUsedPlaceholders() {
+				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 		});
 	}
@@ -109,5 +118,9 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.BELOWNAME_NUMBER;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
 	}
 }

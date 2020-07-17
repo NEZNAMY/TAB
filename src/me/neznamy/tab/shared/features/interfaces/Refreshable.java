@@ -10,4 +10,5 @@ public interface Refreshable {
 	public void refresh(ITabPlayer refreshed, boolean force);
 	public CPUFeature getRefreshCPU();
 	public Set<String> getUsedPlaceholders();
+	public void refreshUsedPlaceholders();
 }

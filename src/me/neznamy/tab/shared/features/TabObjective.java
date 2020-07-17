@@ -28,7 +28,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	public TabObjective() {
 		rawValue = Configs.config.getString("yellow-number-in-tablist", "%ping%");
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
+		refreshUsedPlaceholders();
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
 		} else {
@@ -92,5 +92,9 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.YELLOW_NUMBER;
+	}
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
 	}
 }
