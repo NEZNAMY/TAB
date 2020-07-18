@@ -209,18 +209,6 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			fixArmorStandHeights(p);
 		}
 	}
-	public void restartArmorStands(ITabPlayer p) {
-		p.getArmorStands().forEach(a -> a.destroy());
-		p.armorStands.clear();
-		if (p.disabledNametag) return;
-		loadArmorStands(p);
-		for (ITabPlayer worldPlayer : Shared.getPlayers()) {
-			if (p == worldPlayer) continue;
-			if (!worldPlayer.getWorldName().equals(p.getWorldName())) continue;
-			spawnArmorStand(p, worldPlayer);
-		}
-		if (p.previewingNametag) spawnArmorStand(p, p);
-	}
 	public void loadArmorStands(ITabPlayer pl) {
 		pl.armorStands.clear();
 		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
