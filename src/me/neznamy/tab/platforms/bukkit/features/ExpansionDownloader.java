@@ -14,10 +14,12 @@ public class ExpansionDownloader{
 
 	public ExpansionDownloader(Set<String> expansions) {
 		Main instance = Main.instance;
+		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
 		Bukkit.getScheduler().runTaskLater(instance, new Runnable() {
 
 			@Override
 			public void run() {
+				//to not freeze the server with Thread.sleep
 				Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 					@Override
@@ -48,10 +50,10 @@ public class ExpansionDownloader{
 					}
 				});
 			}
-			
 		}, 1);
 	}
 	public void runSyncCommand(String command) {
+		//back to main thread as commands need to be ran in it
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.instance, new Runnable() {
 
 			@Override
