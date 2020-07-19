@@ -23,6 +23,9 @@ public class DataWatcher{
 	public void setValue(DataWatcherObject type, Object value){
 		dataValues.put(type.position, new Item(type, value));
 	}
+	public void removeValue(int position) {
+		dataValues.remove(position);
+	}
 	public Item getItem(int position) {
 		return dataValues.get(position);
 	}
