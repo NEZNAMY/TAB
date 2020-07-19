@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 public class PetFix implements RawPacketFeature{
 
 	private final int PET_OWNER_POSITION = getPetOwnerPosition();
-	private Field PacketPlayOutEntityMetadata_LIST;
+	private final Field PacketPlayOutEntityMetadata_LIST;
 	
 	private int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
