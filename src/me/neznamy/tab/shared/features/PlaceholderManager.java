@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
-//THIS CLASS IS IN PROGRESS
 @SuppressWarnings("unchecked")
 public class PlaceholderManager implements QuitEventListener {
 
@@ -121,7 +120,11 @@ public class PlaceholderManager implements QuitEventListener {
 			@Override
 			public void run() {
 				int loopTime = atomic.addAndGet(50);
-				Collection<ITabPlayer> players = Shared.getPlayers();
+				Collection<ITabPlayer> allPlayers = Shared.getPlayers();
+				Collection<ITabPlayer> players = new ArrayList<ITabPlayer>();
+				for (ITabPlayer p : allPlayers) {
+					if (p.onJoinFinished) players.add(p);
+				}
 				Map<ITabPlayer, Set<Refreshable>> update = new HashMap<ITabPlayer, Set<Refreshable>>();
 				Map<ITabPlayer, Set<Refreshable>> forceUpdate = new HashMap<ITabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
@@ -146,7 +149,7 @@ public class PlaceholderManager implements QuitEventListener {
 				}
 				for (Placeholder placeholder : Placeholders.usedPlaceholders) {
 					if (loopTime % placeholder.cooldown != 0) continue;
-					//					System.out.println(placeholder.getIdentifier() + " - " + placeholder.cooldown);
+//					System.out.println(placeholder.getIdentifier() + " - " + placeholder.cooldown);
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
 						for (ITabPlayer all : players) {

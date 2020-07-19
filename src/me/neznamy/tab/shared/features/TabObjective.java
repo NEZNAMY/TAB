@@ -79,7 +79,6 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledTablistObjective) return;
-		if (refreshed.properties.get(propertyName) == null) return; //player not initialized yet
 		int value = getValue(refreshed);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, value);
