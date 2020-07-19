@@ -257,7 +257,7 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
-		
+
 		if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
 			Shared.permissionPlugin = new GroupManager();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
@@ -458,13 +458,6 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 		} else {
 			Shared.registerFeature("placeholders", new PlaceholderManager());
 			registerPlaceholders();
-			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
-			if (Configs.BossBarEnabled) {
-				BossBar bb = new BossBar();
-				Shared.registerFeature("bossbar", bb);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb));
-			}
-			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 					if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
@@ -475,6 +468,13 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 					Shared.registerFeature("nametag16", new NameTag16());
 				}
 			}
+			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
+			if (Configs.BossBarEnabled) {
+				BossBar bb = new BossBar();
+				Shared.registerFeature("bossbar", bb);
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb));
+			}
+			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
 				Playerlist playerlist = new Playerlist();
