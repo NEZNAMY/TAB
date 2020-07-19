@@ -44,6 +44,7 @@ public class Configs {
 	public static boolean SECRET_debugMode;
 	public static String SECRET_multiWorldSeparator;
 	public static String SECRET_essentials_nickname_prefix;
+	public static boolean SECRET_rgb_support;
 
 
 	public static ConfigurationFile animation;
@@ -139,6 +140,7 @@ public class Configs {
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
 		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
+		SECRET_rgb_support = getSecretOption("rgb-support", true);
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new YamlConfigurationFile(dataFolder, "animations.yml", null);

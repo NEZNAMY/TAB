@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 @SuppressWarnings("unchecked")
@@ -274,32 +275,34 @@ public class IChatBaseComponent {
 
 	public static IChatBaseComponent fromColoredText(String message){
 		if (message == null) return new IChatBaseComponent();
-		if (message.contains("&#")) {
-			//adding support for &#RRGGBB
-			message = message.replace("&#", "#");
-		}
-		while (message.contains("{#")) {
-			//adding support for {#RRGGBB}
-			int index = message.indexOf("{#");
-			if (message.length() - index > 8) {
-				if (message.charAt(index+8) == '}') {
-					message = message.substring(0, index) + message.substring(index + 1, index + 8) + message.substring(index + 9, message.length());
+		if (Configs.SECRET_rgb_support) {
+			if (message.contains("&#")) {
+				//adding support for &#RRGGBB
+				message = message.replace("&#", "#");
+			}
+			while (message.contains("{#")) {
+				//adding support for {#RRGGBB}
+				int index = message.indexOf("{#");
+				if (message.length() - index > 8) {
+					if (message.charAt(index+8) == '}') {
+						message = message.substring(0, index) + message.substring(index + 1, index + 8) + message.substring(index + 9, message.length());
+					}
 				}
 			}
-		}
-		while (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
-			//adding support for &x&R&R&G&G&B&B
-			String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
-			int begin = message.indexOf(sequence);
-			message = message.replaceFirst(sequence, "#");
-			message = message.substring(0, begin) + 
-					message.charAt(begin) + 
-					message.charAt(begin + 2) + 
-					message.charAt(begin + 4) + 
-					message.charAt(begin + 6) + 
-					message.charAt(begin + 8) + 
-					message.charAt(begin + 10) + 
-					message.substring(begin + 12, message.length());
+			while (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
+				//adding support for &x&R&R&G&G&B&B
+				String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
+				int begin = message.indexOf(sequence);
+				message = message.replaceFirst(sequence, "#");
+				message = message.substring(0, begin) + 
+						message.charAt(begin) + 
+						message.charAt(begin + 2) + 
+						message.charAt(begin + 4) + 
+						message.charAt(begin + 6) + 
+						message.charAt(begin + 8) + 
+						message.charAt(begin + 10) + 
+						message.substring(begin + 12, message.length());
+			}
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
@@ -347,7 +350,7 @@ public class IChatBaseComponent {
 						break;
 					}
 				}
-			} else if (c == '#'){
+			} else if (Configs.SECRET_rgb_support && c == '#'){
 				try {
 					String hex = message.substring(i+1, i+7);
 					TextColor color = new TextColor(hex); //the validation check is in constructor
