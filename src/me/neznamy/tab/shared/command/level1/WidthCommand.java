@@ -48,7 +48,7 @@ public class WidthCommand extends SubCommand{
 			if (!Premium.premiumconfig.hasConfigOption("extra-character-widths")) Premium.premiumconfig.set("extra-character-widths", new HashMap<Integer, Integer>());
 			Premium.premiumconfig.getConfigurationSection("extra-character-widths").put((int)c, width);
 			Premium.premiumconfig.save();
-			sendMessage(sender, "&2[TAB] Successfully set width of " + c + " to " + width + " pixels.");
+			sendMessage(sender, "&2[TAB] Successfully set width of &6" + c + " &2(&6" + (int)c + "&2) to &6" + width + "&2 pixels.");
 		} else {
 			sendMessage(sender, "Usage: /tab width <character>");
 		}
