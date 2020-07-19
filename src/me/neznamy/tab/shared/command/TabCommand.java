@@ -35,6 +35,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new ReloadCommand());
 		if (Premium.is()) {
 			registerSubCommand(new ScoreboardCommand());
+			registerSubCommand(new WidthCommand());
 		}
 	}
 
