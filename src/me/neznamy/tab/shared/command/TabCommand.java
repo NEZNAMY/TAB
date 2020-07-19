@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
@@ -15,23 +16,26 @@ import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.command.level1.PlayerUUIDCommand;
 import me.neznamy.tab.shared.command.level1.ReloadCommand;
 import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
+import me.neznamy.tab.shared.command.level1.WidthCommand;
 import me.neznamy.tab.shared.config.Configs;
 
 public class TabCommand extends SubCommand {
 
 	public TabCommand() {
 		super("tab", null);
-		subcommands.put("announce", new AnnounceCommand());
-		subcommands.put("bossbar", new BossBarCommand());
-		subcommands.put("cpu", new CpuCommand());
-		subcommands.put("debug", new DebugCommand());
-		subcommands.put("group", new GroupCommand());
-		subcommands.put("ntpreview", new NTPreviewCommand());
-		subcommands.put("parse", new ParseCommand());
-		subcommands.put("player", new PlayerCommand());
-		subcommands.put("playeruuid", new PlayerUUIDCommand());
-		subcommands.put("reload", new ReloadCommand());
-		subcommands.put("scoreboard", new ScoreboardCommand());
+		registerSubCommand(new AnnounceCommand());
+		registerSubCommand(new BossBarCommand());
+		registerSubCommand(new CpuCommand());
+		registerSubCommand(new DebugCommand());
+		registerSubCommand(new GroupCommand());
+		registerSubCommand(new NTPreviewCommand());
+		registerSubCommand(new ParseCommand());
+		registerSubCommand(new PlayerCommand());
+		registerSubCommand(new PlayerUUIDCommand());
+		registerSubCommand(new ReloadCommand());
+		if (Premium.is()) {
+			registerSubCommand(new ScoreboardCommand());
+		}
 	}
 
 	@Override

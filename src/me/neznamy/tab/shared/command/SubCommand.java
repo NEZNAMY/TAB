@@ -22,6 +22,9 @@ public abstract class SubCommand {
 		this.name = name;
 		this.permission = permission;
 	}
+	public void registerSubCommand(SubCommand subcommand) {
+		subcommands.put(subcommand.getName(), subcommand);
+	}
 	public String getName() {
 		return name;
 	}
