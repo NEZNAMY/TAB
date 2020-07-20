@@ -103,7 +103,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			return IChatBaseComponent.optimizedComponent(format);
 		} else {
 			//fucking lunar client
-			return new IChatBaseComponent(new IChatBaseComponent(format).toColoredText());
+			return new IChatBaseComponent(IChatBaseComponent.fromColoredText(format).toColoredText());
 		}
 	}
 	@Override
