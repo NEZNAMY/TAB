@@ -24,7 +24,17 @@ public class WidthCommand extends SubCommand{
 			return;
 		}
 		if (args.length == 1) {
-			char c = args[0].charAt(0);
+			char c;
+			if (args[0].length() == 1) {
+				c = args[0].charAt(0);
+			} else {
+				try {
+					c = (char) Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					sendMessage(sender, "&c" + args[0] + " is not a valid number/character!");
+					return;
+				}
+			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
 			messages.add(new IChatBaseComponent("§b[TAB] Click the line with closest width"));
 			messages.add(new IChatBaseComponent("§b[TAB] §ki §e|§b (1 pixel) §7§l[Click to apply]").onClickRunCommand("/tab width " + c + " 1").onHoverShowText("Click to set width to 1 pixel"));
