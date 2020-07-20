@@ -228,7 +228,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 						width += localWidth;
 					}
 				} else {
-					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it in premiumconfig.yml in extra-character-widths section.");
+					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
 				}
 			}
 			width += component.getText().length()-1;
