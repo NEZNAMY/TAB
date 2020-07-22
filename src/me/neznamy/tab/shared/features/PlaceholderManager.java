@@ -41,8 +41,11 @@ public class PlaceholderManager implements QuitEventListener {
 	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 
 	private AFKProvider afk;
+	
+	private static PlaceholderManager instance;
 
 	public PlaceholderManager(){
+		instance = this;
 		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
 			if (placeholder.startsWith("%bungee_")) serverPlaceholderRefreshIntervals.put(placeholder, 1000);
 		}
@@ -205,7 +208,7 @@ public class PlaceholderManager implements QuitEventListener {
 		});
 	}
 	public static PlaceholderManager getInstance() {
-		return ((PlaceholderManager)Shared.features.get("placeholders"));
+		return instance;
 	}
 	public static Set<Refreshable> getPlaceholderUsage(String identifier){
 		Set<Refreshable> set = new HashSet<Refreshable>();
