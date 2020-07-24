@@ -98,4 +98,10 @@ public interface TabPlayer {
 	 * @since 2.8.3
 	 */
 	public void forceRefresh();
+	
+	public void showScoreboard(Scoreboard scoreboard);
+	
+	public void showScoreboard(String name);
+	
+	public void removeCustomScoreboard();
 }

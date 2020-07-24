@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -33,15 +34,15 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
 	private Set<String> usedPlaceholders;
 
-	public Scoreboard(String name, String title, List<String> lines, String displayCondition, String childBoard) {
-		this(name, title, lines);
+	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
+		this(manager, name, title, lines);
 		this.displayCondition = displayCondition;
 		this.childBoard = childBoard;
 		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 		refreshUsedPlaceholders();
 	}
-	public Scoreboard(String name, String title, List<String> lines) {
-		this.manager = (ScoreboardManager) Shared.features.get("scoreboard");
+	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines) {
+		this.manager = manager;
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
@@ -146,14 +147,6 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
 	}
 
-	//implementing interface
-	public void sendTo(UUID player) {
-		ITabPlayer p = Shared.getPlayer(player);
-		if  (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
-		p.setActiveScoreboard(this);
-		register(p);
-	}
-
 	public void removeFrom(UUID player) {
 		ITabPlayer p = Shared.getPlayer(player);
 		p.setActiveScoreboard(null);
@@ -185,7 +178,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 				if (rawtext.length() < 35) {
 					//1-34
 					staticPrefix = "";
-					staticName = player + Placeholders.colorChar + "r" + rawtext;
+					staticName = player + Placeholders.colorChar + "r" + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
 					staticSuffix = "";
 				} else {
 					String[] sub = substring(rawtext, 16);

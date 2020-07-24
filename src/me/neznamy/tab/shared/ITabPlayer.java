@@ -15,6 +15,7 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Scoreboard;
+import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -52,14 +53,16 @@ public abstract class ITabPlayer implements TabPlayer{
 	public boolean disabledBossbar;
 	public boolean disabledBelowname;
 
-	private Scoreboard activeScoreboard;
-	public boolean hiddenScoreboard;
 	public boolean previewingNametag;
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 	public boolean lastCollision;
 	public boolean lastVisibility;
 	public boolean onJoinFinished;
 	public boolean hiddenNametag;
+	
+	private Scoreboard activeScoreboard;
+	public boolean hiddenScoreboard;
+	public Scoreboard forcedScoreboard;
 
 	public void init() {
 		updateGroupIfNeeded(false);
@@ -450,5 +453,32 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 	public void forceRefresh() {
 		Shared.refreshables.forEach(r -> r.refresh(this, true));
+	}
+	public void showScoreboard(me.neznamy.tab.api.Scoreboard scoreboard) {
+		if (forcedScoreboard != null) {
+			forcedScoreboard.unregister(this);
+		}
+		if (activeScoreboard != null) {
+			activeScoreboard.unregister(this);
+			activeScoreboard = null;
+		}
+		forcedScoreboard = (Scoreboard) scoreboard;
+		((Scoreboard)scoreboard).register(this);
+	}
+	public void showScoreboard(String name) {
+		ScoreboardManager sbm = ((ScoreboardManager) Shared.features.get("scoreboard"));
+		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
+		Scoreboard scoreboard = sbm.getScoreboards().get(name);
+		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name: " + name);
+		showScoreboard(scoreboard);
+	}
+	public void removeCustomScoreboard() {
+		if (forcedScoreboard == null) return;
+		ScoreboardManager sbm = ((ScoreboardManager) Shared.features.get("scoreboard"));
+		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
+		Scoreboard sb = sbm.getScoreboards().get(sbm.getHighestScoreboard(this));
+		activeScoreboard = sb;
+		sb.register(this);
+		forcedScoreboard = null;
 	}
 }

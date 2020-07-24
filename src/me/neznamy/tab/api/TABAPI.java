@@ -125,7 +125,7 @@ public class TABAPI {
 		}
 		ScoreboardManager sbm = (ScoreboardManager) Shared.features.get("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard("API", title, lines);
+		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard(sbm, "API", title, lines);
 		sbm.APIscoreboards.add((me.neznamy.tab.premium.Scoreboard) sb);
 		return sb;
 	}

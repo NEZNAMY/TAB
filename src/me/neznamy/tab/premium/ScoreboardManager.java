@@ -32,8 +32,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public String scoreboard_off;
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public void load() {
+	public ScoreboardManager() {
 		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
@@ -60,10 +59,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				lines = new ArrayList<String>();
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "lines");
 			}
-			Scoreboard sb = new Scoreboard(scoreboard+"", title, lines, condition, childBoard);
+			Scoreboard sb = new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard);
 			scoreboards.put(scoreboard+"", sb);
 			Shared.registerFeature("scoreboard-" + scoreboard, sb);
 		}	
+	}
+	@Override
+	public void load() {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
@@ -71,8 +73,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished) continue;
+					if (p.forcedScoreboard != null) continue;
 					Scoreboard board = p.getActiveScoreboard();
-					if (board != null && board.getName().equals("API")) continue;
 					String current = board == null ? "null" : board.getName();
 					String highest = getHighestScoreboard(p);
 					if (!current.equals(highest)) {
@@ -158,5 +160,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			return true;
 		}
 		return false;
+	}
+	public Map<String, Scoreboard> getScoreboards(){
+		return scoreboards;
 	}
 }
