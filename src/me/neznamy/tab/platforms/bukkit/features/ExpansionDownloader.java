@@ -58,7 +58,11 @@ public class ExpansionDownloader{
 
 			@Override
 			public void run() {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+				try {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+				} catch (Exception e) {
+					//papi ecloud is disabled
+				}
 			}
 		});
 	}
