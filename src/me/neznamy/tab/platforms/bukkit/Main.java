@@ -482,11 +482,15 @@ public class Main extends JavaPlugin implements Listener, MainClass{
 				if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 
 			}
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
-			if (Configs.config.getBoolean("do-not-move-spectators", false)) 																Shared.registerFeature("spectatorfix", new SpectatorFix());
-			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 												Shared.registerFeature("scoreboard", new ScoreboardManager());
-			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 													Shared.registerFeature("pwp", new PerWorldPlayerlist());
-			if (Configs.SECRET_remove_ghost_players) 																						Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+			int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
+			//on 1.16 server cats and parrots do not listen to sit/stand commands, but dogs do
+			//this is probably caused by 1.16 server requiring additional packets from client which are not sent when player does not see correct data
+			//disabling the feature until the issue is resolved
+			if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
+			if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.registerFeature("spectatorfix", new SpectatorFix());
+			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.registerFeature("scoreboard", new ScoreboardManager());
+			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist());
+			if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
 				Shared.registerFeature("papihook", new TabExpansion());
 				new ExpansionDownloader(usedExpansions);

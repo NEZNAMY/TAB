@@ -47,10 +47,6 @@ public class PetFix implements RawPacketFeature{
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable{
-		//on 1.16 server cats and parrots do not listen to sit/stand commands, but dogs do
-		//disabling the feature until the issue is resolved
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 16) return packet;
-		
 		if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return packet;
