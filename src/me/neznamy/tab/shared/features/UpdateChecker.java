@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.Shared;
 
 public class UpdateChecker {
 
-	private final int currentVersionId = 282;
+	private final String currentVersion = "2.8.2";
 	
 	public UpdateChecker() {
 		new Thread(new Runnable() {
@@ -18,13 +18,12 @@ public class UpdateChecker {
 			@Override
 			public void run() {
 				try {
-					HttpURLConnection con = (HttpURLConnection) new URL("http://207.180.242.97/spigot/tab/latest.version").openConnection();
+					HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=57806").openConnection();
 					BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String versionId = br.readLine();
 					String versionString = br.readLine();
 					br.close();
-					int latestVersion = Integer.parseInt(versionId);
-					if (latestVersion > currentVersionId) {
+					con.disconnect();
+					if (!versionString.equals(currentVersion)) {
 						Shared.mainClass.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion);
 						if (Premium.is()) {
 							Shared.mainClass.sendConsoleMessage("&a[TAB] Get the update at https://www.mc-market.org/resources/14009/");
