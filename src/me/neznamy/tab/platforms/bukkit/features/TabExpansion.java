@@ -20,8 +20,10 @@ public class TabExpansion extends PlaceholderExpansion implements Loadable{
 	public void unload() {
 		try {
 			PlaceholderAPI.unregisterExpansion(this);
-		} catch (Exception ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
+		} catch (IllegalStateException ExpansionUnregisterEventMayOnlyBeTriggeredSynchronously) {
 			// java.lang.IllegalStateException: ExpansionUnregisterEvent may only be triggered synchronously.
+		} catch (NoSuchMethodError e){
+			// new placeholderapi builds
 		}
 	}
 	@Override
