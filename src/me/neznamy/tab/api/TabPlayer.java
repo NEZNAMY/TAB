@@ -1,5 +1,7 @@
 package me.neznamy.tab.api;
 
+import java.util.UUID;
+
 public interface TabPlayer {
 
 	/**
@@ -93,15 +95,50 @@ public interface TabPlayer {
 	 */
 	public boolean hasHiddenNametag();
 	
+	
 	/**
 	 * Refreshes all visuals on the player
 	 * @since 2.8.3
 	 */
 	public void forceRefresh();
 	
+	
+	/**
+	 * Displays a scoreboard created using TABAPI.createScoreboard method
+	 * @see removeCustomScoreboard
+	 * @since 2.8.3
+	 */
 	public void showScoreboard(Scoreboard scoreboard);
 	
+	
+	/**
+	 * Displays a scoreboard defined in premiumconfig.yml
+	 * @see removeCustomScoreboard
+	 * @since 2.8.3
+	 */
 	public void showScoreboard(String name);
 	
+	
+	/**
+	 * Removes forced scoreboard sent using one of the showScoreboard methods
+	 * @see showScoreboard
+	 * @since 2.8.3
+	 */
 	public void removeCustomScoreboard();
+	
+	
+	/**
+	 * Returns player's name
+	 * @return Player's name
+	 * @since 2.8.3
+	 */
+	public String getName();
+	
+	
+	/**
+	 * Returns player's UUID
+	 * @return Player's UUID
+	 * @since 2.8.3
+	 */
+	public UUID getUniqueId();
 }
