@@ -126,6 +126,17 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 				}
 			}
 		});
+		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
+			public void run() {
+				for (ITabPlayer p : Shared.getPlayers()) {
+					boolean collision = p.getTeamPush();
+					if (p.lastCollision != collision) {
+						p.lastCollision = collision;
+						p.updateTeamData();
+					}
+				}
+			}
+		});
 	}
 	@Override
 	public void unload() {

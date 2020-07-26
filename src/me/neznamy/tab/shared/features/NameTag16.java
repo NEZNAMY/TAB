@@ -41,12 +41,23 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 						boolean visible = !p.hasInvisibility();
 						if (p.nameTagVisible != visible) {
 							p.nameTagVisible = visible;
-							p.updateTeam();
+							p.updateTeamData();
 						}
 					}
 				}
 			});
 		}
+		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
+			public void run() {
+				for (ITabPlayer p : Shared.getPlayers()) {
+					boolean collision = p.getTeamPush();
+					if (p.lastCollision != collision) {
+						p.lastCollision = collision;
+						p.updateTeamData();
+					}
+				}
+			}
+		});
 	}
 	@Override
 	public void unload() {

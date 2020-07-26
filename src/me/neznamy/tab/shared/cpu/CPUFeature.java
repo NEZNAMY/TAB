@@ -23,6 +23,7 @@ public enum CPUFeature {
 	NAMETAG("NameTags"),
 	NAMETAG_INVISFIX("NameTags - invisfix"),
 	NAMETAG_ANTIOVERRIDE("NameTags - anti override"),
+	NAMETAG_COLLISION("NameTags - collision rule refresh"),
 	NAMETAGX_INVISCHECK("NameTagX - visibility update"),
 	NAMETAGX_PACKET_ENTITY_MOVE("NameTagX - EntityMove"),
 	NAMETAGX_PACKET_LISTENING("NameTagX - Packet Listening"),
