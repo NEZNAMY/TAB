@@ -64,10 +64,11 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			if (condition.contains("%")) {
 				if (condition.contains("=")) {
 					String leftSide = condition.split("=")[0];
-					String rightSide = condition.split("=")[1];
 					for (Placeholder pl : conditionPlaceholders) {
 						leftSide = pl.set(leftSide, p);
 					}
+					String rightSide = Placeholders.color(condition.split("=")[1]);
+					leftSide = Placeholders.color(leftSide);
 					if (!leftSide.equals(rightSide)) return false;
 				} else if (condition.contains("<")) {
 					String leftSide = condition.split("<")[0];
