@@ -174,7 +174,7 @@ public abstract class ConfigurationFile {
 	
 	private Map<String, Object> set(Map<String, Object> map, String path, Object value) {
 		if (path.contains(".")) {
-			String keyWord = fixKey(map, path.split("\\.")[0]);
+			String keyWord = getRealKey(map, path.split("\\.")[0]);
 			Object submap = map.get(keyWord);
 			if (submap == null || !(submap instanceof Map)) {
 				submap = new HashMap<String, Object>();
@@ -182,7 +182,7 @@ public abstract class ConfigurationFile {
 			map.put(keyWord.replace("@#@", "."), set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
 		} else {
 			if (value == null) {
-				map.remove(path);
+				map.remove(getRealKey(map, path));
 			} else {
 				map.put(path, value);
 			}
@@ -190,9 +190,9 @@ public abstract class ConfigurationFile {
 		return map;
 	}
 	
-	private String fixKey(Map<?, ?> map, String key) {
-		for (Entry<?, ?> e : map.entrySet()) {
-			if (e.getKey().toString().equalsIgnoreCase(key)) return e.getKey().toString();
+	private String getRealKey(Map<?, ?> map, String key) {
+		for (Object mapkey : map.keySet()) {
+			if (mapkey.toString().equalsIgnoreCase(key)) return mapkey.toString();
 		}
 		return key;
 	}
