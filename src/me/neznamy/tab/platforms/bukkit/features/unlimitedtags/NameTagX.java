@@ -21,6 +21,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
@@ -461,13 +463,15 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	}
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
-		List<Entity> passengers = new ArrayList<Entity>();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
-			passengers = vehicle.getPassengers();
+			return vehicle.getPassengers();
 		} else {
-			if (vehicle.getPassenger() != null) passengers.add(vehicle.getPassenger());
+			if (vehicle.getPassenger() != null) {
+				return Lists.newArrayList(vehicle.getPassenger()); 
+			} else {
+				return new ArrayList<Entity>();
+			}
 		}
-		return passengers;
 	}
 	@Override
 	public void refreshUsedPlaceholders() {
