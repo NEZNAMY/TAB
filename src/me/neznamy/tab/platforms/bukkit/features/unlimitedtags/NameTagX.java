@@ -51,20 +51,20 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	private Set<String> usedPlaceholders;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
-	
+
 	private Field PacketPlayInUseEntity_ENTITY;
-	
+
 	private Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 	private Field PacketPlayOutEntityDestroy_ENTITIES;
 	private Field PacketPlayOutEntity_ENTITYID;
 
 	private Field PacketPlayOutMount_VEHICLE;
 	private Field PacketPlayOutMount_PASSENGERS;
-	
+
 	private Field PacketPlayOutAttachEntity_A;
 	private Field PacketPlayOutAttachEntity_PASSENGER;
 	private Field PacketPlayOutAttachEntity_VEHICLE;
-	
+
 	private Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
 
 	@SuppressWarnings("unchecked")
@@ -83,11 +83,11 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
 		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
 		PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
-		
+
 		Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutMount);
 		PacketPlayOutMount_VEHICLE = mount.get("a");
 		PacketPlayOutMount_PASSENGERS = mount.get("b");
-		
+
 		Map<String, Field> attachentity = PacketPlayOut.getFields(MethodAPI.PacketPlayOutAttachEntity);
 		PacketPlayOutAttachEntity_A = attachentity.get("a");
 		PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
@@ -120,9 +120,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
-					synchronized(p.armorStands) {
-						p.getArmorStands().forEach(a -> a.updateVisibility());
-					}
+					p.getArmorStands().forEach(a -> a.updateVisibility());
 				}
 			}
 		});
@@ -186,15 +184,14 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 				try {
 					if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 					for (ITabPlayer all : Shared.getPlayers()) {
-						List<ArmorStand> armorStands = new ArrayList<>();
-						armorStands.addAll(all.getArmorStands());
-						armorStands.forEach(a -> a.removeFromRegistered(disconnectedPlayer));
+						all.getArmorStands().forEach(a -> a.removeFromRegistered(disconnectedPlayer));
 					}
-					disconnectedPlayer.getArmorStands().forEach(a -> a.destroy());
-					int asCount = disconnectedPlayer.getArmorStands().size();
+					List<ArmorStand> armorStands = disconnectedPlayer.getArmorStands();
+					armorStands.forEach(a -> a.destroy());
+					int asCount = armorStands.size();
 					int[] armorStandIds = new int[asCount];
 					for (int i=0; i<asCount; i++) {
-						armorStandIds[i] = disconnectedPlayer.getArmorStands().get(i).getEntityId();
+						armorStandIds[i] = armorStands.get(i).getEntityId();
 					}
 					Thread.sleep(100);
 					for (ITabPlayer all : Shared.getPlayers()) {
@@ -214,9 +211,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			p.registerTeam();
 		} else {
 			p.updateTeam();
-			List<ArmorStand> list = new ArrayList<ArmorStand>();
-			list.addAll(p.armorStands);
-			list.forEach(a -> a.refresh());
+			p.getArmorStands().forEach(a -> a.refresh());
 			fixArmorStandHeights(p);
 		}
 	}
@@ -235,9 +230,9 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		fixArmorStandHeights(pl);
 	}
 	public void fixArmorStandHeights(ITabPlayer p) {
-		p.armorStands.forEach(a -> a.refresh());
+		p.getArmorStands().forEach(a -> a.refresh());
 		double currentY = -Configs.SECRET_NTX_space;
-		for (ArmorStand as : p.getArmorStands().toArray(new ArmorStand[0])) {
+		for (ArmorStand as : p.getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
 			if (as.property.get().length() != 0) {
 				currentY += Configs.SECRET_NTX_space;
@@ -275,7 +270,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 				//player moved
 				Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
 					public void run() {
-						pl.armorStands.forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pl.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
 					}
 				});
 			} else if ((vehicleList = vehicles.get(id)) != null){
@@ -285,7 +280,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 					if (passenger != null) {
 						Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
 							public void run() {
-								passenger.armorStands.forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+								passenger.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
 							}
 						});
 					}
@@ -331,7 +326,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 				ITabPlayer pass = Shared.entityIdMap.get(entity);
 				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
 					public void run() {
-						pass.armorStands.forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
 					}
 				});
 			}
@@ -355,7 +350,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 				ITabPlayer pass = Shared.entityIdMap.get(passenger);
 				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
 					public void run() {
-						pass.armorStands.forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
 					}
 				});
 			}
@@ -382,7 +377,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		if (p == null) return;
 		if (p.previewingNametag) Shared.featureCpu.runMeasuredTask("processing PlayerMoveEvent", CPUFeature.NAMETAGX_EVENT_MOVE, new Runnable() {
 			public void run() {
-				p.armorStands.forEach(a -> p.sendPacket(a.getTeleportPacket(p)));
+				p.getArmorStands().forEach(a -> p.sendPacket(a.getTeleportPacket(p)));
 			}
 		});
 	}
@@ -409,13 +404,11 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		if (p == null) return;
 		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerTeleportEvent", CPUFeature.NAMETAGX_EVENT_TELEPORT, new Runnable() {
 			public void run() {
-				synchronized (p.armorStands) {
-					for (ArmorStand as : p.armorStands) {
-						List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-						synchronized (nearbyPlayers){
-							for (ITabPlayer nearby : nearbyPlayers) {
-								nearby.sendPacket(as.getTeleportPacket(nearby));
-							}
+				for (ArmorStand as : p.getArmorStands()) {
+					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
+					synchronized (nearbyPlayers){
+						for (ITabPlayer nearby : nearbyPlayers) {
+							nearby.sendPacket(as.getTeleportPacket(nearby));
 						}
 					}
 				}
@@ -437,7 +430,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		return info;
 	}
 	public void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
-		for (ArmorStand as : armorStandOwner.getArmorStands().toArray(new ArmorStand[0])) {
+		for (ArmorStand as : armorStandOwner.getArmorStands()) {
 			for (Object packet : as.getSpawnPackets(viewer, true)) {
 				viewer.sendPacket(packet);
 			}
@@ -450,7 +443,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 		boolean suffix = refreshed.properties.get("tagsuffix").update();
 		if (prefix || suffix || force) refreshed.updateTeam();
 		boolean fix = false;
-		for (ArmorStand as : refreshed.armorStands.toArray(new ArmorStand[0])) {
+		for (ArmorStand as : refreshed.getArmorStands()) {
 			if (as.property.update() || force) {
 				as.refresh();
 				fix = true;

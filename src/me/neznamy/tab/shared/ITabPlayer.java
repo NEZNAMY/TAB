@@ -143,7 +143,8 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	public List<ArmorStand> getArmorStands() {
-		return armorStands;
+		//avoiding concurrent modification and possible crash due to synchronized lock
+		return new ArrayList<ArmorStand>(armorStands);
 	}
 
 	public PlayerInfoData getInfoData() {
