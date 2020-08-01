@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,19 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
@@ -36,42 +27,23 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RawPacketFeature, PlayerInfoPacketListener, Refreshable{
+public class NameTagX implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
-	private boolean modifyNPCnames;
 	public boolean markerFor18x;
 	private Set<String> usedPlaceholders;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
-	private Field PacketPlayInUseEntity_ENTITY;
-
-	private Field PacketPlayOutNamedEntitySpawn_ENTITYID;
-	private Field PacketPlayOutEntityDestroy_ENTITIES;
-	private Field PacketPlayOutEntity_ENTITYID;
-
-	private Field PacketPlayOutMount_VEHICLE;
-	private Field PacketPlayOutMount_PASSENGERS;
-
-	private Field PacketPlayOutAttachEntity_A;
-	private Field PacketPlayOutAttachEntity_PASSENGER;
-	private Field PacketPlayOutAttachEntity_VEHICLE;
-
-	private Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
+	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
+	private EventListener eventListener;
+	private PacketListener packetListener;
 
 	@SuppressWarnings("unchecked")
 	public NameTagX() {
-		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
@@ -81,23 +53,13 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
-		PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(MethodAPI.PacketPlayInUseEntity).get("a");
-		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
-		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
-		PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
-
-		Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutMount);
-		PacketPlayOutMount_VEHICLE = mount.get("a");
-		PacketPlayOutMount_PASSENGERS = mount.get("b");
-
-		Map<String, Field> attachentity = PacketPlayOut.getFields(MethodAPI.PacketPlayOutAttachEntity);
-		PacketPlayOutAttachEntity_A = attachentity.get("a");
-		PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
-		PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
+		eventListener = new EventListener();
+		packetListener = new PacketListener(this);
+		Shared.registerFeature("nametagx-packet", packetListener);
 	}
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(this, Main.instance);
+		Bukkit.getPluginManager().registerEvents(eventListener, Main.instance);
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.teamName = SortingType.INSTANCE.getTeamName(all);
 			updateProperties(all);
@@ -140,7 +102,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 	}
 	@Override
 	public void unload() {
-		HandlerList.unregisterAll(this);
+		HandlerList.unregisterAll(eventListener);
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
 			p.getArmorStands().forEach(a -> a.destroy());
@@ -242,195 +204,7 @@ public class NameTagX implements Listener, Loadable, JoinEventListener, QuitEven
 			}
 		}
 	}
-	@Override
-	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
-		if (sender.getVersion().getMinorVersion() == 8 && MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
-			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
-			ITabPlayer attacked = null;
-			loop:
-				for (ITabPlayer all : Shared.getPlayers()) {
-					for (ArmorStand as : all.getArmorStands()) {
-						if (as.getEntityId() == entityId) {
-							attacked = all;
-							break loop;
-						}
-					}
-				}
-			if (attacked != null && attacked != sender) {
-				PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
-			}
-		}
-		return packet;
-	}
-	@Override
-	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
-		if (MethodAPI.PacketPlayOutEntity.isInstance(packet)) {
-			int id = PacketPlayOutEntity_ENTITYID.getInt(packet);
-			ITabPlayer pl = Shared.entityIdMap.get(id);
-			List<Integer> vehicleList;
-			if (pl != null) {
-				//player moved
-				Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
-					public void run() {
-						pl.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
-					}
-				});
-			} else if ((vehicleList = vehicles.get(id)) != null){
-				//a vehicle carrying something moved
-				for (Integer entity : vehicleList) {
-					ITabPlayer passenger = Shared.entityIdMap.get(entity);
-					if (passenger != null) {
-						Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
-							public void run() {
-								passenger.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
-							}
-						});
-					}
-				}
-			}
-		}
-		if (MethodAPI.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
-			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
-			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
-				public void run() {
-					spawnArmorStand(spawnedPlayer, receiver);
-				}
-			});
-		}
-		if (MethodAPI.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			int[] entites = (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet);
-			for (int id : entites) {
-				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing EntityDestroy", CPUFeature.NAMETAGX_PACKET_ENTITY_DESTROY, new Runnable() {
-					public void run() {
-						despawnedPlayer.getArmorStands().forEach(a -> a.destroy(receiver));
-					}
-				});
-			}
-		}
-		if (MethodAPI.PacketPlayOutMount != null && MethodAPI.PacketPlayOutMount.isInstance(packet)) {
-			//1.9+ mount detection
-			int vehicle = PacketPlayOutMount_VEHICLE.getInt(packet);
-			int[] passg = (int[]) PacketPlayOutMount_PASSENGERS.get(packet);
-			Integer[] passengers = new Integer[passg.length];
-			for (int i=0; i<passg.length; i++) {
-				passengers[i] = passg[i];
-			}
-			if (passengers.length == 0) {
-				//detach
-				vehicles.remove(vehicle);
-			} else {
-				//attach
-				vehicles.put(vehicle, Arrays.asList(passengers));
-			}
-			for (int entity : passengers) {
-				ITabPlayer pass = Shared.entityIdMap.get(entity);
-				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
-					public void run() {
-						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
-					}
-				});
-			}
-		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && MethodAPI.PacketPlayOutAttachEntity.isInstance(packet)) {
-			//1.8.x mount detection
-			if (PacketPlayOutAttachEntity_A.getInt(packet) == 0) {
-				int passenger = PacketPlayOutAttachEntity_PASSENGER.getInt(packet);
-				int vehicle = PacketPlayOutAttachEntity_VEHICLE.getInt(packet);
-				if (vehicle != -1) {
-					//attach
-					vehicles.put(vehicle, Arrays.asList(passenger));
-				} else {
-					//detach
-					for (Entry<Integer, List<Integer>> entry : vehicles.entrySet()) {
-						if (entry.getValue().contains(passenger)) {
-							vehicles.remove(entry.getKey());
-						}
-					}
-				}
-				ITabPlayer pass = Shared.entityIdMap.get(passenger);
-				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
-					public void run() {
-						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
-					}
-				});
-			}
-		}
-		return packet;
-	}
-	@Override
-	public CPUFeature getCPUName() {
-		return CPUFeature.NAMETAGX_PACKET_LISTENING;
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void a(PlayerToggleSneakEvent e) {
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerToggleSneakEvent", CPUFeature.NAMETAGX_EVENT_SNEAK, new Runnable() {
-			public void run() {
-				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
-			}
-		});
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void a(PlayerMoveEvent e) {
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		if (p.previewingNametag) Shared.featureCpu.runMeasuredTask("processing PlayerMoveEvent", CPUFeature.NAMETAGX_EVENT_MOVE, new Runnable() {
-			public void run() {
-				p.getArmorStands().forEach(a -> p.sendPacket(a.getTeleportPacket(p)));
-			}
-		});
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void a(PlayerRespawnEvent e) {
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerRespawnEvent", CPUFeature.NAMETAGX_EVENT_RESPAWN, new Runnable() {
-			public void run() {
-				for (ArmorStand as : p.getArmorStands()) {
-					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-					synchronized (nearbyPlayers){
-						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getTeleportPacket(nearby));
-						}
-					}
-				}
-			}
-		});
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void a(PlayerTeleportEvent e) {
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerTeleportEvent", CPUFeature.NAMETAGX_EVENT_TELEPORT, new Runnable() {
-			public void run() {
-				for (ArmorStand as : p.getArmorStands()) {
-					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-					synchronized (nearbyPlayers){
-						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getTeleportPacket(nearby));
-						}
-					}
-				}
-			}
-		});
-	}
-	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
-		for (PlayerInfoData playerInfoData : info.entries) {
-			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {
-				if (playerInfoData.name.length() <= 14) {
-					playerInfoData.name += Placeholders.colorChar + "r";
-				} else {
-					playerInfoData.name += " ";
-				}
-			}
-		}
-		return info;
-	}
+	
 	public void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
 		for (ArmorStand as : armorStandOwner.getArmorStands()) {
 			for (Object packet : as.getSpawnPackets(viewer, true)) {
