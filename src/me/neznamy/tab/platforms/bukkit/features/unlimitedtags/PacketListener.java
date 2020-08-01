@@ -77,6 +77,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
+		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		if (MethodAPI.PacketPlayOutEntity.isInstance(packet)) {
 			int id = PacketPlayOutEntity_ENTITYID.getInt(packet);
 			ITabPlayer pl = Shared.entityIdMap.get(id);

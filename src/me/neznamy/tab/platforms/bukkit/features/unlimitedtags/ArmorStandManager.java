@@ -14,6 +14,7 @@ public class ArmorStandManager {
 		armorStands.put(name, as);
 	}
 	public void spawn(ITabPlayer viewer) {
+		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand as : armorStands.values()) {
 			for (Object packet : as.getSpawnPackets(viewer, true)) {
 				viewer.sendPacket(packet);
