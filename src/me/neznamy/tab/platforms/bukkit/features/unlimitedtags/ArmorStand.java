@@ -85,29 +85,29 @@ public class ArmorStand{
 		viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
-			for (ITabPlayer all : getNearbyPlayers()) {
-				all.sendPacket(getTeleportPacket(all));
-			}
+		for (ITabPlayer all : getNearbyPlayers()) {
+			all.sendPacket(getTeleportPacket(all));
+		}
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
-			for (ITabPlayer viewer : getNearbyPlayers()) {
-				if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
-					//1.14.x client sided bug, despawning completely
-					if (sneaking) {
-						viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
-					} else {
-						for (Object packet : getSpawnPackets(viewer, false)) {
-							viewer.sendPacket(packet);
-						}
-					}
-				} else {
-					//respawning so there's no animation and it's instant
+		for (ITabPlayer viewer : getNearbyPlayers()) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
+				//1.14.x client sided bug, despawning completely
+				if (sneaking) {
 					viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+				} else {
 					for (Object packet : getSpawnPackets(viewer, false)) {
 						viewer.sendPacket(packet);
 					}
 				}
+			} else {
+				//respawning so there's no animation and it's instant
+				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+				for (Object packet : getSpawnPackets(viewer, false)) {
+					viewer.sendPacket(packet);
+				}
+			}
 		}
 	}
 	public void destroy() {
@@ -122,9 +122,9 @@ public class ArmorStand{
 		}
 	}
 	private void updateMetadata() {
-			for (ITabPlayer viewer : getNearbyPlayers()) {
-				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer).toNMS(), true));
-			}
+		for (ITabPlayer viewer : getNearbyPlayers()) {
+			viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer).toNMS(), true));
+		}
 	}
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
