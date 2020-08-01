@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -65,8 +64,7 @@ import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -252,26 +250,12 @@ public class Main implements MainClass{
 		if (component == null) return null;
 		return GsonComponentSerializer.gson().serialize(component);
 	}
-	public void registerPlaceholders() {
+	public void detectPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			Shared.permissionPlugin = new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
 		} else {
 			Shared.permissionPlugin = new None();
 		}
-
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
-			public String get() {
-				return server.getConfiguration().getShowMaxPlayers()+"";
-			}
-		});
-		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
-				public String get() {
-					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
-				}
-			});
-		}
-		Placeholders.registerUniversalPlaceholders();
 	}
 	
 	public PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
@@ -341,8 +325,12 @@ public class Main implements MainClass{
 	 */
 
 	public void loadFeatures(boolean inject) throws Exception{
-		Shared.registerFeature("placeholders", new PlaceholderManager());
-		registerPlaceholders();
+		PlaceholderManager plm = new PlaceholderManager();
+		plm.addRegistry(new VelocityPlaceholderRegistry(server));
+		plm.addRegistry(new UniversalPlaceholderRegistry());
+		plm.registerPlaceholders();
+		Shared.registerFeature("placeholders", plm);
+		detectPermissionPlugin();
 		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());

@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -41,6 +42,7 @@ public class PlaceholderManager implements QuitEventListener {
 	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 
 	private AFKProvider afk;
+	private List<PlaceholderRegistry> registry = new ArrayList<>();
 	
 	private static PlaceholderManager instance;
 
@@ -307,5 +309,14 @@ public class PlaceholderManager implements QuitEventListener {
 	public void setAFKProvider(AFKProvider afk) {
 		Shared.debug("Loaded AFK provider: " + afk.getClass().getSimpleName());
 		this.afk = afk;
+	}
+	public void addRegistry(PlaceholderRegistry registry) {
+		this.registry.add(registry);
+	}
+	public void registerPlaceholders() {
+		registry.forEach(r -> r.registerPlaceholders());
+		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
+			Placeholders.categorizeUsedPlaceholder(placeholder);
+		}
 	}
 }

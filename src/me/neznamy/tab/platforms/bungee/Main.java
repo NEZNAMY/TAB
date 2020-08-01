@@ -4,13 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
-import de.myzelyam.api.vanish.BungeeVanishAPI;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -51,11 +48,9 @@ import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -262,7 +257,7 @@ public class Main extends Plugin implements Listener, MainClass{
 		}
 		return false;
 	}
-	public void registerPlaceholders() {
+	public void detectPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			Shared.permissionPlugin = new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
@@ -274,50 +269,6 @@ public class Main extends Plugin implements Listener, MainClass{
 		} else {
 			Shared.permissionPlugin = new None();
 		}
-		
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
-			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline%", 1000) {
-				public String get() {
-					return Shared.getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size()+"";
-				}
-			});
-			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
-				public String get() {
-					int count = 0;
-					for (ITabPlayer all : Shared.getPlayers()) {
-						if (!all.isVanished() && all.isStaff()) count++;
-					}
-					return count+"";
-				}
-			});
-		}
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
-			public String get() {
-				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
-			public String get(ITabPlayer p) {
-				return (p.getBungeeEntity()).getDisplayName();
-			}
-		});
-		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			Placeholders.registerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
-				public String get() {
-					return server.getValue().getPlayers().size()+"";
-				}
-			});
-			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
-				public String get() {
-					int count = server.getValue().getPlayers().size();
-					for (ProxiedPlayer p : server.getValue().getPlayers()) {
-						if (Shared.getPlayer(p.getUniqueId()).isVanished()) count--;
-					}
-					return count+"";
-				}
-			});
-		}
-		Placeholders.registerUniversalPlaceholders();
 	}
 
 
@@ -326,8 +277,12 @@ public class Main extends Plugin implements Listener, MainClass{
 	 */
 
 	public void loadFeatures(boolean inject) throws Exception{
-		Shared.registerFeature("placeholders", new PlaceholderManager());
-		registerPlaceholders();
+		PlaceholderManager plm = new PlaceholderManager();
+		plm.addRegistry(new BungeePlaceholderRegistry());
+		plm.addRegistry(new UniversalPlaceholderRegistry());
+		plm.registerPlaceholders();
+		Shared.registerFeature("placeholders", plm);
+		detectPermissionPlugin();
 		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
