@@ -157,15 +157,15 @@ public class ArmorStand{
 		byte flag = 0;
 		if (sneaking) flag += (byte)2;
 		flag += (byte)32;
-		DataWatcher.Helper.setEntityFlags(datawatcher, flag);
+		datawatcher.helper().setEntityFlags(flag);
 
 		if (displayName == null) displayName = "";
-		DataWatcher.Helper.setCustomName(datawatcher, displayName, viewer.getVersion());
+		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
-		DataWatcher.Helper.setCustomNameVisible(datawatcher, visible);
+		datawatcher.helper().setCustomNameVisible(visible);
 
-		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) DataWatcher.Helper.setArmorStandFlags(datawatcher, (byte)16);
+		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){

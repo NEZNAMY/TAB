@@ -72,11 +72,11 @@ public class BossBarLine {
 		} else {
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, ((BossBar_legacy)Shared.features.get("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher(null);
-			DataWatcher.Helper.setEntityFlags(w, (byte) 32);
-			DataWatcher.Helper.setCustomName(w, to.properties.get("bossbar-text-" + name).get(), to.getVersion());
+			w.helper().setEntityFlags((byte) 32);
+			w.helper().setCustomName(to.properties.get("bossbar-text-" + name).get(), to.getVersion());
 			float health = (float)3*parseProgress(to.properties.get("bossbar-progress-" + name).get());
 			if (health == 0) health = 1;
-			DataWatcher.Helper.setHealth(w, health);
+			w.helper().setHealth(health);
 			packet.setDataWatcher(w);
 			to.sendCustomBukkitPacket(packet);
 		}

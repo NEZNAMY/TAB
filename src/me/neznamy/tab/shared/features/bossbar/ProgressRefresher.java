@@ -31,7 +31,7 @@ public class ProgressRefresher implements Refreshable {
 			DataWatcher w = new DataWatcher(null);
 			float health = (float)3*line.parseProgress(progress.updateAndGet());
 			if (health == 0) health = 1;
-			DataWatcher.Helper.setHealth(w, health);
+			w.helper().setHealth(health);
 			refreshed.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(line.entityId, w.toNMS(), true));
 		}
 	}

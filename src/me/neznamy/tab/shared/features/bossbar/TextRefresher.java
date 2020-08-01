@@ -29,7 +29,7 @@ public class TextRefresher implements Refreshable {
 			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, text.updateAndGet()));
 		} else {
 			DataWatcher w = new DataWatcher(null);
-			DataWatcher.Helper.setCustomName(w, text.updateAndGet(), refreshed.getVersion());
+			w.helper().setCustomName(text.updateAndGet(), refreshed.getVersion());
 			refreshed.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(line.entityId, w.toNMS(), true));
 		}
 	}
