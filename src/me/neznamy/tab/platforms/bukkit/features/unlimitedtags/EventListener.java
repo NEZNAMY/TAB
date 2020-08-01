@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.List;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,8 +19,10 @@ public class EventListener implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerToggleSneakEvent", CPUFeature.NAMETAGX_EVENT_SNEAK, new Runnable() {
+			
+			@Override
 			public void run() {
-				p.getArmorStands().forEach(a -> a.sneak(e.isSneaking()));
+				p.getArmorStandManager().sneak(e.isSneaking());
 			}
 		});
 	}
@@ -32,8 +32,10 @@ public class EventListener implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		if (p.previewingNametag) Shared.featureCpu.runMeasuredTask("processing PlayerMoveEvent", CPUFeature.NAMETAGX_EVENT_MOVE, new Runnable() {
+			
+			@Override
 			public void run() {
-				p.getArmorStands().forEach(a -> p.sendPacket(a.getTeleportPacket(p)));
+				p.getArmorStandManager().teleport(p);
 			}
 		});
 	}
@@ -43,15 +45,10 @@ public class EventListener implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerRespawnEvent", CPUFeature.NAMETAGX_EVENT_RESPAWN, new Runnable() {
+			
+			@Override
 			public void run() {
-				for (ArmorStand as : p.getArmorStands()) {
-					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-					synchronized (nearbyPlayers){
-						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getTeleportPacket(nearby));
-						}
-					}
-				}
+				p.getArmorStandManager().teleport();
 			}
 		});
 	}
@@ -61,15 +58,10 @@ public class EventListener implements Listener {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerTeleportEvent", CPUFeature.NAMETAGX_EVENT_TELEPORT, new Runnable() {
+			
+			@Override
 			public void run() {
-				for (ArmorStand as : p.getArmorStands()) {
-					List<ITabPlayer> nearbyPlayers = as.getNearbyPlayers();
-					synchronized (nearbyPlayers){
-						for (ITabPlayer nearby : nearbyPlayers) {
-							nearby.sendPacket(as.getTeleportPacket(nearby));
-						}
-					}
-				}
+				p.getArmorStandManager().teleport();
 			}
 		});
 	}

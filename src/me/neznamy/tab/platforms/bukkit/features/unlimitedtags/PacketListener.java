@@ -34,10 +34,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	private Field PacketPlayOutAttachEntity_A;
 	private Field PacketPlayOutAttachEntity_PASSENGER;
 	private Field PacketPlayOutAttachEntity_VEHICLE;
-	
+
 	private boolean modifyNPCnames;
 	private NameTagX nameTagX;
-	
+
 	public PacketListener(NameTagX nameTagX) {
 		PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(MethodAPI.PacketPlayInUseEntity).get("a");
 		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
@@ -52,32 +52,29 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		PacketPlayOutAttachEntity_A = attachentity.get("a");
 		PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
 		PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
-		
+
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		this.nameTagX = nameTagX;
 	}
-	
+
 	@Override
 	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
 		if (sender.getVersion().getMinorVersion() == 8 && MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
 			ITabPlayer attacked = null;
-			loop:
-				for (ITabPlayer all : Shared.getPlayers()) {
-					for (ArmorStand as : all.getArmorStands()) {
-						if (as.getEntityId() == entityId) {
-							attacked = all;
-							break loop;
-						}
-					}
+			for (ITabPlayer all : Shared.getPlayers()) {
+				if (all.getArmorStandManager().hasArmorStandWithID(entityId)) {
+					attacked = all;
+					break;
 				}
+			}
 			if (attacked != null && attacked != sender) {
 				PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
 			}
 		}
 		return packet;
 	}
-	
+
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
 		if (MethodAPI.PacketPlayOutEntity.isInstance(packet)) {
@@ -88,7 +85,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				//player moved
 				Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
 					public void run() {
-						pl.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pl.getArmorStandManager().teleport(receiver);
 					}
 				});
 			} else if ((vehicleList = nameTagX.vehicles.get(id)) != null){
@@ -98,7 +95,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 					if (passenger != null) {
 						Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
 							public void run() {
-								passenger.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+								passenger.getArmorStandManager().teleport(receiver);
 							}
 						});
 					}
@@ -109,8 +106,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
+
+				@Override
 				public void run() {
-					nameTagX.spawnArmorStand(spawnedPlayer, receiver);
+					spawnedPlayer.getArmorStandManager().spawn(receiver);
 				}
 			});
 		}
@@ -119,8 +118,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			for (int id : entites) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
 				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing EntityDestroy", CPUFeature.NAMETAGX_PACKET_ENTITY_DESTROY, new Runnable() {
+
+					@Override
 					public void run() {
-						despawnedPlayer.getArmorStands().forEach(a -> a.destroy(receiver));
+						despawnedPlayer.getArmorStandManager().destroy(receiver);
 					}
 				});
 			}
@@ -143,8 +144,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			for (int entity : passengers) {
 				ITabPlayer pass = Shared.entityIdMap.get(entity);
 				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
+
+					@Override
 					public void run() {
-						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pass.getArmorStandManager().teleport(receiver);
 					}
 				});
 			}
@@ -167,20 +170,22 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 				ITabPlayer pass = Shared.entityIdMap.get(passenger);
 				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
+
+					@Override
 					public void run() {
-						pass.getArmorStands().forEach(a -> receiver.sendPacket(a.getTeleportPacket(receiver)));
+						pass.getArmorStandManager().teleport(receiver);
 					}
 				});
 			}
 		}
 		return packet;
 	}
-	
+
 	@Override
 	public CPUFeature getCPUName() {
 		return CPUFeature.NAMETAGX_PACKET_LISTENING;
 	}
-	
+
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;

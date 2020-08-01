@@ -55,10 +55,8 @@ public class ArmorStand{
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		synchronized (nearbyPlayers) {
-			for (ITabPlayer all : nearbyPlayers) {
-				all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
-			}
+		for (ITabPlayer all : getNearbyPlayers()) {
+			all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
 		}
 	}
 	public Object[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
@@ -87,17 +85,13 @@ public class ArmorStand{
 		viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
-		synchronized (nearbyPlayers) {
-			for (ITabPlayer all : nearbyPlayers) {
-				Object teleportPacket = getTeleportPacket(all);
-				all.sendPacket(teleportPacket);
+			for (ITabPlayer all : getNearbyPlayers()) {
+				all.sendPacket(getTeleportPacket(all));
 			}
-		}
 	}
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
-		synchronized (nearbyPlayers) {
-			for (ITabPlayer viewer : nearbyPlayers) {
+			for (ITabPlayer viewer : getNearbyPlayers()) {
 				if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 					//1.14.x client sided bug, despawning completely
 					if (sneaking) {
@@ -114,7 +108,6 @@ public class ArmorStand{
 						viewer.sendPacket(packet);
 					}
 				}
-			}
 		}
 	}
 	public void destroy() {
@@ -129,11 +122,9 @@ public class ArmorStand{
 		}
 	}
 	private void updateMetadata() {
-		synchronized (nearbyPlayers) {
-			for (ITabPlayer viewer : nearbyPlayers) {
+			for (ITabPlayer viewer : getNearbyPlayers()) {
 				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer).toNMS(), true));
 			}
-		}
 	}
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
@@ -178,7 +169,7 @@ public class ArmorStand{
 		return datawatcher;
 	}
 	public List<ITabPlayer> getNearbyPlayers(){
-		return nearbyPlayers;
+		return new ArrayList<ITabPlayer>(nearbyPlayers);
 	}
 	private boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;

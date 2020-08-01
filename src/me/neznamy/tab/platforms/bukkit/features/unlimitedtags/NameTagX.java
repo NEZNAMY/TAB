@@ -16,7 +16,6 @@ import org.bukkit.event.HandlerList;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -77,14 +76,14 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
-				spawnArmorStand(all, worldPlayer);
+				all.getArmorStandManager().spawn(worldPlayer);
 			}
 		}
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAGX_INVISCHECK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (p.disabledNametag) continue;
-					p.getArmorStands().forEach(a -> a.updateVisibility());
+					p.getArmorStandManager().updateVisibility();
 				}
 			}
 		});
@@ -105,7 +104,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		HandlerList.unregisterAll(eventListener);
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
-			p.getArmorStands().forEach(a -> a.destroy());
+			p.getArmorStandManager().destroy();
 		}
 	}
 	@Override
@@ -148,19 +147,10 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				try {
 					if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 					for (ITabPlayer all : Shared.getPlayers()) {
-						all.getArmorStands().forEach(a -> a.removeFromRegistered(disconnectedPlayer));
-					}
-					List<ArmorStand> armorStands = disconnectedPlayer.getArmorStands();
-					armorStands.forEach(a -> a.destroy());
-					int asCount = armorStands.size();
-					int[] armorStandIds = new int[asCount];
-					for (int i=0; i<asCount; i++) {
-						armorStandIds[i] = armorStands.get(i).getEntityId();
+						all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 					}
 					Thread.sleep(100);
-					for (ITabPlayer all : Shared.getPlayers()) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(armorStandIds));
-					}
+					disconnectedPlayer.getArmorStandManager().destroy();
 				} catch (InterruptedException e) {
 
 				}
@@ -175,28 +165,28 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			p.registerTeam();
 		} else {
 			p.updateTeam();
-			p.getArmorStands().forEach(a -> a.refresh());
+			p.getArmorStandManager().refresh();
 			fixArmorStandHeights(p);
 		}
 	}
 	public void loadArmorStands(ITabPlayer pl) {
-		pl.armorStands.clear();
+		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : dynamicLines) {
 			Property p = pl.properties.get(line);
-			pl.armorStands.add(new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
+			pl.getArmorStandManager().addArmorStand(line, new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.properties.get(line.getKey());
-			pl.armorStands.add(new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
 	}
 	public void fixArmorStandHeights(ITabPlayer p) {
-		p.getArmorStands().forEach(a -> a.refresh());
+		p.getArmorStandManager().refresh();
 		double currentY = -Configs.SECRET_NTX_space;
-		for (ArmorStand as : p.getArmorStands()) {
+		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
 			if (as.property.get().length() != 0) {
 				currentY += Configs.SECRET_NTX_space;
@@ -205,13 +195,6 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 	}
 	
-	public void spawnArmorStand(ITabPlayer armorStandOwner, ITabPlayer viewer) {
-		for (ArmorStand as : armorStandOwner.getArmorStands()) {
-			for (Object packet : as.getSpawnPackets(viewer, true)) {
-				viewer.sendPacket(packet);
-			}
-		}
-	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
@@ -219,7 +202,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		boolean suffix = refreshed.properties.get("tagsuffix").update();
 		if (prefix || suffix || force) refreshed.updateTeam();
 		boolean fix = false;
-		for (ArmorStand as : refreshed.getArmorStands()) {
+		for (ArmorStand as : refreshed.getArmorStandManager().getArmorStands()) {
 			if (as.property.update() || force) {
 				as.refresh();
 				fix = true;

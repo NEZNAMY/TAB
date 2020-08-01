@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.UUID;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStand;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStandManager;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Scoreboard;
@@ -39,7 +38,7 @@ public abstract class ITabPlayer implements TabPlayer{
 	public String teamName;
 
 	public Map<String, Property> properties = new HashMap<String, Property>();
-	public List<ArmorStand> armorStands = Collections.synchronizedList(new ArrayList<ArmorStand>());
+	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	public Channel channel;
 	public boolean nameTagVisible = true;
@@ -140,11 +139,6 @@ public abstract class ITabPlayer implements TabPlayer{
 
 	public String getWorldName() {
 		return world;
-	}
-
-	public List<ArmorStand> getArmorStands() {
-		//avoiding concurrent modification and possible crash due to synchronized lock
-		return new ArrayList<ArmorStand>(armorStands);
 	}
 
 	public PlayerInfoData getInfoData() {
@@ -481,5 +475,13 @@ public abstract class ITabPlayer implements TabPlayer{
 		activeScoreboard = sb;
 		sb.register(this);
 		forcedScoreboard = null;
+	}
+
+	public ArmorStandManager getArmorStandManager() {
+		return armorStandManager;
+	}
+
+	public void setArmorStandManager(ArmorStandManager armorStandManager) {
+		this.armorStandManager = armorStandManager;
 	}
 }
