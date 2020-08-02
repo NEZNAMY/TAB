@@ -27,6 +27,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean remember_toggle_choice;
 	public List<String> sb_off_players;
 	public List<Scoreboard> APIscoreboards = new ArrayList<>();
+	public boolean permToToggle;
 
 	public String scoreboard_on;
 	public String scoreboard_off;
@@ -35,6 +36,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public ScoreboardManager() {
 		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
+		permToToggle = Configs.bossbar.getBoolean("scoreboard.permission-required-to-toggle", false);
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");

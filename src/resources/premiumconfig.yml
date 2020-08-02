@@ -41,6 +41,8 @@ unlimited-nametag-mode-static-lines:
 scoreboard:
   enabled: false
   toggle-command: /sb
+  #tab.togglescoreboard
+  permission-required-to-toggle: false
   remember-toggle-choice: false
   #using 1-15 instead of 0s everywhere
   use-numbers: false
