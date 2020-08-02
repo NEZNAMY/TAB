@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.RGBUtils;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -276,33 +277,7 @@ public class IChatBaseComponent {
 	public static IChatBaseComponent fromColoredText(String message){
 		if (message == null) return new IChatBaseComponent();
 		if (Configs.SECRET_rgb_support) {
-			if (message.contains("&#")) {
-				//adding support for &#RRGGBB
-				message = message.replace("&#", "#");
-			}
-			while (message.contains("{#")) {
-				//adding support for {#RRGGBB}
-				int index = message.indexOf("{#");
-				if (message.length() - index > 8) {
-					if (message.charAt(index+8) == '}') {
-						message = message.substring(0, index) + message.substring(index + 1, index + 8) + message.substring(index + 9, message.length());
-					}
-				}
-			}
-			while (message.contains("&x") || message.contains(Placeholders.colorChar + "x")) {
-				//adding support for &x&R&R&G&G&B&B
-				String sequence = message.contains("&x") ? "&x" : Placeholders.colorChar + "x";
-				int begin = message.indexOf(sequence);
-				message = message.replaceFirst(sequence, "#");
-				message = message.substring(0, begin) + 
-						message.charAt(begin) + 
-						message.charAt(begin + 2) + 
-						message.charAt(begin + 4) + 
-						message.charAt(begin + 6) + 
-						message.charAt(begin + 8) + 
-						message.charAt(begin + 10) + 
-						message.substring(begin + 12, message.length());
-			}
+			message = RGBUtils.applyFormats(message);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
@@ -462,7 +437,7 @@ public class IChatBaseComponent {
 					//not sending old colors as RGB to 1.16 clients if not needed, also viaversion blocks that as well
 					return legacyEquivalent.toString().toLowerCase();
 				}
-				return "#" + Integer.toHexString((red << 16) + (green << 8) + blue);
+				return "#" + RGBUtils.toHexString(red, green, blue);
 			} else {
 				return legacy.toString().toLowerCase();
 			}
@@ -474,6 +449,15 @@ public class IChatBaseComponent {
 			} else {
 				return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 			}
+		}
+		public int getRed() {
+			return red;
+		}
+		public int getGreen() {
+			return green;
+		}
+		public int getBlue() {
+			return blue;
 		}
 	}
 }
