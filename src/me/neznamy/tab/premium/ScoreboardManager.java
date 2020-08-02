@@ -36,7 +36,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public ScoreboardManager() {
 		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
-		permToToggle = Configs.bossbar.getBoolean("scoreboard.permission-required-to-toggle", false);
+		permToToggle = Premium.premiumconfig.getBoolean("scoreboard.permission-required-to-toggle", false);
 		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
