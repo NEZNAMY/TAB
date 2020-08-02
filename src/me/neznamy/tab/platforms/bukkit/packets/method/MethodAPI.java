@@ -89,7 +89,7 @@ public abstract class MethodAPI {
 
 	static {
 		try {
-			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.instance.serverPackage).getConstructor().newInstance();
+			instance = (MethodAPI) Class.forName(MethodAPI.class.getPackage().getName()+".MethodAPI_" + Main.serverPackage).getConstructor().newInstance();
 		} catch (Throwable e) {
 			//bungee or velocity
 		}

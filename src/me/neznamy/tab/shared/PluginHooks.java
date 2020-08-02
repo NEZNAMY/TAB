@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -22,10 +21,11 @@ public class PluginHooks {
 		Player p = (player == null ? null : Bukkit.getPlayer(player));
 		return setPlaceholders(p, placeholder);
 	}
+	@SuppressWarnings("deprecation")
 	public static String setPlaceholders(Player player, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
-			return PlaceholderAPI.setPlaceholders((OfflinePlayer) player, placeholder);
+			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
 			String playername = (player == null ? "null" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");

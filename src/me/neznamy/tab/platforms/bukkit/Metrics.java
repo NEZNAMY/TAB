@@ -241,7 +241,7 @@ public class Metrics {
 	 */
 	private JSONObject getServerData() {
 		// Minecraft specific data
-		int playerAmount = plugin.getOnlinePlayers().length;
+		int playerAmount = Main.getOnlinePlayers().length;
 		int onlineMode = Bukkit.getOnlineMode() ? 1 : 0;
 		String bukkitVersion = Bukkit.getVersion();
 

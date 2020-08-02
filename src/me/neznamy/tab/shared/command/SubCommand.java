@@ -41,14 +41,14 @@ public abstract class SubCommand {
 		if (sender != null) {
 			sender.sendMessage(message);
 		} else {
-			Shared.mainClass.sendConsoleMessage(message);
+			Shared.platform.sendConsoleMessage(message);
 		}
 	}
 	public void sendRawMessage(ITabPlayer sender, String message) {
 		if (sender != null) {
 			sender.sendRawMessage(message);
 		} else {
-			Shared.mainClass.sendRawConsoleMessage(message);
+			Shared.platform.sendRawConsoleMessage(message);
 		}
 	}
 	public List<String> getPlayers(String nameStart){

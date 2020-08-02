@@ -50,7 +50,7 @@ public class Shared {
 	public static List<Refreshable> refreshables = new ArrayList<Refreshable>();
 	
 	public static boolean disabled;
-	public static MainClass mainClass;
+	public static PlatformMethods platform;
 	public static String separatorType;
 	public static CPUManager featureCpu;
 	public static CPUManager placeholderCpu;
@@ -83,10 +83,10 @@ public class Shared {
 	}
 	
 	public static void print(char color, String message) {
-		mainClass.sendConsoleMessage("&" + color + "[TAB] " + message);
+		platform.sendConsoleMessage("&" + color + "[TAB] " + message);
 	}
 	public static void debug(String message) {
-		if (Configs.SECRET_debugMode) mainClass.sendConsoleMessage("&9[TAB DEBUG] " + message);
+		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		if (Premium.is() && !to.hasPermission("tab.admin")) return;
@@ -103,7 +103,8 @@ public class Shared {
 			placeholderCpu = new CPUManager();
 			bukkitBridgePlaceholderCpu = new CPUManager();
 			Configs.loadFiles();
-			mainClass.loadFeatures(inject);
+			permissionPlugin = platform.detectPermissionPlugin();
+			platform.loadFeatures(inject);
 			loadableFeatures.forEach(f -> f.load());
 			getPlayers().forEach(p -> p.onJoinFinished = true);
 			errorManager.printConsoleWarnCount();
@@ -135,7 +136,7 @@ public class Shared {
 			features = new HashMap<>();
 			data.clear();
 			entityIdMap.clear();
-			mainClass.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
+			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
 		}

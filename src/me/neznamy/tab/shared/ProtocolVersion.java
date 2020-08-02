@@ -61,7 +61,7 @@ public enum ProtocolVersion {
 		this.friendlyName = friendlyName;
 		if (toString().equals("UNKNOWN")) {
 			try {
-				minorVersion = Integer.parseInt(Main.instance.serverPackage.split("_")[1]);
+				minorVersion = Integer.parseInt(Main.serverPackage.split("_")[1]);
 			} catch (Throwable t) {
 				minorVersion = 16;
 			}

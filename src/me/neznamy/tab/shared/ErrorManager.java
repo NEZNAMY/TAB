@@ -49,22 +49,22 @@ public class ErrorManager {
 				String currentTime = getCurrentTime();
 				if (message != null) {
 					buf.write(currentTime + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
-					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
+					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c[TAB] " + message);
 				}
 				if (t != null) {
 					buf.write(currentTime + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c" + t.getClass().getName() +": " + t.getMessage());
+					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c" + t.getClass().getName() +": " + t.getMessage());
 					for (StackTraceElement ste : t.getStackTrace()) {
 						buf.write(currentTime + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_debugMode || intoConsoleToo) Shared.mainClass.sendConsoleMessage("&c       at " + ste.toString());
+						if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c       at " + ste.toString());
 					}
 				}
 				buf.close();
 			}
 		} catch (Throwable ex) {
-			Shared.mainClass.sendConsoleMessage("&c[TAB] An error occurred when printing error message into file");
+			Shared.platform.sendConsoleMessage("&c[TAB] An error occurred when printing error message into file");
 			ex.printStackTrace();
-			Shared.mainClass.sendConsoleMessage("&c[TAB] Original error: " + message);
+			Shared.platform.sendConsoleMessage("&c[TAB] Original error: " + message);
 			if (t != null) t.printStackTrace();
 		}
 	}
@@ -181,7 +181,7 @@ public class ErrorManager {
 	public void startupWarn(String message) {
 		if (oneTimeMessages.contains(message)) return;
 		oneTimeMessages.add(message);
-		Shared.mainClass.sendConsoleMessage("&c[TAB] " + message);
+		Shared.platform.sendConsoleMessage("&c[TAB] " + message);
 		startupWarns++;
 	}
 	public void missingAttribute(String objectType, Object objectName, String attribute) {
@@ -190,9 +190,9 @@ public class ErrorManager {
 	public void printConsoleWarnCount() {
 		if (startupWarns > 0) {
 			if (startupWarns == 1) {
-				Shared.mainClass.sendConsoleMessage("&e[TAB] There was 1 startup warning.");
+				Shared.platform.sendConsoleMessage("&e[TAB] There was 1 startup warning.");
 			} else {
-				Shared.mainClass.sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.");
+				Shared.platform.sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.");
 			}
 		}
 	}

@@ -33,14 +33,14 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
 		ignoredWorlds = Configs.advancedconfig.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
 		sharedWorlds = Configs.advancedconfig.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
-		for (Player p : Main.instance.getOnlinePlayers()){
+		for (Player p : Main.getOnlinePlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);
 		}
 	}
 	@Override
 	public void unload(){
-		for (Player p : Main.instance.getOnlinePlayers()) for (Player pl : Main.instance.getOnlinePlayers()) p.showPlayer(pl);
+		for (Player p : Main.getOnlinePlayers()) for (Player pl : Main.getOnlinePlayers()) p.showPlayer(pl);
 	}
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
@@ -57,7 +57,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 
 			@Override
 			public void run() {
-				for (Player everyone : Main.instance.getOnlinePlayers()){
+				for (Player everyone : Main.getOnlinePlayers()){
 					if (everyone == shown) continue;
 					if (shouldSee(shown, everyone)) shown.showPlayer(everyone);
 					if (shouldSee(everyone, shown)) everyone.showPlayer(shown);
@@ -88,7 +88,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 
 			@Override
 			public void run() {
-				for (Player everyone : Main.instance.getOnlinePlayers()){
+				for (Player everyone : Main.getOnlinePlayers()){
 					if (everyone == hidden) continue;
 					hidden.hidePlayer(everyone);
 					everyone.hidePlayer(hidden);

@@ -3,6 +3,7 @@ package me.neznamy.tab.api;
 import java.util.List;
 import java.util.UUID;
 
+import me.neznamy.tab.platforms.bukkit.BukkitMethods;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.Shared;
@@ -57,7 +58,7 @@ public class TABAPI {
 	 * @since 2.4.12
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {
-		if (Shared.mainClass instanceof me.neznamy.tab.platforms.bukkit.Main) {
+		if (Shared.platform instanceof BukkitMethods) {
 			if (isUnlimitedNameTagModeEnabled()) return;
 			Configs.config.set("change-nametag-prefix-suffix", true);
 			Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);

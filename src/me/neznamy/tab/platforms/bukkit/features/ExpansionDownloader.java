@@ -13,9 +13,8 @@ import me.neznamy.tab.shared.Shared;
 public class ExpansionDownloader{
 
 	public ExpansionDownloader(Set<String> expansions) {
-		Main instance = Main.instance;
 		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
-		Bukkit.getScheduler().runTaskLater(instance, new Runnable() {
+		Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
 
 			@Override
 			public void run() {
@@ -34,12 +33,12 @@ public class ExpansionDownloader{
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
 								for (String expansion : expansions) {
-									instance.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+									Shared.platform.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
 									runSyncCommand("papi ecloud download " + expansion);
 									Thread.sleep(5000);
 								}
 								if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-									instance.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+									Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
 									runSyncCommand("papi reload");
 								}
 							}

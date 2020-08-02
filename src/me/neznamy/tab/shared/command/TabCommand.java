@@ -60,7 +60,7 @@ public class TabCommand extends SubCommand {
 		}
 	}
 	private void help(ITabPlayer sender){
-		if (sender == null) Shared.mainClass.sendConsoleMessage("&3TAB v" + Shared.pluginVersion);
+		if (sender == null) Shared.platform.sendConsoleMessage("&3TAB v" + Shared.pluginVersion);
 		if (sender == null || sender.hasPermission("tab.admin") && !Shared.disabled) {
 			  sendMessage(sender, "&m                                                                                ");
 			  sendMessage(sender, " &8>> &3&l/tab reload");

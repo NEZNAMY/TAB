@@ -38,7 +38,7 @@ public class DebugCommand extends SubCommand {
 		}
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
-		sendMessage(sender, "&6Server version: &a" + Shared.mainClass.getServerVersion());
+		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
 		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Premium.is() ? " Premium" : ""));
 		if (Configs.errorFile.exists()) {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");

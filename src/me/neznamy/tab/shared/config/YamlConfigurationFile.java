@@ -34,17 +34,17 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			values = yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
-			Shared.mainClass.convertConfig(this);
+			Shared.platform.convertConfig(this);
 			if (!hasHeader()) fixHeader();
 			Placeholders.findAllUsed(values);
 		} catch (ParserException | ScannerException e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
-			Shared.mainClass.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
+			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
 			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
 			if (fix != null) {
-				Shared.mainClass.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
+				Shared.platform.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
 			}
 			throw e;
 		}

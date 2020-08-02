@@ -13,7 +13,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
-import me.neznamy.tab.platforms.velocity.Main;
+import me.neznamy.tab.platforms.velocity.VelocityUtils;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -166,7 +166,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public Object toVelocity(ProtocolVersion clientVersion) {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
-			item.setDisplayName((Component) me.neznamy.tab.platforms.velocity.Main.componentFromString(displayName == null ? null : displayName.toString(clientVersion)));
+			item.setDisplayName((Component) VelocityUtils.componentFromString(displayName == null ? null : displayName.toString(clientVersion)));
 			if (gameMode != null) item.setGameMode(gameMode.getNetworkId());
 			item.setLatency(latency);
 			item.setProperties((List<com.velocitypowered.api.util.GameProfile.Property>) skin);
@@ -187,7 +187,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		public static PlayerInfoData fromVelocity(Object nmsData){
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item) nmsData;
-			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), IChatBaseComponent.fromString(Main.componentToString(item.getDisplayName())));
+			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), IChatBaseComponent.fromString(VelocityUtils.componentToString(item.getDisplayName())));
 		}
 		
 		@Override

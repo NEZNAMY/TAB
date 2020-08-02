@@ -2,10 +2,12 @@ package me.neznamy.tab.shared;
 
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public interface MainClass {
+public interface PlatformMethods {
 
+	public PermissionPlugin detectPermissionPlugin();
 	public void loadFeatures(boolean inject) throws Exception;
 	public void sendConsoleMessage(String message);
 	public void sendRawConsoleMessage(String message);

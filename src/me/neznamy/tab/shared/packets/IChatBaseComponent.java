@@ -374,7 +374,6 @@ public class IChatBaseComponent {
 		}
 		component.setText(builder.toString());
 		components.add(component);
-
 		return new IChatBaseComponent("").setExtra(components);
 	}
 	public String toColoredText() {

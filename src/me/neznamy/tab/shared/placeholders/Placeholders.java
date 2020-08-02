@@ -133,7 +133,7 @@ public class Placeholders {
 	public static void categorizeUsedPlaceholder(String identifier) {
 		if (identifier.startsWith("%rel_")) {
 			if (registeredRelationalPlaceholders.containsKey(identifier)) return;
-			Shared.mainClass.registerUnknownPlaceholder(identifier);
+			Shared.platform.registerUnknownPlaceholder(identifier);
 			return;
 		}
 
@@ -163,7 +163,7 @@ public class Placeholders {
 			return;
 		}
 		//placeholderapi or invalid
-		Shared.mainClass.registerUnknownPlaceholder(identifier);
+		Shared.platform.registerUnknownPlaceholder(identifier);
 	}
 	public static void registerPlaceholder(Placeholder placeholder) {
 		registerPlaceholder(placeholder, false);

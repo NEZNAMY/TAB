@@ -100,11 +100,11 @@ public class Configs {
 			Premium.loadPremiumConfig();
 		}
 		SortingType.initialize();
-		Shared.mainClass.suggestPlaceholders();
+		Shared.platform.suggestPlaceholders();
 	}
 	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
-		Shared.mainClass.loadConfig();
+		Shared.platform.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
 		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
