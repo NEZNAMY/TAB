@@ -52,7 +52,6 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 				for (ITabPlayer p : Shared.getPlayers()) {
 					boolean collision = p.getTeamPush();
 					if (p.lastCollision != collision) {
-						p.lastCollision = collision;
 						p.updateTeamData();
 					}
 				}

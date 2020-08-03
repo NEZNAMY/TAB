@@ -312,7 +312,7 @@ public abstract class ITabPlayer implements TabPlayer{
 		if (disabledNametag) return;
 		Property tagprefix = properties.get("tagprefix");
 		Property tagsuffix = properties.get("tagsuffix");
-		boolean collision = getTeamPush();
+		boolean collision = lastCollision = getTeamPush();
 		boolean visible = getTeamVisibility();
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
