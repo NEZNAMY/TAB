@@ -109,12 +109,8 @@ public class Main extends Plugin{
 					}
 					if (Shared.features.containsKey("nametag16")) {
 						if (packet instanceof Team) {
-							Shared.errorManager.printError("[" + player.getName() + "] Receiving team packet" + ((Team)packet).toString());
 							if (killPacket((Team) packet)) {
-								Shared.errorManager.printError("[" + player.getName() + "] Killing");
 								return;
-							} else {
-								Shared.errorManager.printError("[" + player.getName() + "] Keeping");
 							}
 						}
 						if (packet instanceof ByteBuf) {
@@ -122,18 +118,13 @@ public class Main extends Plugin{
 							if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
 								team.read(buf, null, player.getVersion().getNetworkId());
-								Shared.errorManager.printError("[" + player.getName() + "] Receiving raw team packet" + team.toString());
 								if (killPacket(team)) {
-									Shared.errorManager.printError("[" + player.getName() + "] Killing");
 									return;
-								} else {
-									Shared.errorManager.printError("[" + player.getName() + "] Keeping");
 								}
 							}
 						}
 						if (packet instanceof Login) {
 							//registering all teams again because client reset packet is sent
-							Shared.errorManager.printError("[" + player.getName() + "] Receiving login packet");
 							Shared.featureCpu.runTaskLater(100, "Reapplying scoreboard components", CPUFeature.WATERFALLFIX, new Runnable() {
 
 								@Override
