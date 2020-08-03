@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
+import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -36,7 +37,6 @@ public class Main {
 	public Main(ProxyServer server) {
 		this.server = server;
 	}
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!hasRequiredLibs()) {
@@ -49,7 +49,8 @@ public class Main {
 		Configs.dataFolder = new File("plugins" + File.separatorChar + "TAB");
 		Shared.command = new TabCommand();
 		server.getEventManager().register(this, new VelocityEventListener());
-		server.getCommandManager().register("btab", new Command() {
+		CommandManager cmd = server.getCommandManager();
+		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				if (Shared.disabled) {
 					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
