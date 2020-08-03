@@ -1,5 +1,8 @@
 package me.neznamy.tab.premium;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,168 +28,24 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	@SuppressWarnings("unchecked")
 	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
-
-		//32-47
-		widths.put(' ', 3);
-		widths.put('!', 1);
-		widths.put('"', 4);
-		widths.put('#', 5);
-		widths.put('$', 5);
-		widths.put('%', 5);
-		widths.put('&', 5);
-		widths.put('\'', 1);
-		widths.put('(', 4);
-		widths.put(')', 4);
-		widths.put('*', 3);
-		widths.put('+', 5);
-		widths.put(',', 1);
-		widths.put('-', 5);
-		widths.put('.', 1);
-		widths.put('/', 5);
-
-		//48-57
-		widths.put('0', 5);
-		widths.put('1', 5);
-		widths.put('2', 5);
-		widths.put('3', 5);
-		widths.put('4', 5);
-		widths.put('5', 5);
-		widths.put('6', 5);
-		widths.put('7', 5);
-		widths.put('8', 5);
-		widths.put('9', 5);
-
-		//58-64
-		widths.put(':', 1);
-		widths.put(';', 1);
-		widths.put('<', 4);
-		widths.put('=', 5);
-		widths.put('>', 4);
-		widths.put('?', 5);
-		widths.put('@', 6);
-
-		//65-90
-		widths.put('A', 5);
-		widths.put('B', 5);
-		widths.put('C', 5);
-		widths.put('D', 5);
-		widths.put('E', 5);
-		widths.put('F', 5);
-		widths.put('G', 5);
-		widths.put('H', 5);
-		widths.put('I', 3);
-		widths.put('J', 5);
-		widths.put('K', 5);
-		widths.put('L', 5);
-		widths.put('M', 5);
-		widths.put('N', 5);
-		widths.put('O', 5);
-		widths.put('P', 5);
-		widths.put('Q', 5);
-		widths.put('R', 5);
-		widths.put('S', 5);
-		widths.put('T', 5);
-		widths.put('U', 5);
-		widths.put('V', 5);
-		widths.put('W', 5);
-		widths.put('X', 5);
-		widths.put('Y', 5);
-		widths.put('Z', 5);
-
-		//91-96
-		widths.put('[', 3);
-		widths.put('\\', 5);
-		widths.put(']', 3);
-		widths.put('^', 5);
-		widths.put('_', 5);
-		widths.put('`', 2);
-
-		//97-122
-		widths.put('a', 5);
-		widths.put('b', 5);
-		widths.put('c', 5);
-		widths.put('d', 5);
-		widths.put('e', 5);
-		widths.put('f', 4);
-		widths.put('g', 5);
-		widths.put('h', 5);
-		widths.put('i', 1);
-		widths.put('j', 5);
-		widths.put('k', 4);
-		widths.put('l', 2);
-		widths.put('m', 5);
-		widths.put('n', 5);
-		widths.put('o', 5);
-		widths.put('p', 5);
-		widths.put('q', 5);
-		widths.put('r', 5);
-		widths.put('s', 5);
-		widths.put('t', 3);
-		widths.put('u', 5);
-		widths.put('v', 5);
-		widths.put('w', 5);
-		widths.put('x', 5);
-		widths.put('y', 5);
-		widths.put('z', 5);
-
-		//123-126
-		widths.put('{', 4);
-		widths.put('|', 1);
-		widths.put('}', 4);
-		widths.put('~', 6);
-
-		//extra
-		widths.put('á', 5);
-		widths.put('ä', 5);
-		widths.put('č', 3);
-		widths.put('ç', 5);
-		widths.put('ď', 5);
-		widths.put('é', 5);
-		widths.put('ě', 5);
-		widths.put('í', 1);
-		widths.put('ı', 2); //more like 2.5
-		widths.put('ľ', 2);
-		widths.put('ĺ', 2);
-		widths.put('ň', 5);
-		widths.put('ó', 5);
-		widths.put('ö', 5);
-		widths.put('ô', 5);
-		widths.put('ŕ', 5);
-		widths.put('ř', 5);
-		widths.put('š', 5);
-		widths.put('ş', 5);
-		widths.put('ť', 3);
-		widths.put('ü', 5);
-		widths.put('ú', 5);
-		widths.put('ů', 5);
-		widths.put('ý', 5);
-		widths.put('ž', 5);
-		widths.put('İ', 3);
-		
-		widths.put((char)1769, 7); //7.5
-		widths.put((char)9679, 3); //3.5
-		widths.put((char)9733, 3); //3.5
-		widths.put((char)9734, 3); //3.5
-		widths.put((char)9818, 4);
-		widths.put((char)9835, 4);
-		widths.put((char)9876, 7);
-		widths.put((char)10004, 6);
-		widths.put((char)10006, 7); //7.5
-		widths.put((char)10008, 6);
-		widths.put((char)10031, 8); //7.5
-		widths.put((char)10051, 8);
-		widths.put((char)10084, 7);
-		widths.put((char)12300, 8);
-		widths.put((char)12301, 8);
-		widths.put((char)12302, 8);
-		widths.put((char)12303, 8);
-		widths.put((char)12304, 8);
-		widths.put((char)12305, 8);
-		widths.put((char)12484, 8);
-
-		Map<Integer, ?> section = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
-		for (Entry<Integer, ?> entry : section.entrySet()) {
+		loadWidthsFromFile();
+		for (Entry<Integer, ?> entry : ((Map<Integer, ?>)Premium.premiumconfig.getConfigurationSection("extra-character-widths")).entrySet()) {
 			widths.put((char)(int)entry.getKey(), (int)entry.getValue());
+		}
+	}
+	private void loadWidthsFromFile() {
+		try {
+			InputStream input = getClass().getClassLoader().getResourceAsStream("resources/widths.txt");
+			BufferedReader br = new BufferedReader(new InputStreamReader(input));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.isEmpty()) continue;
+				String[] arr = line.split(":");
+				widths.put((char)Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
+			}
+			br.close();
+		} catch (Exception ex) {
+			Shared.errorManager.criticalError("Failed to read character widths from file", ex);
 		}
 	}
 	public String fixTextWidth(ITabPlayer player, String prefixAndName, String suffix) {
