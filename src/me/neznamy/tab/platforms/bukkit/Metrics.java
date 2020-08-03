@@ -31,7 +31,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;

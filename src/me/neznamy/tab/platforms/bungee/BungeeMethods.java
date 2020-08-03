@@ -70,7 +70,7 @@ public class BungeeMethods implements PlatformMethods {
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16());
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) 				Shared.registerFeature("nametag16", new NameTag16(false));
 		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0)	Shared.registerFeature("tabobjective", new TabObjective());
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();

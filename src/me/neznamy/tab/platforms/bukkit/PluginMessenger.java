@@ -9,7 +9,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 
 public class PluginMessenger implements PluginMessageListener {

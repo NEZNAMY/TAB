@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.TabCommand;
@@ -124,9 +123,6 @@ public class Main extends JavaPlugin {
 			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		PluginHooks.libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
-		PluginHooks.protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
-		PluginHooks.viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 	}
 	@SuppressWarnings("unchecked")
 	public static Player[] getOnlinePlayers(){

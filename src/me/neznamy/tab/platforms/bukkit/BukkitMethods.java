@@ -25,7 +25,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.ScoreboardManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -98,7 +97,7 @@ public class BukkitMethods implements PlatformMethods {
 					}
 					Shared.registerFeature("nametagx", new NameTagX());
 				} else {
-					Shared.registerFeature("nametag16", new NameTag16());
+					Shared.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
 				}
 			}
 			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());

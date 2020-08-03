@@ -4,8 +4,6 @@ import java.util.Set;
 
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -18,8 +16,10 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
 	private Set<String> usedPlaceholders;
-
-	public NameTag16() {
+	private boolean fixVisibility;
+	
+	public NameTag16(boolean fixVisibility) {
+		this.fixVisibility = fixVisibility;
 		refreshUsedPlaceholders();
 	}
 	@Override
@@ -31,7 +31,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			if (!p.disabledNametag) p.registerTeam();
 		}
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || PluginHooks.viaversion || PluginHooks.protocolsupport) {
+		if (fixVisibility) {
 			for (ITabPlayer p : Shared.getPlayers()) {
 				p.nameTagVisible = !p.hasInvisibility();
 			}

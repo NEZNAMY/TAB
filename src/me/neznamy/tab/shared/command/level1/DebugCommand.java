@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;

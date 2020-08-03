@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -10,7 +11,6 @@ import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -34,11 +34,11 @@ public class TabPlayer extends ITabPlayer{
 		init();
 	}
 	private int getProtocolVersion() {
-		if (PluginHooks.protocolsupport){
+		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 			int version = getProtocolVersionPS();
 			if (version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
 		}
-		if (PluginHooks.viaversion) {
+		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			return getProtocolVersionVia();
 		}
 		return ProtocolVersion.SERVER_VERSION.getNetworkId();
@@ -93,7 +93,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@Override
 	public boolean getTeamPush() {
-		if (PluginHooks.libsDisguises && isDisguisedLD()) return false;
+		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && isDisguisedLD()) return false;
 		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return false; 
 		return Configs.getCollisionRule(world);
 	}

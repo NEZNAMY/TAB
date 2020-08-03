@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command.level1;
 
+import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PluginHooks;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
