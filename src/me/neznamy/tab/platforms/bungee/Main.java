@@ -70,7 +70,7 @@ public class Main extends Plugin{
 				}
 			}
 		});
-		new PluginMessenger(this);
+		plm = new PluginMessenger(this);
 		Shared.load(true);
 		Metrics.start(this);
 	}
