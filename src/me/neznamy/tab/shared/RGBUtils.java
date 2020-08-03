@@ -10,18 +10,20 @@ public class RGBUtils {
 	private static final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");
 	private static final Pattern fix3 = Pattern.compile("\\&x[\\&0-9a-fA-F]{12}");
 	private static final Pattern gradient1 = Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>");
+	private static final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
 	public static String toHexString(int red, int green, int blue) {
 		String s = Integer.toHexString((red << 16) + (green << 8) + blue);
 		while (s.length() < 6) s = "0" + s;
 		return s;
 	}
-	
+
 	public static String applyFormats(String text) {
 		text = fixFormat1(text);
 		text = fixFormat2(text);
 		text = fixFormat3(text);
 		text = setGradient1(text);
+		text = setGradient2(text);
 		return text;
 	}
 
@@ -52,7 +54,7 @@ public class RGBUtils {
 		}
 		return text;
 	}
-	
+
 	//<#RRGGBB>Text</#RRGGBB>
 	private static String setGradient1(String text) {
 		Matcher m = gradient1.matcher(text);
@@ -66,7 +68,21 @@ public class RGBUtils {
 		}
 		return text;
 	}
-	
+
+	//{#RRGGBB>}text{#RRGGBB<}
+	private static String setGradient2(String text) {
+		Matcher m = gradient2.matcher(text);
+		while (m.find()) {
+			String format = m.group();
+			TextColor start = new TextColor(format.substring(2, 8));
+			String message = format.substring(10, format.length()-10);
+			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
+			String applied = asGradient(start, message, end);
+			text = text.replace(format, applied);
+		}
+		return text;
+	}
+
 	private static String asGradient(TextColor start, String text, TextColor end) {
 		StringBuilder sb = new StringBuilder();
 		int length = text.length();
