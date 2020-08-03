@@ -58,4 +58,9 @@ public class ScoreboardScore implements MinecraftPacket {
 	public boolean handle(MinecraftSessionHandler handler) {
 		return false;
 	}
+
+	@Override
+	public String toString(){
+		return "ScoreboardScore(itemName=" + itemName + ", action=" + action + ", scoreName=" + scoreName + ", value=" + value + ")";
+	}
 }

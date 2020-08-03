@@ -36,4 +36,9 @@ public class ScoreboardDisplay implements MinecraftPacket {
 	public boolean handle(MinecraftSessionHandler handler) {
 		return false;
 	}
+
+	@Override
+	public String toString(){
+		return "ScoreboardDisplay(position=" + position + ", name=" + name + ")";
+	}
 }

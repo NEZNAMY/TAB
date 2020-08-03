@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.velocity.protocol;
 
+import java.util.Arrays;
+
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
@@ -114,5 +116,10 @@ public class Team implements MinecraftPacket {
 	}
 	public String[] getPlayers() {
 		return players;
+	}
+	
+	@Override
+	public String toString(){
+		return "Team(name=" + name + ", mode=" + mode + ", displayName=" + displayName + ", prefix=" + prefix + ", suffix=" + suffix + ", nameTagVisibility=" + nameTagVisibility + ", collisionRule=" + collisionRule + ", color=" + color + ", friendlyFire=" + friendlyFire + ", players=" + Arrays.deepToString(players) + ")";
 	}
 }

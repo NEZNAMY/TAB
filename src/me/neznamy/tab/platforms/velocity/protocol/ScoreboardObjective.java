@@ -65,6 +65,11 @@ public class ScoreboardObjective implements MinecraftPacket {
 		return false;
 	}
 
+	@Override
+	public String toString(){
+		return "ScoreboardObjective(name=" + name + ", value=" + value + ", type=" + type + ", action=" + action + ")";
+	}
+
 	public enum HealthDisplay{
 
 		INTEGER, HEARTS;
