@@ -118,6 +118,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
+		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		String teamDisplay = name;
 		int color = 0;
 		String prefix;
@@ -134,6 +135,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 		return new Team(name, (byte)method, teamDisplay, prefix, suffix, nametagVisibility, collisionRule, color, (byte)options, players.toArray(new String[0]));
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
+		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		String teamDisplay = name;
 		int color = 0;
 		String prefix;
