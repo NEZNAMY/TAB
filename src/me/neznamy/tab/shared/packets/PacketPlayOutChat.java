@@ -38,7 +38,11 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {
 		Chat chat = new Chat(message.toString(clientVersion), type.getId());
-		chat.setSender(UUID.randomUUID()); //might kick the client if null, not tested
+		try {
+			chat.setSender(UUID.randomUUID());
+		} catch (NoSuchMethodError e) {
+			//old bungeecord version
+		}
 		return chat;
 	}
 	public Object toVelocity(ProtocolVersion clientVersion) {
