@@ -156,6 +156,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 				} else {
 					item.setDisplayName(displayName.toColoredText());
 				}
+			} else if (clientVersion.getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) {
+				item.setDisplayName(name); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
 			}
 			if (gameMode != null) item.setGamemode(gameMode.getNetworkId());
 			item.setPing(latency);
