@@ -23,7 +23,7 @@ public class CPUManager {
 	private ConcurrentMap<String, Long> lastSecond = new ConcurrentHashMap<String, Long>();
 	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 
-	private ExecutorService exe = Executors.newCachedThreadPool();
+	private static ExecutorService exe = Executors.newCachedThreadPool();
 
 	public CPUManager() {
 		exe.submit(new Runnable() {
@@ -43,7 +43,7 @@ public class CPUManager {
 			}
 		});
 	}
-	public void cancelAllTasks() {
+	public static void cancelAllTasks() {
 		exe.shutdownNow();
 		exe = Executors.newCachedThreadPool();
 	}

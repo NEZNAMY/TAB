@@ -121,9 +121,7 @@ public class Shared {
 		try {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
-			featureCpu.cancelAllTasks();
-			placeholderCpu.cancelAllTasks();
-			bukkitBridgePlaceholderCpu.cancelAllTasks();
+			CPUManager.cancelAllTasks();
 			loadableFeatures.forEach(f -> f.unload());
 			loadableFeatures = new ArrayList<>();
 			playerInfoListeners = new ArrayList<>();
