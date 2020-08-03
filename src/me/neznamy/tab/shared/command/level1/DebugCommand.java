@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -43,7 +42,6 @@ public class DebugCommand extends SubCommand {
 		if (Configs.errorFile.exists()) {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
 		}
-		sendMessage(sender, "&6PlaceholderAPI: &a" + (PluginHooks.placeholderAPI? "Yes" : "No"));
 		sendMessage(sender, "&6Permission plugin: &a" + Shared.permissionPlugin.getName());
 		if (Configs.groupsByPermissions) {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
