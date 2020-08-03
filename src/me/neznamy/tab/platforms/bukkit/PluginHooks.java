@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -20,8 +21,8 @@ public class PluginHooks {
 		Player p = (player == null ? null : Bukkit.getPlayer(player));
 		return setPlaceholders(p, placeholder);
 	}
-	@SuppressWarnings("deprecation")
-	public static String setPlaceholders(Player player, String placeholder) {
+
+	public static String setPlaceholders(OfflinePlayer player, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
@@ -36,7 +37,7 @@ public class PluginHooks {
 			return "ERROR";
 		}
 	}
-	@SuppressWarnings("deprecation") //"deprecated by mistake"
+
 	public static String setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {

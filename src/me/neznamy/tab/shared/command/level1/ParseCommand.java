@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
@@ -37,7 +38,7 @@ public class ParseCommand extends SubCommand{
 					replaced = p.set(replaced, sender);
 				}
 			}
-			if (PluginHooks.placeholderAPI) replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
+			if (Shared.separatorType.equals("world")) replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
 			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendCustomPacket(new PacketPlayOutChat(colored));
