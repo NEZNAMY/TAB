@@ -29,7 +29,12 @@ public class WidthCommand extends SubCommand{
 				c = args[0].charAt(0);
 			} else {
 				try {
-					c = (char) Integer.parseInt(args[0]);
+					int i = Integer.parseInt(args[0]);
+					if (i > Character.MAX_VALUE) {
+						sendMessage(sender, "&cCharacter ID out of range: 0-" + (int)Character.MAX_VALUE);
+						return;
+					}
+					c = (char) i;
 				} catch (NumberFormatException e) {
 					sendMessage(sender, "&c" + args[0] + " is not a valid number/character!");
 					return;
