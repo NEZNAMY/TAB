@@ -43,7 +43,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
-			all.sendPacket(packet);
+			if (all.getVersion().getMinorVersion() > 8) all.sendPacket(packet);
 		}
 	}
 	@Override
@@ -115,7 +115,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		if (prefix || name || suffix || force) {
 			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer all : Shared.getPlayers()) {
-				all.sendPacket(packet);
+				if (all.getVersion().getMinorVersion() > 8) all.sendPacket(packet);
 			}
 		}
 	}
