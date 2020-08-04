@@ -78,13 +78,12 @@ public class Configs {
 
 	public static ConfigurationFile playerdata; 
 
-	public static File dataFolder;
 	public static File errorFile;
 	public static File papiErrorFile;
 
 	public static void loadFiles() throws Exception {
-		errorFile = new File(dataFolder, "errors.txt");
-		papiErrorFile = new File(dataFolder, "PlaceholderAPI.errors.txt");
+		errorFile = new File(Shared.platform.getDataFolder(), "errors.txt");
+		papiErrorFile = new File(Shared.platform.getDataFolder(), "PlaceholderAPI.errors.txt");
 		if (errorFile.exists() && errorFile.length() > 10) {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
@@ -125,13 +124,13 @@ public class Configs {
 			index++;
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
-		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.separatorType+"s", Arrays.asList("reverted" + Shared.separatorType));
-		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.separatorType+"s.header-footer", Arrays.asList("disabled" + Shared.separatorType));
-		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-names", Arrays.asList("disabled" + Shared.separatorType));
-		disabledNametag = config.getStringList("disable-features-in-"+Shared.separatorType+"s.nametag", Arrays.asList("disabled" + Shared.separatorType));
-		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.separatorType+"s.tablist-objective", Arrays.asList("disabled" + Shared.separatorType));
-		disabledBossbar = config.getStringList("disable-features-in-"+Shared.separatorType+"s.bossbar", Arrays.asList("disabled" + Shared.separatorType));
-		disabledBelowname = config.getStringList("disable-features-in-"+Shared.separatorType+"s.belowname", Arrays.asList("disabled" + Shared.separatorType));
+		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
+		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledNametag = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.nametag", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-objective", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledBossbar = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledBelowname = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
@@ -145,14 +144,14 @@ public class Configs {
 		SECRET_autoComplete = getSecretOption("auto-command-complete", true);
 	}
 	public static void loadAnimations() throws Exception {
-		animation = new YamlConfigurationFile(dataFolder, "animations.yml", null);
+		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
 		animations = new ArrayList<Animation>();
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
 	}
 	public static void loadBossbar() throws Exception {
-		bossbar = new YamlConfigurationFile(dataFolder, "bossbar.yml", null);
+		bossbar = new YamlConfigurationFile(Shared.platform.getDataFolder(), "bossbar.yml", null);
 		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			BossBarEnabled = false;
@@ -161,7 +160,7 @@ public class Configs {
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
 	}
 	public static void loadTranslation() throws Exception {
-		translation = new YamlConfigurationFile(dataFolder, "translation.yml", null);
+		translation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "translation.yml", null);
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");
@@ -191,7 +190,7 @@ public class Configs {
 			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
 			try {
 				if (!file.exists()) file.createNewFile();
-				playerdata = new YamlConfigurationFile(dataFolder, "playerdata.yml", null);
+				playerdata = new YamlConfigurationFile(Shared.platform.getDataFolder(), "playerdata.yml", null);
 			} catch (Exception e) {
 				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
 				return Lists.newArrayList();

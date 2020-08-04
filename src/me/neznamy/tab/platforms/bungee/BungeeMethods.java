@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungee;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +40,17 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
 import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 public class BungeeMethods implements PlatformMethods {
 
+	private Plugin plugin;
+	
+	public BungeeMethods(Plugin plugin) {
+		this.plugin = plugin;
+	}
+	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
@@ -109,7 +117,7 @@ public class BungeeMethods implements PlatformMethods {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(Configs.dataFolder, "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 	}
 	
@@ -225,5 +233,15 @@ public class BungeeMethods implements PlatformMethods {
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 		suggestPlaceholderSwitch("%player_name%", "%nick%");
 		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
+	}
+
+	@Override
+	public String getSeparatorType() {
+		return "server";
+	}
+
+	@Override
+	public File getDataFolder() {
+		return plugin.getDataFolder();
 	}
 }

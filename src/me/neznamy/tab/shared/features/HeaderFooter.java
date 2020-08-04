@@ -66,12 +66,12 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	private void updateRawValue(ITabPlayer p, String name) {
 		String worldGroup = p.getWorldGroupOf(p.getWorldName());
 		StringBuilder rawValue = new StringBuilder();
-		List<String> lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
+		List<String> lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
 		if (lines == null) lines = Configs.config.getStringList("Users." + p.getName() + "." + name);
 		if (lines == null) lines = Configs.config.getStringList("Users." + p.getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.separatorType + "-settings." + worldGroup + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
+		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + "." + name);
 		if (lines == null) lines = Configs.config.getStringList("Groups." + p.getGroup() + "." + name);
 		if (lines == null) lines = Configs.config.getStringList(name);
 		if (lines == null) lines = new ArrayList<String>();

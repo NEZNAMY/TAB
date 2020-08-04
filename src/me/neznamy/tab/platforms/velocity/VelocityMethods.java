@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +109,7 @@ public class VelocityMethods implements PlatformMethods {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(Configs.dataFolder, "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 	}
 	
@@ -224,5 +225,15 @@ public class VelocityMethods implements PlatformMethods {
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 		suggestPlaceholderSwitch("%player_name%", "%nick%");
 		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
+	}
+
+	@Override
+	public String getSeparatorType() {
+		return "server";
+	}
+
+	@Override
+	public File getDataFolder() {
+		return new File("plugins" + File.separatorChar + "TAB");
 	}
 }

@@ -44,7 +44,7 @@ public class CpuCommand extends SubCommand {
 			sendMessage(sender, "&8&l║ &7" + entry.getKey() + refresh + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
-		if (Shared.separatorType.equals("server")) {
+		if (Shared.platform.getSeparatorType().equals("server")) {
 			sendMessage(sender, "&8&l║ &6Placeholder usage on Bukkit servers:");
 			for (Entry<Object, Float> entry : bridgeplaceholders.entrySet()) {
 				sendMessage(sender, "&8&l║ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
@@ -57,7 +57,7 @@ public class CpuCommand extends SubCommand {
 		}
 		sendMessage(sender, "&8&l║&8&m                                                    ");
 		sendMessage(sender, "&8&l║ &6&lPlaceholders Total: &a&l" + colorizeTotalUsage(decimal3.format(placeholdersTotal)) + "%");
-		if (Shared.separatorType.equals("server")) sendMessage(sender, "&8&l║ &6&lBukkit bridge placeholders Total: &a&l" + colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%");
+		if (Shared.platform.getSeparatorType().equals("server")) sendMessage(sender, "&8&l║ &6&lBukkit bridge placeholders Total: &a&l" + colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%");
 		sendMessage(sender, "&8&l║ &6&lPlugin internals: &a&l" + colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal)) + "%");
 		sendMessage(sender, "&8&l║ &6&lTotal: &e&l" + colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal)) + "%");
 		sendMessage(sender, "&8&l║&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");

@@ -53,13 +53,13 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"%", 1000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"%", 1000) {
 			public String get(ITabPlayer p) {
 				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.separatorType+"online%", 1000) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"online%", 1000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
 				for (ITabPlayer all : Shared.getPlayers()){

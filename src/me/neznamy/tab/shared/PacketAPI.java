@@ -16,7 +16,7 @@ public class PacketAPI{
 	
 	//scoreboard team
 	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
-		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.separatorType.equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));

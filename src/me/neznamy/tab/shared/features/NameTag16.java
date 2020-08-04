@@ -88,7 +88,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.registerTeam();
 		} else {
-			if (Shared.separatorType.equals("server")) {
+			if (Shared.platform.getSeparatorType().equals("server")) {
 				Shared.featureCpu.runTaskLater(500, "refreshing nametags", CPUFeature.NAMETAG, new Runnable() {
 
 					@Override

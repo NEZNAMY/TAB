@@ -259,12 +259,12 @@ public abstract class ITabPlayer implements TabPlayer{
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
-			setProperty(property, value, "Player: " + getName() + ", " + Shared.separatorType + ": " + worldGroup);
+		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
+			setProperty(property, value, "Player: " + getName() + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
-			setProperty(property, value, "PlayerUUID: " + getName() + ", " + Shared.separatorType + ": " + worldGroup);
+		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
+			setProperty(property, value, "PlayerUUID: " + getName() + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) {
@@ -275,12 +275,12 @@ public abstract class ITabPlayer implements TabPlayer{
 			setProperty(property, value, "PlayerUUID: " + getName());
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
-			setProperty(property, value, "Group: " + permissionGroup + ", " + Shared.separatorType + ": " + worldGroup);
+		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
+			setProperty(property, value, "Group: " + permissionGroup + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.separatorType + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
-			setProperty(property, value, "Group: _OTHER_," + Shared.separatorType + ": " + worldGroup);
+		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
+			setProperty(property, value, "Group: _OTHER_," + Shared.platform.getSeparatorType() + ": " + worldGroup);
 			return;
 		}
 		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
@@ -298,7 +298,7 @@ public abstract class ITabPlayer implements TabPlayer{
 
 	@SuppressWarnings("unchecked")
 	public String getWorldGroupOf(String world) {
-		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.separatorType + "-settings");
+		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
 			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {

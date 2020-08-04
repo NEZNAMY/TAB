@@ -17,7 +17,6 @@ import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -31,12 +30,9 @@ public class Main extends JavaPlugin {
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		instance = this;
 		Shared.platform = new BukkitMethods();
-		Shared.separatorType = "world";
-		Configs.dataFolder = getDataFolder();
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 		if (MethodAPI.getInstance() != null){
 			Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
-			Shared.command = new TabCommand();
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
 					if (Configs.bukkitBridgeMode || Shared.disabled) {

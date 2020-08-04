@@ -10,7 +10,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.BelowName;
@@ -32,12 +31,9 @@ public class Main extends Plugin{
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
-		Shared.platform = new BungeeMethods();
-		Shared.separatorType = "server";
-		Configs.dataFolder = getDataFolder();
+		Shared.platform = new BungeeMethods(this);
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
-		Shared.command = new TabCommand();
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
 			@SuppressWarnings("deprecation")
 			public void execute(CommandSender sender, String[] args) {

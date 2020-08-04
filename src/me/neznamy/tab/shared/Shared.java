@@ -38,6 +38,7 @@ public class Shared {
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
+	public static final TabCommand command = new TabCommand();
 	
 	public static Map<String, Object> features = new ConcurrentHashMap<String, Object>();
 	public static List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
@@ -51,12 +52,10 @@ public class Shared {
 	
 	public static boolean disabled;
 	public static PlatformMethods platform;
-	public static String separatorType;
 	public static CPUManager featureCpu;
 	public static CPUManager placeholderCpu;
 	public static CPUManager bukkitBridgePlaceholderCpu;
 	public static ErrorManager errorManager;
-	public static TabCommand command;
 	public static PermissionPlugin permissionPlugin;
 	
 	public static String brokenFile = "-";

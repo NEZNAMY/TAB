@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -156,10 +157,10 @@ public class BukkitMethods implements PlatformMethods {
 	
 	@Override
 	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(Configs.dataFolder, "bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(getDataFolder(), "bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.advancedconfig = new YamlConfigurationFile(Configs.dataFolder, "advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
+		Configs.advancedconfig = new YamlConfigurationFile(getDataFolder(), "advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);
@@ -326,5 +327,15 @@ public class BukkitMethods implements PlatformMethods {
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
 		suggestPlaceholderSwitch("%player_name%", "%nick%");
 		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
+	}
+
+	@Override
+	public String getSeparatorType() {
+		return "world";
+	}
+
+	@Override
+	public File getDataFolder() {
+		return Main.instance.getDataFolder();
 	}
 }

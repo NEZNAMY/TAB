@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.io.File;
 import java.util.UUID;
 
 import com.google.inject.Inject;
@@ -22,7 +21,6 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -49,9 +47,6 @@ public class Main {
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new VelocityMethods(server);
-		Shared.separatorType = "server";
-		Configs.dataFolder = new File("plugins" + File.separatorChar + "TAB");
-		Shared.command = new TabCommand();
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {

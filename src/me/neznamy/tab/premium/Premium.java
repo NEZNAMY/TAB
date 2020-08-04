@@ -1,6 +1,6 @@
 package me.neznamy.tab.premium;
 
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
 
@@ -14,7 +14,7 @@ public class Premium {
 	}
 
 	public static void loadPremiumConfig() throws Exception {
-		premiumconfig = new YamlConfigurationFile(Configs.dataFolder, "premiumconfig.yml", null);
+		premiumconfig = new YamlConfigurationFile(Shared.platform.getDataFolder(), "premiumconfig.yml", null);
 		alignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
 	}
 }

@@ -38,7 +38,7 @@ public class ParseCommand extends SubCommand{
 					replaced = p.set(replaced, sender);
 				}
 			}
-			if (Shared.separatorType.equals("world")) replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
+			if (Shared.platform.getSeparatorType().equals("world")) replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
 			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendCustomPacket(new PacketPlayOutChat(colored));

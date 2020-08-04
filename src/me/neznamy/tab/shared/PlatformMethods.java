@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared;
 
+import java.io.File;
+
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -17,6 +19,8 @@ public interface PlatformMethods {
 	public void convertConfig(ConfigurationFile config);
 	public String getServerVersion();
 	public void suggestPlaceholders();
+	public String getSeparatorType();
+	public File getDataFolder();
 	
 	public default void removeOld(ConfigurationFile config, String oldKey) {
 		if (config.hasConfigOption(oldKey)) {
