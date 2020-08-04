@@ -82,7 +82,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (!PluginHooks.placeholderAPI) {
 				Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
 			}
-			new PluginMessenger(Main.instance);
+			new PluginMessenger(Main.INSTANCE);
 		} else {
 			Main.detectPlugins();
 			usedExpansions = new HashSet<String>();
@@ -336,6 +336,6 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public File getDataFolder() {
-		return Main.instance.getDataFolder();
+		return Main.INSTANCE.getDataFolder();
 	}
 }

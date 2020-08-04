@@ -26,7 +26,7 @@ public class TabExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getAuthor(){
-		return Main.instance.getDescription().getAuthors().toString();
+		return Main.INSTANCE.getDescription().getAuthors().toString();
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class TabExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getVersion(){
-		return Main.instance.getDescription().getVersion();
+		return Main.INSTANCE.getDescription().getVersion();
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		showInSameWorldGroup(p.getBukkitEntity());
 	}
 	private void showInSameWorldGroup(Player shown){
-		Bukkit.getScheduler().runTask(Main.instance, new Runnable() {
+		Bukkit.getScheduler().runTask(Main.INSTANCE, new Runnable() {
 
 			@Override
 			public void run() {
@@ -84,7 +84,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		return false;
 	}
 	public void hidePlayer(Player hidden){
-		Bukkit.getScheduler().runTask(Main.instance, new Runnable() {
+		Bukkit.getScheduler().runTask(Main.INSTANCE, new Runnable() {
 
 			@Override
 			public void run() {

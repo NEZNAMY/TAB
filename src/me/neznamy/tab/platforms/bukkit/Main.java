@@ -23,12 +23,12 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Main extends JavaPlugin {
 
-	public static Main instance;
+	public static Main INSTANCE;
 	public final static String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
-		instance = this;
+		INSTANCE = this;
 		Shared.platform = new BukkitMethods();
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 		if (MethodAPI.getInstance() != null){

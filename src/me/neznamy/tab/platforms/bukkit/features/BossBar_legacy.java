@@ -27,7 +27,7 @@ public class BossBar_legacy implements Listener, Loadable {
 	}
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(this, Main.instance);
+		Bukkit.getPluginManager().registerEvents(this, Main.INSTANCE);
 		//bar disappears in client after ~1 second of not seeing boss entity
 		Shared.featureCpu.startRepeatingMeasuredTask(900, "refreshing bossbar", CPUFeature.BOSSBAR_LEGACY, new Runnable() {
 			public void run() {

@@ -58,7 +58,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(eventListener, Main.instance);
+		Bukkit.getPluginManager().registerEvents(eventListener, Main.INSTANCE);
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.teamName = SortingType.INSTANCE.getTeamName(all);
 			updateProperties(all);

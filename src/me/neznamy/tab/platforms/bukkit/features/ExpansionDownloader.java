@@ -14,7 +14,7 @@ public class ExpansionDownloader{
 
 	public ExpansionDownloader(Set<String> expansions) {
 		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
-		Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
+		Bukkit.getScheduler().runTaskLater(Main.INSTANCE, new Runnable() {
 
 			@Override
 			public void run() {
@@ -53,7 +53,7 @@ public class ExpansionDownloader{
 	}
 	public void runSyncCommand(String command) {
 		//back to main thread as commands need to be ran in it
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.instance, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.INSTANCE, new Runnable() {
 
 			@Override
 			public void run() {
