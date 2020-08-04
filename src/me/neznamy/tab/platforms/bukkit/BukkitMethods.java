@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
+import me.neznamy.tab.platforms.bukkit.features.BukkitBridge;
 import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -82,7 +83,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (!PluginHooks.placeholderAPI) {
 				Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
 			}
-			new PluginMessenger(Main.INSTANCE);
+			new BukkitBridge(Main.INSTANCE);
 		} else {
 			Main.detectPlugins();
 			usedExpansions = new HashSet<String>();

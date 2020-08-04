@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit;
+package me.neznamy.tab.platforms.bukkit.features;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -9,17 +9,20 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 
-public class PluginMessenger implements PluginMessageListener {
+public class BukkitBridge implements PluginMessageListener {
 
 	private JavaPlugin plugin;
 	
-	public PluginMessenger(JavaPlugin plugin) {
+	public BukkitBridge(JavaPlugin plugin) {
 		this.plugin = plugin;
 		Bukkit.getMessenger().registerIncomingPluginChannel(plugin, Shared.CHANNEL_NAME, this);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, Shared.CHANNEL_NAME);
 	}
+	
+	@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] bytes){
 		if (!channel.equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
