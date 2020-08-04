@@ -90,9 +90,9 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
+					if (!p.onJoinFinished) continue;
 					boolean collision = p.getTeamPush();
 					if (p.lastCollision != collision) {
-						p.lastCollision = collision;
 						p.updateTeamData();
 					}
 				}
