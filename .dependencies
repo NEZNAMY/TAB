@@ -6,7 +6,7 @@ EssentialsX: https://www.spigotmc.org/resources/9089/
 GroupManager: https://www.spigotmc.org/resources/38875/
 iDisguise: https://www.spigotmc.org/resources/5509/
 LuckPerms 4: https://www.spigotmc.org/resources/28140/download?version=267214
-LuckPerms 5: https://www.spigotmc.org/resources/28140/
+LuckPerms 5: https://ci.lucko.me/job/LuckPerms/lastSuccessfulBuild/artifact/bukkit/build/libs/
 NetworkManager (API): https://github.com/ChimpGamer/NetworkManager/blob/master/Pluggie/API-s/NetworkManagerAPI-v2.8.7.jar
 PlaceholderAPI: https://ci.extendedclip.com/job/PlaceholderAPI/lastSuccessfulBuild/artifact/build/libs/
 PremiumVanish (API): https://github.com/MyzelYam/PremiumVanishAPI/releases
