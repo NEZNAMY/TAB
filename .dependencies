@@ -8,7 +8,7 @@ iDisguise: https://www.spigotmc.org/resources/5509/
 LuckPerms 4: https://www.spigotmc.org/resources/28140/download?version=267214
 LuckPerms 5: https://www.spigotmc.org/resources/28140/
 NetworkManager (API): https://github.com/ChimpGamer/NetworkManager/blob/master/Pluggie/API-s/NetworkManagerAPI-v2.8.7.jar
-PlaceholderAPI: https://www.spigotmc.org/resources/6245/
+PlaceholderAPI: https://ci.extendedclip.com/job/PlaceholderAPI/lastSuccessfulBuild/artifact/build/libs/
 PremiumVanish (API): https://github.com/MyzelYam/PremiumVanishAPI/releases
 Vault: https://www.spigotmc.org/resources/34315/
 UltraPermissions: - (if you own it use it, if not, delete the code)

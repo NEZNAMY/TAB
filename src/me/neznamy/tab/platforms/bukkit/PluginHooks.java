@@ -38,6 +38,7 @@ public class PluginHooks {
 		}
 	}
 
+	@SuppressWarnings("deprecation") //"deprecated by mistake"
 	public static String setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
