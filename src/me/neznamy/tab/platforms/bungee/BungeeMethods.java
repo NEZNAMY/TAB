@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bungee.permission.BungeePerms;
 import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
@@ -30,6 +29,7 @@ import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.PermissionPlugin;

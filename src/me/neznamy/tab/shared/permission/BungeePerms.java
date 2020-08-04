@@ -1,10 +1,9 @@
-package me.neznamy.tab.platforms.bungee.permission;
+package me.neznamy.tab.shared.permission;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.alpenblock.bungeeperms.Group;
 import net.alpenblock.bungeeperms.PermissionsManager;
 

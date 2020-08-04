@@ -31,6 +31,7 @@ import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -51,6 +52,8 @@ public class VelocityMethods implements PlatformMethods {
 	public PermissionPlugin detectPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
+		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
+			return new BungeePerms();
 		} else {
 			return new None();
 		}
