@@ -15,9 +15,9 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 
 public class VelocityPacketRegistry {
 
-	private Method map;
+	private static Method map;
 	
-	public void registerPackets() {
+	public static boolean registerPackets() {
 		try {
 			Method register = null;
 			for (Method m : PacketRegistry.class.getDeclaredMethods()) {
@@ -71,12 +71,13 @@ public class VelocityPacketRegistry {
 							map(0x4B, ProtocolVersion.MINECRAFT_1_14, false),
 							map(0x4C, ProtocolVersion.MINECRAFT_1_15, false)
 			});
+			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			return false;
 		}
 	}
 	
-	public PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
+	public static PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
 	}
 }

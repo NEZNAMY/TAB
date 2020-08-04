@@ -43,6 +43,10 @@ public class Main {
 			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 build #158 and up to work. Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
 			return;
 		}
+		if (!VelocityPacketRegistry.registerPackets()) {
+			System.out.println("\u00a7c[TAB] This plugin version does not support your Velocity version. Update the plugin.");
+			return;
+		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new VelocityMethods(server);
 		Shared.separatorType = "server";
@@ -91,15 +95,14 @@ public class Main {
 					return sug;
 				}*/
 		});
-		new VelocityPacketRegistry().registerPackets();
 		plm = new PluginMessenger(this);
 		Shared.load(true);
 	}
 
 	private boolean hasRequiredLibs() {
 		try {
-			Class.forName("org.yaml.snakeyaml.Yaml");
-			Class.forName("net.kyori.adventure.text.Component");
+			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
+			Class.forName("net.kyori.adventure.text.Component"); //1.1.0 b158+
 			return true;
 		} catch (ClassNotFoundException e) {
 			return false;
