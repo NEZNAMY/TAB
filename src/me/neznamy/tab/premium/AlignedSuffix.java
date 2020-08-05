@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -29,9 +29,20 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		for (Entry<Integer, ?> entry : ((Map<Integer, ?>)Premium.premiumconfig.getConfigurationSection("extra-character-widths")).entrySet()) {
-			widths.put((char)(int)entry.getKey(), (int)entry.getValue());
+		boolean save = false;
+		Map<Integer, ?> extraWidths = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
+		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
+			char c = (char)(int)entry;
+			int width = (int)extraWidths.get(entry);
+			if (widths.containsKey(c) && widths.get(c) == width) {
+				extraWidths.remove((int)c);
+				Shared.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin with the same value.");
+				save = true;
+				continue;
+			}
+			widths.put(c, width);
 		}
+		if (save) Premium.premiumconfig.save();
 	}
 	private void loadWidthsFromFile() {
 		try {
