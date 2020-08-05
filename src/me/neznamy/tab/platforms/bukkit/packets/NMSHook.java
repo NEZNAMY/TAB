@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
 
-public abstract class NMSHook {
+public class NMSHook {
 	
 	private static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 			"v1_5_R1", "v1_5_R2", "v1_5_R3",
