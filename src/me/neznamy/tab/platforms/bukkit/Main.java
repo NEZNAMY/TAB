@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -118,7 +119,7 @@ public class Main extends JavaPlugin {
 	}
 	public static void detectPlugins() {
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(de.robingrether.idisguise.api.DisguiseAPI.class);
+			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class);
 			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
