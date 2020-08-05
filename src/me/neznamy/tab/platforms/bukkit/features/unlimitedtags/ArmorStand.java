@@ -101,15 +101,15 @@ public class ArmorStand{
 				if (sneaking) {
 					viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
 				} else {
-					for (Object packet : getSpawnPackets(viewer, false)) {
-						viewer.sendPacket(packet);
+					for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
+						viewer.sendCustomBukkitPacket(packet);
 					}
 				}
 			} else {
 				//respawning so there's no animation and it's instant
 				viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
-				for (Object packet : getSpawnPackets(viewer, false)) {
-					viewer.sendPacket(packet);
+				for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
+					viewer.sendCustomBukkitPacket(packet);
 				}
 			}
 		}

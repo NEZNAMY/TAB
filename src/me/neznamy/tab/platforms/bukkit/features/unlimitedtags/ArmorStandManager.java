@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 
 public class ArmorStandManager {
@@ -16,8 +17,8 @@ public class ArmorStandManager {
 	public void spawn(ITabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand as : armorStands.values()) {
-			for (Object packet : as.getSpawnPackets(viewer, true)) {
-				viewer.sendPacket(packet);
+			for (PacketPlayOut packet : as.getSpawnPackets(viewer, true)) {
+				viewer.sendCustomBukkitPacket(packet);
 			}
 		}
 	}
