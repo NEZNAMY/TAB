@@ -83,7 +83,6 @@ public abstract class NMSHook {
 			}
 			return SUPPORTED_VERSIONS.contains(Main.serverPackage);
 		} catch (Throwable e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
