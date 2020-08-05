@@ -104,13 +104,6 @@ public class Main {
 		}
 	}
 
-	public void onDisable() {
-		if (!Shared.disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) p.channel.pipeline().remove(Shared.DECODER_NAME);
-			Shared.unload();
-		}
-	}
-
 	public static void inject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).channel;
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
