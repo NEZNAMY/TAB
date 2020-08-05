@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 
@@ -67,6 +68,9 @@ public class WidthCommand extends SubCommand{
 			Premium.premiumconfig.getConfigurationSection("extra-character-widths").put(c, width);
 			Premium.premiumconfig.save();
 			sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char)c + " &2(&6" + c + "&2) to &6" + width + "&2 pixels.");
+			if (Configs.SECRET_debugMode) {
+				execute(sender, new String[] {c+1+""});
+			}
 		} else {
 			sendMessage(sender, "Usage: /tab width <character>");
 		}
