@@ -176,7 +176,6 @@ public class BukkitMethods implements PlatformMethods {
 			if (plugin.equals("some")) return;
 			if (!usedExpansions.contains(plugin) && !plugin.equals("rel")) {
 				usedExpansions.add(plugin);
-				Shared.debug("&dFound used placeholderapi expansion: &e" + plugin);
 			}
 			PlaceholderManager.getInstance().registerPAPIPlaceholder(identifier);
 		}
