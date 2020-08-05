@@ -46,6 +46,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
+import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -72,7 +73,7 @@ public class BukkitMethods implements PlatformMethods {
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider());
 		} else {
-			return new me.neznamy.tab.shared.permission.None();
+			return new None();
 		}
 	}
 
