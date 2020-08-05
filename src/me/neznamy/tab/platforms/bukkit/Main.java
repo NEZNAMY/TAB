@@ -26,6 +26,7 @@ public class Main extends JavaPlugin {
 	public static Main INSTANCE;
 	public final static String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
+	@Override
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		INSTANCE = this;
@@ -82,6 +83,8 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 	}
+	
+	@Override
 	public void onDisable() {
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) {

@@ -29,6 +29,7 @@ public class Main extends Plugin{
 
 	public static PluginMessenger plm;
 
+	@Override
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new BungeeMethods(this);
@@ -70,6 +71,8 @@ public class Main extends Plugin{
 		Shared.load(true);
 		Metrics.start(this);
 	}
+	
+	@Override
 	public void onDisable() {
 		if (!Shared.disabled) {
 			for (ITabPlayer p : Shared.getPlayers()) p.channel.pipeline().remove(Shared.DECODER_NAME);
