@@ -4,5 +4,5 @@ import me.neznamy.tab.shared.ITabPlayer;
 
 public interface AFKProvider {
 
-	public boolean isAFK(ITabPlayer p);
+	public boolean isAFK(ITabPlayer p) throws Exception;
 }

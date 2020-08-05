@@ -140,7 +140,11 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		PlaceholderManager.getInstance().setAFKProvider(afk);
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 			public String get(ITabPlayer p) {
-				return PlaceholderManager.getInstance().getAFKProvider().isAFK(p) ? Configs.yesAfk : Configs.noAfk;
+				try {
+					return PlaceholderManager.getInstance().getAFKProvider().isAFK(p) ? Configs.yesAfk : Configs.noAfk;
+				} catch (Throwable t) {
+					return Shared.errorManager.printError("", "Failed to check AFK status of " + p.getName() + " using " + PlaceholderManager.getInstance().getAFKProvider().getClass().getSimpleName(), t);
+				}
 			}
 			@Override
 			public String[] getChilds(){
