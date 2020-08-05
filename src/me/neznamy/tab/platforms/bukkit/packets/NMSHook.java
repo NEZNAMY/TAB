@@ -8,7 +8,6 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.Main;
 
 public class NMSHook {
 	
@@ -68,7 +67,7 @@ public class NMSHook {
 		return PING.getInt(p.getClass().getMethod("getHandle").invoke(p));
 	}
 
-	public static boolean isVersionSupported(){
+	public static boolean isVersionSupported(String serverPackage){
 		try {
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
 			try {
@@ -81,7 +80,7 @@ public class NMSHook {
 			} catch (Throwable t) {
 				
 			}
-			return SUPPORTED_VERSIONS.contains(Main.serverPackage);
+			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
 			return false;
 		}

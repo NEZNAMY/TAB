@@ -30,7 +30,7 @@ public class Main extends JavaPlugin {
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
-		if (NMSHook.isVersionSupported()){
+		if (NMSHook.isVersionSupported(serverPackage)){
 			INSTANCE = this;
 			Shared.platform = new BukkitMethods();
 			Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
