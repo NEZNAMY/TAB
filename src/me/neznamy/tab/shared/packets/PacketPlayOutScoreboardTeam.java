@@ -1,17 +1,20 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardTeam);
+	public static Class<?> PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
+	private static Constructor<?> newPacketPlayOutScoreboardTeam = getConstructor(PacketPlayOutScoreboardTeam, 0);
+	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardTeam);
 	private static final Field NAME = getField(fields, "a");
 	private static final Field DISPLAYNAME = getField(fields, "b");
 	private static final Field PREFIX = getField(fields, "c");
@@ -98,12 +101,12 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut{
 			prefix = cutTo(prefix, 16);
 			suffix = cutTo(suffix, 16);
 		}
-		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardTeam();
+		Object packet = newPacketPlayOutScoreboardTeam.newInstance();
 		NAME.set(packet, name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(name).toString(clientVersion)));
-			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(prefix).toString(clientVersion)));
-			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(suffix).toString(clientVersion)));
+			DISPLAYNAME.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(name).toString(clientVersion)));
+			if (prefix != null && prefix.length() > 0) PREFIX.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(prefix).toString(clientVersion)));
+			if (suffix != null && suffix.length() > 0) SUFFIX.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(suffix).toString(clientVersion)));
 			CHATFORMAT.set(packet, color != null ? color.toNMS() : EnumChatFormat.lastColorsOf(prefix).toNMS());
 		} else {
 			DISPLAYNAME.set(packet, name);

@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public enum EnumChatFormat{
@@ -45,7 +45,7 @@ public enum EnumChatFormat{
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;
-		if (MethodAPI.getInstance() != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumChatFormat, toString());
+		if (NMSHook.EnumChatFormat != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)NMSHook.EnumChatFormat, toString());
 	}
 	public Object toNMS() {
 		return nmsEquivalent;

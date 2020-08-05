@@ -31,7 +31,7 @@ public class ArmorStandManager {
 	}
 
 	public void teleport(ITabPlayer viewer) {
-		armorStands.values().forEach(a -> viewer.sendPacket(a.getTeleportPacket(viewer)));
+		armorStands.values().forEach(a -> viewer.sendCustomBukkitPacket(a.getTeleportPacket(viewer)));
 	}
 
 	public void refresh() {

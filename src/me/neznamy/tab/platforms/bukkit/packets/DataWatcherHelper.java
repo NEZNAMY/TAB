@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.packets;
 import java.util.Optional;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
@@ -39,7 +38,7 @@ public class DataWatcherHelper {
 	
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
+			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
 		} else {

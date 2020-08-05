@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -22,15 +21,23 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class PacketListener implements RawPacketFeature, PlayerInfoPacketListener {
 
-	private Field PacketPlayInUseEntity_ENTITY;
+	private Class<?> PacketPlayOutEntityDestroy = PacketPlayOut.getNMSClass("PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
+	private Field PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(PacketPlayOutEntityDestroy).get("a");
+	
+	private Class<?> PacketPlayInUseEntity = PacketPlayOut.getNMSClass("PacketPlayInUseEntity");
+	private Field PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
 
-	private Field PacketPlayOutNamedEntitySpawn_ENTITYID;
-	private Field PacketPlayOutEntityDestroy_ENTITIES;
-	private Field PacketPlayOutEntity_ENTITYID;
+	private Class<?> PacketPlayOutNamedEntitySpawn = PacketPlayOut.getNMSClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
+	private Field PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(PacketPlayOutNamedEntitySpawn).get("a");
+	
+	private Class<?> PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
+	private Field PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(PacketPlayOutEntity).get("a");
 
+	public static Class<?> PacketPlayOutMount = PacketPlayOut.getNMSClass("PacketPlayOutMount");
 	private Field PacketPlayOutMount_VEHICLE;
 	private Field PacketPlayOutMount_PASSENGERS;
 
+	private Class<?> PacketPlayOutAttachEntity = PacketPlayOut.getNMSClass("PacketPlayOutAttachEntity");
 	private Field PacketPlayOutAttachEntity_A;
 	private Field PacketPlayOutAttachEntity_PASSENGER;
 	private Field PacketPlayOutAttachEntity_VEHICLE;
@@ -39,16 +46,11 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	private NameTagX nameTagX;
 
 	public PacketListener(NameTagX nameTagX) {
-		PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(MethodAPI.PacketPlayInUseEntity).get("a");
-		PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutNamedEntitySpawn).get("a");
-		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityDestroy).get("a");
-		PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntity).get("a");
-
-		Map<String, Field> mount = PacketPlayOut.getFields(MethodAPI.PacketPlayOutMount);
+		Map<String, Field> mount = PacketPlayOut.getFields(PacketPlayOutMount);
 		PacketPlayOutMount_VEHICLE = mount.get("a");
 		PacketPlayOutMount_PASSENGERS = mount.get("b");
 
-		Map<String, Field> attachentity = PacketPlayOut.getFields(MethodAPI.PacketPlayOutAttachEntity);
+		Map<String, Field> attachentity = PacketPlayOut.getFields(PacketPlayOutAttachEntity);
 		PacketPlayOutAttachEntity_A = attachentity.get("a");
 		PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
 		PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
@@ -59,7 +61,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	@Override
 	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
-		if (sender.getVersion().getMinorVersion() == 8 && MethodAPI.PacketPlayInUseEntity.isInstance(packet)) {
+		if (sender.getVersion().getMinorVersion() == 8 && PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
 			ITabPlayer attacked = null;
 			for (ITabPlayer all : Shared.getPlayers()) {
@@ -78,7 +80,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
-		if (MethodAPI.PacketPlayOutEntity.isInstance(packet)) {
+		if (PacketPlayOutEntity.isInstance(packet)) {
 			int id = PacketPlayOutEntity_ENTITYID.getInt(packet);
 			ITabPlayer pl = Shared.entityIdMap.get(id);
 			List<Integer> vehicleList;
@@ -103,7 +105,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			}
 		}
-		if (MethodAPI.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
+		if (PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
 			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
@@ -114,7 +116,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			});
 		}
-		if (MethodAPI.PacketPlayOutEntityDestroy.isInstance(packet)) {
+		if (PacketPlayOutEntityDestroy.isInstance(packet)) {
 			int[] entites = (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet);
 			for (int id : entites) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
@@ -127,7 +129,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				});
 			}
 		}
-		if (MethodAPI.PacketPlayOutMount != null && MethodAPI.PacketPlayOutMount.isInstance(packet)) {
+		if (PacketPlayOutMount != null && PacketPlayOutMount.isInstance(packet)) {
 			//1.9+ mount detection
 			int vehicle = PacketPlayOutMount_VEHICLE.getInt(packet);
 			int[] passg = (int[]) PacketPlayOutMount_PASSENGERS.get(packet);
@@ -153,7 +155,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				});
 			}
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && MethodAPI.PacketPlayOutAttachEntity.isInstance(packet)) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && PacketPlayOutAttachEntity.isInstance(packet)) {
 			//1.8.x mount detection
 			if (PacketPlayOutAttachEntity_A.getInt(packet) == 0) {
 				int passenger = PacketPlayOutAttachEntity_PASSENGER.getInt(packet);

@@ -7,13 +7,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class Injector {
 
@@ -64,7 +64,7 @@ public class Injector {
 						}
 						if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
 							long time = System.nanoTime();
-							if (MethodAPI.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+							if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								//nametag anti-override
 								if (Main.INSTANCE.killPacket(packet)) {
 									Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);

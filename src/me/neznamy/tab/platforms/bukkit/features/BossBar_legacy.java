@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.platforms.bukkit.Main;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -33,7 +33,7 @@ public class BossBar_legacy implements Listener, Loadable {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
-						all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(l.nmsEntity, getWitherLocation(all)));
+						all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(l.entityId, getWitherLocation(all)));
 					}
 				}
 			}

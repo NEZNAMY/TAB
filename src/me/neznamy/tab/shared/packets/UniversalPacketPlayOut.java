@@ -22,8 +22,7 @@ public abstract class UniversalPacketPlayOut extends PacketPlayOut{
 		try {
 			return Shared.platform.buildPacket(this, clientVersion);
 		} catch (Exception e) {
-			Shared.errorManager.printError("An error occurred when creating " + getClass().getSimpleName(), e);
-			return null;
+			return Shared.errorManager.printError(null, "An error occurred when creating " + getClass().getSimpleName(), e);
 		}
 	}
 }

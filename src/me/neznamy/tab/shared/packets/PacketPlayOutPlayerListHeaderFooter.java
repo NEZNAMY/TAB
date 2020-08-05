@@ -1,17 +1,20 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 
-	private static List<Field> fields = getFields(MethodAPI.PacketPlayOutPlayerListHeaderFooter, MethodAPI.IChatBaseComponent);
+	private static Class<?> PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
+	private static Constructor<?> newPacketPlayOutPlayerListHeaderFooter = getConstructor(PacketPlayOutPlayerListHeaderFooter, 0);
+	private static List<Field> fields = getFields(PacketPlayOutPlayerListHeaderFooter, getNMSClass("IChatBaseComponent"));
 	private static final Field HEADER = getObjectAt(fields, 0);
 	private static final Field FOOTER = getObjectAt(fields, 1);
 	
@@ -27,9 +30,9 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut{
 		this.footer = footer;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerListHeaderFooter();
-		HEADER.set(packet, MethodAPI.getInstance().stringToComponent(header.toString(clientVersion)));
-		FOOTER.set(packet, MethodAPI.getInstance().stringToComponent(footer.toString(clientVersion)));
+		Object packet = newPacketPlayOutPlayerListHeaderFooter.newInstance();
+		HEADER.set(packet, NMSHook.stringToComponent(header.toString(clientVersion)));
+		FOOTER.set(packet, NMSHook.stringToComponent(footer.toString(clientVersion)));
 		return packet;
 	}
 	public Object toBungee(ProtocolVersion clientVersion) {

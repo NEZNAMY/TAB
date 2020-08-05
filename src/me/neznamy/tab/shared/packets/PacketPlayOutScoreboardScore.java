@@ -1,15 +1,21 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardScore);
+	private static Class<?> PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
+	private static Class<Enum> EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
+	private static Constructor<?> newPacketPlayOutScoreboardScore0 = getConstructor(PacketPlayOutScoreboardScore, 0);
+	private static Constructor<?> newPacketPlayOutScoreboardScore1 = getConstructor(PacketPlayOutScoreboardScore, 1);
+	private static Constructor<?> newPacketPlayOutScoreboardScore4 = getConstructor(PacketPlayOutScoreboardScore, 4);
+	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardScore);
 	private static final Field PLAYER = getField(fields, "a");
 	private static final Field OBJECTIVENAME = getField(fields, "b");
 	private static final Field SCORE = getField(fields, "c");
@@ -29,12 +35,12 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			return MethodAPI.getInstance().newPacketPlayOutScoreboardScore(action.toNMS(), objectiveName, player, score);
+			return newPacketPlayOutScoreboardScore4.newInstance(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
-				return MethodAPI.getInstance().newPacketPlayOutScoreboardScore(player);
+				return newPacketPlayOutScoreboardScore1.newInstance(player);
 			} else {
-				packet = MethodAPI.getInstance().newPacketPlayOutScoreboardScore();
+				packet = newPacketPlayOutScoreboardScore0.newInstance();
 				PLAYER.set(packet, player);
 				OBJECTIVENAME.set(packet, objectiveName);
 				SCORE.set(packet, score);
@@ -57,11 +63,10 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		private byte ordinal;
 		private Object nmsEquivalent;
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private Action(byte ordinal) {
 			this.ordinal = ordinal;
-			if (MethodAPI.EnumScoreboardAction != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardAction, toString());
+			if (EnumScoreboardAction != null) {
+				nmsEquivalent = Enum.valueOf(EnumScoreboardAction, toString());
 			} else {
 				nmsEquivalent = ordinal;
 			}

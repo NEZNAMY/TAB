@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.Set;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -30,7 +30,7 @@ public class TextRefresher implements Refreshable {
 		} else {
 			DataWatcher w = new DataWatcher(null);
 			w.helper().setCustomName(text.updateAndGet(), refreshed.getVersion());
-			refreshed.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(line.entityId, w.toNMS(), true));
+			refreshed.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(line.entityId, w));
 		}
 	}
 	@Override

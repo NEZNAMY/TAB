@@ -1,15 +1,17 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut{
 	
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardDisplayObjective);
+	private static Class<?> PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
+	private static Constructor<?> newPacketPlayOutScoreboardDisplayObjective = getConstructor(PacketPlayOutScoreboardDisplayObjective, 0);
+	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardDisplayObjective);
 	private static final Field POSITION = getField(fields, "a");
 	private static final Field OBJECTIVENAME = getField(fields, "b");
 	
@@ -21,7 +23,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		this.objectiveName = objectiveName;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardDisplayObjective();
+		Object packet = newPacketPlayOutScoreboardDisplayObjective.newInstance();
 		POSITION.set(packet, slot);
 		OBJECTIVENAME.set(packet, objectiveName);
 		return packet;

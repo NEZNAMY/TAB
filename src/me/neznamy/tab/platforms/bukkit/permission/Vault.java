@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.permission;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -27,10 +26,6 @@ public class Vault implements PermissionPlugin {
 
 	@Override
 	public String getName() {
-		try {
-			return permission.getName();
-		} catch (Throwable e) {
-			return Shared.errorManager.printError("Unknown/None", "Failed to get permission plugin name using Vault", e);
-		}
+		return permission.getName();
 	}
 }

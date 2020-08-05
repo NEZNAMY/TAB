@@ -140,20 +140,15 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		Shared.featureCpu.runMeasuredTask("Processing player quit", CPUFeature.NAMETAGX_EVENT_QUIT, new Runnable() {
+		Shared.featureCpu.runTaskLater(100, "Processing player quit", CPUFeature.NAMETAGX_EVENT_QUIT, new Runnable() {
 
 			@Override
 			public void run() {
-				try {
-					if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
-					for (ITabPlayer all : Shared.getPlayers()) {
-						all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
-					}
-					Thread.sleep(100);
-					disconnectedPlayer.getArmorStandManager().destroy();
-				} catch (InterruptedException e) {
-
+				if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
+				for (ITabPlayer all : Shared.getPlayers()) {
+					all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 				}
+				disconnectedPlayer.getArmorStandManager().destroy();
 			}
 		});
 	}
@@ -194,7 +189,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			}
 		}
 	}
-	
+
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;

@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,17 +12,17 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	
 	private static final Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
-	private static final Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutSpawnEntityLiving);
+	public static Class<?> PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+	private static Constructor<?> newPacketPlayOutSpawnEntityLiving = getConstructor(PacketPlayOutSpawnEntityLiving, 0);
+	private static final Map<String, Field> fields = getFields(PacketPlayOutSpawnEntityLiving);
 	private static final Field ENTITYID = getField(fields, "a");
-	private static final Field UUID = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, UUID.class), 0);
+	private static final Field UUID = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, UUID.class), 0);
 	private static final Field ENTITYTYPE;
 	private static final Field X;
 	private static final Field Y;
@@ -32,8 +33,8 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private static final Field YAW;
 	private static final Field PITCH;
 	private static final Field L;
-	public static final Field DATAWATCHER = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, MethodAPI.DataWatcher), 0);
-	private static final Field DATAWATCHERITEMS = getObjectAt(getFields(MethodAPI.PacketPlayOutSpawnEntityLiving, List.class), 0);
+	public static final Field DATAWATCHER = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, DataWatcher.DataWatcher), 0);
+	private static final Field DATAWATCHERITEMS = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, List.class), 0);
 	
 	private int entityId;
 	private UUID uuid;
@@ -69,7 +70,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		return this;
 	}
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = MethodAPI.getInstance().newPacketPlayOutSpawnEntityLiving();
+		Object packet = newPacketPlayOutSpawnEntityLiving.newInstance();
 		ENTITYID.set(packet, entityId);
 		ENTITYTYPE.set(packet, entityType);
 		if (motX != 0) MOTX.set(packet, motX);
@@ -98,13 +99,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		}
 		return packet;
 	}
-	public Object toNMSNoEx(){
-		try {
-			return toNMS(null);
-		} catch (Exception e) {
-			return Shared.errorManager.printError(null, "Failed to create PacketPlayOutSpawnEntityLiving", e);
-		}
-	}
+	
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;
 		return paramDouble < i ? i - 1 : i;

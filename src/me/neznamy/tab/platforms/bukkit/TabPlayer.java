@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -26,7 +26,7 @@ public class TabPlayer extends ITabPlayer{
 	public TabPlayer(Player p) throws Exception {
 		player = p;
 		world = p.getWorld().getName();
-		channel = (Channel) MethodAPI.getInstance().getChannel(player);
+		channel = (Channel) NMSHook.getChannel(player);
 		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();
@@ -69,13 +69,23 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@Override
 	public long getPing() {
-		int ping = MethodAPI.getInstance().getPing(player);
+		int ping;
+		try {
+			ping = NMSHook.getPing(player);
+		} catch (Exception e) {
+			return -1;
+		}
 		if (ping > 10000 || ping < 0) ping = -1;
 		return ping;
 	}
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null) MethodAPI.getInstance().sendPacket(player, nmsPacket);
+		if (nmsPacket != null)
+			try {
+				NMSHook.sendPacket(player, nmsPacket);
+			} catch (Exception e) {
+				Shared.errorManager.printError("Failed to send packet", e);
+			}
 	}
 	@Override
 	public void sendMessage(String message) {

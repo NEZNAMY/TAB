@@ -11,8 +11,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -22,11 +25,12 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class ArmorStand{
 
+	private static int idCounter = 2000000000;
+
 	private ITabPlayer owner;
 	private Player player;
 	private double yOffset;
-	private Object nmsEntity = MethodAPI.getInstance().newEntityArmorStand();
-	private int entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
+	private int entityId = idCounter++;
 	private UUID uuid = UUID.randomUUID();
 	private boolean sneaking;
 	private boolean visible;
@@ -56,37 +60,37 @@ public class ArmorStand{
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (ITabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(all)));
+			all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
 		}
 	}
-	public Object[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
+	public PacketPlayOut[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-			return new Object[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).toNMSNoEx(),
-					MethodAPI.getInstance().newPacketPlayOutEntityMetadata(getEntityId(), dataWatcher.toNMS(), true)
+			return new PacketPlayOut[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)),
+					new PacketPlayOutEntityMetadata(getEntityId(), dataWatcher)
 			};
 		} else {
-			return new Object[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(dataWatcher).toNMSNoEx()
+			return new PacketPlayOut[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(dataWatcher)
 			};
 		}
 	}
-	public Object getTeleportPacket(ITabPlayer viewer) {
-		return MethodAPI.getInstance().newPacketPlayOutEntityTeleport(nmsEntity, getArmorStandLocationFor(viewer));
+	public PacketPlayOutEntityTeleport getTeleportPacket(ITabPlayer viewer) {
+		return new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(viewer));
 	}
 	private Location getArmorStandLocationFor(ITabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 	public void destroy(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
-		viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+		viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
 	}
 	public void teleport() {
 		for (ITabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(getTeleportPacket(all));
+			all.sendCustomBukkitPacket(getTeleportPacket(all));
 		}
 	}
 	public void sneak(boolean sneaking) {
@@ -95,7 +99,7 @@ public class ArmorStand{
 			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+					viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
 				} else {
 					for (Object packet : getSpawnPackets(viewer, false)) {
 						viewer.sendPacket(packet);
@@ -103,7 +107,7 @@ public class ArmorStand{
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+				viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
 				for (Object packet : getSpawnPackets(viewer, false)) {
 					viewer.sendPacket(packet);
 				}
@@ -111,8 +115,8 @@ public class ArmorStand{
 		}
 	}
 	public void destroy() {
-		Object destroyPacket = MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId);
-		for (ITabPlayer all : Shared.getPlayers()) all.sendPacket(destroyPacket);
+		PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
+		for (ITabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
 	public void updateVisibility() {
@@ -123,7 +127,7 @@ public class ArmorStand{
 	}
 	private void updateMetadata() {
 		for (ITabPlayer viewer : getNearbyPlayers()) {
-			viewer.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer).toNMS(), true));
+			viewer.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
 		}
 	}
 	public boolean getVisibility() {

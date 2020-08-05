@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -32,7 +32,7 @@ public class Main extends JavaPlugin {
 		INSTANCE = this;
 		Shared.platform = new BukkitMethods();
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
-		if (MethodAPI.getInstance() != null){
+		if (NMSHook.isVersionSupported()){
 			Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){

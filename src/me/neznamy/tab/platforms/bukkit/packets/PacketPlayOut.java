@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 public abstract class PacketPlayOut{
@@ -66,6 +68,35 @@ public abstract class PacketPlayOut{
 			}
 		} else {
 			return f;
+		}
+		return null;
+	}
+	
+	public static Field getField(Class<?> clazz, String name) {
+		try {
+			return clazz.getDeclaredField(name);
+		} catch (NoSuchFieldException e) {
+			return null;
+		}
+	}
+
+	public static Class<?> getNMSClass(String... potentialNames){
+		for (String className : potentialNames) {
+			try {
+				return Class.forName("net.minecraft.server." + Main.serverPackage + "." + className);
+			} catch (ClassNotFoundException e) {
+
+			}
+		}
+		return null;
+	}
+
+	public static Constructor<?> getConstructor(Class<?> clazz, int... parameterCount){
+		if (clazz == null) return null;
+		for (int count : parameterCount) {
+			for (Constructor<?> c : clazz.getConstructors()) {
+				if (c.getParameterCount() == count) return c;
+			}
 		}
 		return null;
 	}

@@ -1,16 +1,21 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutScoreboardObjective);
+	private static Class<?> PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
+	private static Class<Enum> EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
+	private static Constructor<?> newPacketPlayOutScoreboardObjective = getConstructor(PacketPlayOutScoreboardObjective, 0);
+	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardObjective);
 	private static final Field OBJECTIVENAME = getField(fields, "a");
 	private static final Field DISPLAYNAME = getField(fields, "b");
 	private static Field RENDERTYPE;
@@ -52,10 +57,10 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		if (clientVersion.getMinorVersion() < 13) {
 			displayName = cutTo(displayName, 32);
 		}
-		Object packet = MethodAPI.getInstance().newPacketPlayOutScoreboardObjective();
+		Object packet = newPacketPlayOutScoreboardObjective.newInstance();
 		OBJECTIVENAME.set(packet, objectiveName);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			DISPLAYNAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion)));
+			DISPLAYNAME.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion)));
 		} else {
 			DISPLAYNAME.set(packet, displayName);
 		}
@@ -87,10 +92,9 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
 		private Object nmsEquivalent;
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private EnumScoreboardHealthDisplay() {
-			if (MethodAPI.EnumScoreboardHealthDisplay != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumScoreboardHealthDisplay, toString());
+			if (EnumScoreboardHealthDisplay != null) {
+				nmsEquivalent = Enum.valueOf(EnumScoreboardHealthDisplay, toString());
 			} else {
 				nmsEquivalent = ordinal();
 			}

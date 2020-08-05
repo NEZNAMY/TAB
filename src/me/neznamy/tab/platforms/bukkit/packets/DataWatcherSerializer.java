@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcherSerializer {
@@ -32,7 +31,7 @@ public class DataWatcherSerializer {
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			Map<String, Object> fields = PacketPlayOut.getStaticFields(MethodAPI.DataWatcherRegistry);
+			Map<String, Object> fields = PacketPlayOut.getStaticFields(PacketPlayOut.getNMSClass("DataWatcherRegistry"));
 			Byte = fields.get("a");
 			Integer = fields.get("b");
 			Float = fields.get("c");

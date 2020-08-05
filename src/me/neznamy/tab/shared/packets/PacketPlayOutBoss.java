@@ -1,17 +1,25 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
-	private static Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutBoss);
+	private static Class<?> PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
+	private static Class<?> BarColor = getNMSClass("BossBattle$BarColor");
+	private static Class<?> BarStyle = getNMSClass("BossBattle$BarStyle");
+	private static Class<Enum> Action_ = (Class<Enum>) PacketPlayOut.getNMSClass("PacketPlayOutBoss$Action");
+	
+	private static Constructor<?> newPacketPlayOutBoss = getConstructor(PacketPlayOutBoss, 0);
+	private static Map<String, Field> fields = getFields(PacketPlayOutBoss);
 	private static final Field UUID = fields.get("a");
 	private static final Field ACTION = fields.get("b");
 	private static final Field NAME = fields.get("c");
@@ -33,8 +41,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	private boolean createWorldFog;
 
 	private PacketPlayOutBoss() {
-		
 	}
+	
 	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
@@ -97,14 +105,14 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	}
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = MethodAPI.getInstance().newPacketPlayOutBoss();
+		Object packet = newPacketPlayOutBoss.newInstance();
 		UUID.set(packet, id);
 		ACTION.set(packet, operation.toNMS());
 		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
 			PROGRESS.set(packet, pct);
 		}
 		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			NAME.set(packet, MethodAPI.getInstance().stringToComponent(IChatBaseComponent.optimizedComponent(name).toString(clientVersion)));
+			NAME.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(name).toString(clientVersion)));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
 			COLOR.set(packet, color.toNMS());
@@ -177,8 +185,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private Action(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.PacketPlayOutBoss_Action != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.PacketPlayOutBoss_Action, toString());
+			if (Action_ != null) {
+				nmsEquivalent = Enum.valueOf(Action_, toString());
 			}
 		}
 		public Object toNMS() {
@@ -203,8 +211,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarColor(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.BarColor != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarColor, toString());
+			if (BarColor != null) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)BarColor, toString());
 			}
 		}
 		public Object toNMS() {
@@ -227,8 +235,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 
 		private BarStyle(int bungeeEquivalent) {
 			this.bungeeEquivalent = bungeeEquivalent;
-			if (MethodAPI.BarStyle != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.BarStyle, toString());
+			if (BarStyle != null) {
+				nmsEquivalent = Enum.valueOf((Class<Enum>)BarStyle, toString());
 			}
 		}
 		public Object toNMS() {

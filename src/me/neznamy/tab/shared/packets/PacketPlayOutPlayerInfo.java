@@ -1,8 +1,10 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,7 +14,8 @@ import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
+import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.velocity.VelocityUtils;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -24,6 +27,14 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
+	
+	private static Class<?> PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo", "Packet201PlayerInfo");
+	private static Class<Enum> EnumGamemode_ = (Class<Enum>) PacketPlayOut.getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
+	private static Class<Enum> EnumPlayerInfoAction_ = (Class<Enum>) PacketPlayOut.getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+	private static Constructor<?> newPacketPlayOutPlayerInfo = getConstructor(PacketPlayOutPlayerInfo, 2, 0);
+	
+	private static Class<?> PlayerInfoData_ = PacketPlayOut.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+	private static Constructor<?> newPlayerInfoData = getConstructor(PlayerInfoData_, 5);
 	
 	private static final Field ACTION;
 	private static Field PLAYERS;
@@ -58,9 +69,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 		private EnumPlayerInfoAction(int networkId) {
 			this.networkId = networkId;
-			if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumPlayerInfoAction, toString());
-			}
+			if (EnumPlayerInfoAction_ != null) nmsEquivalent = Enum.valueOf(EnumPlayerInfoAction_, toString());
 		}
 		public static EnumPlayerInfoAction fromNMS(Object nms) {
 			return EnumPlayerInfoAction.valueOf(nms.toString());
@@ -97,9 +106,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 		private EnumGamemode(int networkId) {
 			this.networkId = networkId;
-			if (MethodAPI.getInstance() != null && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)MethodAPI.EnumGamemode, toString());
-			}
+			if (EnumGamemode_ != null) nmsEquivalent = Enum.valueOf(EnumGamemode_, toString());
 		}
 		public static EnumGamemode fromNMS(Object nms) {
 			if (nms == null) return null;
@@ -143,10 +150,11 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public PlayerInfoData clone() {
 			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
 		}
-		public Object toNMS(ProtocolVersion clientVersion){
+		public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return MethodAPI.getInstance().newPlayerInfoData(profile, latency, gameMode == null ? null : gameMode.toNMS(), displayName == null ? null : MethodAPI.getInstance().stringToComponent(displayName.toString(clientVersion)));
+			return newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo.newInstance(null, Collections.EMPTY_LIST), profile, latency, gameMode == null ? null : gameMode.toNMS(), 
+							displayName == null ? null : NMSHook.stringToComponent(displayName.toString(clientVersion)));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
@@ -180,7 +188,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
 			GameProfile profile = (GameProfile) PROFILE.get(nmsData);
 			Object nmsComponent = LISTNAME.get(nmsData);
-			IChatBaseComponent listName = IChatBaseComponent.fromString(MethodAPI.getInstance().componentToString(nmsComponent));
+			IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
 			return new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
 		}
 		public static PlayerInfoData fromBungee(Object nmsData, ProtocolVersion clientVersion){
@@ -212,7 +220,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(action.toNMS());
+			Object packet = newPacketPlayOutPlayerInfo.newInstance(action.toNMS(), Collections.EMPTY_LIST);
 			List<Object> items = new ArrayList<Object>();
 			for (PlayerInfoData data : entries) {
 				items.add(data.toNMS(clientVersion));
@@ -220,7 +228,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			PLAYERS.set(packet, items);
 			return packet;
 		} else {
-			Object packet = MethodAPI.getInstance().newPacketPlayOutPlayerInfo(null);
+			Object packet = newPacketPlayOutPlayerInfo.newInstance();
 			PlayerInfoData data = entries[0];
 			ACTION.set(packet, action.getNetworkId());
 			net.minecraft.util.com.mojang.authlib.GameProfile profile = new net.minecraft.util.com.mojang.authlib.GameProfile(data.uniqueId, data.name);
@@ -250,7 +258,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		return new com.velocitypowered.proxy.protocol.packet.PlayerListItem(action.getNetworkId(), (List<com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item>) items);
 	}
 	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
-		if (!MethodAPI.PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
+		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.fromNMS(ACTION.get(nmsPacket));
 			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
@@ -296,17 +304,17 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	static {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerInfo);
+			Map<String, Field> fields = getFields(PacketPlayOutPlayerInfo);
 			ACTION = getField(fields, "a");
 			PLAYERS = getField(fields, "b");
 
-			Map<String, Field> infodata = getFields(MethodAPI.PlayerInfoData);
+			Map<String, Field> infodata = getFields(PlayerInfoData_);
 			PING = getField(infodata, "b");
 			GAMEMODE = getField(infodata, "c");
 			PROFILE = getField(infodata, "d");
 			LISTNAME = getField(infodata, "e");
 		} else {
-			Map<String, Field> fields = getFields(MethodAPI.PacketPlayOutPlayerInfo);
+			Map<String, Field> fields = getFields(PacketPlayOutPlayerInfo);
 			ACTION = getField(fields, "action");
 			PING = getField(fields, "ping");
 			GAMEMODE = getField(fields, "gamemode");

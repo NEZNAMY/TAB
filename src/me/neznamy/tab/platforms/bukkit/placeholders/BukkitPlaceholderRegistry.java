@@ -5,7 +5,6 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
@@ -113,7 +112,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
-				return Placeholders.decimal2.format(Math.min(20, MethodAPI.getInstance().getTPS()));
+				try {
+					Object nmsServer = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
+					double value = ((double[]) nmsServer.getClass().getField("recentTps").get(nmsServer))[0];
+					return Placeholders.decimal2.format(Math.min(20, value));
+				} catch (Throwable t) {
+					return "-1";
+				}
 			}
 		});
 		AFKProvider afk;

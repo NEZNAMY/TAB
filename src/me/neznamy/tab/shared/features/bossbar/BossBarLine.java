@@ -6,8 +6,8 @@ import org.bukkit.entity.EntityType;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -17,11 +17,12 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
 public class BossBarLine {
 
+	private static int idCounter = 1000000000;
+	
 	public String name;
 	public boolean permissionRequired;
 	public UUID uuid; //1.9+
-	public Object nmsEntity; // <1.9
-	public int entityId; // <1.9
+	public int entityId = idCounter++; // <1.9
 	public String style;
 	public String color;
 	public String text;
@@ -31,10 +32,6 @@ public class BossBarLine {
 		this.name = name;
 		this.permissionRequired = permissionRequired;
 		this.uuid = UUID.randomUUID();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) {
-			nmsEntity = MethodAPI.getInstance().newEntityWither();
-			entityId = MethodAPI.getInstance().getEntityId(nmsEntity);
-		}
 		this.color = color;
 		this.style = style;
 		this.text = text;
@@ -85,7 +82,7 @@ public class BossBarLine {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(PacketPlayOutBoss.REMOVE(uuid));
 		} else {
-			to.sendPacket(MethodAPI.getInstance().newPacketPlayOutEntityDestroy(entityId));
+			to.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
 		}
 	}
 }

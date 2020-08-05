@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.platforms.bukkit.packets.method.MethodAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -17,7 +16,8 @@ import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 public class PetFix implements RawPacketFeature{
 
 	private final int PET_OWNER_POSITION = getPetOwnerPosition();
-	private final Field PacketPlayOutEntityMetadata_LIST;
+	private final Class<?> PacketPlayOutEntityMetadata = PacketPlayOut.getNMSClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
+	private final Field PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
 	
 	private int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
@@ -35,10 +35,6 @@ public class PetFix implements RawPacketFeature{
 		}
 	}
 	
-	public PetFix() {
-		PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(MethodAPI.PacketPlayOutEntityMetadata).get("b");
-	}
-	
 	@Override
 	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
 		return packet;
@@ -47,7 +43,7 @@ public class PetFix implements RawPacketFeature{
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable{
-		if (MethodAPI.PacketPlayOutEntityMetadata.isInstance(packet)) {
+		if (PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return packet;
 			List<Object> newList = new ArrayList<Object>();
@@ -57,7 +53,7 @@ public class PetFix implements RawPacketFeature{
 			}
 			PacketPlayOutEntityMetadata_LIST.set(packet, newList);
 		}
-		if (MethodAPI.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
+		if (PacketPlayOutSpawnEntityLiving.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
 			watcher.removeValue(PET_OWNER_POSITION);
 			PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
