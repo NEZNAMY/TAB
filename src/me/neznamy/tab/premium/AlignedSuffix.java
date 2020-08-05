@@ -43,6 +43,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			widths.put(c, width);
 		}
 		if (save) Premium.premiumconfig.save();
+		Shared.debug("Loaded " + widths.size() + " character widths.");
 	}
 	private void loadWidthsFromFile() {
 		try {
