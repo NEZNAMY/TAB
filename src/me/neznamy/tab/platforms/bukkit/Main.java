@@ -29,10 +29,10 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
-		INSTANCE = this;
-		Shared.platform = new BukkitMethods();
 		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 		if (NMSHook.isVersionSupported()){
+			INSTANCE = this;
+			Shared.platform = new BukkitMethods();
 			Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
