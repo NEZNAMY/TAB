@@ -86,7 +86,7 @@ public class DataWatcher{
 	public Object toNMS() throws Exception{
 		Object nmsWatcher;
 		if (newDataWatcher.getParameterCount() == 1) {
-			nmsWatcher = newDataWatcher.newInstance((Object[])null);
+			nmsWatcher = newDataWatcher.newInstance(new Object[] {null});
 		} else {
 			nmsWatcher = newDataWatcher.newInstance();
 		}
