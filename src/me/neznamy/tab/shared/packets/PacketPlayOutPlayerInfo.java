@@ -105,8 +105,12 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		private int networkId;
 
 		private EnumGamemode(int networkId) {
-			this.networkId = networkId;
-			if (EnumGamemode_ != null) nmsEquivalent = Enum.valueOf(EnumGamemode_, toString());
+			try {
+				this.networkId = networkId;
+				if (EnumGamemode_ != null) nmsEquivalent = Enum.valueOf(EnumGamemode_, toString());
+			} catch (Exception e) {
+				//spectator on <1.8
+			}
 		}
 		public static EnumGamemode fromNMS(Object nms) {
 			if (nms == null) return null;
