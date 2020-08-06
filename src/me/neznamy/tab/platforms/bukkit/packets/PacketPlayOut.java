@@ -84,7 +84,7 @@ public abstract class PacketPlayOut{
 		for (String className : potentialNames) {
 			try {
 				return Class.forName("net.minecraft.server." + Main.serverPackage + "." + className);
-			} catch (ClassNotFoundException e) {
+			} catch (Throwable e) {
 
 			}
 		}
