@@ -56,6 +56,9 @@ public class ArmorStand{
 	public boolean hasStaticOffset() {
 		return staticOffset;
 	}
+	public double getOffset() {
+		return yOffset;
+	}
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
