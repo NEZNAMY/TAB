@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +20,10 @@ public class DataWatcher{
 	private static final Class<?> WatchableObject = PacketPlayOut.getNMSClass("DataWatcher$Item", "WatchableObject");
 	private static final Constructor<?> newWatchableObject = PacketPlayOut.getConstructor(WatchableObject, 3, 2);
 	
-	private static final Field ENTITY = PacketPlayOut.getObjectAt(PacketPlayOut.getFields(DataWatcher, PacketPlayOut.getNMSClass("Entity")), 0);
 	private static final Method REGISTER = getRegisterMethod();
 
-	private Object entity;
 	private Map<Integer, Item> dataValues = new HashMap<Integer, Item>();
-	private DataWatcherHelper helper;
+	private DataWatcherHelper helper = new DataWatcherHelper(this);
 
 	private static Method getRegisterMethod() {
 		try {
@@ -39,10 +36,6 @@ public class DataWatcher{
 			Shared.errorManager.criticalError("Failed to inialize DataWatcher class", e);
 			return null;
 		}
-	}
-	public DataWatcher(Object entity) {
-		this.entity = entity;
-		helper = new DataWatcherHelper(this);
 	}
 
 	public void setValue(DataWatcherObject type, Object value){
@@ -93,7 +86,7 @@ public class DataWatcher{
 	public Object toNMS() throws Exception{
 		Object nmsWatcher;
 		if (newDataWatcher.getParameterCount() == 1) {
-			nmsWatcher = newDataWatcher.newInstance(entity);
+			nmsWatcher = newDataWatcher.newInstance((Object[])null);
 		} else {
 			nmsWatcher = newDataWatcher.newInstance();
 		}
@@ -108,7 +101,7 @@ public class DataWatcher{
 	}
 	@SuppressWarnings("unchecked")
 	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
-		DataWatcher watcher = new DataWatcher(ENTITY.get(nmsWatcher));
+		DataWatcher watcher = new DataWatcher();
 		List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
 		if (items != null) {
 			for (Object watchableObject : items) {

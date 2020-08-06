@@ -156,7 +156,7 @@ public class ArmorStand{
 		nearbyPlayers.remove(viewer);
 	}
 	public DataWatcher createDataWatcher(String displayName, ITabPlayer viewer) {
-		DataWatcher datawatcher = new DataWatcher(null);
+		DataWatcher datawatcher = new DataWatcher();
 
 		byte flag = 0;
 		if (sneaking) flag += (byte)2;

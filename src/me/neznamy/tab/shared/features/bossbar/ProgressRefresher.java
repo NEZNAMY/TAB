@@ -28,7 +28,7 @@ public class ProgressRefresher implements Refreshable {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_PCT(line.uuid, (float)line.parseProgress(progress.updateAndGet())/100));
 		} else {
-			DataWatcher w = new DataWatcher(null);
+			DataWatcher w = new DataWatcher();
 			float health = (float)3*line.parseProgress(progress.updateAndGet());
 			if (health == 0) health = 1;
 			w.helper().setHealth(health);

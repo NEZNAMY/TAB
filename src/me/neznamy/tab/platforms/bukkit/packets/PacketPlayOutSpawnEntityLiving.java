@@ -48,7 +48,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private float yaw;
 	private float pitch;
 	private float l;
-	public DataWatcher dataWatcher = new DataWatcher(null);
+	public DataWatcher dataWatcher = new DataWatcher();
 	private List<Item> watchableObjects;
 
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location loc) {

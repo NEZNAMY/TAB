@@ -28,7 +28,7 @@ public class TextRefresher implements Refreshable {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, text.updateAndGet()));
 		} else {
-			DataWatcher w = new DataWatcher(null);
+			DataWatcher w = new DataWatcher();
 			w.helper().setCustomName(text.updateAndGet(), refreshed.getVersion());
 			refreshed.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(line.entityId, w));
 		}
