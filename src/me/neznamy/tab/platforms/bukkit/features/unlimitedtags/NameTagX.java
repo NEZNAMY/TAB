@@ -39,7 +39,6 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 
 	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
 	private EventListener eventListener;
-	private PacketListener packetListener;
 
 	@SuppressWarnings("unchecked")
 	public NameTagX() {
@@ -53,8 +52,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener();
-		packetListener = new PacketListener(this);
-		Shared.registerFeature("nametagx-packet", packetListener);
+		Shared.registerFeature("nametagx-packet", new PacketListener(this));
 	}
 	@Override
 	public void load() {
