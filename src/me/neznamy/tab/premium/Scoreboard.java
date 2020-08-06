@@ -97,7 +97,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	public String getLineName(int i) {
 		String id = i+"";
 		if (id.length() == 1) id = "0" + id;
-		return Placeholders.colorChar + String.valueOf(id.charAt(0)) + Placeholders.colorChar + String.valueOf(id.charAt(1));
+		char c = Placeholders.colorChar;
+		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
 	}
 	public List<ITabPlayer> getRegisteredUsers(){
 		return players;
@@ -179,7 +180,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 				if (rawtext.length() < 35) {
 					//1-34
 					staticPrefix = "";
-					staticName = player + Placeholders.colorChar + "r" + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
+					staticName = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
 					staticSuffix = "";
 				} else {
 					String[] sub = substring(rawtext, 16);
