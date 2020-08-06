@@ -82,7 +82,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAGX_INVISCHECK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (p.disabledNametag) continue;
+					if (!p.onJoinFinished || p.disabledNametag) continue;
 					p.getArmorStandManager().updateVisibility();
 				}
 			}
@@ -90,7 +90,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.onJoinFinished) continue;
+					if (!p.onJoinFinished || p.disabledNametag) continue;
 					boolean collision = p.getTeamPush();
 					if (p.lastCollision != collision) {
 						p.updateTeamData();
