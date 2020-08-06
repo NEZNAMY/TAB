@@ -29,62 +29,62 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable(){
+		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
+		if (!NMSHook.isVersionSupported(serverPackage)){
+			Shared.disabled = true;
+			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is not supported. Disabling..");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
-		Shared.print('7', "Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
-		if (NMSHook.isVersionSupported(serverPackage)){
-			INSTANCE = this;
-			Shared.platform = new BukkitMethods();
-			Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
-			Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
-				public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-					if (Configs.bukkitBridgeMode || Shared.disabled) {
-						if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
-							if (sender.hasPermission("tab.reload")) {
-								Shared.unload();
-								Shared.load(false);
-								if (Shared.disabled) {
-									if (sender instanceof Player) {
-										sender.sendMessage(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
-									}
-								} else {
-									sender.sendMessage(Placeholders.color(Configs.reloaded));
+		INSTANCE = this;
+		Shared.platform = new BukkitMethods();
+		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
+		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
+			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
+				if (Configs.bukkitBridgeMode || Shared.disabled) {
+					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
+						if (sender.hasPermission("tab.reload")) {
+							Shared.unload();
+							Shared.load(false);
+							if (Shared.disabled) {
+								if (sender instanceof Player) {
+									sender.sendMessage(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
 								}
 							} else {
-								sender.sendMessage(Placeholders.color(Configs.no_perm));
+								sender.sendMessage(Placeholders.color(Configs.reloaded));
 							}
 						} else {
-							if (sender.hasPermission("tab.admin")) {
-								sender.sendMessage(Placeholders.color("&m                                                                                "));
-								if (Configs.bukkitBridgeMode) sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
-								if (Shared.disabled) sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
-								sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
-								sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
-								sender.sendMessage(Placeholders.color("&m                                                                                "));
-							}
+							sender.sendMessage(Placeholders.color(Configs.no_perm));
 						}
 					} else {
-						Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+						if (sender.hasPermission("tab.admin")) {
+							sender.sendMessage(Placeholders.color("&m                                                                                "));
+							if (Configs.bukkitBridgeMode) sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
+							if (Shared.disabled) sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
+							sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
+							sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
+							sender.sendMessage(Placeholders.color("&m                                                                                "));
+						}
 					}
-					return false;
+				} else {
+					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
-			});
-			Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
-				public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
-					if (Configs.bukkitBridgeMode) {
-						return null;
-					}
-					return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				return false;
+			}
+		});
+		Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
+			public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
+				if (Configs.bukkitBridgeMode) {
+					return null;
 				}
-			});
-			Shared.load(true);
-			Metrics.start(this);
-		} else {
-			Shared.disabled = true;
-			Shared.platform.sendConsoleMessage("&c[TAB] Your server version is not supported. Disabling..");
-			Bukkit.getPluginManager().disablePlugin(this);
-		}
+				return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+			}
+		});
+		Shared.load(true);
+		Metrics.start(this);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		if (!Shared.disabled) {
@@ -98,7 +98,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	
+
 	public static void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
