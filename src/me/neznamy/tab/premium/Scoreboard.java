@@ -177,7 +177,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			refreshUsedPlaceholders();
 			if (Static) {
 				rawtext = Placeholders.color(rawtext);
-				if (rawtext.length() < 35) {
+				if (rawtext.length() < 33) { //6 forced characters &x&x&r
 					//1-34
 					staticPrefix = "";
 					staticName = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
