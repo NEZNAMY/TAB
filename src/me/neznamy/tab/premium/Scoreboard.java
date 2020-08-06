@@ -229,7 +229,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			if (replaced.length() > 0) {
 				if (emptyBefore) {
 					//was "", now it is not
-					int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
+					int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : manager.staticNumber;
 					PacketAPI.registerScoreboardScore(p, teamname, player, prefix, suffix, ObjectiveName, score);
 					return null;
 				} else {
@@ -248,7 +248,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			p.setProperty("sb-"+teamname, rawtext, null);
 			List<String> prefixsuffix = replaceText(p, true, true);
 			if (prefixsuffix == null) return;
-			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : 0;
+			int score = (p.getVersion().getMinorVersion() < 8 || manager.useNumbers) ? this.score : manager.staticNumber;
 			PacketAPI.registerScoreboardScore(p, teamname, getName(p), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
 		}
 		private void unregister(ITabPlayer p) {

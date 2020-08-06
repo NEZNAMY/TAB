@@ -28,6 +28,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public List<String> sb_off_players;
 	public List<Scoreboard> APIscoreboards = new ArrayList<>();
 	public boolean permToToggle;
+	public int staticNumber;
 
 	public String scoreboard_on;
 	public String scoreboard_off;
@@ -48,6 +49,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			sb_off_players = Configs.getPlayerData("scoreboard-off");
 		}
 		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
+		staticNumber = Premium.premiumconfig.getInt("scoreboard.static-number", 0);
+		
 		for (Object scoreboard : Premium.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
 			String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
 			String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
