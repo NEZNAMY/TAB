@@ -69,7 +69,7 @@ public class Main extends Plugin{
 		});
 		plm = new PluginMessenger(this);
 		Shared.load(true);
-		Metrics.start(this);
+		BungeeMetrics.start(this);
 	}
 	
 	@Override

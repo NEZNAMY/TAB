@@ -82,7 +82,7 @@ public class Main extends JavaPlugin {
 			}
 		});
 		Shared.load(true);
-		Metrics.start(this);
+		BukkitMetrics.start(this);
 	}
 
 	@Override
