@@ -26,11 +26,10 @@ public class NMSHook {
 			"v1_16_R1"
 		);
 	
-	public static final Class<?> EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
-	
-	private static Class<?> ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
-	private static Field PING = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "ping");
-	private static Field PLAYER_CONNECTION = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "playerConnection");
+	public static  Class<?> EnumChatFormat;
+	private static Class<?> ChatSerializer;
+	private static Field PING;
+	private static Field PLAYER_CONNECTION;
 	private static Field CHANNEL;
 	private static Method sendPacket;
 	private static Method SERIALIZE;
@@ -65,6 +64,10 @@ public class NMSHook {
 
 	public static boolean isVersionSupported(String serverPackage){
 		try {
+			EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
+			ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
+			PING = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "ping");
+			PLAYER_CONNECTION = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "playerConnection");
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
 			try {
 				//1.7+
