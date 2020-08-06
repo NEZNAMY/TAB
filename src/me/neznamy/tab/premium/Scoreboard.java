@@ -185,7 +185,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 					String[] sub = substring(rawtext, 16);
 					staticPrefix = sub[0];
 					String rest = sub[1];
-					String last = Placeholders.getLastColors(staticPrefix);
+					String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(staticPrefix).toColoredText());
 					if (last.length() == 0) last = Placeholders.colorChar + "r";
 					rest = player + last + rest;
 					sub = substring(rest, 40);
@@ -217,7 +217,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 					prefix = prefix.substring(0, 15);
 					suffix = Placeholders.colorChar + suffix;
 				}
-				String last = Placeholders.getLastColors(prefix);
+				String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(prefix).toColoredText());
 				if (last.length() == 0) last = Placeholders.colorChar + "r";
 				suffix = last + suffix;
 				if (suffix.length() > 16) suffix = suffix.substring(0, 16);
