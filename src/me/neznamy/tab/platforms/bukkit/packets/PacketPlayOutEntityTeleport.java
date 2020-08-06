@@ -43,8 +43,8 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 			Y.set(packet, floor((double)location.getY()*32));
 			Z.set(packet, floor((double)location.getZ()*32));
 		}
-		if (location.getYaw() != 0) YAW.set(packet, location.getYaw());
-		if (location.getPitch() != 0) PITCH.set(packet, location.getPitch());
+		if (location.getYaw() != 0) YAW.set(packet, (byte)((float)location.getYaw()/360/256));
+		if (location.getPitch() != 0) PITCH.set(packet, (byte)((float)location.getPitch()/360/256));
 		return packet;
 	}
 	
