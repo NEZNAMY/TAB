@@ -36,21 +36,13 @@ public class NMSHook {
 	private static Method SERIALIZE;
 	private static Method DESERIALIZE;
 	
-	public static Object stringToComponent(String json) {
+	public static Object stringToComponent(String json) throws Exception {
 		if (json == null) return null;
-		try {
-			return DESERIALIZE.invoke(null, json);
-		} catch (Exception e) {
-			return null;
-		}
+		return DESERIALIZE.invoke(null, json);
 	}
-	public static String componentToString(Object component) {
+	public static String componentToString(Object component) throws Exception {
 		if (component == null) return null;
-		try {
-			return (String) SERIALIZE.invoke(null, component);
-		} catch (Exception e) {
-			return null;
-		}
+		return (String) SERIALIZE.invoke(null, component);
 	}
 	
 	public static Object getChannel(Player p){

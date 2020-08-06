@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class DataWatcherHelper {
@@ -38,7 +39,11 @@ public class DataWatcherHelper {
 	
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
+			try {
+				data.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
+			} catch (Exception e) {
+				Shared.errorManager.printError("Failed to create component", e);
+			}
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
 		} else {
