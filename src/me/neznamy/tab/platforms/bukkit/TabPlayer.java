@@ -23,7 +23,7 @@ public class TabPlayer extends ITabPlayer{
 
 	private Player player;
 
-	public TabPlayer(Player p) throws Exception {
+	public TabPlayer(Player p){
 		player = p;
 		world = p.getWorld().getName();
 		channel = (Channel) NMSHook.getChannel(player);
