@@ -56,7 +56,7 @@ public class NMSHook {
 	public static Object getChannel(Player p){
 		try {
 			Object connection = PLAYER_CONNECTION.get(p.getClass().getMethod("getHandle").invoke(p));
-			Object networkManager = connection.getClass().getDeclaredField("networkManager").get(connection);
+			Object networkManager = connection.getClass().getField("networkManager").get(connection);
 			return CHANNEL.get(networkManager);
 		} catch (Exception e) {
 			return null;
