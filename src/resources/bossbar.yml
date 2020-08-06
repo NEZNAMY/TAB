@@ -12,6 +12,8 @@
 
 bossbar-enabled: false
 bossbar-toggle-command: /bossbar
+
+#tab.togglebar
 permission-required-to-toggle: false
 
 #saving toggle decision into playerdata.yml to keep it saved after reloads/restarts
