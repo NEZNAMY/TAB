@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -65,6 +65,6 @@ public class ArmorStandManager {
 		return false;
 	}
 	public Collection<ArmorStand> getArmorStands(){
-		return new HashSet<>(armorStands.values());
+		return new ArrayList<>(armorStands.values());
 	}
 }
