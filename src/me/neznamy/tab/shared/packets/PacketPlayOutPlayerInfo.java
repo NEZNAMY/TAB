@@ -15,7 +15,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.velocity.VelocityUtils;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -29,11 +28,12 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	
 	private static Class<?> PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo", "Packet201PlayerInfo");
-	private static Class<Enum> EnumGamemode_ = (Class<Enum>) PacketPlayOut.getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
-	private static Class<Enum> EnumPlayerInfoAction_ = (Class<Enum>) PacketPlayOut.getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-	private static Constructor<?> newPacketPlayOutPlayerInfo = getConstructor(PacketPlayOutPlayerInfo, 2, 0);
+	private static Class<Enum> EnumGamemode_ = (Class<Enum>) getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
+	private static Class<Enum> EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+	private static Constructor<?> newPacketPlayOutPlayerInfo0 = getConstructor(PacketPlayOutPlayerInfo, new Class<?>[] {});
+	private static Constructor<?> newPacketPlayOutPlayerInfo2 = getConstructor(PacketPlayOutPlayerInfo, EnumPlayerInfoAction_, Iterable.class);
 	
-	private static Class<?> PlayerInfoData_ = PacketPlayOut.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+	private static Class<?> PlayerInfoData_ = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
 	private static Constructor<?> newPlayerInfoData = getConstructor(PlayerInfoData_, 5);
 	
 	private static final Field ACTION;
@@ -157,7 +157,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 			GameProfile profile = new GameProfile(uniqueId, name);
 			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
-			return newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo.newInstance(null, Collections.EMPTY_LIST), profile, latency, gameMode == null ? null : gameMode.toNMS(), 
+			return newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, latency, gameMode == null ? null : gameMode.toNMS(), 
 							displayName == null ? null : NMSHook.stringToComponent(displayName.toString(clientVersion)));
 		}
 		public Object toBungee(ProtocolVersion clientVersion) {
@@ -224,7 +224,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Object packet = newPacketPlayOutPlayerInfo.newInstance(action.toNMS(), Collections.EMPTY_LIST);
+			Object packet = newPacketPlayOutPlayerInfo2.newInstance(action.toNMS(), Collections.EMPTY_LIST);
 			List<Object> items = new ArrayList<Object>();
 			for (PlayerInfoData data : entries) {
 				items.add(data.toNMS(clientVersion));
@@ -232,7 +232,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			PLAYERS.set(packet, items);
 			return packet;
 		} else {
-			Object packet = newPacketPlayOutPlayerInfo.newInstance();
+			Object packet = newPacketPlayOutPlayerInfo0.newInstance();
 			PlayerInfoData data = entries[0];
 			ACTION.set(packet, action.getNetworkId());
 			net.minecraft.util.com.mojang.authlib.GameProfile profile = new net.minecraft.util.com.mojang.authlib.GameProfile(data.uniqueId, data.name);

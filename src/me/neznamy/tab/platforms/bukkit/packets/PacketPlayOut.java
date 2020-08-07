@@ -100,4 +100,13 @@ public abstract class PacketPlayOut{
 		}
 		return null;
 	}
+	
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameterTypes){
+		if (clazz == null) return null;
+		try {
+			return clazz.getConstructor(parameterTypes);
+		} catch (NoSuchMethodException e) {
+			return null;
+		}
+	}
 }
