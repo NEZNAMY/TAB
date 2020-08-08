@@ -95,7 +95,7 @@ public class Placeholders {
 				placeholdersTotal.add(placeholder);
 				for (String child : placeholder.getChilds()) {
 					for (Placeholder p : detectPlaceholders(child)) {
-						if (!placeholdersTotal.contains(p)) placeholdersTotal.add(p);
+						placeholdersTotal.add(p);
 					}
 				}
 			}
