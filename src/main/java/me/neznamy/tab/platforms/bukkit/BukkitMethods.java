@@ -293,8 +293,6 @@ public class BukkitMethods implements PlatformMethods {
 	@Override
 	public void suggestPlaceholders() {
 		//bukkit only
-		suggestPlaceholderSwitch("%cmi_user_afk%", "%afk%");
-		suggestPlaceholderSwitch("%cmi_user_afk_symbol%", "%afk%");
 		suggestPlaceholderSwitch("%deluxetags_tag%", "%deluxetag%");
 		suggestPlaceholderSwitch("%essentials_afk%", "%afk%");
 		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");

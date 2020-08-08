@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -23,6 +24,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	
 	private Yaml yaml;
 	
+	@SuppressWarnings("unchecked")
 	public YamlConfigurationFile(File dataFolder, String source, String destination, List<String> header) throws Exception{
 		super(dataFolder, source, destination, header);
 		FileInputStream input = null;
@@ -31,7 +33,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			yaml = new Yaml(options);
 			input = new FileInputStream(file);
-			values = yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
+			values = (Map<String, Object>) yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 			Shared.platform.convertConfig(this);

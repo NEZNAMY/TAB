@@ -1,19 +1,8 @@
-# Plugins #
-BungeePerms: https://ci.wea-ondara.net/job/BungeePerms/lastSuccessfulBuild/artifact/target/
-CMIAPI: http://www.zrips.net/wp-content/uploads/2019/02/CMIAPI7.6.2.0.jar
-EssentialsX: https://www.spigotmc.org/resources/9089/
-GroupManager: https://www.spigotmc.org/resources/38875/
-iDisguise: https://www.spigotmc.org/resources/5509/
-LuckPerms 4: https://www.spigotmc.org/resources/28140/download?version=267214
-LuckPerms 5: https://ci.lucko.me/job/LuckPerms/lastSuccessfulBuild/artifact/bukkit/build/libs/
-NetworkManager (API): https://github.com/ChimpGamer/NetworkManager/blob/master/Pluggie/API-s/NetworkManagerAPI-v2.8.7.jar
-PlaceholderAPI: https://ci.extendedclip.com/job/PlaceholderAPI/lastSuccessfulBuild/artifact/build/libs/
-PremiumVanish (API): https://github.com/MyzelYam/PremiumVanishAPI/releases
-Vault: https://www.spigotmc.org/resources/34315/
-UltraPermissions: - (if you own it use it, if not, delete the code)
+# Extra dependencies as they don't have a maven repository #
 
-# Server Platforms #
-BungeeCord: https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar
+GroupManager: https://www.spigotmc.org/resources/38875/
+LuckPerms 4: https://www.spigotmc.org/resources/28140/download?version=267214
+NetworkManager (API): https://github.com/ChimpGamer/NetworkManager/blob/master/Pluggie/API-s/NetworkManagerAPI-v2.8.7.jar
+PremiumVanish (API): https://github.com/MyzelYam/PremiumVanishAPI/releases
+UltraPermissions: - (if you own it use it, if not, delete the code)
 Velocity: https://ci.velocitypowered.com/job/velocity-1.1.0/lastSuccessfulBuild/artifact/proxy/build/libs/
-Spigot 1.16.1: https://cdn.getbukkit.org/spigot/spigot-1.16.1.jar
-Spigot 1.7.10: https://cdn.getbukkit.org/spigot/spigot-1.7.10-SNAPSHOT-b1657.jar

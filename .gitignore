@@ -1,5 +1,8 @@
 # Compiled class file
 *.class
+/bin/
+/target/
+/src/test/
 
 # Log file
 *.log
@@ -26,7 +29,6 @@ hs_err_pid*
 .settings
 .classpath
 .project
-/bin/
 
 # intellij
 /.idea/

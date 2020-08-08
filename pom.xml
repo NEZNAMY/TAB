@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>me.neznamy</groupId>
+	<artifactId>TAB</artifactId>
+	<version>2.8.4</version>
+	<name>TAB</name>
+	<description>An all-in-one solution</description>
+
+	<repositories>
+
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+
+		<repository>
+			<id>bungeecord-repo</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+
+		<repository>
+			<id>velocity</id>
+			<url>https://repo.velocitypowered.com/snapshots/</url>
+		</repository>
+
+		<repository>
+			<id>placeholderapi</id>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
+
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+
+		<repository>
+			<id>robingrether-repo</id>
+			<url>http://repo.robingrether.de/</url>
+		</repository>
+
+		<repository>
+			<id>bungeeperms-repo</id>
+			<url>http://repo.wea-ondara.net/repository/public/</url>
+		</repository>
+
+		<repository>
+			<id>luck-repo</id>
+			<url>https://ci.lucko.me/plugin/repository/everything/</url>
+		</repository>
+
+	</repositories>
+
+	<dependencies>
+
+		<!-- Spigot API -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.1-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- BungeeCord API -->
+		<dependency>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-api</artifactId>
+			<version>1.16-R0.4-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- BungeeCord internals -->
+		<dependency>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-proxy</artifactId>
+			<version>1.16-R0.4-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Velocity API -->
+		<dependency>
+			<groupId>com.velocitypowered</groupId>
+			<artifactId>velocity-api</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- PlaceholderAPI -->
+		<dependency>
+			<groupId>me.clip</groupId>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.10.9</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Vault -->
+		<dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- iDisguise -->
+		<dependency>
+			<groupId>de.robingrether.idisguise</groupId>
+			<artifactId>idisguise-core</artifactId>
+			<version>5.8.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- LuckPerms5 -->
+		<dependency>
+			<groupId>net.luckperms</groupId>
+			<artifactId>api</artifactId>
+			<version>5.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- BungeePerms -->
+		<dependency>
+			<groupId>net.alpenblock</groupId>
+			<artifactId>BungeePerms</artifactId>
+			<version>4.0-dev-109</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Essentials -->
+		<dependency>
+			<groupId>net.ess3</groupId>
+			<artifactId>EssentialsX</artifactId>
+			<version>2.18.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

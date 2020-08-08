@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class Main extends JavaPlugin {
 
 	public static Main INSTANCE;
-	public final static String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	@Override
 	public void onEnable(){

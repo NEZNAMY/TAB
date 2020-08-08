@@ -2,23 +2,20 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.platforms.velocity.VelocityUtils;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
@@ -36,6 +33,14 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 	private static Class<?> PlayerInfoData_ = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
 	private static Constructor<?> newPlayerInfoData = getConstructor(PlayerInfoData_, 5);
 	
+	private static Class<?> GameProfile = getClass("com.mojang.authlib.GameProfile", "net.minecraft.util.com.mojang.authlib.GameProfile");
+	private static Constructor<?> newGameProfile = getConstructor(GameProfile, UUID.class, String.class);
+	private static Field GameProfile_ID = getField(GameProfile, "id");
+	private static Field GameProfile_NAME = getField(GameProfile, "name");
+	private static Field GameProfile_PROPERTIES = getField(GameProfile, "properties");
+	private static Class<?> PropertyMap = getClass("com.mojang.authlib.properties.PropertyMap", "net.minecraft.util.com.mojang.authlib.properties.PropertyMap");
+	private static Method PropertyMap_putAll = getMethod(PropertyMap, "putAll", 1);
+	
 	private static final Field ACTION;
 	private static Field PLAYERS;
 
@@ -51,7 +56,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		this.action = action;
 		this.entries = entries;
 	}
-	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
+	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, Collection<PlayerInfoData> entries) {
 		this.action = action;
 		this.entries = entries.toArray(new PlayerInfoData[0]);
 	}
@@ -155,8 +160,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
 		}
 		public Object toNMS(ProtocolVersion clientVersion) throws Exception{
-			GameProfile profile = new GameProfile(uniqueId, name);
-			if (skin != null) profile.getProperties().putAll((Multimap<String, Property>) skin);
+			Object profile = newGameProfile.newInstance(uniqueId, name);
+			if (skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), skin);
 			return newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, latency, gameMode == null ? null : gameMode.toNMS(), 
 							displayName == null ? null : NMSHook.stringToComponent(displayName.toString(clientVersion)));
 		}
@@ -190,10 +195,10 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		public static PlayerInfoData fromNMS(Object nmsData) throws Exception{
 			int ping = PING.getInt(nmsData);
 			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
-			GameProfile profile = (GameProfile) PROFILE.get(nmsData);
+			Object profile = PROFILE.get(nmsData);
 			Object nmsComponent = LISTNAME.get(nmsData);
 			IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
-			return new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
+			return new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
 		}
 		public static PlayerInfoData fromBungee(Object nmsData, ProtocolVersion clientVersion){
 			Item item = (Item) nmsData;
@@ -206,19 +211,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		
 		@Override
 		public String toString() {
-			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + ",uuid belongs to: " + analyzeUUID(uniqueId) + "}";
-		}
-		private static String analyzeUUID(UUID uuid) {
-			String result = "";
-			ITabPlayer p;
-			if ((p = Shared.getPlayer(uuid)) != null) {
-				result = "[UUID of " + p.getName() + "]";
-			}
-			if ((p = Shared.getPlayerByTablistUUID(uuid)) != null) {
-				result += "[TablistUUID of " + p.getName() + "]";
-			}
-			if (result.length() == 0) result = "Unknown";
-			return result;
+			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + "}";
 		}
 	}
 
@@ -235,8 +228,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			Object packet = newPacketPlayOutPlayerInfo0.newInstance();
 			PlayerInfoData data = entries[0];
 			ACTION.set(packet, action.getNetworkId());
-			net.minecraft.util.com.mojang.authlib.GameProfile profile = new net.minecraft.util.com.mojang.authlib.GameProfile(data.uniqueId, data.name);
-			if (data.skin != null) profile.getProperties().putAll((net.minecraft.util.com.google.common.collect.Multimap<String, net.minecraft.util.com.mojang.authlib.properties.Property>) data.skin);
+			Object profile = newGameProfile.newInstance(data.uniqueId, data.name);
+			if (data.skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), data.skin);
 			PROFILE.set(packet, profile);
 			GAMEMODE.set(packet, data.gameMode.networkId);
 			PING.set(packet, data.latency);
@@ -274,9 +267,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.fromId(ACTION.getInt(nmsPacket));
 			int ping = PING.getInt(nmsPacket);
 			EnumGamemode gamemode = EnumGamemode.fromId(GAMEMODE.getInt(nmsPacket));
-			net.minecraft.util.com.mojang.authlib.GameProfile profile = (net.minecraft.util.com.mojang.authlib.GameProfile) PROFILE.get(nmsPacket);
+			Object profile = PROFILE.get(nmsPacket);
 			IChatBaseComponent listName = IChatBaseComponent.fromColoredText((String) LISTNAME.get(nmsPacket));
-			PlayerInfoData data = new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), ping, gamemode, listName);
+			PlayerInfoData data = new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
 			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
 		}
 	}

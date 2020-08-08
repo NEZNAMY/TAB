@@ -9,7 +9,6 @@ import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
-import me.neznamy.tab.platforms.bukkit.placeholders.afk.CMI;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.Essentials;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.None;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.xAntiAFK;
@@ -128,8 +127,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			afk = new AFKPlus();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
 			afk = new AutoAFK();
-		} else if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
-			afk = new CMI();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			afk = new Essentials();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {

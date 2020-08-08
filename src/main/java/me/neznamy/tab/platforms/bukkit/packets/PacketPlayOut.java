@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,7 +75,9 @@ public abstract class PacketPlayOut{
 	
 	public static Field getField(Class<?> clazz, String name) {
 		try {
-			return clazz.getDeclaredField(name);
+			Field f = clazz.getDeclaredField(name);
+			f.setAccessible(true);
+			return f;
 		} catch (NoSuchFieldException e) {
 			return null;
 		}
@@ -84,6 +87,17 @@ public abstract class PacketPlayOut{
 		for (String className : potentialNames) {
 			try {
 				return Class.forName("net.minecraft.server." + Main.serverPackage + "." + className);
+			} catch (Throwable e) {
+
+			}
+		}
+		return null;
+	}
+	
+	public static Class<?> getClass(String... potentialNames){
+		for (String className : potentialNames) {
+			try {
+				return Class.forName(className);
 			} catch (Throwable e) {
 
 			}
@@ -108,5 +122,12 @@ public abstract class PacketPlayOut{
 		} catch (NoSuchMethodException e) {
 			return null;
 		}
+	}
+	
+	public static Method getMethod(Class<?> clazz, String methodName, int parameterCount) {
+		for (Method m : clazz.getMethods()) {
+			if (m.getName().equals(methodName) && m.getParameterCount() == parameterCount) return m;
+		}
+		return null;
 	}
 }
