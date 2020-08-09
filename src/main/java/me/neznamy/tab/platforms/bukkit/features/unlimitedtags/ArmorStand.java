@@ -75,7 +75,7 @@ public class ArmorStand{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			return new PacketPlayOut[] {
 					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)),
-					new PacketPlayOutEntityMetadata(getEntityId(), dataWatcher)
+					new PacketPlayOutEntityMetadata(entityId, dataWatcher)
 			};
 		} else {
 			return new PacketPlayOut[] {
@@ -152,7 +152,7 @@ public class ArmorStand{
 	}
 	public Location getLocation() {
 		double x = player.getLocation().getX();
-		double y = player.getLocation().getY() + yOffset + 2;
+		double y = getY() + yOffset + 2;
 		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
 			y -= 1.76;
@@ -164,6 +164,24 @@ public class ArmorStand{
 			}
 		}
 		return new Location(null,x,y,z);
+	}
+	private double getY() {
+		//1.14+ bukkit api bug
+		if (player.getVehicle() != null) {
+			if (player.getVehicle().getType() == EntityType.HORSE) {
+				return player.getVehicle().getLocation().getY() + 0.85;
+			}
+			if (player.getVehicle().getType() == EntityType.DONKEY) {
+				return player.getVehicle().getLocation().getY() + 0.525;
+			}
+			if (player.getVehicle().getType() == EntityType.PIG) {
+				return player.getVehicle().getLocation().getY() + 0.325;
+			}
+			if (player.getVehicle().getType().toString().equals("STRIDER")) { //preventing errors on <1.16
+				return player.getVehicle().getLocation().getY() + 1.15;
+			}
+		}
+		return player.getLocation().getY();
 	}
 	public int getEntityId() {
 		return entityId;
