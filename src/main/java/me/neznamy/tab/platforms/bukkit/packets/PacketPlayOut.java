@@ -74,6 +74,7 @@ public abstract class PacketPlayOut{
 	}
 	
 	public static Field getField(Class<?> clazz, String name) {
+		if (clazz == null) return null;
 		try {
 			Field f = clazz.getDeclaredField(name);
 			f.setAccessible(true);
@@ -125,6 +126,7 @@ public abstract class PacketPlayOut{
 	}
 	
 	public static Method getMethod(Class<?> clazz, String methodName, int parameterCount) {
+		if (clazz == null) return null;
 		for (Method m : clazz.getMethods()) {
 			if (m.getName().equals(methodName) && m.getParameterCount() == parameterCount) return m;
 		}
