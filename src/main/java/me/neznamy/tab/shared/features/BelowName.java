@@ -64,10 +64,15 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()){
-			p.setProperty(propertyName, number, null);
-			if (p.disabledBelowname) continue;
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, textProperty.updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		for (ITabPlayer loaded : Shared.getPlayers()){
+			loaded.setProperty(propertyName, number, null);
+			if (loaded.disabledBelowname) continue;
+			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, textProperty.updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		}
+		for (ITabPlayer viewer : Shared.getPlayers()){
+			for (ITabPlayer target : Shared.getPlayers()){
+				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getNumber(target));
+			}
 		}
 	}
 	@Override
@@ -83,8 +88,9 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		connectedPlayer.setProperty(propertyName, number, null);
 		if (connectedPlayer.disabledBelowname) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		int number = getNumber(connectedPlayer);
 		for (ITabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, getNumber(connectedPlayer));
+			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, number);
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getNumber(all));
 		}
 	}

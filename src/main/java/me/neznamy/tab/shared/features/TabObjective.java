@@ -4,6 +4,7 @@ import java.util.Set;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
@@ -37,18 +38,23 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()){
-			p.setProperty(propertyName, rawValue, null);
-			if (p.disabledTablistObjective) continue;
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, title, DisplaySlot, displayType);
-			for (ITabPlayer all : Shared.getPlayers()) PacketAPI.setScoreboardScore(all, p.getName(), ObjectiveName, getValue(p));
+		for (ITabPlayer loaded : Shared.getPlayers()){
+			loaded.setProperty(propertyName, rawValue, null);
+			if (loaded.disabledTablistObjective) continue;
+			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, title, DisplaySlot, displayType);
+		}
+		for (ITabPlayer viewer : Shared.getPlayers()){
+			for (ITabPlayer target : Shared.getPlayers()){
+				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getValue(target));
+			}
 		}
 	}
 	@Override
 	public void unload() {
+		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
-			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
+			p.sendPacket(unregister);
 		}
 	}
 	@Override
