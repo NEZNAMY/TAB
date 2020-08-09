@@ -52,7 +52,6 @@ import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
-import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 public class BukkitMethods implements PlatformMethods {
 
@@ -63,7 +62,7 @@ public class BukkitMethods implements PlatformMethods {
 		if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
 			return new GroupManager();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
-			return new NetworkManager(((NetworkManagerPlugin)Bukkit.getPluginManager().getPlugin("NetworkManager")));
+			return new NetworkManager(Bukkit.getPluginManager().getPlugin("NetworkManager"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
 			return new PermissionsEx();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {

@@ -41,7 +41,6 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 public class BungeeMethods implements PlatformMethods {
 
@@ -60,7 +59,7 @@ public class BungeeMethods implements PlatformMethods {
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			return new BungeePerms();
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager") != null) {
-			return new NetworkManager(((NetworkManagerPlugin)ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager")));
+			return new NetworkManager(ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager"));
 		} else {
 			return new None();
 		}
