@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,6 +16,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import us.myles.ViaVersion.api.Via;
 
 public class TabPlayer extends ITabPlayer{
 
@@ -55,8 +54,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	private int getProtocolVersionVia(){
 		try {
-			Object viaAPI = Class.forName("us.myles.ViaVersion.api.Via").getMethod("getAPI").invoke(null);
-			int ver = (int) viaAPI.getClass().getMethod("getPlayerVersion", UUID.class).invoke(viaAPI, getUniqueId());
+			int ver = Via.getAPI().getPlayerVersion(uniqueId);
 			Shared.debug("ViaVersion returned protocol version " + ver + " for player " + getName());
 			return ver;
 		} catch (Throwable e) {

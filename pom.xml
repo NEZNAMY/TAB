@@ -48,6 +48,11 @@
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
+		
+		<repository>
+			<id>viaversion-repo</id>
+			<url>https://repo.viaversion.com/</url>
+		</repository>
 
 	</repositories>
 
@@ -139,6 +144,14 @@
 			<groupId>com.github.ElgarL</groupId>
 			<artifactId>groupmanager</artifactId>
 			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- ViaVersion -->
+		<dependency>
+			<groupId>us.myles</groupId>
+			<artifactId>viaversion</artifactId>
+			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 
