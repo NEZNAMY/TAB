@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +39,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
 	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
+	public Map<ITabPlayer, List<ITabPlayer>> delayedSpawn = new HashMap<ITabPlayer, List<ITabPlayer>>();
 	private EventListener eventListener;
 
 	@SuppressWarnings("unchecked")
@@ -123,6 +125,12 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				list.add(e.getEntityId());
 			}
 			vehicles.put(vehicle.getEntityId(), list);
+		}
+		if (delayedSpawn.containsKey(connectedPlayer)) {
+			for (ITabPlayer viewer : delayedSpawn.get(connectedPlayer)) {
+				connectedPlayer.getArmorStandManager().spawn(viewer);
+			}
+			delayedSpawn.remove(connectedPlayer);
 		}
 	}
 	private void updateProperties(ITabPlayer p) {

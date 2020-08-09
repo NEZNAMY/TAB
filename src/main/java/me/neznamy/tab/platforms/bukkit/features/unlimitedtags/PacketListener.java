@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,13 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 				@Override
 				public void run() {
-					spawnedPlayer.getArmorStandManager().spawn(receiver);
+					if (spawnedPlayer.getArmorStandManager() != null) {
+						spawnedPlayer.getArmorStandManager().spawn(receiver);
+					} else {
+						//player is not loaded yet and server is already sending entity spawn packet
+						if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<ITabPlayer>());
+						nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
+					}
 				}
 			});
 		}
