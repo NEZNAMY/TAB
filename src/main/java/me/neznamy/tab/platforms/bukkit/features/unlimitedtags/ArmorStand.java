@@ -21,6 +21,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public class ArmorStand{
@@ -111,8 +112,20 @@ public class ArmorStand{
 			} else {
 				//respawning so there's no animation and it's instant
 				viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
-				for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
-					viewer.sendCustomBukkitPacket(packet);
+				Runnable spawn = new Runnable() {
+
+					@Override
+					public void run() {
+						for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
+							viewer.sendCustomBukkitPacket(packet);
+						}
+					}
+				};
+				if (viewer.getVersion().getMinorVersion() == 8) {
+					//1.8.0 client sided bug
+					Shared.featureCpu.runTaskLater(50, "compensating for 1.8.0 bugs", CPUFeature.NAMETAGX_EVENT_SNEAK, spawn);
+				} else {
+					spawn.run();
 				}
 			}
 		}
