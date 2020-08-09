@@ -32,6 +32,7 @@ public class ArmorStand{
 	private Player player;
 	private double yOffset;
 	private int entityId = idCounter++;
+	private PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 	private UUID uuid = UUID.randomUUID();
 	private boolean sneaking;
 	private boolean visible;
@@ -90,7 +91,7 @@ public class ArmorStand{
 	}
 	public void destroy(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
-		viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
+		viewer.sendCustomBukkitPacket(destroyPacket);
 	}
 	public void teleport() {
 		for (ITabPlayer all : getNearbyPlayers()) {
@@ -103,7 +104,7 @@ public class ArmorStand{
 			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
+					viewer.sendCustomBukkitPacket(destroyPacket);
 				} else {
 					for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
 						viewer.sendCustomBukkitPacket(packet);
@@ -111,7 +112,7 @@ public class ArmorStand{
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
+				viewer.sendCustomBukkitPacket(destroyPacket);
 				Runnable spawn = new Runnable() {
 
 					@Override
@@ -131,7 +132,6 @@ public class ArmorStand{
 		}
 	}
 	public void destroy() {
-		PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 		for (ITabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
