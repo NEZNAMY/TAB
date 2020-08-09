@@ -1,6 +1,5 @@
 # Extra dependencies as they don't have a maven repository #
 
-GroupManager: https://www.spigotmc.org/resources/38875/
 PremiumVanish (API): https://github.com/MyzelYam/PremiumVanishAPI/releases
 UltraPermissions: - (if you own it use it, if not, delete the code)
 Velocity: https://ci.velocitypowered.com/job/velocity-1.1.0/lastSuccessfulBuild/artifact/proxy/build/libs/
