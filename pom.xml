@@ -9,46 +9,58 @@
 
 	<repositories>
 
+		<!-- Spigot API -->
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 
+		<!-- BungeeCord API -->
 		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 
+		<!-- Velocity API -->
 		<repository>
 			<id>velocity</id>
 			<url>https://repo.velocitypowered.com/snapshots/</url>
 		</repository>
 
+		<!-- PlaceholderAPI -->
 		<repository>
 			<id>placeholderapi</id>
 			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 
+		<!-- Vault -->
+		<!-- GroupManager -->
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
 
+		<!-- iDisguise -->
 		<repository>
 			<id>robingrether-repo</id>
 			<url>http://repo.robingrether.de/</url>
 		</repository>
 
+		<!-- BungeePerms -->
 		<repository>
 			<id>bungeeperms-repo</id>
 			<url>http://repo.wea-ondara.net/repository/public/</url>
 		</repository>
 
+		<!-- LuckPerms5 -->
+		<!-- BungeeCord internals -->
+		<!-- Essentials -->
 		<repository>
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
-		
+
+		<!-- ViaVersion -->
 		<repository>
 			<id>viaversion-repo</id>
 			<url>https://repo.viaversion.com/</url>
@@ -146,7 +158,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- ViaVersion -->
 		<dependency>
 			<groupId>us.myles</groupId>
