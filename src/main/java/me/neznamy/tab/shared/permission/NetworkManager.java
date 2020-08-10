@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,6 +48,8 @@ public class NetworkManager implements PermissionPlugin {
 	}
 	
 	private String getName(Object group) throws Exception {
-		return (String) group.getClass().getMethod("getName").invoke(group);
+		Method getName = group.getClass().getMethod("getName");
+		getName.setAccessible(true);
+		return (String) getName.invoke(group);
 	}
 }
