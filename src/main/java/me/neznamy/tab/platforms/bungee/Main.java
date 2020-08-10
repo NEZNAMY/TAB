@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -29,14 +30,20 @@ public class Main extends Plugin{
 
 	public static PluginMessenger plm;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable(){
+		if (!isVersionSupported()) {
+			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
+			Shared.disabled = true;
+			return;
+		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new BungeeMethods(this);
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
-			@SuppressWarnings("deprecation")
+
 			public void execute(CommandSender sender, String[] args) {
 				if (Shared.disabled) {
 					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
@@ -70,6 +77,15 @@ public class Main extends Plugin{
 		plm = new PluginMessenger(this);
 		Shared.load(true);
 		BungeeMetrics.start(this);
+	}
+	
+	private boolean isVersionSupported() {
+		try {
+			Class.forName("net.md_5.bungee.protocol.packet.ScoreboardObjective$HealthDisplay");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 	
 	@Override
