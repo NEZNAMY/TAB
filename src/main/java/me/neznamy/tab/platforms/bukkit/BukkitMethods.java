@@ -127,7 +127,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
 				Shared.registerFeature("papihook", new TabExpansion());
-				new ExpansionDownloader(usedExpansions);
+				new ExpansionDownloader().download(usedExpansions);
 			}
 			new GroupRefresher();
 			new UpdateChecker();

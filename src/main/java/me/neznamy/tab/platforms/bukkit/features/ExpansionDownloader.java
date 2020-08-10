@@ -12,7 +12,32 @@ import me.neznamy.tab.shared.Shared;
 
 public class ExpansionDownloader{
 
-	public ExpansionDownloader(Set<String> expansions) {
+	public void download(String expansion) {
+		Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(2000);
+					if (PlaceholderAPI.getRegisteredIdentifiers().contains(expansion)) return;
+					File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
+					int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
+					Shared.platform.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+					runSyncCommand("papi ecloud download " + expansion);
+					Thread.sleep(5000);
+					if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
+						Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
+						runSyncCommand("papi reload");
+					}
+				} catch (InterruptedException | ConcurrentModificationException e) {
+				} catch (Throwable e) {
+					Shared.errorManager.printError("Failed to download PlaceholderAPI expansion. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
+				}
+			}
+		});
+	}
+
+	public void download(Set<String> expansions) {
 		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
 		Bukkit.getScheduler().runTaskLater(Main.INSTANCE, new Runnable() {
 
@@ -24,11 +49,8 @@ public class ExpansionDownloader{
 					@Override
 					public void run() {
 						try {
-							Thread.sleep(5000);
-							Shared.debug("All used expansions: " + expansions);
-							Shared.debug("Installed expansions: " + PlaceholderAPI.getRegisteredIdentifiers());
+							Thread.sleep(2000);
 							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-							Shared.debug("Expansions to install: " + expansions);
 							if (!expansions.isEmpty()) {
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
@@ -38,7 +60,7 @@ public class ExpansionDownloader{
 									Thread.sleep(5000);
 								}
 								if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-									Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect");
+									Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
 									runSyncCommand("papi reload");
 								}
 							}
