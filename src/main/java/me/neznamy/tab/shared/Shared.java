@@ -34,7 +34,7 @@ public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";
 	public static final String CHANNEL_NAME = "tab:placeholders";
-	public static final String pluginVersion = "2.8.4-pre8";
+	public static final String pluginVersion = "2.8.4";
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
