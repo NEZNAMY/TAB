@@ -22,7 +22,7 @@ public enum SortingType {
 	GROUP_PERMISSIONS_THEN_PLACEHOLDER_HIGH_TO_LOW, GROUP_PERMISSIONS_THEN_PLACEHOLDER_LOW_TO_HIGH, 
 	GROUP_PERMISSIONS_THEN_PLACEHOLDER_A_TO_Z, GROUP_PERMISSIONS_THEN_PLACEHOLDER_Z_TO_A;
 	
-	private final int DEFAULT_NUMBER = 5000000;
+	private final int DEFAULT_NUMBER = 500000000;
 	public static SortingType INSTANCE;
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting;
