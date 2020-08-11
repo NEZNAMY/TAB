@@ -116,7 +116,7 @@ public class Configs {
 		int index = 1;
 		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
 			String sort = index+"";
-			while (sort.length()<4) {
+			while (sort.length() < 3) {
 				sort = "0" + sort;
 			}
 			sortedGroups.put(group.toLowerCase()+"", sort);
