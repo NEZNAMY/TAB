@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -72,13 +73,13 @@ public class DataWatcher{
 		}
 		public static Item fromNMS(Object nmsItem) throws Exception{
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				DataWatcherObject object = DataWatcherObject.fromNMS(nmsItem.getClass().getDeclaredField("a").get(nmsItem));
-				Object value = nmsItem.getClass().getDeclaredField("b").get(nmsItem);
+				DataWatcherObject object = DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
+				Object value = getValue(nmsItem, "b");
 				return new Item(object, value);
 			} else {
-				Object classType = nmsItem.getClass().getDeclaredField("a").getInt(nmsItem);
-				int position = nmsItem.getClass().getDeclaredField("b").getInt(nmsItem);
-				Object value = nmsItem.getClass().getDeclaredField("c").getInt(nmsItem);
+				Object classType = getValue(nmsItem, "a");
+				int position = (int) getValue(nmsItem, "b");
+				Object value = getValue(nmsItem, "c");
 				return new Item(new DataWatcherObject(position, classType), value);
 			}
 		}
@@ -111,6 +112,13 @@ public class DataWatcher{
 		}
 		return watcher;
 	}
+	
+	private static Object getValue(Object obj, String field) throws Exception {
+		Field f = obj.getClass().getDeclaredField(field);
+		f.setAccessible(true);
+		return f.get(obj);
+	}
+	
 	public static class DataWatcherObject {
 
 		public int position;
@@ -123,8 +131,8 @@ public class DataWatcher{
 		
 		public static DataWatcherObject fromNMS(Object nmsObject) throws Exception {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				int position = nmsObject.getClass().getDeclaredField("a").getInt(nmsObject);
-				Object classType = nmsObject.getClass().getDeclaredField("b").get(nmsObject);
+				int position = (int) getValue(nmsObject, "a");
+				Object classType = getValue(nmsObject, "b");
 				return new DataWatcherObject(position, classType);
 			} else {
 				throw new IllegalStateException();
