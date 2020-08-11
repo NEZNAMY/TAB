@@ -49,13 +49,17 @@ public class PetFix implements RawPacketFeature{
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
 				Item i = Item.fromNMS(item);
-				if (i.type.position != PET_OWNER_POSITION) newList.add(i.toNMS());
+				if (i.type.position == PET_OWNER_POSITION && i.value.toString().startsWith("Optional")) continue;
+				newList.add(i.toNMS());
 			}
 			PacketPlayOutEntityMetadata_LIST.set(packet, newList);
 		}
 		if (PacketPlayOutSpawnEntityLiving.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
-			watcher.removeValue(PET_OWNER_POSITION);
+			Item petOwner = watcher.getItem(PET_OWNER_POSITION);
+			if (petOwner != null && petOwner.value.toString().startsWith("Optional")) {
+				watcher.removeValue(PET_OWNER_POSITION);
+			}
 			PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 		}
 		return packet;
