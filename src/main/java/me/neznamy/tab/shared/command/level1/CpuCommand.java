@@ -33,34 +33,34 @@ public class CpuCommand extends SubCommand {
 		for (Float time : features.values()) featuresTotal += time;
 		
 		sendMessage(sender, " ");
-		sendMessage(sender, "&8&lâ•‘&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
-		sendMessage(sender, "&8&lâ•‘ &6CPU stats from the last minute");
-		sendMessage(sender, "&8&lâ•‘&8&m                                                    ");
-		sendMessage(sender, "&8&lâ•‘ &6Placeholders:");
+		sendMessage(sender, "&8&l•‘&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+		sendMessage(sender, "&8&l•‘ &6CPU stats from the last minute");
+		sendMessage(sender, "&8&l•‘&8&m                                                    ");
+		sendMessage(sender, "&8&l•‘ &6Placeholders:");
 		for (Entry<Object, Float> entry : placeholders.entrySet()) {
 			Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
 			String refresh = "";
 			if (p != null) refresh = " &8(" + p.cooldown + ")&7";
-			sendMessage(sender, "&8&lâ•‘ &7" + entry.getKey() + refresh + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
+			sendMessage(sender, "&8&l•‘ &7" + entry.getKey() + refresh + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
-		sendMessage(sender, "&8&lâ•‘&8&m                                                    ");
+		sendMessage(sender, "&8&l•‘&8&m                                                    ");
 		if (Shared.platform.getSeparatorType().equals("server")) {
-			sendMessage(sender, "&8&lâ•‘ &6Placeholder usage on Bukkit servers:");
+			sendMessage(sender, "&8&l•‘ &6Placeholder usage on Bukkit servers:");
 			for (Entry<Object, Float> entry : bridgeplaceholders.entrySet()) {
-				sendMessage(sender, "&8&lâ•‘ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
+				sendMessage(sender, "&8&l•‘ &7" + entry.getKey() + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 			}
-			sendMessage(sender, "&8&lâ•‘&8&m                                                    ");
+			sendMessage(sender, "&8&l•‘&8&m                                                    ");
 		}
-		sendMessage(sender, "&8&lâ•‘ &6Features:");
+		sendMessage(sender, "&8&l•‘ &6Features:");
 		for (Entry<Object, Float> entry : features.entrySet()) {
-			sendMessage(sender, "&8&lâ•‘ &7" + entry.getKey() + " - " + colorizeFeature(decimal3.format(entry.getValue())) + "%");
+			sendMessage(sender, "&8&l•‘ &7" + entry.getKey() + " - " + colorizeFeature(decimal3.format(entry.getValue())) + "%");
 		}
-		sendMessage(sender, "&8&lâ•‘&8&m                                                    ");
-		sendMessage(sender, "&8&lâ•‘ &6&lPlaceholders Total: &a&l" + colorizeTotalUsage(decimal3.format(placeholdersTotal)) + "%");
-		if (Shared.platform.getSeparatorType().equals("server")) sendMessage(sender, "&8&lâ•‘ &6&lBukkit bridge placeholders Total: &a&l" + colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%");
-		sendMessage(sender, "&8&lâ•‘ &6&lPlugin internals: &a&l" + colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal)) + "%");
-		sendMessage(sender, "&8&lâ•‘ &6&lTotal: &e&l" + colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal)) + "%");
-		sendMessage(sender, "&8&lâ•‘&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+		sendMessage(sender, "&8&l•‘&8&m                                                    ");
+		sendMessage(sender, "&8&l•‘ &6&lPlaceholders Total: &a&l" + colorizeTotalUsage(decimal3.format(placeholdersTotal)) + "%");
+		if (Shared.platform.getSeparatorType().equals("server")) sendMessage(sender, "&8&l•‘ &6&lBukkit bridge placeholders Total: &a&l" + colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%");
+		sendMessage(sender, "&8&l•‘ &6&lPlugin internals: &a&l" + colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal)) + "%");
+		sendMessage(sender, "&8&l•‘ &6&lTotal: &e&l" + colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal)) + "%");
+		sendMessage(sender, "&8&l•‘&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}
 	private String colorizePlaceholder(String usage) {

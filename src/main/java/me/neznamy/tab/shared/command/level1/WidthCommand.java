@@ -42,22 +42,22 @@ public class WidthCommand extends SubCommand{
 				}
 			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
-			messages.add(new IChatBaseComponent("Â§b[TAB] Click the line with closest width"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§ki Â§e|Â§b (1 pixel) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 1").onHoverShowText("Click to set width to 1 pixel"));
-			messages.add(new IChatBaseComponent("Â§2[TAB] " + c + " Â§d|"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kl Â§e|Â§b (2 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 2").onHoverShowText("Click to set width to 2 pixels"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kii Â§e|Â§b (3 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 3").onHoverShowText("Click to set width to 3 pixels"));
-			messages.add(new IChatBaseComponent("Â§2[TAB] " + c + " Â§d|"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kil Â§e|Â§b (4 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 4").onHoverShowText("Click to set width to 4 pixels"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kll Â§e|Â§b (5 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 5").onHoverShowText("Click to set width to 5 pixels"));
-			messages.add(new IChatBaseComponent("Â§2[TAB] " + c + " Â§d|"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kiil Â§e|Â§b (6 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 6").onHoverShowText("Click to set width to 6 pixels"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kill Â§e|Â§b (7 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 7").onHoverShowText("Click to set width to 7 pixels"));
-			messages.add(new IChatBaseComponent("Â§2[TAB] " + c + " Â§d|"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§klll Â§e|Â§b (8 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 8").onHoverShowText("Click to set width to 8 pixels"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kllii Â§e|Â§b (9 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 9").onHoverShowText("Click to set width to 9 pixels"));
-			messages.add(new IChatBaseComponent("Â§2[TAB] " + c + " Â§d|"));
-			messages.add(new IChatBaseComponent("Â§b[TAB] Â§kllil Â§e|Â§b (10 pixels) Â§7Â§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 10").onHoverShowText("Click to set width to 10 pixels"));
+			messages.add(new IChatBaseComponent("§b[TAB] Click the line with closest width"));
+			messages.add(new IChatBaseComponent("§b[TAB] §ki §e|§b (1 pixel) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 1").onHoverShowText("Click to set width to 1 pixel"));
+			messages.add(new IChatBaseComponent("§2[TAB] " + c + " §d|"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kl §e|§b (2 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 2").onHoverShowText("Click to set width to 2 pixels"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kii §e|§b (3 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 3").onHoverShowText("Click to set width to 3 pixels"));
+			messages.add(new IChatBaseComponent("§2[TAB] " + c + " §d|"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kil §e|§b (4 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 4").onHoverShowText("Click to set width to 4 pixels"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kll §e|§b (5 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 5").onHoverShowText("Click to set width to 5 pixels"));
+			messages.add(new IChatBaseComponent("§2[TAB] " + c + " §d|"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kiil §e|§b (6 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 6").onHoverShowText("Click to set width to 6 pixels"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kill §e|§b (7 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 7").onHoverShowText("Click to set width to 7 pixels"));
+			messages.add(new IChatBaseComponent("§2[TAB] " + c + " §d|"));
+			messages.add(new IChatBaseComponent("§b[TAB] §klll §e|§b (8 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 8").onHoverShowText("Click to set width to 8 pixels"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kllii §e|§b (9 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 9").onHoverShowText("Click to set width to 9 pixels"));
+			messages.add(new IChatBaseComponent("§2[TAB] " + c + " §d|"));
+			messages.add(new IChatBaseComponent("§b[TAB] §kllil §e|§b (10 pixels) §7§l[Click to apply]").onClickRunCommand("/tab width " + (int)c + " 10").onHoverShowText("Click to set width to 10 pixels"));
 			for (IChatBaseComponent message : messages) {
 				sender.sendCustomPacket(new PacketPlayOutChat(message));
 			}
