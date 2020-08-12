@@ -168,6 +168,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		private String staticPrefix;
 		private String staticName;
 		private String staticSuffix;
+		private String staticPrefix1_7;
+		private String staticName1_7;
+		private String staticSuffix1_7;
 
 		public Score(int score, String teamname, String player, String rawtext) {
 			this.score = score;
@@ -177,8 +180,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			refreshUsedPlaceholders();
 			if (Static) {
 				rawtext = Placeholders.color(rawtext);
-				if (rawtext.length() < 33) { //6 forced characters &x&x&r
-					//1-34
+				if (rawtext.length() <= 34) { //6 forced characters &x&x&r
 					staticPrefix = "";
 					staticName = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
 					staticSuffix = "";
@@ -194,6 +196,22 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 					staticSuffix = sub[1];
 					if (staticSuffix.length() > 16) staticSuffix = staticSuffix.substring(0, 16);
 				}
+				if (rawtext.length() <= 10) { //6 forced characters &x&x&r
+					staticPrefix1_7 = "";
+					staticName1_7 = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
+					staticSuffix1_7 = "";
+				} else {
+					String[] sub = substring(rawtext, 16);
+					staticPrefix1_7 = sub[0];
+					String rest = sub[1];
+					String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(staticPrefix1_7).toColoredText());
+					if (last.length() == 0) last = Placeholders.colorChar + "r";
+					rest = player + last + rest;
+					sub = substring(rest, 16);
+					staticName1_7 = sub[0];
+					staticSuffix1_7 = sub[1];
+					if (staticSuffix1_7.length() > 16) staticSuffix1_7 = staticSuffix1_7.substring(0, 16);
+				}
 			}
 		}
 		private String[] substring(String string, int length) {
@@ -203,7 +221,11 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		}
 		private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
 			if (Static && p.getVersion().getMinorVersion() < 13) {
-				return Arrays.asList(staticPrefix, staticSuffix);
+				if (p.getVersion().getMinorVersion() < 8) {
+					return Arrays.asList(staticPrefix1_7, staticSuffix1_7);
+				} else {
+					return Arrays.asList(staticPrefix, staticSuffix);
+				}
 			}
 			Property scoreproperty = p.properties.get("sb-"+teamname);
 			boolean emptyBefore = scoreproperty.get().length() == 0;
@@ -257,7 +279,13 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			}
 		}
 		private String getName(ITabPlayer p) {
-			if (Static && p.getVersion().getMinorVersion() < 13) return staticName;
+			if (Static && p.getVersion().getMinorVersion() < 13) {
+				if (p.getVersion().getMinorVersion() < 8) {
+					return staticName1_7;
+				} else {
+					return staticName;
+				}
+			}
 			return player;
 		}
 		@Override
