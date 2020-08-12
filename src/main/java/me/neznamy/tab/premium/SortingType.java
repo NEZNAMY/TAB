@@ -2,6 +2,7 @@ package me.neznamy.tab.premium;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.shared.ITabPlayer;
@@ -26,7 +27,7 @@ public enum SortingType {
 	public static SortingType INSTANCE;
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting;
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	
 	public static void initialize() {
 		if (Premium.is()) {
@@ -39,7 +40,7 @@ public enum SortingType {
 			}
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
-			INSTANCE.usedPlaceholders = new HashSet<String>(Placeholders.detectAll(INSTANCE.sortingPlaceholder));
+			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
 			Shared.registerFeature("sorting-refresh", new Refreshable(){
 
 				@Override
@@ -54,12 +55,12 @@ public enum SortingType {
 
 				@Override
 				public Set<String> getUsedPlaceholders() {
-					return INSTANCE.usedPlaceholders;
+					return new HashSet<>(INSTANCE.usedPlaceholders);
 				}
 
 				@Override
 				public void refreshUsedPlaceholders() {
-					INSTANCE.usedPlaceholders = new HashSet<String>(Placeholders.detectAll(INSTANCE.sortingPlaceholder));
+					INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
 				}
 				
 			});
