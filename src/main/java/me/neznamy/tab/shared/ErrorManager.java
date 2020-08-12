@@ -87,7 +87,7 @@ public class ErrorManager {
 	public int parseInteger(String string, int defaultValue, String place) {
 		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
-			return Math.round(Float.parseFloat(string));
+			return (int) Math.round(Double.parseDouble(string));
 		} catch (Throwable e) {
 			if (string.contains("%")) {
 				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
