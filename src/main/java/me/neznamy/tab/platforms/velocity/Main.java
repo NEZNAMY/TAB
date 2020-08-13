@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
-@Plugin(id = "tab", name = "TAB", version = "2.8.4", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.8.5-pre1", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main {
 
 	public ProxyServer server;
