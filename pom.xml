@@ -440,7 +440,7 @@
 			</exclusions>
 		</dependency>
 
-		<!-- PremiumVanishAPI -->
+		<!-- PremiumVanishAPI
 		<dependency>
 			<groupId>com.github.MyzelYam</groupId>
 			<artifactId>PremiumVanishAPI</artifactId>
@@ -453,7 +453,7 @@
 				</exclusion>
 				
 			</exclusions>
-		</dependency>
+		</dependency> -->
 
 	</dependencies>
 
