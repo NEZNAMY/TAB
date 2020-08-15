@@ -8,6 +8,8 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 
 public class NMSHook {
 	
@@ -50,6 +52,9 @@ public class NMSHook {
 			Object networkManager = connection.getClass().getField("networkManager").get(connection);
 			return CHANNEL.get(networkManager);
 		} catch (Exception e) {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				Shared.errorManager.printError("Failed to get channel of " + p.getName(), e);
+			}
 			return null;
 		}
 	}
