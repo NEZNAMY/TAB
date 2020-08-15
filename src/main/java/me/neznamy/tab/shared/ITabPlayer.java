@@ -340,6 +340,7 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	public void unregisterTeam() {
+		if (teamName == null) return;
 		Object packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69).build(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			viewer.sendPacket(packet);
