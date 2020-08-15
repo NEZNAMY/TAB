@@ -59,14 +59,14 @@ public class BukkitMethods implements PlatformMethods {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
+		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
+			return new PermissionsEx();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
 			return new GroupManager();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
 			return new NetworkManager(Bukkit.getPluginManager().getPlugin("NetworkManager"));
-		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
-			return new PermissionsEx();
-		} else if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
 			return new UltraPermissions();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
