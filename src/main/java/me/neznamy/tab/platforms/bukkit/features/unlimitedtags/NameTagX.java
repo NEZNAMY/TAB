@@ -146,11 +146,11 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
+		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 		Shared.featureCpu.runTaskLater(100, "Processing player quit", CPUFeature.NAMETAGX_EVENT_QUIT, new Runnable() {
 
 			@Override
 			public void run() {
-				if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 				for (ITabPlayer all : Shared.getPlayers()) {
 					all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 				}
