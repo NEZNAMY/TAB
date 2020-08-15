@@ -13,7 +13,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	private static Class<?> PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
 	private static Class<Enum> EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
 	private static Constructor<?> newPacketPlayOutScoreboardScore0 = getConstructor(PacketPlayOutScoreboardScore, 0);
-	private static Constructor<?> newPacketPlayOutScoreboardScore1 = getConstructor(PacketPlayOutScoreboardScore, 1);
+	private static Constructor<?> newPacketPlayOutScoreboardScore_String = getConstructor(PacketPlayOutScoreboardScore, String.class);
 	private static Constructor<?> newPacketPlayOutScoreboardScore4 = getConstructor(PacketPlayOutScoreboardScore, 4);
 	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardScore);
 	private static final Field PLAYER = getField(fields, "a");
@@ -38,7 +38,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 			return newPacketPlayOutScoreboardScore4.newInstance(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
-				return newPacketPlayOutScoreboardScore1.newInstance(player);
+				return newPacketPlayOutScoreboardScore_String.newInstance(player);
 			} else {
 				packet = newPacketPlayOutScoreboardScore0.newInstance();
 				PLAYER.set(packet, player);
