@@ -16,7 +16,7 @@ The source contains content of premium version as well. However, this must be ac
   
   
 ## Links
-Discord: https://discord.gg/EaSvdk6
-SpigotMC (free version): https://www.spigotmc.org/resources/57806/
-MC-Market (paid version): https://www.mc-market.org/resources/14009/
-Wiki: https://github.com/NEZNAMY/TAB/wiki
+Discord: https://discord.gg/EaSvdk6  
+SpigotMC (free version): https://www.spigotmc.org/resources/57806/  
+MC-Market (paid version): https://www.mc-market.org/resources/14009/  
+Wiki: https://github.com/NEZNAMY/TAB/wiki  
