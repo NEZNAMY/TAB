@@ -90,7 +90,6 @@ public class Configs {
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
 		Placeholders.usedPlaceholders = new HashSet<>();
 		Placeholders.registeredPlaceholders.clear();
-		Placeholders.registeredRelationalPlaceholders.clear();
 		loadConfig();
 		loadAnimations();
 		loadBossbar();
