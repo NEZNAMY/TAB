@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
+	private final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
@@ -42,7 +43,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished()) return false;
+		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
 		if (spyServers.contains(viewer.getWorldName())) {
 			return true;
 		}
