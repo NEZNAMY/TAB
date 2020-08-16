@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -22,12 +21,12 @@ public class PluginHooks {
 		return setPlaceholders(p, placeholder);
 	}
 
-	public static String setPlaceholders(OfflinePlayer player, String placeholder) {
+	public static String setPlaceholders(Player player, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
-			String playername = (player == null ? "null" : player.getName());
+			String playername = (player == null ? "< null >" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
