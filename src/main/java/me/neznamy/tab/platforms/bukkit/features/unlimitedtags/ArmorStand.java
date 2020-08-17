@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -167,17 +168,18 @@ public class ArmorStand{
 	}
 	private double getY() {
 		//1.14+ bukkit api bug
-		if (player.getVehicle() != null) {
-			if (player.getVehicle().getType() == EntityType.HORSE) {
+		Entity vehicle = player.getVehicle();
+		if (vehicle != null) {
+			if (vehicle.getType() == EntityType.HORSE) {
 				return player.getVehicle().getLocation().getY() + 0.85;
 			}
-			if (player.getVehicle().getType() == EntityType.DONKEY) {
+			if (vehicle.getType() == EntityType.DONKEY) {
 				return player.getVehicle().getLocation().getY() + 0.525;
 			}
-			if (player.getVehicle().getType() == EntityType.PIG) {
+			if (vehicle.getType() == EntityType.PIG) {
 				return player.getVehicle().getLocation().getY() + 0.325;
 			}
-			if (player.getVehicle().getType().toString().equals("STRIDER")) { //preventing errors on <1.16
+			if (vehicle.getType().toString().equals("STRIDER")) { //preventing errors on <1.16
 				return player.getVehicle().getLocation().getY() + 1.15;
 			}
 		}
