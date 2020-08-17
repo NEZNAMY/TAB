@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -97,16 +96,9 @@ public class TabPlayer extends ITabPlayer{
 	}
 	@Override
 	public boolean getTeamPush() {
-		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && isDisguisedLD()) return false;
+		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return false;
 		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return false; 
 		return Configs.getCollisionRule(world);
-	}
-	private boolean isDisguisedLD() {
-		try {
-			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
-		} catch (Exception e) {
-			return Shared.errorManager.printError(false, "Failed to check disguise status of " + getName() + " using LibsDisguises", e);
-		}
 	}
 	@Override
 	public Object getSkin() {

@@ -67,6 +67,12 @@
 			<url>https://repo.viaversion.com/</url>
 		</repository>
 
+		<!-- LibsDisguises -->
+		<repository>
+			<id>md5</id>
+			<url>http://repo.md-5.net/content/groups/public</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -78,32 +84,32 @@
 			<version>1.16.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>commons-lang</groupId>
 					<artifactId>commons-lang</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-chat</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -115,52 +121,52 @@
 			<type>jar</type>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>brigadier</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.sf.trove4j</groupId>
 					<artifactId>core</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>se.llbit</groupId>
 					<artifactId>jo-nbt</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-transport-native-unix-common</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-codec</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -171,82 +177,77 @@
 			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-transport-native-epoll</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-codec</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-codec-http</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-codec-haproxy</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-handler</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-transport</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>jline</groupId>
 					<artifactId>jline</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.sf.jopt-simple</groupId>
 					<artifactId>jopt-simple</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-log</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-native</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-query</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
-		<!-- Velocity API
-		<dependency>
-			<groupId>com.velocitypowered</groupId>
-			<artifactId>velocity-api</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency> -->
+		<!-- Velocity API <dependency> <groupId>com.velocitypowered</groupId> <artifactId>velocity-api</artifactId> 
+			<version>1.1.0-SNAPSHOT</version> <scope>provided</scope> </dependency> -->
 
 		<!-- PlaceholderAPI -->
 		<dependency>
@@ -255,12 +256,12 @@
 			<version>2.10.9</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>org.jetbrains</groupId>
 					<artifactId>annotations</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -271,12 +272,12 @@
 			<version>1.7</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -287,12 +288,12 @@
 			<version>5.8.2</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>de.robingrether.util</groupId>
 					<artifactId>utility</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -319,32 +320,32 @@
 			<version>2.18.0</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>io.papermc</groupId>
 					<artifactId>paperlib</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.ess3</groupId>
 					<artifactId>BaseProviders</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.ess3</groupId>
 					<artifactId>NMSReflectionProvider</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.ess3</groupId>
 					<artifactId>PaperProvider</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.ess3</groupId>
 					<artifactId>1_8Provider</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -355,22 +356,22 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>org.bstats</groupId>
 					<artifactId>bstats-bukkit</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.intellij</groupId>
 					<artifactId>annotations</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -381,62 +382,62 @@
 			<version>3.1.0</version>
 			<scope>provided</scope>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>it.unimi.dsi</groupId>
 					<artifactId>fastutil</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-common</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-bukkit</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-bungee</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-fabric</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-sponge</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-velocity</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-chat</artifactId>
 				</exclusion>
-				
+
 			</exclusions>
 		</dependency>
 
@@ -446,12 +447,41 @@
 			<artifactId>PremiumVanishAPI</artifactId>
 			<version>2.0.3</version>
 			<exclusions>
-			
+
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
 					<artifactId>jsr305</artifactId>
 				</exclusion>
+
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>LibsDisguises</groupId>
+			<artifactId>LibsDisguises</artifactId>
+			<version>10.0.15</version>
+			<exclusions>
+
+				<exclusion>
+					<groupId>org.ow2.asm</groupId>
+					<artifactId>asm</artifactId>
+				</exclusion>
 				
+				<exclusion>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+				</exclusion>
+				
+				<exclusion>
+					<groupId>com.comphenix.protocol</groupId>
+					<artifactId>ProtocolLib</artifactId>
+				</exclusion>
+				
+				<exclusion>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot</artifactId>
+				</exclusion>
+
 			</exclusions>
 		</dependency>
 
