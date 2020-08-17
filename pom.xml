@@ -456,6 +456,7 @@
 			</exclusions>
 		</dependency>
 
+		<!-- LibsDisguises -->
 		<dependency>
 			<groupId>LibsDisguises</groupId>
 			<artifactId>LibsDisguises</artifactId>
@@ -466,17 +467,17 @@
 					<groupId>org.ow2.asm</groupId>
 					<artifactId>asm</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.projectlombok</groupId>
 					<artifactId>lombok</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>com.comphenix.protocol</groupId>
 					<artifactId>ProtocolLib</artifactId>
 				</exclusion>
-				
+
 				<exclusion>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
