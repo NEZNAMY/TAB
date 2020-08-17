@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.Shared;
 public class ExpansionDownloader{
 
 	public void download(String expansion) {
+		if (expansion.equals("rel")) return;
 		Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 			@Override
