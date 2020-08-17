@@ -23,7 +23,6 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Main extends JavaPlugin {
 
-	public static Main INSTANCE;
 	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	@Override
@@ -36,8 +35,7 @@ public class Main extends JavaPlugin {
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
-		INSTANCE = this;
-		Shared.platform = new BukkitMethods();
+		Shared.platform = new BukkitMethods(this);
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){

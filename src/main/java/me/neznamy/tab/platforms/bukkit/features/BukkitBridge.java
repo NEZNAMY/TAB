@@ -19,10 +19,11 @@ public class BukkitBridge implements PluginMessageListener {
 
 	private JavaPlugin plugin;
 	private Set<String> ignored = new HashSet<String>();
-	private ExpansionDownloader downloader = new ExpansionDownloader();
+	private ExpansionDownloader downloader;
 	
 	public BukkitBridge(JavaPlugin plugin) {
 		this.plugin = plugin;
+		downloader = new ExpansionDownloader(plugin);
 		Bukkit.getMessenger().registerIncomingPluginChannel(plugin, Shared.CHANNEL_NAME, this);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, Shared.CHANNEL_NAME);
 	}

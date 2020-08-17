@@ -5,13 +5,19 @@ import java.util.ConcurrentModificationException;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.Shared;
 
 public class ExpansionDownloader{
 
+	private JavaPlugin plugin;
+	
+	public ExpansionDownloader(JavaPlugin plugin) {
+		this.plugin = plugin;
+	}
+	
 	public void download(String expansion) {
 		if (expansion.equals("rel")) return;
 		Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
@@ -40,7 +46,7 @@ public class ExpansionDownloader{
 
 	public void download(Set<String> expansions) {
 		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
-		Bukkit.getScheduler().runTaskLater(Main.INSTANCE, new Runnable() {
+		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -76,7 +82,7 @@ public class ExpansionDownloader{
 	}
 	public void runSyncCommand(String command) {
 		//back to main thread as commands need to be ran in it
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.INSTANCE, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {

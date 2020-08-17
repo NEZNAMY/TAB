@@ -1,16 +1,19 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.EnumProperty;
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 public class TabExpansion extends PlaceholderExpansion {
 
-	public TabExpansion() {
+	private JavaPlugin plugin;
+	
+	public TabExpansion(JavaPlugin plugin) {
+		this.plugin = plugin;
 		register();
 	}
 	
@@ -26,7 +29,7 @@ public class TabExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getAuthor(){
-		return Main.INSTANCE.getDescription().getAuthors().toString();
+		return plugin.getDescription().getAuthors().toString();
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class TabExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getVersion(){
-		return Main.INSTANCE.getDescription().getVersion();
+		return plugin.getDescription().getVersion();
 	}
 
 	@Override

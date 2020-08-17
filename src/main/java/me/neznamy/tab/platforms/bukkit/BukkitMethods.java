@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.features.BukkitBridge;
@@ -56,6 +57,11 @@ import net.milkbowl.vault.permission.Permission;
 public class BukkitMethods implements PlatformMethods {
 
 	private Set<String> usedExpansions;
+	private JavaPlugin plugin;
+	
+	public BukkitMethods(JavaPlugin plugin) {
+		this.plugin = plugin;
+	}
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
@@ -83,7 +89,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (!PluginHooks.placeholderAPI) {
 				Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
 			}
-			new BukkitBridge(Main.INSTANCE);
+			new BukkitBridge(plugin);
 		} else {
 			Main.detectPlugins();
 			usedExpansions = new HashSet<String>();
@@ -97,7 +103,7 @@ public class BukkitMethods implements PlatformMethods {
 					if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
 						Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
 					}
-					Shared.registerFeature("nametagx", new NameTagX());
+					Shared.registerFeature("nametagx", new NameTagX(plugin));
 				} else {
 					Shared.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
 				}
@@ -106,7 +112,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (Configs.BossBarEnabled) {
 				BossBar bb = new BossBar();
 				Shared.registerFeature("bossbar", bb);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb));
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
 			}
 			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
 			if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
@@ -123,11 +129,11 @@ public class BukkitMethods implements PlatformMethods {
 			if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
 			if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.registerFeature("spectatorfix", new SpectatorFix());
 			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.registerFeature("scoreboard", new ScoreboardManager());
-			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist());
+			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist(plugin));
 			if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 			if (PluginHooks.placeholderAPI) {
-				Shared.registerFeature("papihook", new TabExpansion());
-				new ExpansionDownloader().download(usedExpansions);
+				Shared.registerFeature("papihook", new TabExpansion(plugin));
+				new ExpansionDownloader(plugin).download(usedExpansions);
 			}
 			new GroupRefresher();
 			new UpdateChecker();
@@ -334,6 +340,6 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public File getDataFolder() {
-		return Main.INSTANCE.getDataFolder();
+		return plugin.getDataFolder();
 	}
 }

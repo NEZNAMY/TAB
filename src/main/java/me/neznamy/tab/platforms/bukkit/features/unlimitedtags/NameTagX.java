@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -33,6 +33,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 public class NameTagX implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
+	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	private Set<String> usedPlaceholders;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
@@ -43,7 +44,8 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	private EventListener eventListener;
 
 	@SuppressWarnings("unchecked")
-	public NameTagX() {
+	public NameTagX(JavaPlugin plugin) {
+		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
@@ -58,7 +60,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(eventListener, Main.INSTANCE);
+		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		for (ITabPlayer all : Shared.getPlayers()){
 			all.teamName = SortingType.INSTANCE.getTeamName(all);
 			updateProperties(all);

@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -19,15 +19,16 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 public class BossBar_legacy implements Listener, Loadable {
 
 	private final int WITHER_DISTANCE = 100;
-
 	private BossBar mainFeature;
+	private JavaPlugin plugin;
 	
-	public BossBar_legacy(BossBar mainFeature) {
+	public BossBar_legacy(BossBar mainFeature, JavaPlugin plugin) {
 		this.mainFeature = mainFeature;
+		this.plugin = plugin;
 	}
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(this, Main.INSTANCE);
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
 		Shared.featureCpu.startRepeatingMeasuredTask(900, "refreshing bossbar", CPUFeature.BOSSBAR_LEGACY, new Runnable() {
 			public void run() {

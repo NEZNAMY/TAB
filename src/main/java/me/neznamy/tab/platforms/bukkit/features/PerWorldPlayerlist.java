@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -24,10 +25,14 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 @SuppressWarnings({"deprecation", "unchecked"})
 public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
+	private JavaPlugin plugin;
 	private boolean allowBypass;
 	private List<String> ignoredWorlds;
 	private Map<String, List<String>> sharedWorlds;
 
+	public PerWorldPlayerlist(JavaPlugin plugin) {
+		this.plugin = plugin;
+	}
 	@Override
 	public void load(){
 		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
@@ -53,7 +58,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		showInSameWorldGroup(p.getBukkitEntity());
 	}
 	private void showInSameWorldGroup(Player shown){
-		Bukkit.getScheduler().runTask(Main.INSTANCE, new Runnable() {
+		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -84,7 +89,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		return false;
 	}
 	public void hidePlayer(Player hidden){
-		Bukkit.getScheduler().runTask(Main.INSTANCE, new Runnable() {
+		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
