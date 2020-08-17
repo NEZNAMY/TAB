@@ -1,6 +1,9 @@
 package me.neznamy.tab.platforms.bungee;
 
+import java.util.Collection;
 import java.util.UUID;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -110,7 +113,7 @@ public class Main extends Plugin{
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				try{
+				try {
 					if (packet instanceof DefinedPacket) {
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
 						if (info != null) {
@@ -124,42 +127,39 @@ public class Main extends Plugin{
 					}
 					if (Shared.features.containsKey("nametag16")) {
 						if (packet instanceof Team) {
-							if (killPacket((Team) packet)) {
-								return;
-							}
+							modifyPlayers((Team) packet);
 						}
 						if (packet instanceof ByteBuf) {
 							ByteBuf buf = ((ByteBuf) packet).duplicate();
 							if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
 								team.read(buf, null, player.getVersion().getNetworkId());
-								if (killPacket(team)) {
-									return;
-								}
+								modifyPlayers(team);
+								packet = team;
 							}
 						}
-						if (packet instanceof Login) {
-							//registering all teams again because client reset packet is sent
-							Shared.featureCpu.runTaskLater(100, "Reapplying scoreboard components", CPUFeature.WATERFALLFIX, new Runnable() {
+					}
+					if (packet instanceof Login) {
+						//registering all teams again because client reset packet is sent
+						Shared.featureCpu.runTaskLater(100, "Reapplying scoreboard components", CPUFeature.WATERFALLFIX, new Runnable() {
 
-								@Override
-								public void run() {
-									if (Shared.features.containsKey("nametag16")) {
-										for (ITabPlayer all : Shared.getPlayers()) {
-											all.registerTeam(player);
-										}
-									}
-									TabObjective objective = (TabObjective) Shared.features.get("tabobjective");
-									if (objective != null) {
-										objective.onJoin(player);
-									}
-									BelowName belowname = (BelowName) Shared.features.get("belowname");
-									if (belowname != null) {
-										belowname.onJoin(player);
+							@Override
+							public void run() {
+								if (Shared.features.containsKey("nametag16")) {
+									for (ITabPlayer all : Shared.getPlayers()) {
+										all.registerTeam(player);
 									}
 								}
-							});
-						}
+								TabObjective objective = (TabObjective) Shared.features.get("tabobjective");
+								if (objective != null) {
+									objective.onJoin(player);
+								}
+								BelowName belowname = (BelowName) Shared.features.get("belowname");
+								if (belowname != null) {
+									belowname.onJoin(player);
+								}
+							}
+						});
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
@@ -168,18 +168,16 @@ public class Main extends Plugin{
 			}
 		});
 	}
-	public static boolean killPacket(Team packet){
+	public static void modifyPlayers(Team packet){
+		if (packet.getPlayers() == null) return;
 		if (packet.getFriendlyFire() != 69) {
-			String[] players = packet.getPlayers();
-			if (players == null) return false;
+			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (ITabPlayer p : Shared.getPlayers()) {
-				for (String player : players) {
-					if (player.equals(p.getName()) && !p.disabledNametag) {
-						return true;
-					}
+				if (col.contains(p.getName()) && !p.disabledNametag) {
+					col.remove(p.getName());
 				}
 			}
+			packet.setPlayers(col.toArray(new String[0]));
 		}
-		return false;
 	}
 }

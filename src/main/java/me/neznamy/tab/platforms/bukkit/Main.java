@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Main extends JavaPlugin {
@@ -105,18 +104,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public boolean killPacket(Object packetPlayOutScoreboardTeam) throws Exception{
-		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
-			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
-			for (ITabPlayer p : Shared.getPlayers()) {
-				if (players.contains(p.getName()) && !p.disabledNametag) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 	public static void detectPlugins() {
 		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
 			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class);

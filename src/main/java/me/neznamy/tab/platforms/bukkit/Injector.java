@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -63,13 +64,10 @@ public class Injector {
 							return;
 						}
 						if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
+							//nametag anti-override
 							long time = System.nanoTime();
 							if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-								//nametag anti-override
-								if (Main.INSTANCE.killPacket(packet)) {
-									Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
-									return;
-								}
+								modifyPlayers(packet);
 							}
 							Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
 						}
@@ -106,5 +104,17 @@ public class Injector {
 	public static void uninject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).channel;
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
+		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
+			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
+			for (ITabPlayer p : Shared.getPlayers()) {
+				if (players.contains(p.getName()) && !p.disabledNametag) {
+					players.remove(p.getName());
+				}
+			}
+		}
 	}
 }

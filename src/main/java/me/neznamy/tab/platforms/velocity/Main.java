@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.Collection;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandManager;
@@ -131,7 +133,7 @@ public class Main {
 						}
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
-						if (killPacket((Team)packet)) return;
+						modifyPlayers((Team) packet);
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
@@ -140,18 +142,16 @@ public class Main {
 			}
 		});
 	}
-	public static boolean killPacket(Team packet){
+	public static void modifyPlayers(Team packet){
+		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
-			String[] players = packet.getPlayers();
-			if (players == null) return false;
+			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (ITabPlayer p : Shared.getPlayers()) {
-				for (String player : players) {
-					if (player.equals(p.getName()) && !p.disabledNametag) {
-						return true;
-					}
+				if (col.contains(p.getName()) && !p.disabledNametag) {
+					col.remove(p.getName());
 				}
 			}
+			packet.players = col.toArray(new String[0]);
 		}
-		return false;
 	}
 }
