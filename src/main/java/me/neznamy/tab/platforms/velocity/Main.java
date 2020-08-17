@@ -13,7 +13,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.proxy.protocol.MinecraftPacket;
+import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -121,16 +121,14 @@ public class Main {
 					return;
 				}
 				try {
-					if (packet instanceof MinecraftPacket) {
+					if (packet instanceof PlayerListItem) {
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromVelocity(packet);
-						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-								long time = System.nanoTime();
-								if (info != null) info = f.onPacketSend(player, info);
-								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
-							}
-							packet = (info == null ? null : info.toVelocity(player.getVersion()));
+						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
+							long time = System.nanoTime();
+							if (info != null) info = f.onPacketSend(player, info);
+							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 						}
+						packet = (info == null ? null : info.toVelocity(player.getVersion()));
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
 						modifyPlayers((Team) packet);
@@ -138,7 +136,7 @@ public class Main {
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				super.write(context, packet, channelPromise);
+				if (packet != null) super.write(context, packet, channelPromise);
 			}
 		});
 	}

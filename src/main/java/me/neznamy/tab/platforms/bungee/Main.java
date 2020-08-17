@@ -25,8 +25,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Login;
+import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class Main extends Plugin{
@@ -114,16 +114,14 @@ public class Main extends Plugin{
 					return;
 				}
 				try {
-					if (packet instanceof DefinedPacket) {
+					if (packet instanceof PlayerListItem) {
 						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
-						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-								long time = System.nanoTime();
-								if (info != null) info = f.onPacketSend(player, info);
-								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
-							}
-							packet = (info == null ? null : info.toBungee(player.getVersion()));
+						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
+							long time = System.nanoTime();
+							if (info != null) info = f.onPacketSend(player, info);
+							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 						}
+						packet = (info == null ? null : info.toBungee(player.getVersion()));
 					}
 					if (Shared.features.containsKey("nametag16")) {
 						if (packet instanceof Team) {
@@ -164,7 +162,7 @@ public class Main extends Plugin{
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				super.write(context, packet, channelPromise);
+				if (packet != null) super.write(context, packet, channelPromise);
 			}
 		});
 	}
