@@ -56,7 +56,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerTeleportEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || !p.onJoinFinished) return;
 		if (!p.disabledNametag) Shared.featureCpu.runMeasuredTask("processing PlayerTeleportEvent", CPUFeature.NAMETAGX_EVENT_TELEPORT, new Runnable() {
 			
 			@Override
