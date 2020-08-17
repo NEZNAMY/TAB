@@ -133,17 +133,6 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			delayedSpawn.remove(connectedPlayer);
 		}
 	}
-	private void updateProperties(ITabPlayer p) {
-		p.properties.get("tagprefix").update();
-		p.properties.get("customtagname").update();
-		p.properties.get("tagsuffix").update();
-		for (String line : dynamicLines) {
-			p.properties.get(line).update();
-		}
-		for (String line : staticLines.keySet()) {
-			p.properties.get(line).update();
-		}
-	}
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
@@ -160,6 +149,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		updateProperties(p);
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
@@ -199,9 +189,16 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
-		boolean prefix = refreshed.properties.get("tagprefix").update();
-		boolean suffix = refreshed.properties.get("tagsuffix").update();
-		if (prefix || suffix || force) refreshed.updateTeam();
+		boolean refresh;
+		if (force) {
+			updateProperties(refreshed);
+			refresh = true;
+		} else {
+			boolean prefix = refreshed.properties.get("tagprefix").update();
+			boolean suffix = refreshed.properties.get("tagsuffix").update();
+			refresh = prefix || suffix;
+		}
+		if (refresh) refreshed.updateTeam();
 		boolean fix = false;
 		for (ArmorStand as : refreshed.getArmorStandManager().getArmorStands()) {
 			if (as.property.update() || force) {
@@ -210,6 +207,18 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			}
 		}
 		if (fix) fixArmorStandHeights(refreshed);
+	}
+	private void updateProperties(ITabPlayer p) {
+		p.updateProperty("tagprefix");
+		p.updateProperty("customtagname", p.getName());
+		p.updateProperty("tagsuffix");
+		p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
+		for (String property : dynamicLines) {
+			if (!property.equals("nametag")) p.updateProperty(property);
+		}
+		for (String property : staticLines.keySet()) {
+			if (!property.equals("nametag")) p.updateProperty(property);
+		}
 	}
 	@Override
 	public Set<String> getUsedPlaceholders() {

@@ -109,15 +109,27 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 //		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
-		boolean prefix = refreshed.properties.get("tabprefix").update();
-		boolean name = refreshed.properties.get("customtabname").update();
-		boolean suffix = refreshed.properties.get("tabsuffix").update();
-		if (prefix || name || suffix || force) {
+		boolean refresh;
+		if (force) {
+			updateProperties(refreshed);
+			refresh = true;
+		} else {
+			boolean prefix = refreshed.properties.get("tabprefix").update();
+			boolean name = refreshed.properties.get("customtabname").update();
+			boolean suffix = refreshed.properties.get("tabsuffix").update();
+			refresh = prefix || name || suffix;
+		}
+		if (refresh) {
 			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
 		}
+	}
+	private void updateProperties(ITabPlayer p) {
+		p.updateProperty("tabprefix");
+		p.updateProperty("customtabname", p.getName());
+		p.updateProperty("tabsuffix");
 	}
 	@Override
 	public Set<String> getUsedPlaceholders() {

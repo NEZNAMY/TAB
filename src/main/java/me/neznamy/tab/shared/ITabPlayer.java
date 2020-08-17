@@ -11,7 +11,6 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStandManager;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.premium.Scoreboard;
 import me.neznamy.tab.premium.ScoreboardManager;
@@ -64,9 +63,8 @@ public abstract class ITabPlayer implements TabPlayer{
 	public Scoreboard forcedScoreboard;
 
 	public void init() {
-		updateGroupIfNeeded(false);
-		updateAll();
 		updateDisabledWorlds(getWorldName());
+		updateGroupIfNeeded(false);
 		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
 	}
 
@@ -228,35 +226,15 @@ public abstract class ITabPlayer implements TabPlayer{
 		if (!permissionGroup.equals(newGroup)) {
 			permissionGroup = newGroup;
 			if (updateDataIfChanged) {
-				updateAll();
 				forceRefresh();
 			}
 		}
 	}
 
-	public void updateAll() {
-		updateProperty("tabprefix");
-		updateProperty("tagprefix");
-		updateProperty("tabsuffix");
-		updateProperty("tagsuffix");
-		updateProperty("customtabname", getName());
-		NameTagX ntx = (NameTagX) Shared.features.get("nametagx");
-		if (ntx != null) {
-			updateProperty("customtagname", getName());
-			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
-			for (String property : ntx.dynamicLines) {
-				if (!property.equals("nametag")) updateProperty(property);
-			}
-			for (String property : ntx.staticLines.keySet()) {
-				if (!property.equals("nametag")) updateProperty(property);
-			}
-		}
-	}
-
-	private void updateProperty(String property) {
+	public void updateProperty(String property) {
 		updateProperty(property, "");
 	}
-	private void updateProperty(String property, String ifnull) {
+	public void updateProperty(String property, String ifnull) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
@@ -376,14 +354,13 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	public void onWorldChange(String from, String to) {
-		updateDisabledWorlds(to);
-		updateGroupIfNeeded(false);
-		updateAll();
 		ITabPlayer player = this;
 		Shared.featureCpu.runMeasuredTask("processing world change", CPUFeature.WORLD_SWITCH, new Runnable() {
 
 			@Override
 			public void run() {
+				updateDisabledWorlds(to);
+				updateGroupIfNeeded(false);
 				Shared.worldChangeListeners.forEach(f -> f.onWorldChange(player, from, to));
 			}
 		});

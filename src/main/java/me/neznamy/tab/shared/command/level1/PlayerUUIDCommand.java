@@ -35,7 +35,6 @@ public class PlayerUUIDCommand extends SubCommand {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Users." + changed.getUniqueId().toString(), null);
 					Configs.config.save();
-					changed.updateAll();
 					changed.forceRefresh();
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
@@ -76,7 +75,6 @@ public class PlayerUUIDCommand extends SubCommand {
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
 		Configs.config.save();
 		Placeholders.checkForRegistration(value);
-		player.updateAll();
 		player.forceRefresh();
 		if (value != null){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));

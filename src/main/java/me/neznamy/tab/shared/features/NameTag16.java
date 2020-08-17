@@ -26,8 +26,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	public void load(){
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.teamName = SortingType.INSTANCE.getTeamName(p);
-			p.properties.get("tagprefix").update();
-			p.properties.get("tagsuffix").update();
+			updateProperties(p);
 			if (!p.disabledNametag) p.registerTeam();
 		}
 		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
@@ -68,8 +67,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
-		connectedPlayer.properties.get("tagprefix").update();
-		connectedPlayer.properties.get("tagsuffix").update();
+		updateProperties(connectedPlayer);
 		if (connectedPlayer.disabledNametag) return;
 		connectedPlayer.registerTeam();
 		for (ITabPlayer all : Shared.getPlayers()) {
@@ -83,6 +81,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
+		updateProperties(p);
 		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
 			p.unregisterTeam();
 		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
@@ -105,9 +104,21 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
-		boolean prefix = refreshed.properties.get("tagprefix").update();
-		boolean suffix = refreshed.properties.get("tagsuffix").update();
-		if (prefix || suffix || force) refreshed.updateTeam();
+		boolean refresh;
+		if (force) {
+			updateProperties(refreshed);
+			refresh = true;
+		} else {
+			boolean prefix = refreshed.properties.get("tagprefix").update();
+			boolean suffix = refreshed.properties.get("tagsuffix").update();
+			refresh = prefix || suffix;
+		}
+		
+		if (refresh) refreshed.updateTeam();
+	}
+	private void updateProperties(ITabPlayer p) {
+		p.updateProperty("tagprefix");
+		p.updateProperty("tagsuffix");
 	}
 	@Override
 	public Set<String> getUsedPlaceholders() {

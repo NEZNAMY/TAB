@@ -32,7 +32,6 @@ public class GroupCommand extends SubCommand {
 					Configs.config.save();
 					for (ITabPlayer pl : Shared.getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
-							pl.updateAll();
 							pl.forceRefresh();
 						}
 					}
@@ -77,7 +76,6 @@ public class GroupCommand extends SubCommand {
 		Placeholders.checkForRegistration(value);
 		for (ITabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
-				pl.updateAll();
 				pl.forceRefresh();
 			}
 		}
