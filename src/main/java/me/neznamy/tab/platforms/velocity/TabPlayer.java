@@ -1,8 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.util.UUID;
-
-import com.google.common.base.Charsets;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
@@ -19,7 +16,6 @@ public class TabPlayer extends ITabPlayer{
 		player = p;
 		world = server;
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
-		tablistId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + p.getUsername()).getBytes(Charsets.UTF_8));
 		uniqueId = p.getUniqueId();
 		name = p.getUsername();
 		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());

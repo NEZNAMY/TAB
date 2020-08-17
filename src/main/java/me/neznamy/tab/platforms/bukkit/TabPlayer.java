@@ -25,7 +25,6 @@ public class TabPlayer extends ITabPlayer{
 		player = p;
 		world = p.getWorld().getName();
 		channel = (Channel) NMSHook.getChannel(player);
-		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		version = ProtocolVersion.fromNumber(getProtocolVersion());
@@ -107,7 +106,7 @@ public class TabPlayer extends ITabPlayer{
 	@Override
 	public PlayerInfoData getInfoData() {
 		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
-		return new PlayerInfoData(this.name, tablistId, null, 0, EnumGamemode.CREATIVE, new IChatBaseComponent(name));
+		return new PlayerInfoData(this.name, uniqueId, null, 0, EnumGamemode.CREATIVE, new IChatBaseComponent(name));
 	}
 	@Override
 	public Player getBukkitEntity() {

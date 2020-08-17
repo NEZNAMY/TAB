@@ -59,6 +59,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+			if (packetPlayer == receiver && ADD) packetPlayer.correctId = playerInfoData.uniqueId;
 			if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly

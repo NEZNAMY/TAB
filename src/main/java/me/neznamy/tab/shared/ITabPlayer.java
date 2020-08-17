@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Charsets;
+
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
@@ -31,7 +33,8 @@ public abstract class ITabPlayer implements TabPlayer{
 
 	public String name;
 	public UUID uniqueId;
-	public UUID tablistId;
+	public UUID offlineId;
+	public UUID correctId; //for velocity, the correct UUID to use in tablist
 	public String world;
 	private String permissionGroup = "< Not Initialized Yet >";
 	public String teamName;
@@ -42,7 +45,6 @@ public abstract class ITabPlayer implements TabPlayer{
 	public Channel channel;
 	public boolean nameTagVisible = true;
 	public boolean bossbarVisible;
-	private PlayerInfoData infoData;
 
 	public boolean disabledHeaderFooter;
 	public boolean disabledTablistNames;
@@ -65,7 +67,8 @@ public abstract class ITabPlayer implements TabPlayer{
 	public void init() {
 		updateDisabledWorlds(getWorldName());
 		updateGroupIfNeeded(false);
-		infoData = new PlayerInfoData(name, tablistId, null, 0, EnumGamemode.CREATIVE, null);
+		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
+		correctId = uniqueId; //initialization to avoid NPEs
 	}
 
 	//bukkit only
@@ -115,8 +118,8 @@ public abstract class ITabPlayer implements TabPlayer{
 		return uniqueId;
 	}
 
-	public UUID getTablistId() {
-		return tablistId;
+	public UUID getOfflineId() {
+		return offlineId;
 	}
 
 	public ProtocolVersion getVersion() {
@@ -140,7 +143,7 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	public PlayerInfoData getInfoData() {
-		return infoData;
+		return new PlayerInfoData(name, correctId, null, 0, EnumGamemode.CREATIVE, null);
 	}
 	
 	public String getGroupFromPermPlugin() {

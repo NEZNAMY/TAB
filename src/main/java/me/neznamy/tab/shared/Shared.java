@@ -74,9 +74,8 @@ public class Shared {
 	}
 	public static ITabPlayer getPlayerByTablistUUID(UUID tablistId) {
 		for (ITabPlayer p : data.values()) {
-			if (p.getTablistId().toString().equals(tablistId.toString())) {
-				return p;
-			}
+			if (p.getUniqueId().toString().equals(tablistId.toString())) return p;
+			if (p.getOfflineId().toString().equals(tablistId.toString())) return p;
 		}
 		return null;
 	}

@@ -45,7 +45,6 @@ public class TabPlayer extends ITabPlayer{
 			world = "-";
 		}
 		channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
-		tablistId = p.getUniqueId();
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		init();
