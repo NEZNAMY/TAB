@@ -239,12 +239,10 @@ public abstract class ITabPlayer implements TabPlayer{
 		updateProperty("tagprefix");
 		updateProperty("tabsuffix");
 		updateProperty("tagsuffix");
-		updateProperty("customtabname");
-		if (properties.get("customtabname").getCurrentRawValue().length() == 0) setProperty("customtabname", getName(), "None");
-		updateProperty("customtagname");
+		updateProperty("customtabname", getName());
 		NameTagX ntx = (NameTagX) Shared.features.get("nametagx");
 		if (ntx != null) {
-			if (properties.get("customtagname").getCurrentRawValue().length() == 0) setProperty("customtagname", getName(), "None");
+			updateProperty("customtagname", getName());
 			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 			for (String property : ntx.dynamicLines) {
 				if (!property.equals("nametag")) updateProperty(property);
@@ -256,6 +254,9 @@ public abstract class ITabPlayer implements TabPlayer{
 	}
 
 	private void updateProperty(String property) {
+		updateProperty(property, "");
+	}
+	private void updateProperty(String property, String ifnull) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = getWorldGroupOf(getWorldName());
 		String value;
@@ -291,7 +292,7 @@ public abstract class ITabPlayer implements TabPlayer{
 			setProperty(property, value, "Group: _OTHER_");
 			return;
 		}
-		setProperty(property, "", "None");
+		setProperty(property, ifnull, "None");
 	}
 
 	
