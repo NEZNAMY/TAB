@@ -1,55 +1,36 @@
 package me.neznamy.tab.shared.permission;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
+import nl.chimpgamer.networkmanager.api.models.permissions.Group;
 
 public class NetworkManager implements PermissionPlugin {
 
-	private Object plugin;
-	
+	private NetworkManagerPlugin plugin;
+
 	public NetworkManager(Object plugin) {
-		this.plugin = plugin;
-	}
-	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
-		try {
-			Object user = getUser(p);
-			Object group = user.getClass().getMethod("getPrimaryGroup").invoke(user);
-			return getName(group);
-		} catch (Exception e) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using NetworkManager", e);
-		}
+		this.plugin = (NetworkManagerPlugin) plugin;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public String getPrimaryGroup(ITabPlayer p) {
+		Group group = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getPrimaryGroup();
+		if (group == null) {
+			return Shared.errorManager.printError("null", "NetworkManager returned null primary group for " + p.getName());
+		}
+		return group.getName();
+	}
+
 	@Override
 	public String[] getAllGroups(ITabPlayer p) {
-		try {
-			List<String> groups = new ArrayList<String>();
-			Object user = getUser(p);
-			Iterable<Object> i = (Iterable<Object>) user.getClass().getMethod("getGroups").invoke(user);
-			for (Object group : i) {
-				groups.add(getName(group));
-			}
-			return groups.toArray(new String[0]);
-		} catch (Exception e) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + p.getName() + " using NetworkManager", e);
+		List<String> groups = new ArrayList<String>();
+		for (Group group : plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getGroups()) {
+			groups.add(group.getName());
 		}
-	}
-	
-	private Object getUser(ITabPlayer p) throws Exception {
-		Object permissionManager = plugin.getClass().getMethod("getPermissionManager").invoke(plugin);
-		return permissionManager.getClass().getMethod("getPermissionPlayer", UUID.class).invoke(permissionManager, p.getUniqueId());
-	}
-	
-	private String getName(Object group) throws Exception {
-		Method getName = group.getClass().getMethod("getName");
-		getName.setAccessible(true);
-		return (String) getName.invoke(group);
+		return groups.toArray(new String[0]);
 	}
 }
