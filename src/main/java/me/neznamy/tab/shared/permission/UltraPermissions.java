@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.permission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
 import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
@@ -32,13 +33,13 @@ public class UltraPermissions implements PermissionPlugin {
 			Shared.errorManager.printError("UltraPermissions getAPI returned null");
 			return new String[]{"null"};
 		}
-		User user = api.getUsers().name(p.getName());
+		Optional<User> user = api.getUsers().name(p.getName());
 		if (user == null) {
 			Shared.errorManager.printError("UltraPermissions returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"null"};
 		}
 		List<String> groups = new ArrayList<String>();
-		for (Group group : user.getGroups().bestToWorst().get()) {
+		for (Group group : user.get().getActiveGroups().bestToWorst()) {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
