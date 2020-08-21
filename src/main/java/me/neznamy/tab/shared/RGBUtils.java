@@ -9,6 +9,7 @@ public class RGBUtils {
 
 	private static final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");
 	private static final Pattern fix3 = Pattern.compile("\\&x[\\&0-9a-fA-F]{12}");
+	private static final Pattern fix4 = Pattern.compile("#<[0-9a-fA-F]{6}>");
 	private static final Pattern gradient1 = Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>");
 	private static final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
@@ -22,6 +23,7 @@ public class RGBUtils {
 		text = fixFormat1(text);
 		text = fixFormat2(text);
 		text = fixFormat3(text);
+		text = fixFormat4(text);
 		text = setGradient1(text);
 		text = setGradient2(text);
 		return text;
@@ -50,6 +52,17 @@ public class RGBUtils {
 		while (m.find()) {
 			String hexcode = m.group();
 			String fixed = new String(new char[] {hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});
+			text = text.replace(hexcode, "#" + fixed);
+		}
+		return text;
+	}
+	
+	//#<RRGGBB>
+	private static String fixFormat4(String text) {
+		Matcher m = fix4.matcher(text);
+		while (m.find()) {
+			String hexcode = m.group();
+			String fixed = hexcode.substring(2, 8);
 			text = text.replace(hexcode, "#" + fixed);
 		}
 		return text;
