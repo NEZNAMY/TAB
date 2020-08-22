@@ -71,10 +71,10 @@ public class BukkitMethods implements PlatformMethods {
 			return new PermissionsEx();
 		} else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
 			return new GroupManager();
-		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
-			return new NetworkManager(Bukkit.getPluginManager().getPlugin("NetworkManager"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
 			return new UltraPermissions();
+		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
+			return new NetworkManager(Bukkit.getPluginManager().getPlugin("NetworkManager"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider());
 		} else {
