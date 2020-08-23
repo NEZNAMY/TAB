@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,10 +121,9 @@ public class VelocityMethods implements PlatformMethods {
 			if (plugin.equals("some")) return;
 			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
 			PlaceholderManager pl = PlaceholderManager.getInstance();
-			int cooldown = pl.DEFAULT_COOLDOWN;
+			int cooldown = pl.defaultRefresh;
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
 			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
-			if (pl.serverConstantList.contains(identifier)) cooldown = 9999999;
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(ITabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
@@ -143,10 +143,6 @@ public class VelocityMethods implements PlatformMethods {
 	@Override
 	public void convertConfig(ConfigurationFile config) {
 		if (config.getName().equals("config.yml")) {
-			if (config.hasConfigOption("belowname.refresh-interval")) {
-				int value = config.getInt("belowname.refresh-interval");
-				convert(config, "belowname.refresh-interval", value, "belowname.refresh-interval-milliseconds", value);
-			}
 			if (config.getObject("global-playerlist") instanceof Boolean) {
 				rename(config, "global-playerlist", "global-playerlist.enabled");
 				config.set("global-playerlist.spy-servers", Arrays.asList("spyserver1", "spyserver2"));
@@ -163,6 +159,25 @@ public class VelocityMethods implements PlatformMethods {
 			removeOld(config, "tablist-refresh-interval-milliseconds");
 			removeOld(config, "header-footer-refresh-interval-milliseconds");
 			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
+			rename(config, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
+			if (!config.hasConfigOption("placeholderapi-refresh-intervals")) {
+				Map<String, Object> map = new LinkedHashMap<String, Object>();
+				map.put("default-refresh-interval", 100);
+				Map<String, Integer> server = new HashMap<String, Integer>();
+				server.put("%server_uptime%", 1000);
+				server.put("%server_tps_1_colored%", 1000);
+				map.put("server", server);
+				Map<String, Integer> player = new HashMap<String, Integer>();
+				player.put("%player_health%", 200);
+				player.put("%player_ping%", 1000);
+				player.put("%vault_prefix%", 1000);
+				map.put("player", player);
+				Map<String, Integer> relational = new HashMap<String, Integer>();
+				relational.put("%rel_factionsuuid_relation_color%", 500);
+				map.put("relational", relational);
+				config.set("placeholderapi-refresh-intervals", map);
+				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
+			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			removeOld(config, "scoreboard.refresh-interval-ticks");

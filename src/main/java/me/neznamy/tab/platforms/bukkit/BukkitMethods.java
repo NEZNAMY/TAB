@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -237,6 +238,25 @@ public class BukkitMethods implements PlatformMethods {
 				Shared.print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
 			}
 			rename(config, "belowname", "classic-vanilla-belowname");
+			rename(config, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
+			if (!config.hasConfigOption("placeholderapi-refresh-intervals")) {
+				Map<String, Object> map = new LinkedHashMap<String, Object>();
+				map.put("default-refresh-interval", 100);
+				Map<String, Integer> server = new HashMap<String, Integer>();
+				server.put("%server_uptime%", 1000);
+				server.put("%server_tps_1_colored%", 1000);
+				map.put("server", server);
+				Map<String, Integer> player = new HashMap<String, Integer>();
+				player.put("%player_health%", 200);
+				player.put("%player_ping%", 1000);
+				player.put("%vault_prefix%", 1000);
+				map.put("player", player);
+				Map<String, Integer> relational = new HashMap<String, Integer>();
+				relational.put("%rel_factionsuuid_relation_color%", 500);
+				map.put("relational", relational);
+				config.set("placeholderapi-refresh-intervals", map);
+				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
+			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			removeOld(config, "scoreboard.refresh-interval-ticks");

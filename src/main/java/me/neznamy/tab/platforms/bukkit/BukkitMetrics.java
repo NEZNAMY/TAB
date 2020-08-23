@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -21,7 +19,6 @@ import org.json.simple.JSONObject;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.Metrics;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 
 @SuppressWarnings("unchecked")
 public class BukkitMetrics extends Metrics {
@@ -48,15 +45,6 @@ public class BukkitMetrics extends Metrics {
 		metrics.addCustomChart(new SimplePie("server_version", new Callable<String>() {
 			public String call() {
 				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
-			}
-		}));
-		metrics.addCustomChart(new AdvancedPie("used_unlisted_papi_placeholders_2_8_1", new Callable<Map<String, Integer>>() {
-			public Map<String, Integer> call(){
-				Map<String, Integer> map = new HashMap<String, Integer>();
-				for (String placeholder : PlaceholderManager.getInstance().unknownPlaceholders) {
-					map.put(placeholder, 1);
-				}
-				return map;
 			}
 		}));
 	}

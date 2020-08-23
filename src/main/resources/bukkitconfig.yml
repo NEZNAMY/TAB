@@ -121,3 +121,15 @@ disable-features-in-worlds:
     - disabledworld
   belowname:
     - disabledworld
+
+placeholderapi-refresh-intervals:
+  default-refresh-interval: 100
+   server:
+    "%server_uptime%": 1000
+    "%server_tps_1_colored%": 1000
+  player:
+    "%player_health%": 200
+    "%player_ping%": 1000
+    "%vault_prefix%": 1000
+  relational:
+    "%rel_factionsuuid_relation_color%": 500

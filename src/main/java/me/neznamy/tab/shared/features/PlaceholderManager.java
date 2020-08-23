@@ -24,19 +24,12 @@ import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 @SuppressWarnings("unchecked")
 public class PlaceholderManager implements QuitEventListener {
 
-	public final int DEFAULT_COOLDOWN = 100;
-	public final int DEFAULT_RELATIONAL_COOLDOWN = 500;
-
-	//for metrics
-	public List<String> unknownPlaceholders = new ArrayList<String>();
-
-	public List<String> serverConstantList = new ArrayList<String>();
+	public int defaultRefresh;
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
@@ -48,75 +41,18 @@ public class PlaceholderManager implements QuitEventListener {
 
 	public PlaceholderManager(){
 		instance = this;
-		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
-			if (placeholder.startsWith("%bungee_")) serverPlaceholderRefreshIntervals.put(placeholder, 1000);
-		}
-
-		serverConstantList.add("%server_max_players%");							//%maxplayers%
-
-		serverPlaceholderRefreshIntervals.put("%server_online%", 1000); 		//%online%
-		serverPlaceholderRefreshIntervals.put("%server_uptime%", 1000);
-		serverPlaceholderRefreshIntervals.put("%server_ram_used%", 200);		//%memory-used%
-		serverPlaceholderRefreshIntervals.put("%server_tps%", 1000);			//%tps%
-		serverPlaceholderRefreshIntervals.put("%server_tps_1%", 1000);			//%tps%
-		serverPlaceholderRefreshIntervals.put("%server_tps_1_colored%", 1000);
-		serverPlaceholderRefreshIntervals.put("%supervanish_playercount%", 1000); //%canseeonline%
-		serverPlaceholderRefreshIntervals.put("%premiumvanish_bungeeplayercount%", 1000);
-
-		playerPlaceholderRefreshIntervals.put("%cmi_user_afk%", 1000); 			//%afk%
-		playerPlaceholderRefreshIntervals.put("%cmi_user_afk_symbol%", 1000); 	//%afk%
-		playerPlaceholderRefreshIntervals.put("%cmi_user_display_name%", 1000);
-		playerPlaceholderRefreshIntervals.put("%cmi_user_ping%", 1000);			//%ping%
-		playerPlaceholderRefreshIntervals.put("%cmi_user_vanished_symbol%", 1000);
-		playerPlaceholderRefreshIntervals.put("%deluxetags_tag%", 1000);		//%deluxetag%
-		playerPlaceholderRefreshIntervals.put("%eglow_glowcolor%", 100);
-		playerPlaceholderRefreshIntervals.put("%essentials_nickname%", 1000);	//%essentialsnick%
-		playerPlaceholderRefreshIntervals.put("%factionsuuid_faction_name%", 1000);
-		playerPlaceholderRefreshIntervals.put("%luckperms_prefix%", 1000); 		//%luckperms-prefix%
-		playerPlaceholderRefreshIntervals.put("%luckperms_primary_group_name%", 1000); //%rank%
-		playerPlaceholderRefreshIntervals.put("%luckperms_suffix%", 1000); 		//%luckperms-suffix%
-		playerPlaceholderRefreshIntervals.put("%multiverse_world_alias%", 2000);
-		playerPlaceholderRefreshIntervals.put("%player_colored_ping%", 1000);
-		playerPlaceholderRefreshIntervals.put("%player_displayname%", 1000);	//%displayname%
-		playerPlaceholderRefreshIntervals.put("%player_health%", 100); 			//%health%
-		playerPlaceholderRefreshIntervals.put("%player_health_rounded%", 100);	//%health%
-		playerPlaceholderRefreshIntervals.put("%player_name%", 10000); 			//nick plugins changing player name, so not a constant
-		playerPlaceholderRefreshIntervals.put("%player_ping%", 1000);			//%ping%
-		playerPlaceholderRefreshIntervals.put("%player_world%", 1000);			//%world%
-		playerPlaceholderRefreshIntervals.put("%player_x%", 200);				//%xPos%
-		playerPlaceholderRefreshIntervals.put("%player_y%", 200);				//%yPos%
-		playerPlaceholderRefreshIntervals.put("%player_z%", 200);				//%zPos%
-		playerPlaceholderRefreshIntervals.put("%statistic_deaths%", 1000);		//%deaths%
-		playerPlaceholderRefreshIntervals.put("%statistic_hours_played%", 1000);
-		playerPlaceholderRefreshIntervals.put("%statistic_player_kills%", 1000);
-		playerPlaceholderRefreshIntervals.put("%statistic_time_played%", 1000);
-		playerPlaceholderRefreshIntervals.put("%uperms_prefix%", 1000);			//%vault-prefix%
-		playerPlaceholderRefreshIntervals.put("%uperms_rank%", 1000);			//%rank%
-		playerPlaceholderRefreshIntervals.put("%uperms_suffix%", 1000);			//%vault-suffix%
-		playerPlaceholderRefreshIntervals.put("%vault_eco_balance%", 1000);
-		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_commas%", 1000);
-		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_fixed%", 1000);
-		playerPlaceholderRefreshIntervals.put("%vault_eco_balance_formatted%", 1000);
-		playerPlaceholderRefreshIntervals.put("%vault_prefix%", 1000);			//%vault-prefix%
-		playerPlaceholderRefreshIntervals.put("%vault_rank%", 1000);			//%rank%
-		playerPlaceholderRefreshIntervals.put("%vault_rankprefix%", 1000);		//%vault-prefix%
-		playerPlaceholderRefreshIntervals.put("%vault_suffix%", 1000);			//%vault-suffix%
-		playerPlaceholderRefreshIntervals.put("%viaversion_player_protocol_version%", 999999); //%player-version%
-
-		relationalPlaceholderRefreshIntervals.put("%rel_factionsuuid_relation_color%", 500);
-		relationalPlaceholderRefreshIntervals.put("%rel_factions_relation_color%", 500);
-
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.server")).entrySet()) {
+		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval");
+		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server")).entrySet()) {
 			serverPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
-			Shared.debug("Loaded cooldown " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
 		}
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.player")).entrySet()) {
+		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.player")).entrySet()) {
 			playerPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
-			Shared.debug("Loaded cooldown " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
 		}
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("papi-placeholder-cooldowns.relational")).entrySet()) {
+		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.relational")).entrySet()) {
 			relationalPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
-			Shared.debug("Loaded cooldown " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
 		}
 
 		AtomicInteger atomic = new AtomicInteger();
@@ -230,15 +166,6 @@ public class PlaceholderManager implements QuitEventListener {
 			}, true);
 			return;
 		}
-		if (serverConstantList.contains(identifier)) {
-			Shared.debug("Registering SERVER PlaceholderAPI constant " + identifier);
-			Placeholders.registerPlaceholder(new ServerConstant(identifier){
-				public String get() {
-					return PluginHooks.setPlaceholders((UUID)null, identifier);
-				}
-			}, true);
-			return;
-		}
 		if (playerPlaceholderRefreshIntervals.containsKey(identifier)) {
 			Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + playerPlaceholderRefreshIntervals.get(identifier));
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, playerPlaceholderRefreshIntervals.get(identifier)){
@@ -259,10 +186,9 @@ public class PlaceholderManager implements QuitEventListener {
 			});
 			return;
 		}
-		unknownPlaceholders.add(identifier);
 		if (identifier.contains("%rel_")) {
-			Shared.debug("Registering unlisted RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + DEFAULT_RELATIONAL_COOLDOWN);
-			Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, DEFAULT_RELATIONAL_COOLDOWN) {
+			Shared.debug("Registering unlisted RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + defaultRefresh);
+			Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, defaultRefresh) {
 
 				@Override
 				public String get(ITabPlayer viewer, ITabPlayer target) {
@@ -271,14 +197,14 @@ public class PlaceholderManager implements QuitEventListener {
 			});
 		} else {
 			if (identifier.startsWith("%server_")) {
-				Shared.debug("Registering unlisted SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + DEFAULT_COOLDOWN);
-				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, DEFAULT_COOLDOWN){
+				Shared.debug("Registering unlisted SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + defaultRefresh);
+				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, defaultRefresh){
 					public String get() {
 						return PluginHooks.setPlaceholders((UUID)null, identifier);
 					}
 				}, true);
 			} else {
-				int cooldown = identifier.startsWith("%cmi_") ? DEFAULT_COOLDOWN * 10 : DEFAULT_COOLDOWN; //inefficient plugin
+				int cooldown = identifier.startsWith("%cmi_") ? defaultRefresh * 10 : defaultRefresh; //inefficient plugin
 				Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
 				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 					public String get(ITabPlayer p) {
