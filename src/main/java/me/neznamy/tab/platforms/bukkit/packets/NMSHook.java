@@ -74,15 +74,13 @@ public class NMSHook {
 			PING = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "ping");
 			PLAYER_CONNECTION = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "playerConnection");
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
-			try {
-				//1.7+
+			int minor = Integer.parseInt(serverPackage.split("_")[1]);
+			if (minor >= 7) {
 				SERIALIZE = ChatSerializer.getMethod("a", PacketPlayOut.getNMSClass("IChatBaseComponent"));
 				DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-				
-				//1.8+
+			}
+			if (minor >= 8) {
 				CHANNEL = PacketPlayOut.getFields(PacketPlayOut.getNMSClass("NetworkManager"), Channel.class).get(0);
-			} catch (Throwable t) {
-				
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
