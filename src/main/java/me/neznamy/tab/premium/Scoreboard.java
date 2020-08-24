@@ -6,17 +6,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
+import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
@@ -27,18 +29,23 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private ScoreboardManager manager;
 	private String name;
 	private String title;
-	private String displayCondition;
+	private Condition displayCondition;
 	private String childBoard;
 	private List<Score> scores = new ArrayList<Score>();
 	private List<ITabPlayer> players = new ArrayList<ITabPlayer>();
-	private List<Placeholder> conditionPlaceholders = new ArrayList<Placeholder>();
 	private Set<String> usedPlaceholders;
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
-		this.displayCondition = displayCondition;
+		if (displayCondition != null) {
+			if (Premium.conditions.containsKey(displayCondition)) {
+				this.displayCondition = Premium.conditions.get(displayCondition);
+			} else {
+				List<String> conditions = Lists.newArrayList(displayCondition.split(";"));
+				this.displayCondition = Condition.compile(null, conditions, null, null, null);
+			}
+		}
 		this.childBoard = childBoard;
-		conditionPlaceholders = Placeholders.detectPlaceholders(displayCondition);
 		refreshUsedPlaceholders();
 	}
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines) {
@@ -56,40 +63,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	}
 	public boolean isConditionMet(ITabPlayer p) {
 		if (displayCondition == null) return true;
-		for (String condition : displayCondition.split(";")) {
-			if (condition.startsWith("permission:")) {
-				String permission = condition.split(":")[1];
-				if (!p.hasPermission(permission)) return false;
-			}
-			if (condition.contains("%")) {
-				if (condition.contains("=")) {
-					String leftSide = condition.split("=")[0];
-					for (Placeholder pl : conditionPlaceholders) {
-						leftSide = pl.set(leftSide, p);
-					}
-					String rightSide = Placeholders.color(condition.split("=")[1]);
-					leftSide = Placeholders.color(leftSide);
-					if (!leftSide.equals(rightSide)) return false;
-				} else if (condition.contains("<")) {
-					String leftSide = condition.split("<")[0];
-					double rightSide = Shared.errorManager.parseDouble(condition.split("<")[1], 0, "Scoreboard condition with \"<\" - right side");
-					for (Placeholder pl : conditionPlaceholders) {
-						leftSide = pl.set(leftSide, p);
-					}
-					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \"<\" - left side");
-					if (numericValueLeftSide >= rightSide) return false;
-				} else if (condition.contains(">")) {
-					String leftSide = condition.split(">")[0];
-					double rightSide = Shared.errorManager.parseDouble(condition.split(">")[1], 0, "Scoreboard condition with \">\" - right side");
-					for (Placeholder pl : conditionPlaceholders) {
-						leftSide = pl.set(leftSide, p);
-					}
-					double numericValueLeftSide = Shared.errorManager.parseDouble(leftSide, 0, "Scoreboard condition with \">\" - left side");
-					if (numericValueLeftSide <= rightSide) return false;
-				}
-			}
-		}
-		return true;
+		return displayCondition.isMet(p);
 	}
 	public String getChildScoreboard() {
 		return childBoard;

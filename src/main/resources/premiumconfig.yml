@@ -93,3 +93,12 @@ allign-tabsuffix-on-the-right: false
 extra-character-widths:
   65330: 6
   65365: 5
+  
+conditions:
+  health:
+    conditions:
+      - "%health%<21"
+      - "%health%>15"
+    type: AND
+    yes: "Healthy!"
+    no: "Damaged!"

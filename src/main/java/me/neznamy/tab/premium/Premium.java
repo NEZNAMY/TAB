@@ -1,5 +1,10 @@
 package me.neznamy.tab.premium;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
@@ -8,6 +13,7 @@ public class Premium {
 	
 	public static ConfigurationFile premiumconfig;
 	public static boolean alignTabsuffix;
+	public static Map<String, Condition> conditions;
 
 	public static boolean is() {
 		return false;
@@ -16,5 +22,13 @@ public class Premium {
 	public static void loadPremiumConfig() throws Exception {
 		premiumconfig = new YamlConfigurationFile(Shared.platform.getDataFolder(), "premiumconfig.yml", null);
 		alignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
+		conditions = new HashMap<String, Condition>();
+		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
+			List<String> conditions = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
+			String type = premiumconfig.getString("conditions." + condition + ".type");
+			String yes = premiumconfig.getString("conditions." + condition + ".true");
+			String no = premiumconfig.getString("conditions." + condition + ".false");
+			Premium.conditions.put(condition+"", Condition.compile(condition+"", conditions, type, yes, no));
+		}
 	}
 }

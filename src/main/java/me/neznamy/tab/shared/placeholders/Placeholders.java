@@ -11,9 +11,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Animation;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 public class Placeholders {
 
@@ -148,18 +152,45 @@ public class Placeholders {
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
 					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()) {
+						
 						public String get() {
 							return a.getMessage();
 						}
+						
 						@Override
 						public String[] getChilds(){
 							return a.getAllMessages();
 						}
+						
 					}, true);
 					return;
 				}
 			}
 			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
+			return;
+		}
+		if (identifier.contains("condition:")) {
+			//animation
+			String conditionName = identifier.substring(11, identifier.length()-1);
+			for (Condition c : Premium.conditions.values()) {
+				if (c.getName().equalsIgnoreCase(conditionName)) {
+					registerPlaceholder(new PlayerPlaceholder("%condition:" + conditionName + "%", PlaceholderManager.getInstance().defaultRefresh) {
+
+						@Override
+						public String get(ITabPlayer p) {
+							return c.getText(p);
+						}
+						
+						@Override
+						public String[] getChilds(){
+							return new String[] {c.yes, c.no};
+						}
+						
+					}, true);
+					return;
+				}
+			}
+			Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
 			return;
 		}
 		//placeholderapi or invalid
