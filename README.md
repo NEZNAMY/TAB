@@ -1,6 +1,6 @@
 ## Introduction  
 Here it is. After countless requests to go opensource, I did it to make those people quiet. It worked.  
-It's already been almost a year and I still can't see any positives of it. This way I just provided trash talkers on paper discord with a way to directly link something from the source itself without any ideas how to improve/fix it.  
+It's already been almost a year and I still can't see any positives of it. This way I just provided trash talkers on paper discord more ways to *do their job* on this plugin.  
   
   
 ## Compiling
@@ -8,11 +8,11 @@ If for any reason you want to compile the source yourself instead of using alrea
   
   
 ## Contributing
-You are allowed to make useful pull requests if you really want to. Code changes must be tested before committing and the changes/additions must respect it's location. For example: pull requests which add a bukkit api method call in the middle of universal code which would break it on bungeecord will not be accepted.
+You are allowed to make pull requests if you believe you have useful code changes that will improve the plugin for it's users (not just you). Make sure you test the changes first and don't break anything, such as by injecting bukkit api calls into universal code that will *crash* on bungeecord.  
   
   
 ## Premium code
-The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/premium/Premium.java#L13). Keep in mind you will get no support for premium features if you did not buy it. If you don't want to support me, then i don't see a reason to provide support to you either.  
+The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/premium/Premium.java#L13). Keep in mind you will get no support for premium features if you did not buy it. If you don't want to support me then I don't see a reason to provide support to you either.  
   
   
 ## Links
