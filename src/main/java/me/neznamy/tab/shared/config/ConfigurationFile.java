@@ -56,7 +56,7 @@ public abstract class ConfigurationFile {
 			Object value = values;
 			for (String tab : path.split("\\.")) {
 				tab = tab.replace("@#@", ".");
-				value = getIgnoreCase((Map<String, Object>) value, tab);
+				value = getIgnoreCase((Map<Object, Object>) value, tab);
 			}
 			if (value == null && defaultValue != null) {
 				set(path, defaultValue);
@@ -69,9 +69,9 @@ public abstract class ConfigurationFile {
 		}
 	}
 	
-	private Object getIgnoreCase(Map<String, Object> map, String key) {
-		for (String mapkey : map.keySet()) {
-			if (mapkey.equalsIgnoreCase(key)) return map.get(mapkey);
+	private Object getIgnoreCase(Map<Object, Object> map, String key) {
+		for (Object mapkey : map.keySet()) {
+			if (mapkey.toString().equalsIgnoreCase(key)) return map.get(mapkey);
 		}
 		return null;
 	}
