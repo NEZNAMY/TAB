@@ -114,10 +114,10 @@ public class Main extends JavaPlugin {
 		try {
 			Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
 			if (players instanceof Player[]) {
-				//1.5.x - 1.6.x
+				//1.5.x - 1.7.x
 				return (Player[]) players;
 			} else {
-				//1.7+
+				//1.8+
 				return ((Collection<Player>)players).toArray(new Player[0]); 
 			}
 		} catch (Exception e) {
