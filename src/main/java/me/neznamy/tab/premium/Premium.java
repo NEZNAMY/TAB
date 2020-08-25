@@ -13,7 +13,7 @@ public class Premium {
 	
 	public static ConfigurationFile premiumconfig;
 	public static boolean alignTabsuffix;
-	public static Map<String, Condition> conditions;
+	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
 
 	public static boolean is() {
 		return false;
