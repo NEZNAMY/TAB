@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -110,11 +111,12 @@ public class Injector {
 	private static void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
-			for (ITabPlayer p : Shared.getPlayers()) {
-				if (players.contains(p.getName()) && !p.disabledNametag) {
-					players.remove(p.getName());
-				}
+			Collection<String> newList = new ArrayList<String>();
+			for (String entry : players) {
+				ITabPlayer p = Shared.getPlayer(entry);
+				if (p == null || p.disabledNametag) newList.add(entry);
 			}
+			PacketPlayOutScoreboardTeam.PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}
 	}
 }
