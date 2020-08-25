@@ -153,16 +153,16 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			this.rawtext = rawtext;
 			refreshUsedPlaceholders();
 			if (Static) {
-				rawtext = Placeholders.color(rawtext);
+				rawtext = IChatBaseComponent.fromColoredText(rawtext).toColoredText(); //translating RGB to legacy codes as <1.13 can't see RGB anyway
 				if (rawtext.length() <= 34) { //6 forced characters &x&x&r
 					staticPrefix = "";
-					staticName = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
+					staticName = player + rawtext;
 					staticSuffix = "";
 				} else {
 					String[] sub = substring(rawtext, 16);
 					staticPrefix = sub[0];
 					String rest = sub[1];
-					String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(staticPrefix).toColoredText());
+					String last = Placeholders.getLastColors(staticPrefix);
 					if (last.length() == 0) last = Placeholders.colorChar + "r";
 					rest = player + last + rest;
 					sub = substring(rest, 40);
@@ -172,13 +172,13 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 				}
 				if (rawtext.length() <= 10) { //6 forced characters &x&x&r
 					staticPrefix1_7 = "";
-					staticName1_7 = player + IChatBaseComponent.fromColoredText(rawtext).toColoredText();
+					staticName1_7 = player + rawtext;
 					staticSuffix1_7 = "";
 				} else {
 					String[] sub = substring(rawtext, 16);
 					staticPrefix1_7 = sub[0];
 					String rest = sub[1];
-					String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(staticPrefix1_7).toColoredText());
+					String last = Placeholders.getLastColors(staticPrefix1_7);
 					if (last.length() == 0) last = Placeholders.colorChar + "r";
 					rest = player + last + rest;
 					sub = substring(rest, 16);
