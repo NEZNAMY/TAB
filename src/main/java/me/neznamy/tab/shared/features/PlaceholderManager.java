@@ -41,7 +41,7 @@ public class PlaceholderManager implements QuitEventListener {
 
 	public PlaceholderManager(){
 		instance = this;
-		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval");
+		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server")).entrySet()) {
 			serverPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
 			Shared.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
