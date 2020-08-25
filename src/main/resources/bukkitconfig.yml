@@ -124,7 +124,7 @@ disable-features-in-worlds:
 
 placeholderapi-refresh-intervals:
   default-refresh-interval: 100
-   server:
+  server:
     "%server_uptime%": 1000
     "%server_tps_1_colored%": 1000
   player:
