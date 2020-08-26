@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -22,40 +21,90 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
-	
-	private static Class<?> PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo", "Packet201PlayerInfo");
-	private static Class<Enum> EnumGamemode_ = (Class<Enum>) getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
-	private static Class<Enum> EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-	private static Constructor<?> newPacketPlayOutPlayerInfo0 = getConstructor(PacketPlayOutPlayerInfo, new Class<?>[] {});
-	private static Constructor<?> newPacketPlayOutPlayerInfo2 = getConstructor(PacketPlayOutPlayerInfo, EnumPlayerInfoAction_, Iterable.class);
-	
-	private static Class<?> PlayerInfoData_ = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-	private static Constructor<?> newPlayerInfoData = getConstructor(PlayerInfoData_, 5);
-	
-	private static Class<?> GameProfile = getClass("com.mojang.authlib.GameProfile", "net.minecraft.util.com.mojang.authlib.GameProfile");
-	private static Constructor<?> newGameProfile = getConstructor(GameProfile, UUID.class, String.class);
-	private static Field GameProfile_ID = getField(GameProfile, "id");
-	private static Field GameProfile_NAME = getField(GameProfile, "name");
-	private static Field GameProfile_PROPERTIES = getField(GameProfile, "properties");
-	private static Class<?> PropertyMap = getClass("com.mojang.authlib.properties.PropertyMap", "net.minecraft.util.com.mojang.authlib.properties.PropertyMap");
-	private static Method PropertyMap_putAll = getMethod(PropertyMap, "putAll", 1);
-	
-	private static final Field ACTION;
+public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
+
+	private static Class<?> PacketPlayOutPlayerInfo;
+	private static Class<Enum> EnumGamemode_;
+	private static Class<Enum> EnumPlayerInfoAction_;
+	private static Class<?> PlayerInfoData_;
+	private static Constructor<?> newPacketPlayOutPlayerInfo0;
+	private static Constructor<?> newPacketPlayOutPlayerInfo2;
+	private static Constructor<?> newPlayerInfoData;
+
+	private static Class<?> GameProfile;
+	private static Constructor<?> newGameProfile;
+	private static Field GameProfile_ID;
+	private static Field GameProfile_NAME;
+	private static Field GameProfile_PROPERTIES;
+	private static Class<?> PropertyMap;
+	private static Method PropertyMap_putAll;
+
+	private static Field ACTION;
 	private static Field PLAYERS;
 
-	private static final Field PING;
-	private static final Field GAMEMODE;
-	private static final Field PROFILE;
-	private static final Field LISTNAME;
-	
+	private static Field PING;
+	private static Field GAMEMODE;
+	private static Field PROFILE;
+	private static Field LISTNAME;
+
 	public EnumPlayerInfoAction action;
 	public PlayerInfoData[] entries;
+
+	public static void initializeClass() throws Exception {
+		PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
+		try {
+			EnumGamemode_ = (Class<Enum>) getNMSClass("EnumGamemode");
+		} catch (ClassNotFoundException e) {
+			//v1_8_R2 - v1_9_R2
+			EnumGamemode_ = (Class<Enum>) getNMSClass("WorldSettings$EnumGamemode");
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			//1.8+
+			try {
+				//v1_8_R2+
+				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+				PlayerInfoData_ = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
+			} catch (ClassNotFoundException e) {
+				//v1_8_R1
+				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
+				PlayerInfoData_ = getNMSClass("PlayerInfoData");
+			}
+			newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
+			GameProfile = Class.forName("com.mojang.authlib.GameProfile");
+			PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
+			newPlayerInfoData = PlayerInfoData_.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+			(ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
+			(PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
+			(PING = PlayerInfoData_.getDeclaredField("b")).setAccessible(true);
+			(GAMEMODE = PlayerInfoData_.getDeclaredField("c")).setAccessible(true);
+			(PROFILE = PlayerInfoData_.getDeclaredField("d")).setAccessible(true);
+			(LISTNAME = PlayerInfoData_.getDeclaredField("e")).setAccessible(true);
+		} else {
+			//1.7
+			newPacketPlayOutPlayerInfo0 = PacketPlayOutPlayerInfo.getConstructor();
+			GameProfile = Class.forName("net.minecraft.util.com.mojang.authlib.GameProfile");
+			PropertyMap = Class.forName("net.minecraft.util.com.mojang.authlib.properties.PropertyMap");
+			(ACTION = PacketPlayOutPlayerInfo.getDeclaredField("action")).setAccessible(true);
+			(PING = PacketPlayOutPlayerInfo.getDeclaredField("ping")).setAccessible(true);
+			(GAMEMODE = PacketPlayOutPlayerInfo.getDeclaredField("gamemode")).setAccessible(true);
+			(PROFILE = PacketPlayOutPlayerInfo.getDeclaredField("player")).setAccessible(true);
+			(LISTNAME = PacketPlayOutPlayerInfo.getDeclaredField("username")).setAccessible(true);
+		}
+		newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
+		(GameProfile_ID = GameProfile.getDeclaredField("id")).setAccessible(true);
+		(GameProfile_NAME = GameProfile.getDeclaredField("name")).setAccessible(true);
+		(GameProfile_PROPERTIES = GameProfile.getDeclaredField("properties")).setAccessible(true);
+		for (Method m : PropertyMap.getMethods()) {
+			if (m.getName().equals("putAll") && m.getParameterCount() == 1) PropertyMap_putAll = m;
+		}
+		if (PropertyMap_putAll == null) throw new IllegalStateException("putAll method not found");
+	}
 
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
 		this.action = action;
 		this.entries = entries;
 	}
+
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, Collection<PlayerInfoData> entries) {
 		this.action = action;
 		this.entries = entries.toArray(new PlayerInfoData[0]);
@@ -76,24 +125,30 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.networkId = networkId;
 			if (EnumPlayerInfoAction_ != null) nmsEquivalent = Enum.valueOf(EnumPlayerInfoAction_, toString());
 		}
+
 		public static EnumPlayerInfoAction fromNMS(Object nms) {
 			return EnumPlayerInfoAction.valueOf(nms.toString());
 		}
+
 		public static EnumPlayerInfoAction fromBungee(Object bungee) {
 			return EnumPlayerInfoAction.valueOf(bungee.toString().replace("GAMEMODE", "GAME_MODE"));
 		}
+
 		public static EnumPlayerInfoAction fromId(int id) {
 			for (EnumPlayerInfoAction action : values()) {
 				if (action.networkId == id) return action;
 			}
 			return null;
 		}
+
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
+
 		public Object toBungee() {
 			return PlayerListItem.Action.valueOf(toString().replace("GAME_MODE", "GAMEMODE"));
 		}
+
 		public int getNetworkId() {
 			return networkId;
 		}
@@ -117,19 +172,23 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 				//spectator on <1.8
 			}
 		}
+
 		public static EnumGamemode fromNMS(Object nms) {
 			if (nms == null) return null;
 			return EnumGamemode.valueOf(nms.toString());
 		}
+
 		public static EnumGamemode fromId(int id) {
 			for (EnumGamemode action : values()) {
 				if (action.networkId == id) return action;
 			}
 			return null;
 		}
+
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
+
 		public int getNetworkId() {
 			return networkId;
 		}
@@ -148,6 +207,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.name = name;
 			this.uniqueId = uniqueId;
 		}
+
 		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
 			this.name = name;
 			this.uniqueId = uniqueId;
@@ -156,15 +216,18 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			this.gameMode = gameMode;
 			this.displayName = displayName;
 		}
+
 		public PlayerInfoData clone() {
 			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
 		}
+
 		public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 			Object profile = newGameProfile.newInstance(uniqueId, name);
 			if (skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), skin);
 			return newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, latency, gameMode == null ? null : gameMode.toNMS(), 
-							displayName == null ? null : NMSHook.stringToComponent(displayName.toString(clientVersion)));
+					displayName == null ? null : NMSHook.stringToComponent(displayName.toString(clientVersion)));
 		}
+
 		public Object toBungee(ProtocolVersion clientVersion) {
 			Item item = new Item();
 			if (displayName != null) {
@@ -183,6 +246,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			item.setUuid(uniqueId);
 			return item;
 		}
+
 		public Object toVelocity(ProtocolVersion clientVersion) {
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = new com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item(uniqueId);
 			item.setDisplayName((Component) VelocityUtils.componentFromString(displayName == null ? null : displayName.toString(clientVersion)));
@@ -192,6 +256,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			item.setName(name);
 			return item;
 		}
+
 		public static PlayerInfoData fromNMS(Object nmsData) throws Exception{
 			int ping = PING.getInt(nmsData);
 			EnumGamemode gamemode = EnumGamemode.fromNMS(GAMEMODE.get(nmsData));
@@ -200,15 +265,17 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
 			return new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
 		}
+
 		public static PlayerInfoData fromBungee(Object nmsData, ProtocolVersion clientVersion){
 			Item item = (Item) nmsData;
 			return new PlayerInfoData(item.getUsername(), item.getUuid(), item.getProperties(), item.getPing(), EnumGamemode.fromId(item.getGamemode()), IChatBaseComponent.fromString(item.getDisplayName()));
 		}
+
 		public static PlayerInfoData fromVelocity(Object nmsData){
 			com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item) nmsData;
 			return new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.fromId(item.getGameMode()), IChatBaseComponent.fromString(VelocityUtils.componentToString(item.getDisplayName())));
 		}
-		
+
 		@Override
 		public String toString() {
 			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + ",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + "}";
@@ -237,6 +304,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			return packet;
 		}
 	}
+
 	public Object toBungee(ProtocolVersion clientVersion) {
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction((Action) action.toBungee());
@@ -247,6 +315,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		packet.setItems(items);
 		return packet;
 	}
+
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		List items = new ArrayList();
 		for (PlayerInfoData data : entries) {
@@ -254,6 +323,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		return new com.velocitypowered.proxy.protocol.packet.PlayerListItem(action.getNetworkId(), (List<com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item>) items);
 	}
+
 	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
 		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
@@ -273,6 +343,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
 		}
 	}
+
 	public static PacketPlayOutPlayerInfo fromBungee(Object bungeePacket, ProtocolVersion clientVersion){
 		if (!(bungeePacket instanceof PlayerListItem)) return null;
 		PlayerListItem item = (PlayerListItem) bungeePacket;
@@ -283,6 +354,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
+
 	public static PacketPlayOutPlayerInfo fromVelocity(Object velocityPacket){
 		if (!(velocityPacket instanceof com.velocitypowered.proxy.protocol.packet.PlayerListItem)) return null;
 		com.velocitypowered.proxy.protocol.packet.PlayerListItem item = (com.velocitypowered.proxy.protocol.packet.PlayerListItem) velocityPacket;
@@ -293,30 +365,9 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut{
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "PacketPlayOutPlayerInfo{action=" + action + ",entries=" + Arrays.toString(entries) + "}";
-	}
-
-	static {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Map<String, Field> fields = getFields(PacketPlayOutPlayerInfo);
-			ACTION = getField(fields, "a");
-			PLAYERS = getField(fields, "b");
-
-			Map<String, Field> infodata = getFields(PlayerInfoData_);
-			PING = getField(infodata, "b");
-			GAMEMODE = getField(infodata, "c");
-			PROFILE = getField(infodata, "d");
-			LISTNAME = getField(infodata, "e");
-		} else {
-			Map<String, Field> fields = getFields(PacketPlayOutPlayerInfo);
-			ACTION = getField(fields, "action");
-			PING = getField(fields, "ping");
-			GAMEMODE = getField(fields, "gamemode");
-			PROFILE = getField(fields, "player");
-			LISTNAME = getField(fields, "username");
-		}
 	}
 }

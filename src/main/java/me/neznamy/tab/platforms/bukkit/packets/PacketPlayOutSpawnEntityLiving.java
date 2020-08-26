@@ -14,27 +14,26 @@ import org.bukkit.entity.EntityType;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.shared.ProtocolVersion;
 
-public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
+public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 	
-	private static final Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
+	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
-	public static Class<?> PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
-	private static Constructor<?> newPacketPlayOutSpawnEntityLiving = getConstructor(PacketPlayOutSpawnEntityLiving, 0);
-	private static final Map<String, Field> fields = getFields(PacketPlayOutSpawnEntityLiving);
-	private static final Field ENTITYID = getField(fields, "a");
-	private static final Field UUID = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, UUID.class), 0);
-	private static final Field ENTITYTYPE;
-	private static final Field X;
-	private static final Field Y;
-	private static final Field Z;
-	private static final Field MOTX;
-	private static final Field MOTY;
-	private static final Field MOTZ;
-	private static final Field YAW;
-	private static final Field PITCH;
-	private static final Field L;
-	public static final Field DATAWATCHER = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, DataWatcher.DataWatcher), 0);
-	private static final Field DATAWATCHERITEMS = getObjectAt(getFields(PacketPlayOutSpawnEntityLiving, List.class), 0);
+	public static Class<?> PacketPlayOutSpawnEntityLiving;
+	private static Constructor<?> newPacketPlayOutSpawnEntityLiving;
+	private static Field ENTITYID;
+	private static Field UUID;
+	private static Field ENTITYTYPE;
+	private static Field X;
+	private static Field Y;
+	private static Field Z;
+	private static Field MOTX;
+	private static Field MOTY;
+	private static Field MOTZ;
+	private static Field YAW;
+	private static Field PITCH;
+	private static Field L;
+	public static Field DATAWATCHER;
+	private static Field DATAWATCHERITEMS;
 	
 	private int entityId;
 	private UUID uuid;
@@ -51,9 +50,57 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	public DataWatcher dataWatcher = new DataWatcher();
 	private List<Item> watchableObjects;
 
+	public static void initializeClass() throws Exception {
+		try {
+			PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
+		} catch (ClassNotFoundException e) {
+			PacketPlayOutSpawnEntityLiving = getNMSClass("Packet24MobSpawn");
+		}
+		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
+		(ENTITYID = PacketPlayOutSpawnEntityLiving.getDeclaredField("a")).setAccessible(true);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			(UUID = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
+			(ENTITYTYPE = PacketPlayOutSpawnEntityLiving.getDeclaredField("c")).setAccessible(true);
+			(X = PacketPlayOutSpawnEntityLiving.getDeclaredField("d")).setAccessible(true);
+			(Y = PacketPlayOutSpawnEntityLiving.getDeclaredField("e")).setAccessible(true);
+			(Z = PacketPlayOutSpawnEntityLiving.getDeclaredField("f")).setAccessible(true);
+			(MOTX = PacketPlayOutSpawnEntityLiving.getDeclaredField("g")).setAccessible(true);
+			(MOTY = PacketPlayOutSpawnEntityLiving.getDeclaredField("h")).setAccessible(true);
+			(MOTZ = PacketPlayOutSpawnEntityLiving.getDeclaredField("i")).setAccessible(true);
+			(YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
+			(PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
+			(L = PacketPlayOutSpawnEntityLiving.getDeclaredField("l")).setAccessible(true);
+		} else {
+			(ENTITYTYPE = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
+			(X = PacketPlayOutSpawnEntityLiving.getDeclaredField("c")).setAccessible(true);
+			(Y = PacketPlayOutSpawnEntityLiving.getDeclaredField("d")).setAccessible(true);
+			(Z = PacketPlayOutSpawnEntityLiving.getDeclaredField("e")).setAccessible(true);
+			(MOTX = PacketPlayOutSpawnEntityLiving.getDeclaredField("f")).setAccessible(true);
+			(MOTY = PacketPlayOutSpawnEntityLiving.getDeclaredField("g")).setAccessible(true);
+			(MOTZ = PacketPlayOutSpawnEntityLiving.getDeclaredField("h")).setAccessible(true);
+			(YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("i")).setAccessible(true);
+			(PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
+			(L = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() <= 14) {
+			(DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher.DataWatcher).get(0)).setAccessible(true);
+			(DATAWATCHERITEMS = getFields(PacketPlayOutSpawnEntityLiving, List.class).get(0)).setAccessible(true);
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			entityIds.put(EntityType.ARMOR_STAND, 1);
+			entityIds.put(EntityType.WITHER, 83);
+		} else {
+			entityIds.put(EntityType.WITHER, 64);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
+				entityIds.put(EntityType.ARMOR_STAND, 30);
+			}
+		}
+	}
+	
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location loc) {
 		this(entityId, uuid, entityIds.get(entityType), loc);
 	}
+	
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, int entityType, Location loc) {
 		if (loc == null) throw new IllegalArgumentException("Location cannot be null");
 		this.entityId = entityId;
@@ -65,10 +112,12 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 		this.yaw = loc.getYaw();
 		this.pitch = loc.getPitch();
 	}
+	
 	public PacketPlayOutSpawnEntityLiving setDataWatcher(DataWatcher dataWatcher) {
 		this.dataWatcher = dataWatcher;
 		return this;
 	}
+	
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutSpawnEntityLiving.newInstance();
 		ENTITYID.set(packet, entityId);
@@ -103,41 +152,5 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut{
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;
 		return paramDouble < i ? i - 1 : i;
-	}
-
-	static {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			entityIds.put(EntityType.ARMOR_STAND, 1);
-			entityIds.put(EntityType.WITHER, 83);
-		} else {
-			entityIds.put(EntityType.WITHER, 64);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
-				entityIds.put(EntityType.ARMOR_STAND, 30);
-			}
-		}
-
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			ENTITYTYPE = getField(fields, "c");
-			X = getField(fields, "d");
-			Y = getField(fields, "e");
-			Z = getField(fields, "f");
-			MOTX = getField(fields, "g");
-			MOTY = getField(fields, "h");
-			MOTZ = getField(fields, "i");
-			YAW = getField(fields, "j");
-			PITCH = getField(fields, "k");
-			L = getField(fields, "l");
-		} else {
-			ENTITYTYPE = getField(fields, "b");
-			X = getField(fields, "c");
-			Y = getField(fields, "d");
-			Z = getField(fields, "e");
-			MOTX = getField(fields, "f");
-			MOTY = getField(fields, "g");
-			MOTZ = getField(fields, "h");
-			YAW = getField(fields, "i");
-			PITCH = getField(fields, "j");
-			L = getField(fields, "k");
-		}
 	}
 }

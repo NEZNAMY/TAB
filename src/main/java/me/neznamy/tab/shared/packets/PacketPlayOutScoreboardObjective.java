@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -12,23 +11,50 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 
-	private static Class<?> PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
-	private static Class<Enum> EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
-	private static Constructor<?> newPacketPlayOutScoreboardObjective = getConstructor(PacketPlayOutScoreboardObjective, 0);
-	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardObjective);
-	private static final Field OBJECTIVENAME = getField(fields, "a");
-	private static final Field DISPLAYNAME = getField(fields, "b");
+	private static Class<?> PacketPlayOutScoreboardObjective;
+	private static Class<Enum> EnumScoreboardHealthDisplay;
+	private static Constructor<?> newPacketPlayOutScoreboardObjective;
+	private static Field OBJECTIVENAME;
+	private static Field DISPLAYNAME;
 	private static Field RENDERTYPE;
-	private static final Field METHOD;
+	private static Field METHOD;
 	
 	private String objectiveName;
 	private String displayName;
 	private EnumScoreboardHealthDisplay renderType;
 	private int method;
 
-	private PacketPlayOutScoreboardObjective() {
-		
+	public static void initializeClass() throws Exception {
+		try {
+			//1.7+
+			PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
+		} catch (ClassNotFoundException e) {
+			//1.6-
+			PacketPlayOutScoreboardObjective = getNMSClass("Packet206SetScoreboardObjective");
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			try {
+				//v1_8_R2+
+				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
+			} catch (ClassNotFoundException e) {
+				//v1_8_R1
+				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("EnumScoreboardHealthDisplay");
+			}
+		}
+		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
+		(OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
+		(DISPLAYNAME = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			(RENDERTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
+			(METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
+		} else {
+			(METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
+		}
 	}
+
+	private PacketPlayOutScoreboardObjective() {
+	}
+	
 	public static PacketPlayOutScoreboardObjective REGISTER(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
 		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
 		packet.objectiveName = objectiveName;
@@ -37,6 +63,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		packet.method = 0;
 		return packet;
 	}
+	
 	public static PacketPlayOutScoreboardObjective UNREGISTER(String objectiveName) {
 		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
 		packet.objectiveName = objectiveName;
@@ -44,6 +71,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		packet.method = 1;
 		return packet;
 	}
+	
 	public static PacketPlayOutScoreboardObjective UPDATE_TITLE(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
 		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
 		packet.objectiveName = objectiveName;
@@ -52,6 +80,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		packet.method = 2;
 		return packet;
 	}
+	
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() < 13) {
@@ -68,6 +97,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		METHOD.set(packet, method);
 		return packet;
 	}
+	
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
@@ -77,6 +107,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 		return new ScoreboardObjective(objectiveName, displayName, renderType == null ? null : renderType.toBungee(), (byte)method);
 	}
+	
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
@@ -86,6 +117,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective(objectiveName, displayName, renderType == null ? null : renderType.toVelocity(), (byte)method);
 	}
+	
 	public enum EnumScoreboardHealthDisplay{
 
 		INTEGER, HEARTS;
@@ -107,15 +139,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		}
 		public me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay toVelocity() {
 			return me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay.valueOf(toString());
-		}
-	}
-
-	static {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			RENDERTYPE = getField(fields, "c");
-			METHOD = getField(fields, "d");
-		} else {
-			METHOD = getField(fields, "c");
 		}
 	}
 }

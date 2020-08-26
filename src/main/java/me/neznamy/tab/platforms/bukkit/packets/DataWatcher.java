@@ -8,35 +8,44 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 
-public class DataWatcher{
+public class DataWatcher {
 
-	public static final Class<?> DataWatcher = PacketPlayOut.getNMSClass("DataWatcher");
-	private static final Constructor<?> newDataWatcher = PacketPlayOut.getConstructor(DataWatcher, 1, 0);
-	
-	private static final Class<?> DataWatcherObject_ = PacketPlayOut.getNMSClass("DataWatcherObject");
-	private static final Constructor<?> newDataWatcherObject = PacketPlayOut.getConstructor(DataWatcherObject_, 2);
-	
-	private static final Class<?> WatchableObject = PacketPlayOut.getNMSClass("DataWatcher$Item", "WatchableObject");
-	private static final Constructor<?> newWatchableObject = PacketPlayOut.getConstructor(WatchableObject, 3, 2);
-	
-	private static final Method REGISTER = getRegisterMethod();
+	public static Class<?> DataWatcher;
+	private static Constructor<?> newDataWatcher;
+
+	private static Class<?> DataWatcherObject;
+	public static Constructor<?> newDataWatcherObject;
+
+	private static Class<?> DataWatcherItem;
+	private static Constructor<?> newDataWatcherItem;
+
+	private static Method REGISTER;
 
 	private Map<Integer, Item> dataValues = new HashMap<Integer, Item>();
 	private DataWatcherHelper helper = new DataWatcherHelper(this);
 
-	private static Method getRegisterMethod() {
-		try {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				return DataWatcher.getMethod("register", DataWatcherObject_, Object.class);
-			} else {
-				return DataWatcher.getMethod("a", int.class, Object.class);
+	public static void initializeClass() throws Exception {
+		DataWatcher = PacketPlayOut.getNMSClass("DataWatcher");
+		newDataWatcher = DataWatcher.getConstructors()[0];
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			//1.9+
+			DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$Item");
+			DataWatcherObject = PacketPlayOut.getNMSClass("DataWatcherObject");
+			newDataWatcherObject = DataWatcherObject.getConstructors()[0];
+			REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
+		} else {
+			//1.8-
+			try {
+				//v1_8_R2+
+				DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$WatchableObject");
+			} catch (ClassNotFoundException e) {
+				//v1_8_R1-
+				DataWatcherItem = PacketPlayOut.getNMSClass("WatchableObject");
 			}
-		} catch (Exception e) {
-			Shared.errorManager.criticalError("Failed to inialize DataWatcher class", e);
-			return null;
+			REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
 		}
+		newDataWatcherItem = DataWatcherItem.getConstructors()[0];
 	}
 
 	public void setValue(DataWatcherObject type, Object value){
@@ -66,14 +75,14 @@ public class DataWatcher{
 		}
 		public Object toNMS() throws Exception{
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				return newWatchableObject.newInstance(type.toNMS(), value);
+				return newDataWatcherItem.newInstance(type.toNMS(), value);
 			} else {
-				return newWatchableObject.newInstance(type.classType, type.position, value);
+				return newDataWatcherItem.newInstance(type.classType, type.position, value);
 			}
 		}
 		public static Item fromNMS(Object nmsItem) throws Exception{
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				DataWatcherObject object = DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
+				DataWatcherObject object = me.neznamy.tab.platforms.bukkit.packets.DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
 				Object value = getValue(nmsItem, "b");
 				return new Item(object, value);
 			} else {
@@ -112,38 +121,12 @@ public class DataWatcher{
 		}
 		return watcher;
 	}
-	
-	private static Object getValue(Object obj, String field) throws Exception {
+
+	static Object getValue(Object obj, String field) throws Exception {
 		Field f = obj.getClass().getDeclaredField(field);
 		f.setAccessible(true);
 		return f.get(obj);
 	}
-	
-	public static class DataWatcherObject {
 
-		public int position;
-		public Object classType;
 
-		public DataWatcherObject(int position, Object classType){
-			this.position = position;
-			this.classType = classType;
-		}
-		
-		public static DataWatcherObject fromNMS(Object nmsObject) throws Exception {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				int position = (int) getValue(nmsObject, "a");
-				Object classType = getValue(nmsObject, "b");
-				return new DataWatcherObject(position, classType);
-			} else {
-				throw new IllegalStateException();
-			}
-		}
-		public Object toNMS() throws Exception {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				return newDataWatcherObject.newInstance(position, classType);
-			} else {
-				throw new IllegalStateException();
-			}
-		}
-	}
 }

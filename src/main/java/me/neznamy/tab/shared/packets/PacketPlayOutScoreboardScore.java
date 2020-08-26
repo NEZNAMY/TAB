@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
@@ -10,22 +9,51 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 
-	private static Class<?> PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
-	private static Class<Enum> EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
-	private static Constructor<?> newPacketPlayOutScoreboardScore0 = getConstructor(PacketPlayOutScoreboardScore, 0);
-	private static Constructor<?> newPacketPlayOutScoreboardScore_String = getConstructor(PacketPlayOutScoreboardScore, String.class);
-	private static Constructor<?> newPacketPlayOutScoreboardScore4 = getConstructor(PacketPlayOutScoreboardScore, 4);
-	private static Map<String, Field> fields = getFields(PacketPlayOutScoreboardScore);
-	private static final Field PLAYER = getField(fields, "a");
-	private static final Field OBJECTIVENAME = getField(fields, "b");
-	private static final Field SCORE = getField(fields, "c");
-	private static final Field ACTION = getField(fields, "d");
+	private static Class<?> PacketPlayOutScoreboardScore;
+	private static Class<Enum> EnumScoreboardAction;
+	private static Constructor<?> newPacketPlayOutScoreboardScore0;
+	private static Constructor<?> newPacketPlayOutScoreboardScore_String;
+	private static Constructor<?> newPacketPlayOutScoreboardScore_1_13;
+	private static Field PLAYER;
+	private static Field OBJECTIVENAME;
+	private static Field SCORE;
+	private static Field ACTION;
 	
 	private Action action;
 	private String objectiveName;
 	private String player;
 	private int score;
 
+	public static void initializeClass() throws Exception {
+		try {
+			//1.7+
+			PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
+		} catch (ClassNotFoundException e) {
+			//1.6-
+			PacketPlayOutScoreboardScore = getNMSClass("Packet207SetScoreboardScore");
+		}
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action");
+			newPacketPlayOutScoreboardScore_1_13 = PacketPlayOutScoreboardScore.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
+		} else {
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				try {
+					//v1_8_R2+
+					EnumScoreboardAction = (Class<Enum>) getNMSClass("PacketPlayOutScoreboardScore$EnumScoreboardAction");
+				} catch (ClassNotFoundException e) {
+					//v1_8_R1
+					EnumScoreboardAction = (Class<Enum>) getNMSClass("EnumScoreboardAction");
+				}
+			}
+			newPacketPlayOutScoreboardScore0 = PacketPlayOutScoreboardScore.getConstructor();
+			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore.getConstructor(String.class);
+		}
+		(PLAYER = PacketPlayOutScoreboardScore.getDeclaredField("a")).setAccessible(true);
+		(OBJECTIVENAME = PacketPlayOutScoreboardScore.getDeclaredField("b")).setAccessible(true);
+		(SCORE = PacketPlayOutScoreboardScore.getDeclaredField("c")).setAccessible(true);
+		(ACTION = PacketPlayOutScoreboardScore.getDeclaredField("d")).setAccessible(true);
+	}
+	
 	public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
 		this.action = action;
 		this.objectiveName = objectiveName;
@@ -35,7 +63,7 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
-			return newPacketPlayOutScoreboardScore4.newInstance(action.toNMS(), objectiveName, player, score);
+			return newPacketPlayOutScoreboardScore_1_13.newInstance(action.toNMS(), objectiveName, player, score);
 		} else {
 			if (action == Action.REMOVE) {
 				return newPacketPlayOutScoreboardScore_String.newInstance(player);
@@ -66,8 +94,10 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		private Action(byte ordinal) {
 			this.ordinal = ordinal;
 			if (EnumScoreboardAction != null) {
+				//1.8+
 				nmsEquivalent = Enum.valueOf(EnumScoreboardAction, toString());
 			} else {
+				//1.7-
 				nmsEquivalent = ordinal;
 			}
 		}

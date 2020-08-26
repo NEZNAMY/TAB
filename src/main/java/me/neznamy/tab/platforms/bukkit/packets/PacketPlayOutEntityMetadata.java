@@ -6,11 +6,22 @@ import me.neznamy.tab.shared.ProtocolVersion;
 
 public class PacketPlayOutEntityMetadata extends PacketPlayOut {
 
-	private static Class<?> PacketPlayOutEntityMetadata = PacketPlayOut.getNMSClass("PacketPlayOutEntityMetadata");
-	private static Constructor<?> newPacketPlayOutEntityMetadata = PacketPlayOut.getConstructor(PacketPlayOutEntityMetadata, 3);
+	public static Class<?> PacketPlayOutEntityMetadata;
+	private static Constructor<?> newPacketPlayOutEntityMetadata;
 	
 	private int entityId;
 	private DataWatcher dataWatcher;
+	
+	public static void initializeClass() throws Exception {
+		try {
+			//1.7+
+			PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
+		} catch (ClassNotFoundException e) {
+			//1.6-
+			PacketPlayOutEntityMetadata = getNMSClass("Packet40EntityMetadata");
+		}
+		newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, getNMSClass("DataWatcher"), boolean.class);
+	}
 
 	public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher) {
 		this.entityId = entityId;

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
 
 import org.bukkit.Location;
 
@@ -10,20 +9,34 @@ import me.neznamy.tab.shared.ProtocolVersion;
 
 public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 
-	private static Class<?> PacketPlayOutEntityTeleport = getNMSClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
-	private static Constructor<?> newPacketPlayOutEntityTeleport = getConstructor(PacketPlayOutEntityTeleport, 0);
-	private static Map<String, Field> fields = getFields(PacketPlayOutEntityTeleport);
-	private static final Field ENTITYID = fields.get("a");
-	private static final Field X = fields.get("b");
-	private static final Field Y = fields.get("c");
-	private static final Field Z = fields.get("d");
-	private static final Field YAW = fields.get("e");
-	private static final Field PITCH = fields.get("f");
-	@SuppressWarnings("unused")
-	private static final Field ONGROUND = fields.get("g");
+	private static Class<?> PacketPlayOutEntityTeleport;
+	private static Constructor<?> newPacketPlayOutEntityTeleport;
+	private static Field ENTITYID;
+	private static Field X;
+	private static Field Y;
+	private static Field Z;
+	private static Field YAW;
+	private static Field PITCH;
 	
 	private int entityId;
 	private Location location;
+	
+	public static void initializeClass() throws Exception {
+		try {
+			//1.7+
+			PacketPlayOutEntityTeleport = getNMSClass("PacketPlayOutEntityTeleport");
+		} catch (ClassNotFoundException e) {
+			//1.6-
+			PacketPlayOutEntityTeleport = getNMSClass("Packet34EntityTeleport");
+		}
+		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
+		(ENTITYID = PacketPlayOutEntityTeleport.getDeclaredField("a")).setAccessible(true);
+		(X = PacketPlayOutEntityTeleport.getDeclaredField("b")).setAccessible(true);
+		(Y = PacketPlayOutEntityTeleport.getDeclaredField("c")).setAccessible(true);
+		(Z = PacketPlayOutEntityTeleport.getDeclaredField("d")).setAccessible(true);
+		(YAW = PacketPlayOutEntityTeleport.getDeclaredField("e")).setAccessible(true);
+		(PITCH = PacketPlayOutEntityTeleport.getDeclaredField("f")).setAccessible(true);
+	}
 	
 	public PacketPlayOutEntityTeleport(int entityId, Location location) {
 		this.entityId = entityId;

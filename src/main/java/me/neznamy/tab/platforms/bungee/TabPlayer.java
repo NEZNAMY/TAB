@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -19,7 +18,7 @@ import net.md_5.bungee.protocol.Protocol;
 
 public class TabPlayer extends ITabPlayer{
 	
-	private static final Field wrapperField = PacketPlayOut.getFields(InitialHandler.class).get("ch");
+	private static Field wrapperField;
 	private static Object directionData;
 	private static Method getId;
 	
@@ -30,6 +29,7 @@ public class TabPlayer extends ITabPlayer{
 			directionData = f.get(Protocol.GAME);
 			getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class);
 			getId.setAccessible(true);
+			(wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
 		} catch (Exception e) {
 			Shared.errorManager.criticalError("Failed to initialize fields for packet analysis", e);
 		}

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import java.util.Optional;
 
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.DataWatcherObject;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -34,25 +33,25 @@ public class DataWatcherHelper {
 	}
 	
 	public void setEntityFlags(byte flags) {
-		data.setValue(new DataWatcherObject(0, DataWatcherSerializer.Byte), flags);
+		data.setValue(new DataWatcherObject(0, DataWatcherRegistry.Byte), flags);
 	}
 	
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
 			try {
-				data.setValue(new DataWatcherObject(2, DataWatcherSerializer.Optional_IChatBaseComponent), Optional.ofNullable(NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
+				data.setValue(new DataWatcherObject(2, DataWatcherRegistry.Optional_IChatBaseComponent), Optional.ofNullable(NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(customName).toString(clientVersion))));
 			} catch (Exception e) {
 				Shared.errorManager.printError("Failed to create component", e);
 			}
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
-			data.setValue(new DataWatcherObject(2, DataWatcherSerializer.String), customName);
+			data.setValue(new DataWatcherObject(2, DataWatcherRegistry.String), customName);
 		} else {
 			if (customName.length() > 64) customName = customName.substring(0, 64);
 			
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6){
-				data.setValue(new DataWatcherObject(10, DataWatcherSerializer.String), customName);
+				data.setValue(new DataWatcherObject(10, DataWatcherRegistry.String), customName);
 			} else {
-				data.setValue(new DataWatcherObject(5, DataWatcherSerializer.String), customName);
+				data.setValue(new DataWatcherObject(5, DataWatcherRegistry.String), customName);
 			}
 		}
 			
@@ -60,21 +59,21 @@ public class DataWatcherHelper {
 	
 	public void setCustomNameVisible(boolean visible) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			data.setValue(new DataWatcherObject(3, DataWatcherSerializer.Boolean), visible);
+			data.setValue(new DataWatcherObject(3, DataWatcherRegistry.Boolean), visible);
 		} else {
-			data.setValue(new DataWatcherObject(3, DataWatcherSerializer.Byte), (byte)(visible?1:0));
+			data.setValue(new DataWatcherObject(3, DataWatcherRegistry.Byte), (byte)(visible?1:0));
 		}
 	}
 	
 	public void setHealth(float health) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
-			data.setValue(new DataWatcherObject(6, DataWatcherSerializer.Float), health);
+			data.setValue(new DataWatcherObject(6, DataWatcherRegistry.Float), health);
 		} else {
-			data.setValue(new DataWatcherObject(16, DataWatcherSerializer.Integer), (int)health);
+			data.setValue(new DataWatcherObject(16, DataWatcherRegistry.Integer), (int)health);
 		}
 	}
 	
 	public void setArmorStandFlags(byte flags) {
-		data.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherSerializer.Byte), flags);
+		data.setValue(new DataWatcherObject(ARMOR_STAND_BYTEFLAGS_POSITION, DataWatcherRegistry.Byte), flags);
 	}
 }

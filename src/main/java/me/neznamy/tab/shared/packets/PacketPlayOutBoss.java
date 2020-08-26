@@ -2,33 +2,29 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PacketPlayOutBoss extends UniversalPacketPlayOut{
+public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 
-	private static Class<?> PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
-	private static Class<?> BarColor = getNMSClass("BossBattle$BarColor");
-	private static Class<?> BarStyle = getNMSClass("BossBattle$BarStyle");
-	private static Class<Enum> Action_ = (Class<Enum>) PacketPlayOut.getNMSClass("PacketPlayOutBoss$Action");
-	
-	private static Constructor<?> newPacketPlayOutBoss = getConstructor(PacketPlayOutBoss, 0);
-	private static Map<String, Field> fields = getFields(PacketPlayOutBoss);
-	private static final Field UUID = fields.get("a");
-	private static final Field ACTION = fields.get("b");
-	private static final Field NAME = fields.get("c");
-	private static final Field PROGRESS = fields.get("d");
-	private static final Field COLOR = fields.get("e");
-	private static final Field STYLE = fields.get("f");
-	private static final Field DARKEN_SKY = fields.get("g");
-	private static final Field PLAY_MUSIC = fields.get("h");
-	private static final Field CREATE_FOG = fields.get("i");
+	private static Class<?> PacketPlayOutBoss;
+	private static Class<?> BarColor;
+	private static Class<?> BarStyle;
+	private static Class<Enum> Action_;
+	private static Constructor<?> newPacketPlayOutBoss;
+	private static Field UUID;
+	private static Field ACTION;
+	private static Field NAME;
+	private static Field PROGRESS;
+	private static Field COLOR;
+	private static Field STYLE;
+	private static Field DARKEN_SKY;
+	private static Field PLAY_MUSIC;
+	private static Field CREATE_FOG;
 	
 	private UUID id;
 	private Action operation;
@@ -40,6 +36,23 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut{
 	private boolean playMusic;
 	private boolean createWorldFog;
 
+	public static void initializeClass() throws Exception {
+		PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
+		BarColor = getNMSClass("BossBattle$BarColor");
+		BarStyle = getNMSClass("BossBattle$BarStyle");
+		Action_ = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
+		newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
+		(UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
+		(ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
+		(NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
+		(PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
+		(COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
+		(STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
+		(DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
+		(PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
+		(CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
+	}
+	
 	private PacketPlayOutBoss() {
 	}
 	

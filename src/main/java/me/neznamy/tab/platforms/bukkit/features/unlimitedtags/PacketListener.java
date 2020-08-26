@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
@@ -22,40 +21,54 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public class PacketListener implements RawPacketFeature, PlayerInfoPacketListener {
 
-	private Class<?> PacketPlayOutEntityDestroy = PacketPlayOut.getNMSClass("PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
-	private Field PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOut.getFields(PacketPlayOutEntityDestroy).get("a");
+	private static Class<?> PacketPlayOutEntityDestroy;
+	private static Field PacketPlayOutEntityDestroy_ENTITIES;
 	
-	private Class<?> PacketPlayInUseEntity = PacketPlayOut.getNMSClass("PacketPlayInUseEntity");
-	private Field PacketPlayInUseEntity_ENTITY = PacketPlayOut.getFields(PacketPlayInUseEntity).get("a");
+	private static Class<?> PacketPlayInUseEntity;
+	private static Field PacketPlayInUseEntity_ENTITY;
 
-	private Class<?> PacketPlayOutNamedEntitySpawn = PacketPlayOut.getNMSClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
-	private Field PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOut.getFields(PacketPlayOutNamedEntitySpawn).get("a");
+	private static Class<?> PacketPlayOutNamedEntitySpawn;
+	private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 	
-	private Class<?> PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
-	private Field PacketPlayOutEntity_ENTITYID = PacketPlayOut.getFields(PacketPlayOutEntity).get("a");
+	private static Class<?> PacketPlayOutEntity;
+	private static Field PacketPlayOutEntity_ENTITYID;
 
-	public static Class<?> PacketPlayOutMount = PacketPlayOut.getNMSClass("PacketPlayOutMount");
-	private Field PacketPlayOutMount_VEHICLE;
-	private Field PacketPlayOutMount_PASSENGERS;
+	public static Class<?> PacketPlayOutMount;
+	private static Field PacketPlayOutMount_VEHICLE;
+	private static Field PacketPlayOutMount_PASSENGERS;
 
-	private Class<?> PacketPlayOutAttachEntity = PacketPlayOut.getNMSClass("PacketPlayOutAttachEntity");
-	private Field PacketPlayOutAttachEntity_A;
-	private Field PacketPlayOutAttachEntity_PASSENGER;
-	private Field PacketPlayOutAttachEntity_VEHICLE;
+	private static Class<?> PacketPlayOutAttachEntity;
+	private static Field PacketPlayOutAttachEntity_A;
+	private static Field PacketPlayOutAttachEntity_PASSENGER;
+	private static Field PacketPlayOutAttachEntity_VEHICLE;
 
 	private boolean modifyNPCnames;
 	private NameTagX nameTagX;
 
+	public static void initializeClass() throws Exception {
+		PacketPlayInUseEntity = PacketPlayOut.getNMSClass("PacketPlayInUseEntity");
+		PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
+		PacketPlayOutEntityDestroy = PacketPlayOut.getNMSClass("PacketPlayOutEntityDestroy");
+		PacketPlayOutNamedEntitySpawn = PacketPlayOut.getNMSClass("PacketPlayOutNamedEntitySpawn");
+		
+		(PacketPlayInUseEntity_ENTITY = PacketPlayInUseEntity.getDeclaredField("a")).setAccessible(true);
+		(PacketPlayOutEntity_ENTITYID = PacketPlayOutEntity.getDeclaredField("a")).setAccessible(true);
+		(PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOutEntityDestroy.getDeclaredField("a")).setAccessible(true);
+		(PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOutNamedEntitySpawn.getDeclaredField("a")).setAccessible(true);
+		
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			PacketPlayOutMount = PacketPlayOut.getNMSClass("PacketPlayOutMount");
+			(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
+			(PacketPlayOutMount_PASSENGERS = PacketPlayOutMount.getDeclaredField("b")).setAccessible(true);
+		} else {
+			PacketPlayOutAttachEntity = PacketPlayOut.getNMSClass("PacketPlayOutAttachEntity");
+			(PacketPlayOutAttachEntity_A = PacketPlayOutAttachEntity.getDeclaredField("a")).setAccessible(true);
+			(PacketPlayOutAttachEntity_PASSENGER = PacketPlayOutAttachEntity.getDeclaredField("b")).setAccessible(true);
+			(PacketPlayOutAttachEntity_VEHICLE = PacketPlayOutAttachEntity.getDeclaredField("c")).setAccessible(true);
+		}
+	}
+	
 	public PacketListener(NameTagX nameTagX) {
-		Map<String, Field> mount = PacketPlayOut.getFields(PacketPlayOutMount);
-		PacketPlayOutMount_VEHICLE = mount.get("a");
-		PacketPlayOutMount_PASSENGERS = mount.get("b");
-
-		Map<String, Field> attachentity = PacketPlayOut.getFields(PacketPlayOutAttachEntity);
-		PacketPlayOutAttachEntity_A = attachentity.get("a");
-		PacketPlayOutAttachEntity_PASSENGER = attachentity.get("b");
-		PacketPlayOutAttachEntity_VEHICLE = attachentity.get("c");
-
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		this.nameTagX = nameTagX;
 	}

@@ -6,20 +6,24 @@ import java.util.List;
 
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 
-public class PetFix implements RawPacketFeature{
+public class PetFix implements RawPacketFeature {
 
-	private final int PET_OWNER_POSITION = getPetOwnerPosition();
-	private final Class<?> PacketPlayOutEntityMetadata = PacketPlayOut.getNMSClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
-	private final Field PacketPlayOutEntityMetadata_LIST = PacketPlayOut.getFields(PacketPlayOutEntityMetadata).get("b");
+	private static int PET_OWNER_POSITION;
+	private static Field PacketPlayOutEntityMetadata_LIST;
 	
-	private int getPetOwnerPosition() {
+	public static void initializeClass() throws Exception {
+		(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
+		PET_OWNER_POSITION = getPetOwnerPosition();
+	}
+	
+	private static int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			//1.15.x, 1.16.1
 			return 17;
@@ -42,8 +46,8 @@ public class PetFix implements RawPacketFeature{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable{
-		if (PacketPlayOutEntityMetadata.isInstance(packet)) {
+	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
+		if (PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return packet;
 			List<Object> newList = new ArrayList<Object>();

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -375,6 +376,8 @@ public abstract class ITabPlayer implements TabPlayer{
 	public void sendCustomBukkitPacket(PacketPlayOut packet) {
 		try {
 			sendPacket(packet.toNMS(getVersion()));
+		} catch (InvocationTargetException e) {
+			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e.getTargetException());
 		} catch (Throwable e) {
 			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}

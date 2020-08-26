@@ -8,8 +8,16 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.platforms.bukkit.features.PetFix;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.PacketListener;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class NMSHook {
 	
@@ -30,9 +38,12 @@ public class NMSHook {
 	
 	public static  Class<?> EnumChatFormat;
 	private static Class<?> ChatSerializer;
+	public static Class<?> IChatBaseComponent;
 	private static Field PING;
 	private static Field PLAYER_CONNECTION;
+	private static Field NETWORK_MANAGER;
 	private static Field CHANNEL;
+	private static Method getHandle;
 	private static Method sendPacket;
 	private static Method SERIALIZE;
 	private static Method DESERIALIZE;
@@ -46,44 +57,67 @@ public class NMSHook {
 		return (String) SERIALIZE.invoke(null, component);
 	}
 	
-	public static Object getChannel(Player p){
-		try {
-			Object connection = PLAYER_CONNECTION.get(p.getClass().getMethod("getHandle").invoke(p));
-			Object networkManager = connection.getClass().getField("networkManager").get(connection);
-			return CHANNEL.get(networkManager);
-		} catch (Exception e) {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				Shared.errorManager.printError("Failed to get channel of " + p.getName(), e);
-			}
-			return null;
-		}
+	public static Object getChannel(Player p) throws Exception {
+		return CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(p))));
 	}
 
-	public static void sendPacket(Player p, Object nmsPacket) throws Exception{
-		sendPacket.invoke(PLAYER_CONNECTION.get(p.getClass().getMethod("getHandle").invoke(p)), nmsPacket);
+	public static void sendPacket(Player p, Object nmsPacket) throws Exception {
+		sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(p)), nmsPacket);
 	}
 	
-	public static int getPing(Player p) throws Exception{
-		return PING.getInt(p.getClass().getMethod("getHandle").invoke(p));
+	public static int getPing(Player p) throws Exception {
+		return PING.getInt(getHandle.invoke(p));
 	}
 
 	public static boolean isVersionSupported(String serverPackage){
 		try {
+			try {
+				IChatBaseComponent = PacketPlayOut.getNMSClass("IChatBaseComponent");
+			} catch (ClassNotFoundException e) {
+				IChatBaseComponent = PacketPlayOut.getNMSClass("ChatMessage");
+			}
+			DataWatcher.initializeClass();
+			DataWatcherRegistry.initializeClass();
+			PacketPlayOutChat.initializeClass();
+			PacketPlayOutEntityDestroy.initializeClass();
+			PacketPlayOutEntityMetadata.initializeClass();
+			PacketPlayOutEntityTeleport.initializeClass();
+			PacketPlayOutScoreboardDisplayObjective.initializeClass();
+			PacketPlayOutScoreboardObjective.initializeClass();
+			PacketPlayOutScoreboardScore.initializeClass();
+			PacketPlayOutScoreboardTeam.initializeClass();
+			PacketPlayOutSpawnEntityLiving.initializeClass();
+			PetFix.initializeClass();
 			EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
-			ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
-			PING = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "ping");
-			PLAYER_CONNECTION = PacketPlayOut.getField(PacketPlayOut.getNMSClass("EntityPlayer"), "playerConnection");
+			PING = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("ping");
+			PLAYER_CONNECTION = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
+			NETWORK_MANAGER = PLAYER_CONNECTION.getType().getField("networkManager");
+			getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);
 			if (minor >= 7) {
-				SERIALIZE = ChatSerializer.getMethod("a", PacketPlayOut.getNMSClass("IChatBaseComponent"));
+				PacketPlayOutPlayerInfo.initializeClass();
+				try {
+					//v1_8_R2+
+					ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer");
+				} catch (ClassNotFoundException e) {
+					//v1_8_R1-
+					ChatSerializer = PacketPlayOut.getNMSClass("ChatSerializer");
+				}
+				SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
 				DESERIALIZE = ChatSerializer.getMethod("a", String.class);
 			}
 			if (minor >= 8) {
+				PacketListener.initializeClass();
+				PacketPlayOutPlayerListHeaderFooter.initializeClass();
 				CHANNEL = PacketPlayOut.getFields(PacketPlayOut.getNMSClass("NetworkManager"), Channel.class).get(0);
+			}
+			if (minor >= 9) {
+				PacketPlayOutBoss.initializeClass();
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
+//			e.printStackTrace();
 			return false;
 		}
 	}
