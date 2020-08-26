@@ -58,6 +58,7 @@ public class NMSHook {
 	}
 	
 	public static Object getChannel(Player p) throws Exception {
+		if (CHANNEL == null) return null;
 		return CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(p))));
 	}
 
