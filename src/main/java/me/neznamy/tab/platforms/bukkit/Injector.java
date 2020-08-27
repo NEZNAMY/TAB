@@ -34,7 +34,7 @@ public class Injector {
 						super.channelRead(context, packet);
 						return;
 					}
-					try{
+					try {
 						ITabPlayer player = Shared.getPlayer(uuid);
 						if (player != null) {
 							for (RawPacketFeature f : Shared.rawpacketfeatures) {
@@ -47,10 +47,10 @@ public class Injector {
 								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 							}
 						}
+						if (packet != null) super.channelRead(context, packet);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
 					}
-					if (packet != null) super.channelRead(context, packet);
 				}
 
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
@@ -58,7 +58,7 @@ public class Injector {
 						super.write(context, packet, channelPromise);
 						return;
 					}
-					try{
+					try {
 						ITabPlayer player = Shared.getPlayer(uuid);
 						if (player == null) {
 							super.write(context, packet, channelPromise);
@@ -92,10 +92,10 @@ public class Injector {
 							}
 							packet = (info == null ? null : info.toNMS(player.getVersion()));
 						}
+						if (packet != null) super.write(context, packet, channelPromise);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
 					}
-					if (packet != null) super.write(context, packet, channelPromise);
 				}
 			});
 		} catch (NoSuchElementException e) {
