@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class All0StaticLine extends ScoreboardLine {
 
 	private Scoreboard parent;
+	private int lineID;
 	private String text;
 	
 	private String prefix1_7;
@@ -28,6 +29,7 @@ public class All0StaticLine extends ScoreboardLine {
 	public All0StaticLine(Scoreboard parent, int lineID, String text) {
 		super(lineID);
 		this.parent = parent;
+		this.lineID = lineID;
 		this.text = IChatBaseComponent.fromColoredText(text).toColoredText(); //colorizing + translating RGB codes into legacy
 		//1.8+
 		if (this.text.length() <= 34) { //6 forced characters &x&x&r
@@ -73,10 +75,12 @@ public class All0StaticLine extends ScoreboardLine {
 	@Override
 	public void register(ITabPlayer p) {
 		p.setProperty(teamName, text, null);
+		//<1.8 does not support sorting by name which we abuse here
+		int score = p.getVersion().getMinorVersion() < 8 ? lineID : parent.manager.staticNumber;
 		if (p.getVersion().getMinorVersion() < 8) {
-			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, parent.manager.staticNumber);
+			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, score);
 		} else {
-			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, parent.manager.staticNumber);
+			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, score);
 		}
 	}
 

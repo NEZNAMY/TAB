@@ -48,7 +48,9 @@ public class All0StableDynamicLine extends ScoreboardLine {
 		p.setProperty(teamName, text, null);
 		List<String> prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix == null) return;
-		PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, parent.manager.staticNumber);
+		//<1.8 does not support sorting by name which we abuse here
+		int score = p.getVersion().getMinorVersion() < 8 ? lineID : parent.manager.staticNumber;
+		PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, score);
 	}
 
 	@Override
