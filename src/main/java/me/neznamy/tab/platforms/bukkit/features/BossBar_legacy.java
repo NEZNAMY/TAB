@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 
 public class BossBar_legacy implements Listener, Loadable {
 
-	private final int WITHER_DISTANCE = 100;
+	private final int WITHER_DISTANCE = 75;
 	private BossBar mainFeature;
 	private JavaPlugin plugin;
 	
