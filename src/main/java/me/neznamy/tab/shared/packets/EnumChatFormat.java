@@ -3,7 +3,10 @@ package me.neznamy.tab.shared.packets;
 import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public enum EnumChatFormat{
+/**
+ * A class representing the n.m.s.EnumChatFormat class to make work with it much easier
+ */
+public enum EnumChatFormat {
 
 	BLACK(0, '0', 0x000000),
 	DARK_BLUE(1, '1', 0x0000AA),

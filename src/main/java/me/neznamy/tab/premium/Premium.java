@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
 
+/**
+ * Core of the premium version
+ */
 public class Premium {
 	
 	public static ConfigurationFile premiumconfig;

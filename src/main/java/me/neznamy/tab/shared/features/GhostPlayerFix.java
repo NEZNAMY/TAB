@@ -8,7 +8,10 @@ import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
-public class GhostPlayerFix implements QuitEventListener{
+/**
+ * A small class fixing bugs in other plugins
+ */
+public class GhostPlayerFix implements QuitEventListener {
 
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {

@@ -26,6 +26,9 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
+/**
+ * Messy class for placeholder management
+ */
 @SuppressWarnings("unchecked")
 public class PlaceholderManager implements QuitEventListener {
 

@@ -6,6 +6,9 @@ import org.bukkit.Bukkit;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * Hook into https://www.spigotmc.org/resources/35065/ for %afk%
+ */
 public class AFKPlus implements AFKProvider {
 
 	@Override

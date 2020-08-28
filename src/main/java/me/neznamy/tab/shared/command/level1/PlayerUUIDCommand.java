@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Handler for "/tab playeruuid" subcommand
+ */
 public class PlayerUUIDCommand extends SubCommand {
 
 	public PlayerUUIDCommand() {

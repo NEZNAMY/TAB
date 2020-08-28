@@ -17,6 +17,14 @@ import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
+/**
+ * A large source of hate. Packet intercepting to secure proper functionality of some features:
+ * Tablist names - anti-override (preventing other plugins from setting this value)
+ * Nametags - anti-override
+ * SpectatorFix - to change gamemode to something else than spectator
+ * PetFix - to remove owner field from entity data
+ * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
+ */
 public class Injector {
 
 	public static void inject(UUID uuid) {

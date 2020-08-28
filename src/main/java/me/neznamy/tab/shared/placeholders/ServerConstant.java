@@ -2,6 +2,9 @@ package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * Placeholder which is in fact a constant (never changes value) and has same output for all players
+ */
 public abstract class ServerConstant extends Placeholder{
 	
 	private String value;

@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * An implementation of Refreshable for bossbar color and style
+ */
 public class ColorAndStyleRefresher implements Refreshable {
 
 	private BossBarLine line;

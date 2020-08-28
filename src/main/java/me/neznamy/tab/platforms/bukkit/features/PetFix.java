@@ -13,6 +13,11 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 
+/**
+ * A feature to disable minecraft 1.9+ feature making tamed animals with custom names copy nametag properties of their owner
+ * This is achieved by listening to entity spawn (<1.15) / entity metadata packets and removing owner field from the datawatcher list
+ * This feature will intentionally not enable on 1.16+ due to a bug (#178) which I don't know how to fix
+ */
 public class PetFix implements RawPacketFeature {
 
 	private static int PET_OWNER_POSITION;

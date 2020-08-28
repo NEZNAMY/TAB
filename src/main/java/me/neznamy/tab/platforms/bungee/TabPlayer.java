@@ -16,7 +16,10 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 
-public class TabPlayer extends ITabPlayer{
+/**
+ * TabPlayer for BungeeCord
+ */
+public class TabPlayer extends ITabPlayer {
 	
 	private static Field wrapperField;
 	private static Object directionData;
@@ -49,30 +52,36 @@ public class TabPlayer extends ITabPlayer{
 		name = p.getName();
 		init();
 	}
+	
 	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
 	}
+	
 	@Override
 	public long getPing() {
 		return player.getPing();
 	}
+	
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
 	}
+	
 	@Override
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(Placeholders.color(message));
 	}
+	
 	@Override
 	@SuppressWarnings("deprecation")
 	public void sendRawMessage(String message) {
 		if (message == null || message.length() == 0) return;
 		player.sendMessage(message);
 	}
+	
 	@Override
 	public Object getSkin() {
 		LoginResult loginResult = ((InitialHandler)player.getPendingConnection()).getLoginProfile();
@@ -86,10 +95,12 @@ public class TabPlayer extends ITabPlayer{
 		}
 		return s;
 	}
+	
 	@Override
 	public ProxiedPlayer getBungeeEntity() {
 		return player;
 	}
+	
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
 			return (int) getId.invoke(directionData, clazz, getVersion().getNetworkId());
@@ -98,10 +109,12 @@ public class TabPlayer extends ITabPlayer{
 			return 0;
 		}
 	}
+	
 	@Override
 	public ProtocolVersion getVersion() {
 		return ProtocolVersion.fromNumber(player.getPendingConnection().getVersion());
 	}
+	
 	@Override
 	public boolean isVanished() {
 		return ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player);

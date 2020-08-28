@@ -55,6 +55,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
+/**
+ * Bukkit implementation of PlatformMethods
+ */
 public class BukkitMethods implements PlatformMethods {
 
 	private Set<String> usedExpansions;

@@ -2,6 +2,9 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
+/**
+ * An interface representing a player
+ */
 public interface TabPlayer {
 
 	/**

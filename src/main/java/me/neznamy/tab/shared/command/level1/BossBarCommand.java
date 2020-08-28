@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Handler for "/tab bossbar" subcommand
+ */
 public class BossBarCommand extends SubCommand{
 
 	public BossBarCommand() {

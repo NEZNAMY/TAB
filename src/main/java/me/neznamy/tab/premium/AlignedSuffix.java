@@ -18,6 +18,9 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Additional code for Playerlist class to secure alignment
+ */
 public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
 	private int maxWidth;

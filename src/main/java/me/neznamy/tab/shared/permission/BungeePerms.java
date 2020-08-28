@@ -7,6 +7,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import net.alpenblock.bungeeperms.Group;
 import net.alpenblock.bungeeperms.PermissionsManager;
 
+/**
+ * BungeePerms hook
+ */
 public class BungeePerms implements PermissionPlugin {
 
 	@Override

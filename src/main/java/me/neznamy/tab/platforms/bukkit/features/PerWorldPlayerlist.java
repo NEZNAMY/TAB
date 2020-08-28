@@ -22,6 +22,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
+/**
+ * Per-world-playerlist feature. Currently event based, however that causes various (compatibility) issues.
+ * Will be reworked to use packets in the future
+ */
 @SuppressWarnings({"deprecation", "unchecked"})
 public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
@@ -33,6 +37,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	public PerWorldPlayerlist(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
+	
 	@Override
 	public void load(){
 		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
@@ -43,20 +48,24 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			showInSameWorldGroup(p);
 		}
 	}
+	
 	@Override
 	public void unload(){
 		for (Player p : Main.getOnlinePlayers()) for (Player pl : Main.getOnlinePlayers()) p.showPlayer(pl);
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		hidePlayer(connectedPlayer.getBukkitEntity());
 		showInSameWorldGroup(connectedPlayer.getBukkitEntity());
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		hidePlayer(p.getBukkitEntity());
 		showInSameWorldGroup(p.getBukkitEntity());
 	}
+	
 	private void showInSameWorldGroup(Player shown){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
@@ -70,6 +79,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			}
 		});
 	}
+	
 	private boolean shouldSee(Player viewer, Player displayed) {
 		if (displayed == viewer) return true;
 		String player1WorldGroup = null;
@@ -88,7 +98,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		}
 		return false;
 	}
-	public void hidePlayer(Player hidden){
+	
+	private void hidePlayer(Player hidden){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
@@ -101,6 +112,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			}
 		});
 	}
+	
 	//fixing bukkit api bug making players not hide when hidePlayer is called too early
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
@@ -119,6 +131,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		if (info.entries.length == 0) return null;
 		return info;
 	}
+	
 	@Override
 	public CPUFeature getCPUName() {
 		return CPUFeature.PER_WORLD_PLAYERLIST;

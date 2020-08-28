@@ -17,6 +17,9 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
+/**
+ * Feature handler for scoreboard feature
+ */
 public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener{
 
 	private String toggleCommand;

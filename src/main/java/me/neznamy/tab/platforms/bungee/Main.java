@@ -29,7 +29,10 @@ import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.Team;
 
-public class Main extends Plugin{
+/**
+ * Main class for BungeeCord platform
+ */
+public class Main extends Plugin {
 
 	public static PluginMessenger plm;
 

@@ -6,6 +6,9 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 
+/**
+ * A class representing an animation from animations.yml
+ */
 public class Animation {
 	
 	private String name;

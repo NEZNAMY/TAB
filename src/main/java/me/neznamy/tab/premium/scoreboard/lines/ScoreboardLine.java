@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Abstract class representing a line of scoreboard
+ */
 public abstract class ScoreboardLine implements Refreshable {
 
 	protected static final String ObjectiveName = "TAB-Scoreboard";

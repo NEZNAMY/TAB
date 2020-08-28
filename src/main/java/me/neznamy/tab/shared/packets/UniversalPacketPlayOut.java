@@ -5,6 +5,9 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Abstract class to be extended by packets which can be sent on all 3 supported platforms
+ */
 public abstract class UniversalPacketPlayOut extends PacketPlayOut{
 
 	public abstract Object toBungee(ProtocolVersion clientVersion);

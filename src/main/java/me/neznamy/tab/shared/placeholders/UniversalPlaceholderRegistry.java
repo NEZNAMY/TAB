@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.permission.LuckPerms;
 
+/**
+ * An implementation of PlaceholderRegistry for universal placeholders
+ */
 public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");

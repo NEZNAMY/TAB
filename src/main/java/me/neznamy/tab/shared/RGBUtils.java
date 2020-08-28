@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
 
+/**
+ * A helper class to reformat all RGB formats into the default #RRGGBB ad apply gradients
+ */
 public class RGBUtils {
 
 	private static final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");

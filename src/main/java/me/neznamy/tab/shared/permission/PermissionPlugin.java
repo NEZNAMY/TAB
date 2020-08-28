@@ -2,6 +2,9 @@ package me.neznamy.tab.shared.permission;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * An interface representing permission plugin hook
+ */
 public interface PermissionPlugin {
 
 	public String getPrimaryGroup(ITabPlayer p) throws Throwable;

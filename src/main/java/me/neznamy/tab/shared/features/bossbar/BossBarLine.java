@@ -15,6 +15,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
+/**
+ * Class representing a bossbar from configuration
+ */
 public class BossBarLine {
 
 	private static int idCounter = 1000000000;

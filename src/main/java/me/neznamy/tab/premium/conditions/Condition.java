@@ -7,6 +7,9 @@ import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * The main condition class
+ */
 public abstract class Condition {
 
 	private String name;

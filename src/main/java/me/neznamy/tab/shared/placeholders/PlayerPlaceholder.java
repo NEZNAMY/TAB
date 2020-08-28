@@ -5,7 +5,10 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
-public abstract class PlayerPlaceholder extends Placeholder{
+/**
+ * A player placeholder (output is different for every player)
+ */
+public abstract class PlayerPlaceholder extends Placeholder {
 
 	public Map<String, String> lastValue = new HashMap<String, String>();
 

@@ -10,6 +10,9 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * Representation of any server/player placeholder
+ */
 public abstract class Placeholder {
 
 	public int cooldown;

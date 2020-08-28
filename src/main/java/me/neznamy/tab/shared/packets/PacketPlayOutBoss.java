@@ -8,6 +8,9 @@ import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.BossBar;
 
+/**
+ * A class representing platform specific packet class
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 

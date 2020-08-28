@@ -25,6 +25,9 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 
+/**
+ * Bukkit registry to register bukkit-only placeholders
+ */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	private Economy economy;

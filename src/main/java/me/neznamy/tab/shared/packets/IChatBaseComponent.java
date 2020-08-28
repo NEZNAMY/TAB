@@ -16,6 +16,9 @@ import me.neznamy.tab.shared.RGBUtils;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * A class representing the n.m.s.IChatBaseComponent class to make work with it much easier
+ */
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 

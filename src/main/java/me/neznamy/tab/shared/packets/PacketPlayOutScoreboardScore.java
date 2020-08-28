@@ -6,6 +6,9 @@ import java.lang.reflect.Field;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
+/**
+ * A class representing platform specific packet class
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 

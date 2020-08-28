@@ -4,6 +4,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.milkbowl.vault.permission.Permission;
 
+/**
+ * Vault permission hook
+ */
 public class Vault implements PermissionPlugin {
 
 	private Permission permission;

@@ -13,6 +13,9 @@ import me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective;
 import me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore;
 import me.neznamy.tab.platforms.velocity.protocol.Team;
 
+/**
+ * Util to register scoreboard packets which are missing on velocity
+ */
 public class VelocityPacketRegistry {
 
 	private static Method map;

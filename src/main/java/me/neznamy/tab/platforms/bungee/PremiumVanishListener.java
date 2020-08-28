@@ -12,6 +12,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+/**
+ * An addon for global playerlist to make PremiumVanish work properly
+ */
 public class PremiumVanishListener implements Listener {
 
 	private final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";

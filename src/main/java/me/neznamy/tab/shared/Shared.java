@@ -30,6 +30,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Universal variable and method storage
+ */
 public class Shared {
 
 	public static final String DECODER_NAME = "TABReader";

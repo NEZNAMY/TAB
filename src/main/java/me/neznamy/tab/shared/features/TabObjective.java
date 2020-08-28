@@ -16,6 +16,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Feature handler for tablist objective feature
+ */
 public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
 
 	private final String ObjectiveName = "TAB-YellowNumber";

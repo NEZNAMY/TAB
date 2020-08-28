@@ -2,6 +2,9 @@ package me.neznamy.tab.premium.conditions.simple;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * An abstract class representing a simple condition
+ */
 public abstract class SimpleCondition {
 	
 	public abstract boolean isMet(ITabPlayer p);

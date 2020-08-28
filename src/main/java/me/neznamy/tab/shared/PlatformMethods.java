@@ -7,6 +7,9 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * An interface with methods that are called in universal code, but require platform-specific API calls
+ */
 public interface PlatformMethods {
 
 	public PermissionPlugin detectPermissionPlugin();

@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
+/**
+ * A string with placeholders
+ */
 public class Property {
 
 	private ITabPlayer owner;

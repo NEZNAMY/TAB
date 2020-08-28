@@ -23,6 +23,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Abstract class for configuration file
+ */
 @SuppressWarnings("unchecked")
 public abstract class ConfigurationFile {
 
@@ -34,7 +37,9 @@ public abstract class ConfigurationFile {
 		this.header = header;
 		dataFolder.mkdirs();
 		file = new File(dataFolder, destination);
-		if (!file.exists()) Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
+		if (!file.exists()) {
+			Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
+		}
 	}
 	
 	public abstract void save();

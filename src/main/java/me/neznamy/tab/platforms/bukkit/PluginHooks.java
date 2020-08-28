@@ -11,6 +11,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 
+/**
+ * Mostly PlaceholderAPI hook currently. Will be renamed or code movedin the future.
+ */
 public class PluginHooks {
 
 	public static boolean placeholderAPI;

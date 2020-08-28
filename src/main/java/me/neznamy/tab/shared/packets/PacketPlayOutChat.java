@@ -7,6 +7,9 @@ import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Chat;
 
+/**
+ * A class representing platform specific packet class
+ */
 public class PacketPlayOutChat extends UniversalPacketPlayOut{
 
 	private static Class<?> PacketPlayOutChat;

@@ -5,6 +5,9 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * A relational placeholder (output different for every pair of players)
+ */
 public abstract class RelationalPlaceholder {
 
 	public final int refresh;

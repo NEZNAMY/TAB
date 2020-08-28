@@ -1,5 +1,8 @@
 package me.neznamy.tab.api;
 
+/**
+ * An enum class representing basic properties applicable to a player or group
+ */
 public enum EnumProperty {
 
 	TABPREFIX,

@@ -12,7 +12,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
-public class PacketAPI{
+/**
+ * Soon to be removed assistant for easier packet creating
+ */
+public class PacketAPI {
 	
 	//scoreboard team
 	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {

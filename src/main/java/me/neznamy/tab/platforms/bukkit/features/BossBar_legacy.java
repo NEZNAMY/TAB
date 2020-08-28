@@ -16,6 +16,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 
+/**
+ * An additional class with additional code for <1.9 servers due to an entity being required
+ */
 public class BossBar_legacy implements Listener, Loadable {
 
 	private final int WITHER_DISTANCE = 75;

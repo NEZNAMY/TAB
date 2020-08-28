@@ -7,6 +7,9 @@ import com.velocitypowered.proxy.protocol.ProtocolUtils;
 
 import io.netty.buffer.ByteBuf;
 
+/**
+ * A missing Velocity packet
+ */
 public class ScoreboardScore implements MinecraftPacket {
 
 	private String itemName;

@@ -5,6 +5,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
+/**
+ * Velocity API calls which cannot be in the main class because unsupported velocity version would throw an exception
+ * when loading class without any chance to check for compatibility
+ */
 public class VelocityUtils {
 
 	//java class loader throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)

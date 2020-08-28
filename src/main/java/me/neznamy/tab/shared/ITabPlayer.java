@@ -30,7 +30,10 @@ import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public abstract class ITabPlayer implements TabPlayer{
+/**
+ * The core class for player
+ */
+public abstract class ITabPlayer implements TabPlayer {
 
 	public String name;
 	public UUID uniqueId;

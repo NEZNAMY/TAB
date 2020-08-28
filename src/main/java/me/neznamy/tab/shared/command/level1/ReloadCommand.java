@@ -5,7 +5,10 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 
-public class ReloadCommand extends SubCommand{
+/**
+ * Handler for "/tab reload" subcommand
+ */
+public class ReloadCommand extends SubCommand {
 
 	public ReloadCommand() {
 		super("reload", "tab.reload");

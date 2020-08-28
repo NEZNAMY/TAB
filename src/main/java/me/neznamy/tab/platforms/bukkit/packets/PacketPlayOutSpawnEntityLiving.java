@@ -14,6 +14,9 @@ import org.bukkit.entity.EntityType;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.PacketPlayOutSpawnEntityLiving class to make work with it much easier
+ */
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 	
 	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();

@@ -4,6 +4,9 @@ import org.bukkit.entity.Player;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * Hook into https://www.spigotmc.org/resources/63466/ for %afk%
+ */
 public class xAntiAFK implements AFKProvider {
 
 	@Override

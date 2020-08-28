@@ -8,6 +8,9 @@ import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * TAB's expansion for PlaceholderAPI
+ */
 public class TabExpansion extends PlaceholderExpansion {
 
 	private JavaPlugin plugin;

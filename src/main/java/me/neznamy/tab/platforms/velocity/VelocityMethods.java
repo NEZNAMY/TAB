@@ -42,6 +42,9 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.kyori.adventure.text.TextComponent;
 
+/**
+ * Velocity implementation of PlatformMethods
+ */
 public class VelocityMethods implements PlatformMethods {
 
 	private ProxyServer server;

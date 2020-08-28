@@ -12,6 +12,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 
+/**
+ * The event listener part for securing proper functionality of armor stands
+ */
 public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

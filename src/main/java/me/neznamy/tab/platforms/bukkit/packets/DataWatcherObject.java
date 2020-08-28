@@ -2,6 +2,9 @@ package me.neznamy.tab.platforms.bukkit.packets;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.DataWatcherObject class to make work with it much easier
+ */
 public class DataWatcherObject {
 
 	public int position;

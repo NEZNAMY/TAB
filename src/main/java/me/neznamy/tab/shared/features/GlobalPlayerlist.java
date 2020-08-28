@@ -20,6 +20,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
+/**
+ * Feature handler for global playerlist feature
+ */
 public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
 	private final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";

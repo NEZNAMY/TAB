@@ -9,6 +9,9 @@ import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.Team;
 
+/**
+ * A class representing platform specific packet class
+ */
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 
 	public static Class<?> PacketPlayOutScoreboardTeam;

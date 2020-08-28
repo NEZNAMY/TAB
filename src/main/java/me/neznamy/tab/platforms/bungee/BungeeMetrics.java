@@ -24,6 +24,9 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
+/**
+ * bStats metrics for bungeecord
+ */
 @SuppressWarnings("unchecked")
 public class BungeeMetrics extends Metrics {
 	

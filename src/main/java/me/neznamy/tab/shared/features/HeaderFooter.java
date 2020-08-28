@@ -15,6 +15,9 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Feature handler for header and footer
+ */
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
 	private Set<String> usedPlaceholders;

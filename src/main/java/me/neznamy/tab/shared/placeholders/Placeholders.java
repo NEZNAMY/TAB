@@ -19,6 +19,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 
+/**
+ * Messy class to be moved into PlaceholderManager class
+ */
 public class Placeholders {
 
 	public static final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");

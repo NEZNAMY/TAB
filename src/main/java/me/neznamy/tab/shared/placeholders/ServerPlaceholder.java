@@ -2,6 +2,9 @@ package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * A server placeholder (output same for all players)
+ */
 public abstract class ServerPlaceholder extends Placeholder{
 
 	private String lastValue;

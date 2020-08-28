@@ -19,6 +19,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * The packet listening part for securing proper functionality of armor stands
+ * Bukkit events are too unreliable and delayed/ahead which causes desynchronization
+ */
 public class PacketListener implements RawPacketFeature, PlayerInfoPacketListener {
 
 	private static Class<?> PacketPlayOutEntityDestroy;

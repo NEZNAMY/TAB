@@ -22,6 +22,9 @@ import org.json.simple.JSONObject;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * Universal code for metrics classes
+ */
 @SuppressWarnings("unchecked")
 public abstract class Metrics {
 

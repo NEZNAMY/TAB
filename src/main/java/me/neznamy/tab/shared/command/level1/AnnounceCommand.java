@@ -7,7 +7,10 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
 import me.neznamy.tab.shared.config.Configs;
 
-public class AnnounceCommand extends SubCommand{
+/**
+ * Handler for "/tab announce" subcommand
+ */
+public class AnnounceCommand extends SubCommand {
 
 	public AnnounceCommand() {
 		super("announce", null);

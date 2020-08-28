@@ -15,6 +15,9 @@ import com.google.common.io.ByteStreams;
 import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * A class to listen and respond to PlaceholderAPI placeholder requests sent by bungeecord
+ */
 public class BukkitBridge implements PluginMessageListener {
 
 	private JavaPlugin plugin;

@@ -9,6 +9,9 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.DataWatcher class to make work with it much easier
+ */
 public class DataWatcher {
 
 	public static Class<?> DataWatcher;

@@ -7,7 +7,10 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
-public class ScoreboardCommand extends SubCommand{
+/**
+ * Handler for "/tab scoreboard" subcommand
+ */
+public class ScoreboardCommand extends SubCommand {
 
 	public ScoreboardCommand() {
 		super("scoreboard", null);

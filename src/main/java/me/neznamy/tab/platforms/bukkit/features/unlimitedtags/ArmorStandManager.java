@@ -8,6 +8,9 @@ import java.util.Map;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * A helper class for easy management of armor stands of a player
+ */
 public class ArmorStandManager {
 
 	private Map<String, ArmorStand> armorStands = new LinkedHashMap<String, ArmorStand>();

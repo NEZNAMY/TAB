@@ -10,7 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.shared.Shared;
 
-public class ExpansionDownloader{
+/**
+ * Utility to execute /papi ecloud download <expansion> on expansions which are used but not installed
+ * If an expansion was successfully downloaded (new expansion count is higher than previous in expansions folder),
+ * /papi reload is executed.
+ * Since this feature was added into the plugin amount of non-working placeholders caused by missing expansion went down rapidly.
+ * I'm not sure why, must be a coinscidence.
+ */
+public class ExpansionDownloader {
 
 	private JavaPlugin plugin;
 	

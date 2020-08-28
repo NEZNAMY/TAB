@@ -7,6 +7,9 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.DataWatcherRegistry class to make work with it much easier
+ */
 public class DataWatcherRegistry {
 
 	public static Object Byte;

@@ -7,7 +7,8 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
- * Fully customizable line
+ * Fully customizable line, to use this class user must follow the following formula in a line
+ * "Custom|prefix|name|suffix|number" where even name supports placeholders, however has a chance to flicker on refresh
  * Not for public use
  */
 public class CustomLine extends ScoreboardLine {

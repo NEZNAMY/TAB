@@ -5,6 +5,9 @@ import java.util.List;
 import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * A condition consisting of multiple SimpleConditions with AND type
+ */
 public class ConditionAND extends Condition {
 
 	public ConditionAND(String name, List<String> conditions, String yes, String no) {

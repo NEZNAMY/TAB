@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Enum class for all supported sorting types
+ */
 public enum SortingType {
 	
 	GROUPS, GROUP_PERMISSIONS, 

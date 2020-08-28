@@ -20,6 +20,9 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * YAML implementation of ConfigurationFile
+ */
 public class YamlConfigurationFile extends ConfigurationFile {
 	
 	private Yaml yaml;

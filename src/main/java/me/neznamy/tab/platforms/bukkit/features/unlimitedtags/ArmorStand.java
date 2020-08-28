@@ -25,7 +25,10 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
-public class ArmorStand{
+/**
+ * A class representing an armor stand attached to a player (if the feature is enabled)
+ */
+public class ArmorStand {
 
 	private static int idCounter = 2000000000;
 
@@ -52,16 +55,20 @@ public class ArmorStand{
 		markerFor18x = ((NameTagX)Shared.features.get("nametagx")).markerFor18x;
 		refresh();
 	}
+	
 	public void refresh() {
 		visible = getVisibility();
 		updateMetadata();
 	}
+	
 	public boolean hasStaticOffset() {
 		return staticOffset;
 	}
+	
 	public double getOffset() {
 		return yOffset;
 	}
+	
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
@@ -69,6 +76,7 @@ public class ArmorStand{
 			all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
 		}
 	}
+	
 	public PacketPlayOut[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
@@ -84,21 +92,26 @@ public class ArmorStand{
 			};
 		}
 	}
+	
 	public PacketPlayOutEntityTeleport getTeleportPacket(ITabPlayer viewer) {
 		return new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(viewer));
 	}
+	
 	private Location getArmorStandLocationFor(ITabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
+	
 	public void destroy(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 		viewer.sendCustomBukkitPacket(destroyPacket);
 	}
+	
 	public void teleport() {
 		for (ITabPlayer all : getNearbyPlayers()) {
 			all.sendCustomBukkitPacket(getTeleportPacket(all));
 		}
 	}
+	
 	public void sneak(boolean sneaking) {
 		this.sneaking = sneaking;
 		for (ITabPlayer viewer : getNearbyPlayers()) {
@@ -132,25 +145,30 @@ public class ArmorStand{
 			}
 		}
 	}
+	
 	public void destroy() {
 		for (ITabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
+	
 	public void updateVisibility() {
 		if (getVisibility() != visible) {
 			visible = !visible;
 			updateMetadata();
 		}
 	}
+	
 	private void updateMetadata() {
 		for (ITabPlayer viewer : getNearbyPlayers()) {
 			viewer.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
 		}
 	}
+	
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
 		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
+	
 	public Location getLocation() {
 		double x = player.getLocation().getX();
 		double y = getY() + yOffset + 2;
@@ -166,6 +184,7 @@ public class ArmorStand{
 		}
 		return new Location(null,x,y,z);
 	}
+	
 	private double getY() {
 		//1.14+ bukkit api bug
 		Entity vehicle = player.getVehicle();
@@ -185,12 +204,15 @@ public class ArmorStand{
 		}
 		return player.getLocation().getY();
 	}
+	
 	public int getEntityId() {
 		return entityId;
 	}
+	
 	public void removeFromRegistered(ITabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 	}
+	
 	public DataWatcher createDataWatcher(String displayName, ITabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
@@ -208,9 +230,11 @@ public class ArmorStand{
 		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);
 		return datawatcher;
 	}
+	
 	public List<ITabPlayer> getNearbyPlayers(){
 		return new ArrayList<ITabPlayer>(nearbyPlayers);
 	}
+	
 	private boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}

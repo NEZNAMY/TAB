@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
+/**
+ * Velocity registry to register velocity-only placeholders
+ */
 public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 
 	private ProxyServer server;

@@ -5,6 +5,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 
+/**
+ * Handler for "/tab ntpreview" subcommand
+ */
 public class NTPreviewCommand extends SubCommand{
 
 	public NTPreviewCommand() {
@@ -24,6 +27,8 @@ public class NTPreviewCommand extends SubCommand{
 				}
 				sender.previewingNametag = !sender.previewingNametag;
 			}
-		} else sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+		} else {
+			sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+		}
 	}
 }

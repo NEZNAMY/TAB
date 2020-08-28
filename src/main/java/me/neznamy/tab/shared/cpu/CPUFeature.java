@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.cpu;
 
+/**
+ * Enum class for all possible CPU usage categories
+ * Getting pretty messy, looking to split into two types in the future
+ */
 public enum CPUFeature {
 
 	//tablist names

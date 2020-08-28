@@ -10,8 +10,12 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
+/**
+ * Handler for "/tab announce bar" subcommand
+ */
 public class AnnounceBarCommand extends SubCommand{
 
+	
 	public AnnounceBarCommand() {
 		super("bar", "tab.announce.bar");
 	}

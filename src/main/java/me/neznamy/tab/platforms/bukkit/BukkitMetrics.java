@@ -20,6 +20,9 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.Metrics;
 
+/**
+ * bStats metrics for bukkit
+ */
 @SuppressWarnings("unchecked")
 public class BukkitMetrics extends Metrics {
 

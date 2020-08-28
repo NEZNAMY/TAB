@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
+/**
+ * A class representing platform specific packet class
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 

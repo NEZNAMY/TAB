@@ -18,6 +18,9 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
+/**
+ * A class to request and read PlaceholderAPI values from bukkit server
+ */
 public class PluginMessenger{
 
 	private MinecraftChannelIdentifier mc;

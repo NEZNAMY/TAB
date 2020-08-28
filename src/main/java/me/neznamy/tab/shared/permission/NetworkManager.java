@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.Shared;
 import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 import nl.chimpgamer.networkmanager.api.models.permissions.Group;
 
+/**
+ * NetworkManager hook
+ */
 public class NetworkManager implements PermissionPlugin {
 
 	private NetworkManagerPlugin plugin;

@@ -7,6 +7,9 @@ import org.bukkit.Location;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.PacketPlayOutEntityTeleport class to make work with it much easier
+ */
 public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 
 	private static Class<?> PacketPlayOutEntityTeleport;

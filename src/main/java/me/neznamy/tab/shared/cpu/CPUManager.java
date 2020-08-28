@@ -15,12 +15,15 @@ import java.util.concurrent.Executors;
 
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * A class which measures CPU usage of all tasks inserted into it and shows usage
+ */
 public class CPUManager {
 
 	private final int bufferSizeMillis = 100;
 	private final int dataMemorySize = 600;
 
-	private ConcurrentMap<String, Long> lastSecond = new ConcurrentHashMap<String, Long>();
+	private ConcurrentMap<String, Long> currentBuffer = new ConcurrentHashMap<String, Long>();
 	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
 
 	private static ExecutorService exe = Executors.newCachedThreadPool();
@@ -33,8 +36,8 @@ public class CPUManager {
 				try {
 					while (true) {
 						Thread.sleep(bufferSizeMillis);
-						lastMinute.add(lastSecond);
-						lastSecond = new ConcurrentHashMap<String, Long>();
+						lastMinute.add(currentBuffer);
+						currentBuffer = new ConcurrentHashMap<String, Long>();
 						if (lastMinute.size() > dataMemorySize) lastMinute.remove(0);
 					}
 				} catch (InterruptedException pluginDisabled) {
@@ -159,11 +162,11 @@ public class CPUManager {
 		addTime0(placeholder, nanoseconds);
 	}
 	private void addTime0(String key, long nanoseconds) {
-		Long current = lastSecond.get(key);
+		Long current = currentBuffer.get(key);
 		if (current == null) {
-			lastSecond.put(key, nanoseconds);
+			currentBuffer.put(key, nanoseconds);
 		} else {
-			lastSecond.put(key, current + nanoseconds);
+			currentBuffer.put(key, current + nanoseconds);
 		}
 	}
 }

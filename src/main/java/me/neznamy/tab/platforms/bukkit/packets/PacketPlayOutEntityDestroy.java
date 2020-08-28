@@ -4,6 +4,9 @@ import java.lang.reflect.Constructor;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.PacketPlayOutEntityDestroy class to make work with it much easier
+ */
 public class PacketPlayOutEntityDestroy extends PacketPlayOut {
 
 	public static Class<?> PacketPlayOutEntityDestroy;

@@ -16,6 +16,9 @@ import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
+/**
+ * Class for handling bossbar feature
+ */
 public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener{
 
 	public List<String> defaultBars;

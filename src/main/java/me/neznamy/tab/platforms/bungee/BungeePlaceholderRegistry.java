@@ -14,6 +14,9 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+/**
+ * Bungeecord registry to register bungeecord-only placeholders
+ */
 public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
@@ -41,7 +44,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(ITabPlayer p) {
-				return (p.getBungeeEntity()).getDisplayName();
+				return p.getBungeeEntity().getDisplayName();
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {

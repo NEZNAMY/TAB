@@ -9,6 +9,9 @@ import java.util.Map;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * Abstract class representing a subcommand of "/tab" command
+ */
 public abstract class SubCommand {
 
 	protected final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};

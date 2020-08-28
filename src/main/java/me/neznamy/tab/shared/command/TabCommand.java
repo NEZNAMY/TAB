@@ -21,6 +21,9 @@ import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
 import me.neznamy.tab.shared.command.level1.WidthCommand;
 import me.neznamy.tab.shared.config.Configs;
 
+/**
+ * The core command handler
+ */
 public class TabCommand extends SubCommand {
 	
 	public TabCommand() {

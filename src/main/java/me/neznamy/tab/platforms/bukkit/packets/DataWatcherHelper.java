@@ -6,6 +6,9 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
+/**
+ * A class to help assigning DataWatcher items as positions often change per-version
+ */
 public class DataWatcherHelper {
 
 	private static final int ARMOR_STAND_BYTEFLAGS_POSITION = getArmorStandFlagsPosition();
@@ -47,7 +50,6 @@ public class DataWatcherHelper {
 			data.setValue(new DataWatcherObject(2, DataWatcherRegistry.String), customName);
 		} else {
 			if (customName.length() > 64) customName = customName.substring(0, 64);
-			
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6){
 				data.setValue(new DataWatcherObject(10, DataWatcherRegistry.String), customName);
 			} else {

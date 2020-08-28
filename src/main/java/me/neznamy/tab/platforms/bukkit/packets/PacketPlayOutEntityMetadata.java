@@ -4,6 +4,9 @@ import java.lang.reflect.Constructor;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * A class representing the n.m.s.PacketPlayOutEntityMetadata class to make work with it much easier
+ */
 public class PacketPlayOutEntityMetadata extends PacketPlayOut {
 
 	public static Class<?> PacketPlayOutEntityMetadata;

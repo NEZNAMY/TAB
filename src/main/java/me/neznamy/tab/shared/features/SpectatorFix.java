@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
+/**
+ * Feature handler for spectator fix feature
+ */
 public class SpectatorFix implements PlayerInfoPacketListener {
 
 	private boolean allowBypass;

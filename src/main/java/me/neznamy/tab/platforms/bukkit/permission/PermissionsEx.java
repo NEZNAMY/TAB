@@ -5,6 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
+/**
+ * PEX hook
+ */
 public class PermissionsEx implements PermissionPlugin {
 
 	@Override

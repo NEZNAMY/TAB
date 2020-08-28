@@ -7,6 +7,9 @@ import org.bukkit.Bukkit;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * Can't find plugin link. Was it removed?
+ */
 public class AutoAFK implements AFKProvider {
 
 	@Override

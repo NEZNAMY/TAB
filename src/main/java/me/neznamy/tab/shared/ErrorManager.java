@@ -18,6 +18,9 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
+/**
+ * An error assistant to print internal errors into error file and warn user about misconfiguration
+ */
 public class ErrorManager {
 
 	private final String newline = System.getProperty("line.separator");

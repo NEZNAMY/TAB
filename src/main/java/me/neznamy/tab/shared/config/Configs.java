@@ -16,6 +16,10 @@ import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * A static mess of config options
+ * Looking to clean this up in the future
+ */
 public class Configs {
 
 	public static ConfigurationFile config;

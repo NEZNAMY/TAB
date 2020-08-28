@@ -17,6 +17,9 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+/**
+ * The core for bungeecord forwarding events into all enabled features
+ */
 public class BungeeEventListener implements Listener {
 
 	@EventHandler
@@ -36,6 +39,7 @@ public class BungeeEventListener implements Listener {
 			e.getSuggestions().addAll(Shared.command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args));
 		}
 	}
+	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
 		if (Shared.disabled) return;
@@ -44,6 +48,7 @@ public class BungeeEventListener implements Listener {
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.quitListeners.forEach(f -> f.onQuit(disconnectedPlayer));
 	}
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
 		try{
@@ -62,6 +67,7 @@ public class BungeeEventListener implements Listener {
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
+	
 	@EventHandler
 	public void onChat(ChatEvent e) {
 		ITabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());

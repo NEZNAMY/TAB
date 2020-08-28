@@ -11,6 +11,9 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
+/**
+ * Handler for "/tab parse" subcommand
+ */
 public class ParseCommand extends SubCommand{
 
 	public ParseCommand() {

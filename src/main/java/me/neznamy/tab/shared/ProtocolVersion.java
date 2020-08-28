@@ -2,6 +2,9 @@ package me.neznamy.tab.shared;
 
 import me.neznamy.tab.platforms.bukkit.Main;
 
+/**
+ * Enum class representing all possibly used protocol versions
+ */
 public enum ProtocolVersion {
 
 	UNKNOWN		(999, "Unknown"),

@@ -14,6 +14,9 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 
+/**
+ * The core for bukkit forwarding events into all enabled features
+ */
 public class BukkitEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -36,6 +39,7 @@ public class BukkitEventListener implements Listener {
 			Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
 		}
 	}
+	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e){
 		try {
@@ -50,6 +54,7 @@ public class BukkitEventListener implements Listener {
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.entityIdMap.remove(e.getPlayer().getEntityId());
 	}
+	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		try {
@@ -62,6 +67,7 @@ public class BukkitEventListener implements Listener {
 			Shared.errorManager.printError("An error occurred when processing PlayerChangedWorldEvent", t);
 		}
 	}
+	
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (Shared.disabled) return;

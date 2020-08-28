@@ -21,6 +21,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Main class for Bukkit platform
+ */
 public class Main extends JavaPlugin {
 
 	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];

@@ -10,6 +10,9 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 
+/**
+ * LuckPerms hook
+ */
 public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	private String version;

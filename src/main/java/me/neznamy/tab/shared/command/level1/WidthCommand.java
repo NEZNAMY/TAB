@@ -11,7 +11,10 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 
-public class WidthCommand extends SubCommand{
+/**
+ * Handler for "/tab width" subcommand
+ */
+public class WidthCommand extends SubCommand {
 
 	public WidthCommand() {
 		super("width", "tab.width");

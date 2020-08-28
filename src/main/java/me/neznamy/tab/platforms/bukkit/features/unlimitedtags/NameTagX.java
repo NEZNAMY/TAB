@@ -31,6 +31,9 @@ import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
+/**
+ * The core class for unlimited nametag mode
+ */
 public class NameTagX implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
 	private JavaPlugin plugin;
@@ -58,6 +61,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		eventListener = new EventListener();
 		Shared.registerFeature("nametagx-packet", new PacketListener(this));
 	}
+	
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
@@ -101,6 +105,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			}
 		});
 	}
+	
 	@Override
 	public void unload() {
 		HandlerList.unregisterAll(eventListener);
@@ -109,6 +114,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			p.getArmorStandManager().destroy();
 		}
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
@@ -135,6 +141,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			delayedSpawn.remove(connectedPlayer);
 		}
 	}
+	
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
@@ -149,6 +156,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			}
 		});
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		updateProperties(p);
@@ -162,6 +170,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			fixArmorStandHeights(p);
 		}
 	}
+	
 	public void loadArmorStands(ITabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
@@ -176,6 +185,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 		fixArmorStandHeights(pl);
 	}
+	
 	public void fixArmorStandHeights(ITabPlayer p) {
 		p.getArmorStandManager().refresh();
 		double currentY = -Configs.SECRET_NTX_space;
@@ -210,6 +220,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 		if (fix) fixArmorStandHeights(refreshed);
 	}
+	
 	private void updateProperties(ITabPlayer p) {
 		p.updateProperty("tagprefix");
 		p.updateProperty("customtagname", p.getName());
@@ -222,14 +233,17 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			if (!property.equals("nametag")) p.updateProperty(property);
 		}
 	}
+	
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
+	
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.NAMETAG;
 	}
+	
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
@@ -242,6 +256,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			}
 		}
 	}
+	
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");

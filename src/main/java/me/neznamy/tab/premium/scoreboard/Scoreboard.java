@@ -24,6 +24,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * A class representing a scoreboard configured in premiumconfig
+ */
 public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	private final String ObjectiveName = "TAB-Scoreboard";
@@ -51,6 +54,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		this.childBoard = childBoard;
 		refreshUsedPlaceholders();
 	}
+	
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines) {
 		this.manager = manager;
 		this.name = name;
@@ -110,6 +114,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			players.add(p);
 		}
 	}
+	
 	public void unregister() {
 		for (ITabPlayer all : players.toArray(new ITabPlayer[0])) {
 			unregister(all);
@@ -117,6 +122,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		players.clear();
 		lines.clear();
 	}
+	
 	public void unregister(ITabPlayer p) {
 		if (players.contains(p)) {
 			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
@@ -132,10 +138,12 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		if (refreshed.properties.get("scoreboard-title") == null) return;
 		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
+	
 	@Override
 	public CPUFeature getRefreshCPU() {
 		return CPUFeature.SCOREBOARD_TITLE;
 	}
+	
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;

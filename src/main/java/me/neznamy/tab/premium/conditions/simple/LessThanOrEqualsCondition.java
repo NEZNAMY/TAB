@@ -7,6 +7,9 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * "leftSide<=rightSide" condition where leftSide supports placeholders
+ */
 public class LessThanOrEqualsCondition extends SimpleCondition {
 
 	private String leftSide;

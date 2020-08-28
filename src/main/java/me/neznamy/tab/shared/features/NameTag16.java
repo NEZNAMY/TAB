@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
+/**
+ * Feature handler for nametag feature
+ */
 public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
 	private Set<String> usedPlaceholders;

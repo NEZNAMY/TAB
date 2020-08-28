@@ -6,6 +6,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * "leftSide=rightSide" condition where leftSide supports placeholders
+ */
 public class EqualsCondition extends SimpleCondition {
 
 	private String leftSide;

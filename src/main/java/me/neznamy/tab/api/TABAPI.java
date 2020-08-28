@@ -16,6 +16,9 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
+/**
+ * The primary API class to get instances of other API classes
+ */
 public class TABAPI {
 
 	/**

@@ -7,6 +7,9 @@ import java.util.List;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ProtocolVersion;
 
+/**
+ * An abstract class extended by packet classes
+ */
 public abstract class PacketPlayOut {
 	
 	public abstract Object toNMS(ProtocolVersion clientVersion) throws Exception;

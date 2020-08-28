@@ -8,6 +8,9 @@ import java.net.URL;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * Update checker
+ */
 public class UpdateChecker {
 
 	private final String currentVersion = "2.8.4";

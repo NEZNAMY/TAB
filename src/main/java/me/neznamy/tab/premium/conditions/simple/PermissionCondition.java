@@ -2,6 +2,9 @@ package me.neznamy.tab.premium.conditions.simple;
 
 import me.neznamy.tab.shared.ITabPlayer;
 
+/**
+ * "permission:permission.node" condition where permission.node is the permission
+ */
 public class PermissionCondition extends SimpleCondition {
 
 	private String permission;

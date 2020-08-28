@@ -20,6 +20,9 @@ import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
+/**
+ * A class representing platform specific packet class
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 

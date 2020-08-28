@@ -27,6 +27,9 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
+/**
+ * Main class for Velocity platform
+ */
 @Plugin(id = "tab", name = "TAB", version = "2.8.5-pre5", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main {
 

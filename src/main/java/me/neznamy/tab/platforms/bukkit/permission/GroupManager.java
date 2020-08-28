@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
+/**
+ * GroupManager hook
+ */
 public class GroupManager implements PermissionPlugin {
 
 	@Override

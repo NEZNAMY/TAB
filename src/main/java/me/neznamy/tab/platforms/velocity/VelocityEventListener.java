@@ -8,6 +8,9 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 
+/**
+ * The core for velocity forwarding events into all enabled features
+ */
 public class VelocityEventListener {
 
 	@Subscribe

@@ -19,6 +19,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
+/**
+ * The core class for NMS hooks and compatibility check
+ */
 public class NMSHook {
 	
 	private static final List<String> SUPPORTED_VERSIONS = Arrays.asList(

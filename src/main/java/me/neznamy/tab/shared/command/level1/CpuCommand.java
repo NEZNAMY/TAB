@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
+/**
+ * Handler for "/tab cpu" subcommand
+ */
 public class CpuCommand extends SubCommand {
 
 	private DecimalFormat decimal3 = new DecimalFormat("#.###");

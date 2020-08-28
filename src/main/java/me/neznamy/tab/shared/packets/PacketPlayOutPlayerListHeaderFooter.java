@@ -10,6 +10,9 @@ import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 
+/**
+ * A class representing platform specific packet class
+ */
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut {
 
 	private static Class<?> PacketPlayOutPlayerListHeaderFooter;

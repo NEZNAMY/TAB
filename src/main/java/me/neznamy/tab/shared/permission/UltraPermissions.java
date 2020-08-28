@@ -11,6 +11,9 @@ import me.TechsCode.UltraPermissions.storage.objects.User;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
+/**
+ * UltraPermissions hook
+ */
 public class UltraPermissions implements PermissionPlugin {
 
 	@Override
