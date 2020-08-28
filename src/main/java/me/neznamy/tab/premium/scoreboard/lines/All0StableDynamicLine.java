@@ -74,7 +74,6 @@ public class All0StableDynamicLine extends ScoreboardLine {
 			}
 			String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(prefix).toColoredText());
 			suffix = last + suffix;
-			if (suffix.length() > 16) suffix = suffix.substring(0, 16);
 		} else {
 			prefix = replaced;
 			suffix = "";

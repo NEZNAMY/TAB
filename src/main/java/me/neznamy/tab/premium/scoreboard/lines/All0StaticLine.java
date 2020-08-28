@@ -43,7 +43,6 @@ public class All0StaticLine extends ScoreboardLine {
 			String[] name_suffix = split(other, 40);
 			name = name_suffix[0];
 			suffix = name_suffix[1];
-			if (suffix.length() > 16) suffix = suffix.substring(0, 16);
 		}
 		if (this.text.length() <= 10) { //6 forced characters &x&x&r
 			prefix1_7= "";
@@ -58,7 +57,6 @@ public class All0StaticLine extends ScoreboardLine {
 			String[] name_suffix = split(other, 40);
 			name1_7 = name_suffix[0];
 			suffix1_7 = name_suffix[1];
-			if (suffix1_7.length() > 16) suffix1_7 = suffix1_7.substring(0, 16);
 		}
 	}
 	
