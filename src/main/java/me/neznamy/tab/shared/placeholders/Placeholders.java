@@ -50,8 +50,11 @@ public class Placeholders {
 		return placeholders;
 	}
 
-	public static Set<String> getUsedPlaceholderIdentifiersRecursive(String line){
-		Set<String> base = new HashSet<String>(detectAll(line));
+	public static Set<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
+		Set<String> base = new HashSet<String>();
+		for (String string : strings) {
+			base.addAll(detectAll(string));
+		}
 		for (String placeholder : base.toArray(new String[0])) {
 			List<Placeholder> pl = detectPlaceholders(placeholder);
 			for (Placeholder p : pl) {
