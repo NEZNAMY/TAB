@@ -30,7 +30,13 @@ public class DataWatcher {
 
 	public static void initializeClass() throws Exception {
 		DataWatcher = PacketPlayOut.getNMSClass("DataWatcher");
-		newDataWatcher = DataWatcher.getConstructors()[0];
+		try {
+			//1.7+
+			newDataWatcher = DataWatcher.getConstructor(PacketPlayOut.getNMSClass("Entity"));
+		} catch (Exception e1) {
+			//1.6-
+			newDataWatcher = DataWatcher.getConstructor();
+		}
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			//1.9+
 			DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$Item");
