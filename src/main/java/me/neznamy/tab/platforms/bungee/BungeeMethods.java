@@ -10,7 +10,7 @@ import java.util.Map;
 import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.ProtocolVersion;

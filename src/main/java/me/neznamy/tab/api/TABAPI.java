@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import me.neznamy.tab.platforms.bukkit.BukkitMethods;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
-import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -126,8 +126,8 @@ public class TABAPI {
 		}
 		ScoreboardManager sbm = (ScoreboardManager) Shared.features.get("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard sb = new me.neznamy.tab.premium.Scoreboard(sbm, "API", title, lines);
-		sbm.APIscoreboards.add((me.neznamy.tab.premium.Scoreboard) sb);
+		Scoreboard sb = new me.neznamy.tab.premium.scoreboard.Scoreboard(sbm, "API", title, lines);
+		sbm.APIscoreboards.add((me.neznamy.tab.premium.scoreboard.Scoreboard) sb);
 		return sb;
 	}
 	

@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
-import me.neznamy.tab.premium.ScoreboardManager;
+import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
