@@ -29,7 +29,7 @@ public class PluginHooks {
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
-			String playername = (player == null ? "< null >" : player.getName());
+			String playername = (player == null ? "<null>" : player.getName());
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {
 				Shared.errorManager.printError("PlaceholderAPI v" + papi.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
