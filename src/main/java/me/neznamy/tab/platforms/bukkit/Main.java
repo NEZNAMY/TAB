@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +92,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-
 	public static void inject(UUID player) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Injector.inject(player);
@@ -106,20 +104,5 @@ public class Main extends JavaPlugin {
 			if (provider != null) PluginHooks.idisguise = provider.getProvider();
 		}
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-	}
-	@SuppressWarnings("unchecked")
-	public static Player[] getOnlinePlayers(){
-		try {
-			Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-			if (players instanceof Player[]) {
-				//1.5.x - 1.7.x
-				return (Player[]) players;
-			} else {
-				//1.8+
-				return ((Collection<Player>)players).toArray(new Player[0]); 
-			}
-		} catch (Exception e) {
-			return Shared.errorManager.printError(new Player[0], "Failed to get online players");
-		}
 	}
 }

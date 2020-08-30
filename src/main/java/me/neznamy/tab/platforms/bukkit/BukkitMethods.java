@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -134,11 +135,23 @@ public class BukkitMethods implements PlatformMethods {
 		new GroupRefresher();
 		new UpdateChecker();
 
-		for (Player p : Main.getOnlinePlayers()) {
+		for (Player p : getOnlinePlayers()) {
 			ITabPlayer t = new TabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			Shared.entityIdMap.put(p.getEntityId(), t);
 			if (inject) Main.inject(t.getUniqueId());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Player[] getOnlinePlayers() throws Exception {
+		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
+		if (players instanceof Player[]) {
+			//1.5.x - 1.7.x
+			return (Player[]) players;
+		} else {
+			//1.8+
+			return ((Collection<Player>)players).toArray(new Player[0]); 
 		}
 	}
 
