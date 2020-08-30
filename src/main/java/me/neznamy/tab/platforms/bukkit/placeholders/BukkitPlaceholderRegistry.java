@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
@@ -32,7 +34,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	private Economy economy;
 	private Chat chat;
-	
+
 	public BukkitPlaceholderRegistry() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
@@ -41,7 +43,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			if (rspChat != null) chat = rspChat.getProvider();
 		}
 	}
-	
+
 	@Override
 	public void registerPlaceholders() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%money%", 1000) {
@@ -110,6 +112,17 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(p.getBukkitEntity().getHealth())+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%fullhealth%", 100) {
+			public String get(ITabPlayer p) {
+				double absorption = 0;
+				for (PotionEffect pe : p.getBukkitEntity().getActivePotionEffects()) {
+					if (pe.getType().equals(PotionEffectType.ABSORPTION)) {
+						absorption = pe.getAmplifier() * 2 + 2;
+					}
+				}
+				return (int) Math.ceil(p.getBukkitEntity().getHealth() + absorption)+"";
 			}
 		});
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
