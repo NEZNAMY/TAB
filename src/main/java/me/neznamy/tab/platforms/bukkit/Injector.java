@@ -90,15 +90,17 @@ public class Injector {
 							}
 							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
 						}
-
-						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
-						if (info != null) {
-							for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-								long time = System.nanoTime();
-								if (info != null) info = f.onPacketSend(player, info);
-								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+						
+						if (!Shared.playerInfoListeners.isEmpty()) {
+							PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
+							if (info != null) {
+								for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
+									long time = System.nanoTime();
+									if (info != null) info = f.onPacketSend(player, info);
+									Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+								}
+								packet = (info == null ? null : info.toNMS(player.getVersion()));
 							}
-							packet = (info == null ? null : info.toNMS(player.getVersion()));
 						}
 						if (packet != null) super.write(context, packet, channelPromise);
 					} catch (Throwable e){
