@@ -60,11 +60,11 @@ public class PlaceholderManager implements QuitEventListener {
 		}
 
 		AtomicInteger atomic = new AtomicInteger();
-		Shared.cpu.startRepeatingMeasuredTask(10, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
 			public void run() {
-				int loopTime = atomic.addAndGet(10);
+				int loopTime = atomic.addAndGet(50);
 				Collection<ITabPlayer> allPlayers = Shared.getPlayers();
 				Collection<ITabPlayer> players = new ArrayList<ITabPlayer>();
 				for (ITabPlayer p : allPlayers) {
