@@ -128,7 +128,7 @@ public class BukkitMethods implements PlatformMethods {
 		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist(plugin));
 		if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (PluginHooks.placeholderAPI) {
-			Shared.registerFeature("papihook", new TabExpansion(plugin));
+			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
 		}
 		new GroupRefresher();
