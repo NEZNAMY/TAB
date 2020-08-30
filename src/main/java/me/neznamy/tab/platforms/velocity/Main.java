@@ -30,7 +30,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = "2.8.5-pre5", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.8.5-pre6", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main {
 
 	public ProxyServer server;
