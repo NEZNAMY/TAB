@@ -192,7 +192,7 @@ public class ArmorStand {
 			if (vehicle.getType() == EntityType.HORSE) {
 				return player.getVehicle().getLocation().getY() + 0.85;
 			}
-			if (vehicle.getType() == EntityType.DONKEY) {
+			if (vehicle.getType().toString().equals("DONKEY")) {
 				return player.getVehicle().getLocation().getY() + 0.525;
 			}
 			if (vehicle.getType() == EntityType.PIG) {
