@@ -44,7 +44,7 @@ public class Shared {
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	public static final TabCommand command = new TabCommand();
 	
-	public static Map<String, Object> features = new ConcurrentHashMap<String, Object>();
+	public static Map<String, Feature> features = new ConcurrentHashMap<String, Feature>();
 	public static List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
 	public static List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
 	public static List<Loadable> loadableFeatures = new ArrayList<Loadable>();
