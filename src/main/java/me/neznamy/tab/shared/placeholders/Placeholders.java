@@ -43,6 +43,9 @@ public class Placeholders {
 	public static Placeholder getPlaceholder(String identifier) {
 		return registeredPlaceholders.get(identifier);
 	}
+	public static RelationalPlaceholder getRelationalPlaceholder(String identifier) {
+		return registeredRelationalPlaceholders.get(identifier);
+	}
 	public static List<String> detectAll(String text){
 		List<String> placeholders = new ArrayList<>();
 		if (text == null) return placeholders;

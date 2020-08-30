@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -41,9 +42,14 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l•‘&8&m                                                    ");
 		sendMessage(sender, "&8&l•‘ &6Placeholders:");
 		for (Entry<Object, Float> entry : placeholders.entrySet()) {
-			Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
 			String refresh = "";
-			if (p != null) refresh = " &8(" + p.cooldown + ")&7";
+			if (!entry.getKey().toString().startsWith("%rel_")) {
+				Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
+				if (p != null) refresh = " &8(" + p.cooldown + ")&7";
+			} else {
+				RelationalPlaceholder rel = Placeholders.getRelationalPlaceholder(entry.getKey()+"");
+				if (rel != null) refresh = " &8(" + rel.refresh + ")&7";
+			}
 			sendMessage(sender, "&8&l•‘ &7" + entry.getKey() + refresh + " - " + colorizePlaceholder(decimal3.format(entry.getValue())) + "%");
 		}
 		sendMessage(sender, "&8&l•‘&8&m                                                    ");
