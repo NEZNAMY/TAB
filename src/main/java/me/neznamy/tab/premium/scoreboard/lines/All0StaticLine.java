@@ -17,6 +17,7 @@ public class All0StaticLine extends ScoreboardLine {
 	private Scoreboard parent;
 	private int lineID;
 	private String text;
+	private String originalText;
 	
 	private String prefix1_7;
 	private String name1_7;
@@ -30,6 +31,7 @@ public class All0StaticLine extends ScoreboardLine {
 		super(lineID);
 		this.parent = parent;
 		this.lineID = lineID;
+		this.originalText = Placeholders.color(text);
 		this.text = IChatBaseComponent.fromColoredText(text).toColoredText(); //colorizing + translating RGB codes into legacy
 		//1.8+
 		if (this.text.length() <= 34) { //6 forced characters &x&x&r
@@ -75,19 +77,21 @@ public class All0StaticLine extends ScoreboardLine {
 	@Override
 	public void register(ITabPlayer p) {
 		p.setProperty(teamName, text, null);
-		//<1.8 does not support sorting by name which we abuse here
-		int score = p.getVersion().getMinorVersion() < 8 ? lineID : parent.manager.staticNumber;
 		if (p.getVersion().getMinorVersion() < 8) {
-			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, score);
+			//<1.8 does not support sorting by name which we abuse here
+			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, lineID);
+		} else if (p.getVersion().getMinorVersion() < 13) {
+			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, parent.manager.staticNumber);
 		} else {
-			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, score);
+			PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), originalText, "", ObjectiveName, parent.manager.staticNumber);
 		}
 	}
 
 	@Override
 	public void unregister(ITabPlayer p) {
 		if (p.properties.get(teamName).get().length() > 0) {
-			PacketAPI.removeScoreboardScore(p, p.getVersion().getMinorVersion() < 8 ? name1_7 : name, teamName);
+			String name = p.getVersion().getMinorVersion() >= 13 ? getPlayerName() : p.getVersion().getMinorVersion() >= 8 ? this.name : name1_7;
+			PacketAPI.removeScoreboardScore(p, name, teamName);
 		}
 	}
 }
