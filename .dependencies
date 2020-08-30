@@ -1,4 +1,4 @@
 # Extra dependencies as they don't have a maven repository #
 
-UltraPermissions: - (if you own it use it, if not, delete the code)
+NetworkManager (API): https://github.com/ChimpGamer/NetworkManager/blob/master/Pluggie/API-s/NetworkManagerAPI-v2.8.7.jar
 Velocity: https://ci.velocitypowered.com/job/velocity-1.1.0/lastSuccessfulBuild/artifact/proxy/build/libs/
