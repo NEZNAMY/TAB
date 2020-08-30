@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
 
 /**
- * A helper class to reformat all RGB formats into the default #RRGGBB ad apply gradients
+ * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
  */
 public class RGBUtils {
 
