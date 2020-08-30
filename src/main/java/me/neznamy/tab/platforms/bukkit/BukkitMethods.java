@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
-import me.neznamy.tab.platforms.bukkit.features.BukkitBridge;
 import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -62,11 +61,11 @@ public class BukkitMethods implements PlatformMethods {
 
 	private Set<String> usedExpansions;
 	private JavaPlugin plugin;
-	
+
 	public BukkitMethods(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
@@ -88,84 +87,76 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void loadFeatures(boolean inject) throws Exception{
-		if (Configs.bukkitBridgeMode) {
-			PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-			if (!PluginHooks.placeholderAPI) {
-				Shared.errorManager.startupWarn("Bukkit bridge mode is enabled but PlaceholderAPI was not found, this will not work.");
-			}
-			new BukkitBridge(plugin);
-		} else {
-			Main.detectPlugins();
-			usedExpansions = new HashSet<String>();
-			PlaceholderManager plm = new PlaceholderManager();
-			plm.addRegistry(new BukkitPlaceholderRegistry());
-			plm.addRegistry(new UniversalPlaceholderRegistry());
-			plm.registerPlaceholders();
-			Shared.registerFeature("placeholders", plm);
-			if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
-				if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-					if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
-						Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
-					}
-					Shared.registerFeature("nametagx", new NameTagX(plugin));
-				} else {
-					Shared.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
+		Main.detectPlugins();
+		usedExpansions = new HashSet<String>();
+		PlaceholderManager plm = new PlaceholderManager();
+		plm.addRegistry(new BukkitPlaceholderRegistry());
+		plm.addRegistry(new UniversalPlaceholderRegistry());
+		plm.registerPlaceholders();
+		Shared.registerFeature("placeholders", plm);
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
+			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
+					Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
 				}
-			}
-			if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
-			if (Configs.BossBarEnabled) {
-				BossBar bb = new BossBar();
-				Shared.registerFeature("bossbar", bb);
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
-			}
-			if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
-			if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
-				Playerlist playerlist = new Playerlist();
-				Shared.registerFeature("playerlist", playerlist);
-				if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
-
-			}
-			int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
-			//on 1.16 server cats and parrots do not listen to sit/stand commands, but dogs do
-			//this is probably caused by 1.16 server requiring additional packets from client which are not sent when player does not see correct data
-			//disabling the feature until the issue is resolved
-			if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
-			if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.registerFeature("spectatorfix", new SpectatorFix());
-			if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.registerFeature("scoreboard", new ScoreboardManager());
-			if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist(plugin));
-			if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
-			if (PluginHooks.placeholderAPI) {
-				Shared.registerFeature("papihook", new TabExpansion(plugin));
-				new ExpansionDownloader(plugin).download(usedExpansions);
-			}
-			new GroupRefresher();
-			new UpdateChecker();
-
-			for (Player p : Main.getOnlinePlayers()) {
-				ITabPlayer t = new TabPlayer(p);
-				Shared.data.put(p.getUniqueId(), t);
-				Shared.entityIdMap.put(p.getEntityId(), t);
-				if (inject) Main.inject(t.getUniqueId());
+				Shared.registerFeature("nametagx", new NameTagX(plugin));
+			} else {
+				Shared.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
 			}
 		}
+		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
+		if (Configs.BossBarEnabled) {
+			BossBar bb = new BossBar();
+			Shared.registerFeature("bossbar", bb);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
+		}
+		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
+		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
+			Playerlist playerlist = new Playerlist();
+			Shared.registerFeature("playerlist", playerlist);
+			if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+
+		}
+		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
+		//on 1.16 server cats and parrots do not listen to sit/stand commands, but dogs do
+		//this is probably caused by 1.16 server requiring additional packets from client which are not sent when player does not see correct data
+		//disabling the feature until the issue is resolved
+		if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.registerFeature("spectatorfix", new SpectatorFix());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.registerFeature("scoreboard", new ScoreboardManager());
+		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist(plugin));
+		if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (PluginHooks.placeholderAPI) {
+			Shared.registerFeature("papihook", new TabExpansion(plugin));
+			new ExpansionDownloader(plugin).download(usedExpansions);
+		}
+		new GroupRefresher();
+		new UpdateChecker();
+
+		for (Player p : Main.getOnlinePlayers()) {
+			ITabPlayer t = new TabPlayer(p);
+			Shared.data.put(p.getUniqueId(), t);
+			Shared.entityIdMap.put(p.getEntityId(), t);
+			if (inject) Main.inject(t.getUniqueId());
+		}
 	}
-	
+
 	@Override
 	public void sendConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
 	}
-	
+
 	@Override
 	public void sendRawConsoleMessage(String message) {
 		Bukkit.getConsoleSender().sendMessage(message);
 	}
-	
+
 	@Override
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
 		return packet.toNMS(protocolVersion);
 	}
-	
+
 	@Override
 	public void loadConfig() throws Exception {
 		Configs.config = new YamlConfigurationFile(getDataFolder(), "bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
@@ -174,10 +165,9 @@ public class BukkitMethods implements PlatformMethods {
 		Configs.advancedconfig = new YamlConfigurationFile(getDataFolder(), "advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
 		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
 		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-		Configs.bukkitBridgeMode = Configs.advancedconfig.getBoolean("bukkit-bridge-mode", false);
 		Configs.groupsByPermissions = Configs.advancedconfig.getBoolean("assign-groups-by-permissions", false);
 	}
-	
+
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
@@ -312,12 +302,12 @@ public class BukkitMethods implements PlatformMethods {
 			removeOld(config, "refresh-interval-milliseconds");
 		}
 	}
-	
+
 	@Override
 	public String getServerVersion() {
 		return Bukkit.getBukkitVersion().split("-")[0] + " (" + Main.serverPackage + ")";
 	}
-	
+
 	@Override
 	public void suggestPlaceholders() {
 		//bukkit only

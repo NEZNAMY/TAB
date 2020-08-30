@@ -77,7 +77,6 @@ public class Configs {
 	public static ConfigurationFile advancedconfig;
 	public static boolean usePrimaryGroup = true;
 	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
-	public static boolean bukkitBridgeMode;
 	public static boolean groupsByPermissions;
 
 	public static ConfigurationFile playerdata; 

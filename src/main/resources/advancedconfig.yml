@@ -24,5 +24,4 @@ primary-group-finding-list:
   - Admin
   - Helper
   - default
-bukkit-bridge-mode: false
 assign-groups-by-permissions: false

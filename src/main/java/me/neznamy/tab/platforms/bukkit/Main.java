@@ -42,7 +42,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-				if (Configs.bukkitBridgeMode || Shared.disabled) {
+				if (Shared.disabled) {
 					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
 						if (sender.hasPermission("tab.reload")) {
 							Shared.unload();
@@ -60,8 +60,7 @@ public class Main extends JavaPlugin {
 					} else {
 						if (sender.hasPermission("tab.admin")) {
 							sender.sendMessage(Placeholders.color("&m                                                                                "));
-							if (Configs.bukkitBridgeMode) sender.sendMessage(Placeholders.color(" &6&lBukkit bridge mode activated"));
-							if (Shared.disabled) sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
+							sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
 							sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
 							sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
 							sender.sendMessage(Placeholders.color("&m                                                                                "));
@@ -75,9 +74,6 @@ public class Main extends JavaPlugin {
 		});
 		Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
 			public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
-				if (Configs.bukkitBridgeMode) {
-					return null;
-				}
 				return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
@@ -94,7 +90,6 @@ public class Main extends JavaPlugin {
 				}
 			}
 			Shared.unload();
-			if (Configs.bukkitBridgeMode) Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
 		}
 	}
 

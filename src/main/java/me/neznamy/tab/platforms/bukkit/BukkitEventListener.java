@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 
@@ -23,7 +22,6 @@ public class BukkitEventListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		try {
 			if (Shared.disabled) return;
-			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = new TabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
@@ -44,7 +42,6 @@ public class BukkitEventListener implements Listener {
 	public void onQuit(PlayerQuitEvent e){
 		try {
 			if (Shared.disabled) return;
-			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (disconnectedPlayer == null) return;
 			Shared.quitListeners.forEach(f -> f.onQuit(disconnectedPlayer));
@@ -59,7 +56,6 @@ public class BukkitEventListener implements Listener {
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		try {
 			if (Shared.disabled) return;
-			if (Configs.bukkitBridgeMode) return;
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p == null) return;
 			p.onWorldChange(e.getFrom().getName(), p.world = e.getPlayer().getWorld().getName());
@@ -71,7 +67,6 @@ public class BukkitEventListener implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (Shared.disabled) return;
-		if (Configs.bukkitBridgeMode) return;
 		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {

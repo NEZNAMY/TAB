@@ -36,11 +36,11 @@ public class ExpansionDownloader {
 					if (PlaceholderAPI.getRegisteredIdentifiers().contains(expansion)) return;
 					File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 					int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
-					Shared.platform.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+					Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Expansion \u00a7e" + expansion + "\u00a7d is used but not installed. Installing!");
 					runSyncCommand("papi ecloud download " + expansion);
 					Thread.sleep(5000);
 					if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-						Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
+						Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
 						runSyncCommand("papi reload");
 					}
 				} catch (InterruptedException | ConcurrentModificationException e) {
@@ -69,12 +69,12 @@ public class ExpansionDownloader {
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
 								for (String expansion : expansions) {
-									Shared.platform.sendConsoleMessage("&d[TAB] Expansion &e" + expansion + "&d is used but not installed. Installing!");
+									Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Expansion \u00a7e" + expansion + "\u00a7d is used but not installed. Installing!");
 									runSyncCommand("papi ecloud download " + expansion);
 									Thread.sleep(5000);
 								}
 								if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-									Shared.platform.sendConsoleMessage("&d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
+									Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
 									runSyncCommand("papi reload");
 								}
 							}
