@@ -6,17 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -43,7 +41,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
 		ignoredWorlds = Configs.advancedconfig.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
 		sharedWorlds = Configs.advancedconfig.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
-		for (Player p : Main.getOnlinePlayers()){
+		for (ITabPlayer p : Shared.getPlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);
 		}
@@ -51,63 +49,67 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	@Override
 	public void unload(){
-		for (Player p : Main.getOnlinePlayers()) for (Player pl : Main.getOnlinePlayers()) p.showPlayer(pl);
+		for (ITabPlayer p : Shared.getPlayers()) {
+			for (ITabPlayer pl : Shared.getPlayers()) {
+				p.getBukkitEntity().showPlayer(pl.getBukkitEntity());
+			}
+		}
 	}
 	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		hidePlayer(connectedPlayer.getBukkitEntity());
-		showInSameWorldGroup(connectedPlayer.getBukkitEntity());
+		hidePlayer(connectedPlayer);
+		showInSameWorldGroup(connectedPlayer);
 	}
 	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
-		hidePlayer(p.getBukkitEntity());
-		showInSameWorldGroup(p.getBukkitEntity());
+		hidePlayer(p);
+		showInSameWorldGroup(p);
 	}
 	
-	private void showInSameWorldGroup(Player shown){
+	private void showInSameWorldGroup(ITabPlayer shown){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				for (Player everyone : Main.getOnlinePlayers()){
+				for (ITabPlayer everyone : Shared.getPlayers()){
 					if (everyone == shown) continue;
-					if (shouldSee(shown, everyone)) shown.showPlayer(everyone);
-					if (shouldSee(everyone, shown)) everyone.showPlayer(shown);
+					if (shouldSee(shown, everyone)) shown.getBukkitEntity().showPlayer(everyone.getBukkitEntity());
+					if (shouldSee(everyone, shown)) everyone.getBukkitEntity().showPlayer(shown.getBukkitEntity());
 				}
 			}
 		});
 	}
 	
-	private boolean shouldSee(Player viewer, Player displayed) {
+	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
 		if (displayed == viewer) return true;
 		String player1WorldGroup = null;
 		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group).contains(viewer.getWorld().getName())) player1WorldGroup = group;
+			if (sharedWorlds.get(group).contains(viewer.getWorldName())) player1WorldGroup = group;
 		}
 		String player2WorldGroup = null;
 		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group).contains(displayed.getWorld().getName())) player2WorldGroup = group;
+			if (sharedWorlds.get(group).contains(displayed.getWorldName())) player2WorldGroup = group;
 		}
-		if (viewer.getWorld() == displayed.getWorld() || (player1WorldGroup != null && player2WorldGroup != null && player1WorldGroup.equals(player2WorldGroup))) {
+		if (viewer.getWorldName().equals(displayed.getWorldName()) || (player1WorldGroup != null && player2WorldGroup != null && player1WorldGroup.equals(player2WorldGroup))) {
 			return true;
 		}
-		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorld().getName())) {
+		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName())) {
 			return true;
 		}
 		return false;
 	}
 	
-	private void hidePlayer(Player hidden){
+	private void hidePlayer(ITabPlayer hidden){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				for (Player everyone : Main.getOnlinePlayers()){
+				for (ITabPlayer everyone : Shared.getPlayers()){
 					if (everyone == hidden) continue;
-					hidden.hidePlayer(everyone);
-					everyone.hidePlayer(hidden);
+					hidden.getBukkitEntity().hidePlayer(everyone.getBukkitEntity());
+					everyone.getBukkitEntity().hidePlayer(hidden.getBukkitEntity());
 				}
 			}
 		});
@@ -120,7 +122,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData data : info.entries) {
 			ITabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
-			if (added != null && !shouldSee(receiver.getBukkitEntity(), added.getBukkitEntity())) {
+			if (added != null && !shouldSee(receiver, added)) {
 				toRemove.add(data);
 			}
 		}
