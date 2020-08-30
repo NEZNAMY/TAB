@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
+import me.neznamy.tab.shared.features.interfaces.Feature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -136,7 +137,7 @@ public class Shared {
 			errorManager.criticalError("Failed to disable", e);
 		}
 	}
-	public static void registerFeature(String featureName, Object featureHandler) {
+	public static void registerFeature(String featureName, Feature featureHandler) {
 		features.put(featureName, featureHandler);
 		if (featureHandler instanceof Loadable) {
 			loadableFeatures.add((Loadable) featureHandler);
