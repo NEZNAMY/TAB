@@ -68,9 +68,16 @@
 		</repository>
 
 		<!-- LibsDisguises -->
+		<!-- Netty -->
 		<repository>
 			<id>md5</id>
 			<url>http://repo.md-5.net/content/groups/public</url>
+		</repository>
+
+		<!-- Google common -->
+		<repository>
+			<id>econic</id>
+			<url>https://repo.enonic.com/public/</url>
 		</repository>
 
 	</repositories>
@@ -246,8 +253,93 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Velocity API <dependency> <groupId>com.velocitypowered</groupId> <artifactId>velocity-api</artifactId> 
-			<version>1.1.0-SNAPSHOT</version> <scope>provided</scope> </dependency> -->
+		<!-- Velocity API -->
+		<dependency>
+			<groupId>com.velocitypowered</groupId>
+			<artifactId>velocity-api</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
+			<scope>provided</scope>
+			<exclusions>
+
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-legacy</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-plain</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.moandjiezana.toml</groupId>
+					<artifactId>toml4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>adventure-text-serializer-legacy</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>adventure-text-serializer-plain</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>adventure-text-serializer-legacy-text3</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>examination-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>examination-string</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.inject</groupId>
+					<artifactId>javax.inject</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>aopalliance</groupId>
+					<artifactId>aopalliance</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.checkerframework</groupId>
+					<artifactId>checker-qual</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.mojang</groupId>
+					<artifactId>brigadier</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-hocon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-yaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-gson</artifactId>
+				</exclusion>
+
+			</exclusions>
+		</dependency>
 
 		<!-- PlaceholderAPI -->
 		<dependency>
@@ -484,6 +576,29 @@
 				</exclusion>
 
 			</exclusions>
+		</dependency>
+
+		<!-- Netty -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.51.Final</version>
+		</dependency>
+
+		<!-- com.google.common.collect -->
+		<dependency>
+			<groupId>com.google.common</groupId>
+			<artifactId>google-collect</artifactId>
+			<version>0.5</version>
+		</dependency>
+
+		<!-- com.google.common.io -->
+		<!-- com.google.common.base -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>17.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
