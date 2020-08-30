@@ -113,6 +113,7 @@ public class ArmorStand {
 	}
 	
 	public void sneak(boolean sneaking) {
+		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (ITabPlayer viewer : getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
