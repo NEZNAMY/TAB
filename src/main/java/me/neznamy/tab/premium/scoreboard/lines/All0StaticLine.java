@@ -47,7 +47,7 @@ public class All0StaticLine extends ScoreboardLine {
 			suffix = name_suffix[1];
 		}
 		if (this.text.length() <= 10) { //6 forced characters &x&x&r
-			prefix1_7= "";
+			prefix1_7 = "";
 			name1_7 = getPlayerName() + this.text;
 			suffix1_7 = "";
 		} else {
