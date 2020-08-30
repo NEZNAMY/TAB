@@ -79,7 +79,12 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 				}
 			} else {
 				if (manager.useNumbers) {
-					return new NumberedStaticLine(lineID, text);
+					if (text.length() > 26) {
+						return new NumberedStaticLine(lineID, text);
+					} else {
+						 //trying to avoid same player name when multiple lines have the same short text (such as for empty lines)
+						return new NumberedStableDynamicLine(this, lineID, text);
+					}
 				} else {
 					return new All0StaticLine(this, lineID, text);
 				}
