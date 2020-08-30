@@ -198,12 +198,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		} else {
-			Placeholders.registerPlaceholder(new ServerConstant("%vault-prefix%") {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%vault-prefix%", -1) {
 				public String get() {
 					return "";
 				}
 			});
-			Placeholders.registerPlaceholder(new ServerConstant("%vault-suffix%") {
+			Placeholders.registerPlaceholder(new ServerPlaceholder("%vault-suffix%", -1) {
 				public String get() {
 					return "";
 				}
