@@ -27,7 +27,7 @@ public class ExpansionDownloader {
 	
 	public void download(String expansion) {
 		if (expansion.equals("rel")) return;
-		Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+		Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 			@Override
 			public void run() {
@@ -58,7 +58,7 @@ public class ExpansionDownloader {
 			@Override
 			public void run() {
 				//to not freeze the server with Thread.sleep
-				Shared.featureCpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+				Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
 
 					@Override
 					public void run() {

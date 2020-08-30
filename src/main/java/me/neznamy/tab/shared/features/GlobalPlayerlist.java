@@ -9,7 +9,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -44,6 +45,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 	}
+	
 	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
 		if (displayed == viewer) return true;
 		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
@@ -66,6 +68,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 		return false;
 	}
+	
 	@Override
 	public void unload() {
 		for (ITabPlayer displayed : Shared.getPlayers()) {
@@ -75,6 +78,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		Object addConnected = getAddPacket(connectedPlayer).build(ProtocolVersion.SERVER_VERSION);
@@ -89,6 +93,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 	}
+	
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		Object remove = getRemovePacket(disconnectedPlayer).build(ProtocolVersion.SERVER_VERSION);
@@ -97,10 +102,11 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			all.sendPacket(remove);
 		}
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		//delay because VeLoCiTyPoWeReD
-		Shared.featureCpu.runTaskLater(100, "processing server switch", CPUFeature.GLOBAL_PLAYERLIST, new Runnable() {
+		Shared.cpu.runTaskLater(100, "processing server switch", getFeatureType(), UsageType.WORLD_SWITCH_EVENT, new Runnable() {
 
 			@Override
 			public void run() {
@@ -122,12 +128,15 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		});
 	}
+	
 	public PacketPlayOutPlayerInfo getRemovePacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, null, null));
 	}
+	
 	public PacketPlayOutPlayerInfo getAddPacket(ITabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
 	}
+	
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (receiver.getVersion().getMinorVersion() < 8) return info;
@@ -151,8 +160,9 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 		return info;
 	}
+
 	@Override
-	public CPUFeature getCPUName() {
-		return CPUFeature.GLOBAL_PLAYERLIST;
+	public TabFeature getFeatureType() {
+		return TabFeature.GLOBAL_PLAYERLIST;
 	}
 }

@@ -4,7 +4,7 @@ import java.util.Set;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -21,6 +21,7 @@ public class ColorAndStyleRefresher implements Refreshable {
 		this.line = line;
 		refreshUsedPlaceholders();
 	}
+	
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
@@ -28,17 +29,20 @@ public class ColorAndStyleRefresher implements Refreshable {
 		Property style = refreshed.properties.get("bossbar-style-" + line.name);
 		refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_STYLE(line.uuid, line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())));
 	}
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.BOSSBAR_COLOR_STYLE_REFRESH;
-	}
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
+	
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.color);
 		usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line.style));
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BOSSBAR;
 	}
 }

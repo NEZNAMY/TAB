@@ -13,6 +13,7 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -64,9 +65,9 @@ public class PluginMessenger{
 				for (Refreshable r : update) {
 					long startTime = System.nanoTime();
 					r.refresh(receiver, false);
-					Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+					Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 				}
-				Shared.bukkitBridgePlaceholderCpu.addTime(pl.getIdentifier(), cpu);
+				Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 			} else {
 				Shared.debug("Received output for unknown placeholder " + placeholder);
 			}

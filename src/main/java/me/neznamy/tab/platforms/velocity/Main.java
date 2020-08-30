@@ -24,6 +24,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
@@ -129,12 +131,14 @@ public class Main {
 						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 							long time = System.nanoTime();
 							if (info != null) info = f.onPacketSend(player, info);
-							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 						}
 						packet = (info == null ? null : info.toVelocity(player.getVersion()));
 					}
 					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
+						long time = System.nanoTime();
 						modifyPlayers((Team) packet);
+						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);

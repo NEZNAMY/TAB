@@ -10,7 +10,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -82,13 +83,14 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		if (bossbar_off_players == null) bossbar_off_players = new ArrayList<String>();
 	}
+	
 	@Override
 	public void load() {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
 			detectBossBarsAndSend(p);
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", CPUFeature.BOSSBAR_PERMISSION_CHECK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.bossbarVisible || p.disabledBossbar) continue;
@@ -104,6 +106,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			}
 		});
 	}
+	
 	@Override
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
@@ -114,11 +117,13 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		lines.clear();
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.bossbarVisible = !bossbar_off_players.contains(connectedPlayer.getName());
 		detectBossBarsAndSend(connectedPlayer);
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		for (BossBarLine line : p.activeBossBars) {
@@ -126,6 +131,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		detectBossBarsAndSend(p);
 	}
+	
 	@Override
 	public boolean onCommand(ITabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
@@ -134,6 +140,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		return false;
 	}
+	
 	public void detectBossBarsAndSend(ITabPlayer p) {
 		p.activeBossBars.clear();
 		if (p.disabledBossbar || !p.bossbarVisible) return;
@@ -141,6 +148,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		showBossBars(p, announcements);
 		showBossBars(p, perWorld.get(p.getWorldName()));
 	}
+	
 	private void showBossBars(ITabPlayer p, List<String> bars) {
 		if (bars == null) return;
 		for (String defaultBar : bars) {
@@ -150,5 +158,10 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 				p.activeBossBars.add(bar);
 			}
 		}
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BOSSBAR;
 	}
 }

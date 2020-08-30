@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -39,6 +39,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
 	}
+	
 	@Override
 	public void load() {
 		for (ITabPlayer loaded : Shared.getPlayers()){
@@ -52,6 +53,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			}
 		}
 	}
+	
 	@Override
 	public void unload() {
 		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).build(ProtocolVersion.SERVER_VERSION);
@@ -60,6 +62,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			p.sendPacket(unregister);
 		}
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(propertyName, rawValue, null);
@@ -71,6 +74,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
@@ -82,9 +86,11 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			return;
 		}
 	}
+	
 	public int getValue(ITabPlayer p) {
 		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "Yellow number in tablist");
 	}
+	
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledTablistObjective) return;
@@ -93,16 +99,19 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, value);
 		}
 	}
+	
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.YELLOW_NUMBER;
-	}
+
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BOSSBAR;
 	}
 }

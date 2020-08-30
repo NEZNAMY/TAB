@@ -11,7 +11,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -50,9 +51,9 @@ public class Injector {
 								try {
 									if (packet != null) packet = f.onPacketReceive(player, packet);
 								} catch (Throwable e) {
-									Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
+									Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 								}
-								Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+								Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 							}
 						}
 						if (packet != null) super.channelRead(context, packet);
@@ -78,7 +79,7 @@ public class Injector {
 							if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								modifyPlayers(packet);
 							}
-							Shared.featureCpu.addTime(CPUFeature.NAMETAG_ANTIOVERRIDE, System.nanoTime()-time);
+							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 						}
 
 						for (RawPacketFeature f : Shared.rawpacketfeatures) {
@@ -86,9 +87,9 @@ public class Injector {
 							try {
 								if (packet != null) packet = f.onPacketSend(player, packet);
 							} catch (Throwable e) {
-								Shared.errorManager.printError("Feature " + f.getCPUName() + " failed to read packet", e);
+								Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 							}
-							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 						}
 						
 						if (!Shared.playerInfoListeners.isEmpty()) {
@@ -97,7 +98,7 @@ public class Injector {
 								for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 									long time = System.nanoTime();
 									if (info != null) info = f.onPacketSend(player, info);
-									Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+									Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 								}
 								packet = (info == null ? null : info.toNMS(player.getVersion()));
 							}

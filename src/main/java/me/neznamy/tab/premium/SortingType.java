@@ -8,7 +8,7 @@ import java.util.Set;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -52,11 +52,6 @@ public enum SortingType {
 				}
 
 				@Override
-				public CPUFeature getRefreshCPU() {
-					return CPUFeature.NAMETAG;
-				}
-
-				@Override
 				public Set<String> getUsedPlaceholders() {
 					return new HashSet<>(INSTANCE.usedPlaceholders);
 				}
@@ -64,6 +59,11 @@ public enum SortingType {
 				@Override
 				public void refreshUsedPlaceholders() {
 					INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
+				}
+
+				@Override
+				public TabFeature getFeatureType() {
+					return TabFeature.SORTING;
 				}
 				
 			});

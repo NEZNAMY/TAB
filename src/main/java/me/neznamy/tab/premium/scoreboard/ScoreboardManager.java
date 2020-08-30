@@ -10,7 +10,8 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -73,12 +74,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			Shared.registerFeature("scoreboard-" + scoreboard, sb);
 		}	
 	}
+	
 	@Override
 	public void load() {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", CPUFeature.SCOREBOARD_CONDITIONS, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished) continue;
@@ -95,6 +97,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 		});
 	}
+	
 	@Override
 	public void unload() {
 		for (Scoreboard board : scoreboards.values()) {
@@ -105,11 +108,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		scoreboards.clear();
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer p) {
 		p.hiddenScoreboard = sb_off_players.contains(p.getName());
 		send(p);
 	}
+	
 	public void send(ITabPlayer p) {
 		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
 		String scoreboard = getHighestScoreboard(p);
@@ -121,10 +126,12 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 		}
 	}
+	
 	@Override
 	public void onQuit(ITabPlayer p) {
 		unregisterScoreboard(p, false);
 	}
+	
 	public void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
 		if (p.getActiveScoreboard() != null) {
 			if (sendUnregisterPacket) {
@@ -135,11 +142,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			p.setActiveScoreboard(null);
 		}
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		unregisterScoreboard(p, true);
 		send(p);
 	}
+	
 	public String getHighestScoreboard(ITabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
@@ -153,6 +162,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		return scoreboard;
 	}
+	
 	@Override
 	public boolean onCommand(ITabPlayer sender, String message) {
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
@@ -170,7 +180,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		return false;
 	}
+	
 	public Map<String, Scoreboard> getScoreboards(){
 		return scoreboards;
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.SCOREBOARD;
 	}
 }

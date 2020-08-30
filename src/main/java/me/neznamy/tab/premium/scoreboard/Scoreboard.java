@@ -18,7 +18,7 @@ import me.neznamy.tab.premium.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -138,12 +138,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		if (refreshed.properties.get("scoreboard-title") == null) return;
 		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
-	
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.SCOREBOARD_TITLE;
-	}
-	
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
@@ -158,5 +153,10 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		ITabPlayer p = Shared.getPlayer(player);
 		p.setActiveScoreboard(null);
 		unregister(p);
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.SCOREBOARD;
 	}
 }

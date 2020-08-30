@@ -16,7 +16,8 @@ import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKProvider;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -59,7 +60,7 @@ public class PlaceholderManager implements QuitEventListener {
 		}
 
 		AtomicInteger atomic = new AtomicInteger();
-		Shared.featureCpu.startRepeatingMeasuredTask(10, "refreshing placeholders", CPUFeature.PLACEHOLDER_REFRESHING, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(10, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
 			public void run() {
@@ -89,7 +90,7 @@ public class PlaceholderManager implements QuitEventListener {
 							}
 						}
 					}
-					Shared.placeholderCpu.addTime(relPlaceholder.identifier, System.nanoTime()-startTime);
+					Shared.cpu.addPlaceholderTime(relPlaceholder.identifier, System.nanoTime()-startTime);
 				}
 				for (Placeholder placeholder : new HashSet<>(Placeholders.usedPlaceholders)) { //avoiding concurrent modification on reload
 					if (loopTime % placeholder.cooldown != 0) continue;
@@ -103,7 +104,7 @@ public class PlaceholderManager implements QuitEventListener {
 								somethingChanged = true;
 							}
 						}
-						Shared.placeholderCpu.addTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+						Shared.cpu.addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
 					}
 					if (placeholder instanceof ServerPlaceholder) {
 						long startTime = System.nanoTime();
@@ -115,7 +116,7 @@ public class PlaceholderManager implements QuitEventListener {
 								update.get(all).addAll(usage);
 							}
 						}
-						Shared.placeholderCpu.addTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+						Shared.cpu.addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
 					}
 				}
 				if (somethingChanged) {
@@ -124,7 +125,7 @@ public class PlaceholderManager implements QuitEventListener {
 							entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 						}
 					}
-					Shared.featureCpu.runTask("refreshing", new Runnable() {
+					Shared.cpu.runTask("refreshing", new Runnable() {
 
 						@Override
 						public void run() {
@@ -132,14 +133,14 @@ public class PlaceholderManager implements QuitEventListener {
 								for (Refreshable r : entry.getValue()) {
 									long startTime = System.nanoTime();
 									r.refresh(entry.getKey(), true);
-									Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+									Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 								}
 							}
 							for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
 								for (Refreshable r : entry.getValue()) {
 									long startTime = System.nanoTime();
 									r.refresh(entry.getKey(), false);
-									Shared.featureCpu.addTime(r.getRefreshCPU(), System.nanoTime()-startTime);
+									Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 								}
 							}
 						}
@@ -247,5 +248,9 @@ public class PlaceholderManager implements QuitEventListener {
 		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
 			Placeholders.categorizeUsedPlaceholder(placeholder);
 		}
+	}
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.PLACEHOLDER_REFRESHING;
 	}
 }

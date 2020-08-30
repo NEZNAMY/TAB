@@ -5,7 +5,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 /**
  * Classes implementing this interface will receive quit event
  */
-public interface QuitEventListener {
+public interface QuitEventListener extends Feature {
 
 	public void onQuit(ITabPlayer disconnectedPlayer);
 }

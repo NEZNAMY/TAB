@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -36,7 +36,7 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 	}
 
 	@Override
-	public CPUFeature getCPUName() {
-		return CPUFeature.SPECTATOR_FIX;
+	public TabFeature getFeatureType() {
+		return TabFeature.SPECTATOR_FIX;
 	}
 }

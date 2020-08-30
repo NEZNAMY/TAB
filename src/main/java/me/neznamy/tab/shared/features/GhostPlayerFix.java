@@ -3,7 +3,8 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -16,7 +17,7 @@ public class GhostPlayerFix implements QuitEventListener {
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		Object removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
-		Shared.featureCpu.runTaskLater(100, "removing players", CPUFeature.GHOST_PLAYER_FIX, new Runnable() {
+		Shared.cpu.runTaskLater(100, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override
 			public void run() {
@@ -26,5 +27,10 @@ public class GhostPlayerFix implements QuitEventListener {
 				}
 			}
 		});
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.GHOST_PLAYER_FIX;
 	}
 }

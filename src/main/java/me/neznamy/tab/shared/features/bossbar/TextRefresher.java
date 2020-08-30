@@ -7,7 +7,7 @@ import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -24,6 +24,7 @@ public class TextRefresher implements Refreshable {
 		this.line = line;
 		refreshUsedPlaceholders();
 	}
+	
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
@@ -36,16 +37,19 @@ public class TextRefresher implements Refreshable {
 			refreshed.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(line.entityId, w));
 		}
 	}
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.BOSSBAR_TEXT_REFRESH;
-	}
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
+	
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.text);
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BOSSBAR;
 	}
 }

@@ -55,9 +55,7 @@ public class Shared {
 	
 	public static boolean disabled;
 	public static PlatformMethods platform;
-	public static CPUManager featureCpu;
-	public static CPUManager placeholderCpu;
-	public static CPUManager bukkitBridgePlaceholderCpu;
+	public static CPUManager cpu;
 	public static ErrorManager errorManager;
 	public static PermissionPlugin permissionPlugin;
 	
@@ -100,9 +98,7 @@ public class Shared {
 			long time = System.currentTimeMillis();
 			disabled = false;
 			errorManager = new ErrorManager();
-			featureCpu = new CPUManager();
-			placeholderCpu = new CPUManager();
-			bukkitBridgePlaceholderCpu = new CPUManager();
+			cpu = new CPUManager();
 			Configs.loadFiles();
 			permissionPlugin = platform.detectPermissionPlugin();
 			platform.loadFeatures(inject);
@@ -122,7 +118,7 @@ public class Shared {
 		try {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
-			CPUManager.cancelAllTasks();
+			cpu.cancelAllTasks();
 			loadableFeatures.forEach(f -> f.unload());
 			loadableFeatures = new ArrayList<>();
 			playerInfoListeners = new ArrayList<>();

@@ -6,7 +6,8 @@ import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -20,11 +21,12 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 
 	private Set<String> usedPlaceholders;
 	private boolean fixVisibility;
-	
+
 	public NameTag16(boolean fixVisibility) {
 		this.fixVisibility = fixVisibility;
 		refreshUsedPlaceholders();
 	}
+	
 	@Override
 	public void load(){
 		for (ITabPlayer p : Shared.getPlayers()) {
@@ -37,7 +39,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			for (ITabPlayer p : Shared.getPlayers()) {
 				p.nameTagVisible = !p.hasInvisibility();
 			}
-			Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAG_INVISFIX, new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
 						boolean visible = !p.hasInvisibility();
@@ -49,7 +51,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 				}
 			});
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished) continue;
@@ -61,12 +63,14 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			}
 		});
 	}
+	
 	@Override
 	public void unload() {
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledNametag) p.unregisterTeam();
 		}
 	}
+	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
@@ -78,10 +82,12 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
 		}
 	}
+	
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		updateProperties(p);
@@ -91,7 +97,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			p.registerTeam();
 		} else {
 			if (Shared.platform.getSeparatorType().equals("server")) {
-				Shared.featureCpu.runTaskLater(500, "refreshing nametags", CPUFeature.NAMETAG, new Runnable() {
+				Shared.cpu.runTaskLater(500, "refreshing nametags", getFeatureType(), UsageType.WORLD_SWITCH_EVENT, new Runnable() {
 
 					@Override
 					public void run() {
@@ -104,6 +110,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			}
 		}
 	}
+
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (refreshed.disabledNametag) return;
@@ -116,23 +123,27 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			boolean suffix = refreshed.properties.get("tagsuffix").update();
 			refresh = prefix || suffix;
 		}
-		
+
 		if (refresh) refreshed.updateTeam();
 	}
+
 	private void updateProperties(ITabPlayer p) {
 		p.updateProperty("tagprefix");
 		p.updateProperty("tagsuffix");
 	}
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.NAMETAG;
-	}
+
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.NAMETAGS;
 	}
 }

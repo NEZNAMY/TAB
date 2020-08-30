@@ -5,7 +5,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 /**
  * Classes implementing this interface will receive join event
  */
-public interface JoinEventListener {
+public interface JoinEventListener extends Feature {
 
 	public void onJoin(ITabPlayer connectedPlayer);
 }

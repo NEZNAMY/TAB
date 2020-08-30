@@ -24,7 +24,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -85,7 +86,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				all.getArmorStandManager().spawn(worldPlayer);
 			}
 		}
-		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", CPUFeature.NAMETAGX_INVISCHECK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished || p.disabledNametag) continue;
@@ -93,7 +94,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				}
 			}
 		});
-		Shared.featureCpu.startRepeatingMeasuredTask(200, "refreshing collision", CPUFeature.NAMETAG_COLLISION, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished || p.disabledNametag) continue;
@@ -145,7 +146,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
-		Shared.featureCpu.runTaskLater(100, "Processing player quit", CPUFeature.NAMETAGX_EVENT_QUIT, new Runnable() {
+		Shared.cpu.runTaskLater(100, "Processing player quit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override
 			public void run() {
@@ -239,11 +240,6 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		return usedPlaceholders;
 	}
 	
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.NAMETAG;
-	}
-	
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
@@ -266,5 +262,10 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		for (String line : staticLines.keySet()) {
 			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.NAMETAGX;
 	}
 }

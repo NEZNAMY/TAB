@@ -11,7 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -33,7 +34,7 @@ public class BossBar_legacy implements Listener, Loadable {
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		Shared.featureCpu.startRepeatingMeasuredTask(900, "refreshing bossbar", CPUFeature.BOSSBAR_LEGACY, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.REFRESHING, new Runnable() {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
@@ -53,7 +54,7 @@ public class BossBar_legacy implements Listener, Loadable {
 			long time = System.nanoTime();
 			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p != null) mainFeature.detectBossBarsAndSend(p);
-			Shared.featureCpu.addTime(CPUFeature.BOSSBAR_LEGACY, System.nanoTime()-time);
+			Shared.cpu.addTime(TabFeature.BOSSBAR, UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
 		}
@@ -62,5 +63,10 @@ public class BossBar_legacy implements Listener, Loadable {
 		Location loc = p.getBukkitEntity().getEyeLocation().add(p.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BOSSBAR;
 	}
 }

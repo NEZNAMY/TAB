@@ -22,7 +22,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
@@ -139,7 +140,7 @@ public class ArmorStand {
 				};
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					Shared.featureCpu.runTaskLater(50, "compensating for 1.8.0 bugs", CPUFeature.NAMETAGX_EVENT_SNEAK, spawn);
+					Shared.cpu.runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, spawn);
 				} else {
 					spawn.run();
 				}

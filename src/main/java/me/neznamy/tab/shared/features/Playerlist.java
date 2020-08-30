@@ -11,7 +11,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -32,12 +33,14 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	public Playerlist() {
 		refreshUsedPlaceholders();
 	}
+	
 	@Override
 	public void load(){
 		for (ITabPlayer all : Shared.getPlayers()) {
 			refresh(all, true);
 		}
 	}
+	
 	@Override
 	public void unload(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
@@ -49,10 +52,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
 	}
+	
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		refresh(p, true);
 	}
+	
 	@Override
 	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (receiver.getVersion().getMinorVersion() < 8) return info;
@@ -75,7 +80,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			Shared.featureCpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", CPUFeature.TABLIST_NAMES_3, new Runnable() {
+			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.OTHER, new Runnable() {
 
 				@Override
 				public void run() {
@@ -85,10 +90,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		return info;
 	}
-	@Override
-	public CPUFeature getCPUName() {
-		return CPUFeature.TABLIST_NAMES_2;
-	}
+
 	public IChatBaseComponent getTabFormat(ITabPlayer p, ITabPlayer viewer) {
 		Property prefix = p.properties.get("tabprefix");
 		Property name = p.properties.get("customtabname");
@@ -135,20 +137,24 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		p.updateProperty("customtabname", p.getName());
 		p.updateProperty("tabsuffix");
 	}
+	
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
-	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.TABLIST_NAMES_1;
-	}
+
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
 		refresh(connectedPlayer, true);
 	}
+	
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.TABLIST_NAMES;
 	}
 }

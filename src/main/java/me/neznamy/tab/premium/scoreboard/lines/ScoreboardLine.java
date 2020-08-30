@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -30,11 +30,6 @@ public abstract class ScoreboardLine implements Refreshable {
 	public abstract void unregister(ITabPlayer p);
 	
 	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.SCOREBOARD_LINES;
-	}
-	
-	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
@@ -47,5 +42,10 @@ public abstract class ScoreboardLine implements Refreshable {
 	
 	protected String getPlayerName() {
 		return playerName;
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.SCOREBOARD;
 	}
 }

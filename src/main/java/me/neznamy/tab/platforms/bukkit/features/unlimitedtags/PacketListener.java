@@ -11,7 +11,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -104,7 +105,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			List<Integer> vehicleList;
 			if (pl != null) {
 				//player moved
-				Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
+				Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
 					public void run() {
 						pl.getArmorStandManager().teleport(receiver);
 					}
@@ -114,7 +115,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				for (Integer entity : vehicleList) {
 					ITabPlayer passenger = Shared.entityIdMap.get(entity);
 					if (passenger != null) {
-						Shared.featureCpu.runMeasuredTask("processing EntityMove", CPUFeature.NAMETAGX_PACKET_ENTITY_MOVE, new Runnable() {
+						Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
 							public void run() {
 								passenger.getArmorStandManager().teleport(receiver);
 							}
@@ -126,7 +127,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		if (PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
 			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
-			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing NamedEntitySpawn", CPUFeature.NAMETAGX_PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
+			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 
 				@Override
 				public void run() {
@@ -144,7 +145,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			int[] entites = (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet);
 			for (int id : entites) {
 				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.featureCpu.runMeasuredTask("processing EntityDestroy", CPUFeature.NAMETAGX_PACKET_ENTITY_DESTROY, new Runnable() {
+				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
 
 					@Override
 					public void run() {
@@ -170,7 +171,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			}
 			for (int entity : passengers) {
 				ITabPlayer pass = Shared.entityIdMap.get(entity);
-				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
+				if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 					@Override
 					public void run() {
@@ -196,7 +197,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 					}
 				}
 				ITabPlayer pass = Shared.entityIdMap.get(passenger);
-				if (pass != null) Shared.featureCpu.runMeasuredTask("processing Mount", CPUFeature.NAMETAGX_PACKET_MOUNT, new Runnable() {
+				if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 					@Override
 					public void run() {
@@ -206,11 +207,6 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			}
 		}
 		return packet;
-	}
-
-	@Override
-	public CPUFeature getCPUName() {
-		return CPUFeature.NAMETAGX_PACKET_LISTENING;
 	}
 
 	@Override
@@ -226,5 +222,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			}
 		}
 		return info;
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.NAMETAGX;
 	}
 }

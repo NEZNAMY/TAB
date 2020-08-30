@@ -14,7 +14,8 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -122,11 +123,12 @@ public class Main extends Plugin {
 						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
 							long time = System.nanoTime();
 							if (info != null) info = f.onPacketSend(player, info);
-							Shared.featureCpu.addTime(f.getCPUName(), System.nanoTime()-time);
+							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 						}
 						packet = (info == null ? null : info.toBungee(player.getVersion()));
 					}
 					if (Shared.features.containsKey("nametag16")) {
+						long time = System.nanoTime();
 						if (packet instanceof Team) {
 							modifyPlayers((Team) packet);
 						}
@@ -139,10 +141,11 @@ public class Main extends Plugin {
 								packet = team;
 							}
 						}
+						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 					}
 					if (packet instanceof Login) {
 						//registering all teams again because client reset packet is sent
-						Shared.featureCpu.runTaskLater(100, "Reapplying scoreboard components", CPUFeature.WATERFALLFIX, new Runnable() {
+						Shared.cpu.runTaskLater(100, "Reapplying scoreboard components", TabFeature.WATERFALLFIX, UsageType.PACKET_READING, new Runnable() {
 
 							@Override
 							public void run() {

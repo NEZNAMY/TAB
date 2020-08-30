@@ -9,7 +9,8 @@ import java.util.Map;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -74,11 +75,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 					maxPlayer = all;
 				}
 			}
-			updateAllNames(null);
+			updateAllNames(null, UsageType.PACKET_READING);
 		} else if (playerNameWidth > maxWidth) {
 			maxWidth = playerNameWidth;
 			maxPlayer = player;
-			updateAllNames(player);
+			updateAllNames(player, UsageType.PACKET_READING);
 		}
 		String newFormat = prefixAndName + Placeholders.colorChar + "r";
 		try {
@@ -160,24 +161,24 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		if (width > maxWidth) {
 			maxWidth = width;
 			maxPlayer = p;
-			updateAllNames(null);
+			updateAllNames(null, UsageType.PLAYER_JOIN_EVENT);
 		}
 	}
 	@Override
 	public void onQuit(ITabPlayer p) {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
-			updateAllNames(null);
+			updateAllNames(null, UsageType.PLAYER_QUIT_EVENT);
 		}
 	}
 	@Override
 	public void onWorldChange(ITabPlayer p, String from, String to) {
 		if (maxPlayer == p && recalculateMaxWidth(null)) {
-			updateAllNames(null);
+			updateAllNames(null, UsageType.WORLD_SWITCH_EVENT);
 		}
 	}
 
-	private void updateAllNames(ITabPlayer exception) {
-		Shared.featureCpu.runMeasuredTask("aligning tabsuffix", CPUFeature.ALIGNED_TABSUFFIX, new Runnable() {
+	private void updateAllNames(ITabPlayer exception, UsageType usage) {
+		Shared.cpu.runMeasuredTask("aligning tabsuffix", TabFeature.ALIGNED_TABSUFFIX, usage, new Runnable() {
 
 			@Override
 			public void run() {
@@ -203,5 +204,10 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			}
 		}
 		return oldMaxWidth != maxWidth;
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.ALIGNED_TABSUFFIX;
 	}
 }

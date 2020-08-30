@@ -20,7 +20,6 @@ import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -338,7 +337,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 	}
 
-	private void updateDisabledWorlds(String world) {
+	public void updateDisabledWorlds(String world) {
 		disabledHeaderFooter = isDisabledWorld(Configs.disabledHeaderFooter, world);
 		disabledTablistNames = isDisabledWorld(Configs.disabledTablistNames, world);
 		disabledNametag = isDisabledWorld(Configs.disabledNametag, world);
@@ -360,20 +359,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			return false;
 		}
 	}
-
-	public void onWorldChange(String from, String to) {
-		ITabPlayer player = this;
-		Shared.featureCpu.runMeasuredTask("processing world change", CPUFeature.WORLD_SWITCH, new Runnable() {
-
-			@Override
-			public void run() {
-				updateDisabledWorlds(to);
-				updateGroupIfNeeded(false);
-				Shared.worldChangeListeners.forEach(f -> f.onWorldChange(player, from, to));
-			}
-		});
-	}
-
+	
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		sendPacket(packet.build(getVersion()));
 	}

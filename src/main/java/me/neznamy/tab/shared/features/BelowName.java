@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUFeature;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -55,13 +55,13 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			}
 
 			@Override
-			public CPUFeature getRefreshCPU() {
-				return CPUFeature.BELOWNAME_TEXT;
+			public void refreshUsedPlaceholders() {
+				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 
 			@Override
-			public void refreshUsedPlaceholders() {
-				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
+			public TabFeature getFeatureType() {
+				return TabFeature.BELOWNAME_TEXT;
 			}
 		});
 	}
@@ -124,11 +124,11 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		return usedPlaceholders;
 	}
 	@Override
-	public CPUFeature getRefreshCPU() {
-		return CPUFeature.BELOWNAME_NUMBER;
-	}
-	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
+	}
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.BELOWNAME_NUMBER;
 	}
 }
