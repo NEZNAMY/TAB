@@ -25,7 +25,7 @@ public class Configs {
 	public static ConfigurationFile config;
 	public static boolean collisionRule;
 	public static List<String> revertedCollision;
-	public static Map<String, String> sortedGroups;
+	public static LinkedHashMap<String, String> sortedGroups;
 	public static Map<Object, Object> rankAliases;
 	public static List<String> disabledHeaderFooter;
 	public static List<String> disabledTablistNames;
@@ -116,13 +116,12 @@ public class Configs {
 		}
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
-		for (String group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
+		for (Object group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
 			String sort = index+"";
 			while (sort.length() < 3) {
 				sort = "0" + sort;
 			}
-			sortedGroups.put(group.toLowerCase()+"", sort);
-			sortedGroups.put(group+"", sort);
+			sortedGroups.put(String.valueOf(group).toLowerCase(), sort);
 			index++;
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");

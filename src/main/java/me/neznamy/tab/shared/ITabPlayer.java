@@ -42,6 +42,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public String world;
 	private String permissionGroup = "< Not Initialized Yet >";
 	public String teamName;
+	public String teamNameNote;
 
 	public Map<String, Property> properties = new HashMap<String, Property>();
 	private ArmorStandManager armorStandManager;
