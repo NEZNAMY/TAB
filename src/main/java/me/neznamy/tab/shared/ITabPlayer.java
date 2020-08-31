@@ -1,14 +1,13 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.base.Charsets;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
@@ -71,7 +70,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void init() {
 		updateDisabledWorlds(getWorldName());
 		updateGroupIfNeeded(false);
-		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
+		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
 		correctId = uniqueId; //initialization to avoid NPEs
 	}
 

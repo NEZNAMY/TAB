@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			yaml = new Yaml(options);
 			input = new FileInputStream(file);
-			values = (Map<String, Object>) yaml.load(new InputStreamReader(input, Charset.forName("UTF-8")));
+			values = (Map<String, Object>) yaml.load(new InputStreamReader(input, StandardCharsets.UTF_8));
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
 			Shared.platform.convertConfig(this);

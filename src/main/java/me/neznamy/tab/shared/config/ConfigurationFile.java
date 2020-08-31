@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,7 +218,7 @@ public abstract class ConfigurationFile {
 			content.addAll(readAllLines());
 			file.delete();
 			file.createNewFile();
-			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
+			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
 			for (String line : content) {
 				buf.write(line + System.getProperty("line.separator"));
 			}
@@ -230,7 +231,7 @@ public abstract class ConfigurationFile {
 	protected List<String> readAllLines() {
 		List<String> list = new ArrayList<String>();
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 			String line;
 			while ((line = br.readLine()) != null) {
 				list.add(line);
