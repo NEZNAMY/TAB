@@ -20,7 +20,7 @@ public class PacketAPI {
 	
 	//scoreboard team
 	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
-		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.platform.getSeparatorType().equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
@@ -31,7 +31,7 @@ public class PacketAPI {
 
 	//scoreboard objective
 	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
-		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(objectiveName));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardObjective.REGISTER(objectiveName, title, displayType));

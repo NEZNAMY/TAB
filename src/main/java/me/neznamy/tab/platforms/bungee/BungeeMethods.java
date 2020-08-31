@@ -188,6 +188,7 @@ public class BungeeMethods implements PlatformMethods {
 				config.set("placeholderapi-refresh-intervals", map);
 				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
 			}
+			rename(config, "safe-team-register", "unregister-before-register");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			removeOld(config, "scoreboard.refresh-interval-ticks");

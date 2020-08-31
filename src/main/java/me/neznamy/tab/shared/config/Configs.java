@@ -42,7 +42,7 @@ public class Configs {
 	public static Map<String, Object> serverAliases;
 	public static double SECRET_NTX_space;
 	public static boolean SECRET_invisible_nametags;
-	public static boolean SECRET_safe_register;
+	public static boolean SECRET_unregister_before_register;
 	public static boolean SECRET_remove_ghost_players;
 	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
@@ -135,7 +135,7 @@ public class Configs {
 		
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
-		SECRET_safe_register = getSecretOption("safe-team-register", true);
+		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
 		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
