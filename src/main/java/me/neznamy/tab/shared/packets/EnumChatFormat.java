@@ -31,37 +31,95 @@ public enum EnumChatFormat {
 	ITALIC(20, 'o'),
 	RESET(21, 'r');
 
+	//network id of the color
 	private int networkId;
+	
+	//characer representing the color
 	private char character;
+	
+	//an instance of n.m.s.EnumChatFormat
 	private Object nmsEquivalent;
-	public int hexColor;
-	public int red, green, blue;
+	
+	//red value of this color
+	private int red;
+	
+	//green value of this color;
+	private int green;
+	
+	//blue value of this color
+	private int blue;
 
 	private EnumChatFormat(int networkId, char character, int hexColor) {
 		this(networkId, character);
-		this.hexColor = hexColor;
 		red = (hexColor >> 16) & 0xFF;
 		green = (hexColor >> 8) & 0xFF;
 		blue = hexColor & 0xFF;
 	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;
 		if (NMSHook.EnumChatFormat != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)NMSHook.EnumChatFormat, toString());
 	}
-	public Object toNMS() {
-		return nmsEquivalent;
-	}
+	
+	/**
+	 * Returns network id of this color
+	 * @return network if of this color
+	 */
 	public int getNetworkId() {
 		return networkId;
 	}
+	
+	/**
+	 * Returns NMS EnumChatFormat with the same value
+	 * @return NMS equivalent
+	 */
+	public Object toNMS() {
+		return nmsEquivalent;
+	}
+	
+	/**
+	 * Returns red value of this color
+	 * @return red value
+	 */
+	public int getRed() {
+		return red;
+	}
+	
+	/**
+	 * Returns green value of this color
+	 * @return green value
+	 */
+	public int getGreen() {
+		return green;
+	}
+	
+	/**
+	 * Returns blue value of this color
+	 * @return blue value
+	 */
+	public int getBlue() {
+		return blue;
+	}
+	
+	/**
+	 * Returns enum value based on inserted color or null if character is not valid
+	 * @param c - color code character (0-9, a-f, k-o, r)
+	 * @return instance from the character
+	 */
 	public static EnumChatFormat getByChar(char c) {
 		for (EnumChatFormat format : values()) {
 			if (format.character == c) return format;
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns enum value of last colors used in given string
+	 * @param string - string to check last colors of
+	 * @return last used color code in given string
+	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.RESET;
 		String last = Placeholders.getLastColors(string);
@@ -73,9 +131,22 @@ public enum EnumChatFormat {
 		}
 		return EnumChatFormat.RESET;
 	}
+	
+	/**
+	 * Returns \u00a7 followed by color's character
+	 * @return \u00a7 followed by color's character
+	 */
 	public String getFormat() {
 		return Placeholders.colorChar + "" + character;
 	}
+	
+	/**
+	 * Returns enum value with exact red, green and blue values or null if no match
+	 * @param red - exact red value
+	 * @param green - exact green value
+	 * @param blue - exact blue value
+	 * @return enum value or null if no such combination exists
+	 */
 	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
 		for (EnumChatFormat format : values()) {
 			if (format.red == red && format.green == green && format.blue == blue) return format;

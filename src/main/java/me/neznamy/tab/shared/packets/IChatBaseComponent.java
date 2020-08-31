@@ -431,9 +431,9 @@ public class IChatBaseComponent {
 		private EnumChatFormat legacy;
 
 		public TextColor(EnumChatFormat legacy) {
-			this.red = legacy.red;
-			this.green = legacy.green;
-			this.blue = legacy.blue;
+			this.red = legacy.getRed();
+			this.green = legacy.getGreen();
+			this.blue = legacy.getBlue();
 			this.legacy = legacy;
 		}
 
@@ -445,9 +445,9 @@ public class IChatBaseComponent {
 			double minDist = 9999;
 			double dist;
 			for (EnumChatFormat color : EnumChatFormat.values()) {
-				int r = (int) Math.pow(color.red - red, 2);
-				int g = (int) Math.pow(color.green - green, 2);
-				int b = (int) Math.pow(color.blue - blue, 2);
+				int r = (int) Math.pow(color.getRed() - red, 2);
+				int g = (int) Math.pow(color.getGreen() - green, 2);
+				int b = (int) Math.pow(color.getBlue() - blue, 2);
 				dist = Math.sqrt(r + g + b);
 				if (dist < minDist) {
 					minDist = dist;
