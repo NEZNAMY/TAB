@@ -68,6 +68,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		this.type = type;
 	}
 	
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 16) {
 			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(message.toString(clientVersion)), type.toNMS(), UUID.randomUUID());
@@ -87,6 +88,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		}
 	}
 	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		Chat chat = new Chat(message.toString(clientVersion), type.getId());
 		try {
@@ -97,6 +99,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut{
 		return chat;
 	}
 	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new com.velocitypowered.proxy.protocol.packet.Chat(message.toString(clientVersion), type.getId(), UUID.randomUUID());
 	}

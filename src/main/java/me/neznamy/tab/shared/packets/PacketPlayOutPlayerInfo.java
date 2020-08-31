@@ -285,6 +285,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		}
 	}
 
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Object packet = newPacketPlayOutPlayerInfo2.newInstance(action.toNMS(), Collections.EMPTY_LIST);
@@ -308,6 +309,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		}
 	}
 
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		PlayerListItem packet = new PlayerListItem();
 		packet.setAction((Action) action.toBungee());
@@ -319,6 +321,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		List items = new ArrayList();
 		for (PlayerInfoData data : entries) {

@@ -84,6 +84,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		return packet;
 	}
 	
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() < 13) {
@@ -101,6 +102,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		return packet;
 	}
 	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {
@@ -111,6 +113,7 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut{
 		return new ScoreboardObjective(objectiveName, displayName, renderType == null ? null : renderType.toBungee(), (byte)method);
 	}
 	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		String displayName = this.displayName;
 		if (clientVersion.getMinorVersion() >= 13) {

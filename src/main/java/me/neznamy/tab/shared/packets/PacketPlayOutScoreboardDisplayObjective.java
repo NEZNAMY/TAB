@@ -37,6 +37,7 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		this.objectiveName = objectiveName;
 	}
 	
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutScoreboardDisplayObjective.newInstance();
 		POSITION.set(packet, slot);
@@ -44,10 +45,12 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 		return packet;
 	}
 	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardDisplay((byte)slot, objectiveName);
 	}
 	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay((byte)slot, objectiveName);
 	}

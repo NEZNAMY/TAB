@@ -63,6 +63,8 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		this.player = player;
 		this.score = score;
 	}
+	
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
@@ -80,12 +82,17 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		}
 		return packet;
 	}
+	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
+	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore(player, action.toBungee(), objectiveName, score);
 	}
+	
 	public enum Action{
 
 		CHANGE((byte) 0),

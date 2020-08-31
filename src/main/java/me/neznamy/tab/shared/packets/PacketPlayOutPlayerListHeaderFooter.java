@@ -35,19 +35,26 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut 
 		this.header = IChatBaseComponent.optimizedComponent(header);
 		this.footer = IChatBaseComponent.optimizedComponent(footer);
 	}
+	
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;
 		this.footer = footer;
 	}
+	
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutPlayerListHeaderFooter.newInstance();
 		HEADER.set(packet, NMSHook.stringToComponent(header.toString(clientVersion)));
 		FOOTER.set(packet, NMSHook.stringToComponent(footer.toString(clientVersion)));
 		return packet;
 	}
+	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		return new PlayerListHeaderFooter(header.toString(clientVersion), footer.toString(clientVersion));
 	}
+	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		return new HeaderAndFooter(header.toString(clientVersion), footer.toString(clientVersion));
 	}

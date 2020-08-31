@@ -72,6 +72,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.createWorldFog = createWorldFog;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
@@ -82,12 +83,14 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.overlay = overlay;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss REMOVE(UUID id) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.REMOVE;
 		packet.id = id;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss UPDATE_PCT(UUID id, float pct) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PCT;
@@ -95,6 +98,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.pct = pct;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss UPDATE_NAME(UUID id, String name) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_NAME;
@@ -102,6 +106,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.name = name;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss UPDATE_STYLE(UUID id, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_STYLE;
@@ -110,6 +115,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.overlay = overlay;
 		return packet;
 	}
+	
 	public static PacketPlayOutBoss UPDATE_PROPERTIES(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PROPERTIES;
@@ -120,6 +126,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutBoss.newInstance();
 		UUID.set(packet, id);
@@ -141,6 +148,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		}
 		return packet;
 	}
+	
+	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
 		BossBar packet = new BossBar(id, operation.toBungee());
@@ -159,6 +168,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		}
 		return packet;
 	}
+	
+	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
 		com.velocitypowered.proxy.protocol.packet.BossBar packet = new com.velocitypowered.proxy.protocol.packet.BossBar();
@@ -179,6 +190,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		}
 		return packet;
 	}
+	
 	private byte getFlags(){
 		byte value = 0;
 		if (darkenScreen) value += 1;
