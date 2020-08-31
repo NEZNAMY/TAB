@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.config.Configs;
  * The core command handler
  */
 public class TabCommand extends SubCommand {
-	
+
 	public TabCommand() {
 		super("tab", null);
 		registerSubCommand(new AnnounceCommand());
@@ -65,24 +65,24 @@ public class TabCommand extends SubCommand {
 	private void help(TabPlayer sender){
 		if (sender == null) Shared.platform.sendConsoleMessage("&3TAB v" + Shared.pluginVersion, true);
 		if (sender == null || sender.hasPermission("tab.admin") && !Shared.disabled) {
-			  sendMessage(sender, "&m                                                                                ");
-			  sendMessage(sender, " &8>> &3&l/tab reload");
-			  sendMessage(sender, "      - &7Reloads plugin and config");
-			  sendMessage(sender, " &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
-			  sendMessage(sender, "      - &7Do &8/tab group/player &7to show properties");
-			  sendMessage(sender, " &8>> &3&l/tab ntpreview");
-			  sendMessage(sender, "      - &7Shows your nametag for yourself, for testing purposes");
-			  sendMessage(sender, " &8>> &3&l/tab announce bar &3<name> &9<seconds>");
-			  sendMessage(sender, "      - &7Temporarily displays bossbar to all players");
-			  sendMessage(sender, " &8>> &3&l/tab parse <placeholder> ");
-			  sendMessage(sender, "      - &7Test if a placeholder works");
-			  sendMessage(sender, " &8>> &3&l/tab debug [player]");
-			  sendMessage(sender, "      - &7displays debug information about player");
-			  sendMessage(sender, " &8>> &3&l/tab cpu");
-			  sendMessage(sender, "      - &7shows CPU usage of the plugin");
-			  sendMessage(sender, " &8>> &4&l/tab group/player <name> remove");
-			  sendMessage(sender, "      - &7Clears all data about player/group");
-			  sendMessage(sender, "&m                                                                                ");
+			sendMessage(sender, "&m                                                                                ");
+			sendMessage(sender, " &8>> &3&l/tab reload");
+			sendMessage(sender, "      - &7Reloads plugin and config");
+			sendMessage(sender, " &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
+			sendMessage(sender, "      - &7Do &8/tab group/player &7to show properties");
+			sendMessage(sender, " &8>> &3&l/tab ntpreview");
+			sendMessage(sender, "      - &7Shows your nametag for yourself, for testing purposes");
+			sendMessage(sender, " &8>> &3&l/tab announce bar &3<name> &9<seconds>");
+			sendMessage(sender, "      - &7Temporarily displays bossbar to all players");
+			sendMessage(sender, " &8>> &3&l/tab parse <placeholder> ");
+			sendMessage(sender, "      - &7Test if a placeholder works");
+			sendMessage(sender, " &8>> &3&l/tab debug [player]");
+			sendMessage(sender, "      - &7displays debug information about player");
+			sendMessage(sender, " &8>> &3&l/tab cpu");
+			sendMessage(sender, "      - &7shows CPU usage of the plugin");
+			sendMessage(sender, " &8>> &4&l/tab group/player <name> remove");
+			sendMessage(sender, "      - &7Clears all data about player/group");
+			sendMessage(sender, "&m                                                                                ");
 		}
 	}
 	public List<String> complete(TabPlayer sender, String[] arguments) {
