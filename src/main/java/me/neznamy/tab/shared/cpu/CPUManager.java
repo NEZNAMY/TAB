@@ -146,7 +146,7 @@ public class CPUManager {
 	}
 	
 	public Map<String, Float> getBridgeUsage(){
-		return getUsage(placeholderUsageLastMinute);
+		return getUsage(bridgePlaceholderUsageLastMinute);
 	}
 	
 	private Map<String, Float> getUsage(List<Map<String, Long>> list){
