@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared.placeholders;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.shared.ITabPlayer;
@@ -33,7 +35,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 			@Override
 			public String[] getChilds(){
-				return Configs.rankAliases.values().toArray(new String[0]);
+				List<String> list = new ArrayList<String>();
+				for (Object value : Configs.rankAliases.values()) {
+					list.add(value.toString());
+				}
+				return list.toArray(new String[0]);
 			}
 		});
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
