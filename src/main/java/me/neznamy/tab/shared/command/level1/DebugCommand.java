@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -23,7 +24,7 @@ public class DebugCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		ITabPlayer analyzed = null;
 		if (args.length > 0) {
 			analyzed = Shared.getPlayer(args[0]);
@@ -34,7 +35,7 @@ public class DebugCommand extends SubCommand {
 		}
 		debug(sender, analyzed);
 	}
-	private void debug(ITabPlayer sender, ITabPlayer analyzed) {
+	private void debug(TabPlayer sender, ITabPlayer analyzed) {
 		if (analyzed == null && sender != null) {
 			analyzed = Shared.getPlayer(sender.getUniqueId());
 		}
@@ -112,18 +113,18 @@ public class DebugCommand extends SubCommand {
 			showProperty(sender, analyzed, "customtagname", analyzed.disabledNametag);
 		}
 	}
-	private void showProperty(ITabPlayer sender, ITabPlayer analyzed, String property, boolean disabled) {
+	private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
 		if (disabled) {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's world");
 		} else {
-			Property pr = analyzed.properties.get(property);
+			Property pr = analyzed.getProperty(property);
 			String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
 			String value = Placeholders.color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
 			sendRawMessage(sender, value);
 		}
 	}
 	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<String>();
 	}
 }

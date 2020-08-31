@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -15,7 +15,7 @@ public class ReloadCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		Shared.unload();
 		Shared.load(false);
 		if (Shared.disabled) {

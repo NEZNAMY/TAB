@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
 import me.neznamy.tab.shared.command.level1.BossBarCommand;
@@ -45,7 +45,7 @@ public class TabCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String arg0 = args[0];
 			SubCommand command = subcommands.get(arg0.toLowerCase());
@@ -62,7 +62,7 @@ public class TabCommand extends SubCommand {
 			help(sender);
 		}
 	}
-	private void help(ITabPlayer sender){
+	private void help(TabPlayer sender){
 		if (sender == null) Shared.platform.sendConsoleMessage("&3TAB v" + Shared.pluginVersion);
 		if (sender == null || sender.hasPermission("tab.admin") && !Shared.disabled) {
 			  sendMessage(sender, "&m                                                                                ");
@@ -85,7 +85,7 @@ public class TabCommand extends SubCommand {
 			  sendMessage(sender, "&m                                                                                ");
 		}
 	}
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (!Configs.SECRET_autoComplete) return new ArrayList<String>();
 		return super.complete(sender, arguments);
 	}

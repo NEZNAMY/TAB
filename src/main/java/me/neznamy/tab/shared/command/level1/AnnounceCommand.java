@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.command.level1;
 
 import java.util.Arrays;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -18,7 +18,7 @@ public class AnnounceCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String arg0 = args[0].toLowerCase();
 			SubCommand command = subcommands.get(arg0);

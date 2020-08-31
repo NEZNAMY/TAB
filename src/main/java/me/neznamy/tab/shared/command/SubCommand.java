@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -31,37 +31,37 @@ public abstract class SubCommand {
 	public String getName() {
 		return name;
 	}
-	public boolean hasPermission(ITabPlayer sender) {
+	public boolean hasPermission(TabPlayer sender) {
 		return hasPermission(sender, permission);
 	}
-	public boolean hasPermission(ITabPlayer sender, String permission) {
+	public boolean hasPermission(TabPlayer sender, String permission) {
 		if (permission == null) return true; //no permission required
 		if (sender == null) return true; //console
 		if (sender.hasPermission("tab.admin")) return true;
 		return sender.hasPermission(permission);
 	}
-	public void sendMessage(ITabPlayer sender, String message) {
+	public void sendMessage(TabPlayer sender, String message) {
 		if (sender != null) {
-			sender.sendMessage(message);
+			sender.sendMessage(message, true);
 		} else {
 			Shared.platform.sendConsoleMessage(message);
 		}
 	}
-	public void sendRawMessage(ITabPlayer sender, String message) {
+	public void sendRawMessage(TabPlayer sender, String message) {
 		if (sender != null) {
-			sender.sendRawMessage(message);
+			sender.sendMessage(message, false);
 		} else {
 			Shared.platform.sendRawConsoleMessage(message);
 		}
 	}
 	public List<String> getPlayers(String nameStart){
 		List<String> suggestions = new ArrayList<String>();
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
 		}
 		return suggestions;
 	}
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		String argument = arguments[0].toLowerCase();
 		if (arguments.length == 1) {
 			List<String> suggestions = new ArrayList<String>();
@@ -77,5 +77,5 @@ public abstract class SubCommand {
 		return new ArrayList<String>();
 	}
 	
-	public abstract void execute(ITabPlayer sender, String[] args);
+	public abstract void execute(TabPlayer sender, String[] args);
 }

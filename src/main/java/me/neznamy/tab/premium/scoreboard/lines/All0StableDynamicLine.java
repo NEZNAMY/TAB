@@ -55,13 +55,13 @@ public class All0StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void unregister(ITabPlayer p) {
-		if (parent.players.contains(p) && p.properties.get(teamName).get().length() > 0) {
+		if (parent.players.contains(p) && p.getProperty(teamName).get().length() > 0) {
 			PacketAPI.removeScoreboardScore(p, getPlayerName(), teamName);
 		}
 	}
 	
 	private List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
-		Property scoreproperty = p.properties.get(teamName);
+		Property scoreproperty = p.getProperty(teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
 		if (!scoreproperty.update() && !force) return null;
 		String replaced = scoreproperty.get();

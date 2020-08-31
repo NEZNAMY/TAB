@@ -90,14 +90,9 @@ public class TabPlayer extends ITabPlayer {
 	}
 	
 	@Override
-	public void sendMessage(String message) {
+	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(Placeholders.color(message));
-	}
-	
-	@Override
-	public void sendRawMessage(String message) {
-		if (message == null || message.length() == 0) return;
+		if (translateColors) message = Placeholders.color(message);
 		player.sendMessage(message);
 	}
 	

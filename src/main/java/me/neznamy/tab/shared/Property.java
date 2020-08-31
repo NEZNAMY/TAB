@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.shared.placeholders.ServerConstant;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -14,7 +15,7 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
  */
 public class Property {
 
-	private ITabPlayer owner;
+	private TabPlayer owner;
 	private String rawValue;
 	private String temporaryValue;
 	public String lastReplacedValue;
@@ -23,7 +24,7 @@ public class Property {
 	public List<Placeholder> placeholders = new ArrayList<Placeholder>();
 	public List<RelationalPlaceholder> relPlaceholders = new ArrayList<RelationalPlaceholder>();
 
-	public Property(ITabPlayer owner, String rawValue, String source) {
+	public Property(TabPlayer owner, String rawValue, String source) {
 		if (rawValue == null) rawValue = "";
 		this.owner = owner;
 		this.source = source;
@@ -79,7 +80,7 @@ public class Property {
 	public boolean update() {
 		String string = getCurrentRawValue();
 		for (Placeholder pl : placeholders) {
-			string = pl.set(string, owner);
+			string = pl.set(string, (ITabPlayer) owner);
 		}
 		string = Placeholders.color(string);
 		for (String removed : Configs.removeStrings) {
@@ -94,11 +95,11 @@ public class Property {
 	public String get() {
 		return lastReplacedValue;
 	}
-	public String getFormat(ITabPlayer viewer) {
+	public String getFormat(TabPlayer viewer) {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (RelationalPlaceholder pl : relPlaceholders) {
-			format = format.replace(pl.identifier, pl.getLastValue(viewer, owner));
+			format = format.replace(pl.identifier, pl.getLastValue((ITabPlayer) viewer, (ITabPlayer) owner));
 		}
 		return format;
 	}

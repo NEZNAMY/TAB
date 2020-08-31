@@ -31,20 +31,20 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
-		String oldName = refreshed.properties.get(teamName + "-name").get();
-		boolean prefix = refreshed.properties.get(teamName + "-prefix").update();
-		boolean name = refreshed.properties.get(teamName + "-name").update();
-		boolean suffix = refreshed.properties.get(teamName + "-suffix").update();
+		String oldName = refreshed.getProperty(teamName + "-name").get();
+		boolean prefix = refreshed.getProperty(teamName + "-prefix").update();
+		boolean name = refreshed.getProperty(teamName + "-name").update();
+		boolean suffix = refreshed.getProperty(teamName + "-suffix").update();
 		if (prefix || name || suffix) {
 			if (name) {
 				//name changed as well
 				PacketAPI.removeScoreboardScore(refreshed, oldName, teamName);
-				PacketAPI.registerScoreboardScore(refreshed, teamName, refreshed.properties.get(teamName + "-name").get(), 
-						refreshed.properties.get(teamName + "-prefix").get(), refreshed.properties.get(teamName + "-suffix").get(), ObjectiveName, score);
+				PacketAPI.registerScoreboardScore(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 
+						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
 			} else {
 				//only prefix/suffix changed
-				refreshed.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, refreshed.properties.get(teamName + "-prefix").get(), 
-						refreshed.properties.get(teamName + "-suffix").get(), "always", "always", 69));
+				refreshed.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
+						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 69));
 			}
 		}
 	}
@@ -59,14 +59,14 @@ public class CustomLine extends ScoreboardLine {
 		p.setProperty(teamName + "-prefix", prefix, null);
 		p.setProperty(teamName + "-name", name, null);
 		p.setProperty(teamName + "-suffix", suffix, null);
-		PacketAPI.registerScoreboardScore(p, teamName, p.properties.get(teamName + "-name").get(), p.properties.get(teamName + "-prefix").get(),
-				p.properties.get(teamName + "-suffix").get(), ObjectiveName, score);
+		PacketAPI.registerScoreboardScore(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
+				p.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
 	}
 
 	@Override
 	public void unregister(ITabPlayer p) {
 		if (parent.players.contains(p)) {
-			PacketAPI.removeScoreboardScore(p, p.properties.get(teamName + "-name").get(), teamName);
+			PacketAPI.removeScoreboardScore(p, p.getProperty(teamName + "-name").get(), teamName);
 		}
 	}
 }

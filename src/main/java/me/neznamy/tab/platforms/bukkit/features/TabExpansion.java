@@ -52,10 +52,10 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (p == null) return "";
 		for (EnumProperty property : EnumProperty.values()) {
 			if (identifier.equals(property.toString())) {
-				return p.properties.get(property.toString()).lastReplacedValue;
+				return p.getProperty(property.toString()).lastReplacedValue;
 			}
 			if (identifier.equals(property.toString() + "_raw")) {
-				return p.properties.get(property.toString()).getCurrentRawValue();
+				return p.getProperty(property.toString()).getCurrentRawValue();
 			}
 		}
 		if (identifier.equals("scoreboard_visible")) {

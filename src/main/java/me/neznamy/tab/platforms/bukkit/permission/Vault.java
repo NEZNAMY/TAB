@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.permission;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -16,13 +16,13 @@ public class Vault implements PermissionPlugin {
 	}
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) {
 		if (getName().equals("SuperPerms")) return "null";
 		return permission.getPrimaryGroup(p.getBukkitEntity());
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
+	public String[] getAllGroups(TabPlayer p) {
 		if (getName().equals("SuperPerms")) return new String[] {"null"};
 		return permission.getPlayerGroups(p.getBukkitEntity());
 	}

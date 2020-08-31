@@ -4,11 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
@@ -45,13 +45,13 @@ public class PetFix implements RawPacketFeature {
 	}
 	
 	@Override
-	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
 		return packet;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
+	public Object onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
 		if (PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return packet;

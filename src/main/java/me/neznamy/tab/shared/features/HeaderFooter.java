@@ -61,7 +61,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			updateRawValue(p, "footer");
 		}
 		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.properties.get("header").updateAndGet(), p.properties.get("footer").updateAndGet()));
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").updateAndGet(), p.getProperty("footer").updateAndGet()));
 	}
 	
 	@Override

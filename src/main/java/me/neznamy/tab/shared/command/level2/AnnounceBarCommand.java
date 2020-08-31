@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
@@ -21,7 +22,7 @@ public class AnnounceBarCommand extends SubCommand{
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if (Shared.featureManager.isFeatureEnabled("bossbar")) {
 			BossBar feature = (BossBar) Shared.featureManager.getFeature("bossbar");
 			if (args.length == 2) {
@@ -35,7 +36,7 @@ public class AnnounceBarCommand extends SubCommand{
 							try {
 								BossBarLine bar = feature.lines.get(barname);
 								if (bar == null) {
-									sender.sendMessage("Bar not found");
+									sender.sendMessage("Bar not found", false);
 									return;
 								}
 								feature.announcements.add(barname);
@@ -55,7 +56,7 @@ public class AnnounceBarCommand extends SubCommand{
 						}
 					});
 				} catch (Exception e) {
-					sender.sendMessage(args[3] + " is not a number!");
+					sender.sendMessage(args[3] + " is not a number!", false);
 				}
 			} else {
 				sendMessage(sender, "Usage: /tab announce bar <bar name> <length>");
@@ -66,7 +67,7 @@ public class AnnounceBarCommand extends SubCommand{
 	}
 
 	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		BossBar b = (BossBar) Shared.featureManager.getFeature("bossbar");
 		if (b == null) return new ArrayList<String>();
 		List<String> suggestions = new ArrayList<String>();

@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.shared.ITabPlayer;
 
 /**
  * A helper class for easy management of armor stands of a player
@@ -18,7 +18,7 @@ public class ArmorStandManager {
 	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 	}
-	public void spawn(ITabPlayer viewer) {
+	public void spawn(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand as : getArmorStands()) {
 			for (PacketPlayOut packet : as.getSpawnPackets(viewer, true)) {
@@ -35,7 +35,7 @@ public class ArmorStandManager {
 		getArmorStands().forEach(a -> a.teleport());
 	}
 
-	public void teleport(ITabPlayer viewer) {
+	public void teleport(TabPlayer viewer) {
 		getArmorStands().forEach(a -> viewer.sendCustomBukkitPacket(a.getTeleportPacket(viewer)));
 	}
 
@@ -47,7 +47,7 @@ public class ArmorStandManager {
 		getArmorStands().forEach(a -> a.updateVisibility());
 	}
 
-	public void unregisterPlayer(ITabPlayer viewer) {
+	public void unregisterPlayer(TabPlayer viewer) {
 		getArmorStands().forEach(a -> a.removeFromRegistered(viewer));
 	}
 
@@ -55,7 +55,7 @@ public class ArmorStandManager {
 		getArmorStands().forEach(a -> a.destroy());
 	}
 
-	public void destroy(ITabPlayer viewer) {
+	public void destroy(TabPlayer viewer) {
 		getArmorStands().forEach(a -> a.destroy(viewer));
 	}
 

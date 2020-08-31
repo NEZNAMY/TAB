@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bungee.permission;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
 /**
@@ -9,13 +9,13 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 public class None implements PermissionPlugin{
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) {
 		String[] groups = p.getBungeeEntity().getGroups().toArray(new String[0]);
 		return groups[groups.length-1];
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
+	public String[] getAllGroups(TabPlayer p) {
 		return p.getBungeeEntity().getGroups().toArray(new String[0]);
 	}
 	

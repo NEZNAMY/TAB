@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -19,7 +19,7 @@ public class GroupCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		//<name> <property> [value...]
 		if (args.length > 1) {
 			String group = args[0];
@@ -33,7 +33,7 @@ public class GroupCommand extends SubCommand {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Groups." + group, null);
 					Configs.config.save();
-					for (ITabPlayer pl : Shared.getPlayers()) {
+					for (TabPlayer pl : Shared.getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.forceRefresh();
 						}
@@ -72,12 +72,12 @@ public class GroupCommand extends SubCommand {
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
-	private void saveGroup(ITabPlayer sender, String group, String type, String value){
+	private void saveGroup(TabPlayer sender, String group, String type, String value){
 		if (value.length() == 0) value = null;
 		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value);
 		Configs.config.save();
 		Placeholders.checkForRegistration(value);
-		for (ITabPlayer pl : Shared.getPlayers()) {
+		for (TabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();
 			}
@@ -90,7 +90,7 @@ public class GroupCommand extends SubCommand {
 	}
 
 	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 2) {
 			for (String property : usualProperties) {

@@ -119,8 +119,8 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.properties.get("tagprefix").update();
-			boolean suffix = refreshed.properties.get("tagsuffix").update();
+			boolean prefix = refreshed.getProperty("tagprefix").update();
+			boolean suffix = refreshed.getProperty("tagsuffix").update();
 			refresh = prefix || suffix;
 		}
 

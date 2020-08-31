@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.Arrays;
 import java.util.Collection;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
@@ -18,18 +19,18 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 public class PacketAPI {
 	
 	//scoreboard team
-	public static void registerScoreboardTeam(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
+	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
 	}
-	public static void updateScoreboardTeamPrefixSuffix(ITabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
+	public static void updateScoreboardTeamPrefixSuffix(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", 69));
 	}
 
 	//scoreboard objective
-	public static void registerScoreboardObjective(ITabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
+	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_safe_register) {
 			to.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(objectiveName));
 		}
@@ -38,15 +39,15 @@ public class PacketAPI {
 	}
 
 	//scoreboard score
-	public static void registerScoreboardScore(ITabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
+	public static void registerScoreboardScore(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
 		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
 		setScoreboardScore(p, fakeplayer, objective, score);
 	}
-	public static void removeScoreboardScore(ITabPlayer p, String fakeplayer, String objective) {
+	public static void removeScoreboardScore(TabPlayer p, String fakeplayer, String objective) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, objective, fakeplayer, 0));
 		p.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(objective).setTeamOptions(69));
 	}
-	public static void setScoreboardScore(ITabPlayer to, String fakeplayer, String objective, int score) {
+	public static void setScoreboardScore(TabPlayer to, String fakeplayer, String objective, int score) {
 		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective, fakeplayer, score));
 	}
 }

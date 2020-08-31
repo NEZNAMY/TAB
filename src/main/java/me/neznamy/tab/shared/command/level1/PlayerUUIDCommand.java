@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -19,11 +19,11 @@ public class PlayerUUIDCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		//<uuid> <property> [value...]
 		if (args.length > 1) {
 			String name = args[0];
-			ITabPlayer changed = Shared.getPlayer(name);
+			TabPlayer changed = Shared.getPlayer(name);
 			if (changed == null) {
 				sendMessage(sender, Configs.player_not_found);
 				return;
@@ -73,7 +73,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
-	public void savePlayer(ITabPlayer sender, ITabPlayer player, String type, String value){
+	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
 		Configs.config.save();
@@ -86,7 +86,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		}
 	}
 	@Override
-	public List<String> complete(ITabPlayer sender, String[] arguments) {
+	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (arguments.length == 1) return getPlayers(arguments[0]);
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 2) {

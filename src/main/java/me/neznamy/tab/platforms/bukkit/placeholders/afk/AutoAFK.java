@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * Can't find plugin link. Was it removed?
@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 public class AutoAFK implements AFKProvider {
 
 	@Override
-	public boolean isAFK(ITabPlayer p) throws Exception {
+	public boolean isAFK(TabPlayer p) throws Exception {
 		Object plugin = Bukkit.getPluginManager().getPlugin("AutoAFK");
 		Field f = plugin.getClass().getDeclaredField("afkList");
 		f.setAccessible(true);

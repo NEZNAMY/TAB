@@ -77,7 +77,7 @@ public class NumberedStaticLine extends ScoreboardLine {
 
 	@Override
 	public void unregister(ITabPlayer p) {
-		if (p.properties.get(teamName).get().length() > 0) {
+		if (p.getProperty(teamName).get().length() > 0) {
 			PacketAPI.removeScoreboardScore(p, p.getVersion().getMinorVersion() < 8 ? name1_7 : name, teamName);
 		}
 	}

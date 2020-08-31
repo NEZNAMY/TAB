@@ -112,7 +112,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	public void register(ITabPlayer p) {
 		if (!players.contains(p)) {
 			p.setProperty("scoreboard-title", title, null);
-			PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.properties.get("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.getProperty("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (ScoreboardLine s : lines) {
 				s.register(p);
 			}
@@ -140,8 +140,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (refreshed.properties.get("scoreboard-title") == null) return;
-		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.properties.get("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+		if (refreshed.getProperty("scoreboard-title") == null) return;
+		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
 
 	@Override

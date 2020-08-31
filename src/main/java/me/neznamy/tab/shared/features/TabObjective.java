@@ -88,7 +88,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	
 	public int getValue(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "Yellow number in tablist");
+		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "Yellow number in tablist");
 	}
 	
 	@Override

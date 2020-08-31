@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * An instance of PermissionPlugin to be used when none is found
@@ -8,12 +8,12 @@ import me.neznamy.tab.shared.ITabPlayer;
 public class None implements PermissionPlugin {
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) {
 		return "null";
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
+	public String[] getAllGroups(TabPlayer p) {
 		return new String[] {"null"};
 	}
 	

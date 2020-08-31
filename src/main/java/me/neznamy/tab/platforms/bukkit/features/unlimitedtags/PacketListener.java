@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -79,7 +80,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	@Override
-	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
 		if (sender.getVersion().getMinorVersion() == 8 && PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
 			ITabPlayer attacked = null;
@@ -97,7 +98,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	@Override
-	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable {
+	public Object onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		if (PacketPlayOutEntity.isInstance(packet)) {
 			int id = PacketPlayOutEntity_ENTITYID.getInt(packet);
@@ -135,7 +136,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 						spawnedPlayer.getArmorStandManager().spawn(receiver);
 					} else {
 						//player is not loaded yet and server is already sending entity spawn packet
-						if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<ITabPlayer>());
+						if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<TabPlayer>());
 						nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
 					}
 				}
@@ -210,7 +211,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {

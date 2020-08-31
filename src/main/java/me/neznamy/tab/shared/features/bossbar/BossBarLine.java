@@ -63,18 +63,18 @@ public class BossBarLine {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			to.sendCustomPacket(PacketPlayOutBoss.CREATE(
 					uuid, 
-					to.properties.get("bossbar-text-" + name).get(), 
-					(float)parseProgress(to.properties.get("bossbar-progress-" + name).get())/100, 
-					parseColor(to.properties.get("bossbar-color-" + name).get()), 
-					parseStyle(to.properties.get("bossbar-style-" + name).get())
+					to.getProperty("bossbar-text-" + name).get(), 
+					(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
+					parseColor(to.getProperty("bossbar-color-" + name).get()), 
+					parseStyle(to.getProperty("bossbar-style-" + name).get())
 				)
 			);
 		} else {
 			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, ((BossBar_legacy)Shared.featureManager.getFeature("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher();
 			w.helper().setEntityFlags((byte) 32);
-			w.helper().setCustomName(to.properties.get("bossbar-text-" + name).get(), to.getVersion());
-			float health = (float)3*parseProgress(to.properties.get("bossbar-progress-" + name).get());
+			w.helper().setCustomName(to.getProperty("bossbar-text-" + name).get(), to.getVersion());
+			float health = (float)3*parseProgress(to.getProperty("bossbar-progress-" + name).get());
 			if (health == 0) health = 1;
 			w.helper().setHealth(health);
 			packet.setDataWatcher(w);

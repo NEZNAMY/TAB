@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -40,7 +40,7 @@ public class CpuCommand extends SubCommand {
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		Map<String, Float> placeholders = Shared.cpu.getPlaceholderUsage();
 		float placeholdersTotal = 0;
 		for (Float time : placeholders.values()) placeholdersTotal += time;

@@ -28,7 +28,7 @@ public class TextRefresher implements Refreshable {
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
-		Property text = refreshed.properties.get("bossbar-text-" + line.name);
+		Property text = refreshed.getProperty("bossbar-text-" + line.name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, text.updateAndGet()));
 		} else {

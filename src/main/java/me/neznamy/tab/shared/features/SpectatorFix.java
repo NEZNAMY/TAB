@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -22,13 +22,13 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (receiver.getVersion().getMinorVersion() < 8) return info;
 		if (allowBypass && receiver.hasPermission("tab.spectatorbypass")) return info;
 		if (info.action != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (playerInfoData.gameMode == EnumGamemode.SPECTATOR) {
-				ITabPlayer changed = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				TabPlayer changed = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (changed != receiver) playerInfoData.gameMode = EnumGamemode.CREATIVE;
 			}
 		}

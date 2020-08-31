@@ -109,7 +109,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		}
 	}
 	private int getNumber(ITabPlayer p) {
-		return Shared.errorManager.parseInteger(p.properties.get(propertyName).updateAndGet(), 0, "BelowName");
+		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "BelowName");
 	}
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {

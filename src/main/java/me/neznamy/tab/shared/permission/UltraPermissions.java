@@ -8,7 +8,7 @@ import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
 import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
 import me.TechsCode.UltraPermissions.storage.objects.Group;
 import me.TechsCode.UltraPermissions.storage.objects.User;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -17,14 +17,14 @@ import me.neznamy.tab.shared.Shared;
 public class UltraPermissions implements PermissionPlugin {
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return "null";
 		return groups[0];
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
+	public String[] getAllGroups(TabPlayer p) {
 		UltraPermissionsAPI api = null;
 		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
 			api = UltraPermissionsBungee.getAPI();

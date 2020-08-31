@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -44,7 +45,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
 	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
-	public Map<ITabPlayer, List<ITabPlayer>> delayedSpawn = new HashMap<ITabPlayer, List<ITabPlayer>>();
+	public Map<ITabPlayer, List<TabPlayer>> delayedSpawn = new HashMap<ITabPlayer, List<TabPlayer>>();
 	private EventListener eventListener;
 
 	@SuppressWarnings("unchecked")
@@ -136,7 +137,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			vehicles.put(vehicle.getEntityId(), list);
 		}
 		if (delayedSpawn.containsKey(connectedPlayer)) {
-			for (ITabPlayer viewer : delayedSpawn.get(connectedPlayer)) {
+			for (TabPlayer viewer : delayedSpawn.get(connectedPlayer)) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
 			}
 			delayedSpawn.remove(connectedPlayer);
@@ -174,14 +175,14 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	
 	public void loadArmorStands(ITabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
-		pl.setProperty("nametag", pl.properties.get("tagprefix").getCurrentRawValue() + pl.properties.get("customtagname").getCurrentRawValue() + pl.properties.get("tagsuffix").getCurrentRawValue(), null);
+		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue(), null);
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : dynamicLines) {
-			Property p = pl.properties.get(line);
+			Property p = pl.getProperty(line);
 			pl.getArmorStandManager().addArmorStand(line, new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
-			Property p = pl.properties.get(line.getKey());
+			Property p = pl.getProperty(line.getKey());
 			pl.getArmorStandManager().addArmorStand(line.getKey(), new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
@@ -207,8 +208,8 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.properties.get("tagprefix").update();
-			boolean suffix = refreshed.properties.get("tagsuffix").update();
+			boolean prefix = refreshed.getProperty("tagprefix").update();
+			boolean suffix = refreshed.getProperty("tagsuffix").update();
 			refresh = prefix || suffix;
 		}
 		if (refresh) refreshed.updateTeam();
@@ -226,7 +227,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		p.updateProperty("tagprefix");
 		p.updateProperty("customtagname", p.getName());
 		p.updateProperty("tagsuffix");
-		p.setProperty("nametag", p.properties.get("tagprefix").getCurrentRawValue() + p.properties.get("customtagname").getCurrentRawValue() + p.properties.get("tagsuffix").getCurrentRawValue(), null);
+		p.setProperty("nametag", p.getProperty("tagprefix").getCurrentRawValue() + p.getProperty("customtagname").getCurrentRawValue() + p.getProperty("tagsuffix").getCurrentRawValue(), null);
 		for (String property : dynamicLines) {
 			if (!property.equals("nametag")) p.updateProperty(property);
 		}

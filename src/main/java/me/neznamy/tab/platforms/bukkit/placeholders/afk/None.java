@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.placeholders.afk;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * No afk plugin found, returning false
@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 public class None implements AFKProvider {
 
 	@Override
-	public boolean isAFK(ITabPlayer p) {
+	public boolean isAFK(TabPlayer p) {
 		return false;
 	}
 }

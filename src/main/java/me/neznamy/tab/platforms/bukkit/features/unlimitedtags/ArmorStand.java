@@ -10,14 +10,15 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -33,7 +34,7 @@ public class ArmorStand {
 
 	private static int idCounter = 2000000000;
 
-	private ITabPlayer owner;
+	private TabPlayer owner;
 	private Player player;
 	private double yOffset;
 	private int entityId = idCounter++;
@@ -42,12 +43,12 @@ public class ArmorStand {
 	private boolean sneaking;
 	private boolean visible;
 
-	private List<ITabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<ITabPlayer>());
+	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<TabPlayer>());
 	public Property property;
 	private boolean staticOffset;
 	private boolean markerFor18x;
 
-	public ArmorStand(ITabPlayer owner, Property property, double yOffset, boolean staticOffset) {
+	public ArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = owner.getBukkitEntity();
@@ -73,12 +74,12 @@ public class ArmorStand {
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		for (ITabPlayer all : getNearbyPlayers()) {
+		for (TabPlayer all : getNearbyPlayers()) {
 			all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
 		}
 	}
 	
-	public PacketPlayOut[] getSpawnPackets(ITabPlayer viewer, boolean addToRegistered) {
+	public PacketPlayOut[] getSpawnPackets(TabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
@@ -94,21 +95,21 @@ public class ArmorStand {
 		}
 	}
 	
-	public PacketPlayOutEntityTeleport getTeleportPacket(ITabPlayer viewer) {
+	public PacketPlayOutEntityTeleport getTeleportPacket(TabPlayer viewer) {
 		return new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(viewer));
 	}
 	
-	private Location getArmorStandLocationFor(ITabPlayer viewer) {
+	private Location getArmorStandLocationFor(TabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 	
-	public void destroy(ITabPlayer viewer) {
+	public void destroy(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 		viewer.sendCustomBukkitPacket(destroyPacket);
 	}
 	
 	public void teleport() {
-		for (ITabPlayer all : getNearbyPlayers()) {
+		for (TabPlayer all : getNearbyPlayers()) {
 			all.sendCustomBukkitPacket(getTeleportPacket(all));
 		}
 	}
@@ -116,7 +117,7 @@ public class ArmorStand {
 	public void sneak(boolean sneaking) {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
-		for (ITabPlayer viewer : getNearbyPlayers()) {
+		for (TabPlayer viewer : getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
@@ -149,7 +150,7 @@ public class ArmorStand {
 	}
 	
 	public void destroy() {
-		for (ITabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
+		for (TabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
 	
@@ -161,14 +162,14 @@ public class ArmorStand {
 	}
 	
 	private void updateMetadata() {
-		for (ITabPlayer viewer : getNearbyPlayers()) {
+		for (TabPlayer viewer : getNearbyPlayers()) {
 			viewer.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
 		}
 	}
 	
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
-		return !owner.hasInvisibility() && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
+		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
 	
 	public Location getLocation() {
@@ -211,11 +212,11 @@ public class ArmorStand {
 		return entityId;
 	}
 	
-	public void removeFromRegistered(ITabPlayer viewer) {
+	public void removeFromRegistered(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 	}
 	
-	public DataWatcher createDataWatcher(String displayName, ITabPlayer viewer) {
+	public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
 		byte flag = 0;
@@ -233,8 +234,8 @@ public class ArmorStand {
 		return datawatcher;
 	}
 	
-	public List<ITabPlayer> getNearbyPlayers(){
-		return new ArrayList<ITabPlayer>(nearbyPlayers);
+	public List<TabPlayer> getNearbyPlayers(){
+		return new ArrayList<TabPlayer>(nearbyPlayers);
 	}
 	
 	private boolean isNameVisiblyEmpty(String displayName) {

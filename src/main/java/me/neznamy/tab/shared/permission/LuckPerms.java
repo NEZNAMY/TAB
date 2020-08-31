@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.permission;
 
 import java.util.stream.Collectors;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
@@ -22,7 +22,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	}
 
 	@Override
-	public String getPrimaryGroup(ITabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
@@ -33,7 +33,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	}
 
 	@Override
-	public String[] getAllGroups(ITabPlayer p) {
+	public String[] getAllGroups(TabPlayer p) {
 		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
@@ -44,7 +44,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	}
 
 	@Override
-	public String getPrefix(ITabPlayer p) {
+	public String getPrefix(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
@@ -56,7 +56,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	}
 
 	@Override
-	public String getSuffix(ITabPlayer p) {
+	public String getSuffix(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {

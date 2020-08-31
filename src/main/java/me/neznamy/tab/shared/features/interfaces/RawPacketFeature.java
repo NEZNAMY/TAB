@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.features.interfaces;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * Classes implementing this interface will receive raw packets
  */
 public interface RawPacketFeature extends Feature {
 
-	public Object onPacketReceive(ITabPlayer sender, Object packet) throws Throwable;
-	public Object onPacketSend(ITabPlayer receiver, Object packet) throws Throwable;
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable;
+	public Object onPacketSend(TabPlayer receiver, Object packet) throws Throwable;
 }

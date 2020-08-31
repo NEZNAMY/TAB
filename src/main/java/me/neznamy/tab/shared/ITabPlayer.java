@@ -88,26 +88,12 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public abstract void sendPacket(Object nmsPacket);
 
-	public abstract void sendMessage(String message);
-
-	public abstract void sendRawMessage(String message);
+	public abstract void sendMessage(String message, boolean translateColors);
 
 	public abstract Object getSkin();
 	
 	public boolean isVanished() {
 		return false;
-	}
-
-	public org.bukkit.entity.Player getBukkitEntity() {
-		throw new IllegalStateException("Wrong platform");
-	}
-
-	public ProxiedPlayer getBungeeEntity() {
-		throw new IllegalStateException("Wrong platform");
-	}
-
-	public com.velocitypowered.api.proxy.Player getVelocityEntity() {
-		throw new IllegalStateException("Wrong platform");
 	}
 
 	public boolean getTeamPush() {
@@ -126,10 +112,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return offlineId;
 	}
 
-	public ProtocolVersion getVersion() {
-		return version;
-	}
-
 	public boolean isStaff() {
 		return hasPermission("tab.staff");
 	}
@@ -140,10 +122,6 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public Scoreboard getActiveScoreboard() {
 		return activeScoreboard;
-	}
-
-	public String getWorldName() {
-		return world;
 	}
 
 	public PlayerInfoData getInfoData() {
@@ -167,7 +145,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	public String setProperty(String identifier, String rawValue, String source) {
-		Property p = properties.get(identifier);
+		Property p = getProperty(identifier);
 		if (p == null) {
 			properties.put(identifier, new Property(this, rawValue, source));
 		} else {
@@ -193,10 +171,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean getTeamVisibility() {
 		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
 		return !Shared.featureManager.isFeatureEnabled("nametagx") && nameTagVisible;
-	}
-
-	public String getGroup() {
-		return permissionGroup;
 	}
 
 	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
@@ -296,8 +270,8 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void updateTeamData() {
 		if (disabledNametag) return;
-		Property tagprefix = properties.get("tagprefix");
-		Property tagsuffix = properties.get("tagsuffix");
+		Property tagprefix = getProperty("tagprefix");
+		Property tagsuffix = getProperty("tagsuffix");
 		boolean collision = lastCollision = getTeamPush();
 		boolean visible = getTeamVisibility();
 		for (ITabPlayer viewer : Shared.getPlayers()) {
@@ -308,8 +282,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	public void registerTeam() {
-		Property tagprefix = properties.get("tagprefix");
-		Property tagsuffix = properties.get("tagsuffix");
+		Property tagprefix = getProperty("tagprefix");
+		Property tagsuffix = getProperty("tagsuffix");
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
@@ -318,8 +292,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	public void registerTeam(ITabPlayer viewer) {
-		Property tagprefix = properties.get("tagprefix");
-		Property tagsuffix = properties.get("tagsuffix");
+		Property tagprefix = getProperty("tagprefix");
+		Property tagsuffix = getProperty("tagsuffix");
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), getTeamPush(), Arrays.asList(getName()), null);
@@ -360,17 +334,12 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 	}
 	
-	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		sendPacket(packet.build(getVersion()));
+	public ArmorStandManager getArmorStandManager() {
+		return armorStandManager;
 	}
-	public void sendCustomBukkitPacket(PacketPlayOut packet) {
-		try {
-			sendPacket(packet.toNMS(getVersion()));
-		} catch (InvocationTargetException e) {
-			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e.getTargetException());
-		} catch (Throwable e) {
-			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-		}
+
+	public void setArmorStandManager(ArmorStandManager armorStandManager) {
+		this.armorStandManager = armorStandManager;
 	}
 	
 	
@@ -378,52 +347,76 @@ public abstract class ITabPlayer implements TabPlayer {
 	 *  Implementing interface
 	 */
 	
+	
+	@Override
 	public void setValueTemporarily(EnumProperty type, String value) {
 		Placeholders.checkForRegistration(value);
-		properties.get(type.toString()).setTemporaryValue(value);
+		getProperty(type.toString()).setTemporaryValue(value);
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty("nametag",properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
+			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}
+	
+	@Override
 	public void setValuePermanently(EnumProperty type, String value) {
 		Placeholders.checkForRegistration(value);
-		properties.get(type.toString()).changeRawValue(value);
+		getProperty(type.toString()).changeRawValue(value);
 		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
+			setProperty("nametag", getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}
+	
+	@Override
 	public String getTemporaryValue(EnumProperty type) {
-		return properties.get(type.toString()).getTemporaryValue();
+		return getProperty(type.toString()).getTemporaryValue();
 	}
+	
+	@Override
 	public boolean hasTemporaryValue(EnumProperty type) {
 		return getTemporaryValue(type) != null;
 	}
+	
+	@Override
 	public void removeTemporaryValue(EnumProperty type) {
 		setValueTemporarily(type, null);
 	}
+	
+	@Override
 	public String getOriginalValue(EnumProperty type) {
-		return properties.get(type.toString()).getOriginalRawValue();
+		return getProperty(type.toString()).getOriginalRawValue();
 	}
+	
+	@Override
 	public void sendHeaderFooter(String header, String footer) {
 		sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
 	}
+	
+	@Override
 	public void hideNametag() {
 		hiddenNametag = true;
 		updateTeamData();
 	}
+	
+	@Override
 	public void showNametag() {
 		hiddenNametag = false;
 		updateTeamData();
 	}
+	
+	@Override
 	public boolean hasHiddenNametag() {
 		return hiddenNametag;
 	}
+	
+	@Override
 	public void forceRefresh() {
 		Shared.featureManager.refresh(this, true);
 	}
+	
+	@Override
 	public void showScoreboard(me.neznamy.tab.api.Scoreboard scoreboard) {
 		if (forcedScoreboard != null) {
 			forcedScoreboard.unregister(this);
@@ -435,6 +428,8 @@ public abstract class ITabPlayer implements TabPlayer {
 		forcedScoreboard = (Scoreboard) scoreboard;
 		((Scoreboard)scoreboard).register(this);
 	}
+	
+	@Override
 	public void showScoreboard(String name) {
 		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
@@ -442,6 +437,8 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name: " + name);
 		showScoreboard(scoreboard);
 	}
+	
+	@Override
 	public void removeCustomScoreboard() {
 		if (forcedScoreboard == null) return;
 		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
@@ -451,12 +448,73 @@ public abstract class ITabPlayer implements TabPlayer {
 		sb.register(this);
 		forcedScoreboard = null;
 	}
-
-	public ArmorStandManager getArmorStandManager() {
-		return armorStandManager;
+	
+	@Override
+	public ProtocolVersion getVersion() {
+		return version;
+	}
+	
+	@Override
+	public org.bukkit.entity.Player getBukkitEntity() {
+		throw new IllegalStateException("Wrong platform");
 	}
 
-	public void setArmorStandManager(ArmorStandManager armorStandManager) {
-		this.armorStandManager = armorStandManager;
+	@Override
+	public ProxiedPlayer getBungeeEntity() {
+		throw new IllegalStateException("Wrong platform");
+	}
+
+	@Override
+	public com.velocitypowered.api.proxy.Player getVelocityEntity() {
+		throw new IllegalStateException("Wrong platform");
+	}
+	
+	@Override
+	public void sendCustomBukkitPacket(PacketPlayOut packet) {
+		try {
+			sendPacket(packet.toNMS(getVersion()));
+		} catch (InvocationTargetException e) {
+			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e.getTargetException());
+		} catch (Throwable e) {
+			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
+		}
+	}
+	
+	@Override
+	public String getWorldName() {
+		return world;
+	}
+	
+	@Override
+	public void sendCustomPacket(UniversalPacketPlayOut packet) {
+		sendPacket(packet.build(getVersion()));
+	}
+	
+	@Override
+	public Property getProperty(String name) {
+		return properties.get(name);
+	}
+	
+	@Override
+	public String getGroup() {
+		return permissionGroup;
+	}
+	
+	@Override
+	public void toggleNametagPreview() {
+		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
+		if (previewingNametag) {
+			armorStandManager.destroy(this);
+			sendMessage(Configs.preview_off, true);
+		} else {
+			armorStandManager.spawn(this);
+			sendMessage(Configs.preview_on, true);
+		}
+		previewingNametag = !previewingNametag;
+	}
+	
+	@Override
+	public boolean isPreviewingNametag() {
+		return previewingNametag;
 	}
 }

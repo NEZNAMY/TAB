@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -25,7 +26,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
 	private int maxWidth;
-	private ITabPlayer maxPlayer;
+	private TabPlayer maxPlayer;
 	private Map<Character, Integer> widths = new HashMap<Character, Integer>();
 	private Playerlist playerlist;
 
@@ -64,11 +65,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			Shared.errorManager.criticalError("Failed to read character widths from file", ex);
 		}
 	}
-	public String fixTextWidth(ITabPlayer player, String prefixAndName, String suffix) {
+	public String fixTextWidth(TabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
-			for (ITabPlayer all : Shared.getPlayers()) {
+			for (TabPlayer all : Shared.getPlayers()) {
 				int localWidth = getPlayerNameWidth(all);
 				if (localWidth > maxWidth) {
 					maxWidth = localWidth;
@@ -117,8 +118,8 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 		return width;
 	}
-	private int getPlayerNameWidth(ITabPlayer p) {
-		String format = p.properties.get("tabprefix").get() + p.properties.get("customtabname").get() + p.properties.get("tabsuffix").get();
+	private int getPlayerNameWidth(TabPlayer p) {
+		String format = p.getProperty("tabprefix").get() + p.getProperty("customtabname").get() + p.getProperty("tabsuffix").get();
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	private String buildSpaces(int pixelWidth) {
@@ -177,7 +178,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 	}
 
-	private void updateAllNames(ITabPlayer exception, UsageType usage) {
+	private void updateAllNames(TabPlayer exception, UsageType usage) {
 		Shared.cpu.runMeasuredTask("aligning tabsuffix", TabFeature.ALIGNED_TABSUFFIX, usage, new Runnable() {
 
 			@Override

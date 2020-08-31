@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.interfaces;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 /**
@@ -8,5 +8,5 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
  */
 public interface PlayerInfoPacketListener extends Feature {
 
-	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info);
+	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info);
 }

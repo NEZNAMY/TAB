@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -15,17 +15,12 @@ public class NTPreviewCommand extends SubCommand{
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if ((Shared.featureManager.getFeature("nametagx")) != null) {
 			if (sender != null) {
-				if (sender.previewingNametag) {
-					sender.getArmorStandManager().destroy(sender);
-					sendMessage(sender, Configs.preview_off);
-				} else {
-					sender.getArmorStandManager().spawn(sender);
-					sendMessage(sender, Configs.preview_on);
-				}
-				sender.previewingNametag = !sender.previewingNametag;
+				sender.toggleNametagPreview();
+			} else {
+				sendMessage(sender, "&c[TAB] This command must be ran from the game");
 			}
 		} else {
 			sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);

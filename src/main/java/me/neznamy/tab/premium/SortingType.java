@@ -86,7 +86,7 @@ public enum SortingType {
 			teamName = getGroupPermissionChars(p);
 			break;
 		case TABPREFIX_A_TO_Z:
-			teamName = p.properties.get("tabprefix").get();
+			teamName = p.getProperty("tabprefix").get();
 			break;
 		case PLACEHOLDER_LOW_TO_HIGH:
 			teamName = placeholderLowToHigh(p);

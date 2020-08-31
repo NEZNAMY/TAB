@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -59,16 +60,16 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(ITabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (receiver.getVersion().getMinorVersion() < 8) return info;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return info;
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
-			ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (packetPlayer == receiver && ADD) packetPlayer.correctId = playerInfoData.uniqueId;
-			if (packetPlayer != null && !packetPlayer.disabledTablistNames) {
+			TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+			if (packetPlayer == receiver && ADD) ((ITabPlayer)packetPlayer).correctId = playerInfoData.uniqueId;
+			if (packetPlayer != null && !((ITabPlayer)packetPlayer).disabledTablistNames) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
 				if (ADD && (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
@@ -91,10 +92,10 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		return info;
 	}
 
-	public IChatBaseComponent getTabFormat(ITabPlayer p, ITabPlayer viewer) {
-		Property prefix = p.properties.get("tabprefix");
-		Property name = p.properties.get("customtabname");
-		Property suffix = p.properties.get("tabsuffix");
+	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
+		Property prefix = p.getProperty("tabprefix");
+		Property name = p.getProperty("customtabname");
+		Property suffix = p.getProperty("tabsuffix");
 		if (prefix == null || name == null || suffix == null) {
 //			Shared.errorManager.printError("TabFormat not initialized for " + p.getName());
 			return null;
@@ -120,9 +121,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.properties.get("tabprefix").update();
-			boolean name = refreshed.properties.get("customtabname").update();
-			boolean suffix = refreshed.properties.get("tabsuffix").update();
+			boolean prefix = refreshed.getProperty("tabprefix").update();
+			boolean name = refreshed.getProperty("customtabname").update();
+			boolean suffix = refreshed.getProperty("tabsuffix").update();
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {

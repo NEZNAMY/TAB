@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -21,7 +22,7 @@ public class ParseCommand extends SubCommand{
 	}
 
 	@Override
-	public void execute(ITabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String replaced = "";
 			for (int i=0; i<args.length; i++){
@@ -36,9 +37,9 @@ public class ParseCommand extends SubCommand{
 						((ServerPlaceholder)p).update();
 					}
 					if (p instanceof PlayerPlaceholder) {
-						((PlayerPlaceholder)p).update(sender);
+						((PlayerPlaceholder)p).update((ITabPlayer) sender);
 					}
-					replaced = p.set(replaced, sender);
+					replaced = p.set(replaced, (ITabPlayer) sender);
 				}
 			}
 			if (Shared.platform.getSeparatorType().equals("world")) replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);

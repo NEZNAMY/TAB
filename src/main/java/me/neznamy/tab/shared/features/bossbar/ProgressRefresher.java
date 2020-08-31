@@ -28,7 +28,7 @@ public class ProgressRefresher implements Refreshable {
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
-		Property progress = refreshed.properties.get("bossbar-progress-" + line.name);
+		Property progress = refreshed.getProperty("bossbar-progress-" + line.name);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_PCT(line.uuid, (float)line.parseProgress(progress.updateAndGet())/100));
 		} else {
