@@ -53,13 +53,18 @@ public enum ProtocolVersion {
 	v1_5		(60,  "1.5"),
 	v1_4_7		(51,  "1.4.7"),
 	v1_4_6		(51,  "1.4.6");
-	
+
 	public static ProtocolVersion SERVER_VERSION;
-	
+
+	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private int networkId;
+
+	//user-friendly name of the version
 	private String friendlyName;
+
+	//minor version of the release
 	private int minorVersion;
-	
+
 	private ProtocolVersion(int networkId, String friendlyName){
 		this.networkId = networkId;
 		this.friendlyName = friendlyName;
@@ -73,23 +78,50 @@ public enum ProtocolVersion {
 			minorVersion = Integer.parseInt(toString().split("_")[1]);
 		}
 	}
+
+	/**
+	 * Returns the vesion's network id
+	 * @return version's network id
+	 */
 	public int getNetworkId() {
 		return networkId;
 	}
+
+	/**
+	 * Returns user-friendly name of the version (such as 1.16.2 instead of v1_16_2)
+	 * @return
+	 */
 	public String getFriendlyName() {
 		return friendlyName;
 	}
+
+	/**
+	 * Returns minor version of this release, such as 8 for 1.8.x or 13 for 1.13.x
+	 * @return version's minor version
+	 */
 	public int getMinorVersion() {
 		return minorVersion;
 	}
-	public static ProtocolVersion fromServerString(String s) {
-		if (s.startsWith("1.8")) return v1_8;
+
+	/**
+	 * Returns enum constant of entered version or UNKNOWN if unknown server version
+	 * @param serverString - friendly name of the version
+	 * @return version or UNKNOWN if version is unknown
+	 */
+	public static ProtocolVersion fromServerString(String serverString) {
+		if (serverString.startsWith("1.8")) return v1_8;
 		try {
-			return valueOf("v" + s.replace(".", "_"));
+			return valueOf("v" + serverString.replace(".", "_"));
 		} catch (Throwable e) {
 			return UNKNOWN;
 		}
 	}
+
+	/**
+	 * Returns version from given network id
+	 * @param number - network id of protocol version
+	 * @return version from given network id
+	 */
 	public static ProtocolVersion fromNumber(int number) {
 		for (ProtocolVersion v : values()) {
 			if (number == v.getNetworkId()) return v;

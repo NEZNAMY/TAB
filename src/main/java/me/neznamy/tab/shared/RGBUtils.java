@@ -10,18 +10,39 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
  */
 public class RGBUtils {
 
+	//pattern for {#RRGGBB}
 	private static final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");
+	
+	//pattern for &x&R&R&G&G&B&B
 	private static final Pattern fix3 = Pattern.compile("\\&x[\\&0-9a-fA-F]{12}");
+	
+	//pattern for #<RRGGBB>
 	private static final Pattern fix4 = Pattern.compile("#<[0-9a-fA-F]{6}>");
+	
+	//pattern for <#RRGGBB>Text</#RRGGBB>
 	private static final Pattern gradient1 = Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>");
+	
+	//pattern for {#RRGGBB>}text{#RRGGBB<}
 	private static final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
+	/**
+	 * Returns a 6-digit HEX output from given colors
+	 * @param red - red
+	 * @param green - green
+	 * @param blue - blue
+	 * @return the hex string
+	 */
 	public static String toHexString(int red, int green, int blue) {
 		String s = Integer.toHexString((red << 16) + (green << 8) + blue);
 		while (s.length() < 6) s = "0" + s;
 		return s;
 	}
 
+	/**
+	 * Applies all RGB formats and gradients to text and returns it
+	 * @param text - original text
+	 * @return text where everything is converted to #RRGGBB
+	 */
 	public static String applyFormats(String text) {
 		text = fixFormat1(text);
 		text = fixFormat2(text);
@@ -32,12 +53,20 @@ public class RGBUtils {
 		return text;
 	}
 
-	//&#RRGGBB
+	/**
+	 * Reformats &#RRGGBB into #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String fixFormat1(String text) {
 		return text.replace("&#", "#");
 	}
 
-	//{#RRGGBB}
+	/**
+	 * Reformats {#RRGGBB} into #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String fixFormat2(String text) {
 		Matcher m = fix2.matcher(text);
 		while (m.find()) {
@@ -48,7 +77,11 @@ public class RGBUtils {
 		return text;
 	}
 
-	//&x&R&R&G&G&B&B
+	/**
+	 * Reformats &x&R&R&G&G&B&B into #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String fixFormat3(String text) {
 		text = text.replace('\u00a7', '&');
 		Matcher m = fix3.matcher(text);
@@ -60,7 +93,11 @@ public class RGBUtils {
 		return text;
 	}
 	
-	//#<RRGGBB>
+	/**
+	 * Reformats #<RRGGBB> into #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String fixFormat4(String text) {
 		Matcher m = fix4.matcher(text);
 		while (m.find()) {
@@ -71,7 +108,11 @@ public class RGBUtils {
 		return text;
 	}
 
-	//<#RRGGBB>Text</#RRGGBB>
+	/**
+	 * Applies gradients formatted with <#RRGGBB>Text</#RRGGBB> and returns text using only #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String setGradient1(String text) {
 		Matcher m = gradient1.matcher(text);
 		while (m.find()) {
@@ -85,7 +126,11 @@ public class RGBUtils {
 		return text;
 	}
 
-	//{#RRGGBB>}text{#RRGGBB<}
+	/**
+	 * Applies gradients formatted with {#RRGGBB>}text{#RRGGBB<} and returns text using only #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
 	private static String setGradient2(String text) {
 		Matcher m = gradient2.matcher(text);
 		while (m.find()) {
@@ -99,6 +144,13 @@ public class RGBUtils {
 		return text;
 	}
 
+	/**
+	 * Returns gradient text based on start color, end color and text
+	 * @param start - start color
+	 * @param text - text to be reformatted
+	 * @param end - end color
+	 * @return reformatted text
+	 */
 	private static String asGradient(TextColor start, String text, TextColor end) {
 		StringBuilder sb = new StringBuilder();
 		int length = text.length();

@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.cpu;
 
+/**
+ * Enum class containing names of all features
+ */
 public enum TabFeature {
 
 	ALIGNED_TABSUFFIX("Aligned tabsuffix"),
@@ -23,6 +26,7 @@ public enum TabFeature {
 	WATERFALLFIX("Waterfall fix"),
 	OTHER("Other");
 
+	//user-friendly name to be used in /tab cpu
 	private String friendlyName;
 
 	private TabFeature(String friendlyName){

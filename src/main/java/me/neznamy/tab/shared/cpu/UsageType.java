@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.cpu;
 
+/**
+ * Enum containing all reasons features require CPU time
+ */
 public enum UsageType {
 
 	PLAYER_JOIN_EVENT("PlayerJoinEvent"),
@@ -20,6 +23,7 @@ public enum UsageType {
 	OTHER("Other"),
 	TOTAL("Total");
 	
+	//user-friendly name to be used in /tab cpu
 	private String friendlyName;
 
 	private UsageType(String friendlyName){

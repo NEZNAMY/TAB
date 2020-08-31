@@ -24,6 +24,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
  */
 public class YamlConfigurationFile extends ConfigurationFile {
 	
+	//instance of snakeyaml
 	private Yaml yaml;
 	
 	@SuppressWarnings("unchecked")
@@ -53,10 +54,12 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			throw e;
 		}
 	}
+	
 	public YamlConfigurationFile(File dataFolder, String sourceAndDestination, List<String> header) throws Exception{
 		this(dataFolder, sourceAndDestination, sourceAndDestination, header);
 	}
 	
+	@Override
 	public void save() {
 		try {
 			Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);

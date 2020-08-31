@@ -18,7 +18,17 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
  */
 public class PacketAPI {
 	
-	//scoreboard team
+	/**
+	 * Registers scoreboard team with given properties but sends unregister packet first unless disabled to avoid bungeecord kick
+	 * @param to - player to send the packet to
+	 * @param teamName - team name
+	 * @param prefix - team prefix
+	 * @param suffix - team suffix
+	 * @param enumNameTagVisibility - visibility
+	 * @param enumTeamPush - collision
+	 * @param players - player list
+	 * @param color - color field (1.13+)
+	 */
 	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
@@ -26,7 +36,14 @@ public class PacketAPI {
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
 	}
 
-	//scoreboard objective
+	/**
+	 * Registers scoreboard objective with given properties but sends unregister packet first unless disabled to avoid bungeecord kick
+	 * @param to - player to send the packet to
+	 * @param objectiveName - name of the objective
+	 * @param title - title
+	 * @param position - objective position (0 = Playerlist, 1 = Sidebar, 2 = Belowname)
+	 * @param displayType - display type of the value (only supported in Playerlist)
+	 */
 	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(objectiveName));
@@ -35,16 +52,40 @@ public class PacketAPI {
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 
-	//scoreboard score
+	/**
+	 * Register scoreboard score with given properties
+	 * @param p - player to send the packet to
+	 * @param team - team name of the fake player
+	 * @param fakeplayer - name of the fake player
+	 * @param prefix - prefix
+	 * @param suffix - suffix
+	 * @param objective - objective name
+	 * @param score - score
+	 */
 	public static void registerScoreboardScore(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
 		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
 		setScoreboardScore(p, fakeplayer, objective, score);
 	}
+	
+	/**
+	 * Removes scoreboard score
+	 * @param p - player to send the packet to
+	 * @param fakeplayer - name of the fake player
+	 * @param objective - objective name
+	 */
 	public static void removeScoreboardScore(TabPlayer p, String fakeplayer, String objective) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, objective, fakeplayer, 0));
 		p.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(objective).setTeamOptions(69));
 	}
-	public static void setScoreboardScore(TabPlayer to, String fakeplayer, String objective, int score) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective, fakeplayer, score));
+	
+	/**
+	 * Sets score of player
+	 * @param to - player to send the packet to
+	 * @param player - player who the score belongs to
+	 * @param objective - objective name
+	 * @param score - the score
+	 */
+	public static void setScoreboardScore(TabPlayer to, String player, String objective, int score) {
+		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective, player, score));
 	}
 }
