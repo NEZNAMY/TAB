@@ -94,40 +94,40 @@ public class BukkitMethods implements PlatformMethods {
 		plm.addRegistry(new BukkitPlaceholderRegistry());
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
-		Shared.registerFeature("placeholders", plm);
+		Shared.featureManager.registerFeature("placeholders", plm);
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
 					Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
 				}
-				Shared.registerFeature("nametagx", new NameTagX(plugin));
+				Shared.featureManager.registerFeature("nametagx", new NameTagX(plugin));
 			} else {
-				Shared.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
+				Shared.featureManager.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
 			}
 		}
-		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.registerFeature("belowname", new BelowName());
+		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) {
 			BossBar bb = new BossBar();
-			Shared.registerFeature("bossbar", bb);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
+			Shared.featureManager.registerFeature("bossbar", bb);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
 		}
-		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.registerFeature("headerfooter", new HeaderFooter());
-		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.registerFeature("tabobjective", new TabObjective());
+		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
+		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.featureManager.registerFeature("tabobjective", new TabObjective());
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
 			Playerlist playerlist = new Playerlist();
-			Shared.registerFeature("playerlist", playerlist);
-			if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			Shared.featureManager.registerFeature("playerlist", playerlist);
+			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 
 		}
 		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
 		//on 1.16 server cats and parrots do not listen to sit/stand commands, but dogs do
 		//this is probably caused by 1.16 server requiring additional packets from client which are not sent when player does not see correct data
 		//disabling the feature until the issue is resolved
-		if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.registerFeature("petfix", new PetFix());
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.registerFeature("spectatorfix", new SpectatorFix());
-		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.registerFeature("pwp", new PerWorldPlayerlist(plugin));
-		if (Configs.SECRET_remove_ghost_players) 															Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (version >= 9 && version < 16 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 		Shared.featureManager.registerFeature("petfix", new PetFix());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
+		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
+		if (Configs.SECRET_remove_ghost_players) 															Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (PluginHooks.placeholderAPI) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);

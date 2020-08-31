@@ -220,6 +220,6 @@ public class Placeholders {
 			if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);
 			categorizeUsedPlaceholder(identifier);
 		}
-		Shared.refreshables.forEach(r -> r.refreshUsedPlaceholders());
+		Shared.featureManager.refreshUsedPlaceholders();
 	}
 }

@@ -71,7 +71,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 			Scoreboard sb = new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard);
 			scoreboards.put(scoreboard+"", sb);
-			Shared.registerFeature("scoreboard-" + scoreboard, sb);
+			Shared.featureManager.registerFeature("scoreboard-" + scoreboard, sb);
 		}	
 	}
 	

@@ -62,7 +62,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		for (int i=0; i<lines.size(); i++) {
 			ScoreboardLine score = registerLine(lines.size()-i, lines.get(i));
 			this.lines.add(score);
-			Shared.registerFeature("scoreboard-score-" + name + "-" + i, score);
+			Shared.featureManager.registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
 	}
 

@@ -60,7 +60,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener();
-		Shared.registerFeature("nametagx-packet", new PacketListener(this));
+		Shared.featureManager.registerFeature("nametagx-packet", new PacketListener(this));
 	}
 	
 	@Override

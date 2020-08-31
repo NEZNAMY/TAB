@@ -19,7 +19,7 @@ public class BossBarCommand extends SubCommand{
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		BossBar bossbar = (BossBar) Shared.features.get("bossbar");
+		BossBar bossbar = (BossBar) Shared.featureManager.getFeature("bossbar");
 		if (bossbar == null) {
 			sender.sendMessage(Placeholders.color("&cBossbar feature is not enabled, therefore toggle command cannot be used."));
 			return;

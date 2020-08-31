@@ -70,21 +70,21 @@ public class VelocityMethods implements PlatformMethods {
 		plm.addRegistry(new VelocityPlaceholderRegistry(server));
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
-		Shared.registerFeature("placeholders", plm);
-		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.registerFeature("belowname", new BelowName());
-		if (Configs.BossBarEnabled) 														Shared.registerFeature("bossbar", new BossBar());
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.registerFeature("spectatorfix", new SpectatorFix());
-		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.registerFeature("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.registerFeature("headerfooter", new HeaderFooter());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true))				Shared.registerFeature("nametag16", new NameTag16(false));
-		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 	Shared.registerFeature("tabobjective", new TabObjective());
+		Shared.featureManager.registerFeature("placeholders", plm);
+		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) 			Shared.featureManager.registerFeature("belowname", new BelowName());
+		if (Configs.BossBarEnabled) 														Shared.featureManager.registerFeature("bossbar", new BossBar());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) 					Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
+		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 					Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
+		if (Configs.config.getBoolean("enable-header-footer", true)) 						Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true))				Shared.featureManager.registerFeature("nametag16", new NameTag16(false));
+		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 	Shared.featureManager.registerFeature("tabobjective", new TabObjective());
 		if (Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();
-			Shared.registerFeature("playerlist", playerlist);
-			if (Premium.alignTabsuffix) Shared.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			Shared.featureManager.registerFeature("playerlist", playerlist);
+			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
-		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.SECRET_remove_ghost_players) 											Shared.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 	Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
+		if (Configs.SECRET_remove_ghost_players) 											Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		new GroupRefresher();
 		new UpdateChecker();
 		

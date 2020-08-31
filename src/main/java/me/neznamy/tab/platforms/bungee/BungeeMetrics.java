@@ -43,7 +43,7 @@ public class BungeeMetrics extends Metrics {
 		}));
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", new Callable<String>() {
 			public String call() {
-				return Shared.features.containsKey("globalplayerlist") ? "Yes" : "No";
+				return Shared.featureManager.isFeatureEnabled("globalplayerlist") ? "Yes" : "No";
 			}
 		}));
 	}

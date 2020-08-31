@@ -22,8 +22,8 @@ public class AnnounceBarCommand extends SubCommand{
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		if (Shared.features.containsKey("bossbar")) {
-			BossBar feature = (BossBar) Shared.features.get("bossbar");
+		if (Shared.featureManager.isFeatureEnabled("bossbar")) {
+			BossBar feature = (BossBar) Shared.featureManager.getFeature("bossbar");
 			if (args.length == 2) {
 				String barname = args[0];
 				int duration;
@@ -67,7 +67,7 @@ public class AnnounceBarCommand extends SubCommand{
 
 	@Override
 	public List<String> complete(ITabPlayer sender, String[] arguments) {
-		BossBar b = (BossBar) Shared.features.get("bossbar");
+		BossBar b = (BossBar) Shared.featureManager.getFeature("bossbar");
 		if (b == null) return new ArrayList<String>();
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 1) {

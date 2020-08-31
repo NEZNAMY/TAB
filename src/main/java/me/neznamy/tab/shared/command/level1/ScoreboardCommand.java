@@ -18,7 +18,7 @@ public class ScoreboardCommand extends SubCommand {
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		ScoreboardManager scoreboard = (ScoreboardManager) Shared.features.get("scoreboard");
+		ScoreboardManager scoreboard = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
 		if (scoreboard == null) {
 			sendMessage(sender, Placeholders.color("&cScoreboard feature is not enabled, therefore toggle command cannot be used."));
 			return;

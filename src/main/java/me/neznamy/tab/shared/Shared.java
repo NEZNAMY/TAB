@@ -1,9 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,15 +12,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.Feature;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
-import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
@@ -44,21 +32,12 @@ public class Shared {
 	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
 	public static final TabCommand command = new TabCommand();
 	
-	public static Map<String, Feature> features = new ConcurrentHashMap<String, Feature>();
-	public static List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
-	public static List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
-	public static List<Loadable> loadableFeatures = new ArrayList<Loadable>();
-	public static List<JoinEventListener> joinListeners = new ArrayList<JoinEventListener>();
-	public static List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
-	public static List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
-	public static List<CommandListener> commandListeners = new ArrayList<CommandListener>();
-	public static List<Refreshable> refreshables = new ArrayList<Refreshable>();
-	
 	public static boolean disabled;
 	public static PlatformMethods platform;
 	public static CPUManager cpu;
 	public static ErrorManager errorManager;
 	public static PermissionPlugin permissionPlugin;
+	public static FeatureManager featureManager;
 	
 	public static String brokenFile = "-";
 
@@ -100,10 +79,11 @@ public class Shared {
 			disabled = false;
 			errorManager = new ErrorManager();
 			cpu = new CPUManager();
+			featureManager = new FeatureManager();
 			Configs.loadFiles();
 			permissionPlugin = platform.detectPermissionPlugin();
 			platform.loadFeatures(inject);
-			loadableFeatures.forEach(f -> f.load());
+			featureManager.load();
 			getPlayers().forEach(p -> p.onJoinFinished = true);
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
@@ -120,48 +100,12 @@ public class Shared {
 			if (disabled) return;
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();
-			loadableFeatures.forEach(f -> f.unload());
-			loadableFeatures = new ArrayList<>();
-			playerInfoListeners = new ArrayList<>();
-			rawpacketfeatures = new ArrayList<>();
-			joinListeners = new ArrayList<>();
-			quitListeners = new ArrayList<>();
-			worldChangeListeners = new ArrayList<>();
-			commandListeners = new ArrayList<>();
-			refreshables = new ArrayList<>();
-			features = new HashMap<>();
+			featureManager.unload();
 			data.clear();
 			entityIdMap.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
-		}
-	}
-	public static void registerFeature(String featureName, Feature featureHandler) {
-		features.put(featureName, featureHandler);
-		if (featureHandler instanceof Loadable) {
-			loadableFeatures.add((Loadable) featureHandler);
-		}
-		if (featureHandler instanceof PlayerInfoPacketListener) {
-			playerInfoListeners.add((PlayerInfoPacketListener) featureHandler);
-		}
-		if (featureHandler instanceof RawPacketFeature) {
-			rawpacketfeatures.add((RawPacketFeature) featureHandler);
-		}
-		if (featureHandler instanceof JoinEventListener) {
-			joinListeners.add((JoinEventListener) featureHandler);
-		}
-		if (featureHandler instanceof QuitEventListener) {
-			quitListeners.add((QuitEventListener) featureHandler);
-		}
-		if (featureHandler instanceof WorldChangeListener) {
-			worldChangeListeners.add((WorldChangeListener) featureHandler);
-		}
-		if (featureHandler instanceof CommandListener) {
-			commandListeners.add((CommandListener) featureHandler);
-		}
-		if (featureHandler instanceof Refreshable) {
-			refreshables.add((Refreshable) featureHandler);
 		}
 	}
 }

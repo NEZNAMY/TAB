@@ -16,7 +16,7 @@ public class NTPreviewCommand extends SubCommand{
 
 	@Override
 	public void execute(ITabPlayer sender, String[] args) {
-		if ((Shared.features.get("nametagx")) != null) {
+		if ((Shared.featureManager.getFeature("nametagx")) != null) {
 			if (sender != null) {
 				if (sender.previewingNametag) {
 					sender.getArmorStandManager().destroy(sender);

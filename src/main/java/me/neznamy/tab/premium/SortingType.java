@@ -44,7 +44,7 @@ public enum SortingType {
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
 			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
-			Shared.registerFeature("sorting-refresh", new Refreshable(){
+			Shared.featureManager.registerFeature("sorting-refresh", new Refreshable(){
 
 				@Override
 				public void refresh(ITabPlayer refreshed, boolean force) {

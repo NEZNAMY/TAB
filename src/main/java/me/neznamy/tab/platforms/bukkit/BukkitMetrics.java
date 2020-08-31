@@ -32,7 +32,7 @@ public class BukkitMetrics extends Metrics {
 		BukkitMetrics metrics = new BukkitMetrics(plugin);
 		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
 			public String call() {
-				return Shared.features.containsKey("nametagx") ? "Yes" : "No";
+				return Shared.featureManager.isFeatureEnabled("nametagx") ? "Yes" : "No";
 			}
 		}));
 		metrics.addCustomChart(new SimplePie("placeholderapi", new Callable<String>() {

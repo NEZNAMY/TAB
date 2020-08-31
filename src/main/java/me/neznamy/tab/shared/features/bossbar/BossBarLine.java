@@ -39,9 +39,9 @@ public class BossBarLine {
 		this.style = style;
 		this.text = text;
 		this.progress = progress;
-		Shared.registerFeature("bossbar-text-" + name, new TextRefresher(this));
-		Shared.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
+		Shared.featureManager.registerFeature("bossbar-text-" + name, new TextRefresher(this));
+		Shared.featureManager.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
 	}
 	public boolean hasPermission(ITabPlayer p) {
 		return !permissionRequired || p.hasPermission("tab.bossbar." + name);
@@ -70,7 +70,7 @@ public class BossBarLine {
 				)
 			);
 		} else {
-			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, ((BossBar_legacy)Shared.features.get("bossbar1.8")).getWitherLocation(to));
+			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, ((BossBar_legacy)Shared.featureManager.getFeature("bossbar1.8")).getWitherLocation(to));
 			DataWatcher w = new DataWatcher();
 			w.helper().setEntityFlags((byte) 32);
 			w.helper().setCustomName(to.properties.get("bossbar-text-" + name).get(), to.getVersion());

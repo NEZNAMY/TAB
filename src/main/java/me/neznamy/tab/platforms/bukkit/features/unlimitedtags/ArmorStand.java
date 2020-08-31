@@ -53,7 +53,7 @@ public class ArmorStand {
 		player = owner.getBukkitEntity();
 		this.yOffset = yOffset;
 		this.property = property;
-		markerFor18x = ((NameTagX)Shared.features.get("nametagx")).markerFor18x;
+		markerFor18x = ((NameTagX)Shared.featureManager.getFeature("nametagx")).markerFor18x;
 		refresh();
 	}
 	

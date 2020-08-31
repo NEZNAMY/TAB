@@ -57,7 +57,7 @@ public class PlayerUUIDCommand extends SubCommand {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, changed, type, value);
-						if (!Shared.features.containsKey("nametagx")) {
+						if (!Shared.featureManager.isFeatureEnabled("nametagx")) {
 							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 						}
 					} else {

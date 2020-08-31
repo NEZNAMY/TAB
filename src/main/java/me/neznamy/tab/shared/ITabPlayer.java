@@ -192,7 +192,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	private boolean getTeamVisibility() {
 		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
-		return !Shared.features.containsKey("nametagx") && nameTagVisible;
+		return !Shared.featureManager.isFeatureEnabled("nametagx") && nameTagVisible;
 	}
 
 	public String getGroup() {
@@ -381,7 +381,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setValueTemporarily(EnumProperty type, String value) {
 		Placeholders.checkForRegistration(value);
 		properties.get(type.toString()).setTemporaryValue(value);
-		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		}
 		forceRefresh();
@@ -390,7 +390,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		Placeholders.checkForRegistration(value);
 		properties.get(type.toString()).changeRawValue(value);
 		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
-		if (Shared.features.containsKey("nametagx") && type.toString().contains("tag")) {
+		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag", properties.get("tagprefix").getCurrentRawValue() + properties.get("customtagname").getCurrentRawValue() + properties.get("tagsuffix").getCurrentRawValue(), null);
 		}
 		forceRefresh();
@@ -422,7 +422,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		return hiddenNametag;
 	}
 	public void forceRefresh() {
-		Shared.refreshables.forEach(r -> r.refresh(this, true));
+		Shared.featureManager.refresh(this, true);
 	}
 	public void showScoreboard(me.neznamy.tab.api.Scoreboard scoreboard) {
 		if (forcedScoreboard != null) {
@@ -436,7 +436,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		((Scoreboard)scoreboard).register(this);
 	}
 	public void showScoreboard(String name) {
-		ScoreboardManager sbm = ((ScoreboardManager) Shared.features.get("scoreboard"));
+		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard scoreboard = sbm.getScoreboards().get(name);
 		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name: " + name);
@@ -444,7 +444,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 	public void removeCustomScoreboard() {
 		if (forcedScoreboard == null) return;
-		ScoreboardManager sbm = ((ScoreboardManager) Shared.features.get("scoreboard"));
+		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = sbm.getScoreboards().get(sbm.getHighestScoreboard(this));
 		activeScoreboard = sb;

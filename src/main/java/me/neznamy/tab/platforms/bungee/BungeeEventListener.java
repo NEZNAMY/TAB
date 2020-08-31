@@ -9,10 +9,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -51,11 +47,7 @@ public class BungeeEventListener implements Listener {
 		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		for (QuitEventListener l : Shared.quitListeners) {
-			long time = System.nanoTime();
-			l.onQuit(disconnectedPlayer);
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
-		}
+		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -66,12 +58,7 @@ public class BungeeEventListener implements Listener {
 				ITabPlayer p = new TabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
-				for (JoinEventListener l : Shared.joinListeners) {
-					long time = System.nanoTime();
-					l.onJoin(p);
-					Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
-				}
-				p.onJoinFinished = true;
+				Shared.featureManager.onJoin(p);
 			} else {
 				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				long time = System.nanoTime();
@@ -80,11 +67,7 @@ public class BungeeEventListener implements Listener {
 				p.updateDisabledWorlds(to);
 				p.updateGroupIfNeeded(false);
 				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				for (WorldChangeListener l : Shared.worldChangeListeners) {
-					time = System.nanoTime();
-					l.onWorldChange(p, from, to);
-					Shared.cpu.addTime(l.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				}
+				Shared.featureManager.onWorldChange(p, from, to);
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
@@ -99,8 +82,6 @@ public class BungeeEventListener implements Listener {
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		for (CommandListener listener : Shared.commandListeners) {
-			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
-		}
+		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 }

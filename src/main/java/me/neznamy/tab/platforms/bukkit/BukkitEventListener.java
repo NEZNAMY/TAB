@@ -12,10 +12,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 /**
  * The core for bukkit forwarding events into all enabled features
@@ -33,12 +29,7 @@ public class BukkitEventListener implements Listener {
 			Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
 
 				public void run() {
-					for (JoinEventListener l : Shared.joinListeners) {
-						long time = System.nanoTime();
-						l.onJoin(p);
-						Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
-					}
-					p.onJoinFinished = true;
+					Shared.featureManager.onJoin(p);
 				}
 			});
 		} catch (Throwable ex) {
@@ -54,11 +45,7 @@ public class BukkitEventListener implements Listener {
 		Shared.cpu.runTask("processing PlayerQuitEvent", new Runnable() {
 
 			public void run() {
-				for (QuitEventListener l : Shared.quitListeners) {
-					long time = System.nanoTime();
-					l.onQuit(disconnectedPlayer);
-					Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
-				}
+				Shared.featureManager.onQuit(disconnectedPlayer);
 			}
 		});
 		Shared.data.remove(e.getPlayer().getUniqueId());
@@ -80,11 +67,7 @@ public class BukkitEventListener implements Listener {
 				p.updateDisabledWorlds(to);
 				p.updateGroupIfNeeded(false);
 				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				for (WorldChangeListener l : Shared.worldChangeListeners) {
-					time = System.nanoTime();
-					l.onWorldChange(p, from, to);
-					Shared.cpu.addTime(l.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				}
+				Shared.featureManager.onWorldChange(p, from, to);
 			}
 		});
 	}
@@ -98,8 +81,6 @@ public class BukkitEventListener implements Listener {
 			Shared.sendPluginInfo(sender);
 			return;
 		}
-		for (CommandListener listener : Shared.commandListeners) {
-			if (listener.onCommand(sender, e.getMessage())) e.setCancelled(true);
-		}
+		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 }

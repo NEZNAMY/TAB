@@ -15,6 +15,7 @@ public enum UsageType {
 	PACKET_ENTITY_DESTROY("Entity destroy packet"),
 	PACKET_ENTITY_MOVE("Entity move packet"),
 	PACKET_NAMED_ENTITY_SPAWN("Named entity spawn"),
+	COMMAND_PREPROCESS("Command preprocess"),
 	REPEATING_TASK("Additional repeating task"),
 	OTHER("Other"),
 	TOTAL("Total");

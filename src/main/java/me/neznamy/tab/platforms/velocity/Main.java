@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 /**
@@ -86,7 +85,7 @@ public class Main {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			}
-/*				public List<String> suggest(CommandSource sender, String[] args) {
+			/*				public List<String> suggest(CommandSource sender, String[] args) {
 					List<String> sug = command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 					if (sug == null) {
 						sug = new ArrayList<String>();
@@ -127,15 +126,10 @@ public class Main {
 				}
 				try {
 					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromVelocity(packet);
-						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-							long time = System.nanoTime();
-							if (info != null) info = f.onPacketSend(player, info);
-							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
-						}
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, PacketPlayOutPlayerInfo.fromVelocity(packet));
 						packet = (info == null ? null : info.toVelocity(player.getVersion()));
 					}
-					if (packet instanceof Team && Shared.features.containsKey("nametag16")) {
+					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
 						modifyPlayers((Team) packet);
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);

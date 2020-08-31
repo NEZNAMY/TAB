@@ -35,7 +35,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		refreshUsedPlaceholders();
 		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
 		textProperty = new Property(null, text, null);
-		Shared.registerFeature("belowname-text", new Refreshable() {
+		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
 			
 			private Set<String> usedPlaceholders;
 			

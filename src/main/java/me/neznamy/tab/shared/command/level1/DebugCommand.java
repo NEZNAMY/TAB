@@ -54,7 +54,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
 
-		boolean sorting = Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx");
+		boolean sorting = Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx");
 		String sortingType;
 
 		if (sorting) {
@@ -90,7 +90,7 @@ public class DebugCommand extends SubCommand {
 				if (analyzed.teamNameNote != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.teamNameNote);
 			}
 		}
-		if (Shared.features.containsKey("playerlist")) {
+		if (Shared.featureManager.isFeatureEnabled("playerlist")) {
 			showProperty(sender, analyzed, "tabprefix", analyzed.disabledTablistNames);
 			showProperty(sender, analyzed, "tabsuffix", analyzed.disabledTablistNames);
 			showProperty(sender, analyzed, "customtabname", analyzed.disabledTablistNames);
@@ -99,14 +99,14 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
-		if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
+		if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
 			showProperty(sender, analyzed, "tagprefix", analyzed.disabledNametag);
 			showProperty(sender, analyzed, "tagsuffix", analyzed.disabledNametag);
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
 			sendMessage(sender, "&atagsuffix: &cDisabled");
 		}
-		if (Shared.features.containsKey("nametagx")) {
+		if (Shared.featureManager.isFeatureEnabled("nametagx")) {
 			showProperty(sender, analyzed, "abovename", analyzed.disabledNametag);
 			showProperty(sender, analyzed, "belowname", analyzed.disabledNametag);
 			showProperty(sender, analyzed, "customtagname", analyzed.disabledNametag);

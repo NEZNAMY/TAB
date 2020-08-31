@@ -13,8 +13,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
@@ -46,15 +44,7 @@ public class Injector {
 					try {
 						ITabPlayer player = Shared.getPlayer(uuid);
 						if (player != null) {
-							for (RawPacketFeature f : Shared.rawpacketfeatures) {
-								long time = System.nanoTime();
-								try {
-									if (packet != null) packet = f.onPacketReceive(player, packet);
-								} catch (Throwable e) {
-									Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
-								}
-								Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
-							}
+							packet = Shared.featureManager.onPacketReceive(player, packet);
 						}
 						if (packet != null) super.channelRead(context, packet);
 					} catch (Throwable e){
@@ -73,7 +63,7 @@ public class Injector {
 							super.write(context, packet, channelPromise);
 							return;
 						}
-						if (Shared.features.containsKey("nametag16") || Shared.features.containsKey("nametagx")) {
+						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
 							//nametag anti-override
 							long time = System.nanoTime();
 							if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
@@ -81,27 +71,12 @@ public class Injector {
 							}
 							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 						}
-
-						for (RawPacketFeature f : Shared.rawpacketfeatures) {
-							long time = System.nanoTime();
-							try {
-								if (packet != null) packet = f.onPacketSend(player, packet);
-							} catch (Throwable e) {
-								Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
-							}
-							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
-						}
+						packet = Shared.featureManager.onPacketSend(player, packet);
 						
-						if (!Shared.playerInfoListeners.isEmpty()) {
-							PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
-							if (info != null) {
-								for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-									long time = System.nanoTime();
-									if (info != null) info = f.onPacketSend(player, info);
-									Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
-								}
-								packet = (info == null ? null : info.toNMS(player.getVersion()));
-							}
+						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
+						if (info != null) {
+							info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
+							packet = (info == null ? null : info.toNMS(player.getVersion()));
 						}
 						if (packet != null) super.write(context, packet, channelPromise);
 					} catch (Throwable e){

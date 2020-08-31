@@ -18,7 +18,6 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.TabObjective;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.CommandSender;
@@ -119,15 +118,10 @@ public class Main extends Plugin {
 				}
 				try {
 					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion());
-						for (PlayerInfoPacketListener f : Shared.playerInfoListeners) {
-							long time = System.nanoTime();
-							if (info != null) info = f.onPacketSend(player, info);
-							Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
-						}
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion()));
 						packet = (info == null ? null : info.toBungee(player.getVersion()));
 					}
-					if (Shared.features.containsKey("nametag16")) {
+					if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
 						if (packet instanceof Team) {
 							modifyPlayers((Team) packet);
@@ -149,16 +143,16 @@ public class Main extends Plugin {
 
 							@Override
 							public void run() {
-								if (Shared.features.containsKey("nametag16")) {
+								if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 									for (ITabPlayer all : Shared.getPlayers()) {
 										all.registerTeam(player);
 									}
 								}
-								TabObjective objective = (TabObjective) Shared.features.get("tabobjective");
+								TabObjective objective = (TabObjective) Shared.featureManager.getFeature("tabobjective");
 								if (objective != null) {
 									objective.onJoin(player);
 								}
-								BelowName belowname = (BelowName) Shared.features.get("belowname");
+								BelowName belowname = (BelowName) Shared.featureManager.getFeature("belowname");
 								if (belowname != null) {
 									belowname.onJoin(player);
 								}

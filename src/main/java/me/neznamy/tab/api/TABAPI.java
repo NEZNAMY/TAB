@@ -50,7 +50,7 @@ public class TABAPI {
 	 * @since 2.4.12
 	 */
 	public static boolean isUnlimitedNameTagModeEnabled() {
-		return Shared.features.containsKey("nametagx");
+		return Shared.featureManager.isFeatureEnabled("nametagx");
 	}
 
 
@@ -127,7 +127,7 @@ public class TABAPI {
 		for (String line : lines) {
 			Placeholders.checkForRegistration(line);
 		}
-		ScoreboardManager sbm = (ScoreboardManager) Shared.features.get("scoreboard");
+		ScoreboardManager sbm = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = new me.neznamy.tab.premium.scoreboard.Scoreboard(sbm, "API", title, lines);
 		sbm.APIscoreboards.add((me.neznamy.tab.premium.scoreboard.Scoreboard) sb);
