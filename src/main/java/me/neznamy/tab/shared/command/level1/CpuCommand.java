@@ -91,10 +91,10 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, SEPARATOR);
 		sendMessage(sender, PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(placeholdersTotal))));
 		if (Shared.platform.getSeparatorType().equals("server")) {
-			sendMessage(sender, BRIDGE_PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal)) + "%"));
+			sendMessage(sender, BRIDGE_PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal))));
 		}
-		sendMessage(sender, PLUGIN_INTERNALS.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal)) + "%"));
-		sendMessage(sender, TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal)) + "%"));
+		sendMessage(sender, PLUGIN_INTERNALS.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal))));
+		sendMessage(sender, TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal))));
 		sendMessage(sender, HEADER_FOOTER);
 		sendMessage(sender, " ");
 	}
