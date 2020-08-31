@@ -13,7 +13,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -85,16 +84,16 @@ public class Main {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			}
-			/*				public List<String> suggest(CommandSource sender, String[] args) {
-					List<String> sug = command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-					if (sug == null) {
-						sug = new ArrayList<String>();
-						for (Player p : server.getAllPlayers()) {
-							sug.add(p.getUsername());
-						}
+/*			public List<String> suggest(CommandSource sender, String[] args) {
+				List<String> sug = Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				if (sug == null) {
+					sug = new ArrayList<String>();
+					for (Player p : server.getAllPlayers()) {
+						sug.add(p.getUsername());
 					}
-					return sug;
-				}*/
+				}
+				return sug;
+			}*/
 		});
 		plm = new PluginMessenger(this);
 		Shared.load(true);
@@ -125,7 +124,7 @@ public class Main {
 					return;
 				}
 				try {
-					if (packet instanceof PlayerListItem) {
+					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
 						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, PacketPlayOutPlayerInfo.fromVelocity(packet));
 						packet = (info == null ? null : info.toVelocity(player.getVersion()));
 					}
