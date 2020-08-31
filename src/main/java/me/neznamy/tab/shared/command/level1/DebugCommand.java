@@ -35,6 +35,12 @@ public class DebugCommand extends SubCommand {
 		}
 		debug(sender, analyzed);
 	}
+	
+	/**
+	 * Peforms debug on player and displays output
+	 * @param sender - command sender or null if console
+	 * @param analyzed - player to be analyzed
+	 */
 	private void debug(TabPlayer sender, ITabPlayer analyzed) {
 		if (analyzed == null && sender != null) {
 			analyzed = Shared.getPlayer(sender.getUniqueId());
@@ -113,6 +119,14 @@ public class DebugCommand extends SubCommand {
 			showProperty(sender, analyzed, "customtagname", analyzed.disabledNametag);
 		}
 	}
+	
+	/**
+	 * Shows value and source of player's property
+	 * @param sender - command sender or null if console
+	 * @param analyzed - analyzed player
+	 * @param property - property name
+	 * @param disabled - if feature the property belongs to is disabled or not
+	 */
 	private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
 		if (disabled) {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's world");
@@ -123,6 +137,7 @@ public class DebugCommand extends SubCommand {
 			sendRawMessage(sender, value);
 		}
 	}
+	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<String>();

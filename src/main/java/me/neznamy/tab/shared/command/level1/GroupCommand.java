@@ -72,6 +72,14 @@ public class GroupCommand extends SubCommand {
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
+	
+	/**
+	 * Saves new group settings into config
+	 * @param sender - command sender or null if console
+	 * @param group - affected group
+	 * @param type - property type
+	 * @param value - new value
+	 */
 	private void saveGroup(TabPlayer sender, String group, String type, String value){
 		if (value.length() == 0) value = null;
 		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value);

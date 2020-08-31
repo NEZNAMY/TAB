@@ -62,9 +62,14 @@ public class TabCommand extends SubCommand {
 			help(sender);
 		}
 	}
+	
+	/**
+	 * Sends help menu to the sender
+	 * @param sender - player who ran command or null if from console
+	 */
 	private void help(TabPlayer sender){
 		if (sender == null) Shared.platform.sendConsoleMessage("&3TAB v" + Shared.pluginVersion, true);
-		if (sender == null || sender.hasPermission("tab.admin") && !Shared.disabled) {
+		if ((sender == null || sender.hasPermission("tab.admin")) && !Shared.disabled) {
 			sendMessage(sender, "&m                                                                                ");
 			sendMessage(sender, " &8>> &3&l/tab reload");
 			sendMessage(sender, "      - &7Reloads plugin and config");
@@ -85,6 +90,8 @@ public class TabCommand extends SubCommand {
 			sendMessage(sender, "&m                                                                                ");
 		}
 	}
+	
+	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (!Configs.SECRET_autoComplete) return new ArrayList<String>();
 		return super.complete(sender, arguments);

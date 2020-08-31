@@ -73,6 +73,14 @@ public class PlayerUUIDCommand extends SubCommand {
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
+	
+	/**
+	 * Saves new player settings into config
+	 * @param sender - command sender or null if console
+	 * @param player - affected player
+	 * @param type - property type
+	 * @param value - new value
+	 */
 	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
 		if (value.length() == 0) value = null;
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
@@ -85,6 +93,7 @@ public class PlayerUUIDCommand extends SubCommand {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		}
 	}
+	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (arguments.length == 1) return getPlayers(arguments[0]);

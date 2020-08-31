@@ -98,18 +98,36 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, HEADER_FOOTER);
 		sendMessage(sender, " ");
 	}
+	
+	/**
+	 * Returns colored usage from provided usage
+	 * @param usage - usage
+	 * @return colored usage
+	 */
 	private String colorizePlaceholder(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 1) return "&c" + usage;
 		if (percent > 0.3) return "&e" + usage;
 		return "&a" + usage;
 	}
+	
+	/**
+	 * Returns colored usage from provided usage
+	 * @param usage - usage
+	 * @return colored usage
+	 */
 	private String colorizeFeature(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 5) return "&c" + usage;
 		if (percent > 1) return "&e" + usage;
 		return "&a" + usage;
 	}
+	
+	/**
+	 * Returns colored usage from provided usage
+	 * @param usage - usage
+	 * @return colored usage
+	 */
 	private String colorizeTotalUsage(String usage) {
 		float percent = Float.parseFloat(usage.replace(",", "."));
 		if (percent > 10) return "&c" + usage;
