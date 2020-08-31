@@ -87,7 +87,7 @@ public class ExpansionDownloader {
 			}
 		}, 1);
 	}
-	public void runSyncCommand(String command) {
+	private void runSyncCommand(String command) {
 		//back to main thread as commands need to be ran in it
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
