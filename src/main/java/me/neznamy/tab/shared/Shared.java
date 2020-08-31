@@ -62,10 +62,10 @@ public class Shared {
 	}
 	
 	public static void print(char color, String message) {
-		platform.sendConsoleMessage("&" + color + "[TAB] " + message);
+		platform.sendConsoleMessage("&" + color + "[TAB] " + message,true);
 	}
 	public static void debug(String message) {
-		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message);
+		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
 	public static void sendPluginInfo(ITabPlayer to) {
 		if (Premium.is() && !to.hasPermission("tab.admin")) return;
@@ -103,7 +103,7 @@ public class Shared {
 			featureManager.unload();
 			data.clear();
 			entityIdMap.clear();
-			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms");
+			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
 		}

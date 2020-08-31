@@ -46,10 +46,10 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
-			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage());
+			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
 			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
 			if (fix != null) {
-				Shared.platform.sendConsoleMessage("&d[TAB] Suggestion: " + fix);
+				Shared.platform.sendConsoleMessage("&d[TAB] Suggestion: " + fix, true);
 			}
 			throw e;
 		}

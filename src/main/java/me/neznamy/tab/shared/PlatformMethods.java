@@ -14,8 +14,7 @@ public interface PlatformMethods {
 
 	public PermissionPlugin detectPermissionPlugin();
 	public void loadFeatures(boolean inject) throws Exception;
-	public void sendConsoleMessage(String message);
-	public void sendRawConsoleMessage(String message);
+	public void sendConsoleMessage(String message, boolean translateColors);
 	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
 	public void loadConfig() throws Exception;
 	public void registerUnknownPlaceholder(String identifier);

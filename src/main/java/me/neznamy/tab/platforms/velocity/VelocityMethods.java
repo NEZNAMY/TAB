@@ -96,12 +96,8 @@ public class VelocityMethods implements PlatformMethods {
 	}
 	
 	@Override
-	public void sendConsoleMessage(String message) {
-		server.getConsoleCommandSource().sendMessage(TextComponent.of(Placeholders.color(message)));
-	}
-	
-	@Override
-	public void sendRawConsoleMessage(String message) {
+	public void sendConsoleMessage(String message, boolean translateColors) {
+		if (translateColors) message = Placeholders.color(message);
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
 	}
 	

@@ -102,13 +102,8 @@ public class BungeeMethods implements PlatformMethods {
 	
 	@Override
 	@SuppressWarnings("deprecation")
-	public void sendConsoleMessage(String message) {
-		ProxyServer.getInstance().getConsole().sendMessage(Placeholders.color(message));
-	}
-	
-	@Override
-	@SuppressWarnings("deprecation")
-	public void sendRawConsoleMessage(String message) {
+	public void sendConsoleMessage(String message, boolean translateColors) {
+		if (translateColors) message = Placeholders.color(message);
 		ProxyServer.getInstance().getConsole().sendMessage(message);
 	}
 	

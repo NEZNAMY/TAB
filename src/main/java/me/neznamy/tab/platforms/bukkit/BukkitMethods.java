@@ -156,12 +156,8 @@ public class BukkitMethods implements PlatformMethods {
 	}
 
 	@Override
-	public void sendConsoleMessage(String message) {
-		Bukkit.getConsoleSender().sendMessage(Placeholders.color(message));
-	}
-
-	@Override
-	public void sendRawConsoleMessage(String message) {
+	public void sendConsoleMessage(String message, boolean translateColors) {
+		if (translateColors) message = Placeholders.color(message);
 		Bukkit.getConsoleSender().sendMessage(message);
 	}
 
