@@ -23,9 +23,6 @@ public class CPUManager {
 	private final int bufferSizeMillis = 100;
 	private final int dataMemorySize = 600;
 
-//	private ConcurrentMap<String, Long> currentBuffer = new ConcurrentHashMap<String, Long>();
-//	private List<ConcurrentMap<String, Long>> lastMinute = Collections.synchronizedList(new ArrayList<ConcurrentMap<String, Long>>());
-	
 	private Map<TabFeature, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
@@ -65,8 +62,10 @@ public class CPUManager {
 	}
 	
 	public void cancelAllTasks() {
-		exe.shutdownNow();
+		//preventing errors when tasks are inserted while shutting down
+		ExecutorService old = exe;
 		exe = Executors.newCachedThreadPool();
+		old.shutdownNow();
 	}
 	
 	public void runMeasuredTask(String errorDescription, TabFeature feature, UsageType type, Runnable task) {
