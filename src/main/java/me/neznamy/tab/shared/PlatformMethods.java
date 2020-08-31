@@ -38,11 +38,6 @@ public interface PlatformMethods {
 			Shared.print('2', "Renamed config option " + oldName + " to " + newName);
 		}
 	}
-	public default void convert(ConfigurationFile config, String oldKey, Object oldValue, String newKey, Object newValue) {
-		config.set(oldKey, null);
-		config.set(newKey, newValue);
-		Shared.print('2', "Converted old " + config.getName() + " option " + oldKey + " (" + oldValue + ") to new " + newKey + " (" + newValue + ")");
-	}
 	public default void suggestPlaceholderSwitch(String from, String to) {
 		if (Placeholders.allUsedPlaceholderIdentifiers.contains(from)) {
 			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
