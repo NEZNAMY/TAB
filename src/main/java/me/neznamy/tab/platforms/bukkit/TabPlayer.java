@@ -6,7 +6,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
+import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;

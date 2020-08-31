@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;

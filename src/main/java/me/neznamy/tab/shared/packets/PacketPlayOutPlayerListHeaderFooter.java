@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 
-import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
+import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 

@@ -13,12 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;

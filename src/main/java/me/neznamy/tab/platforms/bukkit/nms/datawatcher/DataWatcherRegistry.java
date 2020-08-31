@@ -1,10 +1,11 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**

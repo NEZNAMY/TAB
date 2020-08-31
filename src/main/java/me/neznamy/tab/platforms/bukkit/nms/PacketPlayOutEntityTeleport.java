@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

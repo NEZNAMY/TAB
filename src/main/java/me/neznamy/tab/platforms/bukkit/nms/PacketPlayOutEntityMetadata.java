@@ -1,7 +1,8 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import java.lang.reflect.Constructor;
 
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**

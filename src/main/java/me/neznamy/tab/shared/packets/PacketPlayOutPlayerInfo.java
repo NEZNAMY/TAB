@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.platforms.bukkit.packets.NMSHook;
+import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.platforms.velocity.VelocityUtils;
 import me.neznamy.tab.shared.ProtocolVersion;
 import net.kyori.adventure.text.Component;

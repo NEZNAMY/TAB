@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 
 /**
  * A helper class for easy management of armor stands of a player

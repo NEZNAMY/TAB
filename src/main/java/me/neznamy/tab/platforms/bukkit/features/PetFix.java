@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
@@ -57,7 +57,7 @@ public class PetFix implements RawPacketFeature {
 			if (items == null) return packet;
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
-				Item i = Item.fromNMS(item);
+				DataWatcherItem i = DataWatcherItem.fromNMS(item);
 				if (i.type.position == PET_OWNER_POSITION && i.value.toString().startsWith("Optional")) continue;
 				newList.add(i.toNMS());
 			}
@@ -65,7 +65,7 @@ public class PetFix implements RawPacketFeature {
 		}
 		if (PacketPlayOutSpawnEntityLiving.PacketPlayOutSpawnEntityLiving.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATAWATCHER.get(packet));
-			Item petOwner = watcher.getItem(PET_OWNER_POSITION);
+			DataWatcherItem petOwner = watcher.getItem(PET_OWNER_POSITION);
 			if (petOwner != null && petOwner.value.toString().startsWith("Optional")) {
 				watcher.removeValue(PET_OWNER_POSITION);
 			}

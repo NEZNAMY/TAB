@@ -1,7 +1,8 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import java.util.Optional;
 
+import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;

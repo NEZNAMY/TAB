@@ -13,7 +13,7 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStandManager;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;

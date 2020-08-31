@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 
@@ -17,8 +17,8 @@ public class DataWatcherObject {
 	
 	public static DataWatcherObject fromNMS(Object nmsObject) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			int position = (int) DataWatcher.getValue(nmsObject, "a");
-			Object classType = DataWatcher.getValue(nmsObject, "b");
+			int position = (int) DataWatcherItem.getValue(nmsObject, "a");
+			Object classType = DataWatcherItem.getValue(nmsObject, "b");
 			return new DataWatcherObject(position, classType);
 		} else {
 			throw new IllegalStateException();

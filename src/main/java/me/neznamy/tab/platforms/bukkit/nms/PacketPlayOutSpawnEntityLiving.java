@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -11,7 +11,8 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher.Item;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**
@@ -51,7 +52,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 	private float pitch;
 	private float l;
 	public DataWatcher dataWatcher = new DataWatcher();
-	private List<Item> watchableObjects;
+	private List<DataWatcherItem> watchableObjects;
 
 	public static void initializeClass() throws Exception {
 		try {
@@ -134,7 +135,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 		if (DATAWATCHER != null && dataWatcher != null) DATAWATCHER.set(packet, dataWatcher.toNMS());
 		if (watchableObjects != null) {
 			List<Object> list = new ArrayList<Object>();
-			for (Item o : this.watchableObjects) {
+			for (DataWatcherItem o : this.watchableObjects) {
 				list.add(o.toNMS());
 			}
 			DATAWATCHERITEMS.set(packet, list);

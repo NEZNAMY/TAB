@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.packets;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.PacketListener;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
@@ -86,6 +89,7 @@ public class NMSHook {
 				IChatBaseComponent = PacketPlayOut.getNMSClass("ChatMessage");
 			}
 			DataWatcher.initializeClass();
+			DataWatcherItem.initializeClass();
 			DataWatcherRegistry.initializeClass();
 			PacketPlayOutChat.initializeClass();
 			PacketPlayOutEntityDestroy.initializeClass();

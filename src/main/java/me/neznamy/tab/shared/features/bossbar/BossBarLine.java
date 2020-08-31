@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.bukkit.entity.EntityType;
 
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
-import me.neznamy.tab.platforms.bukkit.packets.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.packets.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
