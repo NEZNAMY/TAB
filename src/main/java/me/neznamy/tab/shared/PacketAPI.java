@@ -25,9 +25,6 @@ public class PacketAPI {
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE_TEAM(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
 	}
-	public static void updateScoreboardTeamPrefixSuffix(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush) {
-		to.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", 69));
-	}
 
 	//scoreboard objective
 	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {

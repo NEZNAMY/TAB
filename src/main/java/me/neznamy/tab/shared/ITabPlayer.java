@@ -276,7 +276,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.updateScoreboardTeamPrefixSuffix(viewer, teamName, currentPrefix, currentSuffix, visible, collision);
+			viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 		}
 	}
 
