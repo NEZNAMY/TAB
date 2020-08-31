@@ -17,9 +17,15 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
+/**
+ * Feature registration which offers calls to features and measures how long it took them to process
+ */
 public class FeatureManager {
 
+	//all features, sometimes we need to get feature by it's name
 	private Map<String, Feature> features = new ConcurrentHashMap<String, Feature>();
+	
+	//lists of feature types to use on forEach in methods
 	private List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
 	private List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
 	private List<Loadable> loadableFeatures = new ArrayList<Loadable>();
@@ -29,6 +35,12 @@ public class FeatureManager {
 	private List<CommandListener> commandListeners = new ArrayList<CommandListener>();
 	public List<Refreshable> refreshables = new ArrayList<Refreshable>();
 	
+	/**
+	 * Registers a feature by adding it to the core map as well as all lists where applicable
+	 * 
+	 * @param featureName - name of feature
+	 * @param featureHandler - the handler
+	 */
 	public void registerFeature(String featureName, Feature featureHandler) {
 		features.put(featureName, featureHandler);
 		if (featureHandler instanceof Loadable) {
@@ -57,30 +69,67 @@ public class FeatureManager {
 		}
 	}
 	
+	/**
+	 * Returns whether a feature with said name is registered or not
+	 * 
+	 * @param name - name of feature defined in registerFeature method
+	 * @return true if feature exists, false if not
+	 */
 	public boolean isFeatureEnabled(String name) {
 		return features.containsKey(name);
 	}
 	
+	/**
+	 * Returns feature handler by it's name
+	 * 
+	 * @param name - name of feature defined in registerFeature method
+	 * @return the feature or null if feature does not exist
+	 */
 	public Feature getFeature(String name) {
 		return features.get(name);
 	}
 	
+	/**
+	 * Calls load() on all features that implement Loadable
+	 * This function is called on plugin startup
+	 */
 	public void load() {
 		loadableFeatures.forEach(f -> f.load());
 	}
 	
+	/**
+	 * Calls unload() on all features that implement Loadable
+	 * This function is called on plugin unload
+	 */
 	public void unload() {
 		loadableFeatures.forEach(f -> f.unload());
 	}
 	
+	/**
+	 * Calls refresh(...) on all features that implement Refreshable
+	 * 
+	 * @param refreshed - player to be refreshed
+	 * @param force - whether refresh should be forced or not
+	 */
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		refreshables.forEach(r -> r.refresh(refreshed, true));
 	}
 	
+	/**
+	 * Calls refreshUsedPlaceholders() on all features that implement Refreshable
+	 * This function is called when new placeholders enter the game (usually when a command to assign property is ran)
+	 */
 	public void refreshUsedPlaceholders() {
 		refreshables.forEach(r -> r.refreshUsedPlaceholders());
 	}
 	
+	/**
+	 * Calls onPacketSend(...) on all features that implement PlayerInfoPacketListener and measures how long it took them to process
+	 * 
+	 * @param receiver - packet receiver
+	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
+	 * @return altered packet or null if packet should be cancelled
+	 */
 	public PacketPlayOutPlayerInfo onPacketPlayOutPlayerInfo(ITabPlayer receiver, PacketPlayOutPlayerInfo packet) {
 		for (PlayerInfoPacketListener f : playerInfoListeners) {
 			long time = System.nanoTime();
@@ -90,6 +139,11 @@ public class FeatureManager {
 		return packet;
 	}
 	
+	/**
+	 * Calls onQuit(...) on all features that implement QuitEventListener and measures how long it took them to process
+	 * 
+	 * @param disconnectedPlayer - player who disconnected
+	 */
 	public void onQuit(ITabPlayer disconnectedPlayer) {
 		for (QuitEventListener l : quitListeners) {
 			long time = System.nanoTime();
@@ -98,6 +152,11 @@ public class FeatureManager {
 		}
 	}
 	
+	/**
+	 * Calls onJoin(...) on all features that implement JoinEventListener and measures how long it took them to process
+	 * 
+	 * @param connectedPlayer - player who connected
+	 */
 	public void onJoin(ITabPlayer connectedPlayer) {
 		for (JoinEventListener l : joinListeners) {
 			long time = System.nanoTime();
@@ -107,6 +166,13 @@ public class FeatureManager {
 		connectedPlayer.onJoinFinished = true;
 	}
 	
+	/**
+	 * Calls onWorldChange(...) on all features that implement WorldChangeListener and measures how long it took them to process
+	 * 
+	 * @param changed - player who switched world (or server on proxy)
+	 * @param from - name of the previous world/server
+	 * @param to - name of the new world/server
+	 */
 	public void onWorldChange(ITabPlayer changed, String from, String to) {
 		for (WorldChangeListener l : worldChangeListeners) {
 			long time = System.nanoTime();
@@ -115,6 +181,13 @@ public class FeatureManager {
 		}
 	}
 	
+	/**
+	 * Calls onCommand(...) on all features that implement CommandListener and measures how long it took them to process
+	 * 
+	 * @param sender - command sender
+	 * @param command - command line including /
+	 * @return true if command should be cancelled, false if not
+	 */
 	public boolean onCommand(ITabPlayer sender, String command) {
 		boolean cancel = false;
 		for (CommandListener l : commandListeners) {
@@ -125,6 +198,13 @@ public class FeatureManager {
 		return cancel;
 	}
 	
+	/**
+	 * Calls onPacketReceive(...) on all features that implement RawPacketFeature and measures how long it took them to process
+	 * 
+	 * @param receiver - packet receiver
+	 * @param packet - IN packet coming from player
+	 * @return altered packet or null if packet should be cancelled
+	 */
 	public Object onPacketReceive(ITabPlayer receiver, Object packet){
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
@@ -138,6 +218,13 @@ public class FeatureManager {
 		return packet;
 	}
 	
+	/**
+	 * Calls onPacketSend(...) on all features that implement RawPacketFeature and measures how long it took them to process
+	 * 
+	 * @param receiver - packet receiver
+	 * @param packet - OUT packet coming from the server
+	 * @return altered packet or null if packet should be cancelled
+	 */
 	public Object onPacketSend(ITabPlayer receiver, Object packet){
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
