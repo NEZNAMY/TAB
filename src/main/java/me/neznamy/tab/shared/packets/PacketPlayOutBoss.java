@@ -152,7 +152,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
-		BossBar packet = new BossBar(id, operation.toBungee());
+		BossBar packet = new BossBar(id, operation.getNetworkId());
 		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
 			packet.setHealth(pct);
 		}
@@ -160,8 +160,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 			packet.setTitle(IChatBaseComponent.optimizedComponent(name).toString(clientVersion));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
-			packet.setColor(color.toBungee());
-			packet.setDivision(overlay.toBungee());
+			packet.setColor(color.getNetworkId());
+			packet.setDivision(overlay.getNetworkId());
 		}
 		if (operation == Action.UPDATE_PROPERTIES || operation == Action.ADD) {
 			packet.setFlags(getFlags());
@@ -174,7 +174,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		if (clientVersion.getMinorVersion() < 9) return null;
 		com.velocitypowered.proxy.protocol.packet.BossBar packet = new com.velocitypowered.proxy.protocol.packet.BossBar();
 		packet.setUuid(id);
-		packet.setAction(operation.toBungee());
+		packet.setAction(operation.getNetworkId());
 		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
 			packet.setPercent(pct);
 		}
@@ -182,8 +182,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 			packet.setName(IChatBaseComponent.optimizedComponent(name).toString(clientVersion));
 		}
 		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
-			packet.setColor(color.toBungee());
-			packet.setOverlay(overlay.toBungee());
+			packet.setColor(color.getNetworkId());
+			packet.setOverlay(overlay.getNetworkId());
 		}
 		if (operation == Action.UPDATE_PROPERTIES || operation == Action.ADD) {
 			packet.setFlags(getFlags());
@@ -208,11 +208,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		UPDATE_STYLE(4),
 		UPDATE_PROPERTIES(5);
 
-		private int bungeeEquivalent;
+		private int networkId;
 		private Object nmsEquivalent;
 
-		private Action(int bungeeEquivalent) {
-			this.bungeeEquivalent = bungeeEquivalent;
+		private Action(int networkId) {
+			this.networkId = networkId;
 			if (Action_ != null) {
 				nmsEquivalent = Enum.valueOf(Action_, toString());
 			}
@@ -220,8 +220,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
-		public int toBungee() {
-			return bungeeEquivalent;
+		public int getNetworkId() {
+			return networkId;
 		}
 	}
 	public enum BarColor {
@@ -234,11 +234,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		PURPLE(5),
 		WHITE(6);
 
-		private int bungeeEquivalent;
+		private int networkId;
 		private Object nmsEquivalent;
 
-		private BarColor(int bungeeEquivalent) {
-			this.bungeeEquivalent = bungeeEquivalent;
+		private BarColor(int networkId) {
+			this.networkId = networkId;
 			if (BarColor != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)BarColor, toString());
 			}
@@ -246,8 +246,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
-		public int toBungee() {
-			return bungeeEquivalent;
+		public int getNetworkId() {
+			return networkId;
 		}
 	}
 	public enum BarStyle {
@@ -258,11 +258,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		NOTCHED_12(3),
 		NOTCHED_20(4);
 
-		private int bungeeEquivalent;
+		private int networkId;
 		private Object nmsEquivalent;
 
-		private BarStyle(int bungeeEquivalent) {
-			this.bungeeEquivalent = bungeeEquivalent;
+		private BarStyle(int networkId) {
+			this.networkId = networkId;
 			if (BarStyle != null) {
 				nmsEquivalent = Enum.valueOf((Class<Enum>)BarStyle, toString());
 			}
@@ -270,8 +270,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
-		public int toBungee() {
-			return bungeeEquivalent;
+		public int getNetworkId() {
+			return networkId;
 		}
 	}
 }

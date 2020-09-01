@@ -85,12 +85,12 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 	
 	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new ScoreboardScore(player, action.toBungee(), objectiveName, score);
+		return new ScoreboardScore(player, action.getNetworkId(), objectiveName, score);
 	}
 	
 	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore(player, action.toBungee(), objectiveName, score);
+		return new me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore(player, action.getNetworkId(), objectiveName, score);
 	}
 	
 	public enum Action{
@@ -98,24 +98,24 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut{
 		CHANGE((byte) 0),
 		REMOVE((byte) 1);
 
-		private byte ordinal;
+		private byte networkId;
 		private Object nmsEquivalent;
 
-		private Action(byte ordinal) {
-			this.ordinal = ordinal;
+		private Action(byte networkId) {
+			this.networkId = networkId;
 			if (EnumScoreboardAction != null) {
 				//1.8+
 				nmsEquivalent = Enum.valueOf(EnumScoreboardAction, toString());
 			} else {
 				//1.7-
-				nmsEquivalent = ordinal;
+				nmsEquivalent = networkId;
 			}
 		}
 		public Object toNMS() {
 			return nmsEquivalent;
 		}
-		public byte toBungee() {
-			return ordinal;
+		public byte getNetworkId() {
+			return networkId;
 		}
 	}
 }
