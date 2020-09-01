@@ -60,12 +60,7 @@ public class NMSHook {
 	}
 	public static String componentToString(Object component) throws Exception {
 		if (component == null) return null;
-		String result = (String) SERIALIZE.invoke(null, component);
-		if (result.startsWith("\"") && result.endsWith("\"")) {
-			//simple component with only text used, minecraft serializer outputs the text in quotes instead of full json
-			result = "{\"text\":" + result + "}";
-		}
-		return result;
+		return (String) SERIALIZE.invoke(null, component);
 	}
 	
 	public static Object getChannel(Player p) throws Exception {
