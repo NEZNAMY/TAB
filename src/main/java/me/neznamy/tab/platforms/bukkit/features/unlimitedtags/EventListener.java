@@ -35,7 +35,7 @@ public class EventListener implements Listener {
 	public void a(PlayerMoveEvent e) {
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (p.previewingNametag) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, new Runnable() {
+		if (p.isPreviewingNametag()) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, new Runnable() {
 			
 			@Override
 			public void run() {

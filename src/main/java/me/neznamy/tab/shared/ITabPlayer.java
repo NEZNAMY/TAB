@@ -56,7 +56,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public boolean disabledBossbar;
 	public boolean disabledBelowname;
 
-	public boolean previewingNametag;
+	private boolean previewingNametag;
 	public List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
 	public boolean lastCollision;
 	public boolean lastVisibility;
