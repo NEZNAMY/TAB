@@ -241,10 +241,11 @@ public class CPUManager {
 	}
 
 	public void addTime(TabFeature feature, UsageType type, long nanoseconds) {
-		if (!featureUsageCurrent.containsKey(feature)) {
-			featureUsageCurrent.put(feature, new ConcurrentHashMap<UsageType, Long>());
-		}
 		Map<UsageType, Long> usage = featureUsageCurrent.get(feature);
+		if (usage == null) {
+			usage = new ConcurrentHashMap<UsageType, Long>();
+			featureUsageCurrent.put(feature, usage);
+		}
 		if (!usage.containsKey(type)) {
 			usage.put(type, 0L);
 		}
