@@ -311,7 +311,7 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public String getServerVersion() {
-		return Bukkit.getBukkitVersion().split("-")[0] + " (" + Main.serverPackage + ")";
+		return Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")";
 	}
 
 	@Override

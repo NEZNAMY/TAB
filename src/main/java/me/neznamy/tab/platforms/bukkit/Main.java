@@ -25,11 +25,10 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
  */
 public class Main extends JavaPlugin {
 
-	public static final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
 	@Override
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
+		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
 		if (!NMSHook.isVersionSupported(serverPackage)){
 			Shared.disabled = true;
