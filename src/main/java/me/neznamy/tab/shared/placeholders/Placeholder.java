@@ -20,7 +20,6 @@ public abstract class Placeholder {
 	private Map<String, Object> replacements = new HashMap<String, Object>();
 	private List<String> outputPlaceholders = new ArrayList<String>();
 	
-	@SuppressWarnings("unchecked")
 	public Placeholder(String identifier, int cooldown) {
 		this.identifier = identifier;
 		this.cooldown = cooldown;

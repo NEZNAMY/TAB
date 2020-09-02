@@ -20,7 +20,6 @@ public class WidthCommand extends SubCommand {
 		super("width", "tab.width");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (sender == null) {

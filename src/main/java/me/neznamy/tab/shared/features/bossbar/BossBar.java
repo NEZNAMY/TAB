@@ -31,7 +31,6 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public List<String> bossbar_off_players;
 	public boolean permToToggle;
 
-	@SuppressWarnings("unchecked")
 	public BossBar() {
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");

@@ -32,7 +32,6 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void load() {
 		spyServers = Configs.config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));

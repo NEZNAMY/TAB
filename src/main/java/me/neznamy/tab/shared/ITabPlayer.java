@@ -253,9 +253,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		setProperty(property, ifnull, "None");
 	}
 
-	
-
-	@SuppressWarnings("unchecked")
 	public String getWorldGroupOf(String world) {
 		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;

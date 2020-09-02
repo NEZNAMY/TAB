@@ -48,7 +48,6 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	public Map<ITabPlayer, List<TabPlayer>> delayedSpawn = new HashMap<ITabPlayer, List<TabPlayer>>();
 	private EventListener eventListener;
 
-	@SuppressWarnings("unchecked")
 	public NameTagX(JavaPlugin plugin) {
 		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);

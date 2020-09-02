@@ -255,13 +255,12 @@ public abstract class ConfigurationFile {
 	 * @param path - path to the value
 	 * @return value from file or empty map if not present
 	 */
-	@SuppressWarnings("rawtypes")
-	public Map getConfigurationSection(String path) {
-		if (path == null || path.length() == 0) return values;
+	public <K, V> Map<K, V> getConfigurationSection(String path) {
+		if (path == null || path.length() == 0) return (Map<K, V>) values;
 		Object value = getObject(path, null);
 		if (value == null) return new HashMap<>();
 		if (value instanceof Map) {
-			return (Map) value;
+			return (Map<K, V>) value;
 		} else {
 			dataMismatch(path, Map.class, value.getClass());
 			return new HashMap<>();

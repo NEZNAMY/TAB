@@ -30,7 +30,6 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 /**
  * Messy class for placeholder management
  */
-@SuppressWarnings("unchecked")
 public class PlaceholderManager implements QuitEventListener {
 
 	public int defaultRefresh;
@@ -46,16 +45,16 @@ public class PlaceholderManager implements QuitEventListener {
 	public PlaceholderManager(){
 		instance = this;
 		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server")).entrySet()) {
-			serverPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
+			serverPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
 			Shared.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
 		}
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.player")).entrySet()) {
-			playerPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.player").entrySet()) {
+			playerPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
 			Shared.debug("Loaded refresh " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
 		}
-		for (Entry<String, Integer> placeholder : ((Map<String, Integer>)Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.relational")).entrySet()) {
-			relationalPlaceholderRefreshIntervals.put(placeholder.getKey(), placeholder.getValue());
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
+			relationalPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
 			Shared.debug("Loaded refresh " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
 		}
 

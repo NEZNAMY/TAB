@@ -107,7 +107,6 @@ public class VelocityMethods implements PlatformMethods {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
 		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");

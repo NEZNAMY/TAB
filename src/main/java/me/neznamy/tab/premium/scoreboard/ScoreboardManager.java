@@ -38,7 +38,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public String scoreboard_on;
 	public String scoreboard_off;
 
-	@SuppressWarnings("unchecked")
 	public ScoreboardManager() {
 		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
 		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);

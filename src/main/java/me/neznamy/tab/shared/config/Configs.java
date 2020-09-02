@@ -103,7 +103,7 @@ public class Configs {
 		SortingType.initialize();
 		Shared.platform.suggestPlaceholders();
 	}
-	@SuppressWarnings("unchecked")
+
 	public static void loadConfig() throws Exception {
 		Shared.platform.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);

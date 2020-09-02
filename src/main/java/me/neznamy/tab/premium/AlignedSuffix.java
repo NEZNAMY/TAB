@@ -30,7 +30,6 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	private Map<Character, Integer> widths = new HashMap<Character, Integer>();
 	private Playerlist playerlist;
 
-	@SuppressWarnings("unchecked")
 	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
 		loadWidthsFromFile();

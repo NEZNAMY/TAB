@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  * Per-world-playerlist feature. Currently bukkit API based, however that causes various (compatibility) issues.
  * Will be reworked to use packets in the future
  */
-@SuppressWarnings({"deprecation", "unchecked"})
+@SuppressWarnings("deprecation")
 public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
 	private JavaPlugin plugin;
