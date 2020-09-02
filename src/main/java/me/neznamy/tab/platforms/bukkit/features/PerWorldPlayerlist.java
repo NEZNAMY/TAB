@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
- * Per-world-playerlist feature. Currently event based, however that causes various (compatibility) issues.
+ * Per-world-playerlist feature. Currently bukkit API based, however that causes various (compatibility) issues.
  * Will be reworked to use packets in the future
  */
 @SuppressWarnings({"deprecation", "unchecked"})
