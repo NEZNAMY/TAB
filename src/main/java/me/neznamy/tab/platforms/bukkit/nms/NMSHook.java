@@ -86,6 +86,7 @@ public class NMSHook {
 			DataWatcher.initializeClass();
 			DataWatcherItem.initializeClass();
 			DataWatcherRegistry.initializeClass();
+			PacketPlayOutAnimation.initializeClass();
 			PacketPlayOutChat.initializeClass();
 			PacketPlayOutEntityDestroy.initializeClass();
 			PacketPlayOutEntityMetadata.initializeClass();
@@ -95,7 +96,6 @@ public class NMSHook {
 			PacketPlayOutScoreboardScore.initializeClass();
 			PacketPlayOutScoreboardTeam.initializeClass();
 			PacketPlayOutSpawnEntityLiving.initializeClass();
-			PetFix.initializeClass();
 			EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
 			PING = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("ping");
 			PLAYER_CONNECTION = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
@@ -122,6 +122,7 @@ public class NMSHook {
 			}
 			if (minor >= 9) {
 				PacketPlayOutBoss.initializeClass();
+				PetFix.initializeClass();
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
