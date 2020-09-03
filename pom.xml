@@ -6,6 +6,15 @@
 	<version>2.8.4</version>
 	<name>TAB</name>
 	<description>An all-in-one solution</description>
+	
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
 
 	<repositories>
 
