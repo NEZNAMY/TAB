@@ -599,6 +599,11 @@
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
 				</exclusion>
+				
+				<exclusion>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot-api</artifactId>
+				</exclusion>
 
 			</exclusions>
 		</dependency>
