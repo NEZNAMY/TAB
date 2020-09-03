@@ -1,0 +1,11 @@
+{
+  "id":"tab",
+  "version":"2.8.4",
+  "description":"Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more",
+  "authors":[
+    "NEZNAMY"
+  ],
+  "dependencies":[
+  ],
+  "main":"me.neznamy.tab.platforms.velocity.Main"
+}
