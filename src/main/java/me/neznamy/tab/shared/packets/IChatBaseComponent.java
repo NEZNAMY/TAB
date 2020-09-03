@@ -22,7 +22,8 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
-	public static final String EMPTY_COMPONENT = "{\"translate\":\"\"}";
+	public static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
+	public static final String EMPTY_TEXT = "{\"text\":\"\"}";
 	private static Class<?> NBTTagCompound;
 	private static Method CraftItemStack_asNMSCopy;
 	private static Method ItemStack_save;
@@ -267,9 +268,18 @@ public class IChatBaseComponent {
 		}
 	}
 	public String toString(ProtocolVersion clientVersion) {
+		return toString(clientVersion, false);
+	}
+	public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
 		if (extra == null) {
 			if (text == null) return null;
-			if (text.length() == 0) return EMPTY_COMPONENT;
+			if (text.length() == 0) {
+				if (sendTranslatableIfEmpty) {
+					return EMPTY_TRANSLATABLE;
+				} else {
+					return EMPTY_TEXT;
+				}
+			}
 		}
 		//the core component, fixing all colors
 		if (color != null) {

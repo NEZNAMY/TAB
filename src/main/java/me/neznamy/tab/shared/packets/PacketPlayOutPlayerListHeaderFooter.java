@@ -44,18 +44,18 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut 
 	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutPlayerListHeaderFooter.newInstance();
-		HEADER.set(packet, NMSHook.stringToComponent(header.toString(clientVersion)));
-		FOOTER.set(packet, NMSHook.stringToComponent(footer.toString(clientVersion)));
+		HEADER.set(packet, NMSHook.stringToComponent(header.toString(clientVersion, true)));
+		FOOTER.set(packet, NMSHook.stringToComponent(footer.toString(clientVersion, true)));
 		return packet;
 	}
 	
 	@Override
 	public Object toBungee(ProtocolVersion clientVersion) {
-		return new PlayerListHeaderFooter(header.toString(clientVersion), footer.toString(clientVersion));
+		return new PlayerListHeaderFooter(header.toString(clientVersion, true), footer.toString(clientVersion, true));
 	}
 	
 	@Override
 	public Object toVelocity(ProtocolVersion clientVersion) {
-		return new HeaderAndFooter(header.toString(clientVersion), footer.toString(clientVersion));
+		return new HeaderAndFooter(header.toString(clientVersion, true), footer.toString(clientVersion, true));
 	}
 }
