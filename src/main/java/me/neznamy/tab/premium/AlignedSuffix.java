@@ -34,7 +34,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
 		boolean save = false;
-		Map<Integer, ?> extraWidths = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
+		Map<Integer, Integer> extraWidths = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
 		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
 			char c = (char)(int)entry;
 			int width = (int)extraWidths.get(entry);
