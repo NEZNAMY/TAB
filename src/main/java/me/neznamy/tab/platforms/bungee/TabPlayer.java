@@ -99,8 +99,8 @@ public class TabPlayer extends ITabPlayer {
 		try {
 			return (int) getId.invoke(directionData, clazz, getVersion().getNetworkId());
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + getVersion().getFriendlyName());
-			return 0;
+			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + getVersion().getFriendlyName(), e);
+			return -1;
 		}
 	}
 	
