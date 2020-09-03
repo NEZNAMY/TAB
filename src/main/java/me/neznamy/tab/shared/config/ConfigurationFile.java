@@ -44,7 +44,7 @@ public abstract class ConfigurationFile {
 		dataFolder.mkdirs();
 		file = new File(dataFolder, destination);
 		if (!file.exists()) {
-			Files.copy(getClass().getClassLoader().getResourceAsStream("resources/" + source), file.toPath());
+			Files.copy(getClass().getClassLoader().getResourceAsStream(source), file.toPath());
 		}
 	}
 	
