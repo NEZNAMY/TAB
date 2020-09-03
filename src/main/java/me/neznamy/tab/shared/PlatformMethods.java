@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.io.File;
 
 import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -31,16 +30,7 @@ public interface PlatformMethods {
 	 * @param translateColors - if color codes should be translated
 	 */
 	public void sendConsoleMessage(String message, boolean translateColors);
-	
-	/**
-	 * Builds packet into it's platform-specific type and returns it
-	 * @param packet - custom packet to be built
-	 * @param protocolVersion - client's protocol version
-	 * @return The built packet
-	 * @throws Exception - If packet creation fails
-	 */
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception;
-	
+		
 	/**
 	 * Loads config.yml and it's platform-specific variables
 	 * @throws Exception - If something fails (such as yaml syntax error)

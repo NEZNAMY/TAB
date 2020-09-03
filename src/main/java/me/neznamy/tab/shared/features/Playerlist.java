@@ -48,7 +48,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		for (ITabPlayer p : Shared.getPlayers()) {
 			if (!p.disabledTablistNames) updatedPlayers.add(p.getInfoData());
 		}
-		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).build(ProtocolVersion.SERVER_VERSION);
+		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
@@ -127,7 +127,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).create(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}

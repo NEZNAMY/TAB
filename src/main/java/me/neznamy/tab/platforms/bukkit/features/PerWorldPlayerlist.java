@@ -128,10 +128,10 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			}
 		}
 		List<PlayerInfoData> newList = new ArrayList<PlayerInfoData>();
-		Arrays.asList(info.entries).forEach(d -> newList.add(d));
+		info.entries.forEach(d -> newList.add(d));
 		newList.removeAll(toRemove);
-		info.entries = newList.toArray(new PlayerInfoData[0]);
-		if (info.entries.length == 0) return null;
+		info.entries = newList;
+		if (info.entries.size() == 0) return null;
 		return info;
 	}
 

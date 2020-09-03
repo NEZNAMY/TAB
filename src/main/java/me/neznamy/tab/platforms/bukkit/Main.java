@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -37,6 +38,7 @@ public class Main extends JavaPlugin {
 			return;
 		}
 		Shared.platform = new BukkitMethods(this);
+		UniversalPacketPlayOut.builder = new BukkitPacketBuilder();
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){

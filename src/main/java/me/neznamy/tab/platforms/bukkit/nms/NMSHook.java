@@ -8,19 +8,12 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.PacketListener;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
  * The core class for NMS hooks and compatibility check
@@ -83,18 +76,14 @@ public class NMSHook {
 			} catch (ClassNotFoundException e) {
 				IChatBaseComponent = PacketPlayOut.getNMSClass("ChatMessage");
 			}
+			BukkitPacketBuilder.initializeClass();
 			DataWatcher.initializeClass();
 			DataWatcherItem.initializeClass();
 			DataWatcherRegistry.initializeClass();
 			PacketPlayOutAnimation.initializeClass();
-			PacketPlayOutChat.initializeClass();
 			PacketPlayOutEntityDestroy.initializeClass();
 			PacketPlayOutEntityMetadata.initializeClass();
 			PacketPlayOutEntityTeleport.initializeClass();
-			PacketPlayOutScoreboardDisplayObjective.initializeClass();
-			PacketPlayOutScoreboardObjective.initializeClass();
-			PacketPlayOutScoreboardScore.initializeClass();
-			PacketPlayOutScoreboardTeam.initializeClass();
 			PacketPlayOutSpawnEntityLiving.initializeClass();
 			EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
 			PING = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("ping");
@@ -104,7 +93,6 @@ public class NMSHook {
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);
 			if (minor >= 7) {
-				PacketPlayOutPlayerInfo.initializeClass();
 				try {
 					//v1_8_R2+
 					ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer");
@@ -117,11 +105,9 @@ public class NMSHook {
 			}
 			if (minor >= 8) {
 				PacketListener.initializeClass();
-				PacketPlayOutPlayerListHeaderFooter.initializeClass();
 				CHANNEL = PacketPlayOut.getFields(PacketPlayOut.getNMSClass("NetworkManager"), Channel.class).get(0);
 			}
 			if (minor >= 9) {
-				PacketPlayOutBoss.initializeClass();
 				PetFix.initializeClass();
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);

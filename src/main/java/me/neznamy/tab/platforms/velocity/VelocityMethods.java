@@ -32,7 +32,6 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
@@ -100,12 +99,7 @@ public class VelocityMethods implements PlatformMethods {
 		if (translateColors) message = Placeholders.color(message);
 		server.getConsoleCommandSource().sendMessage(TextComponent.of(message));
 	}
-	
-	@Override
-	public Object buildPacket(UniversalPacketPlayOut packet, me.neznamy.tab.shared.ProtocolVersion protocolVersion) {
-		return packet.toVelocity(protocolVersion);
-	}
-	
+
 	@Override
 	public void loadConfig() throws Exception {
 		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));

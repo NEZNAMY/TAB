@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -8,21 +7,16 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 /**
  * Abstract class to be extended by packets which can be sent on all 3 supported platforms
  */
-public abstract class UniversalPacketPlayOut extends PacketPlayOut {
+public abstract class UniversalPacketPlayOut {
 
-	/**
-	 * Converts the class into an instance of net.md-5.bungee.protocol.DefinedPacket
-	 * @param clientVersion - version of player to create packet for
-	 * @return the bungee packet
-	 */
-	public abstract Object toBungee(ProtocolVersion clientVersion);
+	public static PacketBuilder builder;
 	
 	/**
-	 * Converts the class into an instance of com.velocitypowered.proxy.protocol.MinecraftPacket
+	 * Converts the class into raw packet
 	 * @param clientVersion - version of player to create packet for
-	 * @return the velocity packet
+	 * @return the raw packet
 	 */
-	public abstract Object toVelocity(ProtocolVersion clientVersion);
+	protected abstract Object build(ProtocolVersion clientVersion) throws Exception;
 	
 	/**
 	 * Cuts the string into specified length if needed
@@ -40,13 +34,13 @@ public abstract class UniversalPacketPlayOut extends PacketPlayOut {
 	}
 	
 	/**
-	 * Calls platform-specific build call to build the packet
+	 * Calls build(...) and wraps it into a try/catch
 	 * @param clientVersion - player version
 	 * @return built packet depending on platform
 	 */
-	public Object build(ProtocolVersion clientVersion) {
+	public Object create(ProtocolVersion clientVersion) {
 		try {
-			return Shared.platform.buildPacket(this, clientVersion);
+			return build(clientVersion);
 		} catch (Exception e) {
 			return Shared.errorManager.printError(null, "An error occurred when creating " + getClass().getSimpleName(), e);
 		}

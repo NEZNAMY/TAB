@@ -38,7 +38,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
 		for (ITabPlayer displayed : Shared.getPlayers()) {
-			Object displayedAddPacket = getAddPacket(displayed).build(ProtocolVersion.SERVER_VERSION);
+			Object displayedAddPacket = getAddPacket(displayed).create(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer viewer : Shared.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
 				if (shouldSee(viewer, displayed)) viewer.sendPacket(displayedAddPacket);
@@ -72,7 +72,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	@Override
 	public void unload() {
 		for (ITabPlayer displayed : Shared.getPlayers()) {
-			Object displayedRemovePacket = getRemovePacket(displayed).build(ProtocolVersion.SERVER_VERSION);
+			Object displayedRemovePacket = getRemovePacket(displayed).create(ProtocolVersion.SERVER_VERSION);
 			for (ITabPlayer viewer : Shared.getPlayers()) {
 				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendPacket(displayedRemovePacket);
 			}
@@ -81,7 +81,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onJoin(ITabPlayer connectedPlayer) {
-		Object addConnected = getAddPacket(connectedPlayer).build(ProtocolVersion.SERVER_VERSION);
+		Object addConnected = getAddPacket(connectedPlayer).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
@@ -96,7 +96,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		Object remove = getRemovePacket(disconnectedPlayer).build(ProtocolVersion.SERVER_VERSION);
+		Object remove = getRemovePacket(disconnectedPlayer).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.sendPacket(remove);
@@ -110,8 +110,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 
 			@Override
 			public void run() {
-				Object addChanged = getAddPacket(p).build(ProtocolVersion.SERVER_VERSION);
-				Object removeChanged = getRemovePacket(p).build(ProtocolVersion.SERVER_VERSION);
+				Object addChanged = getAddPacket(p).create(ProtocolVersion.SERVER_VERSION);
+				Object removeChanged = getRemovePacket(p).create(ProtocolVersion.SERVER_VERSION);
 				for (ITabPlayer all : Shared.getPlayers()) {
 					if (all == p) continue;
 					if (shouldSee(all, p)) {

@@ -56,7 +56,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	
 	@Override
 	public void unload() {
-		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).build(ProtocolVersion.SERVER_VERSION);
+		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledTablistObjective) continue;
 			p.sendPacket(unregister);

@@ -45,7 +45,6 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.None;
@@ -155,11 +154,6 @@ public class BukkitMethods implements PlatformMethods {
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		if (translateColors) message = Placeholders.color(message);
 		Bukkit.getConsoleSender().sendMessage(message);
-	}
-
-	@Override
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) throws Exception {
-		return packet.toNMS(protocolVersion);
 	}
 
 	@Override

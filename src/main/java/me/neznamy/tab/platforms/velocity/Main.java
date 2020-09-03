@@ -26,6 +26,7 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * Main class for Velocity platform
@@ -52,6 +53,7 @@ public class Main {
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new VelocityMethods(server);
+		UniversalPacketPlayOut.builder = new VelocityPacketBuilder();
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
@@ -125,8 +127,8 @@ public class Main {
 				}
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, PacketPlayOutPlayerInfo.fromVelocity(packet));
-						packet = (info == null ? null : info.toVelocity(player.getVersion()));
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, VelocityPacketBuilder.fromVelocity(packet));
+						packet = (info == null ? null : info.create(player.getVersion()));
 					}
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();

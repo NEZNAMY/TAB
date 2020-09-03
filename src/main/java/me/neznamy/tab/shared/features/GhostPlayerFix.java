@@ -16,7 +16,7 @@ public class GhostPlayerFix implements QuitEventListener {
 
 	@Override
 	public void onQuit(ITabPlayer disconnectedPlayer) {
-		Object removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).build(ProtocolVersion.SERVER_VERSION);
+		Object removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, disconnectedPlayer.getInfoData()).create(ProtocolVersion.SERVER_VERSION);
 		Shared.cpu.runTaskLater(100, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override

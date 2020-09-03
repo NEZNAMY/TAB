@@ -1,64 +1,27 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.UUID;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
-import net.md_5.bungee.protocol.packet.BossBar;
 
 /**
  * A class representing platform specific packet class
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 
-	private static Class<?> PacketPlayOutBoss;
-	private static Class<?> BarColor;
-	private static Class<?> BarStyle;
-	private static Class<Enum> Action_;
-	private static Constructor<?> newPacketPlayOutBoss;
-	private static Field UUID;
-	private static Field ACTION;
-	private static Field NAME;
-	private static Field PROGRESS;
-	private static Field COLOR;
-	private static Field STYLE;
-	private static Field DARKEN_SKY;
-	private static Field PLAY_MUSIC;
-	private static Field CREATE_FOG;
-	
-	private UUID id;
-	private Action operation;
-	private String name;
-	private float pct;
-	private BarColor color;
-	private BarStyle overlay;
-	private boolean darkenScreen;
-	private boolean playMusic;
-	private boolean createWorldFog;
+	public UUID id;
+	public Action operation;
+	public String name;
+	public float pct;
+	public BarColor color;
+	public BarStyle overlay;
+	public boolean darkenScreen;
+	public boolean playMusic;
+	public boolean createWorldFog;
 
-	public static void initializeClass() throws Exception {
-		PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
-		BarColor = getNMSClass("BossBattle$BarColor");
-		BarStyle = getNMSClass("BossBattle$BarStyle");
-		Action_ = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
-		newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
-		(UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
-		(ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
-		(NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
-		(PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
-		(COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
-		(STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
-		(DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
-		(PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
-		(CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
-	}
-	
 	private PacketPlayOutBoss() {
 	}
-	
+
 	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
@@ -72,7 +35,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.createWorldFog = createWorldFog;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
@@ -83,14 +46,14 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.overlay = overlay;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss REMOVE(UUID id) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.REMOVE;
 		packet.id = id;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss UPDATE_PCT(UUID id, float pct) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PCT;
@@ -98,7 +61,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.pct = pct;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss UPDATE_NAME(UUID id, String name) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_NAME;
@@ -106,7 +69,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.name = name;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss UPDATE_STYLE(UUID id, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_STYLE;
@@ -115,7 +78,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		packet.overlay = overlay;
 		return packet;
 	}
-	
+
 	public static PacketPlayOutBoss UPDATE_PROPERTIES(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PROPERTIES;
@@ -126,72 +89,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
-	@Override
-	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
-		Object packet = newPacketPlayOutBoss.newInstance();
-		UUID.set(packet, id);
-		ACTION.set(packet, operation.toNMS());
-		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
-			PROGRESS.set(packet, pct);
-		}
-		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			NAME.set(packet, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(name).toString(clientVersion)));
-		}
-		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
-			COLOR.set(packet, color.toNMS());
-			STYLE.set(packet, overlay.toNMS());
-		}
-		if (operation == Action.UPDATE_PROPERTIES || operation == Action.ADD) {
-			DARKEN_SKY.set(packet, darkenScreen);
-			PLAY_MUSIC.set(packet, playMusic);
-			CREATE_FOG.set(packet, createWorldFog);
-		}
-		return packet;
-	}
-	
-	@Override
-	public Object toBungee(ProtocolVersion clientVersion) {
-		if (clientVersion.getMinorVersion() < 9) return null;
-		BossBar packet = new BossBar(id, operation.getNetworkId());
-		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
-			packet.setHealth(pct);
-		}
-		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			packet.setTitle(IChatBaseComponent.optimizedComponent(name).toString(clientVersion));
-		}
-		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
-			packet.setColor(color.getNetworkId());
-			packet.setDivision(overlay.getNetworkId());
-		}
-		if (operation == Action.UPDATE_PROPERTIES || operation == Action.ADD) {
-			packet.setFlags(getFlags());
-		}
-		return packet;
-	}
-	
-	@Override
-	public Object toVelocity(ProtocolVersion clientVersion) {
-		if (clientVersion.getMinorVersion() < 9) return null;
-		com.velocitypowered.proxy.protocol.packet.BossBar packet = new com.velocitypowered.proxy.protocol.packet.BossBar();
-		packet.setUuid(id);
-		packet.setAction(operation.getNetworkId());
-		if (operation == Action.UPDATE_PCT || operation == Action.ADD) {
-			packet.setPercent(pct);
-		}
-		if (operation == Action.UPDATE_NAME || operation == Action.ADD) {
-			packet.setName(IChatBaseComponent.optimizedComponent(name).toString(clientVersion));
-		}
-		if (operation == Action.UPDATE_STYLE || operation == Action.ADD) {
-			packet.setColor(color.getNetworkId());
-			packet.setOverlay(overlay.getNetworkId());
-		}
-		if (operation == Action.UPDATE_PROPERTIES || operation == Action.ADD) {
-			packet.setFlags(getFlags());
-		}
-		return packet;
-	}
-	
-	private byte getFlags(){
+	public byte getFlags(){
 		byte value = 0;
 		if (darkenScreen) value += 1;
 		if (playMusic) value += 2;
@@ -199,79 +97,38 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return value;
 	}
 
+	@Override
+	protected Object build(ProtocolVersion clientVersion) throws Exception {
+		return builder.build(this, clientVersion);
+	}
+
 	public enum Action {
 
-		ADD(0),
-		REMOVE(1),
-		UPDATE_PCT(2),
-		UPDATE_NAME(3),
-		UPDATE_STYLE(4),
-		UPDATE_PROPERTIES(5);
-
-		private int networkId;
-		private Object nmsEquivalent;
-
-		private Action(int networkId) {
-			this.networkId = networkId;
-			if (Action_ != null) {
-				nmsEquivalent = Enum.valueOf(Action_, toString());
-			}
-		}
-		public Object toNMS() {
-			return nmsEquivalent;
-		}
-		public int getNetworkId() {
-			return networkId;
-		}
+		ADD,
+		REMOVE,
+		UPDATE_PCT,
+		UPDATE_NAME,
+		UPDATE_STYLE,
+		UPDATE_PROPERTIES;
 	}
+
 	public enum BarColor {
 
-		PINK(0),
-		BLUE(1),
-		RED(2),
-		GREEN(3),
-		YELLOW(4),
-		PURPLE(5),
-		WHITE(6);
-
-		private int networkId;
-		private Object nmsEquivalent;
-
-		private BarColor(int networkId) {
-			this.networkId = networkId;
-			if (BarColor != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)BarColor, toString());
-			}
-		}
-		public Object toNMS() {
-			return nmsEquivalent;
-		}
-		public int getNetworkId() {
-			return networkId;
-		}
+		PINK,
+		BLUE,
+		RED,
+		GREEN,
+		YELLOW,
+		PURPLE,
+		WHITE;
 	}
+
 	public enum BarStyle {
 
-		PROGRESS(0),
-		NOTCHED_6(1),
-		NOTCHED_10(2),
-		NOTCHED_12(3),
-		NOTCHED_20(4);
-
-		private int networkId;
-		private Object nmsEquivalent;
-
-		private BarStyle(int networkId) {
-			this.networkId = networkId;
-			if (BarStyle != null) {
-				nmsEquivalent = Enum.valueOf((Class<Enum>)BarStyle, toString());
-			}
-		}
-		public Object toNMS() {
-			return nmsEquivalent;
-		}
-		public int getNetworkId() {
-			return networkId;
-		}
+		PROGRESS,
+		NOTCHED_6,
+		NOTCHED_10,
+		NOTCHED_12,
+		NOTCHED_20;
 	}
 }

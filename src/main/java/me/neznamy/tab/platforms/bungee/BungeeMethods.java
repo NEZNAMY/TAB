@@ -13,7 +13,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.ConfigurationFile;
@@ -30,7 +29,6 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
@@ -105,11 +103,6 @@ public class BungeeMethods implements PlatformMethods {
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		if (translateColors) message = Placeholders.color(message);
 		ProxyServer.getInstance().getConsole().sendMessage(message);
-	}
-	
-	@Override
-	public Object buildPacket(UniversalPacketPlayOut packet, ProtocolVersion protocolVersion) {
-		return packet.toBungee(protocolVersion);
 	}
 	
 	@Override

@@ -23,7 +23,7 @@ public class PremiumVanishListener implements Listener {
 	public void a(BungeePlayerHideEvent e) {
 		if (!Shared.featureManager.isFeatureEnabled("globalplayerlist")) return;
 		ITabPlayer vanished = Shared.getPlayer(e.getPlayer().getUniqueId());
-		Object remove = getRemovePacket(vanished).build(ProtocolVersion.SERVER_VERSION);
+		Object remove = getRemovePacket(vanished).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			if (all == vanished || all.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) continue;
 			all.sendPacket(remove);
@@ -42,7 +42,7 @@ public class PremiumVanishListener implements Listener {
 	public void a(BungeePlayerShowEvent e) {
 		if (!Shared.featureManager.isFeatureEnabled("globalplayerlist")) return;
 		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		Object add = getAddPacket(p).build(ProtocolVersion.SERVER_VERSION);
+		Object add = getAddPacket(p).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer all : Shared.getPlayers()) {
 			all.sendPacket(add);
 		}

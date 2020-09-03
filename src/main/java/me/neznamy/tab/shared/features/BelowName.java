@@ -80,7 +80,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 	@Override
 	public void unload() {
-		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).build(ProtocolVersion.SERVER_VERSION);
+		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer p : Shared.getPlayers()){
 			if (p.disabledBelowname) continue;
 			p.sendPacket(unregister);

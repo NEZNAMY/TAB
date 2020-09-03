@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -46,6 +47,7 @@ public class Main extends Plugin {
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new BungeeMethods(this);
+		UniversalPacketPlayOut.builder = new BungeePacketBuilder();
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
@@ -118,8 +120,8 @@ public class Main extends Plugin {
 				}
 				try {
 					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, PacketPlayOutPlayerInfo.fromBungee(packet, player.getVersion()));
-						packet = (info == null ? null : info.toBungee(player.getVersion()));
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, BungeePacketBuilder.fromBungee(packet, player.getVersion()));
+						packet = (info == null ? null : info.create(player.getVersion()));
 					}
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();

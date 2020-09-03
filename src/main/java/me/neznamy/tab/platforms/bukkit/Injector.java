@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
  * A large source of hate. Packet intercepting to secure proper functionality of some features:
@@ -66,17 +65,17 @@ public class Injector {
 						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
 							//nametag anti-override
 							long time = System.nanoTime();
-							if (PacketPlayOutScoreboardTeam.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 								modifyPlayers(packet);
 							}
 							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 						}
 						packet = Shared.featureManager.onPacketSend(player, packet);
 						
-						PacketPlayOutPlayerInfo info = PacketPlayOutPlayerInfo.fromNMS(packet);
+						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.fromNMS(packet);
 						if (info != null) {
 							info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-							packet = (info == null ? null : info.toNMS(player.getVersion()));
+							packet = (info == null ? null : info.create(player.getVersion()));
 						}
 						if (packet != null) super.write(context, packet, channelPromise);
 					} catch (Throwable e){
@@ -95,14 +94,14 @@ public class Injector {
 	
 	@SuppressWarnings("unchecked")
 	private static void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
-		if (PacketPlayOutScoreboardTeam.SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
-			Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeam.PLAYERS.get(packetPlayOutScoreboardTeam);
+		if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
+			Collection<String> players = (Collection<String>) BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			Collection<String> newList = new ArrayList<String>();
 			for (String entry : players) {
 				ITabPlayer p = Shared.getPlayer(entry);
 				if (p == null || p.disabledNametag) newList.add(entry);
 			}
-			PacketPlayOutScoreboardTeam.PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+			BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}
 	}
 }
