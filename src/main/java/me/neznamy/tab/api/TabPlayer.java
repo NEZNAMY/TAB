@@ -166,7 +166,9 @@ public interface TabPlayer {
 	 * @throws IllegalStateException if called from bungeecord/velocity
 	 * @since 2.8.5
 	 */
-	public Player getBukkitEntity();
+	public default Player getBukkitEntity(){
+		throw new IllegalStateException("Wrong platform");
+	}
 	
 	/**
 	 * Returns the bungee player
@@ -174,7 +176,9 @@ public interface TabPlayer {
 	 * @throws IllegalStateException if called from bukkit/velocity
 	 * @since 2.8.5
 	 */
-	public ProxiedPlayer getBungeeEntity();
+	public default ProxiedPlayer getBungeeEntity(){
+		throw new IllegalStateException("Wrong platform");
+	}
 	
 	/**
 	 * Returns the velocity player
@@ -182,7 +186,9 @@ public interface TabPlayer {
 	 * @throws IllegalStateException if called from bukkit/bungeecord
 	 * @since 2.8.5
 	 */
-	public com.velocitypowered.api.proxy.Player getVelocityEntity();
+	public default com.velocitypowered.api.proxy.Player getVelocityEntity(){
+		throw new IllegalStateException("Wrong platform");
+	}
 	
 	/**
 	 * Sends the player a packet represented by a custom class

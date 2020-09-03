@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * The core class for player
@@ -448,21 +447,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public ProtocolVersion getVersion() {
 		return version;
-	}
-	
-	@Override
-	public org.bukkit.entity.Player getBukkitEntity() {
-		throw new IllegalStateException("Wrong platform");
-	}
-
-	@Override
-	public ProxiedPlayer getBungeeEntity() {
-		throw new IllegalStateException("Wrong platform");
-	}
-
-	@Override
-	public com.velocitypowered.api.proxy.Player getVelocityEntity() {
-		throw new IllegalStateException("Wrong platform");
 	}
 	
 	@Override
