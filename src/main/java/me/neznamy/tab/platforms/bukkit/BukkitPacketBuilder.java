@@ -14,6 +14,8 @@ import org.bukkit.entity.EntityType;
 
 import com.google.common.collect.Lists;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -26,17 +28,19 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import us.myles.ViaVersion.api.type.Type;
+import us.myles.viaversion.libs.gson.JsonParser;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BukkitPacketBuilder implements PacketBuilder {
@@ -356,7 +360,37 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			return nmsPacket;
 		}
 		if (clientVersion.getMinorVersion() >= 9 && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-			//TODO send packet using viaversion API
+			//1.9+ client on 1.8 server
+			//technically redundant VV check as there is no other way to get 1.9 client on 1.8 server
+			ByteBuf buf = Unpooled.buffer();
+			Type.VAR_INT.writePrimitive(buf, 0x0C);
+			Type.UUID.write(buf, packet.id);
+			Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
+			switch (packet.operation) {
+			case ADD:
+				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+				Type.FLOAT.writePrimitive(buf, packet.pct);
+				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+				Type.BYTE.write(buf, packet.getFlags());
+				break;
+			case REMOVE:
+				break;
+			case UPDATE_PCT:
+				Type.FLOAT.writePrimitive(buf, packet.pct);
+				break;
+			case UPDATE_NAME:
+				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+				break;
+			case UPDATE_STYLE:
+				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+				break;
+			case UPDATE_PROPERTIES:
+				Type.BYTE.write(buf, packet.getFlags());
+				break;
+			}
+			return buf;
 		}
 		
 		//<1.9 client and server
