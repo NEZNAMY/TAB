@@ -120,7 +120,7 @@ public class Main extends Plugin {
 				}
 				try {
 					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, BungeePacketBuilder.fromBungee(packet, player.getVersion()));
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, BungeePacketBuilder.readPlayerInfo(packet, player.getVersion()));
 						packet = (info == null ? null : info.create(player.getVersion()));
 					}
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {

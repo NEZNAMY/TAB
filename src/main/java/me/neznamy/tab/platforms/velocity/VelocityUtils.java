@@ -11,9 +11,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
  */
 public class VelocityUtils {
 
-	//java class loader throws NoClassDefFoundError in inactive code (PacketPlayOutPlayerInfo#toVelocity)
-	//making it return Object and then casting fixes it
-	public static Object componentFromString(String json) {
+	public static Component stringToComponent(String json) {
 		if (json == null) return null;
 		return GsonComponentSerializer.gson().deserialize(json);
 	}

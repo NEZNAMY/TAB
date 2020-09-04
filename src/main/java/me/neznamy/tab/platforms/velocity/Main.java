@@ -127,7 +127,7 @@ public class Main {
 				}
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, VelocityPacketBuilder.fromVelocity(packet));
+						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, VelocityPacketBuilder.readPlayerInfo(packet));
 						packet = (info == null ? null : info.create(player.getVersion()));
 					}
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {

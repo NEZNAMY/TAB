@@ -573,7 +573,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return list;
 	}
 
-	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
+	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception{
 		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			EnumPlayerInfoAction action = me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());

@@ -72,7 +72,7 @@ public class Injector {
 						}
 						packet = Shared.featureManager.onPacketSend(player, packet);
 						
-						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.fromNMS(packet);
+						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(packet);
 						if (info != null) {
 							info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 							packet = (info == null ? null : info.create(player.getVersion()));

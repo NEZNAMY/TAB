@@ -32,7 +32,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import net.kyori.adventure.text.Component;
 
 public class VelocityPacketBuilder implements PacketBuilder {
 
@@ -69,7 +68,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		List<Item> items = new ArrayList<Item>();
 		for (PlayerInfoData data : packet.entries) {
 			Item item = new Item(data.uniqueId);
-			item.setDisplayName((Component) VelocityUtils.componentFromString(data.displayName == null ? null : data.displayName.toString(clientVersion)));
+			item.setDisplayName(VelocityUtils.stringToComponent(data.displayName == null ? null : data.displayName.toString(clientVersion)));
 			if (data.gameMode != null) item.setGameMode(data.gameMode.ordinal()-1);
 			item.setLatency(data.latency);
 			item.setProperties((List<Property>) data.skin);
@@ -126,7 +125,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
-	public static PacketPlayOutPlayerInfo fromVelocity(Object velocityPacket){
+	public static PacketPlayOutPlayerInfo readPlayerInfo(Object velocityPacket){
 		if (!(velocityPacket instanceof PlayerListItem)) return null;
 		PlayerListItem list = (PlayerListItem) velocityPacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(list.getAction())];

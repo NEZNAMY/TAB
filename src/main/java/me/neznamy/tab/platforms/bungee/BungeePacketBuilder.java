@@ -138,7 +138,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
-	public static PacketPlayOutPlayerInfo fromBungee(Object bungeePacket, ProtocolVersion clientVersion){
+	public static PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
 		if (!(bungeePacket instanceof PlayerListItem)) return null;
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE"));
