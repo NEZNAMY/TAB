@@ -51,7 +51,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 	private void loadWidthsFromFile() {
 		try {
-			InputStream input = getClass().getClassLoader().getResourceAsStream("resources/widths.txt");
+			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String line;
 			while ((line = br.readLine()) != null) {
