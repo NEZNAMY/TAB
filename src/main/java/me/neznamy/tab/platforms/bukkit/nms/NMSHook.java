@@ -35,7 +35,6 @@ public class NMSHook {
 			"v1_16_R1", "v1_16_R2"
 		);
 	
-	private static Class<?> ChatSerializer;
 	public static Class<?> IChatBaseComponent;
 	private static Field PING;
 	private static Field PLAYER_CONNECTION;
@@ -91,6 +90,7 @@ public class NMSHook {
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);
 			if (minor >= 7) {
+				Class<?> ChatSerializer;
 				try {
 					//v1_8_R2+
 					ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer");
