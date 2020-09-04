@@ -1,12 +1,9 @@
-package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
+package me.neznamy.tab.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 
 /**
  * A helper class for easy management of armor stands of a player
@@ -18,13 +15,10 @@ public class ArmorStandManager {
 	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 	}
+	
 	public void spawn(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
-		for (ArmorStand as : getArmorStands()) {
-			for (PacketPlayOut packet : as.getSpawnPackets(viewer, true)) {
-				viewer.sendCustomBukkitPacket(packet);
-			}
-		}
+		getArmorStands().forEach(a -> a.spawn(viewer, true));
 	}
 
 	public void sneak(boolean sneaking) {
@@ -36,7 +30,7 @@ public class ArmorStandManager {
 	}
 
 	public void teleport(TabPlayer viewer) {
-		getArmorStands().forEach(a -> viewer.sendCustomBukkitPacket(a.getTeleportPacket(viewer)));
+		getArmorStands().forEach(a -> a.teleport(viewer));
 	}
 
 	public void refresh() {
@@ -67,6 +61,7 @@ public class ArmorStandManager {
 		}
 		return false;
 	}
+	
 	public Collection<ArmorStand> getArmorStands(){
 		return new ArrayList<>(armorStands.values());
 	}

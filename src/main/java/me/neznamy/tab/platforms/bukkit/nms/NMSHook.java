@@ -35,7 +35,6 @@ public class NMSHook {
 			"v1_16_R1", "v1_16_R2"
 		);
 	
-	public static  Class<?> EnumChatFormat;
 	private static Class<?> ChatSerializer;
 	public static Class<?> IChatBaseComponent;
 	private static Field PING;
@@ -85,7 +84,6 @@ public class NMSHook {
 			PacketPlayOutEntityMetadata.initializeClass();
 			PacketPlayOutEntityTeleport.initializeClass();
 			PacketPlayOutSpawnEntityLiving.initializeClass();
-			EnumChatFormat = PacketPlayOut.getNMSClass("EnumChatFormat");
 			PING = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("ping");
 			PLAYER_CONNECTION = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
 			NETWORK_MANAGER = PLAYER_CONNECTION.getType().getField("networkManager");

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
+import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TabPlayer;
 
 /**

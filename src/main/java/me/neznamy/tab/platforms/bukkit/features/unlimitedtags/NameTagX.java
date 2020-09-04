@@ -17,6 +17,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.api.ArmorStand;
+import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
@@ -72,8 +74,8 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			if (all.disabledNametag) continue;
 			all.registerTeam();
 			loadArmorStands(all);
-			if (all.getBukkitEntity().getVehicle() != null) {
-				Entity vehicle = all.getBukkitEntity().getVehicle();
+			if (((Entity) all.getPlayer()).getVehicle() != null) {
+				Entity vehicle = ((Entity) all.getPlayer()).getVehicle();
 				List<Integer> list = new ArrayList<Integer>();
 				for (Entity e : getPassengers(vehicle)) {
 					list.add(e.getEntityId());
@@ -127,8 +129,8 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		if (connectedPlayer.disabledNametag) return;
 		connectedPlayer.registerTeam();
 		loadArmorStands(connectedPlayer);
-		if (connectedPlayer.getBukkitEntity().getVehicle() != null) {
-			Entity vehicle = connectedPlayer.getBukkitEntity().getVehicle();
+		if (((Entity) connectedPlayer.getPlayer()).getVehicle() != null) {
+			Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
 			List<Integer> list = new ArrayList<Integer>();
 			for (Entity e : getPassengers(vehicle)) {
 				list.add(e.getEntityId());
@@ -178,11 +180,11 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
-			pl.getArmorStandManager().addArmorStand(line, new ArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new ArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
 	}
@@ -192,7 +194,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		double currentY = -Configs.SECRET_NTX_space;
 		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
-			if (as.property.get().length() != 0) {
+			if (as.getProperty().get().length() != 0) {
 				currentY += Configs.SECRET_NTX_space;
 				as.setOffset(currentY);
 			}
@@ -214,7 +216,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		if (refresh) refreshed.updateTeam();
 		boolean fix = false;
 		for (ArmorStand as : refreshed.getArmorStandManager().getArmorStands()) {
-			if (as.property.update() || force) {
+			if (as.getProperty().update() || force) {
 				as.refresh();
 				fix = true;
 			}

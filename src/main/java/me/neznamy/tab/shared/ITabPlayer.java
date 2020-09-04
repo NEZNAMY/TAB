@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.ArmorStandManager;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
@@ -447,17 +445,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public ProtocolVersion getVersion() {
 		return version;
-	}
-	
-	@Override
-	public void sendCustomBukkitPacket(PacketPlayOut packet) {
-		try {
-			sendPacket(packet.toNMS(getVersion()));
-		} catch (InvocationTargetException e) {
-			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e.getTargetException());
-		} catch (Throwable e) {
-			Shared.errorManager.printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-		}
 	}
 	
 	@Override

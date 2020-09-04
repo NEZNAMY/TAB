@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -162,5 +163,12 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;
+	}
+	
+	public BossBarLine getLine(UUID id) {
+		for (BossBarLine line : lines.values()) {
+			if (line.uuid == id) return line;
+		}
+		return null;
 	}
 }

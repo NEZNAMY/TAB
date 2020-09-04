@@ -2,14 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.UUID;
 
-import org.bukkit.entity.EntityType;
-
-import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
@@ -41,7 +34,7 @@ public class BossBarLine {
 		this.progress = progress;
 		Shared.featureManager.registerFeature("bossbar-text-" + name, new TextRefresher(this));
 		Shared.featureManager.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
+		Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
 	}
 	public boolean hasPermission(ITabPlayer p) {
 		return !permissionRequired || p.hasPermission("tab.bossbar." + name);
@@ -60,32 +53,16 @@ public class BossBarLine {
 		to.setProperty("bossbar-progress-" + name, progress, null);
 		to.setProperty("bossbar-color-" + name, color, null);
 		to.setProperty("bossbar-style-" + name, style, null);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			to.sendCustomPacket(PacketPlayOutBoss.CREATE(
-					uuid, 
-					to.getProperty("bossbar-text-" + name).get(), 
-					(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
-					parseColor(to.getProperty("bossbar-color-" + name).get()), 
-					parseStyle(to.getProperty("bossbar-style-" + name).get())
-				)
-			);
-		} else {
-			PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, ((BossBar_legacy)Shared.featureManager.getFeature("bossbar1.8")).getWitherLocation(to));
-			DataWatcher w = new DataWatcher();
-			w.helper().setEntityFlags((byte) 32);
-			w.helper().setCustomName(to.getProperty("bossbar-text-" + name).get(), to.getVersion());
-			float health = (float)3*parseProgress(to.getProperty("bossbar-progress-" + name).get());
-			if (health == 0) health = 1;
-			w.helper().setHealth(health);
-			packet.setDataWatcher(w);
-			to.sendCustomBukkitPacket(packet);
-		}
+		to.sendCustomPacket(PacketPlayOutBoss.CREATE(
+				uuid, 
+				to.getProperty("bossbar-text-" + name).get(), 
+				(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
+				parseColor(to.getProperty("bossbar-color-" + name).get()), 
+				parseStyle(to.getProperty("bossbar-style-" + name).get())
+			)
+		);
 	}
 	public void remove(ITabPlayer to) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			to.sendCustomPacket(PacketPlayOutBoss.REMOVE(uuid));
-		} else {
-			to.sendCustomBukkitPacket(new PacketPlayOutEntityDestroy(entityId));
-		}
+		to.sendCustomPacket(PacketPlayOutBoss.REMOVE(uuid));
 	}
 }

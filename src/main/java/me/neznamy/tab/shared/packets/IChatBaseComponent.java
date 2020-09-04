@@ -1,12 +1,9 @@
 package me.neznamy.tab.shared.packets;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -24,19 +21,6 @@ public class IChatBaseComponent {
 
 	public static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
 	public static final String EMPTY_TEXT = "{\"text\":\"\"}";
-	private static Class<?> NBTTagCompound;
-	private static Method CraftItemStack_asNMSCopy;
-	private static Method ItemStack_save;
-
-	static {
-		try {
-			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-			NBTTagCompound = Class.forName("net.minecraft.server." + pack + ".NBTTagCompound");
-			CraftItemStack_asNMSCopy = Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class);
-			ItemStack_save = Class.forName("net.minecraft.server." + pack + ".ItemStack").getMethod("save", NBTTagCompound);
-		} catch (Throwable t) {
-		}
-	}
 
 	private String text;
 	private TextColor color;
@@ -198,17 +182,24 @@ public class IChatBaseComponent {
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
-	public IChatBaseComponent onHoverShowItem(ItemStack item) {
-		return onHover(HoverAction.SHOW_ITEM, serialize(item));
-	}
-	private String serialize(ItemStack item) {
+/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
 		try {
-			return ItemStack_save.invoke(CraftItemStack_asNMSCopy.invoke(null, item), NBTTagCompound.getConstructor().newInstance()).toString();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			return "null";
+			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+			return onHover(HoverAction.SHOW_ITEM, Class.forName("net.minecraft.server." + pack + ".ItemStack")
+					.getMethod("save", Class.forName("net.minecraft.server." + pack + ".NBTTagCompound"))
+					.invoke(Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack")
+							.getMethod("asNMSCopy", ItemStack.class).invoke(null, item), 
+							Class.forName("net.minecraft.server." + pack + ".NBTTagCompound")
+							.getConstructor().newInstance()).toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return this;
 		}
+	}*/
+	public IChatBaseComponent onHoverShowItem(String serializedItem) {
+		return onHover(HoverAction.SHOW_ITEM, serializedItem);
 	}
+
 	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
 		JSONObject json = new JSONObject();
 		json.put("id", id.toString());

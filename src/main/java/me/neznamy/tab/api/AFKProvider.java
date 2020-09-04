@@ -1,6 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.placeholders.afk;
-
-import me.neznamy.tab.api.TabPlayer;
+package me.neznamy.tab.api;
 
 /**
  * An interface for hooking into permission plugins for %afk% placeholder

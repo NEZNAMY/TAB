@@ -2,11 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.Set;
 
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
@@ -28,14 +24,7 @@ public class TextRefresher implements Refreshable {
 	@Override
 	public void refresh(ITabPlayer refreshed, boolean force) {
 		if (!refreshed.activeBossBars.contains(line)) return;
-		Property text = refreshed.getProperty("bossbar-text-" + line.name);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, text.updateAndGet()));
-		} else {
-			DataWatcher w = new DataWatcher();
-			w.helper().setCustomName(text.updateAndGet(), refreshed.getVersion());
-			refreshed.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(line.entityId, w));
-		}
+		refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, refreshed.getProperty("bossbar-text-" + line.name).updateAndGet()));
 	}
 
 	@Override

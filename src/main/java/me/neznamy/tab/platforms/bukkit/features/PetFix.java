@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.entity.Player;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutAnimation;
@@ -75,7 +77,7 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 					@Override
 					public void run() {
 						//sending arm animation packet to the client because it does not display with this feature enabled
-						sender.sendCustomBukkitPacket(new PacketPlayOutAnimation(sender.getBukkitEntity().getEntityId(), 0));
+						sender.sendPacket(new PacketPlayOutAnimation(((Player) sender.getPlayer()).getEntityId(), 0));
 					}
 				});
 			}

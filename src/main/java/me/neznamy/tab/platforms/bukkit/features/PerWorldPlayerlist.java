@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -52,7 +53,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	public void unload(){
 		for (TabPlayer p : Shared.getPlayers()) {
 			for (TabPlayer pl : Shared.getPlayers()) {
-				p.getBukkitEntity().showPlayer(pl.getBukkitEntity());
+				((Player) p.getPlayer()).showPlayer((Player) pl.getPlayer());
 			}
 		}
 	}
@@ -76,8 +77,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			public void run() {
 				for (TabPlayer everyone : Shared.getPlayers()){
 					if (everyone == shown) continue;
-					if (shouldSee(shown, everyone)) shown.getBukkitEntity().showPlayer(everyone.getBukkitEntity());
-					if (shouldSee(everyone, shown)) everyone.getBukkitEntity().showPlayer(shown.getBukkitEntity());
+					if (shouldSee(shown, everyone)) ((Player) shown.getPlayer()).showPlayer((Player) everyone.getPlayer());
+					if (shouldSee(everyone, shown)) ((Player) everyone.getPlayer()).showPlayer((Player) shown.getPlayer());
 				}
 			}
 		});
@@ -109,8 +110,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			public void run() {
 				for (TabPlayer everyone : Shared.getPlayers()){
 					if (everyone == hidden) continue;
-					hidden.getBukkitEntity().hidePlayer(everyone.getBukkitEntity());
-					everyone.getBukkitEntity().hidePlayer(hidden.getBukkitEntity());
+					((Player) hidden.getPlayer()).hidePlayer((Player) everyone.getPlayer());
+					((Player) everyone.getPlayer()).hidePlayer((Player) hidden.getPlayer());
 				}
 			}
 		});

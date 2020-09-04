@@ -26,10 +26,9 @@ public class UltraPermissions implements PermissionPlugin {
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
 		UltraPermissionsAPI api = null;
-		if (p instanceof me.neznamy.tab.platforms.bungee.TabPlayer) {
+		if (Shared.platform.getSeparatorType().equals("server")) { //meh solution but whatever
 			api = UltraPermissionsBungee.getAPI();
-		}
-		if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer) {
+		} else {
 			api = me.TechsCode.UltraPermissions.UltraPermissions.getAPI();
 		}
 		if (api == null) {

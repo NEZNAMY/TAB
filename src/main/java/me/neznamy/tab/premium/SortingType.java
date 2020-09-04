@@ -186,8 +186,8 @@ public enum SortingType {
 			if (p.hasPermission("tab.sort." + localgroup)) {
 				chars = getGroupChars(localgroup, p);
 				p.teamNameNote = "Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)";
-				if (p instanceof me.neznamy.tab.platforms.bukkit.TabPlayer && p.getBukkitEntity().isOp()) {
-					p.teamNameNote += ". &c&lThis user is OP and therefore has all permissions.";
+				if (p.hasPermission("random.permission")) {
+					p.teamNameNote += ". &cThis user appears to have all permissions. Is he OP?";
 				}
 				break;
 			}

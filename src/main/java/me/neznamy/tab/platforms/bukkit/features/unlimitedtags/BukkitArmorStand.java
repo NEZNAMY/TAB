@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
+import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
@@ -30,7 +31,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 /**
  * A class representing an armor stand attached to a player (if the feature is enabled)
  */
-public class ArmorStand {
+public class BukkitArmorStand implements ArmorStand {
 
 	private static int idCounter = 2000000000;
 
@@ -44,14 +45,14 @@ public class ArmorStand {
 	private boolean visible;
 
 	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<TabPlayer>());
-	public Property property;
+	private Property property;
 	private boolean staticOffset;
 	private boolean markerFor18x;
 
-	public ArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
+	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
-		player = owner.getBukkitEntity();
+		player = (Player) owner.getPlayer();
 		this.yOffset = yOffset;
 		this.property = property;
 		markerFor18x = ((NameTagX)Shared.featureManager.getFeature("nametagx")).markerFor18x;
@@ -61,6 +62,10 @@ public class ArmorStand {
 	public void refresh() {
 		visible = getVisibility();
 		updateMetadata();
+	}
+	
+	public Property getProperty() {
+		return property;
 	}
 	
 	public boolean hasStaticOffset() {
@@ -75,7 +80,7 @@ public class ArmorStand {
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
+			all.sendPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
 		}
 	}
 	
@@ -95,6 +100,12 @@ public class ArmorStand {
 		}
 	}
 	
+	public void spawn(TabPlayer viewer, boolean addToRegistered) {
+		for (PacketPlayOut packet : getSpawnPackets(viewer, true)) {
+			viewer.sendPacket(packet);
+		}
+	}
+	
 	public PacketPlayOutEntityTeleport getTeleportPacket(TabPlayer viewer) {
 		return new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(viewer));
 	}
@@ -105,13 +116,17 @@ public class ArmorStand {
 	
 	public void destroy(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
-		viewer.sendCustomBukkitPacket(destroyPacket);
+		viewer.sendPacket(destroyPacket);
 	}
 	
 	public void teleport() {
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendCustomBukkitPacket(getTeleportPacket(all));
+			all.sendPacket(getTeleportPacket(all));
 		}
+	}
+	
+	public void teleport(TabPlayer viewer) {
+		viewer.sendPacket(getTeleportPacket(viewer));
 	}
 	
 	public void sneak(boolean sneaking) {
@@ -121,21 +136,21 @@ public class ArmorStand {
 			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendCustomBukkitPacket(destroyPacket);
+					viewer.sendPacket(destroyPacket);
 				} else {
 					for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
-						viewer.sendCustomBukkitPacket(packet);
+						viewer.sendPacket(packet);
 					}
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendCustomBukkitPacket(destroyPacket);
+				viewer.sendPacket(destroyPacket);
 				Runnable spawn = new Runnable() {
 
 					@Override
 					public void run() {
 						for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
-							viewer.sendCustomBukkitPacket(packet);
+							viewer.sendPacket(packet);
 						}
 					}
 				};
@@ -150,7 +165,7 @@ public class ArmorStand {
 	}
 	
 	public void destroy() {
-		for (TabPlayer all : Shared.getPlayers()) all.sendCustomBukkitPacket(destroyPacket);
+		for (TabPlayer all : Shared.getPlayers()) all.sendPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
 	
@@ -163,7 +178,7 @@ public class ArmorStand {
 	
 	private void updateMetadata() {
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			viewer.sendCustomBukkitPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
+			viewer.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
 		}
 	}
 	
@@ -227,7 +242,7 @@ public class ArmorStand {
 		if (displayName == null) displayName = "";
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
-		boolean visible = (isNameVisiblyEmpty(displayName) || !viewer.getBukkitEntity().canSee(player)) ? false : this.visible;
+		boolean visible = (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player)) ? false : this.visible;
 		datawatcher.helper().setCustomNameVisible(visible);
 
 		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);

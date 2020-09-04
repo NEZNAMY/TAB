@@ -44,7 +44,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(ITabPlayer p) {
-				return p.getBungeeEntity().getDisplayName();
+				return ((ProxiedPlayer) p.getPlayer()).getDisplayName();
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {

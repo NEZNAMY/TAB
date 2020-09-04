@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.placeholders.afk;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
+import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
@@ -16,6 +18,6 @@ public class Essentials implements AFKProvider {
 	}
 	@Override
 	public boolean isAFK(TabPlayer p) {
-		return essentials.getUser(p.getBukkitEntity()).isAfk();
+		return essentials.getUser((Player) p.getPlayer()).isAfk();
 	}
 }

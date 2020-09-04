@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.bukkit.entity.Player;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -91,7 +93,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			}
 			if (attacked != null && attacked != sender) {
-				PacketPlayInUseEntity_ENTITY.set(packet, attacked.getBukkitEntity().getEntityId());
+				PacketPlayInUseEntity_ENTITY.set(packet, ((Player) attacked.getPlayer()).getEntityId());
 			}
 		}
 		return packet;

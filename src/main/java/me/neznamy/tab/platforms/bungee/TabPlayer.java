@@ -91,7 +91,7 @@ public class TabPlayer extends ITabPlayer {
 	}
 	
 	@Override
-	public ProxiedPlayer getBungeeEntity() {
+	public ProxiedPlayer getPlayer() {
 		return player;
 	}
 	

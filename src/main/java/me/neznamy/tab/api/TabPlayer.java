@@ -2,13 +2,9 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * An interface representing a player
@@ -161,41 +157,11 @@ public interface TabPlayer {
 	public ProtocolVersion getVersion();
 	
 	/**
-	 * Returns the bukkit player
-	 * @return an instance of org.bukkit.entity.Player
-	 * @throws IllegalStateException if called from bungeecord/velocity
+	 * Returns platform-specific entity
+	 * @return an instance of bukkit/bungee/velocity player depending on platform
 	 * @since 2.8.5
 	 */
-	public default Player getBukkitEntity(){
-		throw new IllegalStateException("Wrong platform");
-	}
-	
-	/**
-	 * Returns the bungee player
-	 * @return an instance of net.md-5.bungee.api.connection.ProxiedPlayer
-	 * @throws IllegalStateException if called from bukkit/velocity
-	 * @since 2.8.5
-	 */
-	public default ProxiedPlayer getBungeeEntity(){
-		throw new IllegalStateException("Wrong platform");
-	}
-	
-	/**
-	 * Returns the velocity player
-	 * @return an instance of com.velocitypowered.api.proxy.Player
-	 * @throws IllegalStateException if called from bukkit/bungeecord
-	 * @since 2.8.5
-	 */
-	public default com.velocitypowered.api.proxy.Player getVelocityEntity(){
-		throw new IllegalStateException("Wrong platform");
-	}
-	
-	/**
-	 * Sends the player a packet represented by a custom class
-	 * @param packet - an instance of me.neznamy.tab.platforms.bukkit.packets.PacketPlayOut
-	 * @since 2.8.5
-	 */
-	public void sendCustomBukkitPacket(PacketPlayOut packet);
+	public Object getPlayer();
 	
 	/**
 	 * Returns player's current world name (server on bungeecord)
@@ -219,6 +185,13 @@ public interface TabPlayer {
 	 * @since 2.8.5
 	 */
 	public void sendCustomPacket(UniversalPacketPlayOut packet);
+	
+	/**
+	 * Sends the player a platform-specific packet
+	 * @param packet - an instance packet depending on platform
+	 * @since 2.8.5
+	 */
+	public void sendPacket(Object packet);
 	
 	/**
 	 * Returns player's property by name

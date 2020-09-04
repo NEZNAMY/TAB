@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.placeholders.afk;
 
+import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TabPlayer;
 
 /**

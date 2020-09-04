@@ -53,7 +53,7 @@ public class TabPlayer extends ITabPlayer{
 	}
 	
 	@Override
-	public Player getVelocityEntity() {
+	public Player getPlayer() {
 		return player;
 	}
 }

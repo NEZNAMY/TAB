@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -37,9 +36,6 @@ public enum EnumChatFormat {
 	//characer representing the color
 	private char character;
 	
-	//an instance of n.m.s.EnumChatFormat
-	private Object nmsEquivalent;
-	
 	//red value of this color
 	private int red;
 	
@@ -56,11 +52,9 @@ public enum EnumChatFormat {
 		blue = hexColor & 0xFF;
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;
-		if (NMSHook.EnumChatFormat != null) this.nmsEquivalent = Enum.valueOf((Class<Enum>)NMSHook.EnumChatFormat, toString());
 	}
 	
 	/**
@@ -69,14 +63,6 @@ public enum EnumChatFormat {
 	 */
 	public int getNetworkId() {
 		return networkId;
-	}
-	
-	/**
-	 * Returns NMS EnumChatFormat with the same value
-	 * @return NMS equivalent
-	 */
-	public Object toNMS() {
-		return nmsEquivalent;
 	}
 	
 	/**

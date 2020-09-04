@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,6 +52,9 @@ import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
@@ -175,7 +179,63 @@ public class BukkitMethods implements PlatformMethods {
 			if (!usedExpansions.contains(plugin) && !plugin.equals("rel")) {
 				usedExpansions.add(plugin);
 			}
-			PlaceholderManager.getInstance().registerPAPIPlaceholder(identifier);
+			PlaceholderManager pl = PlaceholderManager.getInstance();
+			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
+				Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.serverPlaceholderRefreshIntervals.get(identifier));
+				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, pl.serverPlaceholderRefreshIntervals.get(identifier)){
+					public String get() {
+						return PluginHooks.setPlaceholders((UUID)null, identifier);
+					}
+				}, true);
+				return;
+			}
+			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
+				Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.playerPlaceholderRefreshIntervals.get(identifier));
+				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, pl.playerPlaceholderRefreshIntervals.get(identifier)){
+					public String get(ITabPlayer p) {
+						return PluginHooks.setPlaceholders((Player) p.getPlayer(), identifier);
+					}
+				}, true);
+				return;
+			}
+			if (pl.relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
+				Shared.debug("Registering RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.relationalPlaceholderRefreshIntervals.get(identifier));
+				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.relationalPlaceholderRefreshIntervals.get(identifier)) {
+
+					@Override
+					public String get(ITabPlayer viewer, ITabPlayer target) {
+						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
+					}
+				});
+				return;
+			}
+			if (identifier.contains("%rel_")) {
+				Shared.debug("Registering unlisted RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.defaultRefresh);
+				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.defaultRefresh) {
+
+					@Override
+					public String get(ITabPlayer viewer, ITabPlayer target) {
+						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
+					}
+				});
+			} else {
+				if (identifier.startsWith("%server_")) {
+					Shared.debug("Registering unlisted SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.defaultRefresh);
+					Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, pl.defaultRefresh){
+						public String get() {
+							return PluginHooks.setPlaceholders((UUID)null, identifier);
+						}
+					}, true);
+				} else {
+					int cooldown = identifier.startsWith("%cmi_") ? pl.defaultRefresh * 10 : pl.defaultRefresh; //inefficient plugin
+					Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
+					Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+						public String get(ITabPlayer p) {
+							return PluginHooks.setPlaceholders(p == null ? null : (Player) p.getPlayer(), identifier);
+						}
+					}, true);
+				}
+			}
 		}
 	}
 

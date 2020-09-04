@@ -9,29 +9,39 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BukkitPacketBuilder implements PacketBuilder {
+
+	public static Class<Enum> EnumChatFormat_;
 
 	//PacketPlayOutBoss
 	private static Class<?> PacketPlayOutBoss;
@@ -127,6 +137,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	public static void initializeClass() throws Exception {
 		//Initializing classes
+		EnumChatFormat_ = (Class<Enum>) getNMSClass("EnumChatFormat");
 		try {
 			//1.7+
 			PacketPlayOutChat = getNMSClass("PacketPlayOutChat");
@@ -322,25 +333,59 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
-		Object nmsPacket = newPacketPlayOutBoss.newInstance();
-		PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
-		PacketPlayOutBoss_ACTION.set(nmsPacket, Enum.valueOf((Class<Enum>)PacketPlayOutBoss_Action, packet.operation.toString()));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			//1.9+ server
+			Object nmsPacket = newPacketPlayOutBoss.newInstance();
+			PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
+			PacketPlayOutBoss_ACTION.set(nmsPacket, Enum.valueOf((Class<Enum>)PacketPlayOutBoss_Action, packet.operation.toString()));
+			if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
+				PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
+			}
+			if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
+				PacketPlayOutBoss_NAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+			}
+			if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
+				PacketPlayOutBoss_COLOR.set(nmsPacket, Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
+				PacketPlayOutBoss_STYLE.set(nmsPacket, Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
+			}
+			if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
+				PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
+				PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
+				PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
+			}
+			return nmsPacket;
+		}
+		if (clientVersion.getMinorVersion() >= 9 && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+			//TODO send packet using viaversion API
+		}
+		
+		//<1.9 client and server
+		if (packet.operation == Action.UPDATE_STYLE) return null; //nothing to do here
+		
+		int entityId = ((BossBar)Shared.featureManager.getFeature("bossbar")).getLine(packet.id).entityId;
+		if (packet.operation == Action.REMOVE) {
+			return new PacketPlayOutEntityDestroy(entityId).toNMS(clientVersion);
+		}
+		DataWatcher w = new DataWatcher();
 		if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
+			float health = (float)300*packet.pct;
+			if (health == 0) health = 1;
+			w.helper().setHealth(health);
 		}
 		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_NAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+			w.helper().setCustomName(packet.name, clientVersion);
 		}
 		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_COLOR.set(nmsPacket, Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
-			PacketPlayOutBoss_STYLE.set(nmsPacket, Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
+			//shrug
 		}
-		if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
-			PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
-			PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
+		if (packet.operation == Action.ADD) {
+			w.helper().setEntityFlags((byte) 32);
+			PacketPlayOutSpawnEntityLiving spawn = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0));
+			spawn.setDataWatcher(w);
+			return spawn.toNMS(clientVersion);
+		} else {
+			return new PacketPlayOutEntityMetadata(entityId, w).toNMS(clientVersion);
 		}
-		return packet;
 	}
 
 	@Override
@@ -465,7 +510,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
 			if (prefix != null && prefix.length() > 0) PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(prefix).toString(clientVersion)));
 			if (suffix != null && suffix.length() > 0) PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(suffix).toString(clientVersion)));
-			PacketPlayOutScoreboardTeam_CHATFORMAT.set(nmsPacket, packet.color != null ? packet.color.toNMS() : EnumChatFormat.lastColorsOf(prefix).toNMS());
+			EnumChatFormat format = packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(prefix);
+			PacketPlayOutScoreboardTeam_CHATFORMAT.set(nmsPacket, Enum.valueOf((Class<Enum>)EnumChatFormat_, format.toString()));
 		} else {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, packet.name);
 			PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
@@ -492,7 +538,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		return list;
 	}
-	
+
 	public static PacketPlayOutPlayerInfo fromNMS(Object nmsPacket) throws Exception{
 		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {

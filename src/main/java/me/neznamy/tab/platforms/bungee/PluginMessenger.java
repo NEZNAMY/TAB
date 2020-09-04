@@ -37,7 +37,7 @@ public class PluginMessenger implements Listener {
 			if (Shared.getPlayers().isEmpty()) return;
 			player = Shared.getPlayers().toArray(new ITabPlayer[0])[0];
 		}
-		player.getBungeeEntity().getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
+		((ProxiedPlayer) player.getPlayer()).getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
 	}
 	@EventHandler
 	public void on(PluginMessageEvent event){

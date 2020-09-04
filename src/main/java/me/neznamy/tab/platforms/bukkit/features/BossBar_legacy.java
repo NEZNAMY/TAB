@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -38,7 +39,7 @@ public class BossBar_legacy implements Listener, Loadable {
 			public void run() {
 				for (ITabPlayer all : Shared.getPlayers()) {
 					for (BossBarLine l : all.activeBossBars) {
-						all.sendCustomBukkitPacket(new PacketPlayOutEntityTeleport(l.entityId, getWitherLocation(all)));
+						all.sendPacket(new PacketPlayOutEntityTeleport(l.entityId, getWitherLocation(all)));
 					}
 				}
 			}
@@ -60,7 +61,8 @@ public class BossBar_legacy implements Listener, Loadable {
 		}
 	}
 	public Location getWitherLocation(ITabPlayer p) {
-		Location loc = p.getBukkitEntity().getEyeLocation().add(p.getBukkitEntity().getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+		Player pl = (Player) p.getPlayer();
+		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
 	}

@@ -43,7 +43,7 @@ public class PluginHooks {
 	public static String setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
-			return PlaceholderAPI.setRelationalPlaceholders(viewer.getBukkitEntity(), target.getBukkitEntity(), placeholder);
+			return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), placeholder);
 		} catch (Throwable t) {
 			Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 			if (papi != null) {

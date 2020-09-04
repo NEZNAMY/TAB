@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared;
 
-import org.bukkit.Bukkit;
-
 /**
  * Enum class representing all possibly used protocol versions
  */
@@ -69,12 +67,7 @@ public enum ProtocolVersion {
 		this.networkId = networkId;
 		this.friendlyName = friendlyName;
 		if (toString().equals("UNKNOWN")) {
-			try {
-				minorVersion = Integer.parseInt(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].split("_")[1]);
-			} catch (Throwable t) {
-				//bungee, velocity
-				minorVersion = 16;
-			}
+			minorVersion = 16;
 		} else {
 			minorVersion = Integer.parseInt(toString().split("_")[1]);
 		}
@@ -102,6 +95,15 @@ public enum ProtocolVersion {
 	 */
 	public int getMinorVersion() {
 		return minorVersion;
+	}
+	
+	/**
+	 * Changes minor version of this version
+	 * Only called in bukkit main class to handle unknown server versions better
+	 * @param minorVersion
+	 */
+	public void setMinorVersion(int minorVersion) {
+		this.minorVersion = minorVersion;
 	}
 
 	/**
