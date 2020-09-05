@@ -20,20 +20,21 @@ public class CpuCommand extends SubCommand {
 
 	private final DecimalFormat decimal3 = new DecimalFormat("#.###");
 	
-	private final String SEPARATOR = "&8&l•&8&m                                                    ";
-	private final String HEADER_FOOTER = "&8&l•&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ";
-	private final String TITLE = "&8&l• &6CPU stats from the last minute";
-	private final String PLACEHOLDERS_TITLE = "&8&l• &6Placeholders:";
-	private final String PLACEHOLDER_LINE = "&8&l• &7%identifier% - %usage%%";
-	private final String BUKKIT_BRIDGE_TITLE = "&8&l• &6Placeholder usage on Bukkit servers:";
-	private final String BUKKIT_BRIDGE_TITLE_LINE = "&8&l• &7%identifier% - %usage%%";
-	private final String FEATURES_TITLE = "&8&l• &6Features:";
-	private final String FEATURE_NAME = "&8&l• &7%name%:";
-	private final String FEATURE_LINE = "&8&l•     &7%category% - %usage%%";
-	private final String PLACEHOLDERS_TOTAL = "&8&l• &6&lPlaceholders Total: &a&l%total%%";
-	private final String BRIDGE_PLACEHOLDERS_TOTAL = "&8&l• &6&lBukkit bridge placeholders Total: &a&l%total%%";
-	private final String PLUGIN_INTERNALS = "&8&l• &6&lPlugin internals: &a&l%total%%";
-	private final String TOTAL = "&8&l• &6&lTotal: &e&l%total%%";
+	private final char LINE_CHAR = (char)9553;
+	private final String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
+	private final String HEADER_FOOTER = "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ";
+	private final String TITLE = "&8&l" + LINE_CHAR + " &6CPU stats from the last minute";
+	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders:";
+	private final String PLACEHOLDER_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
+	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
+	private final String BUKKIT_BRIDGE_TITLE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
+	private final String FEATURES_TITLE = "&8&l" + LINE_CHAR + " &6Features:";
+	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name%:";
+	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
+	private final String PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%total%%";
+	private final String BRIDGE_PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lBukkit bridge placeholders Total: &a&l%total%%";
+	private final String PLUGIN_INTERNALS = "&8&l" + LINE_CHAR + " &6&lPlugin internals: &a&l%total%%";
+	private final String TOTAL = "&8&l" + LINE_CHAR + " &6&lTotal: &e&l%total%%";
 	
 	public CpuCommand() {
 		super("cpu", "tab.cpu");
