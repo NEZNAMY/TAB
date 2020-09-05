@@ -44,7 +44,7 @@ public class DataWatcherItem {
 	}
 	public static DataWatcherItem fromNMS(Object nmsItem) throws Exception{
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			DataWatcherObject object = me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
+			DataWatcherObject object = DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
 			Object value = getValue(nmsItem, "b");
 			return new DataWatcherItem(object, value);
 		} else {

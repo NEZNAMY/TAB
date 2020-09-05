@@ -116,8 +116,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	//PacketPlayOutPlayerInfo
 	private static Class<?> PacketPlayOutPlayerInfo;
-	private static Class<Enum> EnumGamemode;
-	private static Class<Enum> EnumPlayerInfoAction;
+	private static Class<Enum> EnumGamemode_;
+	private static Class<Enum> EnumPlayerInfoAction_;
 	private static Class<?> PlayerInfoData;
 	private static Constructor<?> newPacketPlayOutPlayerInfo0;
 	private static Constructor<?> newPacketPlayOutPlayerInfo2;
@@ -262,26 +262,26 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			//PacketPlayOutPlayerInfo
 			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
 			try {
-				EnumGamemode = (Class<Enum>) getNMSClass("EnumGamemode");
+				EnumGamemode_ = (Class<Enum>) getNMSClass("EnumGamemode");
 			} catch (ClassNotFoundException e) {
 				//v1_8_R2 - v1_9_R2
-				EnumGamemode = (Class<Enum>) getNMSClass("WorldSettings$EnumGamemode");
+				EnumGamemode_ = (Class<Enum>) getNMSClass("WorldSettings$EnumGamemode");
 			}
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				//1.8+
 				try {
 					//v1_8_R2+
-					EnumPlayerInfoAction = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+					EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 					PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
 				} catch (ClassNotFoundException e) {
 					//v1_8_R1
-					EnumPlayerInfoAction = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
+					EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
 					PlayerInfoData = getNMSClass("PlayerInfoData");
 				}
-				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Iterable.class);
+				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
 				GameProfile = Class.forName("com.mojang.authlib.GameProfile");
 				PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
-				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode, NMSHook.IChatBaseComponent);
+				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
 				(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
 				(PlayerInfoData_PING = PlayerInfoData.getDeclaredField("b")).setAccessible(true);
@@ -445,12 +445,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Object nmsPacket = newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(EnumPlayerInfoAction, packet.action.toString()), Collections.EMPTY_LIST);
+			Object nmsPacket = newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(EnumPlayerInfoAction_, packet.action.toString()), Collections.EMPTY_LIST);
 			List<Object> items = new ArrayList<Object>();
 			for (PlayerInfoData data : packet.entries) {
 				Object profile = newGameProfile.newInstance(data.uniqueId, data.name);
 				if (data.skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), data.skin);
-				items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode, data.gameMode.toString()), 
+				items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
 						data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
 			}
 			PacketPlayOutPlayerInfo_PLAYERS.set(nmsPacket, items);
@@ -576,12 +576,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception{
 		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			EnumPlayerInfoAction action = me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
+			EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 			for (Object nmsData : (List) PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
 				int ping = PlayerInfoData_PING.getInt(nmsData);
 				Object nmsGamemode = PlayerInfoData_GAMEMODE.get(nmsData);
-				EnumGamemode gamemode = nmsGamemode == null ? null : me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode.valueOf(nmsGamemode.toString());
+				EnumGamemode gamemode = nmsGamemode == null ? null : EnumGamemode.valueOf(nmsGamemode.toString());
 				Object profile = PlayerInfoData_PROFILE.get(nmsData);
 				Object nmsComponent = PlayerInfoData_LISTNAME.get(nmsData);
 				IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
@@ -590,9 +590,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			return new PacketPlayOutPlayerInfo(action, listData);
 		} else {
 
-			EnumPlayerInfoAction action = me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction.values()[(PacketPlayOutPlayerInfo_ACTION.getInt(nmsPacket))];
+			EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(PacketPlayOutPlayerInfo_ACTION.getInt(nmsPacket))];
 			int ping = PlayerInfoData_PING.getInt(nmsPacket);
-			EnumGamemode gamemode = me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode.values()[PlayerInfoData_GAMEMODE.getInt(nmsPacket)+1];
+			EnumGamemode gamemode = EnumGamemode.values()[PlayerInfoData_GAMEMODE.getInt(nmsPacket)+1];
 			Object profile = PlayerInfoData_PROFILE.get(nmsPacket);
 			IChatBaseComponent listName = IChatBaseComponent.fromColoredText((String) PlayerInfoData_LISTNAME.get(nmsPacket));
 			PlayerInfoData data = new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
