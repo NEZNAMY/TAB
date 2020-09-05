@@ -85,6 +85,7 @@ public class TabPlayer extends ITabPlayer {
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
+		if (!player.isOnline()) return;
 		if (nmsPacket != null) {
 			try {
 				if (nmsPacket instanceof PacketPlayOut) {
