@@ -389,6 +389,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			case UPDATE_PROPERTIES:
 				Type.BYTE.write(buf, packet.getFlags());
 				break;
+			default:
+				break;
 			}
 			return buf;
 		}
@@ -408,9 +410,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
 			w.helper().setCustomName(packet.name, clientVersion);
-		}
-		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-			//shrug
 		}
 		if (packet.operation == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
