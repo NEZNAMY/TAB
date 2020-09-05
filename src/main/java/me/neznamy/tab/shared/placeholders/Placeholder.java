@@ -24,15 +24,13 @@ public abstract class Placeholder {
 		this.identifier = identifier;
 		this.cooldown = cooldown;
 		if (Premium.is()) {
-			replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
-			Map<String, Object> colored = new HashMap<>();
-			for (Entry<String, Object> entry : replacements.entrySet()) {
-				colored.put(entry.getKey().replace('&', Placeholders.colorChar), entry.getValue());
+			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+			for (Entry<Object, Object> entry : original.entrySet()) {
+				replacements.put(entry.getKey().toString().replace('&', Placeholders.colorChar), entry.getValue());
 				for (String id : Placeholders.detectAll(entry.getValue()+"")) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
 			}
-			replacements = colored;
 		}
 	}
 	public String getIdentifier() {
