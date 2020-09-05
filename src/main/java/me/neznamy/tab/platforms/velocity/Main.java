@@ -22,11 +22,12 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import net.kyori.adventure.text.TextComponent;
 
 /**
  * Main class for Velocity platform
@@ -59,28 +60,8 @@ public class Main {
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
 			public void execute(CommandSource sender, String[] args) {
 				if (Shared.disabled) {
-					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
-						if (sender.hasPermission("tab.reload")) {
-							Shared.unload();
-							Shared.load(false);
-							if (Shared.disabled) {
-								if (sender instanceof Player) {
-									sender.sendMessage(VelocityUtils.asColoredComponent(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
-								}
-							} else {
-								sender.sendMessage(VelocityUtils.asColoredComponent(Configs.reloaded));
-							}
-						} else {
-							sender.sendMessage(VelocityUtils.asColoredComponent(Configs.no_perm));
-						}
-					} else {
-						if (sender.hasPermission("tab.admin")) {
-							sender.sendMessage(VelocityUtils.asColoredComponent("&m                                                                                "));
-							sender.sendMessage(VelocityUtils.asColoredComponent(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
-							sender.sendMessage(VelocityUtils.asColoredComponent(" &8>> &3&l/tab reload"));
-							sender.sendMessage(VelocityUtils.asColoredComponent("      - &7Reloads plugin and config"));
-							sender.sendMessage(VelocityUtils.asColoredComponent("&m                                                                                "));
-						}
+					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+						sender.sendMessage(TextComponent.of(Placeholders.color(message)));
 					}
 				} else {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);

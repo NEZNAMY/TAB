@@ -13,7 +13,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
@@ -54,28 +53,8 @@ public class Main extends Plugin {
 
 			public void execute(CommandSender sender, String[] args) {
 				if (Shared.disabled) {
-					if (args.length == 1 && args[0].toLowerCase().equals("reload")) {
-						if (sender.hasPermission("tab.reload")) {
-							Shared.unload();
-							Shared.load(false);
-							if (Shared.disabled) {
-								if (sender instanceof ProxiedPlayer) {
-									sender.sendMessage(Placeholders.color(Configs.reloadFailed.replace("%file%", Shared.brokenFile)));
-								}
-							} else {
-								sender.sendMessage(Placeholders.color(Configs.reloaded));
-							}
-						} else {
-							sender.sendMessage(Placeholders.color(Configs.no_perm));
-						}
-					} else {
-						if (sender.hasPermission("tab.admin")) {
-							sender.sendMessage(Placeholders.color("&m                                                                                "));
-							sender.sendMessage(Placeholders.color(" &c&lPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + ")"));
-							sender.sendMessage(Placeholders.color(" &8>> &3&l/tab reload"));
-							sender.sendMessage(Placeholders.color("      - &7Reloads plugin and config"));
-							sender.sendMessage(Placeholders.color("&m                                                                                "));
-						}
+					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+						sender.sendMessage(Placeholders.color(message));
 					}
 				} else {
 					Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
