@@ -4,7 +4,10 @@ import java.io.File;
 
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * An interface with methods that are called in universal code, but require platform-specific API calls
@@ -108,5 +111,20 @@ public interface PlatformMethods {
 		if (Placeholders.allUsedPlaceholderIdentifiers.contains(from)) {
 			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
 		}
+	}
+	
+	public default String replaceAllPlaceholders(String string, ITabPlayer sender) {
+		for (Placeholder p : Placeholders.getAllPlaceholders()) {
+			if (string.contains(p.getIdentifier())) {
+				if (p instanceof ServerPlaceholder) {
+					((ServerPlaceholder)p).update();
+				}
+				if (p instanceof PlayerPlaceholder) {
+					((PlayerPlaceholder)p).update(sender);
+				}
+				string = p.set(string, sender);
+			}
+		}
+		return string;
 	}
 }

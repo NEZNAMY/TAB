@@ -51,6 +51,7 @@ import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -414,5 +415,22 @@ public class BukkitMethods implements PlatformMethods {
 	@Override
 	public File getDataFolder() {
 		return plugin.getDataFolder();
+	}
+	
+	@Override
+	public String replaceAllPlaceholders(String string, ITabPlayer sender) {
+		for (Placeholder p : Placeholders.getAllPlaceholders()) {
+			if (string.contains(p.getIdentifier())) {
+				if (p instanceof ServerPlaceholder) {
+					((ServerPlaceholder)p).update();
+				}
+				if (p instanceof PlayerPlaceholder) {
+					((PlayerPlaceholder)p).update(sender);
+				}
+				string = p.set(string, sender);
+			}
+		}
+		string = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), string);
+		return string;
 	}
 }
