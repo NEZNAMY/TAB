@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 
-	private static Class<?> PacketPlayOutEntityTeleport;
 	private static Constructor<?> newPacketPlayOutEntityTeleport;
 	private static Field ENTITYID;
 	private static Field X;
@@ -25,6 +24,7 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 	private Location location;
 	
 	public static void initializeClass() throws Exception {
+		Class<?> PacketPlayOutEntityTeleport;
 		try {
 			//1.7+
 			PacketPlayOutEntityTeleport = getNMSClass("PacketPlayOutEntityTeleport");

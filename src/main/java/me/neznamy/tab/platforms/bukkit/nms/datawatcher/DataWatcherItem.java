@@ -8,14 +8,13 @@ import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcherItem {
 
-
-	private static Class<?> DataWatcherItem;
 	private static Constructor<?> newDataWatcherItem;
 	
 	public DataWatcherObject type;
 	public Object value;
 
 	public static void initializeClass() throws Exception {
+		Class<?> DataWatcherItem;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			//1.9+
 			DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$Item");

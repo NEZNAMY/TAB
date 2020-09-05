@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutAnimation extends PacketPlayOut {
 
-	private static Class<?> PacketPlayOutAnimation;
 	private static Constructor<?> newPacketPlayOutAnimation;
 	private static Field PacketPlayOutAnimation_ENTITYID;
 	private static Field PacketPlayOutAnimation_ANIMATIONTYPE;
@@ -19,6 +18,7 @@ public class PacketPlayOutAnimation extends PacketPlayOut {
 	private int animationType;
 	
 	public static void initializeClass() throws Exception {
+		Class<?> PacketPlayOutAnimation;
 		try {
 			//1.7+
 			PacketPlayOutAnimation = getNMSClass("PacketPlayOutAnimation");
