@@ -29,7 +29,7 @@ public class CpuCommand extends SubCommand {
 	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
 	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String FEATURES_TITLE = "&8&l" + LINE_CHAR + " &6Features:";
-	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name%:";
+	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name% (%usage%%&7):";
 	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
 	private final String PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%total%%";
 	private final String BRIDGE_PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lBukkit bridge placeholders Total: &a&l%total%%";
@@ -86,7 +86,11 @@ public class CpuCommand extends SubCommand {
 		}
 		sendMessage(sender, FEATURES_TITLE);
 		for (Entry<TabFeature, Map<UsageType, Float>> entry : features.entrySet()) {
-			sendMessage(sender, FEATURE_NAME.replace("%name%", entry.getKey().toString()));
+			float featureTotal = 0;
+			for (Float f : entry.getValue().values()) {
+				featureTotal += f;
+			}
+			sendMessage(sender, FEATURE_NAME.replace("%name%", entry.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(featureTotal))));
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
 				sendMessage(sender, FEATURE_LINE.replace("%category%", type.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(type.getValue()))));
 			}
