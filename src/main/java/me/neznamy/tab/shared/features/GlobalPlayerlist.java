@@ -63,10 +63,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (spyServers.contains(displayed.getWorldName()) && !spyServers.contains(viewer.getWorldName())) {
 			return false;
 		}
-		if (viewerServerGroup.equals(displayedServerGroup)) {
-			return true;
-		}
-		return false;
+		return viewerServerGroup.equals(displayedServerGroup);
 	}
 	
 	@Override
