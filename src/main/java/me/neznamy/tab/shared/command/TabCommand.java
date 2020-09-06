@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
 import me.neznamy.tab.shared.command.level1.BossBarCommand;
 import me.neznamy.tab.shared.command.level1.CpuCommand;
+import me.neznamy.tab.shared.command.level1.CpuTestCommand;
 import me.neznamy.tab.shared.command.level1.DebugCommand;
 import me.neznamy.tab.shared.command.level1.GroupCommand;
 import me.neznamy.tab.shared.command.level1.NTPreviewCommand;
@@ -31,6 +32,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new AnnounceCommand());
 		registerSubCommand(new BossBarCommand());
 		registerSubCommand(new CpuCommand());
+		registerSubCommand(new CpuTestCommand());
 		registerSubCommand(new DebugCommand());
 		registerSubCommand(new GroupCommand());
 		registerSubCommand(new NTPreviewCommand());
