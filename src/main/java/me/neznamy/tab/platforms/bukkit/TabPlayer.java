@@ -118,9 +118,13 @@ public class TabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean getTeamPush() {
-		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return false;
-		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return false; 
-		return Configs.getCollisionRule(world);
+		return !isDisguised() && Configs.getCollisionRule(world);
+	}
+	
+	public boolean isDisguised() {
+		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return true;
+		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return true;
+		return false;
 	}
 
 	@Override
