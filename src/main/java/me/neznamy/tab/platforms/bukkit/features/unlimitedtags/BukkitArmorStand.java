@@ -184,6 +184,7 @@ public class BukkitArmorStand implements ArmorStand {
 	
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
+		if (((me.neznamy.tab.platforms.bukkit.TabPlayer)owner).isDisguised()) return false;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
 	
