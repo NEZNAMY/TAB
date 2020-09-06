@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
@@ -112,17 +110,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(((Player) p.getPlayer()).getHealth())+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%fullhealth%", 100) {
-			public String get(ITabPlayer p) {
-				double absorption = 0;
-				for (PotionEffect pe : ((Player) p.getPlayer()).getActivePotionEffects()) {
-					if (pe.getType().equals(PotionEffectType.ABSORPTION)) {
-						absorption = pe.getAmplifier() * 2 + 2;
-					}
-				}
-				return (int) Math.ceil(((Player) p.getPlayer()).getHealth() + absorption)+"";
 			}
 		});
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
