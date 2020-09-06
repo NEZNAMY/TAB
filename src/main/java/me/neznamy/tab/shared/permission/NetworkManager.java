@@ -14,16 +14,18 @@ import nl.chimpgamer.networkmanager.api.models.permissions.Group;
 public class NetworkManager implements PermissionPlugin {
 
 	private NetworkManagerPlugin plugin;
+	private String version;
 
-	public NetworkManager(Object plugin) {
-		this.plugin = (NetworkManagerPlugin) plugin;
+	public NetworkManager(NetworkManagerPlugin plugin, String version) {
+		this.plugin = plugin;
+		this.version = version;
 	}
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		Group group = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getPrimaryGroup();
 		if (group == null) {
-			return Shared.errorManager.printError("null", "NetworkManager returned null primary group for " + p.getName());
+			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null primary group for " + p.getName());
 		}
 		return group.getName();
 	}
@@ -35,5 +37,10 @@ public class NetworkManager implements PermissionPlugin {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
 	}
 }

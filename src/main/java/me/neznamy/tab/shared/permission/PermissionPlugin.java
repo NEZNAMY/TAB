@@ -9,6 +9,7 @@ public interface PermissionPlugin {
 
 	public String getPrimaryGroup(TabPlayer p) throws Throwable;
 	public String[] getAllGroups(TabPlayer p) throws Throwable;
+	public String getVersion();
 	
 	public default String getName() {
 		return getClass().getSimpleName();

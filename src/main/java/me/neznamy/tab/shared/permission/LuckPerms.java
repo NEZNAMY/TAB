@@ -37,7 +37,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
-			Shared.errorManager.printError("LuckPerms v" + version + "returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
+			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
 			return new String[] {"null"};
 		}
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
@@ -65,5 +65,10 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		}
 		String suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
 		return suffix == null ? "" : suffix;
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
 	}
 }

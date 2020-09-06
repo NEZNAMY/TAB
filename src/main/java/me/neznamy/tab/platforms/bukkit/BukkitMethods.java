@@ -58,6 +58,7 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 /**
  * Bukkit implementation of PlatformMethods
@@ -76,15 +77,15 @@ public class BukkitMethods implements PlatformMethods {
 		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
 			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
-			return new PermissionsEx();
+			return new PermissionsEx(Bukkit.getPluginManager().getPlugin("PermissionsEx").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
-			return new GroupManager();
+			return new GroupManager(Bukkit.getPluginManager().getPlugin("GroupManager").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
-			return new UltraPermissions();
+			return new UltraPermissions(Bukkit.getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
-			return new NetworkManager(Bukkit.getPluginManager().getPlugin("NetworkManager"));
+			return new NetworkManager((NetworkManagerPlugin) Bukkit.getPluginManager().getPlugin("NetworkManager"), Bukkit.getPluginManager().getPlugin("NetworkManager").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider());
+			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider(), Bukkit.getPluginManager().getPlugin("Vault").getDescription().getVersion());
 		} else {
 			return new None();
 		}

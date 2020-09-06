@@ -10,6 +10,11 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
  */
 public class PermissionsEx implements PermissionPlugin {
 
+	private String version;
+	
+	public PermissionsEx(String version) {
+		this.version = version;
+	}
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws Throwable {
 		String[] groups = getAllGroups(p);
@@ -25,5 +30,10 @@ public class PermissionsEx implements PermissionPlugin {
 		} catch (InvocationTargetException e) {
 			throw e.getCause();
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
 	}
 }

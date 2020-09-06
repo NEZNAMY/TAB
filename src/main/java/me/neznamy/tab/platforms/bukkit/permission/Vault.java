@@ -12,9 +12,11 @@ import net.milkbowl.vault.permission.Permission;
 public class Vault implements PermissionPlugin {
 
 	private Permission permission;
+	private String vaultVersion;
 
-	public Vault(Permission permission) {
+	public Vault(Permission permission, String vaultVersion) {
 		this.permission = permission;
+		this.vaultVersion = vaultVersion;
 	}
 
 	@Override
@@ -32,5 +34,10 @@ public class Vault implements PermissionPlugin {
 	@Override
 	public String getName() {
 		return permission.getName();
+	}
+
+	@Override
+	public String getVersion() {
+		return "Vault " + vaultVersion;
 	}
 }

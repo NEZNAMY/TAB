@@ -16,6 +16,12 @@ import me.neznamy.tab.shared.Shared;
  */
 public class UltraPermissions implements PermissionPlugin {
 
+	private String version;
+	
+	public UltraPermissions(String version) {
+		this.version = version;
+	}
+	
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		String[] groups = getAllGroups(p);
@@ -32,12 +38,12 @@ public class UltraPermissions implements PermissionPlugin {
 			api = me.TechsCode.UltraPermissions.UltraPermissions.getAPI();
 		}
 		if (api == null) {
-			Shared.errorManager.printError("UltraPermissions getAPI returned null");
+			Shared.errorManager.printError("UltraPermissions v" + version + " returned null API");
 			return new String[]{"null"};
 		}
 		Optional<User> user = api.getUsers().name(p.getName());
-		if (user == null) {
-			Shared.errorManager.printError("UltraPermissions returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
+		if (user == null || !user.isPresent()) {
+			Shared.errorManager.printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"null"};
 		}
 		List<String> groups = new ArrayList<String>();
@@ -45,5 +51,10 @@ public class UltraPermissions implements PermissionPlugin {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
 	}
 }

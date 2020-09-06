@@ -40,6 +40,7 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 /**
  * Bungeecord implementation of PlatformMethods
@@ -57,11 +58,11 @@ public class BungeeMethods implements PlatformMethods {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
-			return new UltraPermissions();
+			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
-			return new BungeePerms();
+			return new BungeePerms(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager") != null) {
-			return new NetworkManager(ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager"));
+			return new NetworkManager((NetworkManagerPlugin) ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager"), ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager").getDescription().getVersion());
 		} else {
 			return new None();
 		}

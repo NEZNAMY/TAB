@@ -21,4 +21,9 @@ public class None implements PermissionPlugin {
 	public String getName() {
 		return "Unknown/None";
 	}
+
+	@Override
+	public String getVersion() {
+		return "-";
+	}
 }

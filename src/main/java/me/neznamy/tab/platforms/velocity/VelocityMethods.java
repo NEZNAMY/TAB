@@ -57,7 +57,7 @@ public class VelocityMethods implements PlatformMethods {
 		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
 		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
-			return new BungeePerms();
+			return new BungeePerms(server.getPluginManager().getPlugin("bungeeperms").get().getDescription().getVersion().get());
 		} else {
 			return new None();
 		}

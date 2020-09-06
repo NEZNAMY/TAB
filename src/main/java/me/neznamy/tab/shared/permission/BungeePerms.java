@@ -12,6 +12,11 @@ import net.alpenblock.bungeeperms.PermissionsManager;
  */
 public class BungeePerms implements PermissionPlugin {
 
+	private String version;
+	
+	public BungeePerms(String version) {
+		this.version = version;
+	}
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		PermissionsManager pm = net.alpenblock.bungeeperms.BungeePerms.getInstance().getPermissionsManager();
@@ -26,5 +31,9 @@ public class BungeePerms implements PermissionPlugin {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
+	}
+	@Override
+	public String getVersion() {
+		return version;
 	}
 }

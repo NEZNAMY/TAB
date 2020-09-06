@@ -128,7 +128,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		try {
 			return Shared.permissionPlugin.getPrimaryGroup(this);
 		} catch (Throwable e) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + getName() + " using " + Shared.permissionPlugin.getName(), e);
+			return Shared.errorManager.printError("null", "Failed to get permission group of " + getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
 		}
 	}
 
@@ -136,7 +136,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		try {
 			return Shared.permissionPlugin.getAllGroups(this);
 		} catch (Throwable e) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + getName() + " using " + Shared.permissionPlugin.getName(), e);
+			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
 		}
 	}
 

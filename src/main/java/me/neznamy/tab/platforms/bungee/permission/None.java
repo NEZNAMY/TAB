@@ -7,7 +7,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 /**
  * Class to take groups from bungeecord config.yml when no permission plugin is found
  */
-public class None implements PermissionPlugin{
+public class None implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
@@ -23,5 +23,10 @@ public class None implements PermissionPlugin{
 	@Override
 	public String getName() {
 		return "Unknown/None";
+	}
+
+	@Override
+	public String getVersion() {
+		return "-";
 	}
 }
