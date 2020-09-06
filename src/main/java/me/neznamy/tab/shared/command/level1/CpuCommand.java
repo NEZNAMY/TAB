@@ -27,7 +27,7 @@ public class CpuCommand extends SubCommand {
 	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders:";
 	private final String PLACEHOLDER_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
-	private final String BUKKIT_BRIDGE_TITLE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
+	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String FEATURES_TITLE = "&8&l" + LINE_CHAR + " &6Features:";
 	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name%:";
 	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
@@ -64,6 +64,7 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, SEPARATOR);
 		sendMessage(sender, PLACEHOLDERS_TITLE);
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
+			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
 			if (!entry.getKey().toString().startsWith("%rel_")) {
 				Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
@@ -78,7 +79,8 @@ public class CpuCommand extends SubCommand {
 		if (Shared.platform.getSeparatorType().equals("server")) {
 			sendMessage(sender, BUKKIT_BRIDGE_TITLE);
 			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
-				sendMessage(sender, BUKKIT_BRIDGE_TITLE_LINE.replace("%identifier%", entry.getKey()).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
+				if (entry.getValue() < 0.1) continue;
+				sendMessage(sender, BUKKIT_BRIDGE_LINE.replace("%identifier%", entry.getKey()).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 			}
 			sendMessage(sender, SEPARATOR);
 		}
