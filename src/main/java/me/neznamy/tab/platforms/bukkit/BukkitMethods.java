@@ -25,9 +25,6 @@ import me.neznamy.tab.platforms.bukkit.permission.GroupManager;
 import me.neznamy.tab.platforms.bukkit.permission.PermissionsEx;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
-import me.neznamy.tab.premium.AlignedSuffix;
-import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -35,16 +32,8 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.GhostPlayerFix;
-import me.neznamy.tab.shared.features.GroupRefresher;
-import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.TabObjective;
-import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
@@ -100,6 +89,7 @@ public class BukkitMethods implements PlatformMethods {
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
 		Shared.featureManager.registerFeature("placeholders", plm);
+		loadUniversalFeatures();
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
@@ -110,31 +100,17 @@ public class BukkitMethods implements PlatformMethods {
 				Shared.featureManager.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
 			}
 		}
-		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
 		if (Configs.BossBarEnabled) {
 			BossBar bb = new BossBar();
 			Shared.featureManager.registerFeature("bossbar", bb);
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
 		}
-		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
-		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) 												Shared.featureManager.registerFeature("tabobjective", new TabObjective());
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) 	{
-			Playerlist playerlist = new Playerlist();
-			Shared.featureManager.registerFeature("playerlist", playerlist);
-			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
-
-		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) 						Shared.featureManager.registerFeature("petfix", new PetFix());
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) 									Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
-		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) 					Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) 						Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
-		if (Configs.SECRET_remove_ghost_players) 															Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
+		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
 		if (PluginHooks.placeholderAPI) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
 		}
-		new GroupRefresher();
-		new UpdateChecker();
 
 		for (Player p : getOnlinePlayers()) {
 			ITabPlayer t = new TabPlayer(p);
@@ -304,40 +280,7 @@ public class BukkitMethods implements PlatformMethods {
 			rename(config, "safe-team-register", "unregister-before-register");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
-			removeOld(config, "scoreboard.refresh-interval-ticks");
-			if (!config.hasConfigOption("placeholder-output-replacements")) {
-				Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
-				Map<String, String> essVanished = new HashMap<String, String>();
-				essVanished.put("Yes", "&7| Vanished");
-				essVanished.put("No", "");
-				replacements.put("%essentials_vanished%", essVanished);
-				Map<String, String> tps = new HashMap<String, String>();
-				tps.put("20", "&aPerfect");
-				replacements.put("%tps%", tps);
-				config.set("placeholder-output-replacements", replacements);
-				Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
-			}
-			boolean scoreboardsConverted = false;
-			for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
-				Boolean permReq = config.getBoolean("scoreboards." + scoreboard + ".permission-required");
-				if (permReq != null) {
-					if (permReq) {
-						config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);
-					}
-					config.set("scoreboards." + scoreboard + ".permission-required", null);
-					scoreboardsConverted = true;
-				}
-				String childBoard = config.getString("scoreboards." + scoreboard + ".if-permission-missing");
-				if (childBoard != null) {
-					config.set("scoreboards." + scoreboard + ".if-permission-missing", null);
-					config.set("scoreboards." + scoreboard + ".if-condition-not-met", childBoard);
-					scoreboardsConverted = true;
-				}
-			}
-			if (scoreboardsConverted) {
-				Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
-			}
-			removeOld(config, "scoreboard.refresh-interval-milliseconds");
+			convertPremiumConfig(config);
 		}
 		if (config.getName().equals("advancedconfig.yml") && config.getObject("per-world-playerlist") instanceof Boolean) {
 			rename(config, "per-world-playerlist", "per-world-playerlist.enabled");

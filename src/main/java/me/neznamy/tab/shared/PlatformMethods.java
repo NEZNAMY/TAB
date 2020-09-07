@@ -1,8 +1,22 @@
 package me.neznamy.tab.shared;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import me.neznamy.tab.premium.AlignedSuffix;
+import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.GhostPlayerFix;
+import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.SpectatorFix;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -113,7 +127,13 @@ public interface PlatformMethods {
 		}
 	}
 	
-	public default String replaceAllPlaceholders(String string, ITabPlayer sender) {
+	/**
+	 * Replaces all placeholders in given string
+	 * @param string - string to replace
+	 * @param player - player to replaced placeholders for
+	 * @return replaced string
+	 */
+	public default String replaceAllPlaceholders(String string, ITabPlayer player) {
 		String replaced = string;
 		for (Placeholder p : Placeholders.getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
@@ -121,11 +141,68 @@ public interface PlatformMethods {
 					((ServerPlaceholder)p).update();
 				}
 				if (p instanceof PlayerPlaceholder) {
-					((PlayerPlaceholder)p).update(sender);
+					((PlayerPlaceholder)p).update(player);
 				}
-				replaced = p.set(replaced, sender);
+				replaced = p.set(replaced, player);
 			}
 		}
 		return replaced;
+	}
+	
+	/**
+	 * Converts premiumconfig variables to latest version
+	 * @param config - the file
+	 */
+	public default void convertPremiumConfig(ConfigurationFile config) {
+		removeOld(config, "scoreboard.refresh-interval-ticks");
+		if (!config.hasConfigOption("placeholder-output-replacements")) {
+			Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
+			Map<String, String> essVanished = new HashMap<String, String>();
+			essVanished.put("Yes", "&7| Vanished");
+			essVanished.put("No", "");
+			replacements.put("%essentials_vanished%", essVanished);
+			Map<String, String> tps = new HashMap<String, String>();
+			tps.put("20", "&aPerfect");
+			replacements.put("%tps%", tps);
+			config.set("placeholder-output-replacements", replacements);
+			Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
+		}
+		boolean scoreboardsConverted = false;
+		for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
+			Boolean permReq = config.getBoolean("scoreboards." + scoreboard + ".permission-required");
+			if (permReq != null) {
+				if (permReq) {
+					config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);
+				}
+				config.set("scoreboards." + scoreboard + ".permission-required", null);
+				scoreboardsConverted = true;
+			}
+			String childBoard = config.getString("scoreboards." + scoreboard + ".if-permission-missing");
+			if (childBoard != null) {
+				config.set("scoreboards." + scoreboard + ".if-permission-missing", null);
+				config.set("scoreboards." + scoreboard + ".if-condition-not-met", childBoard);
+				scoreboardsConverted = true;
+			}
+		}
+		if (scoreboardsConverted) {
+			Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
+		}
+		removeOld(config, "scoreboard.refresh-interval-milliseconds");
+	}
+	
+	public default void loadUniversalFeatures() {
+		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
+		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
+		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
+		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
+		if (Configs.SECRET_remove_ghost_players) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) Shared.featureManager.registerFeature("tabobjective", new TabObjective());
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
+			Playerlist playerlist = new Playerlist();
+			Shared.featureManager.registerFeature("playerlist", playerlist);
+			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+		}
+		new GroupRefresher();
+		new UpdateChecker();
 	}
 }
