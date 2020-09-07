@@ -169,18 +169,6 @@ public class ErrorManager {
 		return list;
 	}
 
-	public int fixBossBarRefresh(String name, int refresh) {
-		if (refresh == 0) {
-			startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
-			return 1000;
-		}
-		if (refresh < 0) {
-			startupWarn("Bossbar \"&e" + name + "&c\" has refresh interval of "+refresh+". Refresh cannot be negative! &bUsing 1000.");
-			return 1000;
-		}
-		return refresh;
-	}
-
 	public void startupWarn(String message) {
 		if (oneTimeMessages.contains(message)) return;
 		oneTimeMessages.add(message);
