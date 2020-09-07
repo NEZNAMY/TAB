@@ -13,8 +13,6 @@ per-world-playerlist:
     minigames:
       - paintball
       - bedwars
-    DoNotDoThis:
-      - ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt
       
 sort-players-by-permissions: false
 fix-pet-names: false

@@ -346,7 +346,6 @@ public class BukkitMethods implements PlatformMethods {
 			Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
 			sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
 			sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
-			sharedWorlds.put("DoNotDoThis", Arrays.asList("ThisIsASingleWorldSoThereIsNoPointInEvenCreatingGroupForIt"));
 			config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
 			Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
 		}
