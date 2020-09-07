@@ -454,9 +454,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		if (packet.operation == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
-			PacketPlayOutSpawnEntityLiving spawn = new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0));
-			spawn.setDataWatcher(w);
-			return spawn.toNMS(clientVersion);
+			return new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w).toNMS(clientVersion);
 		} else {
 			return new PacketPlayOutEntityMetadata(entityId, w).toNMS(clientVersion);
 		}

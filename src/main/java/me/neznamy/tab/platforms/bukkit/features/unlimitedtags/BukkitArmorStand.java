@@ -90,12 +90,12 @@ public class BukkitArmorStand implements ArmorStand {
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			return new PacketPlayOut[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)),
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
 					new PacketPlayOutEntityMetadata(entityId, dataWatcher)
 			};
 		} else {
 			return new PacketPlayOut[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer)).setDataWatcher(dataWatcher)
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), dataWatcher)
 			};
 		}
 	}
