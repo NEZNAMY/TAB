@@ -20,8 +20,7 @@ public enum UsageType {
 	PACKET_NAMED_ENTITY_SPAWN("Named entity spawn"),
 	COMMAND_PREPROCESS("Command preprocess"),
 	REPEATING_TASK("Additional repeating task"),
-	OTHER("Other"),
-	TOTAL("Total");
+	OTHER("Other");
 	
 	//user-friendly name to be used in /tab cpu
 	private String friendlyName;
