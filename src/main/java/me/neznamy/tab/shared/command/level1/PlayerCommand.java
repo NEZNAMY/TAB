@@ -81,14 +81,12 @@ public class PlayerCommand extends SubCommand {
 	 */
 	public void savePlayer(TabPlayer sender, String player, String type, String value){
 		TabPlayer pl = Shared.getPlayer(player);
-		if (value.length() == 0) value = null;
-		Configs.config.set("Users." + player + "." + type, value);
-		Configs.config.save();
+		Configs.config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
 		Placeholders.checkForRegistration(value);
 		if (pl != null) {
 			pl.forceRefresh();
 		}
-		if (value != null){
+		if (value.length() > 0){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));

@@ -25,9 +25,11 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 public class PluginMessenger{
 
 	private MinecraftChannelIdentifier mc;
+	private Main plugin;
 	
 	public PluginMessenger(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
+		this.plugin = plugin;
 		plugin.server.getChannelRegistrar().register(mc);
 		plugin.server.getEventManager().register(plugin, this);
 		
@@ -36,9 +38,16 @@ public class PluginMessenger{
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
-		if (((Player) player.getPlayer()).getCurrentServer().isPresent())
+		Player sender;
+		if (player == null) {
+			if (plugin.server.getAllPlayers().isEmpty()) return;
+			sender = plugin.server.getAllPlayers().toArray(new Player[0])[0];
+		} else {
+			sender = (Player) player.getPlayer();
+		}
+		if (sender.getCurrentServer().isPresent())
 			try {
-				((Player) player.getPlayer()).getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
+				sender.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
 			} catch (IllegalStateException e) {
 				// java.lang.IllegalStateException: Not connected to server!
 				// this is not the best way to deal with this problem, but i could not find a better one

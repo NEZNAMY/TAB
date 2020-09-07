@@ -158,8 +158,7 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		if (translateColors) message = Placeholders.color(message);
-		Bukkit.getConsoleSender().sendMessage(message);
+		Bukkit.getConsoleSender().sendMessage(translateColors ? Placeholders.color(message): message);
 	}
 
 	@Override
@@ -420,18 +419,19 @@ public class BukkitMethods implements PlatformMethods {
 	
 	@Override
 	public String replaceAllPlaceholders(String string, ITabPlayer sender) {
+		String replaced = string;
 		for (Placeholder p : Placeholders.getAllPlaceholders()) {
-			if (string.contains(p.getIdentifier())) {
+			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();
 				}
 				if (p instanceof PlayerPlaceholder) {
 					((PlayerPlaceholder)p).update(sender);
 				}
-				string = p.set(string, sender);
+				replaced = p.set(replaced, sender);
 			}
 		}
-		string = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), string);
-		return string;
+		replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
+		return replaced;
 	}
 }

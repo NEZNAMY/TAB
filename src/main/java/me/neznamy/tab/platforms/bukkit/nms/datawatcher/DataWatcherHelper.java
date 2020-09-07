@@ -50,11 +50,11 @@ public class DataWatcherHelper {
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
 			data.setValue(new DataWatcherObject(2, DataWatcherRegistry.String), customName);
 		} else {
-			if (customName.length() > 64) customName = customName.substring(0, 64);
+			String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6){
-				data.setValue(new DataWatcherObject(10, DataWatcherRegistry.String), customName);
+				data.setValue(new DataWatcherObject(10, DataWatcherRegistry.String), cutName);
 			} else {
-				data.setValue(new DataWatcherObject(5, DataWatcherRegistry.String), customName);
+				data.setValue(new DataWatcherObject(5, DataWatcherRegistry.String), cutName);
 			}
 		}
 			

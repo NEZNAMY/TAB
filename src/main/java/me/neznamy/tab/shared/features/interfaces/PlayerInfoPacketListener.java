@@ -8,5 +8,5 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
  */
 public interface PlayerInfoPacketListener extends Feature {
 
-	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info);
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info);
 }

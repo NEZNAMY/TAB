@@ -36,8 +36,9 @@ public abstract class ScoreboardLine implements Refreshable {
 	
 	protected String[] split(String string, int firstElementMaxLength) {
 		if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
-		if (string.charAt(firstElementMaxLength-1) == Placeholders.colorChar) firstElementMaxLength--;
-		return new String[] {string.substring(0, firstElementMaxLength), string.substring(firstElementMaxLength, string.length())};
+		int splitIndex = firstElementMaxLength;
+		if (string.charAt(splitIndex-1) == Placeholders.colorChar) splitIndex--;
+		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex, string.length())};
 	}
 	
 	protected String getPlayerName() {

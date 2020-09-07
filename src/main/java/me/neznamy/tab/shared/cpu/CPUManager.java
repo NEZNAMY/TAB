@@ -200,8 +200,8 @@ public class CPUManager {
 	}
 	
 	private float nanosToPercent(long nanos) {
-		nanos /= featureUsageLastMinute.size(); //average nanoseconds per buffer (0.1 second)
-		float percent = (float) nanos / bufferSizeMillis / 1000000; //relative usage (0-1)
+		long avg = nanos / featureUsageLastMinute.size(); //average nanoseconds per buffer (0.1 second)
+		float percent = (float) avg / bufferSizeMillis / 1000000; //relative usage (0-1)
 		percent *= 100; //relative into %
 		return percent;
 	}

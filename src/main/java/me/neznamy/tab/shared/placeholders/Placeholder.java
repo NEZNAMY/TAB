@@ -74,12 +74,13 @@ public abstract class Placeholder {
 		return originalOutput;
 	}
 	private String setPlaceholders(String text, ITabPlayer p) {
+		String replaced = text;
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
 			Placeholder pl = Placeholders.getPlaceholder(s);
-			if (pl != null && text.contains(pl.getIdentifier())) text = pl.set(text, p);
+			if (pl != null && replaced.contains(pl.getIdentifier())) replaced = pl.set(replaced, p);
 		}
-		return text;
+		return replaced;
 	}
 	public abstract String getLastValue(ITabPlayer p);
 }

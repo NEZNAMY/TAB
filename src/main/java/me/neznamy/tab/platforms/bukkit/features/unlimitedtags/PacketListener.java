@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -31,13 +32,13 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	private static Class<?> PacketPlayOutEntityDestroy;
 	private static Field PacketPlayOutEntityDestroy_ENTITIES;
-	
+
 	private static Class<?> PacketPlayInUseEntity;
 	private static Field PacketPlayInUseEntity_ENTITY;
 
 	private static Class<?> PacketPlayOutNamedEntitySpawn;
 	private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
-	
+
 	private static Class<?> PacketPlayOutEntity;
 	private static Field PacketPlayOutEntity_ENTITYID;
 
@@ -58,12 +59,12 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
 		PacketPlayOutEntityDestroy = PacketPlayOut.getNMSClass("PacketPlayOutEntityDestroy");
 		PacketPlayOutNamedEntitySpawn = PacketPlayOut.getNMSClass("PacketPlayOutNamedEntitySpawn");
-		
+
 		(PacketPlayInUseEntity_ENTITY = PacketPlayInUseEntity.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutEntity_ENTITYID = PacketPlayOutEntity.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOutEntityDestroy.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOutNamedEntitySpawn.getDeclaredField("a")).setAccessible(true);
-		
+
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			PacketPlayOutMount = PacketPlayOut.getNMSClass("PacketPlayOutMount");
 			(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
@@ -75,7 +76,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			(PacketPlayOutAttachEntity_VEHICLE = PacketPlayOutAttachEntity.getDeclaredField("c")).setAccessible(true);
 		}
 	}
-	
+
 	public PacketListener(NameTagX nameTagX) {
 		modifyNPCnames = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 		this.nameTagX = nameTagX;
@@ -100,121 +101,127 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	@Override
-	public Object onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
-		if (receiver.getVersion().getMinorVersion() < 8) return packet;
+	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
+		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (PacketPlayOutEntity.isInstance(packet)) {
-			int id = PacketPlayOutEntity_ENTITYID.getInt(packet);
-			ITabPlayer pl = Shared.entityIdMap.get(id);
-			List<Integer> vehicleList;
-			if (pl != null) {
-				//player moved
-				Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
-					public void run() {
-						pl.getArmorStandManager().teleport(receiver);
-					}
-				});
-			} else if ((vehicleList = nameTagX.vehicles.get(id)) != null){
-				//a vehicle carrying something moved
-				for (Integer entity : vehicleList) {
-					ITabPlayer passenger = Shared.entityIdMap.get(entity);
-					if (passenger != null) {
-						Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
-							public void run() {
-								passenger.getArmorStandManager().teleport(receiver);
-							}
-						});
-					}
-				}
-			}
+			onEntityMove(receiver, PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
 		if (PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			int entity = PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet);
-			ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entity);
-			if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
-
-				@Override
-				public void run() {
-					if (spawnedPlayer.getArmorStandManager() != null) {
-						spawnedPlayer.getArmorStandManager().spawn(receiver);
-					} else {
-						//player is not loaded yet and server is already sending entity spawn packet
-						if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<TabPlayer>());
-						nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
-					}
-				}
-			});
+			onEntitySpawn(receiver, PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
 		}
 		if (PacketPlayOutEntityDestroy.isInstance(packet)) {
-			int[] entites = (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet);
-			for (int id : entites) {
-				ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-				if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
-
-					@Override
-					public void run() {
-						despawnedPlayer.getArmorStandManager().destroy(receiver);
-					}
-				});
-			}
+			onEntityDestroy(receiver, (int[]) PacketPlayOutEntityDestroy_ENTITIES.get(packet));
 		}
 		if (PacketPlayOutMount != null && PacketPlayOutMount.isInstance(packet)) {
 			//1.9+ mount detection
-			int vehicle = PacketPlayOutMount_VEHICLE.getInt(packet);
-			int[] passg = (int[]) PacketPlayOutMount_PASSENGERS.get(packet);
-			Integer[] passengers = new Integer[passg.length];
-			for (int i=0; i<passg.length; i++) {
-				passengers[i] = passg[i];
-			}
-			if (passengers.length == 0) {
-				//detach
-				nameTagX.vehicles.remove(vehicle);
-			} else {
-				//attach
-				nameTagX.vehicles.put(vehicle, Arrays.asList(passengers));
-			}
-			for (int entity : passengers) {
-				ITabPlayer pass = Shared.entityIdMap.get(entity);
-				if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
-
-					@Override
-					public void run() {
-						pass.getArmorStandManager().teleport(receiver);
-					}
-				});
-			}
+			onMount(receiver, PacketPlayOutMount_VEHICLE.getInt(packet), (int[]) PacketPlayOutMount_PASSENGERS.get(packet));
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && PacketPlayOutAttachEntity.isInstance(packet)) {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && PacketPlayOutAttachEntity.isInstance(packet) && PacketPlayOutAttachEntity_A.getInt(packet) == 0) {
 			//1.8.x mount detection
-			if (PacketPlayOutAttachEntity_A.getInt(packet) == 0) {
-				int passenger = PacketPlayOutAttachEntity_PASSENGER.getInt(packet);
-				int vehicle = PacketPlayOutAttachEntity_VEHICLE.getInt(packet);
-				if (vehicle != -1) {
-					//attach
-					nameTagX.vehicles.put(vehicle, Arrays.asList(passenger));
-				} else {
-					//detach
-					for (Entry<Integer, List<Integer>> entry : nameTagX.vehicles.entrySet()) {
-						if (entry.getValue().contains(passenger)) {
-							nameTagX.vehicles.remove(entry.getKey());
-						}
-					}
-				}
-				ITabPlayer pass = Shared.entityIdMap.get(passenger);
-				if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
+			onAttach(receiver, PacketPlayOutAttachEntity_VEHICLE.getInt(packet), PacketPlayOutAttachEntity_PASSENGER.getInt(packet));
+		}
+	}
 
-					@Override
-					public void run() {
-						pass.getArmorStandManager().teleport(receiver);
-					}
-				});
+	public void onEntityMove(TabPlayer receiver, int entityId) {
+		ITabPlayer pl = Shared.entityIdMap.get(entityId);
+		List<Integer> vehicleList;
+		if (pl != null) {
+			//player moved
+			Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
+				public void run() {
+					pl.getArmorStandManager().teleport(receiver);
+				}
+			});
+		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
+			//a vehicle carrying something moved
+			for (Integer entity : vehicleList) {
+				ITabPlayer passenger = Shared.entityIdMap.get(entity);
+				if (passenger != null) {
+					Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
+						public void run() {
+							passenger.getArmorStandManager().teleport(receiver);
+						}
+					});
+				}
 			}
 		}
-		return packet;
+	}
+
+	public void onEntitySpawn(TabPlayer receiver, int entityId) {
+		ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entityId);
+		if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
+
+			@Override
+			public void run() {
+				if (spawnedPlayer.getArmorStandManager() != null) {
+					spawnedPlayer.getArmorStandManager().spawn(receiver);
+				} else {
+					//player is not loaded yet and server is already sending entity spawn packet
+					if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<TabPlayer>());
+					nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
+				}
+			}
+		});
+	}
+
+	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
+		for (int id : entities) {
+			ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
+			if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
+
+				@Override
+				public void run() {
+					despawnedPlayer.getArmorStandManager().destroy(receiver);
+				}
+			});
+		}
+	}
+
+	public void onMount(TabPlayer receiver, int vehicle, int[] passengers) {
+		if (passengers.length == 0) {
+			//detach
+			nameTagX.vehicles.remove(vehicle);
+		} else {
+			//attach
+			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toList()));
+		}
+		for (int entity : passengers) {
+			ITabPlayer pass = Shared.entityIdMap.get(entity);
+			if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
+
+				@Override
+				public void run() {
+					pass.getArmorStandManager().teleport(receiver);
+				}
+			});
+		}
+	}
+
+	public void onAttach(TabPlayer receiver, int vehicle, int passenger) {
+		if (vehicle != -1) {
+			//attach
+			nameTagX.vehicles.put(vehicle, Arrays.asList(passenger));
+		} else {
+			//detach
+			for (Entry<Integer, List<Integer>> entry : nameTagX.vehicles.entrySet()) {
+				if (entry.getValue().contains(passenger)) {
+					nameTagX.vehicles.remove(entry.getKey());
+				}
+			}
+		}
+		ITabPlayer pass = Shared.entityIdMap.get(passenger);
+		if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
+
+			@Override
+			public void run() {
+				pass.getArmorStandManager().teleport(receiver);
+			}
+		});
 	}
 
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {
 				if (playerInfoData.name.length() <= 14) {
@@ -224,7 +231,6 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			}
 		}
-		return info;
 	}
 
 	@Override

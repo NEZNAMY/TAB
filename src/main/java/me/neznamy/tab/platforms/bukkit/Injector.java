@@ -36,48 +36,43 @@ public class Injector {
 			channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-					if (Shared.disabled) {
-						super.channelRead(context, packet);
-						return;
-					}
 					try {
 						ITabPlayer player = Shared.getPlayer(uuid);
-						if (player != null) {
-							packet = Shared.featureManager.onPacketReceive(player, packet);
+						if (player == null) {
+							super.channelRead(context, packet);
+							return;
 						}
-						if (packet != null) super.channelRead(context, packet);
+						Object modifiedPacket = Shared.featureManager.onPacketReceive(player, packet);
+						if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
 					}
 				}
 
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					if (Shared.disabled) {
-						super.write(context, packet, channelPromise);
-						return;
-					}
 					try {
 						ITabPlayer player = Shared.getPlayer(uuid);
 						if (player == null) {
 							super.write(context, packet, channelPromise);
 							return;
 						}
+						Object modifiedPacket = packet;
 						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
 							//nametag anti-override
 							long time = System.nanoTime();
-							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-								modifyPlayers(packet);
+							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(modifiedPacket)) {
+								modifyPlayers(modifiedPacket);
 							}
 							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 						}
-						packet = Shared.featureManager.onPacketSend(player, packet);
+						Shared.featureManager.onPacketSend(player, modifiedPacket);
 						
-						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(packet);
+						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(modifiedPacket);
 						if (info != null) {
-							info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-							packet = (info == null ? null : info.create(player.getVersion()));
+							Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
+							modifiedPacket = info.create(player.getVersion());
 						}
-						if (packet != null) super.write(context, packet, channelPromise);
+						if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
 					}

@@ -33,11 +33,14 @@ public class PluginMessenger implements Listener {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
+		ProxiedPlayer sender;
 		if (player == null) {
-			if (Shared.getPlayers().isEmpty()) return;
-			player = Shared.getPlayers().toArray(new ITabPlayer[0])[0];
+			if (ProxyServer.getInstance().getPlayers().isEmpty()) return;
+			sender = ProxyServer.getInstance().getPlayers().toArray(new ProxiedPlayer[0])[0];
+		} else {
+			sender = (ProxiedPlayer) player.getPlayer();
 		}
-		((ProxiedPlayer) player.getPlayer()).getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
+		sender.getServer().sendData(Shared.CHANNEL_NAME, out.toByteArray());
 	}
 	@EventHandler
 	public void on(PluginMessageEvent event){

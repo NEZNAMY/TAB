@@ -22,17 +22,16 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.getVersion().getMinorVersion() < 8) return info;
-		if (allowBypass && receiver.hasPermission("tab.spectatorbypass")) return info;
-		if (info.action != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (receiver.getVersion().getMinorVersion() < 8) return;
+		if (allowBypass && receiver.hasPermission("tab.spectatorbypass")) return;
+		if (info.action != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (playerInfoData.gameMode == EnumGamemode.SPECTATOR) {
 				TabPlayer changed = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (changed != receiver) playerInfoData.gameMode = EnumGamemode.CREATIVE;
 			}
 		}
-		return info;
 	}
 
 	@Override

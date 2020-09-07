@@ -44,13 +44,13 @@ public class RGBUtils {
 	 * @return text where everything is converted to #RRGGBB
 	 */
 	public static String applyFormats(String text) {
-		text = fixFormat1(text);
-		text = fixFormat2(text);
-		text = fixFormat3(text);
-		text = fixFormat4(text);
-		text = setGradient1(text);
-		text = setGradient2(text);
-		return text;
+		String replaced = fixFormat1(text);
+		replaced = fixFormat2(replaced);
+		replaced = fixFormat3(replaced);
+		replaced = fixFormat4(replaced);
+		replaced = setGradient1(replaced);
+		replaced = setGradient2(replaced);
+		return replaced;
 	}
 
 	/**
@@ -69,12 +69,13 @@ public class RGBUtils {
 	 */
 	private static String fixFormat2(String text) {
 		Matcher m = fix2.matcher(text);
+		String replaced = text;
 		while (m.find()) {
 			String hexcode = m.group();
 			String fixed = hexcode.substring(2, 8);
-			text = text.replace(hexcode, "#" + fixed);
+			replaced = replaced.replace(hexcode, "#" + fixed);
 		}
-		return text;
+		return replaced;
 	}
 
 	/**
@@ -85,12 +86,13 @@ public class RGBUtils {
 	private static String fixFormat3(String text) {
 		text = text.replace('\u00a7', '&');
 		Matcher m = fix3.matcher(text);
+		String replaced = text;
 		while (m.find()) {
 			String hexcode = m.group();
 			String fixed = new String(new char[] {hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});
-			text = text.replace(hexcode, "#" + fixed);
+			replaced = replaced.replace(hexcode, "#" + fixed);
 		}
-		return text;
+		return replaced;
 	}
 	
 	/**
@@ -100,12 +102,13 @@ public class RGBUtils {
 	 */
 	private static String fixFormat4(String text) {
 		Matcher m = fix4.matcher(text);
+		String replaced = text;
 		while (m.find()) {
 			String hexcode = m.group();
 			String fixed = hexcode.substring(2, 8);
-			text = text.replace(hexcode, "#" + fixed);
+			replaced = replaced.replace(hexcode, "#" + fixed);
 		}
-		return text;
+		return replaced;
 	}
 
 	/**
@@ -115,15 +118,16 @@ public class RGBUtils {
 	 */
 	private static String setGradient1(String text) {
 		Matcher m = gradient1.matcher(text);
+		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
 			TextColor start = new TextColor(format.substring(2, 8));
 			String message = format.substring(9, format.length()-10);
 			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
 			String applied = asGradient(start, message, end);
-			text = text.replace(format, applied);
+			replaced = replaced.replace(format, applied);
 		}
-		return text;
+		return replaced;
 	}
 
 	/**
@@ -133,15 +137,16 @@ public class RGBUtils {
 	 */
 	private static String setGradient2(String text) {
 		Matcher m = gradient2.matcher(text);
+		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
 			TextColor start = new TextColor(format.substring(2, 8));
 			String message = format.substring(10, format.length()-10);
 			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
 			String applied = asGradient(start, message, end);
-			text = text.replace(format, applied);
+			replaced = replaced.replace(format, applied);
 		}
-		return text;
+		return replaced;
 	}
 
 	/**

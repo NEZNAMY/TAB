@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.RGBUtils;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -255,6 +256,7 @@ public class IChatBaseComponent {
 			}
 			return component;
 		} catch (ParseException | ClassCastException e) {
+			Shared.errorManager.printError("Failed to deserialize json component: " + json, e);
 			return fromColoredText(json);
 		}
 	}
@@ -304,22 +306,23 @@ public class IChatBaseComponent {
 		}
 	}
 
-	public static IChatBaseComponent fromColoredText(String message){
-		if (message == null) return new IChatBaseComponent();
+	public static IChatBaseComponent fromColoredText(String originalText){
+		if (originalText == null) return new IChatBaseComponent();
+		String text = originalText;
 		if (Configs.SECRET_rgb_support) {
-			message = RGBUtils.applyFormats(message);
+			text = RGBUtils.applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
-		for (int i = 0; i < message.length(); i++){
-			char c = message.charAt(i);
+		for (int i = 0; i < text.length(); i++){
+			char c = text.charAt(i);
 			if (c == Placeholders.colorChar || c == '&'){
 				i++;
-				if (i >= message.length()) {
+				if (i >= text.length()) {
 					break;
 				}
-				c = message.charAt(i);
+				c = text.charAt(i);
 				if ((c >= 'A') && (c <= 'Z')) {
 					c = (char)(c + ' ');
 				}
@@ -349,6 +352,9 @@ public class IChatBaseComponent {
 						break;
 					case RESET: 
 						format = EnumChatFormat.WHITE;
+						component = new IChatBaseComponent();
+						component.setColor(new TextColor(format));
+						break;
 					default: 
 						component = new IChatBaseComponent();
 						component.setColor(new TextColor(format));
@@ -357,7 +363,7 @@ public class IChatBaseComponent {
 				}
 			} else if (Configs.SECRET_rgb_support && c == '#'){
 				try {
-					String hex = message.substring(i+1, i+7);
+					String hex = text.substring(i+1, i+7);
 					TextColor color = new TextColor(hex); //the validation check is in constructor
 
 					if (builder.length() > 0){

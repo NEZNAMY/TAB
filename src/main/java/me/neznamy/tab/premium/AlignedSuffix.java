@@ -123,14 +123,15 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 	private String buildSpaces(int pixelWidth) {
 		if (pixelWidth < 12) throw new IllegalArgumentException("Cannot build space lower than 12 pixels wide");
+		int pixelsLeft = pixelWidth;
 		int boldSpaces = 0;
 		int normalSpaces = 0;
-		while (pixelWidth % 4 != 0) {
-			pixelWidth -= 5;
+		while (pixelsLeft % 4 != 0) {
+			pixelsLeft -= 5;
 			boldSpaces++;
 		}
-		while (pixelWidth > 0) {
-			pixelWidth -= 4;
+		while (pixelsLeft > 0) {
+			pixelsLeft -= 4;
 			normalSpaces++;
 		}
 		String output = "";
@@ -153,7 +154,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 	@Override
 	public void unload() {
-
+		//nothing to do here, Playerlist feature handles unloading
 	}
 	@Override
 	public void onJoin(ITabPlayer p) {

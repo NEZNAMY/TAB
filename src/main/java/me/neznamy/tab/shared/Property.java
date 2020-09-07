@@ -36,11 +36,10 @@ public class Property {
 	public List<RelationalPlaceholder> relPlaceholders = new ArrayList<RelationalPlaceholder>();
 
 	public Property(TabPlayer owner, String rawValue, String source) {
-		if (rawValue == null) rawValue = "";
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = rawValue;
-		analyze(rawValue);
+		this.rawValue = (rawValue == null ? "" : rawValue);
+		analyze(this.rawValue);
 		update();
 	}
 	

@@ -130,13 +130,12 @@ public class FeatureManager {
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
 	 */
-	public PacketPlayOutPlayerInfo onPacketPlayOutPlayerInfo(ITabPlayer receiver, PacketPlayOutPlayerInfo packet) {
+	public void onPacketPlayOutPlayerInfo(ITabPlayer receiver, PacketPlayOutPlayerInfo packet) {
 		for (PlayerInfoPacketListener f : playerInfoListeners) {
 			long time = System.nanoTime();
-			if (packet != null) packet = f.onPacketSend(receiver, packet);
+			f.onPacketSend(receiver, packet);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
-		return packet;
 	}
 	
 	/**
@@ -206,16 +205,17 @@ public class FeatureManager {
 	 * @return altered packet or null if packet should be cancelled
 	 */
 	public Object onPacketReceive(ITabPlayer receiver, Object packet){
+		Object newPacket = packet;
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
 			try {
-				if (packet != null) packet = f.onPacketReceive(receiver, packet);
+				if (newPacket != null) newPacket = f.onPacketReceive(receiver, newPacket);
 			} catch (Throwable e) {
 				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
-		return packet;
+		return newPacket;
 	}
 	
 	/**
@@ -223,18 +223,16 @@ public class FeatureManager {
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - OUT packet coming from the server
-	 * @return altered packet or null if packet should be cancelled
 	 */
-	public Object onPacketSend(ITabPlayer receiver, Object packet){
+	public void onPacketSend(ITabPlayer receiver, Object packet){
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
 			try {
-				if (packet != null) packet = f.onPacketSend(receiver, packet);
+				f.onPacketSend(receiver, packet);
 			} catch (Throwable e) {
 				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
-		return packet;
 	}
 }

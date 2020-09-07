@@ -114,17 +114,18 @@ public interface PlatformMethods {
 	}
 	
 	public default String replaceAllPlaceholders(String string, ITabPlayer sender) {
+		String replaced = string;
 		for (Placeholder p : Placeholders.getAllPlaceholders()) {
-			if (string.contains(p.getIdentifier())) {
+			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();
 				}
 				if (p instanceof PlayerPlaceholder) {
 					((PlayerPlaceholder)p).update(sender);
 				}
-				string = p.set(string, sender);
+				replaced = p.set(replaced, sender);
 			}
 		}
-		return string;
+		return replaced;
 	}
 }

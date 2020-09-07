@@ -124,6 +124,8 @@ public enum SortingType {
 		case GROUP_PERMISSIONS_THEN_PLACEHOLDER_Z_TO_A:
 			teamName = getGroupPermissionChars(p) + placeholderZtoA(p);
 			break;
+		default:
+			break;
 		}
 		if (teamName.length() > 12) {
 			teamName = teamName.substring(0, 12);
@@ -200,14 +202,15 @@ public enum SortingType {
 		return chars;
 	}
 	private String setPlaceholders(String string, ITabPlayer player) {
+		String replaced = string;
 		if (string.contains("%")) {
 			for (String identifier : usedPlaceholders) {
 				Placeholder pl = Placeholders.getPlaceholder(identifier);
-				if (pl != null && string.contains(pl.getIdentifier())) {
-					string = pl.set(string, player);
+				if (pl != null && replaced.contains(pl.getIdentifier())) {
+					replaced = pl.set(replaced, player);
 				}
 			}
 		}
-		return string;
+		return replaced;
 	}
 }

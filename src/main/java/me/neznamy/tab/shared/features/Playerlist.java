@@ -60,11 +60,11 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.getVersion().getMinorVersion() < 8) return info;
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (receiver.getVersion().getMinorVersion() < 8) return;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
-		if (!UPDATE_NAME && !ADD) return info;
+		if (!UPDATE_NAME && !ADD) return;
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
@@ -89,7 +89,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				}
 			});
 		}
-		return info;
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {

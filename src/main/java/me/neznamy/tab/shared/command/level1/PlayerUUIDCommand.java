@@ -82,12 +82,10 @@ public class PlayerUUIDCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
-		if (value.length() == 0) value = null;
-		Configs.config.set("Users." + player.getUniqueId() + "." + type, value);
-		Configs.config.save();
+		Configs.config.set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
 		Placeholders.checkForRegistration(value);
 		player.forceRefresh();
-		if (value != null){
+		if (value.length() > 0){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));

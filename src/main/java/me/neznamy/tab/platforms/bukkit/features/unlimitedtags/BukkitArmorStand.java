@@ -235,12 +235,9 @@ public class BukkitArmorStand implements ArmorStand {
 	public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
-		byte flag = 0;
+		byte flag = 32; //invisible
 		if (sneaking) flag += (byte)2;
-		flag += (byte)32;
 		datawatcher.helper().setEntityFlags(flag);
-
-		if (displayName == null) displayName = "";
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visible = (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player)) ? false : this.visible;

@@ -87,10 +87,10 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
 		if (PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
-			if (items == null) return packet;
+			if (items == null) return;
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
 				DataWatcherItem i = DataWatcherItem.fromNMS(item);
@@ -107,7 +107,6 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 			}
 			PacketPlayOutSpawnEntityLiving.DATAWATCHER.set(packet, watcher.toNMS());
 		}
-		return packet;
 	}
 
 	@Override

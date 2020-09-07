@@ -264,29 +264,21 @@ public class ErrorManager {
 			int simpleQend = text.lastIndexOf("'");
 			int doubleQstart = text.indexOf("\"");
 			int doubleQend = text.lastIndexOf("\"");
-			if (simpleQstart != -1 && doubleQstart == -1) {
+			if (simpleQstart != -1 && doubleQstart == -1 && simpleQstart == simpleQend) {
 				//text in simple quotes
-				if (simpleQstart == simpleQend) {
-					return "Add ' at the end of line " + line;
-				}
+				return "Add ' at the end of line " + line;
 			}
-			if (doubleQstart != -1 && simpleQstart == -1) {
+			if (doubleQstart != -1 && simpleQstart == -1 && doubleQstart == doubleQend) {
 				//text in double quotes
-				if (doubleQstart == doubleQend) {
-					return "Add \" at the end of line " + line;
-				}
+				return "Add \" at the end of line " + line;
 			}
-			if (simpleQstart != -1 && simpleQstart < doubleQstart) {
+			if (simpleQstart != -1 && simpleQstart < doubleQstart && simpleQend < doubleQend && simpleQstart == simpleQend) {
 				//the text is supposed to be in simple quotes
-				if (simpleQend < doubleQend && simpleQstart == simpleQend) {
-					return "Add ' at the end of line " + line;
-				}
+				return "Add ' at the end of line " + line;
 			}
-			if (doubleQstart != -1 && doubleQstart < simpleQstart) {
+			if (doubleQstart != -1 && doubleQstart < simpleQstart && doubleQend < simpleQend && doubleQstart == doubleQend) {
 				//the text is supposed to be in double quotes
-				if (doubleQend < simpleQend && doubleQstart == doubleQend) {
-					return "Add \" at the end of line " + line;
-				}
+				return "Add \" at the end of line " + line;
 			}
 			if (text.endsWith("''")) {
 				return "Remove one ' from the end of line " + line;
@@ -354,8 +346,7 @@ public class ErrorManager {
 		return i;
 	}
 	private boolean isComment(String line) {
-		line = line.replace(" ", "");
-		return line.startsWith("#") || line.length() == 0;
+		return line.replace(" ", "").startsWith("#") || line.replace(" ", "").length() == 0;
 	}
 	public SimpleDateFormat createDateFormat(String value, String defaultValue) {
 		try {

@@ -88,37 +88,36 @@ public class Main extends Plugin {
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("inbound-boss", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
-			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-				super.channelRead(context, packet);
-			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				ITabPlayer player = Shared.getPlayer(uuid);
 				if (player == null) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
+				Object modifiedPacket = packet;
 				try {
-					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, BungeePacketBuilder.readPlayerInfo(packet, player.getVersion()));
-						packet = (info == null ? null : info.create(player.getVersion()));
+					if (modifiedPacket instanceof PlayerListItem) {
+						PacketPlayOutPlayerInfo info = BungeePacketBuilder.readPlayerInfo(modifiedPacket, player.getVersion());
+						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
+						modifiedPacket = info.create(player.getVersion());
 					}
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
-						if (packet instanceof Team) {
-							modifyPlayers((Team) packet);
+						if (modifiedPacket instanceof Team) {
+							modifyPlayers((Team) modifiedPacket);
 						}
-						if (packet instanceof ByteBuf) {
-							ByteBuf buf = ((ByteBuf) packet).duplicate();
+						if (modifiedPacket instanceof ByteBuf) {
+							ByteBuf buf = ((ByteBuf) modifiedPacket).duplicate();
 							if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
 								team.read(buf, null, player.getVersion().getNetworkId());
 								modifyPlayers(team);
-								packet = team;
+								modifiedPacket = team;
 							}
 						}
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 					}
-					if (packet instanceof Login) {
+					if (modifiedPacket instanceof Login) {
 						//registering all teams again because client reset packet is sent
 						Shared.cpu.runTaskLater(100, "Reapplying scoreboard components", TabFeature.WATERFALLFIX, UsageType.PACKET_READING, new Runnable() {
 
@@ -143,7 +142,7 @@ public class Main extends Plugin {
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				if (packet != null) super.write(context, packet, channelPromise);
+				if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
 			}
 		});
 	}

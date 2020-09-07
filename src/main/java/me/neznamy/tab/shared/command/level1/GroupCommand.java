@@ -81,16 +81,14 @@ public class GroupCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	private void saveGroup(TabPlayer sender, String group, String type, String value){
-		if (value.length() == 0) value = null;
-		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value);
-		Configs.config.save();
+		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
 		Placeholders.checkForRegistration(value);
 		for (TabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();
 			}
 		}
-		if (value != null){
+		if (value.length() > 0){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group"));
 		} else {
 			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));

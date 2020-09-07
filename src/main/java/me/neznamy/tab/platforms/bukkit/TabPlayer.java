@@ -107,8 +107,7 @@ public class TabPlayer extends ITabPlayer {
 	@Override
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
-		if (translateColors) message = Placeholders.color(message);
-		player.sendMessage(message);
+		player.sendMessage(translateColors ? Placeholders.color(message): message);
 	}
 
 	@Override

@@ -97,29 +97,28 @@ public class Main {
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
-			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-				super.channelRead(context, packet);
-			}
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				ITabPlayer player = Shared.getPlayer(uuid);
 				if (player == null) {
 					super.write(context, packet, channelPromise);
 					return;
 				}
+				Object modifiedPacket = packet;
 				try {
-					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
-						PacketPlayOutPlayerInfo info = Shared.featureManager.onPacketPlayOutPlayerInfo(player, VelocityPacketBuilder.readPlayerInfo(packet));
-						packet = (info == null ? null : info.create(player.getVersion()));
+					if (modifiedPacket.getClass().getSimpleName().equals("PlayerListItem")) {
+						PacketPlayOutPlayerInfo info = VelocityPacketBuilder.readPlayerInfo(modifiedPacket);
+						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
+						modifiedPacket = info.create(player.getVersion());
 					}
-					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
+					if (modifiedPacket instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
-						modifyPlayers((Team) packet);
+						modifyPlayers((Team) modifiedPacket);
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				if (packet != null) super.write(context, packet, channelPromise);
+				if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
 			}
 		});
 	}

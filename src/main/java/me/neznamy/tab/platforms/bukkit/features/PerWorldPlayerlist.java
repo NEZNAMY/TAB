@@ -97,10 +97,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		if (viewer.getWorldName().equals(displayed.getWorldName()) || (player1WorldGroup != null && player2WorldGroup != null && player1WorldGroup.equals(player2WorldGroup))) {
 			return true;
 		}
-		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName())) {
-			return true;
-		}
-		return false;
+		return (allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName());
 	}
 	
 	private void hidePlayer(TabPlayer hidden){
@@ -119,8 +116,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	//fixing bukkit api bug making players not hide when hidePlayer is called too early
 	@Override
-	public PacketPlayOutPlayerInfo onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (info.action != EnumPlayerInfoAction.ADD_PLAYER) return info;
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData data : info.entries) {
 			TabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
@@ -132,8 +129,6 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		info.entries.forEach(d -> newList.add(d));
 		newList.removeAll(toRemove);
 		info.entries = newList;
-		if (info.entries.size() == 0) return null;
-		return info;
 	}
 
 	@Override
