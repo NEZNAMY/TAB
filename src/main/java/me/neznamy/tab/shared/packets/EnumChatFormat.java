@@ -45,6 +45,12 @@ public enum EnumChatFormat {
 	//blue value of this color
 	private int blue;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param networkId - network id of the color
+	 * @param character - character representing the color
+	 * @param hexColor - hex code of the color
+	 */
 	private EnumChatFormat(int networkId, char character, int hexColor) {
 		this(networkId, character);
 		red = (hexColor >> 16) & 0xFF;
@@ -52,6 +58,11 @@ public enum EnumChatFormat {
 		blue = hexColor & 0xFF;
 	}
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param networkId - network id of the color
+	 * @param character - character representing the color
+	 */
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;

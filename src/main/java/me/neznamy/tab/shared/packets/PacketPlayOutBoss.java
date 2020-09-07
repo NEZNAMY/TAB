@@ -9,20 +9,53 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 
+	//bossbar's uuid
 	public UUID id;
+	
+	//packet action
 	public Action operation;
+	
+	//bossbar title
 	public String name;
+	
+	//bossbar progress
 	public float pct;
+	
+	//bossbar color
 	public BarColor color;
+	
+	//bossbar style
 	public BarStyle overlay;
+	
+	//darker screen if bossbar is displayed
 	public boolean darkenScreen;
+	
+	//play boss music when bossbar is displayed
 	public boolean playMusic;
+	
+	//create fog if bossbar is displayed
 	public boolean createWorldFog;
 
+	/*
+	 * Creates a new instance of the class
+	 * Constructor is private, use one of the static methods to create an instance
+	 */
 	private PacketPlayOutBoss() {
 	}
 
-	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param name - bossbar title
+	 * @param pct - bossbar progress
+	 * @param color - bossbar color
+	 * @param overlay - bossbar style
+	 * @param darkenScreen - darker screen if bossbar is displayed
+	 * @param playMusic - play boss music when bossbar is displayed
+	 * @param createWorldFog - create fog if bossbar is displayed
+	 * @return the instance with given parameters with ADD action
+	 */
+	public static PacketPlayOutBoss ADD(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
 		packet.id = id;
@@ -36,7 +69,16 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
-	public static PacketPlayOutBoss CREATE(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param name - bossbar title
+	 * @param pct - bossbar progress
+	 * @param color - bossbar color
+	 * @param overlay - bossbar style
+	 * @return the instance with given parameters with ADD action
+	 */
+	public static PacketPlayOutBoss ADD(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.ADD;
 		packet.id = id;
@@ -47,6 +89,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @return the instance with given parameters with REMOVE action
+	 */
 	public static PacketPlayOutBoss REMOVE(UUID id) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.REMOVE;
@@ -54,6 +101,12 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param pct - bossbar progress
+	 * @return the instance with given parameters with UPDATE_PCT action
+	 */
 	public static PacketPlayOutBoss UPDATE_PCT(UUID id, float pct) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PCT;
@@ -62,6 +115,12 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param name - bossbar title
+	 * @return the instance with given parameters with UPDATE_NAME action
+	 */
 	public static PacketPlayOutBoss UPDATE_NAME(UUID id, String name) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_NAME;
@@ -70,6 +129,13 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param color - bossbar color
+	 * @param overlay - bossbar style
+	 * @return the instance with given parameters with UPDATE_STYLE action
+	 */
 	public static PacketPlayOutBoss UPDATE_STYLE(UUID id, BarColor color, BarStyle overlay) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_STYLE;
@@ -79,6 +145,14 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Constructs new packet based on given parameters
+	 * @param id - bossbar uuid
+	 * @param darkenScreen - darker screen if bossbar is displayed
+	 * @param playMusic - play boss music when bossbar is displayed
+	 * @param createWorldFog - create fog if bossbar is displayed
+	 * @return the instance with given parameters with UPDATE_PROPERTIES action
+	 */
 	public static PacketPlayOutBoss UPDATE_PROPERTIES(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		PacketPlayOutBoss packet = new PacketPlayOutBoss();
 		packet.operation = Action.UPDATE_PROPERTIES;
@@ -89,6 +163,10 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return packet;
 	}
 
+	/**
+	 * Returns bitmask based on darkenScreen, playMusic and createWorldFog values
+	 * @return the bitmask
+	 */
 	public byte getFlags(){
 		byte value = 0;
 		if (darkenScreen) value += 1;
@@ -97,11 +175,26 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		return value;
 	}
 
+	/**
+	 * Calls build method of packet builder instance and returns output
+	 */
 	@Override
 	protected Object build(ProtocolVersion clientVersion) throws Exception {
 		return builder.build(this, clientVersion);
 	}
+	
+	/**
+	 * An override to toString() method for better output
+	 */
+	@Override
+	public String toString() {
+		return "PacketPlayOutBoss{id=" + id + ",operation=" + operation + ",name=" + name + ",pct=" + pct +",color=" + color + ",overlay=" + overlay
+				+ ",darkenScreen=" + darkenScreen + ",playMusic=" + playMusic + ",createWorldFog=" + createWorldFog + "}";
+	}
 
+	/**
+	 * An enum representing boss packet action
+	 */
 	public enum Action {
 
 		ADD,
@@ -112,6 +205,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		UPDATE_PROPERTIES;
 	}
 
+	/**
+	 * An enum representing bossbar colors
+	 */
 	public enum BarColor {
 
 		PINK,
@@ -123,6 +219,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		WHITE;
 	}
 
+	/**
+	 * An enum representing bossbar styles using same names as NMS
+	 */
 	public enum BarStyle {
 
 		PROGRESS,

@@ -7,16 +7,35 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut {
 
+	//display slot (0 = playerlist, 1 = sidebar, 2 = belowname)
 	public int slot;
+	
+	//name of the objective
 	public String objectiveName;
 
+	/**
+	 * Constructs a new instance with given parameters
+	 * @param slot - display slot
+	 * @param objectiveName - name of the objective
+	 */
 	public PacketPlayOutScoreboardDisplayObjective(int slot, String objectiveName) {
 		this.slot = slot;
 		this.objectiveName = objectiveName;
 	}
 
+	/**
+	 * Calls build method of packet builder instance and returns output
+	 */
 	@Override
 	protected Object build(ProtocolVersion clientVersion) throws Exception {
 		return builder.build(this, clientVersion);
+	}
+	
+	/**
+	 * An override to toString() method for better output
+	 */
+	@Override
+	public String toString() {
+		return "PacketPlayOutScoreboardDisplayObjective{slot=" + slot + ",objectiveName=" + objectiveName + "}";
 	}
 }

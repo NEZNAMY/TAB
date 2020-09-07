@@ -53,7 +53,7 @@ public class BossBarLine {
 		to.setProperty("bossbar-progress-" + name, progress, null);
 		to.setProperty("bossbar-color-" + name, color, null);
 		to.setProperty("bossbar-style-" + name, style, null);
-		to.sendCustomPacket(PacketPlayOutBoss.CREATE(
+		to.sendCustomPacket(PacketPlayOutBoss.ADD(
 				uuid, 
 				to.getProperty("bossbar-text-" + name).get(), 
 				(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
  */
 public abstract class UniversalPacketPlayOut {
 
+	//platform-specific packet builder
 	public static PacketBuilder builder;
 	
 	/**

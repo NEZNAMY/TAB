@@ -294,14 +294,14 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void unregisterTeam() {
 		if (teamName == null) return;
-		Object packet = PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
+		Object packet = PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
 		for (ITabPlayer viewer : Shared.getPlayers()) {
 			viewer.sendPacket(packet);
 		}
 	}
 
 	public void unregisterTeam(ITabPlayer viewer) {
-		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE_TEAM(teamName).setTeamOptions(69));
+		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69));
 	}
 
 	public void updateDisabledWorlds(String world) {
