@@ -84,9 +84,8 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private static String fixFormat3(String text) {
-		text = text.replace('\u00a7', '&');
-		Matcher m = fix3.matcher(text);
-		String replaced = text;
+		String replaced = text.replace('\u00a7', '&');
+		Matcher m = fix3.matcher(replaced);
 		while (m.find()) {
 			String hexcode = m.group();
 			String fixed = new String(new char[] {hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});

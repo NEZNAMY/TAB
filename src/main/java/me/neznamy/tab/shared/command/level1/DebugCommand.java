@@ -33,6 +33,9 @@ public class DebugCommand extends SubCommand {
 				return;
 			}
 		}
+		if (analyzed == null && sender != null) {
+			analyzed = Shared.getPlayer(sender.getUniqueId());
+		}
 		debug(sender, analyzed);
 	}
 	
@@ -42,9 +45,6 @@ public class DebugCommand extends SubCommand {
 	 * @param analyzed - player to be analyzed
 	 */
 	private void debug(TabPlayer sender, ITabPlayer analyzed) {
-		if (analyzed == null && sender != null) {
-			analyzed = Shared.getPlayer(sender.getUniqueId());
-		}
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
