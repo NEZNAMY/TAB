@@ -91,7 +91,7 @@ public class TabPlayer extends ITabPlayer {
 				if (nmsPacket instanceof PacketPlayOut) {
 					nmsPacket = ((PacketPlayOut)nmsPacket).toNMS(version);
 				}
-				if (nmsPacket instanceof ByteBuf) {
+				if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && nmsPacket instanceof ByteBuf) {
 					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 					return;
 				}

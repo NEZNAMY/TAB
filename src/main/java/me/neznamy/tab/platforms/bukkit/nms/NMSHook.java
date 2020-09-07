@@ -100,6 +100,8 @@ public class NMSHook {
 				}
 				SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
 				DESERIALIZE = ChatSerializer.getMethod("a", String.class);
+			} else if (minor == 6) {
+				DESERIALIZE = IChatBaseComponent.getMethod("d", String.class);
 			}
 			if (minor >= 8) {
 				PacketListener.initializeClass();

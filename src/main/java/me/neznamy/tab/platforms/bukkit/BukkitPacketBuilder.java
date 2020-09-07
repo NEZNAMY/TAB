@@ -45,7 +45,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BukkitPacketBuilder implements PacketBuilder {
 
-	public static Class<Enum> EnumChatFormat_;
+	private static String serverPackage;
+	private static int minorVersion;
+	
+	private static Class<Enum> EnumChatFormat_;
 
 	//PacketPlayOutBoss
 	private static Class<?> PacketPlayOutBoss;
@@ -140,10 +143,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PlayerInfoData_LISTNAME;
 
 	public static void initializeClass() throws Exception {
+		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 		initializeClasses();
 		initializeConstructors();
 		initializeFields();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+		if (minorVersion >= 7) {
 			for (Method m : PropertyMap.getMethods()) {
 				if (m.getName().equals("putAll") && m.getParameterCount() == 1) PropertyMap_putAll = m;
 			}
@@ -153,14 +158,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	private static void initializeClasses() throws Exception {
 		EnumChatFormat_ = (Class<Enum>) getNMSClass("EnumChatFormat");
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+		if (minorVersion >= 7) {
 			//1.7+
 			PacketPlayOutChat = getNMSClass("PacketPlayOutChat");
 			PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective");
 			PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
 			PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
 			PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (minorVersion >= 8) {
 				//1.8+
 				GameProfile = Class.forName("com.mojang.authlib.GameProfile");
 				PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
@@ -177,9 +182,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PacketPlayOutScoreboardScore = getNMSClass("Packet207SetScoreboardScore");
 			PacketPlayOutScoreboardTeam = getNMSClass("Packet209SetScoreboardTeam");
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			//1.8+
+		if (minorVersion >= 7) {
 			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
+		}
+		if (minorVersion >= 8) {
+			//1.8+
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 			try {
 				//v1_8_R2+
@@ -199,20 +206,20 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				EnumGamemode_ = (Class<Enum>) getNMSClass("WorldSettings$EnumGamemode");
 			}
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (minorVersion >= 9) {
 			//1.9+
 			PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
 			BarColor = getNMSClass("BossBattle$BarColor");
 			BarStyle = getNMSClass("BossBattle$BarStyle");
 			PacketPlayOutBoss_Action = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
+		if (minorVersion >= 12) {
 			//1.12+
 			ChatMessageType = getNMSClass("ChatMessageType");
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (minorVersion >= 13) {
 			EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action");
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		} else if (minorVersion >= 8) {
 			try {
 				//v1_8_R2+
 				EnumScoreboardAction = (Class<Enum>) getNMSClass("PacketPlayOutScoreboardScore$EnumScoreboardAction");
@@ -224,35 +231,38 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	private static void initializeConstructors() throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 16) {
+		if (minorVersion >= 16) {
 			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, ChatMessageType, UUID.class);
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
+		} else if (minorVersion >= 12) {
 			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, ChatMessageType);
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		} else if (minorVersion >= 8) {
 			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, byte.class);
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
+		} else if (minorVersion == 7) {
 			try {
 				//v1_7_R4
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, int.class);
 			} catch (Exception e) {
-				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, boolean.class);
+				//v1_7_R1 - R3
+				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent);
 			}
+		} else if (minorVersion == 6) {
+			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent);
 		} else {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(String.class, boolean.class);
+			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(String.class);
 		}
 
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
 		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (minorVersion >= 13) {
 			newPacketPlayOutScoreboardScore_1_13 = PacketPlayOutScoreboardScore.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
 		} else {
 			newPacketPlayOutScoreboardScore0 = PacketPlayOutScoreboardScore.getConstructor();
 			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore.getConstructor(String.class);
 		}
 		newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+		if (minorVersion >= 7) {
 			newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (minorVersion >= 8) {
 				//1.8+
 				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
 				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
@@ -261,10 +271,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				newPacketPlayOutPlayerInfo0 = PacketPlayOutPlayerInfo.getConstructor();
 			}
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (minorVersion >= 9) {
 			newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
 		}
 	}
@@ -277,7 +287,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		//PacketPlayOutScoreboardObjective
 		(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutScoreboardObjective_DISPLAYNAME = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			(PacketPlayOutScoreboardObjective_RENDERTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
 			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
 		} else {
@@ -295,18 +305,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		(PacketPlayOutScoreboardTeam_DISPLAYNAME = PacketPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);
 		(PacketPlayOutScoreboardTeam_PREFIX = PacketPlayOutScoreboardTeam.getDeclaredField("c")).setAccessible(true);
 		(PacketPlayOutScoreboardTeam_SUFFIX = PacketPlayOutScoreboardTeam.getDeclaredField("d")).setAccessible(true);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (minorVersion >= 9) {
 			//1.9+
 			(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_COLLISION = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("i")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("j")).setAccessible(true);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			if (minorVersion >= 13) {
 				(PacketPlayOutScoreboardTeam_CHATFORMAT = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
 			}
 		} else {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (minorVersion >= 8) {
 				//1.8.x
 				(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 				(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
@@ -320,9 +330,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 		}
 
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
+		if (minorVersion >= 7) {
 			//PacketPlayOutPlayerInfo
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (minorVersion >= 8) {
 				//1.8+
 				(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
 				(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
@@ -346,13 +356,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			(GameProfile_NAME = GameProfile.getDeclaredField("name")).setAccessible(true);
 			(GameProfile_PROPERTIES = GameProfile.getDeclaredField("properties")).setAccessible(true);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			//PacketPlayOutPlayerListHeaderFooter
 			List<Field> fields = getFields(PacketPlayOutPlayerListHeaderFooter, NMSHook.IChatBaseComponent);
 			PacketPlayOutPlayerListHeaderFooter_HEADER = fields.get(0);
 			PacketPlayOutPlayerListHeaderFooter_FOOTER = fields.get(1);
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (minorVersion >= 9) {
 			//PacketPlayOutBoss
 			(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
 			(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
@@ -368,7 +378,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (minorVersion >= 9) {
 			//1.9+ server
 			Object nmsPacket = newPacketPlayOutBoss.newInstance();
 			PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
@@ -454,27 +464,30 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 16) {
+		if (minorVersion >= 16) {
 			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()), UUID.randomUUID());
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 12) {
+		} else if (minorVersion >= 12) {
 			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()));
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		} else if (minorVersion >= 8) {
 			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), (byte)packet.type.ordinal());
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 6) {
+		} else if (minorVersion == 7) {
 			try {
 				//v1_7_R4
 				return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), packet.type.ordinal());
 			} catch (Exception e) {
-				return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), true);
+				//v1_7_R1 - R3
+				return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)));
 			}
+		} else if (minorVersion == 6) {
+			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toColoredText()));
 		} else {
-			return newPacketPlayOutChat.newInstance(packet.message.toColoredText(), true);
+			return newPacketPlayOutChat.newInstance(packet.message.toColoredText());
 		}
 	}
 
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			Object nmsPacket = newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(EnumPlayerInfoAction_, packet.action.toString()), Collections.EMPTY_LIST);
 			List<Object> items = new ArrayList<Object>();
 			for (PlayerInfoData data : packet.entries) {
@@ -523,13 +536,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		Object nmsPacket = newPacketPlayOutScoreboardObjective.newInstance();
 		PacketPlayOutScoreboardObjective_OBJECTIVENAME.set(nmsPacket, packet.objectiveName);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (minorVersion >= 13) {
 			PacketPlayOutScoreboardObjective_DISPLAYNAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion)));
 		} else {
 			PacketPlayOutScoreboardObjective_DISPLAYNAME.set(nmsPacket, displayName);
 		}
 		if (PacketPlayOutScoreboardObjective_RENDERTYPE != null && packet.renderType != null) {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (minorVersion >= 8) {
 				PacketPlayOutScoreboardObjective_RENDERTYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay, packet.renderType.toString()));
 			} else {
 				PacketPlayOutScoreboardObjective_RENDERTYPE.set(nmsPacket, packet.renderType.ordinal());
@@ -541,7 +554,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (minorVersion >= 13) {
 			return newPacketPlayOutScoreboardScore_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, packet.action.toString()), packet.objectiveName, packet.player, packet.score);
 		}
 		if (packet.action == me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action.REMOVE) {
@@ -551,7 +564,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		PacketPlayOutScoreboardScore_PLAYER.set(nmsPacket, packet.player);
 		PacketPlayOutScoreboardScore_OBJECTIVENAME.set(nmsPacket, packet.objectiveName);
 		PacketPlayOutScoreboardScore_SCORE.set(nmsPacket, packet.score);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			PacketPlayOutScoreboardScore_ACTION.set(nmsPacket, Enum.valueOf(EnumScoreboardAction, packet.action.toString()));
 		} else {
 			PacketPlayOutScoreboardScore_ACTION.set(nmsPacket, packet.action.ordinal());
@@ -570,7 +583,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		Object nmsPacket = newPacketPlayOutScoreboardTeam.newInstance();
 		PacketPlayOutScoreboardTeam_NAME.set(nmsPacket, packet.name);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (minorVersion >= 13) {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
 			if (prefix != null && prefix.length() > 0) PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(prefix).toString(clientVersion)));
 			if (suffix != null && suffix.length() > 0) PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(suffix).toString(clientVersion)));
@@ -590,7 +603,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	private static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
+		return Class.forName("net.minecraft.server." + serverPackage + "." + name);
 	}
 
 	private static List<Field> getFields(Class<?> clazz, Class<?> type){
@@ -605,7 +618,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception{
 		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+		if (minorVersion >= 8) {
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 			for (Object nmsData : (List) PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
