@@ -49,7 +49,7 @@ public class NumberedStaticLine extends ScoreboardLine {
 			String[] prefix_other = split(this.text, 16);
 			prefix1_7 = prefix_other[0];
 			String other = prefix_other[1];
-			String[] name_suffix = split(other, 40);
+			String[] name_suffix = split(other, 16);
 			name1_7 = name_suffix[0];
 			suffix1_7 = name_suffix[1];
 		}

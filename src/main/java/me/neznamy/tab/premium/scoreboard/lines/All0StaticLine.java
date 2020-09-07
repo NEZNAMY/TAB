@@ -58,7 +58,7 @@ public class All0StaticLine extends ScoreboardLine {
 			String other = prefix_other[1];
 			String lastColors = Placeholders.getLastColors(prefix1_7);
 			other = getPlayerName() + lastColors + other;
-			String[] name_suffix = split(other, 40);
+			String[] name_suffix = split(other, 16);
 			name1_7 = name_suffix[0];
 			suffix1_7 = name_suffix[1];
 		}
