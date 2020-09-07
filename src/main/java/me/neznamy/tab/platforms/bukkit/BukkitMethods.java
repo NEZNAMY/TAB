@@ -264,15 +264,6 @@ public class BukkitMethods implements PlatformMethods {
 			removeOld(config, "header-footer-refresh-interval-milliseconds");
 			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 			removeOld(config, "relational-placeholders-refresh");
-			if (Bukkit.getPluginManager().isPluginEnabled("eGlow")) {
-				for (Object group : config.getConfigurationSection("Groups").keySet()) {
-					String tagprefix = config.getString("Groups." + group + ".tagprefix");
-					if (tagprefix != null && !tagprefix.contains("%eglow_glowcolor%")) {
-						Shared.print('2', "eGlow is installed but %eglow_glowcolor% is not used in tagprefix of group " + group + ". Adding it to make eGlow work properly");
-						config.set("Groups." + group + ".tagprefix", tagprefix + "%eglow_glowcolor%");
-					}
-				}
-			}
 			if (config.hasConfigOption("tablist-objective")) {
 				String type = config.getString("tablist-objective");
 				String value;
