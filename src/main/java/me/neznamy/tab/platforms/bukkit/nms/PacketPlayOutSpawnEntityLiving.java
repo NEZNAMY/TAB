@@ -89,11 +89,7 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 		this.z = loc.getZ();
 		this.yaw = loc.getYaw();
 		this.pitch = loc.getPitch();
-	}
-	
-	public PacketPlayOutSpawnEntityLiving setDataWatcher(DataWatcher dataWatcher) {
 		this.dataWatcher = dataWatcher;
-		return this;
 	}
 	
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
