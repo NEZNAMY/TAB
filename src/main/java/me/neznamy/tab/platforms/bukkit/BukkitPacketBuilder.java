@@ -380,63 +380,75 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (minorVersion >= 9) {
 			//1.9+ server
-			Object nmsPacket = newPacketPlayOutBoss.newInstance();
-			PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
-			PacketPlayOutBoss_ACTION.set(nmsPacket, Enum.valueOf((Class<Enum>)PacketPlayOutBoss_Action, packet.operation.toString()));
-			if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
-				PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
-			}
-			if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
-				PacketPlayOutBoss_NAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-			}
-			if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-				PacketPlayOutBoss_COLOR.set(nmsPacket, Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
-				PacketPlayOutBoss_STYLE.set(nmsPacket, Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
-			}
-			if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
-				PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
-				PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
-				PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
-			}
-			return nmsPacket;
+			return buildBossPacket19(packet, clientVersion);
 		}
 		if (clientVersion.getMinorVersion() >= 9 && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			//1.9+ client on 1.8 server
 			//technically redundant VV check as there is no other way to get 1.9 client on 1.8 server
-			ByteBuf buf = Unpooled.buffer();
-			Type.VAR_INT.writePrimitive(buf, 0x0C);
-			Type.UUID.write(buf, packet.id);
-			Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
-			switch (packet.operation) {
-			case ADD:
-				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-				Type.FLOAT.writePrimitive(buf, packet.pct);
-				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
-				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
-				Type.BYTE.write(buf, packet.getFlags());
-				break;
-			case REMOVE:
-				break;
-			case UPDATE_PCT:
-				Type.FLOAT.writePrimitive(buf, packet.pct);
-				break;
-			case UPDATE_NAME:
-				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-				break;
-			case UPDATE_STYLE:
-				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
-				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
-				break;
-			case UPDATE_PROPERTIES:
-				Type.BYTE.write(buf, packet.getFlags());
-				break;
-			default:
-				break;
-			}
-			return buf;
+			return buildBossPacketVia(packet, clientVersion);
 		}
 
 		//<1.9 client and server
+		return buildBossPacketEntity(packet, clientVersion);
+	}
+	
+	public Object buildBossPacket19(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
+		Object nmsPacket = newPacketPlayOutBoss.newInstance();
+		PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
+		PacketPlayOutBoss_ACTION.set(nmsPacket, Enum.valueOf((Class<Enum>)PacketPlayOutBoss_Action, packet.operation.toString()));
+		if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
+			PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
+		}
+		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
+			PacketPlayOutBoss_NAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+		}
+		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
+			PacketPlayOutBoss_COLOR.set(nmsPacket, Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
+			PacketPlayOutBoss_STYLE.set(nmsPacket, Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
+		}
+		if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
+			PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
+			PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
+			PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
+		}
+		return nmsPacket;
+	}
+	
+	public Object buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
+		ByteBuf buf = Unpooled.buffer();
+		Type.VAR_INT.writePrimitive(buf, 0x0C);
+		Type.UUID.write(buf, packet.id);
+		Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
+		switch (packet.operation) {
+		case ADD:
+			Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+			Type.FLOAT.writePrimitive(buf, packet.pct);
+			Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+			Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+			Type.BYTE.write(buf, packet.getFlags());
+			break;
+		case REMOVE:
+			break;
+		case UPDATE_PCT:
+			Type.FLOAT.writePrimitive(buf, packet.pct);
+			break;
+		case UPDATE_NAME:
+			Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+			break;
+		case UPDATE_STYLE:
+			Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+			Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+			break;
+		case UPDATE_PROPERTIES:
+			Type.BYTE.write(buf, packet.getFlags());
+			break;
+		default:
+			break;
+		}
+		return buf;
+	}
+	
+	public Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (packet.operation == Action.UPDATE_STYLE) return null; //nothing to do here
 
 		int entityId = ((BossBar)Shared.featureManager.getFeature("bossbar")).getLine(packet.id).entityId;
