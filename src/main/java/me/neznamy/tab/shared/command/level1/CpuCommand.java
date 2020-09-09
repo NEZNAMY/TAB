@@ -24,7 +24,7 @@ public class CpuCommand extends SubCommand {
 	private final String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
 	private final String HEADER_FOOTER = "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ";
 	private final String TITLE = "&8&l" + LINE_CHAR + " &6CPU stats from the last minute";
-	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders:";
+	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders that use more than 0.1%:";
 	private final String PLACEHOLDER_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
 	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
