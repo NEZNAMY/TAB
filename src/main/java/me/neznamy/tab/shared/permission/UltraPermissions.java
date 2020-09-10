@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import me.TechsCode.UltraPermissions.UltraPermissionsAPI;
-import me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee;
-import me.TechsCode.UltraPermissions.storage.objects.Group;
-import me.TechsCode.UltraPermissions.storage.objects.User;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
@@ -23,32 +19,37 @@ public class UltraPermissions implements PermissionPlugin {
 	}
 	
 	@Override
-	public String getPrimaryGroup(TabPlayer p) {
+	public String getPrimaryGroup(TabPlayer p) throws Exception {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return "null";
 		return groups[0];
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public String[] getAllGroups(TabPlayer p) {
-		UltraPermissionsAPI api = null;
+	public String[] getAllGroups(TabPlayer p) throws Exception {
+		Object api = null;
 		if (Shared.platform.getSeparatorType().equals("server")) { //meh solution but whatever
-			api = UltraPermissionsBungee.getAPI();
+			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);
 		} else {
-			api = me.TechsCode.UltraPermissions.UltraPermissions.getAPI();
+			api = Class.forName("me.TechsCode.UltraPermissions.UltraPermissions").getMethod("getAPI").invoke(null);
 		}
 		if (api == null) {
 			Shared.errorManager.printError("UltraPermissions v" + version + " returned null API");
 			return new String[]{"null"};
 		}
-		Optional<User> user = api.getUsers().name(p.getName());
-		if (user == null || !user.isPresent()) {
+		Object users = api.getClass().getMethod("getUsers").invoke(api);
+		Optional<Object> optUser = (Optional<Object>) users.getClass().getMethod("name", String.class).invoke(users, p.getName());
+		if (optUser == null || !optUser.isPresent()) {
 			Shared.errorManager.printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"null"};
 		}
 		List<String> groups = new ArrayList<String>();
-		for (Group group : user.get().getActiveGroups().bestToWorst()) {
-			groups.add(group.getName());
+		Object user = optUser.get();
+		Object activeGroups = user.getClass().getMethod("getActiveGroups").invoke(user);
+		Iterable<Object> bestToWorst = (Iterable<Object>) activeGroups.getClass().getMethod("bestToWorst").invoke(activeGroups);
+		for (Object group : bestToWorst) {
+			groups.add((String) group.getClass().getMethod("getName").invoke(group));
 		}
 		return groups.toArray(new String[0]);
 	}

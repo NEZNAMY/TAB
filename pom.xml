@@ -612,15 +612,6 @@
 
 		<!-- Manual Jars -->
 
-		<!-- UltraPermissions -->
-		<dependency>
-			<groupId>jars</groupId>
-			<artifactId>UltraPermissions</artifactId>
-			<version>4.7.8</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}\jars\UltraPermissions 4.7.8.jar</systemPath>
-		</dependency>
-
 		<!-- NetworkManager -->
 		<dependency>
 			<groupId>jars</groupId>
