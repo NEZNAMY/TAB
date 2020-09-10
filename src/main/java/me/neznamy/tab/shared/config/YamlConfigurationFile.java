@@ -18,6 +18,7 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.yamlassist.YamlError;
 
 /**
  * YAML implementation of ConfigurationFile
@@ -47,9 +48,9 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
 			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
-			String fix = Shared.errorManager.suggestYamlFix(e, readAllLines());
-			if (fix != null) {
-				Shared.platform.sendConsoleMessage("&d[TAB] Suggestion: " + fix, true);
+			YamlError error = new YamlError(e, readAllLines());
+			if (error.getSuggestion() != null) {
+				Shared.platform.sendConsoleMessage("&d[TAB] Suggestion: " + error.getSuggestion(), true);
 			}
 			throw e;
 		}
