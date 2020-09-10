@@ -94,4 +94,18 @@ public interface PacketBuilder {
 			return string.substring(0, length);
 		}
 	}
+	
+	/**
+	 * Returns the text as json component for 1.13+ clients or cut text for 1.12-
+	 * @param text - text to convert
+	 * @param clientVersion - client version
+	 * @return component for 1.13+ clients, cut string for 1.12-
+	 */
+	public default String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
+		if (clientVersion.getMinorVersion() >= 13) {
+			return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
+		} else {
+			return cutTo(text, length);
+		}
+	}
 }

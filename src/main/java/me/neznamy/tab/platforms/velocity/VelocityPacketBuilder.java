@@ -90,13 +90,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-		String displayName = packet.displayName;
-		if (clientVersion.getMinorVersion() >= 13) {
-			displayName = IChatBaseComponent.optimizedComponent(displayName).toString(clientVersion);
-		} else {
-			displayName = cutTo(displayName, 32);
-		}
-		return new ScoreboardObjective(packet.objectiveName, displayName, packet.renderType == null ? null : HealthDisplay.valueOf(packet.renderType.toString()), (byte)packet.method);
+		return new ScoreboardObjective(packet.objectiveName, jsonOrCut(packet.displayName, clientVersion, 32), packet.renderType == null ? null : HealthDisplay.valueOf(packet.renderType.toString()), (byte)packet.method);
 	}
 
 	@Override
@@ -107,20 +101,12 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
 		if (packet.name == null || packet.name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
-		String teamDisplay;
-		int color;
-		String prefix;
-		String suffix;
+		String teamDisplay = jsonOrCut(packet.name, clientVersion, 16);
+		int color = 0;
+		String prefix = jsonOrCut(packet.playerPrefix, clientVersion, 16);
+		String suffix = jsonOrCut(packet.playerSuffix, clientVersion, 16);
 		if (clientVersion.getMinorVersion() >= 13) {
-			prefix = IChatBaseComponent.optimizedComponent(packet.playerPrefix).toString(clientVersion);
-			suffix = IChatBaseComponent.optimizedComponent(packet.playerSuffix).toString(clientVersion);
-			teamDisplay = IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion);
 			color = EnumChatFormat.lastColorsOf(packet.playerPrefix).getNetworkId();
-		} else {
-			prefix = cutTo(packet.playerPrefix, 16);
-			suffix = cutTo(packet.playerSuffix, 16);
-			teamDisplay = packet.name;
-			color = 0;
 		}
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
