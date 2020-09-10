@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -156,13 +157,15 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private static String asGradient(TextColor start, String text, TextColor end) {
+		String colors = Placeholders.getLastColors(Placeholders.color(text));
+		String decolorized = text.substring(colors.length());
 		StringBuilder sb = new StringBuilder();
-		int length = text.length();
+		int length = decolorized.length();
 		for (int i=0; i<length; i++) {
 			int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
 			int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
 			int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
-			sb.append("#" + toHexString(red, green, blue) + text.charAt(i));
+			sb.append("#" + toHexString(red, green, blue) + colors + decolorized.charAt(i));
 		}
 		return sb.toString();
 	}
