@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bungee;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
@@ -55,13 +54,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-		Chat bungeePacket = new Chat(packet.message.toString(clientVersion), (byte) packet.type.ordinal());
-		try {
-			bungeePacket.setSender(UUID.randomUUID());
-		} catch (NoSuchMethodError e) {
-			//old bungeecord version
-		}
-		return bungeePacket;
+		return new Chat(packet.message.toString(clientVersion), (byte) packet.type.ordinal());
 	}
 
 	@Override
