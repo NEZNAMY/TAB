@@ -20,46 +20,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	
 	@Override
 	public void registerPlaceholders() {
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
-			public String get(ITabPlayer p) {
-				Object rank = null;
-				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
-					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {
-						rank = entry.getValue();
-						break;
-					}
-				}
-				if (rank == null) rank = Configs.rankAliases.get("_OTHER_");
-				if (rank == null) rank = p.getGroup();
-				return String.valueOf(rank);
-			}
-			@Override
-			public String[] getChilds(){
-				List<String> list = new ArrayList<String>();
-				for (Object value : Configs.rankAliases.values()) {
-					list.add(value.toString());
-				}
-				return list.toArray(new String[0]);
-			}
-		});
-		Placeholders.registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
-			public String get() {
-				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
-					if (all.isStaff()) var++;
-				}
-				return var+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
-			public String get() {
-				int var = Shared.getPlayers().size();
-				for (ITabPlayer all : Shared.getPlayers()){
-					if (all.isStaff()) var--;
-				}
-				return var+"";
-			}
-		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"%", 1000) {
 			public String get(ITabPlayer p) {
 				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
@@ -75,26 +35,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
-			public String get() {
-				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
-			}
-		});
-		Placeholders.registerPlaceholder(new ServerConstant("%memory-max%") {
-			public String get() {
-				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
-			public String get() {
-				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
-			}
-		});
-		Placeholders.registerPlaceholder(new ServerConstant("%memory-max-gb%") {
-			public String get() {
-				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
-			}
-		});
+		
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
 			public String get(ITabPlayer p) {
 				return p.getName();
@@ -125,6 +66,36 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getVersion().getFriendlyName();
 			}
 		});
+		registerLuckPermsPlaceholders();
+		registerMemoryPlaceholders();
+		registerStaffPlaceholders();
+		registerRankPlaceholder();
+	}
+	
+	private void registerMemoryPlaceholders() {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
+			public String get() {
+				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
+			}
+		});
+		Placeholders.registerPlaceholder(new ServerConstant("%memory-max%") {
+			public String get() {
+				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
+			public String get() {
+				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
+			}
+		});
+		Placeholders.registerPlaceholder(new ServerConstant("%memory-max-gb%") {
+			public String get() {
+				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
+			}
+		});
+	}
+	
+	private void registerLuckPermsPlaceholders() {
 		if (Shared.permissionPlugin instanceof LuckPerms) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 				public String get(ITabPlayer p) {
@@ -137,5 +108,51 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
+	}
+	
+	private void registerStaffPlaceholders() {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
+			public String get() {
+				int var = 0;
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (all.isStaff()) var++;
+				}
+				return var+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
+			public String get() {
+				int var = Shared.getPlayers().size();
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (all.isStaff()) var--;
+				}
+				return var+"";
+			}
+		});
+	}
+	
+	private void registerRankPlaceholder() {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
+			public String get(ITabPlayer p) {
+				Object rank = null;
+				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
+					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {
+						rank = entry.getValue();
+						break;
+					}
+				}
+				if (rank == null) rank = Configs.rankAliases.get("_OTHER_");
+				if (rank == null) rank = p.getGroup();
+				return String.valueOf(rank);
+			}
+			@Override
+			public String[] getChilds(){
+				List<String> list = new ArrayList<String>();
+				for (Object value : Configs.rankAliases.values()) {
+					list.add(value.toString());
+				}
+				return list.toArray(new String[0]);
+			}
+		});
 	}
 }

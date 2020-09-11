@@ -42,20 +42,7 @@ public class PlaceholderManager implements QuitEventListener {
 
 	public PlaceholderManager(){
 		instance = this;
-		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
-			serverPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
-			Shared.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
-		}
-		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.player").entrySet()) {
-			playerPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
-			Shared.debug("Loaded refresh " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
-		}
-		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
-			relationalPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
-			Shared.debug("Loaded refresh " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
-		}
-
+		loadRefreshIntervals();
 		AtomicInteger atomic = new AtomicInteger();
 		Shared.cpu.startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
@@ -91,7 +78,6 @@ public class PlaceholderManager implements QuitEventListener {
 				}
 				for (Placeholder placeholder : new HashSet<>(Placeholders.usedPlaceholders)) { //avoiding concurrent modification on reload
 					if (loopTime % placeholder.cooldown != 0) continue;
-//					System.out.println(placeholder.getIdentifier() + " - " + placeholder.cooldown);
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
 						for (ITabPlayer all : players) {
@@ -117,31 +103,51 @@ public class PlaceholderManager implements QuitEventListener {
 					}
 				}
 				if (somethingChanged) {
-					for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
-						if (forceUpdate.containsKey(entry.getKey())) {
-							entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
-						}
-					}
-					Shared.cpu.runTask("refreshing", new Runnable() {
+					refresh(forceUpdate, update);
+				}
+			}
+		});
+	}
+	
+	private void loadRefreshIntervals() {
+		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
+			serverPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
+		}
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.player").entrySet()) {
+			playerPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
+		}
+		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
+			relationalPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			Shared.debug("Loaded refresh " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
+		}
+	}
+	
+	private void refresh(Map<ITabPlayer, Set<Refreshable>> forceUpdate, Map<ITabPlayer, Set<Refreshable>> update) {
+		for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+			if (forceUpdate.containsKey(entry.getKey())) {
+				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
+			}
+		}
+		Shared.cpu.runTask("refreshing", new Runnable() {
 
-						@Override
-						public void run() {
-							for (Entry<ITabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
-								for (Refreshable r : entry.getValue()) {
-									long startTime = System.nanoTime();
-									r.refresh(entry.getKey(), true);
-									Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
-								}
-							}
-							for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
-								for (Refreshable r : entry.getValue()) {
-									long startTime = System.nanoTime();
-									r.refresh(entry.getKey(), false);
-									Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
-								}
-							}
-						}
-					});
+			@Override
+			public void run() {
+				for (Entry<ITabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
+					for (Refreshable r : entry.getValue()) {
+						long startTime = System.nanoTime();
+						r.refresh(entry.getKey(), true);
+						Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
+					}
+				}
+				for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+					for (Refreshable r : entry.getValue()) {
+						long startTime = System.nanoTime();
+						r.refresh(entry.getKey(), false);
+						Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
+					}
 				}
 			}
 		});

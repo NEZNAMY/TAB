@@ -51,21 +51,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return "-";
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 100) {
-			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockX()+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%yPos%", 100) {
-			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockY()+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%zPos%", 100) {
-			public String get(ITabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockZ()+"";
-			}
-		});
+		
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(ITabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
@@ -76,37 +62,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"";
 			}
 		});
-		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
-				public String get(ITabPlayer p) {
-					String name = null;
-					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getNickname();
-					}
-					if (name == null || name.length() == 0) return p.getName();
-					return Configs.SECRET_essentials_nickname_prefix + name;
-				}
-			});
-		} else {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 999999) {
-
-				@Override
-				public String get(ITabPlayer p) {
-					return p.getName();
-				}
-			});
-		}
-		if (Bukkit.getPluginManager().isPluginEnabled("DeluxeTags")) {
-			Placeholders.registerPlaceholder(new PlayerPlaceholder("%deluxetag%", 500) {
-				public String get(ITabPlayer p) {
-					try {
-						return (String) Class.forName("me.clip.deluxetags.DeluxeTag").getMethod("getPlayerDisplayTag", Player.class).invoke(null, ((Player) p.getPlayer()));
-					} catch (Throwable t) {
-						return Shared.errorManager.printError("", "Failed to get DeluxeTag of " + p.getName(), t);
-					}
-				}
-			});
-		}
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 			public String get(ITabPlayer p) {
 				return (int) Math.ceil(((Player) p.getPlayer()).getHealth())+"";
@@ -123,6 +78,36 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
+			public String get(ITabPlayer p) {
+				int var = 0;
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+				}
+				return var+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseestaffonline%", 2000) {
+			public String get(ITabPlayer p) {
+				int var = 0;
+				for (ITabPlayer all : Shared.getPlayers()){
+					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+				}
+				return var+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
+			public String get() {
+				return Bukkit.getMaxPlayers()+"";
+			}
+		});
+		registerAFKPlaceholder();
+		registerVaultPlaceholders();
+		registerPositionPlaceholders();
+		registerEssentialsPlaceholders();
+	}
+
+	private void registerAFKPlaceholder() {
 		AFKProvider afk;
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			afk = new xAntiAFK();
@@ -151,24 +136,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return new String[] {Configs.yesAfk, Configs.noAfk};
 			}
 		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
-			public String get(ITabPlayer p) {
-				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
-					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
-				}
-				return var+"";
-			}
-		});
-		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseestaffonline%", 2000) {
-			public String get(ITabPlayer p) {
-				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
-					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
-				}
-				return var+"";
-			}
-		});
+	}
+
+	private void registerVaultPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
@@ -196,10 +166,44 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
-			public String get() {
-				return Bukkit.getMaxPlayers()+"";
+	}
+	
+	private void registerPositionPlaceholders() {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 100) {
+			public String get(ITabPlayer p) {
+				return ((Player) p.getPlayer()).getLocation().getBlockX()+"";
 			}
 		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%yPos%", 100) {
+			public String get(ITabPlayer p) {
+				return ((Player) p.getPlayer()).getLocation().getBlockY()+"";
+			}
+		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%zPos%", 100) {
+			public String get(ITabPlayer p) {
+				return ((Player) p.getPlayer()).getLocation().getBlockZ()+"";
+			}
+		});
+	}
+	
+	private void registerEssentialsPlaceholders() {
+		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
+				public String get(ITabPlayer p) {
+					String name = null;
+					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getNickname();
+					}
+					if (name == null || name.length() == 0) return p.getName();
+					return Configs.SECRET_essentials_nickname_prefix + name;
+				}
+			});
+		} else {
+			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 999999) {
+				public String get(ITabPlayer p) {
+					return p.getName();
+				}
+			});
+		}
 	}
 }
