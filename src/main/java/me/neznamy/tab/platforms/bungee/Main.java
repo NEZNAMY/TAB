@@ -106,7 +106,7 @@ public class Main extends Plugin {
 						if (modifiedPacket instanceof Team) {
 							modifyPlayers((Team) modifiedPacket);
 						}
-						if (modifiedPacket instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8) {
+						if (modifiedPacket instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8 && player.getVersion() != ProtocolVersion.UNKNOWN) {
 							ByteBuf buf = ((ByteBuf) modifiedPacket).duplicate();
 							if (buf.readByte() == ((TabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
