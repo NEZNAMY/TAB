@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.Shared;
  */
 public class UpdateChecker {
 
-	private final String currentVersion = "2.8.5";
+	private final String currentVersion = "2.8.6";
 	
 	public UpdateChecker() {
 		new Thread(new Runnable() {
