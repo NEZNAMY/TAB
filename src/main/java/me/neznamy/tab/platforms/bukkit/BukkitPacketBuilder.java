@@ -70,6 +70,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Class<?> PacketPlayOutChat;
 	private static Class<?> ChatMessageType;
 	private static Constructor<?> newPacketPlayOutChat;
+	private static Field PacketPlayOutChat_MESSAGE;
+	private static Field PacketPlayOutChat_POSITION;
+	private static Field PacketPlayOutChat_SENDER;
 
 	//PacketPlayOutPlayerListHeaderFooter
 	private static Class<?> PacketPlayOutPlayerListHeaderFooter;
@@ -231,26 +234,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	private static void initializeConstructors() throws Exception {
-		if (minorVersion >= 16) {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, ChatMessageType, UUID.class);
-		} else if (minorVersion >= 12) {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, ChatMessageType);
-		} else if (minorVersion >= 8) {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, byte.class);
-		} else if (minorVersion == 7) {
-			try {
-				//v1_7_R4
-				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent, int.class);
-			} catch (Exception e) {
-				//v1_7_R1 - R3
-				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent);
-			}
-		} else if (minorVersion == 6) {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(NMSHook.IChatBaseComponent);
-		} else {
-			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(String.class);
-		}
-
+		newPacketPlayOutChat = PacketPlayOutChat.getConstructor();
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
 		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
 		if (minorVersion >= 13) {
@@ -280,6 +264,15 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	private static void initializeFields() throws Exception {
+		//PacketPlayOutChat
+		if (minorVersion >= 7) {
+			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("a")).setAccessible(true);
+		} else {
+			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("message")).setAccessible(true);
+		}
+		if (minorVersion >= 8) (PacketPlayOutChat_POSITION = PacketPlayOutChat.getDeclaredField("b")).setAccessible(true);
+		if (minorVersion >= 16) (PacketPlayOutChat_SENDER = PacketPlayOutChat.getDeclaredField("c")).setAccessible(true);
+		
 		//PacketPlayOutScoreboardDisplayObjective
 		(PacketPlayOutScoreboardDisplayObjective_POSITION = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("b")).setAccessible(true);
@@ -474,25 +467,23 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws Exception {
-		if (minorVersion >= 16) {
-			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()), UUID.randomUUID());
-		} else if (minorVersion >= 12) {
-			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()));
-		} else if (minorVersion >= 8) {
-			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), (byte)packet.type.ordinal());
-		} else if (minorVersion == 7) {
-			try {
-				//v1_7_R4
-				return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)), packet.type.ordinal());
-			} catch (Exception e) {
-				//v1_7_R1 - R3
-				return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toString(clientVersion)));
-			}
+		Object nmsPacket = newPacketPlayOutChat.newInstance();
+		if (minorVersion >= 7) {
+			PacketPlayOutChat_MESSAGE.set(nmsPacket, NMSHook.stringToComponent(packet.message.toString(clientVersion)));
 		} else if (minorVersion == 6) {
-			return newPacketPlayOutChat.newInstance(NMSHook.stringToComponent(packet.message.toColoredText()));
+			PacketPlayOutChat_MESSAGE.set(nmsPacket, "{\"text\":\"" + packet.message.toColoredText() + "\"}");
 		} else {
-			return newPacketPlayOutChat.newInstance(packet.message.toColoredText());
+			PacketPlayOutChat_MESSAGE.set(nmsPacket, packet.message.toColoredText());
 		}
+		if (minorVersion >= 12) {
+			PacketPlayOutChat_POSITION.set(nmsPacket, Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()));
+		} else if (minorVersion >= 8) {
+			PacketPlayOutChat_POSITION.set(nmsPacket, (byte)packet.type.ordinal());
+		}
+		if (minorVersion >= 16) {
+			PacketPlayOutChat_SENDER.set(nmsPacket, UUID.randomUUID());
+		}
+		return nmsPacket;
 	}
 
 	@Override
