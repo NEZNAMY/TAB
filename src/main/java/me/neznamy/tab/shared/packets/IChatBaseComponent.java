@@ -288,22 +288,9 @@ public class IChatBaseComponent {
 		return toString();
 	}
 
+	@Override
 	public String toString() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) {
-			//1.7+
-			return jsonObject.toString();
-		} else {
-			String text = toColoredText();
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 6) {
-				//1.6.x
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("text", text);
-				return jsonObject.toString();
-			} else {
-				//1.5.x
-				return text;
-			}
-		}
+		return jsonObject.toString();
 	}
 
 	public static IChatBaseComponent fromColoredText(String originalText){
