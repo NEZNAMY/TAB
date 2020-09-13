@@ -5,22 +5,37 @@ package me.neznamy.tab.shared.cpu;
  */
 public enum UsageType {
 
+	//events
 	PLAYER_JOIN_EVENT("PlayerJoinEvent"),
 	PLAYER_QUIT_EVENT("PlayerQuitEvent"),
-	WORLD_SWITCH_EVENT("WorldSwitchEvent"),
+	WORLD_SWITCH_EVENT("PlayerChangedWorldEvent"),
 	PLAYER_TOGGLE_SNEAK_EVENT("PlayerToggleSneakEvent"),
 	PLAYER_MOVE_EVENT("PlayerMoveEvent"),
 	PLAYER_TELEPORT_EVENT("PlayerTeleportEvent"),
 	PLAYER_RESPAWN_EVENT("PlayerRespawnEvent"),
-	REFRESHING("Refreshing"),
+	COMMAND_PREPROCESS("PlayerCommandPreprocessEvent"),
+	
+	//packets
 	PACKET_READING("Packet reading"),
 	PACKET_MOUNT("Mount packet"),
-	PACKET_ENTITY_DESTROY("Entity destroy packet"),
-	PACKET_ENTITY_MOVE("Entity move packet"),
-	PACKET_NAMED_ENTITY_SPAWN("Named entity spawn"),
-	COMMAND_PREPROCESS("Command preprocess"),
-	REPEATING_TASK("Additional repeating task"),
-	OTHER("Other");
+	PACKET_ENTITY_DESTROY("PacketPlayOutEntityDestroy"),
+	PACKET_ENTITY_MOVE("PacketPlayOutEntity"),
+	PACKET_NAMED_ENTITY_SPAWN("PacketPlayOutNamedEntitySpawn"),
+	
+	//nametags
+	REFRESHING_COLLISION("Refreshing collision rule"),
+	REFRESHING_NAMETAG_VISIBILITY("Refreshing nametag visibility"),
+	
+	//bossbar
+	TELEPORTING_ENTITY("Teleporting entity"),
+	
+	//petfix
+	DISPLAYING_ARM_ANIMATION("Displaying arm animation"),
+	
+	//other
+	REFRESHING("Refreshing"),
+	REPEATING_TASK("Repeating task"),
+	v1_8_0_BUG_COMPENSATION("Compensating for 1.8.0 bugs");
 	
 	//user-friendly name to be used in /tab cpu
 	private String friendlyName;

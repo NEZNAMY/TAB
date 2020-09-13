@@ -39,7 +39,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 			for (ITabPlayer p : Shared.getPlayers()) {
 				p.nameTagVisible = !p.hasInvisibility();
 			}
-			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 				public void run() {
 					for (ITabPlayer p : Shared.getPlayers()) {
 						boolean visible = !p.hasInvisibility();
@@ -51,7 +51,7 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 				}
 			});
 		}
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", getFeatureType(), UsageType.REFRESHING_COLLISION, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished) continue;

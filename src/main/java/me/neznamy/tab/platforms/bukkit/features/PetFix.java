@@ -72,7 +72,7 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 				
 				//sending packet from a different thread because sending packet inside pipeline will cause a disconnect when protocollib is installed
 				//and client connected via bungee
-				Shared.cpu.runMeasuredTask("sending packet", getFeatureType(), UsageType.OTHER, new Runnable() {
+				Shared.cpu.runMeasuredTask("sending packet", getFeatureType(), UsageType.DISPLAYING_ARM_ANIMATION, new Runnable() {
 
 					@Override
 					public void run() {

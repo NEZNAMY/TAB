@@ -88,7 +88,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				all.getArmorStandManager().spawn(worldPlayer);
 			}
 		}
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished || p.disabledNametag) continue;
@@ -96,7 +96,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				}
 			}
 		});
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", TabFeature.NAMETAGS, UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", TabFeature.NAMETAGS, UsageType.REFRESHING_COLLISION, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.onJoinFinished || p.disabledNametag) continue;

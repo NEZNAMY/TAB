@@ -156,7 +156,7 @@ public class BukkitArmorStand implements ArmorStand {
 				};
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					Shared.cpu.runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, spawn);
+					Shared.cpu.runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.v1_8_0_BUG_COMPENSATION, spawn);
 				} else {
 					spawn.run();
 				}
