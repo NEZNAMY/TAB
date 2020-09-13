@@ -73,6 +73,7 @@ public class MissingQuote extends SyntaxError {
 	private String removeIndent(String text) {
 		String result = text;
 		while (result.startsWith(" ")) result = result.substring(1);
+		while (result.endsWith(" ")) result = result.substring(0, result.length()-1);
 		return result;
 	}
 }
