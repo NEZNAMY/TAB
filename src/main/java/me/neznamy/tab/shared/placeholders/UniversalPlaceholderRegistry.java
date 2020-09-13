@@ -145,8 +145,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				if (rank == null) rank = p.getGroup();
 				return String.valueOf(rank);
 			}
+			
 			@Override
-			public String[] getChilds(){
+			public String[] getNestedPlaceholders(){
 				List<String> list = new ArrayList<String>();
 				for (Object value : Configs.rankAliases.values()) {
 					list.add(value.toString());

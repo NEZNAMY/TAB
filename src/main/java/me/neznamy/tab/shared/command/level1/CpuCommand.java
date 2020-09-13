@@ -74,7 +74,7 @@ public class CpuCommand extends SubCommand {
 				if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			} else {
 				RelationalPlaceholder rel = Placeholders.getRelationalPlaceholder(entry.getKey()+"");
-				if (rel != null) refresh = " &8(" + rel.refresh + ")&7";
+				if (rel != null) refresh = " &8(" + rel.getRefresh() + ")&7";
 			}
 			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}

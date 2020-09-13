@@ -106,8 +106,8 @@ public class Placeholders {
 		for (Placeholder placeholder : getAllPlaceholders()) {
 			if (rawValue.contains(placeholder.getIdentifier())) {
 				placeholdersTotal.add(placeholder);
-				for (String child : placeholder.getChilds()) {
-					for (Placeholder p : detectPlaceholders(child)) {
+				for (String nested : placeholder.getNestedPlaceholders()) {
+					for (Placeholder p : detectPlaceholders(nested)) {
 						placeholdersTotal.add(p);
 					}
 				}
@@ -167,7 +167,7 @@ public class Placeholders {
 						}
 						
 						@Override
-						public String[] getChilds(){
+						public String[] getNestedPlaceholders(){
 							return a.getAllMessages();
 						}
 						
@@ -191,7 +191,7 @@ public class Placeholders {
 						}
 						
 						@Override
-						public String[] getChilds(){
+						public String[] getNestedPlaceholders(){
 							return new String[] {c.yes, c.no};
 						}
 						

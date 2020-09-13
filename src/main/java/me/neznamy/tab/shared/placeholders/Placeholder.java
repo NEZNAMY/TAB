@@ -42,7 +42,7 @@ public abstract class Placeholder {
 		return refresh;
 	}
 	
-	public String[] getChilds(){
+	public String[] getNestedPlaceholders(){
 		return new String[0];
 	}
 	
