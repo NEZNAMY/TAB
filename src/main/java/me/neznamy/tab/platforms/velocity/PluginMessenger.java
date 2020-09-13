@@ -20,26 +20,19 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 public class PluginMessenger{
 
 	private MinecraftChannelIdentifier mc;
-	private Main plugin;
 	
 	public PluginMessenger(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
-		this.plugin = plugin;
 		plugin.server.getChannelRegistrar().register(mc);
 		plugin.server.getEventManager().register(plugin, this);
 		
 	}
 	public void requestPlaceholder(ITabPlayer player, String placeholder) {
+		if (player == null) return;
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
-		Player sender;
-		if (player == null) {
-			if (plugin.server.getAllPlayers().isEmpty()) return;
-			sender = plugin.server.getAllPlayers().toArray(new Player[0])[0];
-		} else {
-			sender = (Player) player.getPlayer();
-		}
+		Player sender = (Player) player.getPlayer();
 		if (sender.getCurrentServer().isPresent())
 			try {
 				sender.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
