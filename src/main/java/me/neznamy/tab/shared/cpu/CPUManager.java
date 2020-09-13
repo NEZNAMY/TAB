@@ -21,7 +21,7 @@ import me.neznamy.tab.shared.Shared;
 public class CPUManager {
 
 	private final int bufferSizeMillis = 100;
-	private final int dataMemorySize = 600;
+	private final int dataMemorySize = 100;
 
 	private Map<TabFeature, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
