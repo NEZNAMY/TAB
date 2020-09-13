@@ -34,6 +34,7 @@ public class CpuCommand extends SubCommand {
 	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name% (%usage%%&7):";
 	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
+	private final String THREADS = "&8&l" + LINE_CHAR + " &7Threads created by the plugin (active/total): &7%n%";
 	private final String PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%total%%";
 	private final String BRIDGE_PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lBukkit bridge placeholders Total: &a&l%total%%";
 	private final String PLUGIN_INTERNALS = "&8&l" + LINE_CHAR + " &6&lPlugin internals: &a&l%total%%";
@@ -121,6 +122,7 @@ public class CpuCommand extends SubCommand {
 			}
 		}
 		sendMessage(sender, SEPARATOR);
+		sendMessage(sender, THREADS.replace("%n%", Shared.cpu.getThreadCount()));
 		sendMessage(sender, PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(placeholdersTotal))));
 		if (Shared.platform.getSeparatorType().equals("server")) {
 			sendMessage(sender, BRIDGE_PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal))));

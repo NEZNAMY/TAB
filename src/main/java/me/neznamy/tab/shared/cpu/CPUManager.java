@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import me.neznamy.tab.shared.Shared;
 
@@ -31,7 +32,7 @@ public class CPUManager {
 	private List<Map<String, Long>> placeholderUsageLastMinute = Collections.synchronizedList(new ArrayList<Map<String, Long>>());
 	private List<Map<String, Long>> bridgePlaceholderUsageLastMinute = Collections.synchronizedList(new ArrayList<Map<String, Long>>());
 
-	private ExecutorService exe = Executors.newCachedThreadPool();
+	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
 	public CPUManager() {
 		exe.submit(new Runnable() {
@@ -61,10 +62,14 @@ public class CPUManager {
 		});
 	}
 	
+	public String getThreadCount() {
+		return exe.getActiveCount() + "/" + exe.getPoolSize();
+	}
+	
 	public void cancelAllTasks() {
 		//preventing errors when tasks are inserted while shutting down
 		ExecutorService old = exe;
-		exe = Executors.newCachedThreadPool();
+		exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 		old.shutdownNow();
 	}
 	
