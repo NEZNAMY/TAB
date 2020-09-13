@@ -94,13 +94,7 @@ public class VelocityMethods implements PlatformMethods {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(ITabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
-					String name;
-					if (p == null) {
-						name = "null";
-					} else {
-						name = p.getName();
-					}
-					return lastValue.get(name);
+					return getLastValue(p);
 				}
 			}, true);
 			return;

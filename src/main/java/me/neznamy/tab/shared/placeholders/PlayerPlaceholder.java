@@ -16,18 +16,20 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		super(identifier, cooldown);
 	}
 	public boolean update(ITabPlayer p) {
-		String name = (p == null ? "null" : p.getName());
 		String newValue = get(p);
 		if (newValue == null) newValue = "";
 		if (!newValue.equals("ERROR") && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
-			lastValue.put(name, newValue);
+			lastValue.put(p.getName(), newValue);
 			return true;
 		}
 		return false;
 	}
 	public String getLastValue(ITabPlayer p) {
 		if (p == null) return identifier;
-		if (!lastValue.containsKey(p.getName())) update(p);
+		if (!lastValue.containsKey(p.getName())) {
+			lastValue.put(p.getName(), ""); //preventing stack overflow on bungee when initializing
+			update(p);
+		}
 		return lastValue.get(p.getName());
 	}
 	public abstract String get(ITabPlayer p);

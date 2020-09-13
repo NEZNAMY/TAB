@@ -1,16 +1,11 @@
 package me.neznamy.tab.platforms.bungee;
 
-import java.util.Set;
-
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import net.md_5.bungee.api.ProxyServer;
@@ -57,13 +52,6 @@ public class PluginMessenger implements Listener {
 			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			if (pl != null) {
 				pl.lastValue.put(receiver.getName(), output);
-				pl.lastValue.put("null", output);
-				Set<Refreshable> update = PlaceholderManager.getPlaceholderUsage(pl.getIdentifier());
-				for (Refreshable r : update) {
-					long startTime = System.nanoTime();
-					r.refresh(receiver, false);
-					Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
-				}
 				Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 			} else {
 				Shared.debug("Received output for unknown placeholder " + placeholder);
