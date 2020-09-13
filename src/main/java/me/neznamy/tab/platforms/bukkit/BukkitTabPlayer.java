@@ -24,11 +24,11 @@ import us.myles.ViaVersion.api.Via;
 /**
  * TabPlayer for Bukkit
  */
-public class TabPlayer extends ITabPlayer {
+public class BukkitTabPlayer extends ITabPlayer {
 
 	private Player player;
 
-	public TabPlayer(Player p) throws Exception {
+	public BukkitTabPlayer(Player p) throws Exception {
 		player = p;
 		world = p.getWorld().getName();
 		channel = (Channel) NMSHook.getChannel(player);

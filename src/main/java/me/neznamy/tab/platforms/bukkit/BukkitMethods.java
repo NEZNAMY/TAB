@@ -113,7 +113,7 @@ public class BukkitMethods implements PlatformMethods {
 		}
 
 		for (Player p : getOnlinePlayers()) {
-			ITabPlayer t = new TabPlayer(p);
+			ITabPlayer t = new BukkitTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			Shared.entityIdMap.put(p.getEntityId(), t);
 			if (inject) Main.inject(t.getUniqueId());

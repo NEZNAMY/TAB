@@ -64,7 +64,7 @@ public class VelocityMethods implements PlatformMethods {
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16(false));
 		for (Player p : server.getAllPlayers()) {
-			ITabPlayer t = new TabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
+			ITabPlayer t = new VelocityTabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) Main.inject(t.getUniqueId());
 		}

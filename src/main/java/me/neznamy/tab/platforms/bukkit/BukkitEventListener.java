@@ -22,7 +22,7 @@ public class BukkitEventListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		try {
 			if (Shared.disabled) return;
-			ITabPlayer p = new TabPlayer(e.getPlayer());
+			ITabPlayer p = new BukkitTabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			Main.inject(e.getPlayer().getUniqueId());

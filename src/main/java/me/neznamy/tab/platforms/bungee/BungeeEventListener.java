@@ -55,7 +55,7 @@ public class BungeeEventListener implements Listener {
 		try{
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				ITabPlayer p = new TabPlayer(e.getPlayer());
+				ITabPlayer p = new BungeeTabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);

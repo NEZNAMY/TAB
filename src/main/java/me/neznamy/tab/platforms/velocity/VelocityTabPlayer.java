@@ -11,11 +11,11 @@ import net.kyori.adventure.text.TextComponent;
 /**
  * TabPlayer for Velocity
  */
-public class TabPlayer extends ITabPlayer{
+public class VelocityTabPlayer extends ITabPlayer{
 
 	private Player player;
 
-	public TabPlayer(Player p, String server) {
+	public VelocityTabPlayer(Player p, String server) {
 		player = p;
 		world = server;
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();

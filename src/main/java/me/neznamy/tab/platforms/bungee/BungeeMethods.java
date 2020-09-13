@@ -69,7 +69,7 @@ public class BungeeMethods implements PlatformMethods {
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16(false));
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			ITabPlayer t = new TabPlayer(p);
+			ITabPlayer t = new BungeeTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) Main.inject(t.getUniqueId());
 		}

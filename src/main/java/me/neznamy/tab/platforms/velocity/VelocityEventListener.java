@@ -28,7 +28,7 @@ public class VelocityEventListener {
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				//join
-				ITabPlayer p = new TabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
+				ITabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise

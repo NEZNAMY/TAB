@@ -19,7 +19,7 @@ import net.md_5.bungee.protocol.Protocol;
 /**
  * TabPlayer for BungeeCord
  */
-public class TabPlayer extends ITabPlayer {
+public class BungeeTabPlayer extends ITabPlayer {
 	
 	private static Field wrapperField;
 	private static Object directionData;
@@ -40,7 +40,7 @@ public class TabPlayer extends ITabPlayer {
 	
 	private ProxiedPlayer player;
 
-	public TabPlayer(ProxiedPlayer p) throws Exception {
+	public BungeeTabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
 		if (p.getServer() != null) {
 			world = p.getServer().getInfo().getName();
