@@ -408,8 +408,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 	
 	public Object buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
+		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
 		ByteBuf buf = Unpooled.buffer();
-		Type.VAR_INT.writePrimitive(buf, 0x0C);
+		Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 ? 0x0D : 0x0C);
 		Type.UUID.write(buf, packet.id);
 		Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
 		switch (packet.operation) {
