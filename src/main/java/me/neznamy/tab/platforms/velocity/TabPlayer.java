@@ -21,7 +21,7 @@ public class TabPlayer extends ITabPlayer{
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
 		uniqueId = p.getUniqueId();
 		name = p.getUsername();
-		version = ProtocolVersion.fromNumber(player.getProtocolVersion().getProtocol());
+		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
 		init();
 	}
 	

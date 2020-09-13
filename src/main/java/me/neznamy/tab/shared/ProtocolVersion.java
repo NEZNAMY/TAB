@@ -108,14 +108,14 @@ public enum ProtocolVersion {
 	}
 
 	/**
-	 * Returns enum constant of entered version or UNKNOWN if unknown server version
-	 * @param serverString - friendly name of the version
+	 * Returns enum constant of entered version or UNKNOWN if unknown version
+	 * @param friendlyName - friendly name of the version
 	 * @return version or UNKNOWN if version is unknown
 	 */
-	public static ProtocolVersion fromServerString(String serverString) {
-		if (serverString.startsWith("1.8")) return v1_8;
+	public static ProtocolVersion fromFriendlyName(String friendlyName) {
+		if (friendlyName.startsWith("1.8")) return v1_8;
 		try {
-			return valueOf("v" + serverString.replace(".", "_"));
+			return valueOf("v" + friendlyName.replace(".", "_"));
 		} catch (Throwable e) {
 			return UNKNOWN;
 		}
@@ -123,12 +123,12 @@ public enum ProtocolVersion {
 
 	/**
 	 * Returns version from given network id
-	 * @param number - network id of protocol version
+	 * @param networkId - network id of protocol version
 	 * @return version from given network id
 	 */
-	public static ProtocolVersion fromNumber(int number) {
+	public static ProtocolVersion fromNetworkId(int networkId) {
 		for (ProtocolVersion v : values()) {
-			if (number == v.getNetworkId()) return v;
+			if (networkId == v.getNetworkId()) return v;
 		}
 		return UNKNOWN;
 	}

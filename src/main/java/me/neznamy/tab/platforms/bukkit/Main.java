@@ -27,7 +27,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable(){
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromServerString(Bukkit.getBukkitVersion().split("-")[0]);
+		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
 		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		ProtocolVersion.UNKNOWN.setMinorVersion(Integer.parseInt(serverPackage.split("_")[1]));
 		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");

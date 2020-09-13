@@ -34,7 +34,7 @@ public class TabPlayer extends ITabPlayer {
 		channel = (Channel) NMSHook.getChannel(player);
 		uniqueId = p.getUniqueId();
 		name = p.getName();
-		version = ProtocolVersion.fromNumber(getProtocolVersion());
+		version = ProtocolVersion.fromNetworkId(getProtocolVersion());
 		init();
 	}
 
