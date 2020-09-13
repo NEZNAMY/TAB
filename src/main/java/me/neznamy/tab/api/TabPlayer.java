@@ -188,7 +188,7 @@ public interface TabPlayer {
 	
 	/**
 	 * Sends the player a platform-specific packet
-	 * @param packet - an instance packet depending on platform
+	 * @param packet - an instance of packet depending on platform, or an instance of me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut
 	 * @since 2.8.5
 	 */
 	public void sendPacket(Object packet);
