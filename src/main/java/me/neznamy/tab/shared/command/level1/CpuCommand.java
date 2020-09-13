@@ -71,7 +71,7 @@ public class CpuCommand extends SubCommand {
 			String refresh = "";
 			if (!entry.getKey().toString().startsWith("%rel_")) {
 				Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
-				if (p != null) refresh = " &8(" + p.cooldown + ")&7";
+				if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			} else {
 				RelationalPlaceholder rel = Placeholders.getRelationalPlaceholder(entry.getKey()+"");
 				if (rel != null) refresh = " &8(" + rel.refresh + ")&7";

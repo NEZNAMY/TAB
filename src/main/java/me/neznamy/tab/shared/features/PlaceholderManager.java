@@ -58,7 +58,7 @@ public class PlaceholderManager implements QuitEventListener {
 				Map<ITabPlayer, Set<Refreshable>> forceUpdate = new HashMap<ITabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
 				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
-					if (loopTime % relPlaceholder.refresh != 0) continue;
+					if (loopTime % relPlaceholder.getRefresh() != 0) continue;
 					long startTime = System.nanoTime();
 					for (ITabPlayer p1 : players) {
 						for (ITabPlayer p2 : players) {
@@ -77,7 +77,7 @@ public class PlaceholderManager implements QuitEventListener {
 					Shared.cpu.addPlaceholderTime(relPlaceholder.identifier, System.nanoTime()-startTime);
 				}
 				for (Placeholder placeholder : new HashSet<>(Placeholders.usedPlaceholders)) { //avoiding concurrent modification on reload
-					if (loopTime % placeholder.cooldown != 0) continue;
+					if (loopTime % placeholder.getRefresh() != 0) continue;
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
 						for (ITabPlayer all : players) {

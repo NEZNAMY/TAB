@@ -15,14 +15,14 @@ import me.neznamy.tab.shared.Shared;
  */
 public abstract class Placeholder {
 
-	public int cooldown;
+	private int refresh;
 	protected String identifier;
 	private Map<String, Object> replacements = new HashMap<String, Object>();
 	private List<String> outputPlaceholders = new ArrayList<String>();
 	
-	public Placeholder(String identifier, int cooldown) {
+	public Placeholder(String identifier, int refresh) {
 		this.identifier = identifier;
-		this.cooldown = cooldown;
+		this.refresh = refresh;
 		if (Premium.is()) {
 			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
@@ -33,12 +33,19 @@ public abstract class Placeholder {
 			}
 		}
 	}
+	
 	public String getIdentifier() {
 		return identifier;
 	}
+	
+	public int getRefresh() {
+		return refresh;
+	}
+	
 	public String[] getChilds(){
 		return new String[0];
 	}
+	
 	public String set(String s, ITabPlayer p) {
 		try {
 			String value = getLastValue(p);

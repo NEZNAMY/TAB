@@ -10,14 +10,19 @@ import me.neznamy.tab.shared.ITabPlayer;
  */
 public abstract class RelationalPlaceholder {
 
-	public final int refresh;
-	public final String identifier;
-	public final Map<String, String> lastValue = new HashMap<String, String>();
+	private int refresh;
+	public String identifier;
+	public Map<String, String> lastValue = new HashMap<String, String>();
 
 	public RelationalPlaceholder(String identifier, int refresh) {
 		this.identifier = identifier;
 		this.refresh = refresh;
 	}
+	
+	public int getRefresh() {
+		return refresh;
+	}
+	
 	public boolean update(ITabPlayer viewer, ITabPlayer target) {
 		String mapKey = viewer.getName() + "-" + target.getName();
 		String newValue = get(viewer, target);
@@ -27,6 +32,7 @@ public abstract class RelationalPlaceholder {
 		}
 		return false;
 	}
+	
 	public String getLastValue(ITabPlayer viewer, ITabPlayer target) {
 		if (!lastValue.containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		return lastValue.get(viewer.getName() + "-" + target.getName());
