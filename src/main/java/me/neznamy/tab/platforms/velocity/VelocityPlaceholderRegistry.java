@@ -6,7 +6,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
@@ -21,7 +20,7 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	}
 	@Override
 	public void registerPlaceholders() {
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%maxplayers%", -1) {
 			public String get() {
 				return server.getConfiguration().getShowMaxPlayers()+"";
 			}

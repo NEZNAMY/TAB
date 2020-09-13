@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -37,7 +36,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%maxplayers%", -1) {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}

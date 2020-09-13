@@ -20,7 +20,6 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -96,7 +95,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		Placeholders.registerPlaceholder(new ServerConstant("%maxplayers%") {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%maxplayers%", -1) {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
 			}

@@ -11,7 +11,6 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerConstant;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
@@ -89,18 +88,7 @@ public class TABAPI {
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
 		Placeholders.registerPlaceholder(placeholder, true);
 	}
-
-
-	/**
-	 * Registers a server constant (constant with same output for all players)
-	 * @param constant - Constant handler
-	 * @since 2.7.0
-	 * @see registerPlayerPlaceholder
-	 * @see registerServerPlaceholder
-	 */
-	public static void registerServerConstant(ServerConstant constant) {
-		Placeholders.registerPlaceholder(constant);
-	}
+	
 
 	/**
 	 * Registers a relational placeholder

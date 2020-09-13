@@ -151,7 +151,7 @@ public class Placeholders {
 		}
 
 		if (registeredPlaceholders.containsKey(identifier)) {
-			if (!(registeredPlaceholders.get(identifier) instanceof ServerConstant)) usedPlaceholders.add(registeredPlaceholders.get(identifier));
+			usedPlaceholders.add(registeredPlaceholders.get(identifier));
 			return;
 		}
 
@@ -210,7 +210,7 @@ public class Placeholders {
 	}
 	public static void registerPlaceholder(Placeholder placeholder, boolean addToUsed) {
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		if (!(placeholder instanceof ServerConstant) && addToUsed) usedPlaceholders.add(placeholder);
+		if (addToUsed) usedPlaceholders.add(placeholder);
 	}
 	public static void registerPlaceholder(RelationalPlaceholder placeholder) {
 		registeredRelationalPlaceholders.put(placeholder.identifier, placeholder);

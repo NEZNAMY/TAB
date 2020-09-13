@@ -78,7 +78,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		Placeholders.registerPlaceholder(new ServerConstant("%memory-max%") {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-max%", -1) {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
@@ -88,7 +88,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		Placeholders.registerPlaceholder(new ServerConstant("%memory-max-gb%") {
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-max-gb%", -1) {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
