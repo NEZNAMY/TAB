@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,6 +11,8 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -24,11 +28,10 @@ public class CpuCommand extends SubCommand {
 	private final String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
 	private final String HEADER_FOOTER = "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ";
 	private final String TITLE = "&8&l" + LINE_CHAR + " &6CPU stats from the last minute";
-	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders that use more than 0.1%:";
+	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.1%:";
 	private final String PLACEHOLDER_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
 	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
 	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
-	private final String FEATURES_TITLE = "&8&l" + LINE_CHAR + " &6Features:";
 	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name% (%usage%%&7):";
 	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
 	private final String PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%total%%";
@@ -84,15 +87,37 @@ public class CpuCommand extends SubCommand {
 			}
 			sendMessage(sender, SEPARATOR);
 		}
-		sendMessage(sender, FEATURES_TITLE);
+		if (sender != null) {
+			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
+		} else {
+			Shared.platform.sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
+		}
 		for (Entry<TabFeature, Map<UsageType, Float>> entry : features.entrySet()) {
 			float featureTotal = 0;
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
 			}
-			sendMessage(sender, FEATURE_NAME.replace("%name%", entry.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(featureTotal))));
+			String core = FEATURE_NAME.replace("%name%", entry.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(featureTotal)));
+			List<String> messages = new ArrayList<String>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
-				sendMessage(sender, FEATURE_LINE.replace("%category%", type.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(type.getValue()))));
+				if (sender != null) {
+					//player
+					messages.add("&3" + type.getKey().toString() + " - " + colorizeFeature(decimal3.format(type.getValue())) + "%");
+				} else {
+					//console
+					messages.add(FEATURE_LINE.replace("%category%", type.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(type.getValue()))));
+				}
+			}
+			if (sender != null) {
+				//player
+				IChatBaseComponent message = new IChatBaseComponent(Placeholders.color(core));
+				message.onHoverShowText(Placeholders.color(String.join("\n", messages)));
+				sender.sendCustomPacket(new PacketPlayOutChat(message));
+			} else {
+				Shared.platform.sendConsoleMessage(core, true);
+				for (String message : messages) {
+					Shared.platform.sendConsoleMessage(message, true);
+				}
 			}
 		}
 		sendMessage(sender, SEPARATOR);
