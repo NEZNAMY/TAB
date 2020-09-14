@@ -58,12 +58,7 @@ public class Main extends JavaPlugin {
 			}
 		});
 		Shared.load(true);
-		try {
-			Class.forName("com.google.gson.JsonObject");
-			Metrics.start(this);
-		} catch (ClassNotFoundException e) {
-			//1.8.2 or lower
-		}
+		BukkitMetrics.start(this);
 	}
 
 	@Override
