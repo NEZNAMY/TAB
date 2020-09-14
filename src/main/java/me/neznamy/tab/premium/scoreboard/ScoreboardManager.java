@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -76,13 +77,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : Shared.getPlayers()) {
 			onJoin(p);
 		}
 		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.onJoinFinished) continue;
+					if (!p.isLoaded()) continue;
 					if (p.forcedScoreboard != null) continue;
 					Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
@@ -109,9 +110,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer p) {
-		p.hiddenScoreboard = sb_off_players.contains(p.getName());
-		send(p);
+	public void onJoin(TabPlayer p) {
+		((ITabPlayer)p).hiddenScoreboard = sb_off_players.contains(p.getName());
+		send((ITabPlayer) p);
 	}
 	
 	public void send(ITabPlayer p) {
@@ -127,8 +128,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 	
 	@Override
-	public void onQuit(ITabPlayer p) {
-		unregisterScoreboard(p, false);
+	public void onQuit(TabPlayer p) {
+		unregisterScoreboard((ITabPlayer) p, false);
 	}
 	
 	public void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
@@ -143,12 +144,12 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
-		unregisterScoreboard(p, true);
-		send(p);
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		unregisterScoreboard((ITabPlayer) p, true);
+		send((ITabPlayer) p);
 	}
 	
-	public String getHighestScoreboard(ITabPlayer p) {
+	public String getHighestScoreboard(TabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
 		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
 		if (scoreboard != null) {
@@ -163,7 +164,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 	
 	@Override
-	public boolean onCommand(ITabPlayer sender, String message) {
+	public boolean onCommand(TabPlayer sender, String message) {
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"scoreboard"});

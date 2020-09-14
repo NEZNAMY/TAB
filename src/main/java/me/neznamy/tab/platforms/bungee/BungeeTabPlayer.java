@@ -2,8 +2,11 @@ package me.neznamy.tab.platforms.bungee;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
+import me.neznamy.tab.platforms.velocity.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -39,6 +42,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	}
 	
 	private ProxiedPlayer player;
+	private Map<String, String> attributes = new HashMap<String, String>();
 
 	public BungeeTabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
@@ -111,5 +115,23 @@ public class BungeeTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isVanished() {
 		return ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player);
+	}
+	
+	@Override
+	public boolean isDisguised() {
+		Main.plm.requestAttribute(this, "disguised");
+		if (!attributes.containsKey("disguised")) return false;
+		return Boolean.parseBoolean(attributes.get("disguised"));
+	}
+	
+	public void setAttribute(String attribute, String value) {
+		attributes.put(attribute, value);
+	}
+
+	@Override
+	public boolean hasInvisibility() {
+		Main.plm.requestAttribute(this, "invisible");
+		if (!attributes.containsKey("invisible")) return false;
+		return Boolean.parseBoolean(attributes.get("invisible"));
 	}
 }

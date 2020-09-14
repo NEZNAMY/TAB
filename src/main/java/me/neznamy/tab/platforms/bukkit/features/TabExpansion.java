@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.EnumProperty;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -48,7 +48,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	@Override
 	public String onPlaceholderRequest(Player player, String identifier){
 		if (player == null) return "";
-		ITabPlayer p = Shared.getPlayer(player.getUniqueId());
+		TabPlayer p = Shared.getPlayer(player.getUniqueId());
 		if (p == null) return "";
 		for (EnumProperty property : EnumProperty.values()) {
 			if (identifier.equals(property.toString())) {
@@ -59,10 +59,10 @@ public class TabExpansion extends PlaceholderExpansion {
 			}
 		}
 		if (identifier.equals("scoreboard_visible")) {
-			return p.hiddenScoreboard ? "Disabled" : "Enabled";
+			return p.hasHiddenScoreboard() ? "Disabled" : "Enabled";
 		}
 		if (identifier.equals("bossbar_visible")) {
-			return p.bossbarVisible ? "Enabled" : "Disabled";
+			return p.hasBossbarVisible() ? "Enabled" : "Disabled";
 		}
 		return null;
 	}

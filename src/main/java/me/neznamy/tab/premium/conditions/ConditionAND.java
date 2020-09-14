@@ -2,8 +2,8 @@ package me.neznamy.tab.premium.conditions;
 
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
-import me.neznamy.tab.shared.ITabPlayer;
 
 /**
  * A condition consisting of multiple SimpleConditions with AND type
@@ -15,7 +15,7 @@ public class ConditionAND extends Condition {
 	}
 
 	@Override
-	public boolean isMet(ITabPlayer p) {
+	public boolean isMet(TabPlayer p) {
 		for (SimpleCondition condition : conditions) {
 			if (!condition.isMet(p)) return false;
 		}

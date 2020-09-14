@@ -1,6 +1,6 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -56,7 +56,7 @@ public abstract class StaticLine extends ScoreboardLine {
 	}
 	
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 		//nothing to refresh
 	}
 

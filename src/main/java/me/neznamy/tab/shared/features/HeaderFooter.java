@@ -1,10 +1,11 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -21,46 +22,50 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
 	private Set<String> usedPlaceholders;
+	private List<String> disabledWorlds;
 	
 	public HeaderFooter() {
+		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 	}
 	
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()) refresh(p, true);
+		for (TabPlayer p : Shared.getPlayers()) {
+			refresh(p, true);
+		}
 	}
 	
 	@Override
 	public void unload() {
-		for (ITabPlayer p : Shared.getPlayers()) {
-			if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) continue;
+		for (TabPlayer p : Shared.getPlayers()) {
+			if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 		}
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
+	public void onJoin(TabPlayer connectedPlayer) {
 		refresh(connectedPlayer, true);
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (p.getVersion().getMinorVersion() < 8) return;
-		if (p.disabledHeaderFooter) {
-			if (!p.isDisabledWorld(Configs.disabledHeaderFooter, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
+		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+			if (!isDisabledWorld(disabledWorlds, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
 		} else {
 			refresh(p, true);
 		}
 	}
 	
 	@Override
-	public void refresh(ITabPlayer p, boolean force) {
+	public void refresh(TabPlayer p, boolean force) {
 		if (force) {
 			updateRawValue(p, "header");
 			updateRawValue(p, "footer");
 		}
-		if (p.disabledHeaderFooter || p.getVersion().getMinorVersion() < 8) return;
+		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").updateAndGet(), p.getProperty("footer").updateAndGet()));
 	}
 	
@@ -69,8 +74,8 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		return usedPlaceholders;
 	}
 
-	private void updateRawValue(ITabPlayer p, String name) {
-		String worldGroup = p.getWorldGroupOf(p.getWorldName());
+	private void updateRawValue(TabPlayer p, String name) {
+		String worldGroup = Configs.getWorldGroupOf(p.getWorldName());
 		StringBuilder rawValue = new StringBuilder();
 		List<String> lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
 		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
@@ -86,7 +91,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
 			rawValue.append(line);
 		}
-		p.setProperty(name, rawValue.toString(), null);
+		p.setProperty(name, rawValue.toString());
 	}
 	
 	@Override

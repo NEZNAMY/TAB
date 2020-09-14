@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -18,16 +17,15 @@ public class BossBarCommand extends SubCommand{
 	}
 
 	@Override
-	public void execute(TabPlayer s, String[] args) {
-		ITabPlayer sender = (ITabPlayer) s;
+	public void execute(TabPlayer sender, String[] args) {
 		BossBar bossbar = (BossBar) Shared.featureManager.getFeature("bossbar");
 		if (bossbar == null) {
 			sender.sendMessage("&cBossbar feature is not enabled, therefore toggle command cannot be used.", true);
 			return;
 		}
 		if (!bossbar.permToToggle || sender.hasPermission("tab.togglebar")) {
-			sender.bossbarVisible = !sender.bossbarVisible;
-			if (sender.bossbarVisible) {
+			sender.setBossbarVisible(!sender.hasBossbarVisible());
+			if (sender.hasBossbarVisible()) {
 				if (sender != null) bossbar.detectBossBarsAndSend(sender);
 				sender.sendMessage(Configs.bossbar_on, true);
 				if (bossbar.remember_toggle_choice) {
@@ -35,10 +33,10 @@ public class BossBarCommand extends SubCommand{
 					Configs.playerdata.set("bossbar-off", bossbar.bossbar_off_players);
 				}
 			} else {
-				for (BossBarLine line : sender.activeBossBars) {
+				for (BossBarLine line : sender.getActiveBossBars()) {
 					line.remove(sender);
 				}
-				sender.activeBossBars.clear();
+				sender.getActiveBossBars().clear();
 				sender.sendMessage(Configs.bossbar_off, true);
 				if (bossbar.remember_toggle_choice && !bossbar.bossbar_off_players.contains(sender.getName())) {
 					bossbar.bossbar_off_players.add(sender.getName());

@@ -11,7 +11,6 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -27,12 +26,6 @@ public class Configs {
 	public static List<String> revertedCollision;
 	public static LinkedHashMap<String, String> sortedGroups;
 	public static Map<Object, Object> rankAliases;
-	public static List<String> disabledHeaderFooter;
-	public static List<String> disabledTablistNames;
-	public static List<String> disabledNametag;
-	public static List<String> disabledTablistObjective;
-	public static List<String> disabledBossbar;
-	public static List<String> disabledBelowname;
 	public static SimpleDateFormat dateFormat;
 	public static SimpleDateFormat timeFormat;
 	public static double timeOffset;
@@ -100,7 +93,6 @@ public class Configs {
 		if (Premium.is()) {
 			Premium.loadPremiumConfig();
 		}
-		SortingType.initialize();
 		Shared.platform.suggestPlaceholders();
 	}
 
@@ -126,13 +118,6 @@ public class Configs {
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
-		disabledHeaderFooter = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		disabledTablistNames = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		disabledNametag = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.nametag", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		disabledTablistObjective = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-objective", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		disabledBossbar = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		disabledBelowname = config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
@@ -201,5 +186,16 @@ public class Configs {
 	}
 	public static boolean getCollisionRule(String world) {
 		return revertedCollision.contains(world) ? !collisionRule : collisionRule;
+	}
+	
+	public static String getWorldGroupOf(String world) {
+		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
+		if (worlds.isEmpty()) return world;
+		for (String worldGroup : worlds.keySet()) {
+			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {
+				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
+			}
+		}
+		return world;
 	}
 }

@@ -64,7 +64,10 @@ public class ExpansionDownloader {
 					public void run() {
 						try {
 							Thread.sleep(2000);
+							Shared.debug("Used expansions: " + expansions.toString());
+							Shared.debug("Registered expansions in PlaceholderAPI: " + PlaceholderAPI.getRegisteredIdentifiers());
 							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
+							Shared.debug("Expansions to install: " + expansions.toString());
 							if (!expansions.isEmpty()) {
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;

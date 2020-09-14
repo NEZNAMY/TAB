@@ -13,8 +13,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.robingrether.idisguise.api.DisguiseAPI;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
@@ -58,13 +58,18 @@ public class Main extends JavaPlugin {
 			}
 		});
 		Shared.load(true);
-		BukkitMetrics.start(this);
+		try {
+			Class.forName("com.google.gson.JsonObject");
+			Metrics.start(this);
+		} catch (ClassNotFoundException e) {
+			//1.8.2 or lower
+		}
 	}
 
 	@Override
 	public void onDisable() {
 		if (!Shared.disabled) {
-			for (ITabPlayer p : Shared.getPlayers()) {
+			for (TabPlayer p : Shared.getPlayers()) {
 				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 					Injector.uninject(p.getUniqueId());
 				}

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -27,7 +26,7 @@ public class ParseCommand extends SubCommand{
 			}
 			String message = Placeholders.color("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace("%placeholder%", replaced);
 			sendRawMessage(sender, message);
-			replaced = Shared.platform.replaceAllPlaceholders(replaced, (ITabPlayer) sender);
+			replaced = Shared.platform.replaceAllPlaceholders(replaced, sender);
 			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendCustomPacket(new PacketPlayOutChat(colored));

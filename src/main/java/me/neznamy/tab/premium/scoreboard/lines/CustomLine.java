@@ -1,7 +1,7 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -30,7 +30,7 @@ public class CustomLine extends ScoreboardLine {
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 		String oldName = refreshed.getProperty(teamName + "-name").get();
 		boolean prefix = refreshed.getProperty(teamName + "-prefix").update();
 		boolean name = refreshed.getProperty(teamName + "-name").update();
@@ -55,16 +55,16 @@ public class CustomLine extends ScoreboardLine {
 	}
 
 	@Override
-	public void register(ITabPlayer p) {
-		p.setProperty(teamName + "-prefix", prefix, null);
-		p.setProperty(teamName + "-name", name, null);
-		p.setProperty(teamName + "-suffix", suffix, null);
+	public void register(TabPlayer p) {
+		p.setProperty(teamName + "-prefix", prefix);
+		p.setProperty(teamName + "-name", name);
+		p.setProperty(teamName + "-suffix", suffix);
 		PacketAPI.registerScoreboardScore(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
 				p.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
 	}
 
 	@Override
-	public void unregister(ITabPlayer p) {
+	public void unregister(TabPlayer p) {
 		if (parent.players.contains(p)) {
 			PacketAPI.removeScoreboardScore(p, p.getProperty(teamName + "-name").get(), teamName);
 		}

@@ -9,7 +9,7 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -20,14 +20,14 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 public class PluginMessenger{
 
 	private MinecraftChannelIdentifier mc;
-	
+
 	public PluginMessenger(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
 		plugin.server.getChannelRegistrar().register(mc);
 		plugin.server.getEventManager().register(plugin, this);
-		
+
 	}
-	public void requestPlaceholder(ITabPlayer player, String placeholder) {
+	public void requestPlaceholder(TabPlayer player, String placeholder) {
 		if (player == null) return;
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
@@ -40,26 +40,50 @@ public class PluginMessenger{
 				// java.lang.IllegalStateException: Not connected to server!
 				// this is not the best way to deal with this problem, but i could not find a better one
 			}
-			
 	}
+
+	public void requestAttribute(TabPlayer player, String attribute) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("Attribute");
+		out.writeUTF(attribute);
+		Player sender = (Player) player.getPlayer();
+		if (sender.getCurrentServer().isPresent())
+			try {
+				sender.getCurrentServer().get().sendPluginMessage(mc, out.toByteArray());
+			} catch (IllegalStateException e) {
+				// java.lang.IllegalStateException: Not connected to server!
+				// this is not the best way to deal with this problem, but i could not find a better one
+			}
+	}
+
 	@Subscribe
 	public void on(PluginMessageEvent event){
 		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
 		String subChannel = in.readUTF();
-		if (event.getTarget() instanceof Player && subChannel.equalsIgnoreCase("Placeholder")){
-			event.setResult(ForwardResult.handled());
-			ITabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
-			if (receiver == null) return;
-			String placeholder = in.readUTF();
-			String output = in.readUTF();
-			long cpu = in.readLong();
-			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
-			if (pl != null) {
-				pl.lastValue.put(receiver.getName(), output);
-				Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
-			} else {
-				Shared.debug("Received output for unknown placeholder " + placeholder);
+		if (event.getTarget() instanceof Player) {
+			if (subChannel.equalsIgnoreCase("Placeholder")){
+				event.setResult(ForwardResult.handled());
+				TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
+				if (receiver == null) return;
+				String placeholder = in.readUTF();
+				String output = in.readUTF();
+				long cpu = in.readLong();
+				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
+				if (pl != null) {
+					pl.lastValue.put(receiver.getName(), output);
+					Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
+				} else {
+					Shared.debug("Received output for unknown placeholder " + placeholder);
+				}
+			}
+			if (subChannel.equals("Attribute")) {
+				event.setResult(ForwardResult.handled());
+				VelocityTabPlayer receiver = (VelocityTabPlayer) Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
+				if (receiver == null) return;
+				String attribute = in.readUTF();
+				String value = in.readUTF();
+				receiver.setAttribute(attribute, value);
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.premium.scoreboard.lines.All0StableDynamicLine;
@@ -38,7 +39,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private Condition displayCondition;
 	private String childBoard;
 	private List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
-	public List<ITabPlayer> players = new ArrayList<ITabPlayer>();
+	public List<TabPlayer> players = new ArrayList<TabPlayer>();
 	private Set<String> usedPlaceholders;
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
@@ -96,7 +97,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		return name;
 	}
 	
-	public boolean isConditionMet(ITabPlayer p) {
+	public boolean isConditionMet(TabPlayer p) {
 		if (displayCondition == null) return true;
 		return displayCondition.isMet(p);
 	}
@@ -105,13 +106,13 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		return childBoard;
 	}
 	
-	public List<ITabPlayer> getRegisteredUsers(){
+	public List<TabPlayer> getRegisteredUsers(){
 		return players;
 	}
 	
-	public void register(ITabPlayer p) {
+	public void register(TabPlayer p) {
 		if (!players.contains(p)) {
-			p.setProperty("scoreboard-title", title, null);
+			p.setProperty("scoreboard-title", title);
 			PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.getProperty("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 			for (ScoreboardLine s : lines) {
 				s.register(p);
@@ -121,14 +122,14 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	}
 	
 	public void unregister() {
-		for (ITabPlayer all : players.toArray(new ITabPlayer[0])) {
+		for (TabPlayer all : players.toArray(new TabPlayer[0])) {
 			unregister(all);
 		}
 		players.clear();
 		lines.clear();
 	}
 	
-	public void unregister(ITabPlayer p) {
+	public void unregister(TabPlayer p) {
 		if (players.contains(p)) {
 			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 			for (ScoreboardLine s : lines) {
@@ -139,7 +140,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty("scoreboard-title") == null) return;
 		refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 	}
@@ -155,7 +156,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	}
 
 	public void removeFrom(UUID player) {
-		ITabPlayer p = Shared.getPlayer(player);
+		ITabPlayer p = (ITabPlayer) Shared.getPlayer(player);
 		p.setActiveScoreboard(null);
 		unregister(p);
 	}

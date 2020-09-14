@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -157,7 +156,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		//nothing to do here, Playerlist feature handles unloading
 	}
 	@Override
-	public void onJoin(ITabPlayer p) {
+	public void onJoin(TabPlayer p) {
 		int width = getPlayerNameWidth(p);
 		if (width > maxWidth) {
 			maxWidth = width;
@@ -166,13 +165,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 	}
 	@Override
-	public void onQuit(ITabPlayer p) {
+	public void onQuit(TabPlayer p) {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
 			updateAllNames(null, UsageType.PLAYER_QUIT_EVENT);
 		}
 	}
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (maxPlayer == p && recalculateMaxWidth(null)) {
 			updateAllNames(null, UsageType.WORLD_SWITCH_EVENT);
 		}
@@ -183,7 +182,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 
 			@Override
 			public void run() {
-				for (ITabPlayer all : Shared.getPlayers()) {
+				for (TabPlayer all : Shared.getPlayers()) {
 					if (all == exception) continue;
 					playerlist.refresh(all, true);
 				}
@@ -192,11 +191,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 
 	// returns true if max changed, false if not
-	private boolean recalculateMaxWidth(ITabPlayer ignoredPlayer) {
+	private boolean recalculateMaxWidth(TabPlayer ignoredPlayer) {
 		int oldMaxWidth = maxWidth;
 		maxWidth = 0;
 		maxPlayer = null;
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = getPlayerNameWidth(all);
 			if (localWidth > maxWidth) {

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -46,7 +46,7 @@ public abstract class Placeholder {
 		return new String[0];
 	}
 	
-	public String set(String s, ITabPlayer p) {
+	public String set(String s, TabPlayer p) {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
@@ -59,7 +59,7 @@ public abstract class Placeholder {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
-	public String findReplacement(String originalOutput, ITabPlayer p) {
+	public String findReplacement(String originalOutput, TabPlayer p) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
 			return replacements.get(originalOutput).toString();
@@ -80,7 +80,7 @@ public abstract class Placeholder {
 		if (replacements.containsKey("else")) return replacements.get("else").toString();
 		return originalOutput;
 	}
-	private String setPlaceholders(String text, ITabPlayer p) {
+	private String setPlaceholders(String text, TabPlayer p) {
 		String replaced = text;
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
@@ -89,5 +89,5 @@ public abstract class Placeholder {
 		}
 		return replaced;
 	}
-	public abstract String getLastValue(ITabPlayer p);
+	public abstract String getLastValue(TabPlayer p);
 }

@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -26,7 +25,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
- * Bukkit events are too unreliable and delayed/ahead which causes desynchronization
+ * Bukkit events are too unreliable and delayed/ahead which causes desync
  */
 public class PacketListener implements RawPacketFeature, PlayerInfoPacketListener {
 
@@ -86,8 +85,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
 		if (sender.getVersion().getMinorVersion() == 8 && PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
-			ITabPlayer attacked = null;
-			for (ITabPlayer all : Shared.getPlayers()) {
+			TabPlayer attacked = null;
+			for (TabPlayer all : Shared.getPlayers()) {
 				if (all.getArmorStandManager().hasArmorStandWithID(entityId)) {
 					attacked = all;
 					break;
@@ -123,7 +122,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	public void onEntityMove(TabPlayer receiver, int entityId) {
-		ITabPlayer pl = Shared.entityIdMap.get(entityId);
+		TabPlayer pl = Shared.entityIdMap.get(entityId);
 		List<Integer> vehicleList;
 		if (pl != null) {
 			//player moved
@@ -135,7 +134,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Integer entity : vehicleList) {
-				ITabPlayer passenger = Shared.entityIdMap.get(entity);
+				TabPlayer passenger = Shared.entityIdMap.get(entity);
 				if (passenger != null) {
 					Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
 						public void run() {
@@ -148,8 +147,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
-		ITabPlayer spawnedPlayer = Shared.entityIdMap.get(entityId);
-		if (spawnedPlayer != null && !spawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
+		TabPlayer spawnedPlayer = Shared.entityIdMap.get(entityId);
+		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName())) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 
 			@Override
 			public void run() {
@@ -166,8 +165,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
 		for (int id : entities) {
-			ITabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-			if (despawnedPlayer != null && !despawnedPlayer.disabledNametag) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
+			TabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
+			if (despawnedPlayer != null) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
 
 				@Override
 				public void run() {
@@ -186,7 +185,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toList()));
 		}
 		for (int entity : passengers) {
-			ITabPlayer pass = Shared.entityIdMap.get(entity);
+			TabPlayer pass = Shared.entityIdMap.get(entity);
 			if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 				@Override
@@ -209,7 +208,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			}
 		}
-		ITabPlayer pass = Shared.entityIdMap.get(passenger);
+		TabPlayer pass = Shared.entityIdMap.get(passenger);
 		if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 			@Override

@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungee;
 import java.util.Map.Entry;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
@@ -29,8 +30,8 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 			Placeholders.registerPlaceholder(new ServerPlaceholder("%canseestaffonline%", 1000) {
 				public String get() {
 					int count = 0;
-					for (ITabPlayer all : Shared.getPlayers()) {
-						if (!all.isVanished() && all.isStaff()) count++;
+					for (TabPlayer all : Shared.getPlayers()) {
+						if (!((BungeeTabPlayer)all).isVanished() && all.isStaff()) count++;
 					}
 					return count+"";
 				}
@@ -56,7 +57,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 				public String get() {
 					int count = server.getValue().getPlayers().size();
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
-						if (Shared.getPlayer(p.getUniqueId()).isVanished()) count--;
+						if (((BungeeTabPlayer)Shared.getPlayer(p.getUniqueId())).isVanished()) count--;
 					}
 					return count+"";
 				}

@@ -22,13 +22,13 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
@@ -38,7 +38,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
+public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
@@ -47,7 +47,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
 	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
-	public Map<ITabPlayer, List<TabPlayer>> delayedSpawn = new HashMap<ITabPlayer, List<TabPlayer>>();
+	public Map<TabPlayer, List<TabPlayer>> delayedSpawn = new HashMap<TabPlayer, List<TabPlayer>>();
 	private EventListener eventListener;
 
 	public NameTagX(JavaPlugin plugin) {
@@ -61,17 +61,17 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
-		eventListener = new EventListener();
+		eventListener = new EventListener(this);
 		Shared.featureManager.registerFeature("nametagx-packet", new PacketListener(this));
 	}
 	
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		for (ITabPlayer all : Shared.getPlayers()){
-			all.teamName = SortingType.INSTANCE.getTeamName(all);
+		for (TabPlayer all : Shared.getPlayers()){
+			all.setTeamName(SortingType.INSTANCE.getTeamName(all));
 			updateProperties(all);
-			if (all.disabledNametag) continue;
+			if (isDisabledWorld(all.getWorldName())) continue;
 			all.registerTeam();
 			loadArmorStands(all);
 			if (((Entity) all.getPlayer()).getVehicle() != null) {
@@ -82,7 +82,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 				}
 				vehicles.put(vehicle.getEntityId(), list);
 			}
-			for (ITabPlayer worldPlayer : Shared.getPlayers()) {
+			for (TabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue;
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
 				all.getArmorStandManager().spawn(worldPlayer);
@@ -90,43 +90,33 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.onJoinFinished || p.disabledNametag) continue;
+				for (TabPlayer p : Shared.getPlayers()) {
+					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
 					p.getArmorStandManager().updateVisibility();
 				}
 			}
 		});
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", TabFeature.NAMETAGS, UsageType.REFRESHING_COLLISION, new Runnable() {
-			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.onJoinFinished || p.disabledNametag) continue;
-					boolean collision = p.getTeamPush();
-					if (p.lastCollision != collision) {
-						p.updateTeamData();
-					}
-				}
-			}
-		});
+		startCollisionRefreshingTask();
 	}
 	
 	@Override
 	public void unload() {
 		HandlerList.unregisterAll(eventListener);
-		for (ITabPlayer p : Shared.getPlayers()) {
-			if (!p.disabledNametag) p.unregisterTeam();
+		for (TabPlayer p : Shared.getPlayers()) {
+			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 			p.getArmorStandManager().destroy();
 		}
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
+	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
-			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
+			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}
-		if (connectedPlayer.disabledNametag) return;
+		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
 		loadArmorStands(connectedPlayer);
 		if (((Entity) connectedPlayer.getPlayer()).getVehicle() != null) {
@@ -146,13 +136,13 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	
 	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
-		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
 		Shared.cpu.runTaskLater(100, "Processing player quit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override
 			public void run() {
-				for (ITabPlayer all : Shared.getPlayers()) {
+				for (TabPlayer all : Shared.getPlayers()) {
 					all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 				}
 				disconnectedPlayer.getArmorStandManager().destroy();
@@ -161,11 +151,11 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		updateProperties(p);
-		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
+		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
 			p.unregisterTeam();
-		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
+		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
 			p.registerTeam();
 		} else {
 			p.updateTeam();
@@ -174,9 +164,9 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		}
 	}
 	
-	public void loadArmorStands(ITabPlayer pl) {
+	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
-		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue(), null);
+		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
@@ -189,7 +179,7 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		fixArmorStandHeights(pl);
 	}
 	
-	public void fixArmorStandHeights(ITabPlayer p) {
+	public void fixArmorStandHeights(TabPlayer p) {
 		p.getArmorStandManager().refresh();
 		double currentY = -Configs.SECRET_NTX_space;
 		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
@@ -202,8 +192,8 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (refreshed.disabledNametag) return;
+	public void refresh(TabPlayer refreshed, boolean force) {
+		if (isDisabledWorld(refreshed.getWorldName())) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -224,16 +214,16 @@ public class NameTagX implements Loadable, JoinEventListener, QuitEventListener,
 		if (fix) fixArmorStandHeights(refreshed);
 	}
 	
-	private void updateProperties(ITabPlayer p) {
-		p.updateProperty("tagprefix");
-		p.updateProperty("customtagname", p.getName());
-		p.updateProperty("tagsuffix");
-		p.setProperty("nametag", p.getProperty("tagprefix").getCurrentRawValue() + p.getProperty("customtagname").getCurrentRawValue() + p.getProperty("tagsuffix").getCurrentRawValue(), null);
+	private void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig("tagprefix");
+		p.loadPropertyFromConfig("customtagname", p.getName());
+		p.loadPropertyFromConfig("tagsuffix");
+		p.setProperty("nametag", p.getProperty("tagprefix").getCurrentRawValue() + p.getProperty("customtagname").getCurrentRawValue() + p.getProperty("tagsuffix").getCurrentRawValue());
 		for (String property : dynamicLines) {
-			if (!property.equals("nametag")) p.updateProperty(property);
+			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
 		}
 		for (String property : staticLines.keySet()) {
-			if (!property.equals("nametag")) p.updateProperty(property);
+			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
 		}
 	}
 	

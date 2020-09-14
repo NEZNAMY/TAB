@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -47,7 +47,8 @@ public enum SortingType {
 			Shared.featureManager.registerFeature("sorting-refresh", new Refreshable(){
 
 				@Override
-				public void refresh(ITabPlayer refreshed, boolean force) {
+				public void refresh(TabPlayer refreshed, boolean force) {
+					if (Shared.featureManager.getNameTagFeature().isDisabledWorld(refreshed.getWorldName())) return;
 					refreshed.updateTeam();
 				}
 
@@ -76,7 +77,7 @@ public enum SortingType {
 		}
 	}
 	
-	public String getTeamName(ITabPlayer p) {
+	public String getTeamName(TabPlayer p) {
 		String teamName = null;
 		switch(this){
 		case GROUPS:
@@ -139,9 +140,9 @@ public enum SortingType {
 			String potentialTeamName = teamName;
 			if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 			potentialTeamName += (char)i;
-			for (ITabPlayer all : Shared.getPlayers()) {
+			for (TabPlayer all : Shared.getPlayers()) {
 				if (all == p) continue;
-				if (all.teamName != null && all.teamName.equals(potentialTeamName)) {
+				if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
 					continue main;
 				}
 			}
@@ -149,7 +150,7 @@ public enum SortingType {
 		}
 		return "InvalidTeam";
 	}
-	private String placeholderZtoA(ITabPlayer p) {
+	private String placeholderZtoA(TabPlayer p) {
 		char[] chars = setPlaceholders(sortingPlaceholder, p).toCharArray();
 		for (int i=0; i<chars.length; i++) {
 			char c = chars[i];
@@ -162,34 +163,34 @@ public enum SortingType {
 		}
 		return new String(chars);
 	}
-	private String placeholderLowToHigh(ITabPlayer p) {
+	private String placeholderLowToHigh(TabPlayer p) {
 		int intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 		return String.valueOf(DEFAULT_NUMBER + intValue);
 	}
-	private String placeholderHighToLow(ITabPlayer p) {
+	private String placeholderHighToLow(TabPlayer p) {
 		int intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 		return String.valueOf(DEFAULT_NUMBER - intValue);
 	}
-	public String getGroupChars(String group, ITabPlayer p) {
+	public String getGroupChars(String group, TabPlayer p) {
 		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 4 chars
 		if (chars == null) {
 			chars = "";
 			if (!group.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
-			p.teamNameNote = "&cPlayer's primary group is not in sorting list";
+			p.setTeamNameNote("&cPlayer's primary group is not in sorting list");
 		} else {
-			p.teamNameNote = "Primary group is #" + Integer.parseInt(chars) + " in sorting list";
+			p.setTeamNameNote("Primary group is #" + Integer.parseInt(chars) + " in sorting list");
 			
 		}
 		return chars;
 	}
-	public String getGroupPermissionChars(ITabPlayer p) {
+	public String getGroupPermissionChars(TabPlayer p) {
 		String chars = null;
 		for (String localgroup : Configs.sortedGroups.keySet()) {
 			if (p.hasPermission("tab.sort." + localgroup)) {
 				chars = getGroupChars(localgroup, p);
-				p.teamNameNote = "Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)";
+				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)");
 				if (p.hasPermission("random.permission")) {
-					p.teamNameNote += ". &cThis user appears to have all permissions. Is he OP?";
+					p.setTeamNameNote(p.getTeamNameNote() + ". &cThis user appears to have all permissions. Is he OP?");
 				}
 				break;
 			}
@@ -197,11 +198,11 @@ public enum SortingType {
 		if (chars == null) {
 			chars = "";
 			Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			p.teamNameNote = "&cPlayer does not have sorting permission for any group in sorting list";
+			p.setTeamNameNote("&cPlayer does not have sorting permission for any group in sorting list");
 		}
 		return chars;
 	}
-	private String setPlaceholders(String string, ITabPlayer player) {
+	private String setPlaceholders(String string, TabPlayer player) {
 		String replaced = string;
 		if (string.contains("%")) {
 			for (String identifier : usedPlaceholders) {

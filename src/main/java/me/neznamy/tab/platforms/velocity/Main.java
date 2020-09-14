@@ -18,8 +18,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.velocity.protocol.Team;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -93,12 +93,12 @@ public class Main {
 	}
 
 	public static void inject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).channel;
+		Channel channel = Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 		channel.pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				ITabPlayer player = Shared.getPlayer(uuid);
+				TabPlayer player = Shared.getPlayer(uuid);
 				if (player == null) {
 					super.write(context, packet, channelPromise);
 					return;
@@ -126,8 +126,8 @@ public class Main {
 		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (ITabPlayer p : Shared.getPlayers()) {
-				if (col.contains(p.getName()) && !p.disabledNametag) {
+			for (TabPlayer p : Shared.getPlayers()) {
+				if (col.contains(p.getName()) && !Shared.featureManager.getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					col.remove(p.getName());
 				}
 			}

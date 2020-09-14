@@ -135,7 +135,7 @@ public class Property {
 	public boolean update() {
 		String string = getCurrentRawValue();
 		for (Placeholder pl : placeholders) {
-			string = pl.set(string, (ITabPlayer) owner);
+			string = pl.set(string, owner);
 		}
 		string = Placeholders.color(string);
 		for (String removed : Configs.removeStrings) {
@@ -165,7 +165,7 @@ public class Property {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (RelationalPlaceholder pl : relPlaceholders) {
-			format = format.replace(pl.identifier, pl.getLastValue((ITabPlayer) viewer, (ITabPlayer) owner));
+			format = format.replace(pl.identifier, pl.getLastValue(viewer, owner));
 		}
 		return format;
 	}

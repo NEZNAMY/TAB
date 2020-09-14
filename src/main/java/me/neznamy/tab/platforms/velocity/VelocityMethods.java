@@ -62,7 +62,7 @@ public class VelocityMethods implements PlatformMethods {
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16(false));
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		for (Player p : server.getAllPlayers()) {
 			ITabPlayer t = new VelocityTabPlayer(p, p.getCurrentServer().get().getServerInfo().getName());
 			Shared.data.put(p.getUniqueId(), t);

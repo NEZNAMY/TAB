@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -29,7 +30,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"online%", 1000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : Shared.getPlayers()){
 					if (p.getWorldName().equals(all.getWorldName())) var++;
 				}
 				return var+"";
@@ -114,7 +115,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : Shared.getPlayers()){
 					if (all.isStaff()) var++;
 				}
 				return var+"";
@@ -123,7 +124,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%nonstaffonline%", 2000) {
 			public String get() {
 				int var = Shared.getPlayers().size();
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : Shared.getPlayers()){
 					if (all.isStaff()) var--;
 				}
 				return var+"";

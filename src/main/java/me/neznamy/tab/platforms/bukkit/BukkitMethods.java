@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
@@ -97,7 +98,7 @@ public class BukkitMethods implements PlatformMethods {
 				}
 				Shared.featureManager.registerFeature("nametagx", new NameTagX(plugin));
 			} else {
-				Shared.featureManager.registerFeature("nametag16", new NameTag16(ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 || Bukkit.getPluginManager().isPluginEnabled("ViaVersion") || Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")));
+				Shared.featureManager.registerFeature("nametag16", new NameTag16());
 			}
 		}
 		if (Configs.BossBarEnabled) {
@@ -113,7 +114,7 @@ public class BukkitMethods implements PlatformMethods {
 		}
 
 		for (Player p : getOnlinePlayers()) {
-			ITabPlayer t = new BukkitTabPlayer(p);
+			BukkitTabPlayer t = new BukkitTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			Shared.entityIdMap.put(p.getEntityId(), t);
 			if (inject) Main.inject(t.getUniqueId());
@@ -351,7 +352,7 @@ public class BukkitMethods implements PlatformMethods {
 	}
 	
 	@Override
-	public String replaceAllPlaceholders(String string, ITabPlayer sender) {
+	public String replaceAllPlaceholders(String string, TabPlayer sender) {
 		String replaced = string;
 		for (Placeholder p : Placeholders.getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {

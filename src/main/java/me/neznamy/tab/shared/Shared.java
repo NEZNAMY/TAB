@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
@@ -30,7 +31,7 @@ public class Shared {
 	public static final String pluginVersion = "2.8.6";
 
 	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
-	public static final Map<Integer, ITabPlayer> entityIdMap = new ConcurrentHashMap<Integer, ITabPlayer>();
+	public static final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	public static final TabCommand command = new TabCommand();
 	public static final DisabledCommand disabledCommand = new DisabledCommand();
 	
@@ -46,19 +47,19 @@ public class Shared {
 	public static Collection<ITabPlayer> getPlayers(){
 		return data.values();
 	}
-	public static ITabPlayer getPlayer(String name) {
-		for (ITabPlayer p : data.values()) {
+	public static TabPlayer getPlayer(String name) {
+		for (TabPlayer p : data.values()) {
 			if (p.getName().equals(name)) return p;
 		}
 		return null;
 	}
-	public static ITabPlayer getPlayer(UUID uniqueId) {
+	public static TabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);
 	}
-	public static ITabPlayer getPlayerByTablistUUID(UUID tablistId) {
-		for (ITabPlayer p : data.values()) {
+	public static TabPlayer getPlayerByTablistUUID(UUID tablistId) {
+		for (TabPlayer p : data.values()) {
 			if (p.getUniqueId().toString().equals(tablistId.toString())) return p;
-			if (p.getOfflineId().toString().equals(tablistId.toString())) return p;
+			if (p.getOfflineUUID().equals(tablistId.toString())) return p;
 		}
 		return null;
 	}
@@ -69,7 +70,7 @@ public class Shared {
 	public static void debug(String message) {
 		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
-	public static void sendPluginInfo(ITabPlayer to) {
+	public static void sendPluginInfo(TabPlayer to) {
 		if (Premium.is() && !to.hasPermission("tab.admin")) return;
 		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(new TextColor(EnumChatFormat.DARK_AQUA)).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(new TextColor(EnumChatFormat.BLACK)));
@@ -86,7 +87,7 @@ public class Shared {
 			permissionPlugin = platform.detectPermissionPlugin();
 			platform.loadFeatures(inject);
 			featureManager.load();
-			getPlayers().forEach(p -> p.onJoinFinished = true);
+			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 		} catch (ParserException | ScannerException e) {

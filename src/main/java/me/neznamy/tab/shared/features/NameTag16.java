@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import java.util.Set;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -17,83 +18,70 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 /**
  * Feature handler for nametag feature
  */
-public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
+public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable {
 
 	private Set<String> usedPlaceholders;
-	private boolean fixVisibility;
 
-	public NameTag16(boolean fixVisibility) {
-		this.fixVisibility = fixVisibility;
+	public NameTag16() {
 		refreshUsedPlaceholders();
 	}
-	
+
 	@Override
 	public void load(){
-		for (ITabPlayer p : Shared.getPlayers()) {
-			p.teamName = SortingType.INSTANCE.getTeamName(p);
+		for (TabPlayer p : Shared.getPlayers()) {
+			p.setTeamName(SortingType.INSTANCE.getTeamName(p));
 			updateProperties(p);
-			if (!p.disabledNametag) p.registerTeam();
+			if (!isDisabledWorld(p.getWorldName())) p.registerTeam();
 		}
-		//fixing a 1.8.x client-sided vanilla bug on bukkit mode
-		if (fixVisibility) {
-			for (ITabPlayer p : Shared.getPlayers()) {
-				p.nameTagVisible = !p.hasInvisibility();
-			}
-			Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
-				public void run() {
-					for (ITabPlayer p : Shared.getPlayers()) {
-						boolean visible = !p.hasInvisibility();
-						if (p.nameTagVisible != visible) {
-							p.nameTagVisible = visible;
-							p.updateTeamData();
-						}
-					}
-				}
-			});
+		//fixing a 1.8.x client-sided vanilla bug
+		for (ITabPlayer p : Shared.getPlayers()) {
+			p.nameTagVisible = !p.hasInvisibility();
 		}
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", getFeatureType(), UsageType.REFRESHING_COLLISION, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.onJoinFinished) continue;
-					boolean collision = p.getTeamPush();
-					if (p.lastCollision != collision) {
+					if (isDisabledWorld(p.getWorldName())) continue;
+					boolean visible = !p.hasInvisibility();
+					if (p.nameTagVisible != visible) {
+						p.nameTagVisible = visible;
 						p.updateTeamData();
 					}
 				}
 			}
 		});
+		startCollisionRefreshingTask();
 	}
-	
+
 	@Override
 	public void unload() {
-		for (ITabPlayer p : Shared.getPlayers()) {
-			if (!p.disabledNametag) p.unregisterTeam();
+		for (TabPlayer p : Shared.getPlayers()) {
+			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 		}
 	}
-	
+
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-		connectedPlayer.teamName = SortingType.INSTANCE.getTeamName(connectedPlayer);
+	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		if (connectedPlayer.disabledNametag) return;
+		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue; //already registered 2 lines above
-			if (!all.disabledNametag) all.registerTeam(connectedPlayer);
+			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}
 	}
-	
+
 	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
-		if (!disconnectedPlayer.disabledNametag) disconnectedPlayer.unregisterTeam();
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
 	}
-	
+
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		updateProperties(p);
-		if (p.disabledNametag && !p.isDisabledWorld(Configs.disabledNametag, from)) {
+		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(from)) {
 			p.unregisterTeam();
-		} else if (!p.disabledNametag && p.isDisabledWorld(Configs.disabledNametag, from)) {
+		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(from)) {
 			p.registerTeam();
 		} else {
 			if (Shared.platform.getSeparatorType().equals("server")) {
@@ -112,8 +100,8 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (refreshed.disabledNametag) return;
+	public void refresh(TabPlayer refreshed, boolean force) {
+		if (isDisabledWorld(refreshed.getWorldName())) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -127,9 +115,9 @@ public class NameTag16 implements Loadable, JoinEventListener, QuitEventListener
 		if (refresh) refreshed.updateTeam();
 	}
 
-	private void updateProperties(ITabPlayer p) {
-		p.updateProperty("tagprefix");
-		p.updateProperty("tagsuffix");
+	private void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig("tagprefix");
+		p.loadPropertyFromConfig("tagsuffix");
 	}
 
 	@Override

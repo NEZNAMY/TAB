@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
@@ -40,14 +39,14 @@ public class AnnounceBarCommand extends SubCommand{
 									return;
 								}
 								feature.announcements.add(barname);
-								for (ITabPlayer all : Shared.getPlayers()) {
+								for (TabPlayer all : Shared.getPlayers()) {
 									bar.create(all);
-									all.activeBossBars.add(bar);
+									all.getActiveBossBars().add(bar);
 								}
 								Thread.sleep(duration*1000);
-								for (ITabPlayer all : Shared.getPlayers()) {
+								for (TabPlayer all : Shared.getPlayers()) {
 									bar.remove(all);
-									all.activeBossBars.remove(bar);
+									all.getActiveBossBars().remove(bar);
 								}
 								feature.announcements.remove(barname);
 							} catch (Exception e) {

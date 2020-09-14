@@ -69,9 +69,10 @@ public class NMSHook {
 
 	public static boolean isVersionSupported(String serverPackage){
 		try {
-			try {
+			int minor = Integer.parseInt(serverPackage.split("_")[1]);
+			if (minor >= 7) {
 				IChatBaseComponent = PacketPlayOut.getNMSClass("IChatBaseComponent");
-			} catch (ClassNotFoundException e) {
+			} else if (minor == 6) {
 				IChatBaseComponent = PacketPlayOut.getNMSClass("ChatMessage");
 			}
 			BukkitPacketBuilder.initializeClass();
@@ -88,7 +89,7 @@ public class NMSHook {
 			NETWORK_MANAGER = PLAYER_CONNECTION.getType().getField("networkManager");
 			getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
 			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
-			int minor = Integer.parseInt(serverPackage.split("_")[1]);
+			
 			if (minor >= 7) {
 				Class<?> ChatSerializer;
 				try {
@@ -112,7 +113,7 @@ public class NMSHook {
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
 	}

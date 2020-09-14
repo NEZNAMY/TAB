@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import me.neznamy.tab.api.AFKProvider;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
@@ -80,7 +81,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : Shared.getPlayers()){
 					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
 				return var+"";
@@ -89,7 +90,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(ITabPlayer p) {
 				int var = 0;
-				for (ITabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : Shared.getPlayers()){
 					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
 				return var+"";

@@ -7,11 +7,11 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -25,7 +25,7 @@ public class DebugCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		ITabPlayer analyzed = null;
+		TabPlayer analyzed = null;
 		if (args.length > 0) {
 			analyzed = Shared.getPlayer(args[0]);
 			if (analyzed == null) {
@@ -44,7 +44,7 @@ public class DebugCommand extends SubCommand {
 	 * @param sender - command sender or null if console
 	 * @param analyzed - player to be analyzed
 	 */
-	private void debug(TabPlayer sender, ITabPlayer analyzed) {
+	private void debug(TabPlayer sender, TabPlayer analyzed) {
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
@@ -85,38 +85,41 @@ public class DebugCommand extends SubCommand {
 		} else if (Configs.usePrimaryGroup) {
 			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 		} else {
-			sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermPlugin()));
+			sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermissionPlugin()));
 			sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
 		}
 
 		if (sorting) {
-			if (analyzed.disabledNametag) {
+			if (Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
 				sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
 			} else {
-				sendMessage(sender, "&eTeam name: &a" + analyzed.teamName);
-				if (analyzed.teamNameNote != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.teamNameNote);
+				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
+				if (analyzed.getTeamNameNote() != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.getTeamNameNote());
 			}
 		}
 		if (Shared.featureManager.isFeatureEnabled("playerlist")) {
-			showProperty(sender, analyzed, "tabprefix", analyzed.disabledTablistNames);
-			showProperty(sender, analyzed, "tabsuffix", analyzed.disabledTablistNames);
-			showProperty(sender, analyzed, "customtabname", analyzed.disabledTablistNames);
+			Playerlist playerlist = (Playerlist) Shared.featureManager.getFeature("playerlist");
+			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.disabledWorlds, analyzed.getWorldName());
+			showProperty(sender, analyzed, "tabprefix", disabledPlayerlist);
+			showProperty(sender, analyzed, "tabsuffix", disabledPlayerlist);
+			showProperty(sender, analyzed, "customtabname", disabledPlayerlist);
 		} else {
 			sendMessage(sender, "&atabprefix: &cDisabled");
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
 		if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
-			showProperty(sender, analyzed, "tagprefix", analyzed.disabledNametag);
-			showProperty(sender, analyzed, "tagsuffix", analyzed.disabledNametag);
+			boolean disabledNametags = Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
+			showProperty(sender, analyzed, "tagprefix", disabledNametags);
+			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
+			if (Shared.featureManager.isFeatureEnabled("nametagx")) {
+				showProperty(sender, analyzed, "abovename", disabledNametags);
+				showProperty(sender, analyzed, "belowname", disabledNametags);
+				showProperty(sender, analyzed, "customtagname", disabledNametags);
+			}
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
 			sendMessage(sender, "&atagsuffix: &cDisabled");
-		}
-		if (Shared.featureManager.isFeatureEnabled("nametagx")) {
-			showProperty(sender, analyzed, "abovename", analyzed.disabledNametag);
-			showProperty(sender, analyzed, "belowname", analyzed.disabledNametag);
-			showProperty(sender, analyzed, "customtagname", analyzed.disabledNametag);
 		}
 	}
 	

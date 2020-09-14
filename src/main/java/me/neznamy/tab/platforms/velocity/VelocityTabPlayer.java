@@ -1,5 +1,8 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
@@ -14,6 +17,7 @@ import net.kyori.adventure.text.TextComponent;
 public class VelocityTabPlayer extends ITabPlayer{
 
 	private Player player;
+	private Map<String, String> attributes = new HashMap<String, String>();
 
 	public VelocityTabPlayer(Player p, String server) {
 		player = p;
@@ -54,5 +58,23 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public Player getPlayer() {
 		return player;
+	}
+
+	@Override
+	public boolean isDisguised() {
+		Main.plm.requestAttribute(this, "disguised");
+		if (!attributes.containsKey("disguised")) return false;
+		return Boolean.parseBoolean(attributes.get("disguised"));
+	}
+	
+	public void setAttribute(String attribute, String value) {
+		attributes.put(attribute, value);
+	}
+	
+	@Override
+	public boolean hasInvisibility() {
+		Main.plm.requestAttribute(this, "invisible");
+		if (!attributes.containsKey("invisible")) return false;
+		return Boolean.parseBoolean(attributes.get("invisible"));
 	}
 }

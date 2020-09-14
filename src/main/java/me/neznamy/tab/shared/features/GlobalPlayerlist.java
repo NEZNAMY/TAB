@@ -37,18 +37,18 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		spyServers = Configs.config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
 		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
-		for (ITabPlayer displayed : Shared.getPlayers()) {
+		for (TabPlayer displayed : Shared.getPlayers()) {
 			Object displayedAddPacket = getAddPacket(displayed).create(ProtocolVersion.SERVER_VERSION);
-			for (ITabPlayer viewer : Shared.getPlayers()) {
+			for (TabPlayer viewer : Shared.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
 				if (shouldSee(viewer, displayed)) viewer.sendPacket(displayedAddPacket);
 			}
 		}
 	}
 	
-	private boolean shouldSee(ITabPlayer viewer, ITabPlayer displayed) {
+	private boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
+		if (((ITabPlayer) displayed).isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
 		if (spyServers.contains(viewer.getWorldName())) {
 			return true;
 		}
@@ -68,18 +68,18 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void unload() {
-		for (ITabPlayer displayed : Shared.getPlayers()) {
+		for (TabPlayer displayed : Shared.getPlayers()) {
 			Object displayedRemovePacket = getRemovePacket(displayed).create(ProtocolVersion.SERVER_VERSION);
-			for (ITabPlayer viewer : Shared.getPlayers()) {
+			for (TabPlayer viewer : Shared.getPlayers()) {
 				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendPacket(displayedRemovePacket);
 			}
 		}
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
+	public void onJoin(TabPlayer connectedPlayer) {
 		Object addConnected = getAddPacket(connectedPlayer).create(ProtocolVersion.SERVER_VERSION);
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
 			if (shouldSee(all, connectedPlayer)) {
@@ -92,16 +92,16 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
+	public void onQuit(TabPlayer disconnectedPlayer) {
 		Object remove = getRemovePacket(disconnectedPlayer).create(ProtocolVersion.SERVER_VERSION);
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.sendPacket(remove);
 		}
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		//delay because VeLoCiTyPoWeReD
 		Shared.cpu.runTaskLater(100, "processing server switch", getFeatureType(), UsageType.WORLD_SWITCH_EVENT, new Runnable() {
 
@@ -109,7 +109,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			public void run() {
 				Object addChanged = getAddPacket(p).create(ProtocolVersion.SERVER_VERSION);
 				Object removeChanged = getRemovePacket(p).create(ProtocolVersion.SERVER_VERSION);
-				for (ITabPlayer all : Shared.getPlayers()) {
+				for (TabPlayer all : Shared.getPlayers()) {
 					if (all == p) continue;
 					if (shouldSee(all, p)) {
 						all.sendPacket(addChanged);
@@ -126,11 +126,11 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		});
 	}
 	
-	public PacketPlayOutPlayerInfo getRemovePacket(ITabPlayer p) {
+	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, null, null));
 	}
 	
-	public PacketPlayOutPlayerInfo getAddPacket(ITabPlayer p) {
+	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
 	}
 	
@@ -149,7 +149,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 			for (PlayerInfoData playerInfoData : info.entries) {
-				ITabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (packetPlayer != null && displayAsSpectators && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
 					playerInfoData.gameMode = EnumGamemode.SPECTATOR;
 				}

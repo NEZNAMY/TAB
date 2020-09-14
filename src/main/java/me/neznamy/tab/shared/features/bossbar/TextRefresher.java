@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.Set;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
@@ -22,8 +22,8 @@ public class TextRefresher implements Refreshable {
 	}
 	
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (!refreshed.activeBossBars.contains(line)) return;
+	public void refresh(TabPlayer refreshed, boolean force) {
+		if (!refreshed.getActiveBossBars().contains(line)) return;
 		refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(line.uuid, refreshed.getProperty("bossbar-text-" + line.name).updateAndGet()));
 	}
 

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.Feature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -111,7 +113,7 @@ public class FeatureManager {
 	 * @param refreshed - player to be refreshed
 	 * @param force - whether refresh should be forced or not
 	 */
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 		refreshables.forEach(r -> r.refresh(refreshed, true));
 	}
 	
@@ -130,7 +132,7 @@ public class FeatureManager {
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
 	 */
-	public void onPacketPlayOutPlayerInfo(ITabPlayer receiver, PacketPlayOutPlayerInfo packet) {
+	public void onPacketPlayOutPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
 		for (PlayerInfoPacketListener f : playerInfoListeners) {
 			long time = System.nanoTime();
 			f.onPacketSend(receiver, packet);
@@ -143,7 +145,7 @@ public class FeatureManager {
 	 * 
 	 * @param disconnectedPlayer - player who disconnected
 	 */
-	public void onQuit(ITabPlayer disconnectedPlayer) {
+	public void onQuit(TabPlayer disconnectedPlayer) {
 		for (QuitEventListener l : quitListeners) {
 			long time = System.nanoTime();
 			l.onQuit(disconnectedPlayer);
@@ -156,13 +158,13 @@ public class FeatureManager {
 	 * 
 	 * @param connectedPlayer - player who connected
 	 */
-	public void onJoin(ITabPlayer connectedPlayer) {
+	public void onJoin(TabPlayer connectedPlayer) {
 		for (JoinEventListener l : joinListeners) {
 			long time = System.nanoTime();
 			l.onJoin(connectedPlayer);
 			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
-		connectedPlayer.onJoinFinished = true;
+		connectedPlayer.markAsLoaded();
 	}
 	
 	/**
@@ -172,7 +174,7 @@ public class FeatureManager {
 	 * @param from - name of the previous world/server
 	 * @param to - name of the new world/server
 	 */
-	public void onWorldChange(ITabPlayer changed, String from, String to) {
+	public void onWorldChange(TabPlayer changed, String from, String to) {
 		for (WorldChangeListener l : worldChangeListeners) {
 			long time = System.nanoTime();
 			l.onWorldChange(changed, from, to);
@@ -187,7 +189,7 @@ public class FeatureManager {
 	 * @param command - command line including /
 	 * @return true if command should be cancelled, false if not
 	 */
-	public boolean onCommand(ITabPlayer sender, String command) {
+	public boolean onCommand(TabPlayer sender, String command) {
 		boolean cancel = false;
 		for (CommandListener l : commandListeners) {
 			long time = System.nanoTime();
@@ -204,7 +206,7 @@ public class FeatureManager {
 	 * @param packet - IN packet coming from player
 	 * @return altered packet or null if packet should be cancelled
 	 */
-	public Object onPacketReceive(ITabPlayer receiver, Object packet){
+	public Object onPacketReceive(TabPlayer receiver, Object packet){
 		Object newPacket = packet;
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
@@ -224,7 +226,7 @@ public class FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - OUT packet coming from the server
 	 */
-	public void onPacketSend(ITabPlayer receiver, Object packet){
+	public void onPacketSend(TabPlayer receiver, Object packet){
 		for (RawPacketFeature f : rawpacketfeatures) {
 			long time = System.nanoTime();
 			try {
@@ -234,5 +236,10 @@ public class FeatureManager {
 			}
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
+	}
+	
+	public NameTag getNameTagFeature() {
+		if (features.containsKey("nametag16")) return (NameTag) features.get("nametag16");
+		return (NameTag) features.get("nametagx");
 	}
 }

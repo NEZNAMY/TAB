@@ -15,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -115,7 +114,7 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 	}
 
 	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
+	public void onQuit(TabPlayer disconnectedPlayer) {
 		lastInteractFix.remove(disconnectedPlayer.getName());
 	}
 }

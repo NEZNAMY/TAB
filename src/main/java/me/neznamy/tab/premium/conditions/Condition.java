@@ -3,8 +3,8 @@ package me.neznamy.tab.premium.conditions;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -35,11 +35,11 @@ public abstract class Condition {
 		return name;
 	}
 
-	public String getText(ITabPlayer p) {
+	public String getText(TabPlayer p) {
 		return isMet(p) ? yes : no;
 	}
 
-	public abstract boolean isMet(ITabPlayer p);
+	public abstract boolean isMet(TabPlayer p);
 
 	public static Condition compile(String name, List<String> conditions, String conditionType, String yes, String no) {
 		ConditionType type;

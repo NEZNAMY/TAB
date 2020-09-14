@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -32,7 +31,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	}
 
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
 		List<String> prefixsuffix = replaceText(refreshed, force, false);
 		if (prefixsuffix == null) return;
@@ -40,21 +39,21 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	}
 
 	@Override
-	public void register(ITabPlayer p) {
-		p.setProperty(teamName, text, null);
+	public void register(TabPlayer p) {
+		p.setProperty(teamName, text);
 		List<String> prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix == null) return;
 		PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, getScoreFor(p));
 	}
 
 	@Override
-	public void unregister(ITabPlayer p) {
+	public void unregister(TabPlayer p) {
 		if (parent.players.contains(p) && p.getProperty(teamName).get().length() > 0) {
 			PacketAPI.removeScoreboardScore(p, getPlayerName(), teamName);
 		}
 	}
 
-	protected List<String> replaceText(ITabPlayer p, boolean force, boolean suppressToggle) {
+	protected List<String> replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
 		Property scoreproperty = p.getProperty(teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
 		if (!scoreproperty.update() && !force) return null;

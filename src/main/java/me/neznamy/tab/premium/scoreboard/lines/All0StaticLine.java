@@ -1,7 +1,7 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -23,8 +23,8 @@ public class All0StaticLine extends StaticLine {
 	}
 
 	@Override
-	public void register(ITabPlayer p) {
-		p.setProperty(teamName, text, null);
+	public void register(TabPlayer p) {
+		p.setProperty(teamName, text);
 		if (p.getVersion().getMinorVersion() >= 13) {
 			PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), originalText, "", ObjectiveName, parent.manager.staticNumber);
 		} else if (p.getVersion().getMinorVersion() >= 8) {
@@ -36,7 +36,7 @@ public class All0StaticLine extends StaticLine {
 	}
 
 	@Override
-	public void unregister(ITabPlayer p) {
+	public void unregister(TabPlayer p) {
 		if (p.getProperty(teamName).get().length() > 0) {
 			PacketAPI.removeScoreboardScore(p, p.getVersion().getMinorVersion() >= 13 ? getPlayerName() : p.getVersion().getMinorVersion() >= 8 ? this.name : name1_7, teamName);
 		}

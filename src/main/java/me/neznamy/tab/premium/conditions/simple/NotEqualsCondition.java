@@ -2,7 +2,7 @@ package me.neznamy.tab.premium.conditions.simple;
 
 import java.util.List;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -22,7 +22,7 @@ public class NotEqualsCondition extends SimpleCondition {
 	}
 	
 	@Override
-	public boolean isMet(ITabPlayer p) {
+	public boolean isMet(TabPlayer p) {
 		String leftSide = this.leftSide;
 		for (String identifier : leftSidePlaceholders) {
 			Placeholder pl = Placeholders.getPlaceholder(identifier);

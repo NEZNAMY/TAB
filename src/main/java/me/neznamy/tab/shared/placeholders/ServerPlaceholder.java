@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * A server placeholder (output same for all players)
@@ -25,11 +25,11 @@ public abstract class ServerPlaceholder extends Placeholder{
 		return lastValue;
 	}
 	@Override
-	public String getLastValue(ITabPlayer p) {
+	public String getLastValue(TabPlayer p) {
 		if (lastValue == null) update();
 		return lastValue;
 	}
-	public String get(ITabPlayer p) {
+	public String get(TabPlayer p) {
 		return get();
 	}
 	public abstract String get();

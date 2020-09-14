@@ -1,13 +1,14 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -31,8 +32,10 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public boolean remember_toggle_choice;
 	public List<String> bossbar_off_players;
 	public boolean permToToggle;
+	private List<String> disabledWorlds;
 
 	public BossBar() {
+		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");
 		permToToggle = Configs.bossbar.getBoolean("permission-required-to-toggle", false);
@@ -86,18 +89,18 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void load() {
-		for (ITabPlayer p : Shared.getPlayers()) {
-			p.bossbarVisible = !bossbar_off_players.contains(p.getName());
+		for (TabPlayer p : Shared.getPlayers()) {
+			p.setBossbarVisible(!bossbar_off_players.contains(p.getName()));
 			detectBossBarsAndSend(p);
 		}
 		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.bossbarVisible || p.disabledBossbar) continue;
-					for (BossBarLine bar : p.activeBossBars.toArray(new BossBarLine[0])) {
+				for (TabPlayer p : Shared.getPlayers()) {
+					if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
+					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
 						if (!bar.hasPermission(p)) {
 							bar.remove(p);
-							p.activeBossBars.remove(bar);
+							p.getActiveBossBars().remove(bar);
 						}
 					}
 					showBossBars(p, defaultBars);
@@ -109,31 +112,31 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void unload() {
-		for (ITabPlayer p : Shared.getPlayers()) {
-			for (BossBarLine line : p.activeBossBars) {
+		for (TabPlayer p : Shared.getPlayers()) {
+			for (BossBarLine line : p.getActiveBossBars()) {
 				line.remove(p);
 			}
-			p.activeBossBars.clear();
+			p.getActiveBossBars().clear();
 		}
 		lines.clear();
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-		connectedPlayer.bossbarVisible = !bossbar_off_players.contains(connectedPlayer.getName());
+	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setBossbarVisible(!bossbar_off_players.contains(connectedPlayer.getName()));
 		detectBossBarsAndSend(connectedPlayer);
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
-		for (BossBarLine line : p.activeBossBars) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		for (BossBarLine line : p.getActiveBossBars()) {
 			line.remove(p);
 		}
 		detectBossBarsAndSend(p);
 	}
 	
 	@Override
-	public boolean onCommand(ITabPlayer sender, String message) {
+	public boolean onCommand(TabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"bossbar"});
 			return true;
@@ -141,21 +144,21 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		return false;
 	}
 	
-	public void detectBossBarsAndSend(ITabPlayer p) {
-		p.activeBossBars.clear();
-		if (p.disabledBossbar || !p.bossbarVisible) return;
+	public void detectBossBarsAndSend(TabPlayer p) {
+		p.getActiveBossBars().clear();
+		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements);
 		showBossBars(p, perWorld.get(p.getWorldName()));
 	}
 	
-	private void showBossBars(ITabPlayer p, List<String> bars) {
+	private void showBossBars(TabPlayer p, List<String> bars) {
 		if (bars == null) return;
 		for (String defaultBar : bars) {
 			BossBarLine bar = lines.get(defaultBar);
-			if (bar.hasPermission(p) && !p.activeBossBars.contains(bar)) {
+			if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
 				bar.create(p);
-				p.activeBossBars.add(bar);
+				p.getActiveBossBars().add(bar);
 			}
 		}
 	}

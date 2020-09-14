@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -59,13 +58,13 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
+	public void onJoin(TabPlayer connectedPlayer) {
 		hidePlayer(connectedPlayer);
 		showInSameWorldGroup(connectedPlayer);
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		hidePlayer(p);
 		showInSameWorldGroup(p);
 	}

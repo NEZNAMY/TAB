@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -40,7 +41,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e){
 		if (Shared.disabled) return;
-		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return;
 		Shared.cpu.runTask("processing PlayerQuitEvent", new Runnable() {
 
@@ -55,7 +56,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		if (Shared.disabled) return;
-		ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		Shared.cpu.runTask("processing PlayerChangedWorldEvent", new Runnable() {
 
@@ -63,9 +64,8 @@ public class BukkitEventListener implements Listener {
 			public void run() {
 				long time = System.nanoTime();
 				String from = e.getFrom().getName();
-				String to = p.world = e.getPlayer().getWorld().getName();
-				p.updateDisabledWorlds(to);
-				p.updateGroupIfNeeded(false);
+				String to = e.getPlayer().getWorld().getName();
+				p.setWorldName(to);
 				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 				Shared.featureManager.onWorldChange(p, from, to);
 			}
@@ -75,7 +75,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (Shared.disabled) return;
-		ITabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
+		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
 			Shared.sendPluginInfo(sender);

@@ -9,7 +9,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -26,7 +26,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 public class Injector {
 
 	public static void inject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).channel;
+		Channel channel = Shared.getPlayer(uuid).getChannel();
 		if (!channel.pipeline().names().contains("packet_handler")) {
 			//fake player or waterfall bug
 			return;
@@ -37,7 +37,7 @@ public class Injector {
 
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					try {
-						ITabPlayer player = Shared.getPlayer(uuid);
+						TabPlayer player = Shared.getPlayer(uuid);
 						if (player == null) {
 							super.channelRead(context, packet);
 							return;
@@ -51,7 +51,7 @@ public class Injector {
 
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 					try {
-						ITabPlayer player = Shared.getPlayer(uuid);
+						TabPlayer player = Shared.getPlayer(uuid);
 						if (player == null) {
 							super.write(context, packet, channelPromise);
 							return;
@@ -83,7 +83,7 @@ public class Injector {
 		}
 	}
 	public static void uninject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).channel;
+		Channel channel = Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
 	}
 	
@@ -93,8 +93,8 @@ public class Injector {
 			Collection<String> players = (Collection<String>) BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			Collection<String> newList = new ArrayList<String>();
 			for (String entry : players) {
-				ITabPlayer p = Shared.getPlayer(entry);
-				if (p == null || p.disabledNametag) newList.add(entry);
+				TabPlayer p = Shared.getPlayer(entry);
+				if (p == null || Shared.featureManager.getNameTagFeature().isDisabledWorld(p.getWorldName())) newList.add(entry);
 			}
 			BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}

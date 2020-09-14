@@ -1,8 +1,10 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -29,9 +31,11 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	private final String title = "ms";
 	private EnumScoreboardHealthDisplay displayType;
 	private Set<String> usedPlaceholders;
+	private List<String> disabledWorlds;
 
 	public TabObjective() {
 		rawValue = Configs.config.getString("yellow-number-in-tablist", "%ping%");
+		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-objective", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
@@ -42,13 +46,13 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	
 	@Override
 	public void load() {
-		for (ITabPlayer loaded : Shared.getPlayers()){
-			loaded.setProperty(propertyName, rawValue, null);
-			if (loaded.disabledTablistObjective) continue;
+		for (TabPlayer loaded : Shared.getPlayers()){
+			loaded.setProperty(propertyName, rawValue);
+			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
 			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, title, DisplaySlot, displayType);
 		}
-		for (ITabPlayer viewer : Shared.getPlayers()){
-			for (ITabPlayer target : Shared.getPlayers()){
+		for (TabPlayer viewer : Shared.getPlayers()){
+			for (TabPlayer target : Shared.getPlayers()){
 				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getValue(target));
 			}
 		}
@@ -57,45 +61,45 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void unload() {
 		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
-		for (ITabPlayer p : Shared.getPlayers()){
-			if (p.disabledTablistObjective) continue;
+		for (TabPlayer p : Shared.getPlayers()){
+			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 			p.sendPacket(unregister);
 		}
 	}
 	
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(propertyName, rawValue, null);
-		if (connectedPlayer.disabledTablistObjective) return;
+	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setProperty(propertyName, rawValue);
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType);
 		int value = getValue(connectedPlayer);
-		for (ITabPlayer all : Shared.getPlayers()){
+		for (TabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, value);
 			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
-		if (p.disabledTablistObjective && !p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
 			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
 			return;
 		}
-		if (!p.disabledTablistObjective && p.isDisabledWorld(Configs.disabledTablistObjective, from)) {
+		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
 			onJoin(p);
 			return;
 		}
 	}
 	
-	public int getValue(ITabPlayer p) {
+	public int getValue(TabPlayer p) {
 		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "Yellow number in tablist");
 	}
 	
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
-		if (refreshed.disabledTablistObjective) return;
+	public void refresh(TabPlayer refreshed, boolean force) {
+		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int value = getValue(refreshed);
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, value);
 		}
 	}

@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 
 /**
@@ -15,8 +16,8 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public PlayerPlaceholder(String identifier, int cooldown) {
 		super(identifier, cooldown);
 	}
-	public boolean update(ITabPlayer p) {
-		String newValue = get(p);
+	public boolean update(TabPlayer p) {
+		String newValue = get((ITabPlayer) p);
 		if (newValue == null) newValue = "";
 		if (!newValue.equals("ERROR") && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
 			lastValue.put(p.getName(), newValue);
@@ -24,7 +25,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		}
 		return false;
 	}
-	public String getLastValue(ITabPlayer p) {
+	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValue.containsKey(p.getName())) {
 			lastValue.put(p.getName(), ""); //preventing stack overflow on bungee when initializing

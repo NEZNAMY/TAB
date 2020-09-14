@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -44,7 +45,7 @@ public class BungeeEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
 		if (Shared.disabled) return;
-		ITabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.featureManager.onQuit(disconnectedPlayer);
@@ -60,12 +61,11 @@ public class BungeeEventListener implements Listener {
 				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);
 			} else {
-				ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+				TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				long time = System.nanoTime();
 				String from = p.getWorldName();
-				String to = p.world = e.getPlayer().getServer().getInfo().getName();
-				p.updateDisabledWorlds(to);
-				p.updateGroupIfNeeded(false);
+				String to = e.getPlayer().getServer().getInfo().getName();
+				p.setWorldName(to);
 				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 				Shared.featureManager.onWorldChange(p, from, to);
 			}
@@ -76,7 +76,7 @@ public class BungeeEventListener implements Listener {
 
 	@EventHandler
 	public void onChat(ChatEvent e) {
-		ITabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
+		TabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
 		if (sender == null) return;
 		if (e.getMessage().equalsIgnoreCase("/btab")) {
 			Shared.sendPluginInfo(sender);

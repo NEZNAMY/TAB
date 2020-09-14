@@ -14,10 +14,6 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import us.myles.ViaVersion.api.Via;
 
@@ -115,12 +111,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public boolean hasInvisibility() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
-
-	@Override
-	public boolean getTeamPush() {
-		return !isDisguised() && Configs.getCollisionRule(world);
-	}
 	
+	@Override
 	public boolean isDisguised() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return true;
 		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return true;
@@ -130,12 +122,6 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		return null;
-	}
-
-	@Override
-	public PlayerInfoData getInfoData() {
-		String name = player.getPlayerListName().equals(getName()) ? null : player.getPlayerListName();
-		return new PlayerInfoData(this.name, uniqueId, null, 0, EnumGamemode.CREATIVE, new IChatBaseComponent(name));
 	}
 
 	@Override

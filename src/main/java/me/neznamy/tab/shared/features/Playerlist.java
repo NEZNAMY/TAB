@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
@@ -30,14 +32,17 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
 
 	private Set<String> usedPlaceholders;
+	public List<String> disabledWorlds;
+	
 	
 	public Playerlist() {
+		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 	}
 	
 	@Override
 	public void load(){
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			refresh(all, true);
 		}
 	}
@@ -45,17 +50,17 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void unload(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
-		for (ITabPlayer p : Shared.getPlayers()) {
-			if (!p.disabledTablistNames) updatedPlayers.add(p.getInfoData());
+		for (TabPlayer p : Shared.getPlayers()) {
+			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null));
 		}
 		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).create(ProtocolVersion.SERVER_VERSION);
-		for (ITabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : Shared.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 		}
 	}
 	
 	@Override
-	public void onWorldChange(ITabPlayer p, String from, String to) {
+	public void onWorldChange(TabPlayer p, String from, String to) {
 		refresh(p, true);
 	}
 	
@@ -69,7 +74,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		for (PlayerInfoData playerInfoData : info.entries) {
 			TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packetPlayer == receiver && ADD) ((ITabPlayer)packetPlayer).correctId = playerInfoData.uniqueId;
-			if (packetPlayer != null && !((ITabPlayer)packetPlayer).disabledTablistNames) {
+			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
 				if (ADD && (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
@@ -113,7 +118,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 	}
 	@Override
-	public void refresh(ITabPlayer refreshed, boolean force) {
+	public void refresh(TabPlayer refreshed, boolean force) {
 //		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
 		boolean refresh;
 		if (force) {
@@ -126,16 +131,16 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, refreshed.getInfoData()).create(ProtocolVersion.SERVER_VERSION);
-			for (ITabPlayer all : Shared.getPlayers()) {
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getName(), refreshed.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null)).create(ProtocolVersion.SERVER_VERSION);
+			for (TabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
 		}
 	}
-	private void updateProperties(ITabPlayer p) {
-		p.updateProperty("tabprefix");
-		p.updateProperty("customtabname", p.getName());
-		p.updateProperty("tabsuffix");
+	private void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig("tabprefix");
+		p.loadPropertyFromConfig("customtabname", p.getName());
+		p.loadPropertyFromConfig("tabsuffix");
 	}
 	
 	@Override
@@ -144,7 +149,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 
 	@Override
-	public void onJoin(ITabPlayer connectedPlayer) {
+	public void onJoin(TabPlayer connectedPlayer) {
 		refresh(connectedPlayer, true);
 	}
 	

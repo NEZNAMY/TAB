@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 
@@ -40,7 +40,7 @@ public class PluginHooks {
 		}
 	}
 
-	public static String setRelationalPlaceholders(ITabPlayer viewer, ITabPlayer target, String placeholder) {
+	public static String setRelationalPlaceholders(TabPlayer viewer, TabPlayer target, String placeholder) {
 		if (!placeholderAPI) return placeholder;
 		try {
 			return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), placeholder);

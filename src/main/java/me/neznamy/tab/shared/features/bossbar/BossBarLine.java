@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.UUID;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
@@ -36,7 +36,7 @@ public class BossBarLine {
 		Shared.featureManager.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
 		Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
 	}
-	public boolean hasPermission(ITabPlayer p) {
+	public boolean hasPermission(TabPlayer p) {
 		return !permissionRequired || p.hasPermission("tab.bossbar." + name);
 	}
 	public BarColor parseColor(String color) {
@@ -48,11 +48,11 @@ public class BossBarLine {
 	public float parseProgress(String progress) {
 		return Shared.errorManager.parseFloat(progress, 100, "bossbar progress");
 	}
-	public void create(ITabPlayer to){
-		to.setProperty("bossbar-text-" + name, text, null);
-		to.setProperty("bossbar-progress-" + name, progress, null);
-		to.setProperty("bossbar-color-" + name, color, null);
-		to.setProperty("bossbar-style-" + name, style, null);
+	public void create(TabPlayer to){
+		to.setProperty("bossbar-text-" + name, text);
+		to.setProperty("bossbar-progress-" + name, progress);
+		to.setProperty("bossbar-color-" + name, color);
+		to.setProperty("bossbar-style-" + name, style);
 		to.sendCustomPacket(PacketPlayOutBoss.ADD(
 				uuid, 
 				to.getProperty("bossbar-text-" + name).get(), 
@@ -62,7 +62,7 @@ public class BossBarLine {
 			)
 		);
 	}
-	public void remove(ITabPlayer to) {
+	public void remove(TabPlayer to) {
 		to.sendCustomPacket(PacketPlayOutBoss.REMOVE(uuid));
 	}
 }

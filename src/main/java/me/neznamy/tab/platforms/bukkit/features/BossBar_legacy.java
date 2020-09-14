@@ -9,8 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -37,8 +37,8 @@ public class BossBar_legacy implements Listener, Loadable {
 		//bar disappears in client after ~1 second of not seeing boss entity
 		Shared.cpu.startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {
-				for (ITabPlayer all : Shared.getPlayers()) {
-					for (BossBarLine l : all.activeBossBars) {
+				for (TabPlayer all : Shared.getPlayers()) {
+					for (BossBarLine l : all.getActiveBossBars()) {
 						all.sendPacket(new PacketPlayOutEntityTeleport(l.entityId, getWitherLocation(all)));
 					}
 				}
@@ -53,14 +53,14 @@ public class BossBar_legacy implements Listener, Loadable {
 	public void a(PlayerRespawnEvent e) {
 		try {
 			long time = System.nanoTime();
-			ITabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
+			TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 			if (p != null) mainFeature.detectBossBarsAndSend(p);
 			Shared.cpu.addTime(TabFeature.BOSSBAR, UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		} catch (Throwable t) {
 			Shared.errorManager.printError("An error occurred when processing PlayerRespawnEvent", t);
 		}
 	}
-	public Location getWitherLocation(ITabPlayer p) {
+	public Location getWitherLocation(TabPlayer p) {
 		Player pl = (Player) p.getPlayer();
 		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 		if (loc.getY() < 1) loc.setY(1);

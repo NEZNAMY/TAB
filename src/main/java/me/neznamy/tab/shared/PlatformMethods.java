@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.AlignedSuffix;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
@@ -133,7 +134,7 @@ public interface PlatformMethods {
 	 * @param player - player to replaced placeholders for
 	 * @return replaced string
 	 */
-	public default String replaceAllPlaceholders(String string, ITabPlayer player) {
+	public default String replaceAllPlaceholders(String string, TabPlayer player) {
 		String replaced = string;
 		for (Placeholder p : Placeholders.getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {

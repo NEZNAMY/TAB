@@ -1,13 +1,13 @@
 package me.neznamy.tab.premium.conditions.simple;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * An abstract class representing a simple condition
  */
 public abstract class SimpleCondition {
 	
-	public abstract boolean isMet(ITabPlayer p);
+	public abstract boolean isMet(TabPlayer p);
 	
 	public static SimpleCondition compile(String line) {
 		SimpleCondition c = null;

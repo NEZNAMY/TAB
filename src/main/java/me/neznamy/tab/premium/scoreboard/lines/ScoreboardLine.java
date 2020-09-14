@@ -3,7 +3,7 @@ package me.neznamy.tab.premium.scoreboard.lines;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -23,8 +23,8 @@ public abstract class ScoreboardLine implements Refreshable {
 		playerName = getPlayerName(lineID);
 	}
 	
-	public abstract void register(ITabPlayer p);
-	public abstract void unregister(ITabPlayer p);
+	public abstract void register(TabPlayer p);
+	public abstract void unregister(TabPlayer p);
 	
 	@Override
 	public Set<String> getUsedPlaceholders() {

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.neznamy.tab.api.AFKProvider;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -49,19 +49,18 @@ public class PlaceholderManager implements QuitEventListener {
 			@Override
 			public void run() {
 				int loopTime = atomic.addAndGet(50);
-				Collection<ITabPlayer> allPlayers = Shared.getPlayers();
-				Collection<ITabPlayer> players = new ArrayList<ITabPlayer>();
-				for (ITabPlayer p : allPlayers) {
-					if (p.onJoinFinished) players.add(p);
+				Collection<TabPlayer> players = new ArrayList<TabPlayer>();
+				for (TabPlayer p : Shared.getPlayers()) {
+					if (p.isLoaded()) players.add(p);
 				}
-				Map<ITabPlayer, Set<Refreshable>> update = new HashMap<ITabPlayer, Set<Refreshable>>();
-				Map<ITabPlayer, Set<Refreshable>> forceUpdate = new HashMap<ITabPlayer, Set<Refreshable>>();
+				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
+				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
 				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
 					if (loopTime % relPlaceholder.getRefresh() != 0) continue;
 					long startTime = System.nanoTime();
-					for (ITabPlayer p1 : players) {
-						for (ITabPlayer p2 : players) {
+					for (TabPlayer p1 : players) {
+						for (TabPlayer p2 : players) {
 							if (relPlaceholder.update(p1, p2)) {
 								if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
 								forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
@@ -80,7 +79,7 @@ public class PlaceholderManager implements QuitEventListener {
 					if (loopTime % placeholder.getRefresh() != 0) continue;
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
-						for (ITabPlayer all : players) {
+						for (TabPlayer all : players) {
 							if (((PlayerPlaceholder)placeholder).update(all)) {
 								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
@@ -94,7 +93,7 @@ public class PlaceholderManager implements QuitEventListener {
 						if (((ServerPlaceholder)placeholder).update()) {
 							Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
 							somethingChanged = true;
-							for (ITabPlayer all : players) {
+							for (TabPlayer all : players) {
 								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 								update.get(all).addAll(usage);
 							}
@@ -125,8 +124,8 @@ public class PlaceholderManager implements QuitEventListener {
 		}
 	}
 	
-	private void refresh(Map<ITabPlayer, Set<Refreshable>> forceUpdate, Map<ITabPlayer, Set<Refreshable>> update) {
-		for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+	private void refresh(Map<TabPlayer, Set<Refreshable>> forceUpdate, Map<TabPlayer, Set<Refreshable>> update) {
+		for (Entry<TabPlayer, Set<Refreshable>> entry : update.entrySet()) {
 			if (forceUpdate.containsKey(entry.getKey())) {
 				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 			}
@@ -135,14 +134,14 @@ public class PlaceholderManager implements QuitEventListener {
 
 			@Override
 			public void run() {
-				for (Entry<ITabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
+				for (Entry<TabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
 					for (Refreshable r : entry.getValue()) {
 						long startTime = System.nanoTime();
 						r.refresh(entry.getKey(), true);
 						Shared.cpu.addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 					}
 				}
-				for (Entry<ITabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+				for (Entry<TabPlayer, Set<Refreshable>> entry : update.entrySet()) {
 					for (Refreshable r : entry.getValue()) {
 						long startTime = System.nanoTime();
 						r.refresh(entry.getKey(), false);
@@ -164,14 +163,14 @@ public class PlaceholderManager implements QuitEventListener {
 	}
 
 	@Override
-	public void onQuit(ITabPlayer disconnectedPlayer) {
+	public void onQuit(TabPlayer disconnectedPlayer) {
 		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
 			}
 		}
 		for (RelationalPlaceholder pl : Placeholders.registeredRelationalPlaceholders.values()) {
-			for (ITabPlayer all : Shared.getPlayers()) {
+			for (TabPlayer all : Shared.getPlayers()) {
 				pl.lastValue.remove(all.getName() + "-" + disconnectedPlayer.getName());
 				pl.lastValue.remove(disconnectedPlayer.getName() + "-" + all.getName());
 			}

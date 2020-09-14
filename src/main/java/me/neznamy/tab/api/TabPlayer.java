@@ -1,9 +1,12 @@
 package me.neznamy.tab.api;
 
+import java.util.List;
 import java.util.UUID;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
@@ -170,6 +173,8 @@ public interface TabPlayer {
 	 */
 	public String getWorldName();
 	
+	public void setWorldName(String name);
+	
 	
 	/**
 	 * Performs platform-specific API call to check for permission and returns the result
@@ -229,4 +234,71 @@ public interface TabPlayer {
 	 * @since 2.8.5
 	 */
 	public boolean isPreviewingNametag();
+	
+	/**
+	 * Returns whether player has tab.staff permission or not
+	 * @return whether player is staff or not
+	 * @since 2.8.7
+	 */
+	public boolean isStaff();
+	
+	public Channel getChannel();
+	
+	public long getPing();
+	
+	public Object getSkin();
+	
+	public ArmorStandManager getArmorStandManager();
+	
+	public void setArmorStandManager(ArmorStandManager armorStandManager);
+	
+	public void unregisterTeam();
+	
+	public void unregisterTeam(TabPlayer viewer);
+	
+	public void registerTeam();
+	
+	public void registerTeam(TabPlayer viewer);
+	
+	public void updateTeam();
+	
+	public void updateTeamData();
+	
+	public boolean isLoaded();
+	
+	public void markAsLoaded();
+	
+	public boolean hasBossbarVisible();
+	
+	public void setBossbarVisible(boolean visible);
+	
+	public boolean hasHiddenScoreboard();
+	
+	public String getOfflineUUID();
+	
+	public List<BossBarLine> getActiveBossBars();
+	
+	public void setProperty(String identifier, String rawValue);
+	
+	public void loadPropertyFromConfig(String property);
+	
+	public void loadPropertyFromConfig(String property, String ifnull);
+	
+	public void setTeamName(String name);
+	
+	public String getTeamName();
+	
+	public void setTeamNameNote(String note);
+	
+	public String getTeamNameNote();
+	
+	public String getGroupFromPermissionPlugin();
+	
+	public String[] getGroupsFromPermissionPlugin();
+	
+	public void setCollisionRule(boolean collision);
+	
+	public boolean getCollisionRule();
+	
+	public boolean isDisguised();
 }
