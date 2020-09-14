@@ -39,12 +39,6 @@
 						</includes>
 					</artifactSet>
 					
-					<relocations>
-						<relocation>
-							<pattern>org.json.simple</pattern>
-							<shadedPattern>me.neznamy.tab.libs.org.json.simple</shadedPattern>
-						</relocation>
-					</relocations>
 					
 				</configuration>
 				<executions>
