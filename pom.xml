@@ -121,7 +121,7 @@
 
 	<dependencies>
 
-		<!-- json-simple, shaded and relocated -->
+		<!-- json-simple, shaded -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
