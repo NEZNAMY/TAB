@@ -63,6 +63,7 @@
 		</repository>
 
 		<!-- BungeeCord API -->
+		<!-- io.netty -->
 		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -103,22 +104,11 @@
 		<!-- LuckPerms5 -->
 		<!-- BungeeCord internals -->
 		<!-- Essentials -->
+		<!-- ViaVersion -->
+		<!-- LibsDisguises -->
 		<repository>
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
-		</repository>
-
-		<!-- ViaVersion -->
-		<repository>
-			<id>viaversion-repo</id>
-			<url>https://repo.viaversion.com/</url>
-		</repository>
-
-		<!-- LibsDisguises -->
-		<!-- Netty -->
-		<repository>
-			<id>md5</id>
-			<url>http://repo.md-5.net/content/groups/public</url>
 		</repository>
 
 		<!-- Google common -->
@@ -468,7 +458,7 @@
 		<dependency>
 			<groupId>us.myles</groupId>
 			<artifactId>viaversion</artifactId>
-			<version>3.1.0</version>
+			<version>3.2.0-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 
@@ -549,7 +539,7 @@
 		<dependency>
 			<groupId>LibsDisguises</groupId>
 			<artifactId>LibsDisguises</artifactId>
-			<version>10.0.15</version>
+			<version>10.0.16-SNAPSHOT</version>
 			<exclusions>
 
 				<exclusion>
