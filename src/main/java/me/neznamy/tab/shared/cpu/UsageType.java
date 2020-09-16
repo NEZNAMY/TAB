@@ -29,9 +29,6 @@ public enum UsageType {
 	//bossbar
 	TELEPORTING_ENTITY("Teleporting entity"),
 	
-	//petfix
-	DISPLAYING_ARM_ANIMATION("Displaying arm animation"),
-	
 	//other
 	REFRESHING("Refreshing"),
 	REPEATING_TASK("Repeating task"),

@@ -6,19 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutAnimation;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 
@@ -68,17 +63,6 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 			if (PacketPlayInUseEntity_ACTION.get(packet).toString().equals("INTERACT")) {
 				//this is the first packet, saving player so the next packet can be cancelled
 				lastInteractFix.put(sender.getName(), System.currentTimeMillis());
-				
-				//sending packet from a different thread because sending packet inside pipeline will cause a disconnect when protocollib is installed
-				//and client connected via bungee
-				Shared.cpu.runMeasuredTask("sending packet", getFeatureType(), UsageType.DISPLAYING_ARM_ANIMATION, new Runnable() {
-
-					@Override
-					public void run() {
-						//sending arm animation packet to the client because it does not display with this feature enabled
-						sender.sendPacket(new PacketPlayOutAnimation(((Player) sender.getPlayer()).getEntityId(), 0));
-					}
-				});
 			}
 		}
 		return packet;
