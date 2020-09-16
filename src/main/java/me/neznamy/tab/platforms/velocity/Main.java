@@ -32,7 +32,7 @@ import net.kyori.adventure.text.TextComponent;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = "2.8.6", description = "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.8.7", description = "Change player tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main {
 
 	public ProxyServer server;
@@ -49,7 +49,7 @@ public class Main {
 			return;
 		}
 		if (!VelocityPacketRegistry.registerPackets()) {
-			System.out.println("\u00a7c[TAB] This plugin version does not support your Velocity version. Update the plugin.");
+			System.out.println("\u00a7c[TAB] This plugin version does not support your Velocity version. Update the plugin or downgrade Velocity.");
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
