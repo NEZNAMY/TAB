@@ -72,6 +72,7 @@ public class PluginMessenger{
 				PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
 				if (pl != null) {
 					pl.lastValue.put(receiver.getName(), output);
+					if (!pl.forceUpdate.contains(receiver.getName())) pl.forceUpdate.add(receiver.getName());
 					Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 				} else {
 					Shared.debug("Received output for unknown placeholder " + placeholder);

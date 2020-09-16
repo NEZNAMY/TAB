@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -12,6 +14,7 @@ import me.neznamy.tab.shared.ITabPlayer;
 public abstract class PlayerPlaceholder extends Placeholder {
 
 	public Map<String, String> lastValue = new HashMap<String, String>();
+	public List<String> forceUpdate = new ArrayList<String>();
 
 	public PlayerPlaceholder(String identifier, int cooldown) {
 		super(identifier, cooldown);
@@ -21,6 +24,10 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		if (newValue == null) newValue = "";
 		if (!newValue.equals("ERROR") && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
 			lastValue.put(p.getName(), newValue);
+			return true;
+		}
+		if (forceUpdate.contains(p.getName())) {
+			forceUpdate.remove(p.getName());
 			return true;
 		}
 		return false;

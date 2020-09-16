@@ -167,6 +167,7 @@ public class PlaceholderManager implements QuitEventListener {
 		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
+				((PlayerPlaceholder)pl).forceUpdate.remove(disconnectedPlayer.getName());
 			}
 		}
 		for (RelationalPlaceholder pl : Placeholders.registeredRelationalPlaceholders.values()) {
