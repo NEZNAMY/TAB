@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import me.neznamy.tab.platforms.velocity.Main;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
