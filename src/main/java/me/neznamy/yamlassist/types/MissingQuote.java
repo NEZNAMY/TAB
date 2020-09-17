@@ -1,33 +1,19 @@
-package me.neznamy.tab.yamlassist.types;
+package me.neznamy.yamlassist.types;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.yamlassist.SyntaxError;
+import me.neznamy.yamlassist.SyntaxError;
 
 public class MissingQuote extends SyntaxError {
 
-	private String fix;
-
-	public MissingQuote(YAMLException exception, List<String> fileLines) {
-		super(exception, fileLines);
-		fix = checkQuotes(fileLines, 1, fileLines.size());
-	}
-
 	@Override
-	public boolean isType() {
-		return fix != null;
-	}
-
-	@Override
-	public String getSuggestion() {
-		return fix;
-	}
-
-	private String checkQuotes(List<String> lines, int from, int to) {
-		for (int line = from; line <= to; line++) {
-			String text = lines.get(line-1).split("#")[0];
+	public List<String> getSuggestions(YAMLException exception, List<String> fileLines) {
+		List<String> suggestions = new ArrayList<String>();
+		for (int line = 1; line <= fileLines.size(); line++) {
+			String text = fileLines.get(line-1).split("#")[0];
 			if (text.replace(" ", "").length() == 0) continue;
 			text = removeIndent(text);
 			String suggestion = null;
@@ -38,9 +24,9 @@ public class MissingQuote extends SyntaxError {
 				text = text.substring(text.split(": ")[0].length()+2);
 				suggestion = checkElement(text, line);
 			}
-			if (suggestion != null) return suggestion;
+			if (suggestion != null) suggestions.add(suggestion);
 		}
-		return null;
+		return suggestions;
 	}
 
 	private String checkElement(String value, int lineID) {

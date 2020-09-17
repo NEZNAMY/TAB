@@ -1,33 +1,23 @@
-package me.neznamy.tab.yamlassist.types;
+package me.neznamy.yamlassist.types;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.yamlassist.SyntaxError;
+import me.neznamy.yamlassist.SyntaxError;
 
 public class BadIndentation extends SyntaxError {
-
-	private String fix;
-	public BadIndentation(YAMLException exception, List<String> fileLines) {
-		super(exception, fileLines);
-		fix = checkForIndent(fileLines);
-	}
-
-	@Override
-	public boolean isType() {
-		return fix != null;
-	}
-
-	@Override
-	public String getSuggestion() {
-		return fix;
-	}
 	
-	private String checkForIndent(List<String> lines) {
-		int lineId = -1;
-		for (String line : lines) {
-			lineId++;
+	@Override
+	public List<String> getSuggestions(YAMLException exception, List<String> fileLines) {
+		return checkForIndent(fileLines);
+	}
+
+	private List<String> checkForIndent(List<String> lines) {
+		List<String> suggestions = new ArrayList<String>();
+		for (int lineId = 0; lineId < lines.size(); lineId++) {
+			String line = lines.get(lineId);
 			if (line.isEmpty()) continue;
 			if (line.startsWith("#")) continue;
 			line = line.split("#")[0];
@@ -48,36 +38,56 @@ public class BadIndentation extends SyntaxError {
 			if (prevLine.replace(" ", "").endsWith(":")) {
 				//expecting 2 more spaces or same or 2k less (k = 1,2,..)
 				if (currentLineIndent - prevLineIndent > 2) {
-					return "Remove " + (currentLineIndent-prevLineIndent-2) + " space(s) from line " + (lineId+1);
+					suggestions.add("Remove " + (currentLineIndent-prevLineIndent-2) + " space(s) from line " + (lineId+1));
+					lineId++;
+					continue;
 				}
 				if (currentLineIndent - prevLineIndent == 1) {
-					return "Add 1 space to line " + (lineId+1);
+					suggestions.add("Add 1 space to line " + (lineId+1));
+					lineId++;
+					continue;
 				}
 				if (prevLineIndent - currentLineIndent == 1) {
 					if (line.replace(" ", "").startsWith("-")) {
-						return "Add 1 or 3 spaces to line " +  (lineId+1);
+						suggestions.add("Add 1 or 3 spaces to line " +  (lineId+1));
+						lineId++;
+						continue;
 					} else {
-						return "Remove 1 space from line " + (lineId+1);
+						suggestions.add("Remove 1 space from line " + (lineId+1));
+						lineId++;
+						continue;
 					}
 				}
 			} else {
 				//expecting same indent count or 2k less (k = 1,2,..)
 				if (currentLineIndent > prevLineIndent) {
-					return "Remove " + (currentLineIndent-prevLineIndent) + " space(s) from line " + (lineId+1);
+					suggestions.add("Remove " + (currentLineIndent-prevLineIndent) + " space(s) from line " + (lineId+1));
+					lineId++;
+					continue;
 				}
 			}
 			if (currentLineIndent%2 == 1) {
-				return "Add or remove one space at line " + (lineId+1);
+				suggestions.add("Add or remove one space at line " + (lineId+1));
+				lineId++;
+				continue;
 			}
 		}
-		return null;
+		return suggestions;
 	}
+	
 	private int getIndentCount(String line) {
 		if (isComment(line)) return 0;
-		int i = -1;
-		while (line.charAt(++i) == ' ');
+		int i = 0;
+		while (line.charAt(i) == ' ') {
+			i++;
+		}
+		//not letting tab indent give invalid suggestions
+		while (line.charAt(i) == '\t') {
+			i += 4;
+		}
 		return i;
 	}
+	
 	private boolean isComment(String line) {
 		return line.replace(" ", "").startsWith("#") || line.replace(" ", "").length() == 0;
 	}
