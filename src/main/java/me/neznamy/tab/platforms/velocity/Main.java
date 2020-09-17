@@ -105,7 +105,7 @@ public class Main {
 				}
 				Object modifiedPacket = packet;
 				try {
-					if (modifiedPacket.getClass().getSimpleName().equals("PlayerListItem")) {
+					if (modifiedPacket.getClass().getSimpleName().equals("PlayerListItem") && player.getVersion().getMinorVersion() >= 8) {
 						PacketPlayOutPlayerInfo info = VelocityPacketBuilder.readPlayerInfo(modifiedPacket);
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 						modifiedPacket = info.create(player.getVersion());

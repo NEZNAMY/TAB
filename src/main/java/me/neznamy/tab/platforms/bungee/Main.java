@@ -96,7 +96,7 @@ public class Main extends Plugin {
 				}
 				Object modifiedPacket = packet;
 				try {
-					if (modifiedPacket instanceof PlayerListItem) {
+					if (modifiedPacket instanceof PlayerListItem && player.getVersion().getMinorVersion() >= 8) {
 						PacketPlayOutPlayerInfo info = BungeePacketBuilder.readPlayerInfo(modifiedPacket, player.getVersion());
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 						modifiedPacket = info.create(player.getVersion());
