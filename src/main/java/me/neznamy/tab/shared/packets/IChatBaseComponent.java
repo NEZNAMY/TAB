@@ -256,7 +256,7 @@ public class IChatBaseComponent {
 			}
 			return component;
 		} catch (ParseException | ClassCastException e) {
-			Shared.errorManager.printError("Failed to deserialize json component: " + json, e);
+			Shared.debug("Failed to deserialize json component: " + json);
 			return fromColoredText(json);
 		}
 	}
