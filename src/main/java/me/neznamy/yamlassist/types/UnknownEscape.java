@@ -7,8 +7,12 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * Using "\" without a proper followup character to escape
+ */
 public class UnknownEscape extends SyntaxError {
 
+	//list of valid characters to be escaped
 	private char[] validEscapedCharacters = new char[] {'\\', 'b', 'f', 'n', 'r', 't'};
 	
 	@Override
@@ -26,6 +30,11 @@ public class UnknownEscape extends SyntaxError {
 		return suggestions;
 	}
 	
+	/**
+	 * Returns true if character can be escaped for different meaning
+	 * @param c - the character
+	 * @return true if yes, false if not
+	 */
 	private boolean isValidEscapedCharacter(char c) {
 		for (char valid : validEscapedCharacters) {
 			if (c == valid) return true;

@@ -7,6 +7,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * Some kind of an invalid list, such as not specifying key or specifying another value after the : in key
+ */
 public class InvalidList extends SyntaxError {
 
 	@Override

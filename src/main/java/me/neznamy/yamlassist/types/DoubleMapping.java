@@ -7,6 +7,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * Additional : used after value
+ */
 public class DoubleMapping extends SyntaxError {
 
 	@Override

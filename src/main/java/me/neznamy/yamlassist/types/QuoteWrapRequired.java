@@ -7,6 +7,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * String starting with "%", "&" or other character that is not allowed without quotes
+ */
 public class QuoteWrapRequired extends SyntaxError {
 
 	@Override

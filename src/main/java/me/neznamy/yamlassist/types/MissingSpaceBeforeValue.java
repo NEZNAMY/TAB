@@ -7,6 +7,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * Using "xx:yy" instead of "xx: yy" or "-something" instead of "- something"
+ */
 public class MissingSpaceBeforeValue extends SyntaxError {
 
 	@Override

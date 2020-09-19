@@ -7,6 +7,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.yamlassist.SyntaxError;
 
+/**
+ * Using the TAB key instead of 4 spaces to indent
+ */
 public class TABIndent extends SyntaxError {
 	
 	@Override
