@@ -76,7 +76,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (replaced.length() > 0) {
 			if (emptyBefore) {
 				//was "", now it is not
-				PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefix, suffix, ObjectiveName, lineID);
+				PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefix, suffix, ObjectiveName, getScoreFor(p));
 				return null;
 			} else {
 				return Arrays.asList(prefix, suffix);
