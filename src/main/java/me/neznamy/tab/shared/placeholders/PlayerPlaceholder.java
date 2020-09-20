@@ -16,8 +16,8 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public Map<String, String> lastValue = new HashMap<String, String>();
 	public List<String> forceUpdate = new ArrayList<String>();
 
-	public PlayerPlaceholder(String identifier, int cooldown) {
-		super(identifier, cooldown);
+	public PlayerPlaceholder(String identifier, int refresh) {
+		super(identifier, refresh);
 	}
 	public boolean update(TabPlayer p) {
 		String newValue = get((ITabPlayer) p);

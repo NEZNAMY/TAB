@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.permission.LuckPerms;
  */
 public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
+	//decimal formatter for 2 decimal numbers
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	
 	@Override

@@ -63,17 +63,17 @@ public class PlaceholderManager implements QuitEventListener {
 						for (TabPlayer p2 : players) {
 							if (relPlaceholder.update(p1, p2)) {
 								if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
-								forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
 								somethingChanged = true;
 							}
 							if (relPlaceholder.update(p2, p1)) {
 								if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
-								forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.identifier));
+								forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
 								somethingChanged = true;
 							}
 						}
 					}
-					Shared.cpu.addPlaceholderTime(relPlaceholder.identifier, System.nanoTime()-startTime);
+					Shared.cpu.addPlaceholderTime(relPlaceholder.getIdentifier(), System.nanoTime()-startTime);
 				}
 				for (Placeholder placeholder : new HashSet<>(Placeholders.usedPlaceholders)) { //avoiding concurrent modification on reload
 					if (loopTime % placeholder.getRefresh() != 0) continue;

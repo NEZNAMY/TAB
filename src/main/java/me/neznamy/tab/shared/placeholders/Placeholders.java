@@ -213,7 +213,7 @@ public class Placeholders {
 		if (addToUsed) usedPlaceholders.add(placeholder);
 	}
 	public static void registerPlaceholder(RelationalPlaceholder placeholder) {
-		registeredRelationalPlaceholders.put(placeholder.identifier, placeholder);
+		registeredRelationalPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
 	public static void checkForRegistration(String text) {
 		for (String identifier : detectAll(text)) {

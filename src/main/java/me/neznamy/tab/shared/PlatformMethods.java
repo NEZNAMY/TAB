@@ -191,6 +191,9 @@ public interface PlatformMethods {
 		removeOld(config, "scoreboard.refresh-interval-milliseconds");
 	}
 	
+	/**
+	 * Loads universal features present on all platforms with the same configuration
+	 */
 	public default void loadUniversalFeatures() {
 		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());

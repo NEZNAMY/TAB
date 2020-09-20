@@ -165,7 +165,7 @@ public class Property {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (RelationalPlaceholder pl : relPlaceholders) {
-			format = format.replace(pl.identifier, pl.getLastValue(viewer, owner));
+			format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
 		}
 		return format;
 	}

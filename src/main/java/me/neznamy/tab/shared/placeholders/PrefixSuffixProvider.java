@@ -7,6 +7,17 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public interface PrefixSuffixProvider {
 
+	/**
+	 * Returns prefix for given player
+	 * @param p - player
+	 * @return prefix from permission plugin
+	 */
 	public String getPrefix(TabPlayer p);
+	
+	/**
+	 * Returns suffix for given player
+	 * @param p - player
+	 * @return suffix from permission plugin
+	 */
 	public String getSuffix(TabPlayer p);
 }
