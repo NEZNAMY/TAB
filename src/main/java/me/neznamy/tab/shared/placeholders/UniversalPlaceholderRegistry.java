@@ -152,7 +152,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			public String[] getNestedPlaceholders(){
 				List<String> list = new ArrayList<String>();
 				for (Object value : Configs.rankAliases.values()) {
-					list.add(value.toString());
+					list.add(String.valueOf(value));
 				}
 				return list.toArray(new String[0]);
 			}
