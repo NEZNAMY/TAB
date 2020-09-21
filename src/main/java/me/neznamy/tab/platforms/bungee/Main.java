@@ -110,7 +110,7 @@ public class Main extends Plugin {
 							ByteBuf buf = ((ByteBuf) modifiedPacket).duplicate();
 							if (buf.readByte() == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
-								team.read(buf, null, player.getVersion().getNetworkId());
+								team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
 								modifyPlayers(team);
 								modifiedPacket = team;
 							}
