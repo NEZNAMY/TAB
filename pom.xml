@@ -511,7 +511,7 @@
 			<artifactId>NetworkManager</artifactId>
 			<version>2.8.7</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}\jars\NetworkManagerAPI-v2.8.7.jar</systemPath>
+			<systemPath>${project.basedir}${file.separator}jars${file.separator}NetworkManagerAPI-v2.8.7.jar</systemPath>
 		</dependency>
 
 		<!-- Velocity-all -->
@@ -520,7 +520,7 @@
 			<artifactId>Velocity</artifactId>
 			<version>#249</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}\jars\velocity-proxy-1.1.0-SNAPSHOT-all.jar</systemPath>
+			<systemPath>${project.basedir}${file.separator}jars${file.separator}velocity-proxy-1.1.0-SNAPSHOT-all.jar</systemPath>
 		</dependency>
 
 	</dependencies>
