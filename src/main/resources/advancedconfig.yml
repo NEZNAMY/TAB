@@ -1,25 +1,44 @@
-# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml
- 
+#Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml
+
+#different playerlist in different worlds
 per-world-playerlist:
+
+  #to enable the feature
   enabled: false
+  
+  #allows players with tab.bypass permission to see everyone in tablist despite this option enabled
   allow-bypass-permission: false
+  
+  #players in these worlds will see everyone despite the feature enabled
   ignore-effect-in-worlds:
     - ignoredworld
     - build
+    
+  #groups of worlds to share playerlist
   shared-playerlist-world-groups:
+    #group name, can be anything
     lobby:
       - lobby1
       - lobby2
     minigames:
       - paintball
       - bedwars
-      
+
+#permission node is tab.sort.<permission group from sorting list>
 sort-players-by-permissions: false
+
+#do not enable this if you're on paper, you'll feed the trolls even more
 fix-pet-names: false
+
+#taking primary group from permission plugin
 use-primary-group: true
+
+#if the option above is false, all groups are taken from permission plugin and the one higher in this list is used as primary
 primary-group-finding-list:
   - Owner
   - Admin
   - Helper
   - default
+  
+#if none of the above fits your needs, you can enable this to give groups using tab.group.<group name from the list above> permission
 assign-groups-by-permissions: false

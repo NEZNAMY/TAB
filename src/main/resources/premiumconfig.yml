@@ -82,17 +82,15 @@ scoreboard-off: "&7Scoreboard disabled"
 
 placeholder-output-replacements:
   "%essentials_vanished%":
-    "Yes": "&7| Vanished"
-    "No": ""
+    "yes": "&7| Vanished"
+    "no": ""
     
   #only showing "Perfect" for exactly 20 TPS, standard output for any other value
   "%tps%":
     "20": "&aPerfect"
     
 allign-tabsuffix-on-the-right: false
-extra-character-widths:
-  65330: 6
-  65365: 5
+extra-character-widths: {}
   
 conditions:
   health:

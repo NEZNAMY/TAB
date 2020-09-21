@@ -1,12 +1,16 @@
 # Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
 
+#changing nametags, affecting sorting, collision rule
 change-nametag-prefix-suffix: true
+
+#prefix/suffix in tablist
 change-tablist-prefix-suffix: true
+
+#header/footer
 enable-header-footer: true
 
 header:
   - "&3&lServer name"
-  - "&6&lRank: %rank%"
   - "&7&l>> %animation:Welcome%&3 &l%nick%&7&l! &7&l<<"
   - "&7Online players: &f%online%"
   - "&6Online staff: &e%staffonline%"
@@ -20,7 +24,10 @@ footer:
   - ""
   - "&7Visit our webpage %animation:web%"
 
+#supports any numeric placeholder, set to "" to disable the feature
 yellow-number-in-tablist: "%ping%"
+
+#literally what it says
 group-sorting-priority-list:
   - owner
   - admin
@@ -30,6 +37,7 @@ group-sorting-priority-list:
   - premium
   - player
   - default
+
 Groups:
   Owner:
     tabprefix: "&0&l[&a&lOwner&0&l] &a"
@@ -45,6 +53,8 @@ Groups:
       - "This is an example of per-group header/footer"
     footer:
       - "applied to a group"
+      
+  #default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
   _OTHER_:
     tabprefix: "%vault-prefix%"
     tagprefix: "%vault-prefix%"
@@ -60,19 +70,46 @@ Users:
     abovename: "&bOh look, 3 lines of text !"
     belowname: "&eThere's only one plugin out there supporting it"
 
+#additional very limited line of text below nametag
+#don't forget this enables on all player entities, which includes NPCs
+#tags so you can find this section using the mighty ctrl + f feature: [NPC, Citizens, below_name, health]
 classic-vanilla-belowname:
+
+  #enabling the feature
   enabled: true
+  
+  #number or numeric placeholder, supports per-player placeholders
   number: "%health%"
+  
+  #text after number, must be same on all players
   text: "Health"
 
+#controlling the collision rule
 enable-collision: true
+
+#using the opposite of the setting above for worlds
 revert-collision-rule-in-worlds:
   - revertedworld
+  
+#preventing players with spectator gamemode from being moved to the bottom of tablist with transparent name
 do-not-move-spectators: false
+
+#allows players with tab.spectatorbypass permission to see spectators moved despite the option above enabled
 allow-spectator-bypass-permission: false
+
+#using armor stands for nametags, bypassing all limits
+#THEY ARE CLIENT SIDED AND DO NOT EXIST ON SERVER SO STOP SAYING YOUR SERVER IS LAGGING FROM THIS
 unlimited-nametag-prefix-suffix-mode:
+
+  #enabling the feature
   enabled: false
+  
+  #enabling will result in NPCs ignoring nametag prefix/suffix/visibility to prevent NPCs with names of online players from being invisible
   modify-npc-names: false
+  
+  #using a feature introduced in 1.8.1 to make hitbox zero so you can't cry it affects pvp despite hit redirection
+  #1.8.0 clients will see wild things
+  #automatically enabled for 1.9+
   use-marker-tag-for-1-8-x-clients: false
 
 per-world-settings:
@@ -85,19 +122,33 @@ per-world-settings:
       Owner:
         tabprefix: "&0&l[&a&lOwner&0&l] &a"
         tagprefix: "&2&lOwner &a"
+        
+  #separating multiple worlds with "-"
   world2-world3:
     header:
       - "This is a shared header for"
       - "world2 and world3"
+
 placeholders:
+  #output of %afk%
   afk-yes: " &4*&4&lAFK&4*&r"
   afk-no: ""
+  
+  #%date%
   date-format: "dd.MM.yyyy"
+  
+  #%time%
   time-format: "[HH:mm:ss / h:mm a]"
+  
+  #in hours, in case of wrong timezone
   time-offset: 0
+  
+  #don't forget color codes
   remove-strings:
     - "[]"
     - "< >"
+    
+#aliases for %rank%, this is not the place where group prefix is defined!
 rank-aliases:
   Admin: "&4&lADMIN"
   Mod: "&b&lMOD"

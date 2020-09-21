@@ -1,7 +1,12 @@
 # Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
 
+#changing nametags, affecting sorting, collision rule
 change-nametag-prefix-suffix: true
+
+#prefix/suffix in tablist
 change-tablist-prefix-suffix: true
+
+#header/footer
 enable-header-footer: true
 
 global-playerlist:
@@ -33,7 +38,10 @@ footer:
   - ""
   - "&7Visit our webpage %animation:web%"
   
+#supports any numeric placeholder, set to "" to disable the feature
 yellow-number-in-tablist: "%ping%"
+
+#literally what it says
 group-sorting-priority-list:
   - owner
   - admin
@@ -43,6 +51,7 @@ group-sorting-priority-list:
   - premium
   - player
   - default
+
 Groups:
   Owner:
     tabprefix: "&0&l[&a&lOwner&0&l] &a"
@@ -58,6 +67,8 @@ Groups:
       - "This is an example of per-group header/footer"
     footer:
       - "applied to a group"
+      
+    #default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
   _OTHER_:
     tabprefix: "%rank% "
     tagprefix: "%rank% "
@@ -66,16 +77,34 @@ Users:
   _NEZNAMY_:
     tabprefix: "&6&lTAB Author &a"
     tagprefix: "&6&lTAB &r&a"
+    
+#additional very limited line of text below nametag
+#don't forget this enables on all player entities, which includes NPCs
+#tags so you can find this section using the mighty ctrl + f feature: [NPC, Citizens, below_name, health]
 classic-vanilla-belowname:
-  enabled: true
-  number: "%ping%"
-  text: "&aPing"
 
+  #enabling the feature
+  enabled: true
+  
+  #number or numeric placeholder, supports per-player placeholders
+  number: "%ping%"
+  
+  #text after number, must be same on all players
+  text: "Ping"
+
+#controlling the collision rule
 enable-collision: true
+
+#using the opposite of the setting above for worlds
 revert-collision-rule-in-worlds:
   - revertedworld
+  
+#preventing players with spectator gamemode from being moved to the bottom of tablist with transparent name
 do-not-move-spectators: false
+
+#allows players with tab.spectatorbypass permission to see spectators moved despite the option above enabled
 allow-spectator-bypass-permission: false
+
 per-server-settings:
   server1:
     header:
@@ -91,17 +120,27 @@ per-server-settings:
       - "This is a shared header for"
       - "server2 and server3"
 placeholders:
+  #%date%
   date-format: "dd.MM.yyyy"
+  
+  #%time%
   time-format: "[HH:mm:ss / h:mm a]"
+  
+  #in hours, in case of wrong timezone
   time-offset: 0
+  
+  #don't forget color codes
   remove-strings:
     - "[]"
     - "< >"
+
+#aliases for %server%
 server-aliases:
   hub: "&eHub"
   survival: "&bSurvival"
   plot: "&cPlot"
-  
+
+#aliases for %rank%, this is not the place where group prefix is defined!
 rank-aliases:
   Admin: "&4&lADMIN"
   Mod: "&b&lMOD"

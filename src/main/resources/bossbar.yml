@@ -8,7 +8,7 @@
 #the entity will be slightly visible when progress is less than ~50% (client-sided bug)
 #only 1 line can be displayed at a time
 
-#you can also announce a message using /tab announce bar <bar name> <duration in seconds> (does not support animations yet)
+#you can also announce a message using /tab announce bar <bar name> <duration in seconds>
 
 bossbar-enabled: false
 bossbar-toggle-command: /bossbar
@@ -31,6 +31,8 @@ bars:
   ServerInfo:
     #tab.bossbar.<name>, in this case tab.bossbar.ServerInfo
     permission-required: false
+    
+    #all 4 settings support placeholders including animations, you can use it to achieve changing text
     style: "PROGRESS"
     color: "%animation:barcolors%"
     progress: "100" # in %
