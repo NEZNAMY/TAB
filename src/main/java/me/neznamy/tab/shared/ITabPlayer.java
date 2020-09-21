@@ -49,6 +49,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean collision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
+	private boolean onBoat;
 
 	private Scoreboard activeScoreboard;
 	public boolean hiddenScoreboard;
@@ -85,8 +86,9 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	private boolean getTeamVisibility() {
+		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
 		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
-		return !Shared.featureManager.isFeatureEnabled("nametagx") && nameTagVisible;
+		return nameTagVisible;
 	}
 
 	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
@@ -512,5 +514,15 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public boolean getCollisionRule() {
 		return collision;
+	}
+	
+	@Override
+	public void setOnBoat(boolean onBoat) {
+		this.onBoat = onBoat;
+	}
+	
+	@Override
+	public boolean isOnBoat() {
+		return onBoat;
 	}
 }

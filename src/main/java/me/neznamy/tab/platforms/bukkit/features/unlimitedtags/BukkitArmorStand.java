@@ -185,7 +185,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
 		if (((me.neznamy.tab.platforms.bukkit.BukkitTabPlayer)owner).isDisguised()) return false;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
+		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0 && !owner.isOnBoat();
 	}
 	
 	public Location getLocation() {
@@ -240,7 +240,12 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setEntityFlags(flag);
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
-		boolean visible = (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player)) ? false : this.visible;
+		boolean visible;
+		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player)) {
+			visible = false;
+		} else {
+			visible = this.visible;
+		}
 		datawatcher.helper().setCustomNameVisible(visible);
 
 		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);

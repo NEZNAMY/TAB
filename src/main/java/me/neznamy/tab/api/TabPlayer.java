@@ -301,4 +301,9 @@ public interface TabPlayer {
 	public boolean getCollisionRule();
 	
 	public boolean isDisguised();
+	
+	
+	public void setOnBoat(boolean onBoat);
+	
+	public boolean isOnBoat();
 }

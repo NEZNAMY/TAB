@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -92,6 +94,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
+					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
+					if (p.isOnBoat() != onBoat) {
+						p.setOnBoat(onBoat);
+						p.updateTeamData();
+					}
 					p.getArmorStandManager().updateVisibility();
 				}
 			}
