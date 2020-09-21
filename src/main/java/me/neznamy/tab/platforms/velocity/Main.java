@@ -103,22 +103,24 @@ public class Main {
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				Object modifiedPacket = packet;
 				try {
-					if (modifiedPacket.getClass().getSimpleName().equals("PlayerListItem") && player.getVersion().getMinorVersion() >= 8) {
-						PacketPlayOutPlayerInfo info = VelocityPacketBuilder.readPlayerInfo(modifiedPacket);
+					if (packet.getClass().getSimpleName().equals("PlayerListItem") && player.getVersion().getMinorVersion() >= 8) {
+						PacketPlayOutPlayerInfo info = VelocityPacketBuilder.readPlayerInfo(packet);
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-						modifiedPacket = info.create(player.getVersion());
+						super.write(context, info.create(player.getVersion()), channelPromise);
+						return;
 					}
-					if (modifiedPacket instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
+					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
-						modifyPlayers((Team) modifiedPacket);
-						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
+						modifyPlayers((Team) packet);
+						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+						super.write(context, packet, channelPromise);
+						return;
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
+				super.write(context, packet, channelPromise);
 			}
 		});
 	}

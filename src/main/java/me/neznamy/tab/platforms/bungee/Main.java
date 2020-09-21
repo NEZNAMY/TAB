@@ -94,30 +94,35 @@ public class Main extends Plugin {
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				Object modifiedPacket = packet;
 				try {
-					if (modifiedPacket instanceof PlayerListItem && player.getVersion().getMinorVersion() >= 8) {
-						PacketPlayOutPlayerInfo info = BungeePacketBuilder.readPlayerInfo(modifiedPacket, player.getVersion());
+					if (packet instanceof PlayerListItem && player.getVersion().getMinorVersion() >= 8) {
+						PacketPlayOutPlayerInfo info = BungeePacketBuilder.readPlayerInfo(packet, player.getVersion());
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-						modifiedPacket = info.create(player.getVersion());
+						super.write(context, info.create(player.getVersion()), channelPromise);
+						return;
 					}
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
-						if (modifiedPacket instanceof Team) {
-							modifyPlayers((Team) modifiedPacket);
+						if (packet instanceof Team) {
+							modifyPlayers((Team) packet);
+							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+							super.write(context, packet, channelPromise);
+							return;
 						}
-						if (modifiedPacket instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8) {
-							ByteBuf buf = ((ByteBuf) modifiedPacket).duplicate();
+						if (packet instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8) {
+							ByteBuf buf = ((ByteBuf) packet).duplicate();
 							if (buf.readByte() == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
 								team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
 								modifyPlayers(team);
-								modifiedPacket = team;
+								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+								super.write(context, team, channelPromise);
+								return;
 							}
 						}
-						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
+						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					}
-					if (modifiedPacket instanceof Login) {
+					if (packet instanceof Login) {
 						//registering all teams again because client reset packet is sent
 						Shared.cpu.runTaskLater(100, "Reapplying scoreboard components", TabFeature.WATERFALLFIX, UsageType.PACKET_READING, new Runnable() {
 
@@ -142,7 +147,7 @@ public class Main extends Plugin {
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 				}
-				if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
+				super.write(context, packet, channelPromise);
 			}
 		});
 	}

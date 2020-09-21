@@ -56,23 +56,25 @@ public class Injector {
 							super.write(context, packet, channelPromise);
 							return;
 						}
-						Object modifiedPacket = packet;
 						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
 							//nametag anti-override
 							long time = System.nanoTime();
-							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(modifiedPacket)) {
-								modifyPlayers(modifiedPacket);
+							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+								modifyPlayers(packet);
+								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+								super.write(context, packet, channelPromise);
+								return;
 							}
-							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.PACKET_READING, System.nanoTime()-time);
+							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 						}
-						Shared.featureManager.onPacketSend(player, modifiedPacket);
-						
-						PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(modifiedPacket);
-						if (info != null) {
+						Shared.featureManager.onPacketSend(player, packet);
+						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
+							PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(packet);
 							Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-							modifiedPacket = info.create(player.getVersion());
+							super.write(context, info.create(player.getVersion()), channelPromise);
+							return;
 						}
-						if (modifiedPacket != null) super.write(context, modifiedPacket, channelPromise);
+						super.write(context, packet, channelPromise);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
 					}

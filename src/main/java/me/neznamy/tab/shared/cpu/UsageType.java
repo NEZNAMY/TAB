@@ -16,6 +16,7 @@ public enum UsageType {
 	COMMAND_PREPROCESS("PlayerCommandPreprocessEvent"),
 	
 	//packets
+	ANTI_OVERRIDE("Anti override"),
 	PACKET_READING("Packet reading"),
 	PACKET_MOUNT("Mount packet"),
 	PACKET_ENTITY_DESTROY("PacketPlayOutEntityDestroy"),

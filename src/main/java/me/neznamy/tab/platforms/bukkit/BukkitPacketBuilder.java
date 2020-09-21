@@ -121,7 +121,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	public static Field PacketPlayOutScoreboardTeam_SIGNATURE;
 
 	//PacketPlayOutPlayerInfo
-	private static Class<?> PacketPlayOutPlayerInfo;
+	public static Class<?> PacketPlayOutPlayerInfo;
 	private static Class<Enum> EnumGamemode_;
 	private static Class<Enum> EnumPlayerInfoAction_;
 	private static Class<?> PlayerInfoData;
@@ -618,8 +618,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return list;
 	}
 
-	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception{
-		if (!PacketPlayOutPlayerInfo.isInstance(nmsPacket)) return null;
+	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception {
 		if (minorVersion >= 8) {
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
