@@ -113,7 +113,7 @@ public class NMSHook {
 			}
 			return SUPPORTED_VERSIONS.contains(serverPackage);
 		} catch (Throwable e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return false;
 		}
 	}
