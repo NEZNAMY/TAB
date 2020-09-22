@@ -150,7 +150,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			@Override
 			public void run() {
 				for (TabPlayer all : Shared.getPlayers()) {
-					all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
+					if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 				}
 				disconnectedPlayer.getArmorStandManager().destroy();
 			}
