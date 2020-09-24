@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -9,6 +10,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
+import net.luckperms.api.query.QueryOptions;
 
 /**
  * LuckPerms hook
@@ -51,7 +53,9 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 			return "";
 		}
-		String prefix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getPrefix();
+		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
+		if (!options.isPresent()) return "";
+		String prefix = user.getCachedData().getMetaData(options.get()).getPrefix();
 		return prefix == null ? "" : prefix;
 	}
 
@@ -63,7 +67,9 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 			return "";
 		}
-		String suffix = user.getCachedData().getMetaData(LuckPermsProvider.get().getContextManager().getQueryOptions(user).get()).getSuffix();
+		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
+		if (!options.isPresent()) return "";
+		String suffix = user.getCachedData().getMetaData(options.get()).getSuffix();
 		return suffix == null ? "" : suffix;
 	}
 
