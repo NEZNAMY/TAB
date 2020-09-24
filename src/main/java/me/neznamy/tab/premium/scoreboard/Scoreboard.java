@@ -49,7 +49,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 				this.displayCondition = Premium.conditions.get(displayCondition);
 			} else {
 				List<String> conditions = Lists.newArrayList(displayCondition.split(";"));
-				this.displayCondition = Condition.compile(null, conditions, null, null, null);
+				this.displayCondition = Condition.compile(null, conditions, "AND", null, null);
 			}
 		}
 		this.childBoard = childBoard;
