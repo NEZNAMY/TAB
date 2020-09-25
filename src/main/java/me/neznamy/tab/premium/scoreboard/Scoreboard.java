@@ -71,26 +71,24 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		if (text.startsWith("Custom|")) {
 			String[] elements = text.split("\\|");
 			return new CustomLine(this, lineID, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
-		} else {
-			if (text.contains("%")) {
-				if (manager.useNumbers) {
-					return new NumberedStableDynamicLine(this, lineID, text);
-				} else {
-					return new All0StableDynamicLine(this, lineID, text);
-				}
+		}
+		if (text.contains("%")) {
+			if (manager.useNumbers) {
+				return new NumberedStableDynamicLine(this, lineID, text);
 			} else {
-				if (manager.useNumbers) {
-					if (text.length() > 26) {
-						return new NumberedStaticLine(lineID, text);
-					} else {
-						 //trying to avoid same player name when multiple lines have the same short text (such as for empty lines)
-						return new NumberedStableDynamicLine(this, lineID, text);
-					}
-				} else {
-					return new All0StaticLine(this, lineID, text);
-				}
+				return new All0StableDynamicLine(this, lineID, text);
 			}
 		}
+		//static text
+		if (manager.useNumbers) {
+			if (text.length() > 26) {
+				return new NumberedStaticLine(lineID, text);
+			} else {
+				 //trying to avoid same player name when multiple lines have the same short text (such as for empty lines)
+				return new NumberedStableDynamicLine(this, lineID, text);
+			}
+		}
+		return new All0StaticLine(this, lineID, text);
 	}
 
 	public String getName() {
