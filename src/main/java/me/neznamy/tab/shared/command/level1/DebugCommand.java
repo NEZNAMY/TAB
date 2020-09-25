@@ -38,12 +38,13 @@ public class DebugCommand extends SubCommand {
 		}
 		debug(sender, analyzed);
 	}
-	
+
 	/**
 	 * Peforms debug on player and displays output
 	 * @param sender - command sender or null if console
 	 * @param analyzed - player to be analyzed
 	 */
+	@SuppressWarnings("unchecked")
 	private void debug(TabPlayer sender, TabPlayer analyzed) {
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
@@ -113,16 +114,25 @@ public class DebugCommand extends SubCommand {
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
 			if (Shared.featureManager.isFeatureEnabled("nametagx")) {
-				showProperty(sender, analyzed, "abovename", disabledNametags);
-				showProperty(sender, analyzed, "belowname", disabledNametags);
 				showProperty(sender, analyzed, "customtagname", disabledNametags);
+				List<Object> lines;
+				if (Premium.is()) {
+					lines = (List<Object>) Premium.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines");
+					lines.addAll(Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
+				} else {
+					lines = Arrays.asList("belowname", "nametag", "abovename");
+				}
+				for (Object line : lines) {
+					if (line.toString().equals("nametag")) continue;
+					showProperty(sender, analyzed, line+"", disabledNametags);
+				}
 			}
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
 			sendMessage(sender, "&atagsuffix: &cDisabled");
 		}
 	}
-	
+
 	/**
 	 * Shows value and source of player's property
 	 * @param sender - command sender or null if console
@@ -140,7 +150,7 @@ public class DebugCommand extends SubCommand {
 			sendRawMessage(sender, value);
 		}
 	}
-	
+
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<String>();
