@@ -250,7 +250,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (forcedScoreboard == null) return;
 		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard sb = sbm.getScoreboards().get(sbm.getHighestScoreboard(this));
+		Scoreboard sb = sbm.getScoreboards().get(sbm.detectHighestScoreboard(this));
 		activeScoreboard = sb;
 		sb.register(this);
 		forcedScoreboard = null;

@@ -55,7 +55,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
 		staticNumber = Premium.premiumconfig.getInt("scoreboard.static-number", 0);
-		
+
 		for (Object scoreboard : Premium.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
 			String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
 			String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
@@ -74,7 +74,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			Shared.featureManager.registerFeature("scoreboard-" + scoreboard, sb);
 		}	
 	}
-	
+
 	@Override
 	public void load() {
 		for (TabPlayer p : Shared.getPlayers()) {
@@ -88,7 +88,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 					if (!p.isScoreboardVisible()) continue;
 					Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
-					String highest = getHighestScoreboard(p);
+					String highest = detectHighestScoreboard(p);
 					if (!current.equals(highest)) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 						p.setActiveScoreboard(null);
@@ -98,7 +98,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 		});
 	}
-	
+
 	@Override
 	public void unload() {
 		for (Scoreboard board : scoreboards.values()) {
@@ -109,16 +109,16 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		scoreboards.clear();
 	}
-	
+
 	@Override
 	public void onJoin(TabPlayer p) {
 		p.setScoreboardVisible(!sb_off_players.contains(p.getName()));
 		send((ITabPlayer) p);
 	}
-	
+
 	public void send(ITabPlayer p) {
 		if (disabledWorlds.contains(p.getWorldName()) || !p.isScoreboardVisible()) return;
-		String scoreboard = getHighestScoreboard(p);
+		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
 			if (board != null) {
@@ -127,12 +127,12 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 		}
 	}
-	
+
 	@Override
 	public void onQuit(TabPlayer p) {
 		unregisterScoreboard((ITabPlayer) p, false);
 	}
-	
+
 	public void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
 		if (p.getActiveScoreboard() != null) {
 			if (sendUnregisterPacket) {
@@ -143,27 +143,31 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			p.setActiveScoreboard(null);
 		}
 	}
-	
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		unregisterScoreboard((ITabPlayer) p, true);
 		send((ITabPlayer) p);
 	}
-	
-	public String getHighestScoreboard(TabPlayer p) {
+
+	public String detectHighestScoreboard(TabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
-		if (scoreboard == null && !defaultScoreboard.equalsIgnoreCase("NONE")) scoreboard = defaultScoreboard;
-		if (scoreboard != null) {
-			Scoreboard board = scoreboards.get(scoreboard);
-			while (board != null && !board.isConditionMet(p)) {
-				board = scoreboards.get(board.getChildScoreboard());
-				if (board == null) return "null";
-				scoreboard = board.getName();
+		if (scoreboard == null) {
+			if (defaultScoreboard.equalsIgnoreCase("NONE")) {
+				return "null";
+			} else {
+				scoreboard = defaultScoreboard;
 			}
+		}
+		Scoreboard board = scoreboards.get(scoreboard);
+		while (board != null && !board.isConditionMet(p)) {
+			board = scoreboards.get(board.getChildScoreboard());
+			if (board == null) return "null";
+			scoreboard = board.getName();
 		}
 		return scoreboard;
 	}
-	
+
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (disabledWorlds.contains(sender.getWorldName())) return false;
@@ -181,11 +185,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		return false;
 	}
-	
+
 	public Map<String, Scoreboard> getScoreboards(){
 		return scoreboards;
 	}
-	
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;
