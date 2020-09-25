@@ -85,6 +85,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				for (ITabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded()) continue;
 					if (p.forcedScoreboard != null) continue;
+					if (!p.isScoreboardVisible()) continue;
 					Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = getHighestScoreboard(p);
@@ -111,12 +112,12 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	
 	@Override
 	public void onJoin(TabPlayer p) {
-		((ITabPlayer)p).hiddenScoreboard = sb_off_players.contains(p.getName());
+		p.setScoreboardVisible(!sb_off_players.contains(p.getName()));
 		send((ITabPlayer) p);
 	}
 	
 	public void send(ITabPlayer p) {
-		if (disabledWorlds.contains(p.getWorldName()) || p.hiddenScoreboard || p.getActiveScoreboard() != null) return;
+		if (disabledWorlds.contains(p.getWorldName()) || !p.isScoreboardVisible()) return;
 		String scoreboard = getHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);

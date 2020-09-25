@@ -52,7 +52,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean onBoat;
 
 	private Scoreboard activeScoreboard;
-	public boolean hiddenScoreboard;
+	public boolean scoreboardVisible;
 	public Scoreboard forcedScoreboard;
 
 	public void init() {
@@ -394,11 +394,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public boolean hasHiddenScoreboard() {
-		return hiddenScoreboard;
-	}
-
-	@Override
 	public String getOfflineUUID() {
 		return offlineId;
 	}
@@ -524,5 +519,39 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public boolean isOnBoat() {
 		return onBoat;
+	}
+	
+	
+	@Override
+	public void setScoreboardVisible(boolean visible) {
+		if (scoreboardVisible == visible) return;
+		scoreboardVisible = visible;
+		ScoreboardManager scoreboardManager = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
+		if (scoreboardManager == null) throw new IllegalStateException("Scoreboard feature is not enabled");
+		if (visible) {
+			scoreboardManager.send(this);
+			sendMessage(scoreboardManager.scoreboard_on, true);
+			if (scoreboardManager.remember_toggle_choice) {
+				scoreboardManager.sb_off_players.remove(getName());
+				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+			}
+		} else {
+			scoreboardManager.unregisterScoreboard(this, true);
+			sendMessage(scoreboardManager.scoreboard_off, true);
+			if (scoreboardManager.remember_toggle_choice) {
+				scoreboardManager.sb_off_players.add(getName());
+				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+			}
+		}
+	}
+	
+	@Override
+	public void toggleScoreboard() {
+		setScoreboardVisible(!scoreboardVisible);
+	}
+	
+	@Override
+	public boolean isScoreboardVisible() {
+		return scoreboardVisible;
 	}
 }

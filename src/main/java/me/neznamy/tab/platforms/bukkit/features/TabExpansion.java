@@ -59,7 +59,7 @@ public class TabExpansion extends PlaceholderExpansion {
 			}
 		}
 		if (identifier.equals("scoreboard_visible")) {
-			return p.hasHiddenScoreboard() ? "Disabled" : "Enabled";
+			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
 		}
 		if (identifier.equals("bossbar_visible")) {
 			return p.hasBossbarVisible() ? "Enabled" : "Disabled";

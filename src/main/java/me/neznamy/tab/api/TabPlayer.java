@@ -272,8 +272,6 @@ public interface TabPlayer {
 	
 	public void setBossbarVisible(boolean visible);
 	
-	public boolean hasHiddenScoreboard();
-	
 	public String getOfflineUUID();
 	
 	public List<BossBarLine> getActiveBossBars();
@@ -303,7 +301,15 @@ public interface TabPlayer {
 	public boolean isDisguised();
 	
 	
+	
+	
 	public void setOnBoat(boolean onBoat);
 	
 	public boolean isOnBoat();
+	
+	public void setScoreboardVisible(boolean visible);
+	
+	public void toggleScoreboard();
+	
+	public boolean isScoreboardVisible();
 }
