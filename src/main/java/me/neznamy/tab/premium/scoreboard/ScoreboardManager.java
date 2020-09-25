@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
@@ -72,7 +73,21 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			Scoreboard sb = new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard);
 			scoreboards.put(scoreboard+"", sb);
 			Shared.featureManager.registerFeature("scoreboard-" + scoreboard, sb);
-		}	
+		}
+		if (!defaultScoreboard.equalsIgnoreCase("NONE") && !scoreboards.containsKey(defaultScoreboard)) {
+			Shared.errorManager.startupWarn("Unknown scoreboard &e\"" + defaultScoreboard + "\"&c set as default scoreboard.");
+			defaultScoreboard = "NONE";
+		}
+		for (Entry<String, String> entry : perWorld.entrySet()) {
+			if (!scoreboards.containsKey(entry.getValue())) {
+				Shared.errorManager.startupWarn("Unknown scoreboard &e\"" + entry.getValue() + "\"&c set as per-world scoreboard in world &e\"" + entry.getKey() + "\"&c.");
+			}
+		}
+		for (Scoreboard scoreboard : scoreboards.values()) {
+			if (scoreboard.getChildScoreboard() != null && !scoreboards.containsKey(scoreboard.getChildScoreboard())) {
+				Shared.errorManager.startupWarn("Unknown scoreboard &e\"" + scoreboard.getChildScoreboard() + "\"&c set as if-condition-not-met of scoreboard &e\"" + scoreboard.getName() + "\"&c.");
+			}
+		}
 	}
 
 	@Override
