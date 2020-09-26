@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarColor;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.BarStyle;
 
 /**
  * An error assistant to print internal errors into error file and warn user about misconfiguration

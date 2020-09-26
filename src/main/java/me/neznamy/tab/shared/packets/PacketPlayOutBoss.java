@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.packets;
 
 import java.util.UUID;
 
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**
@@ -203,31 +205,5 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 		UPDATE_NAME,
 		UPDATE_STYLE,
 		UPDATE_PROPERTIES;
-	}
-
-	/**
-	 * An enum representing bossbar colors
-	 */
-	public enum BarColor {
-
-		PINK,
-		BLUE,
-		RED,
-		GREEN,
-		YELLOW,
-		PURPLE,
-		WHITE;
-	}
-
-	/**
-	 * An enum representing bossbar styles using same names as NMS
-	 */
-	public enum BarStyle {
-
-		PROGRESS,
-		NOTCHED_6,
-		NOTCHED_10,
-		NOTCHED_12,
-		NOTCHED_20;
 	}
 }

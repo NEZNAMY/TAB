@@ -215,10 +215,12 @@ public class Placeholders {
 	public static void registerPlaceholder(RelationalPlaceholder placeholder) {
 		registeredRelationalPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
-	public static void checkForRegistration(String text) {
-		for (String identifier : detectAll(text)) {
-			if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);
-			categorizeUsedPlaceholder(identifier);
+	public static void checkForRegistration(String... texts) {
+		for (String text : texts) {
+			for (String identifier : detectAll(text)) {
+				if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);
+				categorizeUsedPlaceholder(identifier);
+			}
 		}
 		Shared.featureManager.refreshUsedPlaceholders();
 	}

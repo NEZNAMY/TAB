@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
@@ -324,4 +325,8 @@ public interface TabPlayer {
 	public boolean hasForcedScoreboard();
 	
 	public boolean isVanished();
+	
+	public void showBossBar(BossBar bossbar);
+	
+	public void removeBossBar(BossBar bossbar);
 }

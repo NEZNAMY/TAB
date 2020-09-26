@@ -3,10 +3,14 @@ package me.neznamy.tab.api;
 import java.util.List;
 import java.util.UUID;
 
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -143,49 +147,71 @@ public class TABAPI {
 	public static void registerPermissionPlugin(PermissionPlugin permission) {
 		Shared.permissionPlugin = permission;
 	}
+	
+	public static BossBar createBossBar(String name, String title, float progress, BarColor color, BarStyle style) {
+		return createBossBar(name, title, progress+"", color.toString(), style.toString());
+	}
+	
+	public static BossBar createBossBar(String name, String title, String progress, String color, String style) {
+		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) Shared.featureManager.getFeature("bossbar");
+		if (feature == null) throw new IllegalStateException("Bossbar feature is not enabled");
+		BossBar bar = new BossBarLine(name, false, color, style, title, progress);
+		feature.lines.put(bar.getName(), (BossBarLine) bar);
+		return bar;
+	}
 
 
-
+	@Deprecated
 	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
 		getPlayer(player).setValueTemporarily(type, value);
 	}
 
+	@Deprecated
 	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
 		getPlayer(player).setValuePermanently(type, value);
 	}
 
+	@Deprecated
 	public static String getTemporaryValue(UUID player, EnumProperty type) {
 		return getPlayer(player).getTemporaryValue(type);
 	}
 
+	@Deprecated
 	public static boolean hasTemporaryValue(UUID player, EnumProperty type) {
 		return getTemporaryValue(player, type) != null;
 	}
 
+	@Deprecated
 	public static void removeTemporaryValue(UUID player, EnumProperty type) {
 		setValueTemporarily(player, type, null);
 	}
 
+	@Deprecated
 	public static String getOriginalValue(UUID player, EnumProperty type) {
 		return getPlayer(player).getOriginalValue(type);
 	}
 
+	@Deprecated
 	public static void sendHeaderFooter(UUID player, String header, String footer) {
 		getPlayer(player).sendHeaderFooter(header, footer);
 	}
 
+	@Deprecated
 	public static void clearHeaderFooter(UUID player) {
 		sendHeaderFooter(player, "", "");
 	}
 
+	@Deprecated
 	public static void hideNametag(UUID player) {
 		getPlayer(player).hideNametag();
 	}
 
+	@Deprecated
 	public static void showNametag(UUID player) {
 		getPlayer(player).showNametag();
 	}
 
+	@Deprecated
 	public static boolean hasHiddenNametag(UUID player) {
 		return getPlayer(player).hasHiddenNametag();
 	}

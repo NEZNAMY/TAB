@@ -13,6 +13,7 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
@@ -526,5 +527,19 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public boolean isVanished() {
 		return false;
+	}
+	
+	@Override
+	public void showBossBar(BossBar bossbar) {
+		BossBarLine line = (BossBarLine) bossbar;
+		line.create(this);
+		activeBossBars.add(line);
+	}
+	
+	@Override
+	public void removeBossBar(BossBar bossbar) {
+		BossBarLine line = (BossBarLine) bossbar;
+		line.remove(this);
+		activeBossBars.remove(line);
 	}
 }
