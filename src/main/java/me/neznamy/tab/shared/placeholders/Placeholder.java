@@ -50,7 +50,7 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(value, p), p);
+			String newValue = setPlaceholders(findReplacement(value), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
@@ -59,7 +59,7 @@ public abstract class Placeholder {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
-	public String findReplacement(String originalOutput, TabPlayer p) {
+	public String findReplacement(String originalOutput) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
 			return replacements.get(originalOutput).toString();
