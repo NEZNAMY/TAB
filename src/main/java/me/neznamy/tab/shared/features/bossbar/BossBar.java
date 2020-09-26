@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -48,11 +47,11 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
 			String text = Configs.bossbar.getString("bars." + bar + ".text");
 			if (style == null) {
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.errorManager.missingAttribute("BossBar", bar, "style");
+				Shared.errorManager.missingAttribute("BossBar", bar, "style");
 				style = "PROGRESS";
 			}
 			if (color == null) {
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) Shared.errorManager.missingAttribute("BossBar", bar, "color");
+				Shared.errorManager.missingAttribute("BossBar", bar, "color");
 				color = "WHITE";
 			}
 			if (progress == null) {
