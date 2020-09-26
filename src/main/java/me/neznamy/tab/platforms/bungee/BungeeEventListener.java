@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -56,7 +55,7 @@ public class BungeeEventListener implements Listener {
 		try{
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				ITabPlayer p = new BungeeTabPlayer(e.getPlayer());
+				TabPlayer p = new BungeeTabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);

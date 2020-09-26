@@ -11,10 +11,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Animation;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -186,7 +186,7 @@ public class Placeholders {
 					registerPlaceholder(new PlayerPlaceholder("%condition:" + conditionName + "%", PlaceholderManager.getInstance().defaultRefresh) {
 
 						@Override
-						public String get(ITabPlayer p) {
+						public String get(TabPlayer p) {
 							return c.getText(p);
 						}
 						

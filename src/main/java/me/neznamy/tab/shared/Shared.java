@@ -36,7 +36,7 @@ public class Shared {
 	public static final String pluginVersion = "2.8.8-pre3";
 
 	//player data
-	public static final Map<UUID, ITabPlayer> data = new ConcurrentHashMap<UUID, ITabPlayer>();
+	public static final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
 	
 	//player data by entityId, used by unlimited nametag mode for better performance
 	public static final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
@@ -72,7 +72,7 @@ public class Shared {
 	 * Returns all players
 	 * @return all players
 	 */
-	public static Collection<ITabPlayer> getPlayers(){
+	public static Collection<TabPlayer> getPlayers(){
 		return data.values();
 	}
 	

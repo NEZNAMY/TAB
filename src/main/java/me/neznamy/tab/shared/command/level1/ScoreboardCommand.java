@@ -25,14 +25,14 @@ public class ScoreboardCommand extends SubCommand {
 		}
 		if (!scoreboard.permToToggle || sender.hasPermission("tab.togglescoreboard")) {
 			if (args.length == 0) {
-				sender.toggleScoreboard();
+				sender.toggleScoreboard(true);
 			}
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("on")) {
-					sender.setScoreboardVisible(true);
+					sender.setScoreboardVisible(true, true);
 				}
 				if (args[0].equalsIgnoreCase("off")){
-					sender.setScoreboardVisible(false);
+					sender.setScoreboardVisible(false, true);
 				}
 			}
 		} else {

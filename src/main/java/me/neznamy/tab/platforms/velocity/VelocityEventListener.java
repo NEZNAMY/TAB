@@ -5,7 +5,6 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -29,7 +28,7 @@ public class VelocityEventListener {
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				//join
-				ITabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
+				TabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
 				//sending custom packets with a delay, it would not work otherwise

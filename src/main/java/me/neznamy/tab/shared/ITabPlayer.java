@@ -11,12 +11,13 @@ import java.util.UUID;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
-import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
@@ -41,7 +42,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	protected Channel channel;
-	public boolean nameTagVisible = true;
+	private boolean nameTagVisible = true;
 	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
@@ -52,16 +53,14 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean onBoat;
 
 	private Scoreboard activeScoreboard;
-	public boolean scoreboardVisible;
-	public Scoreboard forcedScoreboard;
+	private boolean scoreboardVisible;
+	private Scoreboard forcedScoreboard;
 
 	public void init() {
-		updateGroupIfNeeded(false);
+		setGroup(GroupRefresher.detectPermissionGroup(this), false);
 		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)).toString();
 		correctId = uniqueId; //initialization to avoid NPEs
 	}
-
-	public abstract boolean hasInvisibility();
 
 	public abstract boolean hasPermission(String permission);
 
@@ -73,61 +72,10 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public abstract Object getSkin();
 
-	public boolean isVanished() {
-		return false;
-	}
-
-	public void setActiveScoreboard(Scoreboard board) {
-		activeScoreboard = board;
-	}
-
-	public Scoreboard getActiveScoreboard() {
-		return activeScoreboard;
-	}
-
 	private boolean getTeamVisibility() {
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
 		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
 		return nameTagVisible;
-	}
-
-	public void updateGroupIfNeeded(boolean updateDataIfChanged) {
-		String newGroup = "null";
-		if (Configs.groupsByPermissions) {
-			for (Object group : Configs.primaryGroupFindingList) {
-				if (hasPermission("tab.group." + group)) {
-					newGroup = String.valueOf(group);
-					break;
-				}
-			}
-			if (newGroup.equals("null")) {
-				Shared.errorManager.oneTimeConsoleError("Player " + name + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
-			}
-		} else {
-			if (Configs.usePrimaryGroup) {
-				newGroup = getGroupFromPermissionPlugin();
-			} else {
-				String[] playerGroups = getGroupsFromPermissionPlugin();
-				if (playerGroups != null && playerGroups.length > 0) {
-					loop:
-						for (Object entry : Configs.primaryGroupFindingList) {
-							for (String playerGroup : playerGroups) {
-								if (playerGroup.equalsIgnoreCase(entry + "")) {
-									newGroup = playerGroup;
-									break loop;
-								}
-							}
-						}
-				if (playerGroups[0] != null && newGroup.equals("null")) newGroup = playerGroups[0];
-				}
-			}
-		}
-		if (!permissionGroup.equals(newGroup)) {
-			permissionGroup = newGroup;
-			if (updateDataIfChanged) {
-				forceRefresh();
-			}
-		}
 	}
 
 	public void setProperty(String identifier, String rawValue, String source) {
@@ -484,24 +432,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 	
 	@Override
-	public String getGroupFromPermissionPlugin() {
-		try {
-			return Shared.permissionPlugin.getPrimaryGroup(this);
-		} catch (Throwable e) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
-		}
-	}
-
-	@Override
-	public String[] getGroupsFromPermissionPlugin() {
-		try {
-			return Shared.permissionPlugin.getAllGroups(this);
-		} catch (Throwable e) {
-			return Shared.errorManager.printError(new String[] {"null"}, "Failed to get permission groups of " + getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
-		}
-	}
-	
-	@Override
 	public void setCollisionRule(boolean collision) {
 		this.collision = collision;
 	}
@@ -523,21 +453,25 @@ public abstract class ITabPlayer implements TabPlayer {
 	
 	
 	@Override
-	public void setScoreboardVisible(boolean visible) {
+	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage) {
 		if (scoreboardVisible == visible) return;
 		scoreboardVisible = visible;
 		ScoreboardManager scoreboardManager = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
 		if (scoreboardManager == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		if (visible) {
-			scoreboardManager.send(this);
-			sendMessage(scoreboardManager.scoreboard_on, true);
+			scoreboardManager.sendHighestScoreboard(this);
+			if (sendToggleMessage) {
+				sendMessage(scoreboardManager.scoreboard_on, true);
+			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.remove(getName());
 				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
 			}
 		} else {
 			scoreboardManager.unregisterScoreboard(this, true);
-			sendMessage(scoreboardManager.scoreboard_off, true);
+			if (sendToggleMessage) {
+				sendMessage(scoreboardManager.scoreboard_off, true);
+			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.add(getName());
 				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
@@ -546,12 +480,51 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 	
 	@Override
-	public void toggleScoreboard() {
-		setScoreboardVisible(!scoreboardVisible);
+	public void toggleScoreboard(boolean sendToggleMessage) {
+		setScoreboardVisible(!scoreboardVisible, sendToggleMessage);
 	}
 	
 	@Override
 	public boolean isScoreboardVisible() {
 		return scoreboardVisible;
+	}
+	
+	@Override
+	public void setActiveScoreboard(Scoreboard board) {
+		activeScoreboard = board;
+	}
+
+	@Override
+	public Scoreboard getActiveScoreboard() {
+		return activeScoreboard;
+	}
+	
+	@Override
+	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
+		if (this.permissionGroup.equals(permissionGroup)) return;
+		this.permissionGroup = permissionGroup;
+		if (refreshIfChanged) {
+			forceRefresh();
+		}
+	}
+	
+	@Override
+	public void setNameTagVisible(boolean visible) {
+		nameTagVisible = visible;
+	}
+	
+	@Override
+	public boolean hasNameTagVisible() {
+		return nameTagVisible;
+	}
+	
+	@Override
+	public boolean hasForcedScoreboard() {
+		return forcedScoreboard != null;
+	}
+	
+	@Override
+	public boolean isVanished() {
+		return false;
 	}
 }

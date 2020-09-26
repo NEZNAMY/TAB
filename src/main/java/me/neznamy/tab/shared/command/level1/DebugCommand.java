@@ -86,7 +86,11 @@ public class DebugCommand extends SubCommand {
 		} else if (Configs.usePrimaryGroup) {
 			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 		} else {
-			sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(analyzed.getGroupsFromPermissionPlugin()));
+			try {
+				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(Shared.permissionPlugin.getAllGroups(sender)));
+			} catch (Throwable e) {
+				sendMessage(sender, "&eFull permission group list: &a[]");
+			}
 			sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
 		}
 

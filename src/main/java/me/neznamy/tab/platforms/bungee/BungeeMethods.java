@@ -7,8 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungee.permission.None;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -69,7 +69,7 @@ public class BungeeMethods implements PlatformMethods {
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			ITabPlayer t = new BungeeTabPlayer(p);
+			TabPlayer t = new BungeeTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) Main.inject(t.getUniqueId());
 		}
@@ -98,7 +98,7 @@ public class BungeeMethods implements PlatformMethods {
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
 			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
-				public String get(ITabPlayer p) {
+				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
 					return getLastValue(p);
 				}

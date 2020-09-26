@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -48,7 +47,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	private boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (((ITabPlayer) displayed).isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
+		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
 		if (spyServers.contains(viewer.getWorldName())) {
 			return true;
 		}

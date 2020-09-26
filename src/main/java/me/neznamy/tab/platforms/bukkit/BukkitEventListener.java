@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -23,7 +22,7 @@ public class BukkitEventListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		try {
 			if (Shared.disabled) return;
-			ITabPlayer p = new BukkitTabPlayer(e.getPlayer());
+			TabPlayer p = new BukkitTabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
 			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			Main.inject(e.getPlayer().getUniqueId());

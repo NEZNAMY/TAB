@@ -26,7 +26,6 @@ import me.neznamy.tab.platforms.bukkit.permission.GroupManager;
 import me.neznamy.tab.platforms.bukkit.permission.PermissionsEx;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -170,7 +169,7 @@ public class BukkitMethods implements PlatformMethods {
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
 				Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.playerPlaceholderRefreshIntervals.get(identifier));
 				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, pl.playerPlaceholderRefreshIntervals.get(identifier)){
-					public String get(ITabPlayer p) {
+					public String get(TabPlayer p) {
 						return PluginHooks.setPlaceholders((Player) p.getPlayer(), identifier);
 					}
 				}, true);
@@ -181,7 +180,7 @@ public class BukkitMethods implements PlatformMethods {
 				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.relationalPlaceholderRefreshIntervals.get(identifier)) {
 
 					@Override
-					public String get(ITabPlayer viewer, ITabPlayer target) {
+					public String get(TabPlayer viewer, TabPlayer target) {
 						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
 					}
 				});
@@ -192,7 +191,7 @@ public class BukkitMethods implements PlatformMethods {
 				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.defaultRefresh) {
 
 					@Override
-					public String get(ITabPlayer viewer, ITabPlayer target) {
+					public String get(TabPlayer viewer, TabPlayer target) {
 						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
 					}
 				});
@@ -208,7 +207,7 @@ public class BukkitMethods implements PlatformMethods {
 					int cooldown = identifier.startsWith("%cmi_") ? pl.defaultRefresh * 10 : pl.defaultRefresh; //inefficient plugin
 					Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
 					Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
-						public String get(ITabPlayer p) {
+						public String get(TabPlayer p) {
 							return PluginHooks.setPlaceholders(p == null ? null : (Player) p.getPlayer(), identifier);
 						}
 					}, true);

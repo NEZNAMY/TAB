@@ -290,10 +290,6 @@ public interface TabPlayer {
 	
 	public String getTeamNameNote();
 	
-	public String getGroupFromPermissionPlugin();
-	
-	public String[] getGroupsFromPermissionPlugin();
-	
 	public void setCollisionRule(boolean collision);
 	
 	public boolean getCollisionRule();
@@ -307,9 +303,25 @@ public interface TabPlayer {
 	
 	public boolean isOnBoat();
 	
-	public void setScoreboardVisible(boolean visible);
+	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage);
 	
-	public void toggleScoreboard();
+	public void toggleScoreboard(boolean sendToggleMessage);
 	
 	public boolean isScoreboardVisible();
+	
+	public void setActiveScoreboard(Scoreboard board);
+	
+	public Scoreboard getActiveScoreboard();
+	
+	public void setGroup(String group, boolean refreshIfChanged);
+	
+	public boolean hasInvisibility();
+	
+	public void setNameTagVisible(boolean visible);
+	
+	public boolean hasNameTagVisible();
+	
+	public boolean hasForcedScoreboard();
+	
+	public boolean isVanished();
 }

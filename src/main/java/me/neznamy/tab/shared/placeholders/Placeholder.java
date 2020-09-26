@@ -89,5 +89,6 @@ public abstract class Placeholder {
 		}
 		return replaced;
 	}
+	
 	public abstract String getLastValue(TabPlayer p);
 }

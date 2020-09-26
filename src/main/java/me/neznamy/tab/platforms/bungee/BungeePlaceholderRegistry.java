@@ -4,7 +4,6 @@ import java.util.Map.Entry;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -43,7 +42,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				return ((ProxiedPlayer) p.getPlayer()).getDisplayName();
 			}
 		});

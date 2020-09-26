@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.permission.LuckPerms;
@@ -23,13 +22,13 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public void registerPlaceholders() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"%", 1000) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"online%", 1000) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				int var = 0;
 				for (TabPlayer all : Shared.getPlayers()){
 					if (p.getWorldName().equals(all.getWorldName())) var++;
@@ -39,7 +38,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				return p.getName();
 			}
 		});
@@ -59,12 +58,12 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%ping%", 500) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				return p.getPing()+"";
 			}
 		});
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%player-version%", 999999999) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}
 		});
@@ -100,12 +99,12 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerLuckPermsPlaceholders() {
 		if (Shared.permissionPlugin instanceof LuckPerms) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
-				public String get(ITabPlayer p) {
+				public String get(TabPlayer p) {
 					return ((LuckPerms)Shared.permissionPlugin).getPrefix(p);
 				}
 			});
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
-				public String get(ITabPlayer p) {
+				public String get(TabPlayer p) {
 					return ((LuckPerms)Shared.permissionPlugin).getSuffix(p);
 				}
 			});
@@ -135,7 +134,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	
 	private void registerRankPlaceholder() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
-			public String get(ITabPlayer p) {
+			public String get(TabPlayer p) {
 				Object rank = null;
 				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
 					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 
 /**
  * A player placeholder (output is different for every player)
@@ -20,7 +19,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		super(identifier, refresh);
 	}
 	public boolean update(TabPlayer p) {
-		String newValue = get((ITabPlayer) p);
+		String newValue = get((TabPlayer) p);
 		if (newValue == null) newValue = "";
 		if (!newValue.equals("ERROR") && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
 			lastValue.put(p.getName(), newValue);
@@ -40,5 +39,5 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		}
 		return lastValue.get(p.getName());
 	}
-	public abstract String get(ITabPlayer p);
+	public abstract String get(TabPlayer p);
 }

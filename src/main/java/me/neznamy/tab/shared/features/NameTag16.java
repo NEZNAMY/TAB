@@ -4,7 +4,6 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -31,19 +30,18 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		for (TabPlayer p : Shared.getPlayers()) {
 			p.setTeamName(SortingType.INSTANCE.getTeamName(p));
 			updateProperties(p);
+			p.setNameTagVisible(p.hasInvisibility());
 			if (!isDisabledWorld(p.getWorldName())) p.registerTeam();
 		}
-		//fixing a 1.8.x client-sided vanilla bug
-		for (ITabPlayer p : Shared.getPlayers()) {
-			p.nameTagVisible = !p.hasInvisibility();
-		}
+		
+		//fixing a 1.8.x client-sided bug
 		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
+				for (TabPlayer p : Shared.getPlayers()) {
 					if (isDisabledWorld(p.getWorldName())) continue;
 					boolean visible = !p.hasInvisibility();
-					if (p.nameTagVisible != visible) {
-						p.nameTagVisible = visible;
+					if (p.hasNameTagVisible() != visible) {
+						p.setNameTagVisible(visible);
 						p.updateTeamData();
 					}
 				}

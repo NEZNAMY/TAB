@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -33,7 +32,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean useNumbers;
 	public boolean remember_toggle_choice;
 	public List<String> sb_off_players;
-	public List<Scoreboard> APIscoreboards = new ArrayList<>();
+	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
 	public boolean permToToggle;
 	public int staticNumber;
 
@@ -97,17 +96,15 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
-				for (ITabPlayer p : Shared.getPlayers()) {
-					if (!p.isLoaded()) continue;
-					if (p.forcedScoreboard != null) continue;
-					if (!p.isScoreboardVisible()) continue;
-					Scoreboard board = p.getActiveScoreboard();
+				for (TabPlayer p : Shared.getPlayers()) {
+					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible()) continue;
+					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = detectHighestScoreboard(p);
 					if (!current.equals(highest)) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
 						p.setActiveScoreboard(null);
-						send(p);
+						sendHighestScoreboard(p);
 					}
 				}
 			}
@@ -119,7 +116,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		for (Scoreboard board : scoreboards.values()) {
 			board.unregister();
 		}
-		for (ITabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : Shared.getPlayers()) {
 			p.setActiveScoreboard(null);
 		}
 		scoreboards.clear();
@@ -127,11 +124,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onJoin(TabPlayer p) {
-		p.setScoreboardVisible(!sb_off_players.contains(p.getName()));
-		send((ITabPlayer) p);
+		p.setScoreboardVisible(!sb_off_players.contains(p.getName()), false);
 	}
 
-	public void send(ITabPlayer p) {
+	public void sendHighestScoreboard(TabPlayer p) {
 		if (disabledWorlds.contains(p.getWorldName()) || !p.isScoreboardVisible()) return;
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
@@ -145,10 +141,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onQuit(TabPlayer p) {
-		unregisterScoreboard((ITabPlayer) p, false);
+		unregisterScoreboard(p, false);
 	}
 
-	public void unregisterScoreboard(ITabPlayer p, boolean sendUnregisterPacket) {
+	public void unregisterScoreboard(TabPlayer p, boolean sendUnregisterPacket) {
 		if (p.getActiveScoreboard() != null) {
 			if (sendUnregisterPacket) {
 				p.getActiveScoreboard().unregister(p);
@@ -161,8 +157,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		unregisterScoreboard((ITabPlayer) p, true);
-		send((ITabPlayer) p);
+		unregisterScoreboard(p, true);
+		sendHighestScoreboard(p);
 	}
 
 	public String detectHighestScoreboard(TabPlayer p) {
