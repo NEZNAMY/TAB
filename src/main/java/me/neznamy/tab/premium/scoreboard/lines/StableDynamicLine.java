@@ -7,6 +7,8 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -60,11 +62,16 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		String replaced = scoreproperty.get();
 		String prefix;
 		String suffix;
-		if (replaced.length() > 16 && p.getVersion().getMinorVersion() < 13) {
-			prefix = replaced.substring(0, 16);
-			suffix = replaced.substring(16, replaced.length());
-			if (prefix.charAt(15) == Placeholders.colorChar) {
-				prefix = prefix.substring(0, 15);
+		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
+		int charLimit = Shared.platform.getSeparatorType().equals("world") && 
+				ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
+				p.getVersion().getMinorVersion() < 13 ? 14 : 16;
+				
+		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
+			prefix = replaced.substring(0, charLimit);
+			suffix = replaced.substring(charLimit, replaced.length());
+			if (prefix.charAt(charLimit-1) == Placeholders.colorChar) {
+				prefix = prefix.substring(0, charLimit-1);
 				suffix = Placeholders.colorChar + suffix;
 			}
 			String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(prefix).toColoredText());
