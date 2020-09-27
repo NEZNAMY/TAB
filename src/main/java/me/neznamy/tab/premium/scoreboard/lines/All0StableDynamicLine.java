@@ -10,13 +10,13 @@ import me.neznamy.tab.premium.scoreboard.Scoreboard;
  */
 public class All0StableDynamicLine extends StableDynamicLine {
 
-	public All0StableDynamicLine(Scoreboard parent, int lineID, String text) {
-		super(parent, lineID, text);
+	public All0StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+		super(parent, lineNumber, text);
 	}
 
 	@Override
 	public int getScoreFor(TabPlayer p) {
 		//<1.8 does not support sorting by name which we abuse here
-		return p.getVersion().getMinorVersion() >= 8 ? parent.manager.staticNumber : lineID;
+		return p.getVersion().getMinorVersion() >= 8 ? parent.manager.staticNumber : parent.lines.size() + 1 - lineNumber;
 	}
 }

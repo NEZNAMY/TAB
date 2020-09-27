@@ -18,9 +18,9 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected String teamName;
 	private String playerName;
 	
-	public ScoreboardLine(int lineID) {
-		teamName = "TAB-SB-TM-"+lineID;
-		playerName = getPlayerName(lineID);
+	public ScoreboardLine(int lineNumber) {
+		teamName = "TAB-SB-TM-"+lineNumber;
+		playerName = getPlayerName(lineNumber);
 	}
 	
 	public abstract void register(TabPlayer p);
@@ -47,8 +47,8 @@ public abstract class ScoreboardLine implements Refreshable {
 		return TabFeature.SCOREBOARD;
 	}
 	
-	protected static String getPlayerName(int lineID) {
-		String id = 15-lineID+"";
+	protected static String getPlayerName(int lineNumber) {
+		String id = lineNumber+"";
 		if (id.length() == 1) id = "0" + id;
 		char c = Placeholders.colorChar;
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";

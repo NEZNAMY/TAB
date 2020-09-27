@@ -16,8 +16,8 @@ public class All0StaticLine extends StaticLine {
 	private Scoreboard parent;
 	private String originalText;
 
-	public All0StaticLine(Scoreboard parent, int lineID, String text) {
-		super(lineID, text, getPlayerName(lineID));
+	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
+		super(parent, lineNumber, text, getPlayerName(lineNumber));
 		this.parent = parent;
 		this.originalText = Placeholders.color(text);
 	}
@@ -31,7 +31,7 @@ public class All0StaticLine extends StaticLine {
 			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, parent.manager.staticNumber);
 		} else {
 			//<1.8 does not support sorting by name which we abuse here
-			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, lineID);
+			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, parent.lines.size() + 1 - lineNumber);
 		}
 	}
 

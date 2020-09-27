@@ -10,12 +10,12 @@ import me.neznamy.tab.premium.scoreboard.Scoreboard;
  */
 public class NumberedStableDynamicLine extends StableDynamicLine {
 
-	public NumberedStableDynamicLine(Scoreboard parent, int lineID, String text) {
-		super(parent, lineID, text);
+	public NumberedStableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+		super(parent, lineNumber, text);
 	}
 
 	@Override
 	public int getScoreFor(TabPlayer p) {
-		return lineID;
+		return parent.lines.size() + 1 - lineNumber;
 	}
 }

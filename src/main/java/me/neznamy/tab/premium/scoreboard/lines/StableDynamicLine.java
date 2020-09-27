@@ -16,13 +16,13 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public abstract class StableDynamicLine extends ScoreboardLine {
 
 	protected Scoreboard parent;
-	protected int lineID;
+	protected int lineNumber;
 	protected String text;
 
-	public StableDynamicLine(Scoreboard parent, int lineID, String text) {
-		super(lineID);
+	public StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+		super(lineNumber);
 		this.parent = parent;
-		this.lineID = lineID;
+		this.lineNumber = lineNumber;
 		this.text = text;
 		refreshUsedPlaceholders();
 	}

@@ -1,12 +1,14 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public abstract class StaticLine extends ScoreboardLine {
 
-	protected int lineID;
+	protected Scoreboard parent;
+	protected int lineNumber;
 	protected String text;
 	
 	protected String prefix1_7;
@@ -17,9 +19,10 @@ public abstract class StaticLine extends ScoreboardLine {
 	protected String name;
 	protected String suffix;
 	
-	public StaticLine(int lineID, String text, String forcedNameStart) {
-		super(lineID);
-		this.lineID = lineID;
+	public StaticLine(Scoreboard parent, int lineNumber, String text, String forcedNameStart) {
+		super(lineNumber);
+		this.parent = parent;
+		this.lineNumber = lineNumber;
 		this.text = IChatBaseComponent.fromColoredText(text).toColoredText(); //colorizing + translating RGB codes into legacy
 		//1.8+
 		if (this.text.length() <= (40 - forcedNameStart.length())) {

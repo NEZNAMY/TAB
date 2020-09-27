@@ -19,8 +19,8 @@ public class CustomLine extends ScoreboardLine {
 	private String suffix;
 	private int score;
 	
-	public CustomLine(Scoreboard parent, int lineID, String prefix, String name, String suffix, int score) {
-		super(lineID);
+	public CustomLine(Scoreboard parent, int lineNumber, String prefix, String name, String suffix, int score) {
+		super(lineNumber);
 		this.parent = parent;
 		this.prefix = prefix;
 		this.name = name;

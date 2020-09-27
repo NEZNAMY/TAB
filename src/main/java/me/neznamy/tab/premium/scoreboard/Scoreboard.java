@@ -36,7 +36,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private String title;
 	private Condition displayCondition;
 	private String childBoard;
-	private List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
+	public List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
 	public List<TabPlayer> players = new ArrayList<TabPlayer>();
 	private Set<String> usedPlaceholders;
 
@@ -59,34 +59,34 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
-			ScoreboardLine score = registerLine(lines.size()-i, lines.get(i));
+			ScoreboardLine score = registerLine(i+1, lines.get(i));
 			this.lines.add(score);
 			Shared.featureManager.registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
 	}
 
-	private ScoreboardLine registerLine(int lineID, String text) {
+	private ScoreboardLine registerLine(int lineNumber, String text) {
 		if (text.startsWith("Custom|")) {
 			String[] elements = text.split("\\|");
-			return new CustomLine(this, lineID, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
+			return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
 		}
 		if (text.contains("%")) {
 			if (manager.useNumbers) {
-				return new NumberedStableDynamicLine(this, lineID, text);
+				return new NumberedStableDynamicLine(this, lineNumber, text);
 			} else {
-				return new All0StableDynamicLine(this, lineID, text);
+				return new All0StableDynamicLine(this, lineNumber, text);
 			}
 		}
 		//static text
 		if (manager.useNumbers) {
 			if (text.length() > 26) {
-				return new NumberedStaticLine(lineID, text);
+				return new NumberedStaticLine(this, lineNumber, text);
 			} else {
 				//trying to avoid same player name when multiple lines have the same short text (such as for empty lines)
-				return new NumberedStableDynamicLine(this, lineID, text);
+				return new NumberedStableDynamicLine(this, lineNumber, text);
 			}
 		}
-		return new All0StaticLine(this, lineID, text);
+		return new All0StaticLine(this, lineNumber, text);
 	}
 
 	@Override
