@@ -1,12 +1,17 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import java.util.Map;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.PluginHooks;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -63,6 +68,12 @@ public class TabExpansion extends PlaceholderExpansion {
 		}
 		if (identifier.equals("bossbar_visible")) {
 			return p.hasBossbarVisible() ? "Enabled" : "Disabled";
+		}
+		if (identifier.startsWith("replace_") && Premium.is()) {
+			String placeholder = "%" + identifier.substring(8) + "%";
+			String output = PluginHooks.setPlaceholders(player, placeholder);
+			Map<Object, Object> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
+			return Placeholder.findReplacement(replacements, output);
 		}
 		return null;
 	}

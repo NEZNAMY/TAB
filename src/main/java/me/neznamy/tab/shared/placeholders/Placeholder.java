@@ -17,7 +17,7 @@ public abstract class Placeholder {
 
 	private int refresh;
 	protected String identifier;
-	private Map<String, Object> replacements = new HashMap<String, Object>();
+	private Map<Object, Object> replacements = new HashMap<Object, Object>();
 	private List<String> outputPlaceholders = new ArrayList<String>();
 	
 	public Placeholder(String identifier, int refresh) {
@@ -50,7 +50,7 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(value), p);
+			String newValue = setPlaceholders(findReplacement(replacements, value), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
@@ -59,13 +59,13 @@ public abstract class Placeholder {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
-	public String findReplacement(String originalOutput) {
+	public static String findReplacement(Map<Object, Object> replacements, String originalOutput) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
 			return replacements.get(originalOutput).toString();
 		}
-		for (Entry<String, Object> entry : replacements.entrySet()) {
-			String key = entry.getKey();
+		for (Entry<Object, Object> entry : replacements.entrySet()) {
+			String key = entry.getKey().toString();
 			if (key.contains("-")) {
 				try {
 					float low = Float.parseFloat(key.split("-")[0]);
