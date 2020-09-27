@@ -156,7 +156,7 @@ public class PlaceholderManager implements QuitEventListener {
 	}
 	public static Set<Refreshable> getPlaceholderUsage(String identifier){
 		Set<Refreshable> set = new HashSet<Refreshable>();
-		for (Refreshable r : Shared.featureManager.refreshables) {
+		for (Refreshable r : new ArrayList<>(Shared.featureManager.refreshables)) {
 			if (r.getUsedPlaceholders().contains(identifier)) set.add(r);
 		}
 		return set;
