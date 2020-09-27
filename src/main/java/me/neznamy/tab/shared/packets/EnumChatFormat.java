@@ -118,7 +118,7 @@ public enum EnumChatFormat {
 	 * @return last used color code in given string
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
-		if (string == null || string.length() == 0) return EnumChatFormat.RESET;
+		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
 		String last = Placeholders.getLastColors(string);
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
@@ -126,7 +126,7 @@ public enum EnumChatFormat {
 				if (e.character == c) return e;
 			}
 		}
-		return EnumChatFormat.RESET;
+		return EnumChatFormat.WHITE;
 	}
 	
 	/**
