@@ -126,6 +126,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		List<Integer> vehicleList;
 		if (pl != null) {
 			//player moved
+			if (!pl.isLoaded()) return;
 			Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
 				public void run() {
 					pl.getArmorStandManager().teleport(receiver);
@@ -148,7 +149,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
 		TabPlayer spawnedPlayer = Shared.entityIdMap.get(entityId);
-		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName())) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
+		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName()) && spawnedPlayer.isLoaded()) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
 
 			@Override
 			public void run() {
@@ -166,7 +167,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
 		for (int id : entities) {
 			TabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-			if (despawnedPlayer != null) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
+			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
 
 				@Override
 				public void run() {
@@ -186,7 +187,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		}
 		for (int entity : passengers) {
 			TabPlayer pass = Shared.entityIdMap.get(entity);
-			if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
+			if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 				@Override
 				public void run() {
@@ -209,7 +210,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			}
 		}
 		TabPlayer pass = Shared.entityIdMap.get(passenger);
-		if (pass != null) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
+		if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
 
 			@Override
 			public void run() {
@@ -217,7 +218,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			}
 		});
 	}
-
+	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return;

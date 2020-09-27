@@ -159,6 +159,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		if (!p.isLoaded()) return;
 		updateProperties(p);
 		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
 			p.unregisterTeam();
