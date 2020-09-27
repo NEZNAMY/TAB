@@ -5,7 +5,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -55,19 +54,6 @@ public class EventListener implements Listener {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
 		if (!feature.isDisabledWorld(p.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, new Runnable() {
-			
-			@Override
-			public void run() {
-				p.getArmorStandManager().teleport();
-			}
-		});
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void a(PlayerTeleportEvent e) {
-		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded()) return;
-		if (!feature.isDisabledWorld(p.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, new Runnable() {
 			
 			@Override
 			public void run() {

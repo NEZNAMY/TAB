@@ -49,6 +49,9 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	private static Field PacketPlayOutAttachEntity_A;
 	private static Field PacketPlayOutAttachEntity_PASSENGER;
 	private static Field PacketPlayOutAttachEntity_VEHICLE;
+	
+	private static Class<?> PacketPlayOutEntityTeleport;
+	private static Field PacketPlayOutEntityTeleport_ENTITYID;
 
 	private boolean modifyNPCnames;
 	private NameTagX nameTagX;
@@ -58,6 +61,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
 		PacketPlayOutEntityDestroy = PacketPlayOut.getNMSClass("PacketPlayOutEntityDestroy");
 		PacketPlayOutNamedEntitySpawn = PacketPlayOut.getNMSClass("PacketPlayOutNamedEntitySpawn");
+		PacketPlayOutEntityTeleport = PacketPlayOut.getNMSClass("PacketPlayOutEntityTeleport");
+		(PacketPlayOutEntityTeleport_ENTITYID = PacketPlayOutEntityTeleport.getDeclaredField("a")).setAccessible(true);
 
 		(PacketPlayInUseEntity_ENTITY = PacketPlayInUseEntity.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutEntity_ENTITYID = PacketPlayOutEntity.getDeclaredField("a")).setAccessible(true);
@@ -104,6 +109,9 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (PacketPlayOutEntity.isInstance(packet)) {
 			onEntityMove(receiver, PacketPlayOutEntity_ENTITYID.getInt(packet));
+		}
+		if (PacketPlayOutEntityTeleport.isInstance(packet)) {
+			onEntityMove(receiver, PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
 		}
 		if (PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			onEntitySpawn(receiver, PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
