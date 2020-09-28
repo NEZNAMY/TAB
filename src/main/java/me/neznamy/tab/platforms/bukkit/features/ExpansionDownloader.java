@@ -37,7 +37,7 @@ public class ExpansionDownloader {
 					@Override
 					public void run() {
 						try {
-							Thread.sleep(2000);
+							Thread.sleep(5000);
 							Shared.debug("Used expansions: " + expansions.toString());
 							Shared.debug("Registered expansions in PlaceholderAPI: " + PlaceholderAPI.getRegisteredIdentifiers());
 							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
