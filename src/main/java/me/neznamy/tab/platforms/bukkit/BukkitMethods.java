@@ -103,7 +103,7 @@ public class BukkitMethods implements PlatformMethods {
 		if (Configs.BossBarEnabled) {
 			BossBar bb = new BossBar();
 			Shared.featureManager.registerFeature("bossbar", bb);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb, plugin));
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb));
 		}
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
 		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));

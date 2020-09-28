@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
@@ -35,6 +36,7 @@ public class FeatureManager {
 	private List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
 	private List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
 	private List<CommandListener> commandListeners = new ArrayList<CommandListener>();
+	private List<RespawnEventListener> respawnListeners = new ArrayList<RespawnEventListener>();
 	public List<Refreshable> refreshables = new ArrayList<Refreshable>();
 	
 	/**
@@ -68,6 +70,9 @@ public class FeatureManager {
 		}
 		if (featureHandler instanceof Refreshable) {
 			refreshables.add((Refreshable) featureHandler);
+		}
+		if (featureHandler instanceof RespawnEventListener) {
+			respawnListeners.add((RespawnEventListener) featureHandler);
 		}
 	}
 	
@@ -235,6 +240,18 @@ public class FeatureManager {
 				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param respawned
+	 */
+	public void onRespawn(TabPlayer respawned) {
+		for (RespawnEventListener l : respawnListeners) {
+			long time = System.nanoTime();
+			l.onRespawn(respawned);
+			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		}
 	}
 	

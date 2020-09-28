@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -81,5 +82,13 @@ public class BukkitEventListener implements Listener {
 			return;
 		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e) {
+		if (Shared.disabled) return;
+		TabPlayer respawned = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (respawned == null) return;
+		Shared.featureManager.onRespawn(respawned);
 	}
 }

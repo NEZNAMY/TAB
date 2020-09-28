@@ -35,12 +35,13 @@ import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable{
+public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable, RespawnEventListener {
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
@@ -267,5 +268,16 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGX;
+	}
+
+	@Override
+	public void onRespawn(TabPlayer respawned) {
+		if (!isDisabledWorld(respawned.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, new Runnable() {
+			
+			@Override
+			public void run() {
+				respawned.getArmorStandManager().teleport();
+			}
+		});
 	}
 }
