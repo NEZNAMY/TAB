@@ -28,11 +28,8 @@ public class UpdateChecker {
 					con.disconnect();
 					if (!versionString.equals(currentVersion)) {
 						Shared.platform.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion, true);
-						if (Premium.is()) {
-							Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.mc-market.org/resources/14009/", true);
-						} else {
-							Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/", true);
-						}
+						int resourceId = Premium.is() ? 83967 : 57806;
+						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/" + resourceId + "/", true);
 					}
 				} catch (Exception e) {
 					Shared.debug("&cFailed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
