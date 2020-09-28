@@ -128,6 +128,10 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGS;

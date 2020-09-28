@@ -56,6 +56,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	private boolean modifyNPCnames;
 	private NameTagX nameTagX;
 
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		PacketPlayInUseEntity = PacketPlayOut.getNMSClass("PacketPlayInUseEntity");
 		PacketPlayOutEntity = PacketPlayOut.getNMSClass("PacketPlayOutEntity");
@@ -241,6 +245,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		}
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGX;

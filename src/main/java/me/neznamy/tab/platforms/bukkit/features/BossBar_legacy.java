@@ -17,11 +17,19 @@ import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
  */
 public class BossBar_legacy implements RespawnEventListener {
 
+	//distance of wither in blocks
 	private final int WITHER_DISTANCE = 75;
+	
+	//main bossbar feature
 	private BossBar mainFeature;
 	
+	/**
+	 * Constructs a new instance of the class
+	 * @param mainFeature - main bossbar feature
+	 */
 	public BossBar_legacy(BossBar mainFeature) {
 		this.mainFeature = mainFeature;
+		//bar disappears in client after ~1 second of not seeing boss entity
 		Shared.cpu.startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {
 				for (TabPlayer all : Shared.getPlayers()) {
@@ -33,11 +41,19 @@ public class BossBar_legacy implements RespawnEventListener {
 		});
 	}
 	
+	/**
+	 * Respawning all entities as respawn screen destroys all entities in client
+	 */
 	@Override
 	public void onRespawn(TabPlayer respawned) {
 		mainFeature.detectBossBarsAndSend(respawned);
 	}
 	
+	/**
+	 * Returns location where wither should be located based on where player is looking
+	 * @param p - player to get wither location for
+	 * @return location of wither
+	 */
 	public Location getWitherLocation(TabPlayer p) {
 		Player pl = (Player) p.getPlayer();
 		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
@@ -45,6 +61,10 @@ public class BossBar_legacy implements RespawnEventListener {
 		return loc;
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

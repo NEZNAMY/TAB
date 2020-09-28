@@ -8,7 +8,6 @@ import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
@@ -23,20 +22,34 @@ import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
  */
 public class PetFix implements RawPacketFeature, QuitEventListener {
 
+	//datawatcher position of pet owner field
 	private static int PET_OWNER_POSITION;
-	private static Field PacketPlayOutEntityMetadata_LIST;
+	
+	//used NMS classes and fields
+	private static Class<?> PacketPlayOutEntityMetadata;
 	private static Class<?> PacketPlayInUseEntity;
+	private static Field PacketPlayOutEntityMetadata_LIST;
 	private static Field PacketPlayInUseEntity_ACTION;
 	
+	//logger of last interacts to prevent feature not working on 1.16
 	private Map<String, Long> lastInteractFix = new HashMap<String, Long>();
 	
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
-		(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
+		PacketPlayOutEntityMetadata = PacketPlayOut.getNMSClass("PacketPlayOutEntityMetadata");
+		(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
 		PacketPlayInUseEntity = PacketPlayOut.getNMSClass("PacketPlayInUseEntity");
 		(PacketPlayInUseEntity_ACTION = PacketPlayInUseEntity.getDeclaredField("action")).setAccessible(true);
 		PET_OWNER_POSITION = getPetOwnerPosition();
 	}
 	
+	/**
+	 * Returns position of pet owner field based on server version
+	 * @return position of pet owner field based on server version
+	 */
 	private static int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			//1.15.x, 1.16.1
@@ -53,6 +66,9 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 		}
 	}
 	
+	/**
+	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
+	 */
 	@Override
 	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
 		if (PacketPlayInUseEntity.isInstance(packet)) {
@@ -68,10 +84,13 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 		return packet;
 	}
 	
+	/**
+	 * Removes pet owner field from datawatcher
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
-		if (PacketPlayOutEntityMetadata.PacketPlayOutEntityMetadata.isInstance(packet)) {
+		if (PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return;
 			List<Object> newList = new ArrayList<Object>();
@@ -92,11 +111,18 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 		}
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PET_NAME_FIX;
 	}
 
+	/**
+	 * Removing player data to not have a memory leak
+	 */
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		lastInteractFix.remove(disconnectedPlayer.getName());

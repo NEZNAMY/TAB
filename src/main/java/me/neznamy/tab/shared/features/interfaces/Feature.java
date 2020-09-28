@@ -6,6 +6,10 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 
 public interface Feature {
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	public TabFeature getFeatureType();
 	
 	public default boolean isDisabledWorld(List<String> disabledWorlds, String world) {

@@ -37,6 +37,10 @@ public class ProgressRefresher implements Refreshable {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.progress);
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

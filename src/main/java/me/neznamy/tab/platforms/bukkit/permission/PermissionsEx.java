@@ -10,11 +10,17 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
  */
 public class PermissionsEx implements PermissionPlugin {
 
+	//PEX version
 	private String version;
 	
+	/**
+	 * Constructs new instance with given PEX version
+	 * @param version PEX version
+	 */
 	public PermissionsEx(String version) {
 		this.version = version;
 	}
+	
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws Throwable {
 		String[] groups = getAllGroups(p);

@@ -14,17 +14,23 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class DataWatcher {
 
+	//required NMS classes, constructors and methods
 	public static Class<?> DataWatcher;
 	private static Constructor<?> newDataWatcher;
-
 	private static Class<?> DataWatcherObject;
 	public static Constructor<?> newDataWatcherObject;
-
 	private static Method REGISTER;
 
+	//datawatcher data
 	private Map<Integer, DataWatcherItem> dataValues = new HashMap<Integer, DataWatcherItem>();
+	
+	//a helper for easier data write
 	private DataWatcherHelper helper = new DataWatcherHelper(this);
 
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		DataWatcher = PacketPlayOut.getNMSClass("DataWatcher");
 		try {
@@ -45,23 +51,46 @@ public class DataWatcher {
 		}
 	}
 
+	/**
+	 * Sets value into data values
+	 * @param type - type of value
+	 * @param value - value
+	 */
 	public void setValue(DataWatcherObject type, Object value){
 		dataValues.put(type.position, new DataWatcherItem(type, value));
 	}
 
+	/**
+	 * Removes value by position
+	 * @param position - position of value to remove
+	 */
 	public void removeValue(int position) {
 		dataValues.remove(position);
 	}
 
+	/**
+	 * Returns item with given position
+	 * @param position - position of item
+	 * @return item or null if not set
+	 */
 	public DataWatcherItem getItem(int position) {
 		return dataValues.get(position);
 	}
 
+	/**
+	 * Returns helper created by this instance
+	 * @return data write helper
+	 */
 	public DataWatcherHelper helper() {
 		return helper;
 	}
 
-	public Object toNMS() throws Exception{
+	/**
+	 * Converts the class into an instance of NMS.DataWatcher
+	 * @return an instance of NMS.DataWatcher with same data
+	 * @throws Exception - if something fails
+	 */
+	public Object toNMS() throws Exception {
 		Object nmsWatcher;
 		if (newDataWatcher.getParameterCount() == 1) {
 			nmsWatcher = newDataWatcher.newInstance(new Object[] {null});
@@ -77,6 +106,13 @@ public class DataWatcher {
 		}
 		return nmsWatcher;
 	}
+	
+	/**
+	 * Reads NMS data watcher and returns and instance of this class with same data
+	 * @param nmsWatcher - NMS datawatcher to read
+	 * @return an instance of this class with same values
+	 * @throws Exception - if something fails
+	 */
 	@SuppressWarnings("unchecked")
 	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
 		DataWatcher watcher = new DataWatcher();

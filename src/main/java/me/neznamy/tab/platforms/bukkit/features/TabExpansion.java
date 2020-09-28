@@ -18,8 +18,14 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
  */
 public class TabExpansion extends PlaceholderExpansion {
 
+	//plugin to take plugin.yml data from
 	private JavaPlugin plugin;
 	
+	
+	/**
+	 * Constructs new instance of the class and registers it
+	 * @param plugin - plugin to take plugin.yml data from
+	 */
 	public TabExpansion(JavaPlugin plugin) {
 		this.plugin = plugin;
 		register();

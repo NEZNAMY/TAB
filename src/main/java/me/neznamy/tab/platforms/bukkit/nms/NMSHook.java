@@ -20,6 +20,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
  */
 public class NMSHook {
 	
+	//list of officially supported server versions
 	private static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 			"v1_5_R1", "v1_5_R2", "v1_5_R3",
 			"v1_6_R1", "v1_6_R2", "v1_6_R3",
@@ -35,6 +36,7 @@ public class NMSHook {
 			"v1_16_R1", "v1_16_R2"
 		);
 	
+	//used NMS classes, fields and methods
 	public static Class<?> IChatBaseComponent;
 	private static Field PING;
 	private static Field PLAYER_CONNECTION;
@@ -45,28 +47,64 @@ public class NMSHook {
 	private static Method SERIALIZE;
 	private static Method DESERIALIZE;
 	
+	/**
+	 * Converts json string into a component
+	 * @param json json as string
+	 * @return NMS component
+	 * @throws Exception if something fails
+	 */
 	public static Object stringToComponent(String json) throws Exception {
 		if (json == null) return null;
 		return DESERIALIZE.invoke(null, json);
 	}
+	
+	/**
+	 * Converts NMS component into a string
+	 * @param component component to convert
+	 * @return json in string format
+	 * @throws Exception if something fails
+	 */
 	public static String componentToString(Object component) throws Exception {
 		if (component == null) return null;
 		return (String) SERIALIZE.invoke(null, component);
 	}
 	
+	/**
+	 * Returns netty channel of player
+	 * @param p player to get channel of
+	 * @return the channel
+	 * @throws Exception if something fails
+	 */
 	public static Object getChannel(Player p) throws Exception {
 		if (CHANNEL == null) return null;
 		return CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(p))));
 	}
 
+	/**
+	 * Sends a packet to player
+	 * @param p player to send packet to
+	 * @param nmsPacket packet to send
+	 * @throws Exception if something fails
+	 */
 	public static void sendPacket(Player p, Object nmsPacket) throws Exception {
 		sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(p)), nmsPacket);
 	}
 	
+	/**
+	 * Returns ping of player
+	 * @param p player to get ping of
+	 * @return ping
+	 * @throws Exception if something fails
+	 */
 	public static int getPing(Player p) throws Exception {
 		return PING.getInt(getHandle.invoke(p));
 	}
 
+	/**
+	 * Initializes all used NMS classes, constructors, fields and methods and returns true if everything went successfully and version is marked as compatible
+	 * @param serverPackage NMS class package, such as "v1_16_R1"
+	 * @return true if everything loaded and version is marked as compatible, false otherwise
+	 */
 	public static boolean isVersionSupported(String serverPackage){
 		try {
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);

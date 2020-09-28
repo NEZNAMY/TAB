@@ -10,13 +10,21 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutAnimation extends PacketPlayOut {
 
+	//used constructor and fields
 	private static Constructor<?> newPacketPlayOutAnimation;
 	private static Field PacketPlayOutAnimation_ENTITYID;
 	private static Field PacketPlayOutAnimation_ANIMATIONTYPE;
 	
+	//entity id
 	private int entityId;
+	
+	//animation type
 	private int animationType;
 	
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		Class<?> PacketPlayOutAnimation;
 		try {
@@ -31,11 +39,22 @@ public class PacketPlayOutAnimation extends PacketPlayOut {
 		(PacketPlayOutAnimation_ANIMATIONTYPE = PacketPlayOutAnimation.getDeclaredField("b")).setAccessible(true);
 	}
 	
+	/**
+	 * Constructs new instance of this class
+	 * @param entityId entity id
+	 * @param animationType animation type
+	 */
 	public PacketPlayOutAnimation(int entityId, int animationType) {
 		this.entityId = entityId;
 		this.animationType = animationType;
 	}
 	
+	/**
+	 * Converts the custom class into an actual minecraft packet
+	 * @param clientVersion client version to build the packet for
+	 * @return NMS packet
+	 * @throws Exception if something fails
+	 */
 	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutAnimation.newInstance();

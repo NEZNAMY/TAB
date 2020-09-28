@@ -193,6 +193,11 @@ public class PlaceholderManager implements QuitEventListener {
 			Placeholders.categorizeUsedPlaceholder(placeholder);
 		}
 	}
+	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PLACEHOLDER_REFRESHING;

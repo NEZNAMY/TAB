@@ -99,6 +99,10 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.HEADER_FOOTER;

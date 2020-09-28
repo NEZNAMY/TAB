@@ -206,6 +206,10 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		return oldMaxWidth != maxWidth;
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.ALIGNED_TABSUFFIX;

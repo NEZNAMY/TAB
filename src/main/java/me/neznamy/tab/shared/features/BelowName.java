@@ -63,6 +63,10 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 
+			/**
+			 * Returns name of the feature displayed in /tab cpu
+			 * @return name of the feature displayed in /tab cpu
+			 */
 			@Override
 			public TabFeature getFeatureType() {
 				return TabFeature.BELOWNAME_TEXT;
@@ -131,6 +135,11 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
 	}
+	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BELOWNAME_NUMBER;

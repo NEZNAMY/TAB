@@ -201,6 +201,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		return scoreboards;
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;

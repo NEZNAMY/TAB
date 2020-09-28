@@ -17,8 +17,10 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 	
+	//map of entity type ids
 	private static Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
+	//used NMS class, constructor and fields
 	public static Class<?> PacketPlayOutSpawnEntityLiving;
 	private static Constructor<?> newPacketPlayOutSpawnEntityLiving;
 	private static Field ENTITYID;
@@ -31,16 +33,25 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 	private static Field PITCH;
 	public static Field DATAWATCHER;
 	
+	//entity id
 	private int entityId;
+	
+	//entity uuid (1.9+)
 	private UUID uuid;
+	
+	//entity type
 	private int entityType;
-	private double x;
-	private double y;
-	private double z;
-	private float yaw;
-	private float pitch;
-	public DataWatcher dataWatcher = new DataWatcher();
+	
+	//spawn location
+	private Location loc;
+	
+	//entity metadata (1.14 and lower)
+	private DataWatcher dataWatcher;
 
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		try {
 			PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
@@ -79,41 +90,56 @@ public class PacketPlayOutSpawnEntityLiving extends PacketPlayOut {
 		}
 	}
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param entityId entity id
+	 * @param uuid entity uuid
+	 * @param entityType entity type
+	 * @param loc spawn location
+	 * @param dataWatcher entity metadata
+	 */
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) {
-		if (loc == null) throw new IllegalArgumentException("Location cannot be null");
 		this.entityId = entityId;
 		this.uuid = uuid;
 		this.entityType = entityIds.get(entityType);
-		this.x = loc.getX();
-		this.y = loc.getY();
-		this.z = loc.getZ();
-		this.yaw = loc.getYaw();
-		this.pitch = loc.getPitch();
+		this.loc = loc;
 		this.dataWatcher = dataWatcher;
 	}
 	
+	/**
+	 * Converts the custom class into an actual minecraft packet
+	 * @param clientVersion client version to build the packet for
+	 * @return NMS packet
+	 * @throws Exception if something fails
+	 */
+	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutSpawnEntityLiving.newInstance();
 		ENTITYID.set(packet, entityId);
 		ENTITYTYPE.set(packet, entityType);
-		YAW.set(packet, (byte)(yaw * 256.0f / 360.0f));
-		PITCH.set(packet, (byte)(pitch * 256.0f / 360.0f));
+		YAW.set(packet, (byte)(loc.getYaw() * 256.0f / 360.0f));
+		PITCH.set(packet, (byte)(loc.getPitch() * 256.0f / 360.0f));
 		if (DATAWATCHER != null) {
 			DATAWATCHER.set(packet, dataWatcher.toNMS());
 		}
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			UUID.set(packet, uuid);
-			if (x != 0) X.set(packet, x);
-			if (y != 0) Y.set(packet, y);
-			if (z != 0) Z.set(packet, z);
+			X.set(packet, loc.getX());
+			Y.set(packet, loc.getY());
+			Z.set(packet, loc.getZ());
 		} else {
-			if (x != 0) X.set(packet, floor((double)x*32));
-			if (y != 0) Y.set(packet, floor((double)y*32));
-			if (z != 0) Z.set(packet, floor((double)z*32));
+			X.set(packet, floor((double)loc.getX()*32));
+			Y.set(packet, floor((double)loc.getY()*32));
+			Z.set(packet, floor((double)loc.getZ()*32));
 		}
 		return packet;
 	}
 	
+	/**
+	 * A method yoinked from minecraft code used to convert double to int
+	 * @param paramDouble double value
+	 * @return int value
+	 */
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;
 		return paramDouble < i ? i - 1 : i;

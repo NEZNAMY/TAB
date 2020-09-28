@@ -158,6 +158,10 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.TABLIST_NAMES;

@@ -41,6 +41,10 @@ public class ColorAndStyleRefresher implements Refreshable {
 		usedPlaceholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(line.style));
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

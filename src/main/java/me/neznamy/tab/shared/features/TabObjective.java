@@ -114,6 +114,10 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

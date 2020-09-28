@@ -130,6 +130,10 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		info.entries = newList;
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PER_WORLD_PLAYERLIST;

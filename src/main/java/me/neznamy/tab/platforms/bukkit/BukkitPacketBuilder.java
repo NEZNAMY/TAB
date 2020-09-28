@@ -145,6 +145,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PlayerInfoData_PROFILE;
 	private static Field PlayerInfoData_LISTNAME;
 
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
@@ -159,6 +163,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 	}
 
+	/**
+	 * Initializes required NMS classes
+	 * @throws Exception - if something fails
+	 */
 	private static void initializeClasses() throws Exception {
 		EnumChatFormat_ = (Class<Enum>) getNMSClass("EnumChatFormat");
 		if (minorVersion >= 7) {
@@ -233,6 +241,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 	}
 
+	/**
+	 * Initializes required NMS constructors
+	 * @throws Exception - if something fails
+	 */
 	private static void initializeConstructors() throws Exception {
 		newPacketPlayOutChat = PacketPlayOutChat.getConstructor();
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
@@ -263,6 +275,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 	}
 
+	
+	/**
+	 * Initializes required NMS fields
+	 * @throws Exception - if something fails
+	 */
 	private static void initializeFields() throws Exception {
 		//PacketPlayOutChat
 		if (minorVersion >= 7) {

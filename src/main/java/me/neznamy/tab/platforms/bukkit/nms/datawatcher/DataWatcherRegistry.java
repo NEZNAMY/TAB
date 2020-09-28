@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class DataWatcherRegistry {
 
+	//used registry types
 	public static Object Byte;
 	public static Object Integer;
 	public static Object Float;
@@ -20,6 +21,10 @@ public class DataWatcherRegistry {
 	public static Object Optional_IChatBaseComponent;
 	public static Object Boolean;
 
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 			Class<?> DataWatcherRegistry = PacketPlayOut.getNMSClass("DataWatcherRegistry");
@@ -42,6 +47,11 @@ public class DataWatcherRegistry {
 		}
 	}
 
+	/**
+	 * Gets values of all static fields in a class
+	 * @param clazz class to return field values from
+	 * @return map of values
+	 */
 	private static Map<String, Object> getStaticFields(Class<?> clazz){
 		Map<String, Object> fields = new HashMap<String, Object>();
 		if (clazz == null) return fields;

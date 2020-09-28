@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.ProtocolVersion;
  */
 public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 
+	//used NMS constructor and fields
 	private static Constructor<?> newPacketPlayOutEntityTeleport;
 	private static Field ENTITYID;
 	private static Field X;
@@ -20,9 +21,16 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 	private static Field YAW;
 	private static Field PITCH;
 	
+	//entity id
 	private int entityId;
+	
+	//location to teleport to
 	private Location location;
 	
+	/**
+	 * Initializes required NMS classes and fields
+	 * @throws Exception - if something fails
+	 */
 	public static void initializeClass() throws Exception {
 		Class<?> PacketPlayOutEntityTeleport;
 		try {
@@ -41,11 +49,22 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 		(PITCH = PacketPlayOutEntityTeleport.getDeclaredField("f")).setAccessible(true);
 	}
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param entityId entity id
+	 * @param location location to teleport to
+	 */
 	public PacketPlayOutEntityTeleport(int entityId, Location location) {
 		this.entityId = entityId;
 		this.location = location;
 	}
 	
+	/**
+	 * Converts the custom class into an actual minecraft packet
+	 * @param clientVersion client version to build the packet for
+	 * @return NMS packet
+	 * @throws Exception if something fails
+	 */
 	@Override
 	public Object toNMS(ProtocolVersion clientVersion) throws Exception {
 		Object packet = newPacketPlayOutEntityTeleport.newInstance();
@@ -64,6 +83,11 @@ public class PacketPlayOutEntityTeleport extends PacketPlayOut {
 		return packet;
 	}
 	
+	/**
+	 * A method yoinked from minecraft code used to convert double to int
+	 * @param paramDouble double value
+	 * @return int value
+	 */
 	private int floor(double paramDouble){
 		int i = (int)paramDouble;
 		return paramDouble < i ? i - 1 : i;

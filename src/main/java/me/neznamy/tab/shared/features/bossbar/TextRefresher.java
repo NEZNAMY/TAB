@@ -37,6 +37,10 @@ public class TextRefresher implements Refreshable {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.title);
 	}
 	
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

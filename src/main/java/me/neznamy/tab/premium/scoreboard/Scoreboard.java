@@ -154,6 +154,10 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
 	}
 
+	/**
+	 * Returns name of the feature displayed in /tab cpu
+	 * @return name of the feature displayed in /tab cpu
+	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;
