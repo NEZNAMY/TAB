@@ -24,32 +24,6 @@ public class ExpansionDownloader {
 	public ExpansionDownloader(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
-	
-	public void download(String expansion) {
-		if (expansion.equals("rel")) return;
-		Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(2000);
-					if (PlaceholderAPI.getRegisteredIdentifiers().contains(expansion)) return;
-					File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
-					int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
-					Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Expansion \u00a7e" + expansion + "\u00a7d is used but not installed. Installing!");
-					runSyncCommand("papi ecloud download " + expansion);
-					Thread.sleep(5000);
-					if (expansionsFolder.listFiles().length > oldExpansionDownloadedCount) {
-						Bukkit.getConsoleSender().sendMessage("\u00a7d[TAB] Reloading PlaceholderAPI for the changes to take effect.");
-						runSyncCommand("papi reload");
-					}
-				} catch (InterruptedException | ConcurrentModificationException e) {
-				} catch (Throwable e) {
-					Shared.errorManager.printError("Failed to download PlaceholderAPI expansion. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
-				}
-			}
-		});
-	}
 
 	public void download(Set<String> expansions) {
 		//starting the task once the server is fully loaded (including PlaceholderAPI expansions)
