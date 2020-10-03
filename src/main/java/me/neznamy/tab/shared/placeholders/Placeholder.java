@@ -70,7 +70,7 @@ public abstract class Placeholder {
 				try {
 					float low = Float.parseFloat(key.split("-")[0]);
 					float high = Float.parseFloat(key.split("-")[1]);
-					float actualValue = Float.parseFloat(originalOutput);
+					float actualValue = Float.parseFloat(originalOutput.replace(",", ""));
 					if (low <= actualValue && actualValue <= high) return entry.getValue().toString();
 				} catch (NumberFormatException e) {
 					//nope

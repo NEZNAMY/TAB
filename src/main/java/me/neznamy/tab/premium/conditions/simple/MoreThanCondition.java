@@ -29,7 +29,7 @@ public class MoreThanCondition extends SimpleCondition {
 			Placeholder pl = Placeholders.getPlaceholder(identifier);
 			if (pl != null) leftSide = pl.set(leftSide, p);
 		}
-		double leftValue = Shared.errorManager.parseDouble(leftSide, 0, "left side of MoreThan condition");
+		double leftValue = Shared.errorManager.parseDouble(leftSide.replace(",", ""), 0, "left side of MoreThan condition");
 		return leftValue > rightValue;
 	}
 	
