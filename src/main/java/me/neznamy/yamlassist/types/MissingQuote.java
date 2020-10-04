@@ -16,8 +16,8 @@ public class MissingQuote extends SyntaxError {
 	public List<String> getSuggestions(YAMLException exception, List<String> fileLines) {
 		List<String> suggestions = new ArrayList<String>();
 		for (int line = 1; line <= fileLines.size(); line++) {
-			String text = fileLines.get(line-1).split("#")[0];
-			if (text.replace(" ", "").length() == 0) continue;
+			String text = fileLines.get(line-1);
+			if (text.startsWith("#") || text.replace(" ", "").length() == 0) continue;
 			text = removeIndent(text);
 			String suggestion = null;
 			if (text.startsWith("- ")) {
