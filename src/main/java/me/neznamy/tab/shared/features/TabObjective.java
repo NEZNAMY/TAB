@@ -26,7 +26,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	private final String ObjectiveName = "TAB-YellowNumber";
 	private final int DisplaySlot = 0;
 	private final String propertyName = "tablist-objective";
-	
+
 	private String rawValue;
 	private final String title = "ms";
 	private EnumScoreboardHealthDisplay displayType;
@@ -43,7 +43,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
 	}
-	
+
 	@Override
 	public void load() {
 		for (TabPlayer loaded : Shared.getPlayers()){
@@ -57,7 +57,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			}
 		}
 	}
-	
+
 	@Override
 	public void unload() {
 		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
@@ -66,7 +66,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			p.sendPacket(unregister);
 		}
 	}
-	
+
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(propertyName, rawValue);
@@ -78,7 +78,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
 	}
-	
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
@@ -90,11 +90,11 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			return;
 		}
 	}
-	
-	public int getValue(TabPlayer p) {
-		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "Yellow number in tablist");
+
+	private int getValue(TabPlayer p) {
+		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "yellow number");
 	}
-	
+
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
@@ -103,7 +103,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, value);
 		}
 	}
-	
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
@@ -113,7 +113,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
 	}
-	
+
 	/**
 	 * Returns name of the feature displayed in /tab cpu
 	 * @return name of the feature displayed in /tab cpu

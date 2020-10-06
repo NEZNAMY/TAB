@@ -27,12 +27,12 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	private final String ObjectiveName = "TAB-BelowName";
 	private final int DisplaySlot = 2;
 	private final String propertyName = "belowname-number";
-	
+
 	private String number;
 	private Property textProperty;
 	private Set<String> usedPlaceholders;
 	private List<String> disabledWorlds;
-	
+
 	public BelowName() {
 		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
@@ -40,13 +40,13 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
 		textProperty = new Property(null, text, null);
 		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
-			
+
 			private Set<String> usedPlaceholders;
-			
+
 			{
 				refreshUsedPlaceholders();
 			}
-			
+
 			@Override
 			public void refresh(TabPlayer refreshed, boolean force) {
 				if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
@@ -73,6 +73,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			}
 		});
 	}
+
 	@Override
 	public void load() {
 		for (TabPlayer loaded : Shared.getPlayers()){
@@ -82,10 +83,11 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		}
 		for (TabPlayer viewer : Shared.getPlayers()){
 			for (TabPlayer target : Shared.getPlayers()){
-				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getNumber(target));
+				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getValue(target));
 			}
 		}
 	}
+
 	@Override
 	public void unload() {
 		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
@@ -94,17 +96,19 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			p.sendPacket(unregister);
 		}
 	}
+
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(propertyName, number);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
-		int number = getNumber(connectedPlayer);
+		int number = getValue(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, number);
-			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getNumber(all));
+			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
 		}
 	}
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
@@ -116,26 +120,30 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			return;
 		}
 	}
-	private int getNumber(TabPlayer p) {
-		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "BelowName");
+
+	private int getValue(TabPlayer p) {
+		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "belowname");
 	}
+
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
-		int number = getNumber(refreshed);
+		int number = getValue(refreshed);
 		for (TabPlayer all : Shared.getPlayers()) {
 			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, number);
 		}
 	}
+
 	@Override
 	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
+
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
 	}
-	
+
 	/**
 	 * Returns name of the feature displayed in /tab cpu
 	 * @return name of the feature displayed in /tab cpu
