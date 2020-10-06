@@ -7,6 +7,8 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 import nl.chimpgamer.networkmanager.api.models.permissions.Group;
+import nl.chimpgamer.networkmanager.api.models.permissions.PermissionManager;
+import nl.chimpgamer.networkmanager.api.models.permissions.PermissionPlayer;
 
 /**
  * NetworkManager hook
@@ -23,7 +25,15 @@ public class NetworkManager implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		Group group = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getPrimaryGroup();
+		PermissionManager permission = plugin.getPermissionManager();
+		if (permission == null) {
+			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null permission manager");
+		}
+		PermissionPlayer player = permission.getPermissionPlayer(p.getUniqueId());
+		if (player == null) {
+			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null user for " + p.getName());
+		}
+		Group group = player.getPrimaryGroup();
 		if (group == null) {
 			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null primary group for " + p.getName());
 		}
