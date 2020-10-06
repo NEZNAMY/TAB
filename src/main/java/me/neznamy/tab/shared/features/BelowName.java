@@ -102,7 +102,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		int number = getNumber(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()){
 			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, number);
-			PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getNumber(all));
+			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getNumber(all));
 		}
 	}
 	@Override
