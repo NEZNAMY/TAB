@@ -42,8 +42,16 @@ public class NetworkManager implements PermissionPlugin {
 
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
+		PermissionManager permission = plugin.getPermissionManager();
+		if (permission == null) {
+			return Shared.errorManager.printError(new String[] {"null"}, "NetworkManager v" + version + " returned null permission manager");
+		}
+		PermissionPlayer player = permission.getPermissionPlayer(p.getUniqueId());
+		if (player == null) {
+			return Shared.errorManager.printError(new String[] {"null"}, "NetworkManager v" + version + " returned null user for " + p.getName());
+		}
 		List<String> groups = new ArrayList<String>();
-		for (Group group : plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getGroups()) {
+		for (Group group : player.getGroups()) {
 			groups.add(group.getName());
 		}
 		return groups.toArray(new String[0]);
