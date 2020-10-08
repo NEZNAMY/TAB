@@ -7,6 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 import nl.chimpgamer.networkmanager.api.models.permissions.Group;
+import nl.chimpgamer.networkmanager.api.models.permissions.PermissionPlayer;
 
 /**
  * NetworkManager hook
@@ -23,7 +24,11 @@ public class NetworkManager implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		Group group = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getPrimaryGroup();
+		PermissionPlayer permissionPlayer = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId());
+		if (permissionPlayer == null) {
+			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null permission player for " + p.getName());
+		}
+		Group group = permissionPlayer.getPrimaryGroup();
 		if (group == null) {
 			return Shared.errorManager.printError("null", "NetworkManager v" + version + " returned null primary group for " + p.getName());
 		}
@@ -33,8 +38,11 @@ public class NetworkManager implements PermissionPlugin {
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
 		List<String> groups = new ArrayList<String>();
-		for (Group group : plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getGroups()) {
-			groups.add(group.getName());
+		PermissionPlayer permissionPlayer = plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId());
+		if (permissionPlayer != null) {
+			for (Group group : plugin.getPermissionManager().getPermissionPlayer(p.getUniqueId()).getGroups()) {
+				groups.add(group.getName());
+			}
 		}
 		return groups.toArray(new String[0]);
 	}
