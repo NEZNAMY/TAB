@@ -181,15 +181,16 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private static String asGradient(TextColor start, String text, TextColor end) {
-		String colors = Placeholders.getLastColors(Placeholders.color(text));
-		String decolorized = text.substring(colors.length());
+		//lazy support for magic codes in gradients
+		String magicCodes = Placeholders.getLastColors(Placeholders.color(text));
+		String decolorized = text.substring(magicCodes.length());
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();
 		for (int i=0; i<length; i++) {
 			int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
 			int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
 			int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
-			sb.append("#" + toHexString(red, green, blue) + colors + decolorized.charAt(i));
+			sb.append("#" + toHexString(red, green, blue) + magicCodes + decolorized.charAt(i));
 		}
 		return sb.toString();
 	}
