@@ -26,6 +26,9 @@ public class RGBUtils {
 	//pattern for {#RRGGBB>}text{#RRGGBB<}
 	private static final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
+	//pattern for <$#RRGGBB>Text<$#RRGGBB>
+	private static final Pattern gradient3 = Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>");
+
 	/**
 	 * Returns a 6-digit HEX output from given colors
 	 * @param red - red
@@ -51,6 +54,7 @@ public class RGBUtils {
 		replaced = fixFormat4(replaced);
 		replaced = setGradient1(replaced);
 		replaced = setGradient2(replaced);
+		replaced = setGradient3(replaced);
 		return replaced;
 	}
 
@@ -148,6 +152,26 @@ public class RGBUtils {
 		}
 		return replaced;
 	}
+
+	/**
+	 * Applies gradients formatted with <$#RRGGBB>text<$#RRGGBB> and returns text using only #RRGGBB
+	 * @param text - text to be reformatted
+	 * @return reformatted text
+	 */
+	private static String setGradient3(String text) {
+		Matcher m = gradient3.matcher(text);
+		String replaced = text;
+		while (m.find()) {
+			String format = m.group();
+			TextColor start = new TextColor(format.substring(3, 9));
+			String message = format.substring(10, format.length()-10);
+			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		return replaced;
+	}
+
 
 	/**
 	 * Returns gradient text based on start color, end color and text
