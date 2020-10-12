@@ -28,7 +28,7 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 /**
  * Velocity implementation of PlatformMethods
@@ -72,7 +72,7 @@ public class VelocityMethods implements PlatformMethods {
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		server.getConsoleCommandSource().sendMessage(TextComponent.of(translateColors ? Placeholders.color(message): message));
+		server.getConsoleCommandSource().sendMessage(Component.text(translateColors ? Placeholders.color(message): message));
 	}
 
 	@Override

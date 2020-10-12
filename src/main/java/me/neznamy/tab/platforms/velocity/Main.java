@@ -27,7 +27,7 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 /**
  * Main class for Velocity platform
@@ -45,11 +45,11 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!hasRequiredLibs()) {
-			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 build #158 and up to work. Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
+			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 build #253 and up to work. Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
 			return;
 		}
 		if (!VelocityPacketRegistry.registerPackets()) {
-			System.out.println("\u00a7c[TAB] This plugin version does not support your Velocity version. Update the plugin or downgrade Velocity.");
+			System.out.println("\u00a7c[TAB] Your velocity version is way too new for this plugin version. Update the plugin or downgrade Velocity.");
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
@@ -61,7 +61,7 @@ public class Main {
 			public void execute(CommandSource sender, String[] args) {
 				if (Shared.disabled) {
 					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(TextComponent.of(Placeholders.color(message)));
+						sender.sendMessage(Component.text(Placeholders.color(message)));
 					}
 				} else {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
@@ -85,9 +85,9 @@ public class Main {
 	private boolean hasRequiredLibs() {
 		try {
 			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
-			Class.forName("net.kyori.adventure.text.Component"); //1.1.0 b158+
+			Class.forName("net.kyori.adventure.text.Component").getMethod("text", String.class); //1.1.0 b253
 			return true;
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			return false;
 		}
 	}
