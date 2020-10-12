@@ -103,7 +103,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 					String highest = detectHighestScoreboard(p);
 					if (!current.equals(highest)) {
 						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
-						p.setActiveScoreboard(null);
 						sendHighestScoreboard(p);
 					}
 				}
