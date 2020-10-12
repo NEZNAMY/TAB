@@ -305,7 +305,6 @@ public class BukkitMethods implements PlatformMethods {
 	@Override
 	public void suggestPlaceholders() {
 		//bukkit only
-		suggestPlaceholderSwitch("%deluxetags_tag%", "%deluxetag%");
 		suggestPlaceholderSwitch("%essentials_afk%", "%afk%");
 		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");
 		suggestPlaceholderSwitch("%luckperms_prefix%", "%luckperms-prefix%");
