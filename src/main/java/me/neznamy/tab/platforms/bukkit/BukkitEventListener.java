@@ -69,7 +69,7 @@ public class BukkitEventListener implements Listener {
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		if (Shared.disabled) return;
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || !p.isLoaded()) return;
 		Shared.cpu.runTask("processing PlayerChangedWorldEvent", new Runnable() {
 
 			@Override
