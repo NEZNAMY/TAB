@@ -173,7 +173,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void showScoreboard(me.neznamy.tab.api.Scoreboard scoreboard) {
+	public void showScoreboard(Scoreboard scoreboard) {
 		if (forcedScoreboard != null) {
 			forcedScoreboard.unregister(this);
 		}
