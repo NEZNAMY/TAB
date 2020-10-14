@@ -9,6 +9,7 @@ import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -47,7 +48,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(Component.text(translateColors ? Placeholders.color(message): message));
+		player.sendMessage(Identity.nil(), Component.text(translateColors ? Placeholders.color(message): message));
 	}
 	
 	@Override

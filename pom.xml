@@ -518,7 +518,7 @@
 		<dependency>
 			<groupId>jars</groupId>
 			<artifactId>Velocity</artifactId>
-			<version>#262</version>
+			<version>#265</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}${file.separator}jars${file.separator}velocity-proxy-1.1.0-SNAPSHOT-all.jar</systemPath>
 		</dependency>
