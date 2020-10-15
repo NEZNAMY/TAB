@@ -85,18 +85,16 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	private boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		String player1WorldGroup = null;
+		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName())) return true;
+		String viewerWorldGroup = viewer.getWorldName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
+		String targetWorldGroup = displayed.getWorldName() + "-default";
 		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group).contains(viewer.getWorldName())) player1WorldGroup = group;
+			if (sharedWorlds.get(group) != null) {
+				if (sharedWorlds.get(group).contains(viewer.getWorldName())) viewerWorldGroup = group;
+				if (sharedWorlds.get(group).contains(displayed.getWorldName())) targetWorldGroup = group;
+			}
 		}
-		String player2WorldGroup = null;
-		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group).contains(displayed.getWorldName())) player2WorldGroup = group;
-		}
-		if (viewer.getWorldName().equals(displayed.getWorldName()) || (player1WorldGroup != null && player2WorldGroup != null && player1WorldGroup.equals(player2WorldGroup))) {
-			return true;
-		}
-		return (allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName());
+		return viewerWorldGroup.equals(targetWorldGroup);
 	}
 	
 	private void hidePlayer(TabPlayer hidden){
