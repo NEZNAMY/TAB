@@ -74,10 +74,14 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 
 			@Override
 			public void run() {
-				for (TabPlayer everyone : Shared.getPlayers()){
-					if (everyone == shown) continue;
-					if (shouldSee(shown, everyone)) ((Player) shown.getPlayer()).showPlayer((Player) everyone.getPlayer());
-					if (shouldSee(everyone, shown)) ((Player) everyone.getPlayer()).showPlayer((Player) shown.getPlayer());
+				try {
+					for (TabPlayer everyone : Shared.getPlayers()){
+						if (everyone == shown) continue;
+						if (shouldSee(shown, everyone)) ((Player) shown.getPlayer()).showPlayer((Player) everyone.getPlayer());
+						if (shouldSee(everyone, shown)) ((Player) everyone.getPlayer()).showPlayer((Player) shown.getPlayer());
+					}
+				} catch (Throwable t) {
+					Shared.errorManager.printError("Failed to show players", t);
 				}
 			}
 		});
@@ -102,10 +106,14 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 
 			@Override
 			public void run() {
-				for (TabPlayer everyone : Shared.getPlayers()){
-					if (everyone == hidden) continue;
-					((Player) hidden.getPlayer()).hidePlayer((Player) everyone.getPlayer());
-					((Player) everyone.getPlayer()).hidePlayer((Player) hidden.getPlayer());
+				try {
+					for (TabPlayer everyone : Shared.getPlayers()){
+						if (everyone == hidden) continue;
+						((Player) hidden.getPlayer()).hidePlayer((Player) everyone.getPlayer());
+						((Player) everyone.getPlayer()).hidePlayer((Player) hidden.getPlayer());
+					}
+				} catch (Throwable t) {
+					Shared.errorManager.printError("Failed to hide players", t);
 				}
 			}
 		});
