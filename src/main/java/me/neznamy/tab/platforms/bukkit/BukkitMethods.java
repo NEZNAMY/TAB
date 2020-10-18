@@ -22,8 +22,6 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
-import me.neznamy.tab.platforms.bukkit.permission.GroupManager;
-import me.neznamy.tab.platforms.bukkit.permission.PermissionsEx;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
 import me.neznamy.tab.shared.PlatformMethods;
@@ -65,10 +63,6 @@ public class BukkitMethods implements PlatformMethods {
 	public PermissionPlugin detectPermissionPlugin() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
 			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
-		} else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
-			return new PermissionsEx(Bukkit.getPluginManager().getPlugin("PermissionsEx").getDescription().getVersion());
-		} else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
-			return new GroupManager(Bukkit.getPluginManager().getPlugin("GroupManager").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
 			return new UltraPermissions(Bukkit.getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
