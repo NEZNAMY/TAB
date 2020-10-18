@@ -42,6 +42,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getName();
 			}
 		});
+		Placeholders.registerPlaceholder(new PlayerPlaceholder("%player%", 999999999) {
+			public String get(TabPlayer p) {
+				return p.getName();
+			}
+		});
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)(Configs.timeOffset*3600000)));

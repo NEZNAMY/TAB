@@ -11,7 +11,7 @@ enable-header-footer: true
 
 header:
   - "&3&lServer name"
-  - "&7&l>> %animation:Welcome%&3 &l%nick%&7&l! &7&l<<"
+  - "&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
   - "&7Online players: &f%online%"
   - "&6Online staff: &e%staffonline%"
   - "%animation:ping-tps%"

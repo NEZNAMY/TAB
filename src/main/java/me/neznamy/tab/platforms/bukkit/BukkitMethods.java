@@ -335,7 +335,7 @@ public class BukkitMethods implements PlatformMethods {
 		suggestPlaceholderSwitch("%player_ping%", "%ping%");
 		suggestPlaceholderSwitch("%cmi_user_ping%", "%ping%");
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
-		suggestPlaceholderSwitch("%player_name%", "%nick%");
+		suggestPlaceholderSwitch("%player_name%", "%player%");
 		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
 	}
 

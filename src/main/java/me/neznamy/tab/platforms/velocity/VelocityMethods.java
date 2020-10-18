@@ -168,7 +168,7 @@ public class VelocityMethods implements PlatformMethods {
 		suggestPlaceholderSwitch("%cmi_user_ping%", "%ping%");
 		suggestPlaceholderSwitch("%player_ping%", "%ping%");
 		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
-		suggestPlaceholderSwitch("%player_name%", "%nick%");
+		suggestPlaceholderSwitch("%player_name%", "%player%");
 		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
 	}
 
