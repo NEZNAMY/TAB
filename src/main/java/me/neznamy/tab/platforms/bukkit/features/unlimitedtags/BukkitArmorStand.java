@@ -209,16 +209,16 @@ public class BukkitArmorStand implements ArmorStand {
 		Entity vehicle = player.getVehicle();
 		if (vehicle != null) {
 			if (vehicle.getType() == EntityType.HORSE) {
-				return player.getVehicle().getLocation().getY() + 0.85;
+				return vehicle.getLocation().getY() + 0.85;
 			}
 			if (vehicle.getType().toString().equals("DONKEY")) {
-				return player.getVehicle().getLocation().getY() + 0.525;
+				return vehicle.getLocation().getY() + 0.525;
 			}
 			if (vehicle.getType() == EntityType.PIG) {
-				return player.getVehicle().getLocation().getY() + 0.325;
+				return vehicle.getLocation().getY() + 0.325;
 			}
 			if (vehicle.getType().toString().equals("STRIDER")) { //preventing errors on <1.16
-				return player.getVehicle().getLocation().getY() + 1.15;
+				return vehicle.getLocation().getY() + 1.15;
 			}
 		}
 		return player.getLocation().getY();
