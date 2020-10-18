@@ -64,6 +64,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
 		for (TabPlayer all : Shared.getPlayers()) {
+			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue; //already registered 2 lines above
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}

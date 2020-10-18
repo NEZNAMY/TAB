@@ -121,6 +121,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()) {
+			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue;
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}
