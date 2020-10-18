@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
@@ -117,7 +118,8 @@ public class BungeePacketBuilder implements PacketBuilder {
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
-	public static PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
+	@Override
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
 		if (!(bungeePacket instanceof PlayerListItem)) return null;
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE"));
@@ -126,5 +128,25 @@ public class BungeePacketBuilder implements PacketBuilder {
 			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.fromString(i.getDisplayName())));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
+	}
+
+	@Override
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
+		String title;
+		if (clientVersion.getMinorVersion() >= 13) {
+			title = IChatBaseComponent.fromString(packet.getValue()).toColoredText();
+		} else {
+			title = packet.getValue();
+		}
+		EnumScoreboardHealthDisplay renderType = (packet.getType() == null ? null : EnumScoreboardHealthDisplay.valueOf(packet.getType().toString().toUpperCase()));
+		PacketPlayOutScoreboardObjective pack = PacketPlayOutScoreboardObjective.REGISTER(packet.getName(), title, renderType);
+		pack.method = packet.getAction();
+		return pack;
+	}
+
+	@Override
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
 	}
 }

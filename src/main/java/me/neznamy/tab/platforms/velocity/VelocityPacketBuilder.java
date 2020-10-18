@@ -32,6 +32,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 public class VelocityPacketBuilder implements PacketBuilder {
 
@@ -111,7 +112,8 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
-	public static PacketPlayOutPlayerInfo readPlayerInfo(Object velocityPacket){
+	@Override
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object velocityPacket, ProtocolVersion clientVersion){
 		if (!(velocityPacket instanceof PlayerListItem)) return null;
 		PlayerListItem list = (PlayerListItem) velocityPacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(list.getAction())];
@@ -120,5 +122,25 @@ public class VelocityPacketBuilder implements PacketBuilder {
 			listData.add(new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.values()[item.getGameMode()+1], IChatBaseComponent.fromString(VelocityUtils.componentToString(item.getDisplayName()))));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
+	}
+	
+	@Override
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
+		String title;
+		if (clientVersion.getMinorVersion() >= 13) {
+			title = IChatBaseComponent.fromString(packet.value).toColoredText();
+		} else {
+			title = packet.value;
+		}
+		EnumScoreboardHealthDisplay renderType = (packet.type == null ? null : EnumScoreboardHealthDisplay.valueOf(packet.type.toString().toUpperCase()));
+		PacketPlayOutScoreboardObjective pack = PacketPlayOutScoreboardObjective.REGISTER(packet.name, title, renderType);
+		pack.method = packet.action;
+		return pack;
+	}
+
+	@Override
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).position, ((ScoreboardDisplay) bungeePacket).name);
 	}
 }

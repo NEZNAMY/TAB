@@ -33,6 +33,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import us.myles.ViaVersion.api.type.Type;
@@ -635,7 +636,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return list;
 	}
 
-	public static PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket) throws Exception {
+	@Override
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
 		if (minorVersion >= 8) {
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
@@ -659,5 +661,39 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PlayerInfoData data = new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
 			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
 		}
+	}
+	
+	@Override
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
+		String objective = (String) PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
+		String displayName;
+		if (minorVersion >= 13) {
+			displayName = IChatBaseComponent.fromString(NMSHook.componentToString(PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket))).toColoredText();
+		} else {
+			displayName = (String) PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
+		}
+		EnumScoreboardHealthDisplay renderType = null;
+		if (PacketPlayOutScoreboardObjective_RENDERTYPE != null) {
+			Object nmsRender = PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
+			if (nmsRender != null) {
+				if (minorVersion >= 8) {
+					renderType = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
+				} else {
+					renderType = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.values()[(int)nmsRender];
+				}
+			}
+		}
+		int method = PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
+		PacketPlayOutScoreboardObjective packet = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.REGISTER(objective, displayName, renderType);
+		packet.method = method;
+		return packet;
+	}
+	
+	@Override
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
+		return new PacketPlayOutScoreboardDisplayObjective(
+				PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
+				(String) PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
+		);
 	}
 }

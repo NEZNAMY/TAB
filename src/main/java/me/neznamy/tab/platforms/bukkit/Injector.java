@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * A large source of hate. Packet intercepting to secure proper functionality of some features:
@@ -69,7 +70,7 @@ public class Injector {
 						}
 						Shared.featureManager.onPacketSend(player, packet);
 						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
-							PacketPlayOutPlayerInfo info = BukkitPacketBuilder.readPlayerInfo(packet);
+							PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, player.getVersion());
 							Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 							super.write(context, info.create(player.getVersion()), channelPromise);
 							return;

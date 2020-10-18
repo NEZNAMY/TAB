@@ -106,7 +106,7 @@ public class Main {
 				}
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem") && player.getVersion().getMinorVersion() >= 8) {
-						PacketPlayOutPlayerInfo info = VelocityPacketBuilder.readPlayerInfo(packet);
+						PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, player.getVersion());
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 						super.write(context, info.create(player.getVersion()), channelPromise);
 						return;
