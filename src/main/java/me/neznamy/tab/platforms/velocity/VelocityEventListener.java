@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -22,34 +22,23 @@ public class VelocityEventListener {
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
+	
 	@Subscribe
-	public void onConnect(ServerConnectedEvent e){
+	public void onConnect(ServerPostConnectEvent e){
 		try{
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				//join
-				TabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getServer().getServerInfo().getName());
+				TabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
-				//sending custom packets with a delay, it would not work otherwise
-				Shared.cpu.runTask("processing join", new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(50);
-							Shared.featureManager.onJoin(p);
-						} catch (InterruptedException e) {
-
-						}
-					}
-				});
+				Shared.featureManager.onJoin(p);
 			} else {
 				//server change
 				TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 				long time = System.nanoTime();
 				String from = p.getWorldName();
-				String to = e.getServer().getServerInfo().getName();
+				String to = e.getPlayer().getCurrentServer().get().getServerInfo().getName();
 				p.setWorldName(to);
 				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 				Shared.featureManager.onWorldChange(p, from, to);
