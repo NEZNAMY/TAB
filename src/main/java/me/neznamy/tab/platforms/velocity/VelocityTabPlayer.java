@@ -20,9 +20,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 	private Player player;
 	private Map<String, String> attributes = new HashMap<String, String>();
 
-	public VelocityTabPlayer(Player p, String server) {
+	public VelocityTabPlayer(Player p) {
 		player = p;
-		world = server;
+		world = p.getCurrentServer().get().getServerInfo().getName();
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
 		uniqueId = p.getUniqueId();
 		name = p.getUsername();

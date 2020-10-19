@@ -29,7 +29,7 @@ public class VelocityEventListener {
 			if (Shared.disabled) return;
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				//join
-				TabPlayer p = new VelocityTabPlayer(e.getPlayer(), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
+				TabPlayer p = new VelocityTabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
 				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);
