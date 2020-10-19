@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.proxy.bungee;
 
 import de.myzelyam.api.vanish.BungeePlayerHideEvent;
 import de.myzelyam.api.vanish.BungeePlayerShowEvent;

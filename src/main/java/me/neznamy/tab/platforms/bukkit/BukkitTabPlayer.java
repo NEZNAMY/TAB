@@ -128,4 +128,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Player getPlayer() {
 		return player;
 	}
+
+	@Override
+	public void setAttribute(String attribute, String value) {
+
+	}
 }

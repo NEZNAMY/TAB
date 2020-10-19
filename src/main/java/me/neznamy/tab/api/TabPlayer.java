@@ -329,4 +329,6 @@ public interface TabPlayer {
 	public void showBossBar(BossBar bossbar);
 	
 	public void removeBossBar(BossBar bossbar);
+
+	public void setAttribute(String attribute, String value);
 }

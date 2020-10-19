@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.proxy.bungee;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -11,6 +11,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -34,7 +35,7 @@ import net.md_5.bungee.protocol.packet.Team;
  */
 public class Main extends Plugin {
 
-	public static PluginMessenger plm;
+	public static PluginMessageHandler plm;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -61,7 +62,7 @@ public class Main extends Plugin {
 				}
 			}
 		});
-		plm = new PluginMessenger(this);
+		plm = new BungeePluginMessageHandler(this);
 		Shared.load(true);
 		BungeeMetrics.start(this);
 	}

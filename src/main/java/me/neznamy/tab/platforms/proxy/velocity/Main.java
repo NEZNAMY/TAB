@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity;
+package me.neznamy.tab.platforms.proxy.velocity;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -19,7 +19,8 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.velocity.protocol.Team;
+import me.neznamy.tab.platforms.proxy.PluginMessageHandler;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.Team;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -37,7 +38,7 @@ import net.kyori.adventure.text.Component;
 public class Main {
 
 	public ProxyServer server;
-	public static PluginMessenger plm;
+	public static PluginMessageHandler plm;
 
 	@Inject
 	public Main(ProxyServer server) {
@@ -79,7 +80,7 @@ public class Main {
 				return sug;
 			}*/
 		});
-		plm = new PluginMessenger(this);
+		plm = new VelocityPluginMessageHandler(this);
 		Shared.load(true);
 	}
 

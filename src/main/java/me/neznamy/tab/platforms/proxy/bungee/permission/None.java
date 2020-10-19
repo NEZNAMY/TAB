@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee.permission;
+package me.neznamy.tab.platforms.proxy.bungee.permission;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;

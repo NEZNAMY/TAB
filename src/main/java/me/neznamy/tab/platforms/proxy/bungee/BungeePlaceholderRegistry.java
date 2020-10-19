@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.proxy.bungee;
 
 import java.util.Map.Entry;
 

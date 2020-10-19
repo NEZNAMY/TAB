@@ -1,4 +1,4 @@
 name: TAB
-main: me.neznamy.tab.platforms.bungee.Main
+main: me.neznamy.tab.platforms.proxy.bungee.Main
 version: ${project.version}
 author: NEZNAMY

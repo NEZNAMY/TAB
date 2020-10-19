@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.proxy.velocity;
 
 import java.io.File;
 import java.util.Arrays;
@@ -7,8 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
+
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -20,47 +23,40 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.NetworkManager;
+import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
-import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 
 /**
- * Bungeecord implementation of PlatformMethods
+ * Velocity implementation of PlatformMethods
  */
-public class BungeeMethods implements PlatformMethods {
+public class VelocityMethods implements PlatformMethods {
 
-	private Plugin plugin;
+	private ProxyServer server;
 	
-	public BungeeMethods(Plugin plugin) {
-		this.plugin = plugin;
+	public VelocityMethods(ProxyServer server) {
+		this.server = server;
 	}
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
-			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
-			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
-			return new BungeePerms(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager") != null) {
-			return new NetworkManager((NetworkManagerPlugin) ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager"), ProxyServer.getInstance().getPluginManager().getPlugin("NetworkManager").getDescription().getVersion());
+		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
+			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
+		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
+			return new BungeePerms(server.getPluginManager().getPlugin("bungeeperms").get().getDescription().getVersion().get());
 		} else {
 			return new None();
 		}
 	}
-
+	
 	@Override
 	public void loadFeatures(boolean inject) throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
-		plm.addRegistry(new BungeePlaceholderRegistry());
+		plm.addRegistry(new VelocityPlaceholderRegistry(server));
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
 		Shared.featureManager.registerFeature("placeholders", plm);
@@ -68,19 +64,18 @@ public class BungeeMethods implements PlatformMethods {
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
-		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			TabPlayer t = new BungeeTabPlayer(p);
+		for (Player p : server.getAllPlayers()) {
+			TabPlayer t = new VelocityTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
 			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 	
 	@Override
-	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		ProxyServer.getInstance().getConsole().sendMessage(translateColors ? Placeholders.color(message): message);
+		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? Placeholders.color(message): message));
 	}
-	
+
 	@Override
 	public void loadConfig() throws Exception {
 		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
@@ -157,7 +152,7 @@ public class BungeeMethods implements PlatformMethods {
 	
 	@Override
 	public String getServerVersion() {
-		return ProxyServer.getInstance().getVersion();
+		return server.getVersion().getName() + " v" + server.getVersion().getVersion();
 	}
 	
 	@Override
@@ -165,8 +160,8 @@ public class BungeeMethods implements PlatformMethods {
 		//bungee only
 		suggestPlaceholderSwitch("%premiumvanish_bungeeplayercount%", "%canseeonline%");
 		suggestPlaceholderSwitch("%bungee_total%", "%online%");
-		for (String server : ProxyServer.getInstance().getServers().keySet()) {
-			suggestPlaceholderSwitch("%bungee_" + server + "%", "%online_" + server + "%");
+		for (RegisteredServer server : server.getAllServers()) {
+			suggestPlaceholderSwitch("%bungee_" + server.getServerInfo().getName() + "%", "%online_" + server.getServerInfo().getName() + "%");
 		}
 
 		//both
@@ -184,6 +179,6 @@ public class BungeeMethods implements PlatformMethods {
 
 	@Override
 	public File getDataFolder() {
-		return plugin.getDataFolder();
+		return new File("plugins" + File.separatorChar + "TAB");
 	}
 }

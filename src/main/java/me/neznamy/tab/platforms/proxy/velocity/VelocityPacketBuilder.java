@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity;
+package me.neznamy.tab.platforms.proxy.velocity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,28 +11,28 @@ import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item;
 
-import me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay;
-import me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective;
-import me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective.HealthDisplay;
-import me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore;
-import me.neznamy.tab.platforms.velocity.protocol.Team;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardDisplay;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardObjective;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardObjective.HealthDisplay;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardScore;
+import me.neznamy.tab.platforms.proxy.velocity.protocol.Team;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class VelocityPacketBuilder implements PacketBuilder {
 
