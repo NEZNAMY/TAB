@@ -490,9 +490,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (minorVersion >= 7) {
 			PacketPlayOutChat_MESSAGE.set(nmsPacket, NMSHook.stringToComponent(packet.message.toString(clientVersion)));
 		} else if (minorVersion == 6) {
-			PacketPlayOutChat_MESSAGE.set(nmsPacket, "{\"text\":\"" + packet.message.toColoredText() + "\"}");
+			PacketPlayOutChat_MESSAGE.set(nmsPacket, "{\"text\":\"" + packet.message.toLegacyText() + "\"}");
 		} else {
-			PacketPlayOutChat_MESSAGE.set(nmsPacket, packet.message.toColoredText());
+			PacketPlayOutChat_MESSAGE.set(nmsPacket, packet.message.toLegacyText());
 		}
 		if (minorVersion >= 12) {
 			PacketPlayOutChat_POSITION.set(nmsPacket, Enum.valueOf((Class<Enum>)ChatMessageType, packet.type.toString()));
@@ -527,7 +527,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PlayerInfoData_PROFILE.set(nmsPacket, profile);
 			PlayerInfoData_GAMEMODE.set(nmsPacket, data.gameMode.ordinal()-1);
 			PlayerInfoData_PING.set(nmsPacket, data.latency);
-			PlayerInfoData_LISTNAME.set(nmsPacket, cutTo(data.displayName.toColoredText(), 16));
+			PlayerInfoData_LISTNAME.set(nmsPacket, cutTo(data.displayName.toLegacyText(), 16));
 			return nmsPacket;
 		}
 	}
@@ -668,7 +668,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		String objective = (String) PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
 		String displayName;
 		if (minorVersion >= 13) {
-			displayName = IChatBaseComponent.fromString(NMSHook.componentToString(PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket))).toColoredText();
+			displayName = IChatBaseComponent.fromString(NMSHook.componentToString(PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket))).toLegacyText();
 		} else {
 			displayName = (String) PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
 		}

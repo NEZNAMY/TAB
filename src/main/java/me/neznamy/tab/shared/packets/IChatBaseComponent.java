@@ -377,7 +377,12 @@ public class IChatBaseComponent {
 		components.add(component);
 		return new IChatBaseComponent("").setExtra(components);
 	}
-	public String toColoredText() {
+	
+	/**
+	 * Converts this component into a simple text with legacy colors (closest match if color is set to RGB)
+	 * @return The simple text format
+	 */
+	public String toLegacyText() {
 		StringBuilder builder = new StringBuilder();
 		if (color != null) builder.append(color.legacy.getFormat());
 		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
@@ -388,7 +393,7 @@ public class IChatBaseComponent {
 		if (text != null) builder.append(text);
 		if (extra != null) {
 			for (IChatBaseComponent component : extra) {
-				builder.append(component.toColoredText());
+				builder.append(component.toLegacyText());
 			}
 		}
 		return builder.toString();

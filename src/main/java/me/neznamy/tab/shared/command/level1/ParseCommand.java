@@ -31,7 +31,7 @@ public class ParseCommand extends SubCommand{
 			if (sender != null) {
 				sender.sendCustomPacket(new PacketPlayOutChat(colored));
 			} else {
-				sendRawMessage(sender, colored.toColoredText());
+				sendRawMessage(sender, colored.toLegacyText());
 			}
 			sendRawMessage(sender, "Without colors: " + replaced.replace(Placeholders.colorChar, '&'));
 		} else {

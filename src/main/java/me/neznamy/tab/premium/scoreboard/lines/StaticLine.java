@@ -23,7 +23,7 @@ public abstract class StaticLine extends ScoreboardLine {
 		super(lineNumber);
 		this.parent = parent;
 		this.lineNumber = lineNumber;
-		this.text = IChatBaseComponent.fromColoredText(text).toColoredText(); //colorizing + translating RGB codes into legacy
+		this.text = IChatBaseComponent.fromColoredText(text).toLegacyText(); //colorizing + translating RGB codes into legacy
 		//1.8+
 		if (this.text.length() <= (40 - forcedNameStart.length())) {
 			prefix = "";

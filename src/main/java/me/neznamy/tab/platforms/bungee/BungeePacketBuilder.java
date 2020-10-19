@@ -67,7 +67,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
 					item.setDisplayName(data.displayName.toString(clientVersion));
 				} else {
-					item.setDisplayName(data.displayName.toColoredText());
+					item.setDisplayName(data.displayName.toLegacyText());
 				}
 			} else if (clientVersion.getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) {
 				item.setDisplayName(data.name); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
@@ -135,7 +135,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = IChatBaseComponent.fromString(packet.getValue()).toColoredText();
+			title = IChatBaseComponent.fromString(packet.getValue()).toLegacyText();
 		} else {
 			title = packet.getValue();
 		}
