@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.SortingType;
@@ -121,7 +123,7 @@ public class DebugCommand extends SubCommand {
 				showProperty(sender, analyzed, "customtagname", disabledNametags);
 				List<Object> lines;
 				if (Premium.is()) {
-					lines = (List<Object>) Premium.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines");
+					lines = Lists.newArrayList((List<Object>) Premium.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
 					lines.addAll(Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
 				} else {
 					lines = Arrays.asList("belowname", "nametag", "abovename");
