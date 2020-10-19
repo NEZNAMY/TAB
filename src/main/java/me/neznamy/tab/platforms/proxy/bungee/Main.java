@@ -47,7 +47,6 @@ public class Main extends Plugin {
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new BungeeMethods(this);
-		UniversalPacketPlayOut.builder = new BungeePacketBuilder();
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new Command("btab") {

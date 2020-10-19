@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
@@ -40,6 +41,7 @@ public class BungeeMethods implements PlatformMethods {
 	
 	public BungeeMethods(Plugin plugin) {
 		this.plugin = plugin;
+		UniversalPacketPlayOut.builder = new BungeePacketBuilder();
 	}
 	
 	@Override

@@ -56,7 +56,6 @@ public class Main {
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		Shared.platform = new VelocityMethods(server);
-		UniversalPacketPlayOut.builder = new VelocityPacketBuilder();
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {

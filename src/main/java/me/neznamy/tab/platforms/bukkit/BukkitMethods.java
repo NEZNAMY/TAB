@@ -33,6 +33,7 @@ import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.None;
@@ -57,6 +58,7 @@ public class BukkitMethods implements PlatformMethods {
 
 	public BukkitMethods(JavaPlugin plugin) {
 		this.plugin = plugin;
+		UniversalPacketPlayOut.builder = new BukkitPacketBuilder();
 	}
 
 	@Override
