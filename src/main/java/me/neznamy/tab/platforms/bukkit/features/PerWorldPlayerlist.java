@@ -39,9 +39,9 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	@Override
 	public void load(){
-		allowBypass = Configs.advancedconfig.getBoolean("per-world-playerlist.allow-bypass-permission", false);
-		ignoredWorlds = Configs.advancedconfig.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = Configs.advancedconfig.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+		allowBypass = Configs.config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
+		ignoredWorlds = Configs.config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+		sharedWorlds = Configs.config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 		for (TabPlayer p : Shared.getPlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);

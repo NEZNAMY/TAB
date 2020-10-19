@@ -1,12 +1,9 @@
 package me.neznamy.tab.shared.config;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,8 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 
@@ -331,7 +328,7 @@ public abstract class ConfigurationFile {
 	 */
 	public boolean hasHeader() {
 		if (header == null) return true;
-		for (String line : readAllLines()) {
+		for (String line : Configs.readAllLines(file)) {
 			if (line.contains("#")) return true;
 		}
 		return false;
@@ -344,7 +341,7 @@ public abstract class ConfigurationFile {
 		if (header == null) return;
 		try {
 			List<String> content = Lists.newArrayList(header);
-			content.addAll(readAllLines());
+			content.addAll(Configs.readAllLines(file));
 			file.delete();
 			file.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
@@ -355,25 +352,6 @@ public abstract class ConfigurationFile {
 		} catch (Exception ex) {
 			Shared.errorManager.criticalError("Failed to modify file " + file, ex);
 		}
-	}
-	
-	/**
-	 * Reads all lines in file and returns them as List
-	 * @return list of lines in file
-	 */
-	protected List<String> readAllLines() {
-		List<String> list = new ArrayList<String>();
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-			String line;
-			while ((line = br.readLine()) != null) {
-				list.add(line);
-			}
-			br.close();
-		} catch (Exception ex) {
-			Shared.errorManager.criticalError("Failed to read file " + file, ex);
-		}
-		return list;
 	}
 	
 	/**

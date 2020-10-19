@@ -1,6 +1,12 @@
 package me.neznamy.tab.shared.config;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +39,9 @@ public class Configs {
 	public static String noAfk;
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
+	public static boolean usePrimaryGroup;
+	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
+	public static boolean groupsByPermissions;
 	public static double SECRET_NTX_space;
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_unregister_before_register;
@@ -67,11 +76,6 @@ public class Configs {
 	public static String preview_on;
 	public static String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
 
-	public static ConfigurationFile advancedconfig;
-	public static boolean usePrimaryGroup = true;
-	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
-	public static boolean groupsByPermissions;
-
 	public static ConfigurationFile playerdata; 
 
 	public static File errorFile;
@@ -86,6 +90,7 @@ public class Configs {
 		Placeholders.allUsedPlaceholderIdentifiers.clear();
 		Placeholders.usedPlaceholders = new HashSet<>();
 		Placeholders.registeredPlaceholders.clear();
+		removeAdvancedConfig();
 		loadConfig();
 		loadAnimations();
 		loadBossbar();
@@ -96,6 +101,19 @@ public class Configs {
 		Shared.platform.suggestPlaceholders();
 	}
 
+	private static void removeAdvancedConfig() {
+		File f = new File(Shared.platform.getDataFolder(), "advancedconfig.yml");
+		if (f.exists()) {
+			List<String> fileLines = readAllLines(f);
+			File config = new File(Shared.platform.getDataFolder(), "config.yml");
+			for (String line : fileLines) {
+				if (!line.startsWith("#")) {
+					write(config, line);
+				}
+			}
+			f.delete();
+		}
+	}
 	public static void loadConfig() throws Exception {
 		Shared.platform.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
@@ -118,6 +136,9 @@ public class Configs {
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
+		usePrimaryGroup = config.getBoolean("use-primary-group", true);
+		primaryGroupFindingList = config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+		groupsByPermissions = config.getBoolean("assign-groups-by-permissions", false);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
@@ -197,5 +218,34 @@ public class Configs {
 			}
 		}
 		return world;
+	}
+	
+	/**
+	 * Reads all lines in file and returns them as List
+	 * @return list of lines in file
+	 */
+	public static List<String> readAllLines(File file) {
+		List<String> list = new ArrayList<String>();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+			String line;
+			while ((line = br.readLine()) != null) {
+				list.add(line);
+			}
+			br.close();
+		} catch (Exception ex) {
+			Shared.errorManager.criticalError("Failed to read file " + file, ex);
+		}
+		return list;
+	}
+	
+	public static void write(File f, String line){
+		try {
+            BufferedWriter buf = new BufferedWriter(new FileWriter(f, true));
+            buf.write(line + System.getProperty("line.separator"));
+            buf.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 	}
 }

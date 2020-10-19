@@ -99,8 +99,8 @@ public class BukkitMethods implements PlatformMethods {
 			Shared.featureManager.registerFeature("bossbar", bb);
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb));
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.advancedconfig.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
-		if (Configs.advancedconfig.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.config.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
+		if (Configs.config.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
 		if (PluginHooks.placeholderAPI) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
@@ -136,10 +136,6 @@ public class BukkitMethods implements PlatformMethods {
 		Configs.config = new YamlConfigurationFile(getDataFolder(), "bukkitconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
 		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		Configs.advancedconfig = new YamlConfigurationFile(getDataFolder(), "advancedconfig.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/advancedconfig.yml", ""));
-		Configs.usePrimaryGroup = Configs.advancedconfig.getBoolean("use-primary-group", true);
-		Configs.primaryGroupFindingList = Configs.advancedconfig.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-		Configs.groupsByPermissions = Configs.advancedconfig.getBoolean("assign-groups-by-permissions", false);
 	}
 
 	@Override
@@ -224,7 +220,6 @@ public class BukkitMethods implements PlatformMethods {
 			removeOld(config, "staff-groups");
 			removeOld(config, "use-essentials-nickname");
 			removeOld(config, "deluxetag-empty-value");
-			removeOld(config, "per-world-playerlist");
 			removeOld(config, "factions-faction");
 			removeOld(config, "factions-nofaction");
 			removeOld(config, "date-format");
@@ -234,6 +229,7 @@ public class BukkitMethods implements PlatformMethods {
 			removeOld(config, "header-footer-refresh-interval-milliseconds");
 			removeOld(config, "classic-vanilla-belowname.refresh-interval-milliseconds");
 			removeOld(config, "relational-placeholders-refresh");
+			removeOld(config, "bukkit-bridge-mode");
 			if (config.hasConfigOption("tablist-objective")) {
 				String type = config.getString("tablist-objective");
 				String value;
@@ -272,19 +268,19 @@ public class BukkitMethods implements PlatformMethods {
 				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
 			}
 			rename(config, "safe-team-register", "unregister-before-register");
+			if (config.getObject("per-world-playerlist") instanceof Boolean) {
+				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
+				rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
+				rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
+				Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
+				sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
+				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
+				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
+				Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
+			}
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			convertPremiumConfig(config);
-		}
-		if (config.getName().equals("advancedconfig.yml") && config.getObject("per-world-playerlist") instanceof Boolean) {
-			rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
-			rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
-			rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
-			Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
-			sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
-			sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
-			config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
-			Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
 		}
 		if (config.getName().equals("bossbar.yml")) {
 			removeOld(config, "refresh-interval-milliseconds");

@@ -73,11 +73,7 @@ public enum SortingType {
 				
 			});
 		} else {
-			if (Configs.advancedconfig != null) {
-				INSTANCE = (Configs.advancedconfig.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
-			} else {
-				INSTANCE = GROUPS;
-			}
+			INSTANCE = (Configs.config.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
 		}
 	}
 	
