@@ -363,7 +363,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void loadPropertyFromConfig(String property, String ifnull) {
+	public void loadPropertyFromConfig(String property, String ifNotSet) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = Configs.getWorldGroupOf(getWorldName());
 		String value;
@@ -399,7 +399,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			setProperty(property, value, "Group: _OTHER_");
 			return;
 		}
-		setProperty(property, ifnull, "None");
+		setProperty(property, ifNotSet, "None");
 	}
 
 	@Override

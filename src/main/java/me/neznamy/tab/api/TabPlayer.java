@@ -281,7 +281,7 @@ public interface TabPlayer {
 	
 	public void loadPropertyFromConfig(String property);
 	
-	public void loadPropertyFromConfig(String property, String ifnull);
+	public void loadPropertyFromConfig(String property, String ifNotSet);
 	
 	public void setTeamName(String name);
 	
