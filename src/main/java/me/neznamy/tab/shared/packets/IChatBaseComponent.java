@@ -230,11 +230,11 @@ public class IChatBaseComponent {
 			JSONObject jsonObject = ((JSONObject) new JSONParser().parse(json));
 			IChatBaseComponent component = new IChatBaseComponent();
 			component.setText((String) jsonObject.get("text"));
-			if (jsonObject.containsKey("bold")) component.setBold(Boolean.parseBoolean((String) jsonObject.get("bold")));
-			component.setItalic((Boolean) jsonObject.get("italic"));
-			component.setUnderlined((Boolean) jsonObject.get("underlined"));
-			component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
-			component.setObfuscated((Boolean) jsonObject.get("obfuscated"));
+			component.setBold(getBoolean(jsonObject, "bold"));
+			component.setItalic(getBoolean(jsonObject, "italic"));
+			component.setUnderlined(getBoolean(jsonObject, "underlined"));
+			component.setStrikethrough(getBoolean(jsonObject, "strikethrough"));
+			component.setObfuscated(getBoolean(jsonObject, "obfuscated"));
 			component.setColor(TextColor.fromString(((String) jsonObject.get("color"))));
 			if (jsonObject.containsKey("clickEvent")) {
 				JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
@@ -263,6 +263,14 @@ public class IChatBaseComponent {
 			return fromColoredText(json);
 		}
 	}
+	
+	private static Boolean getBoolean(JSONObject jsonObject, String key) {
+		if (jsonObject.containsKey(key)) {
+			return Boolean.parseBoolean((String) jsonObject.get(key));
+		}
+		return null;
+	}
+	
 	public String toString(ProtocolVersion clientVersion) {
 		return toString(clientVersion, false);
 	}
