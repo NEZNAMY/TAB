@@ -287,12 +287,12 @@ public class IChatBaseComponent {
 		}
 		//the core component, fixing all colors
 		if (color != null) {
-			jsonObject.put("color", color.toString(clientVersion));
+			jsonObject.put("color", color.toString(clientVersion.getMinorVersion() >= 16));
 		}
 		if (extra != null) {
 			for (IChatBaseComponent extra : extra) {
 				if (extra.color != null) {
-					extra.jsonObject.put("color", extra.color.toString(clientVersion));
+					extra.jsonObject.put("color", extra.color.toString(clientVersion.getMinorVersion() >= 16));
 				}
 			}
 		}
@@ -469,8 +469,8 @@ public class IChatBaseComponent {
 				}
 			}
 		}
-		public String toString(ProtocolVersion clientVersion) {
-			if (clientVersion.getMinorVersion() >= 16) {
+		public String toString(boolean rgbClient) {
+			if (rgbClient) {
 				EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
 				if (legacyEquivalent != null) {
 					//not sending old colors as RGB to 1.16 clients if not needed, also viaversion blocks that as well
