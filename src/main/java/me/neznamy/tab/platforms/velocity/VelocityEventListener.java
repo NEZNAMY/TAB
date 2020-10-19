@@ -18,7 +18,6 @@ public class VelocityEventListener {
 	public void onQuit(DisconnectEvent e){
 		if (Shared.disabled) return;
 		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
