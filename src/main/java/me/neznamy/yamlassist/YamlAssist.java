@@ -22,7 +22,7 @@ import me.neznamy.yamlassist.types.UnknownEscape;
 public class YamlAssist {
 
 	//registered error checkers
-	private static Map<Class<?>, SyntaxError> registeredSyntaxErrors = new HashMap<Class<?>, SyntaxError>();
+	private static Map<Class<? extends SyntaxError>, SyntaxError> registeredSyntaxErrors = new HashMap<Class<? extends SyntaxError>, SyntaxError>();
 
 	/**
 	 * Registers predefined checkers
