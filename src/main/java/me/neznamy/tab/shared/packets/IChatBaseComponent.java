@@ -230,7 +230,7 @@ public class IChatBaseComponent {
 			JSONObject jsonObject = ((JSONObject) new JSONParser().parse(json));
 			IChatBaseComponent component = new IChatBaseComponent();
 			component.setText((String) jsonObject.get("text"));
-			component.setBold((Boolean) jsonObject.get("bold"));
+			if (jsonObject.containsKey("bold")) component.setBold(Boolean.parseBoolean((String) jsonObject.get("bold")));
 			component.setItalic((Boolean) jsonObject.get("italic"));
 			component.setUnderlined((Boolean) jsonObject.get("underlined"));
 			component.setStrikethrough((Boolean) jsonObject.get("strikethrough"));
