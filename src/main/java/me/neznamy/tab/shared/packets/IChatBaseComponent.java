@@ -249,8 +249,8 @@ public class IChatBaseComponent {
 				component.onHover(HoverAction.valueOf(action.toUpperCase()), value);
 			}
 			if (jsonObject.containsKey("extra")) {
-				List<JSONObject> list = (List<JSONObject>) jsonObject.get("extra");
-				for (JSONObject extra : list) {
+				List<Object> list = (List<Object>) jsonObject.get("extra");
+				for (Object extra : list) {
 					component.addExtra(fromString(extra.toString()));
 				}
 			}
