@@ -266,7 +266,7 @@ public class IChatBaseComponent {
 	
 	private static Boolean getBoolean(JSONObject jsonObject, String key) {
 		if (jsonObject.containsKey(key)) {
-			return Boolean.parseBoolean((String) jsonObject.get(key));
+			return Boolean.parseBoolean(String.valueOf(jsonObject.get(key)));
 		}
 		return null;
 	}
