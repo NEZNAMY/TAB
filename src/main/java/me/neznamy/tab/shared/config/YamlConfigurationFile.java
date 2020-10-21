@@ -48,7 +48,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
 			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
-			List<String> suggestions = YamlAssist.getSuggestions(e, Configs.readAllLines(file));
+			List<String> suggestions = YamlAssist.getSuggestions(file, e);
 			if (!suggestions.isEmpty()) {
 				Shared.platform.sendConsoleMessage("&d[TAB] Suggestions to fix yaml syntax:", true);
 				for (String suggestion : suggestions) {
