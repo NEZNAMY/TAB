@@ -35,7 +35,6 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.NetworkManager;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
@@ -46,7 +45,6 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
-import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 
 /**
  * Bukkit implementation of PlatformMethods
@@ -67,8 +65,6 @@ public class BukkitMethods implements PlatformMethods {
 			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
 			return new UltraPermissions(Bukkit.getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
-		} else if (Bukkit.getPluginManager().isPluginEnabled("NetworkManager")) {
-			return new NetworkManager((NetworkManagerPlugin) Bukkit.getPluginManager().getPlugin("NetworkManager"), Bukkit.getPluginManager().getPlugin("NetworkManager").getDescription().getVersion());
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider(), Bukkit.getPluginManager().getPlugin("Vault").getDescription().getVersion());
 		} else {
