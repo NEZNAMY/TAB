@@ -1,6 +1,6 @@
 ## Introduction  
 Here it is. After countless requests to go opensource, I did it to make those people quiet. It worked.  
-It's already been almost a year and I still can't see any positives of it. This way I just provided trash talkers on paper discord more ways to *do their job* on this plugin.  
+It's already been a year and I still can't see any positives of it. This way I just made it easier for everyone to make a plugin as good, so people can stop using it and switch to something better. 
   
   
 ## Compiling
