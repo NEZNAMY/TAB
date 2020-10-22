@@ -4,7 +4,7 @@ It's already been almost a year and I still can't see any positives of it. This 
   
   
 ## Compiling
-If for any reason you want to compile the source yourself instead of using already compiled jars, you can do so in your IDE. Compiling using gradle is not supported currently. If you are ACTUALLY looking for a way to compile it, you'll find it. Don't pretend like gradle is the official and only way to compile java code.  
+Plugin can be compiled using maven. However, you will need to manually add velocity jar into /jars/ folder as defined in pom.xml due to plugin sending packets which are not available on maven. You can find download link in [.dependencies](https://github.com/NEZNAMY/TAB/blob/master/.dependencies) file.
   
   
 ## Contributing
