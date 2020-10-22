@@ -180,10 +180,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		double height = -Configs.SECRET_NTX_space;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
+			if (p.getCurrentRawValue().length() == 0) continue;
 			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
+			if (p.getCurrentRawValue().length() == 0) continue;
 			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
@@ -214,14 +216,33 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			refresh = prefix || suffix;
 		}
 		if (refresh) refreshed.updateTeam();
-		boolean fix = false;
-		for (ArmorStand as : refreshed.getArmorStandManager().getArmorStands()) {
-			if (as.getProperty().update() || force) {
-				as.refresh();
-				fix = true;
+		if (force) {
+			refreshed.getArmorStandManager().destroy();
+			loadArmorStands(refreshed);
+			if (((Entity) refreshed.getPlayer()).getVehicle() != null) {
+				Entity vehicle = ((Entity) refreshed.getPlayer()).getVehicle();
+				List<Integer> list = new ArrayList<Integer>();
+				for (Entity e : getPassengers(vehicle)) {
+					list.add(e.getEntityId());
+				}
+				vehicles.put(vehicle.getEntityId(), list);
 			}
+			for (TabPlayer viewer : Shared.getPlayers()) {
+				if (viewer == refreshed) continue;
+				if (viewer.getWorldName().equals(refreshed.getWorldName())) {
+					refreshed.getArmorStandManager().spawn(viewer);
+				}
+			}
+		} else {
+			boolean fix = false;
+			for (ArmorStand as : refreshed.getArmorStandManager().getArmorStands()) {
+				if (as.getProperty().update()) {
+					as.refresh();
+					fix = true;
+				}
+			}
+			if (fix) fixArmorStandHeights(refreshed);
 		}
-		if (fix) fixArmorStandHeights(refreshed);
 	}
 	
 	private void updateProperties(TabPlayer p) {
