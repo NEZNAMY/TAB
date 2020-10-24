@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.config.Configs;
 public class PluginHooks {
 
 	public static boolean placeholderAPI;
-	public static Object idisguise;
 
 	public static String setPlaceholders(UUID player, String placeholder) {
 		Player p = (player == null ? null : Bukkit.getPlayer(player));

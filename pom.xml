@@ -77,12 +77,6 @@
 			<url>https://jitpack.io</url>
 		</repository>
 
-		<!-- iDisguise -->
-		<repository>
-			<id>robingrether-repo</id>
-			<url>http://repo.robingrether.de/</url>
-		</repository>
-
 		<!-- BungeePerms -->
 		<repository>
 			<id>bungeeperms-repo</id>
@@ -269,22 +263,6 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
-				</exclusion>
-
-			</exclusions>
-		</dependency>
-
-		<!-- iDisguise -->
-		<dependency>
-			<groupId>de.robingrether.idisguise</groupId>
-			<artifactId>idisguise-core</artifactId>
-			<version>5.8.2</version>
-			<scope>provided</scope>
-			<exclusions>
-
-				<exclusion>
-					<groupId>de.robingrether.util</groupId>
-					<artifactId>utility</artifactId>
 				</exclusion>
 
 			</exclusions>

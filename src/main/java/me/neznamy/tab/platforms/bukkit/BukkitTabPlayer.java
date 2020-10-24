@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffectType;
 
-import de.robingrether.idisguise.api.DisguiseAPI;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
@@ -115,8 +116,20 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isDisguised() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return true;
-		if (PluginHooks.idisguise != null && ((DisguiseAPI)PluginHooks.idisguise).isDisguised(player)) return true;
-		return false;
+		return isDisguisediDis();
+	}
+	
+	private boolean isDisguisediDis() {
+		try {
+			if (!Bukkit.getPluginManager().isPluginEnabled("iDisguise")) return false;
+			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
+			Object iDisguise = provider.getProvider();
+			Method m = iDisguise.getClass().getMethod("isDisguised", Player.class);
+			m.setAccessible(true);
+			return (boolean) m.invoke(iDisguise, player);
+		} catch (Exception e) {
+			return Shared.errorManager.printError(false, "Failed to check disguise status using iDisguise", e);
+		}
 	}
 
 	@Override

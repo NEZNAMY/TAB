@@ -9,10 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.robingrether.idisguise.api.DisguiseAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -78,10 +76,6 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void detectPlugins() {
-		if (Bukkit.getPluginManager().isPluginEnabled("iDisguise")) {
-			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(DisguiseAPI.class);
-			if (provider != null) PluginHooks.idisguise = provider.getProvider();
-		}
 		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 	}
 }
