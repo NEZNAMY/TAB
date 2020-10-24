@@ -119,7 +119,7 @@ public class FeatureManager {
 	 * @param force - whether refresh should be forced or not
 	 */
 	public void refresh(TabPlayer refreshed, boolean force) {
-		refreshables.forEach(r -> r.refresh(refreshed, true));
+		refreshables.forEach(r -> r.refresh(refreshed, force));
 	}
 	
 	/**
