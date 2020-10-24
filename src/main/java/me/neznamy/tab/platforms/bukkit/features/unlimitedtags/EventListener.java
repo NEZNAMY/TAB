@@ -16,12 +16,21 @@ import me.neznamy.tab.shared.cpu.UsageType;
  */
 public class EventListener implements Listener {
 
+	//the nametag feature handler
 	private NameTagX feature;
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param feature - nametagx feature handler
+	 */
 	public EventListener(NameTagX feature) {
 		this.feature = feature;
 	}
 	
+	/**
+	 * Sneak event listener to sneak armor stands
+	 * @param e - sneak event
+	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerToggleSneakEvent e) {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
@@ -35,6 +44,10 @@ public class EventListener implements Listener {
 		});
 	}
 	
+	/**
+	 * Move event listener to send packets when /tab ntpreview is used
+	 * @param e - move event
+	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerMoveEvent e) {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());

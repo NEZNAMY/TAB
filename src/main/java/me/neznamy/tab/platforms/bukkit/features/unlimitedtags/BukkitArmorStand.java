@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -33,22 +34,52 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
  */
 public class BukkitArmorStand implements ArmorStand {
 
+	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
 
+	//owner of the armor stand
 	private TabPlayer owner;
+
+	//instance of Bukkit player
 	private Player player;
+
+	//offset in blocks, 0 for original height
 	private double yOffset;
+
+	//entity ID of this armor stand
 	private int entityId = idCounter++;
+
+	//packet to destroy this armor stand
 	private PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
+
+	//unique ID of this armor stand
 	private UUID uuid = UUID.randomUUID();
+
+	//sneaking flag of armor stands
 	private boolean sneaking;
+
+	//armor stand visibility
 	private boolean visible;
 
+	//list of players in entity tracking range (48 blocks)
 	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<TabPlayer>());
+
+	//property dedicated to this armor stand
 	private Property property;
+
+	//if offset is static or dynamic based on other armor stands
 	private boolean staticOffset;
+
+	//if marker tag should be used for 1.8.x clients
 	private boolean markerFor18x;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param owner - armor stand owner
+	 * @param property - property for armor stand's name
+	 * @param yOffset - offset in blocks
+	 * @param staticOffset - if offset is static or not
+	 */
 	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
@@ -58,24 +89,29 @@ public class BukkitArmorStand implements ArmorStand {
 		markerFor18x = ((NameTagX)Shared.featureManager.getFeature("nametagx")).markerFor18x;
 		refresh();
 	}
-	
+
+	@Override
 	public void refresh() {
 		visible = getVisibility();
 		updateMetadata();
 	}
-	
+
+	@Override
 	public Property getProperty() {
 		return property;
 	}
-	
+
+	@Override
 	public boolean hasStaticOffset() {
 		return staticOffset;
 	}
-	
+
+	@Override
 	public double getOffset() {
 		return yOffset;
 	}
-	
+
+	@Override
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
@@ -83,7 +119,13 @@ public class BukkitArmorStand implements ArmorStand {
 			all.sendPacket(new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(all)));
 		}
 	}
-	
+
+	/**
+	 * Returns list of packets to send to make armor stand spawn with metadata
+	 * @param viewer - viewer to apply relational placeholders for
+	 * @param addToRegistered - if player should be added to registered or not
+	 * @return List of packets that spawn the armor stand
+	 */
 	public PacketPlayOut[] getSpawnPackets(TabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
 		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
@@ -99,36 +141,51 @@ public class BukkitArmorStand implements ArmorStand {
 			};
 		}
 	}
-	
+
+	@Override
 	public void spawn(TabPlayer viewer, boolean addToRegistered) {
 		for (PacketPlayOut packet : getSpawnPackets(viewer, addToRegistered)) {
 			viewer.sendPacket(packet);
 		}
 	}
-	
-	public PacketPlayOutEntityTeleport getTeleportPacket(TabPlayer viewer) {
+
+	/**
+	 * Returns teleport packet for specified viewer
+	 * @param viewer - player to get location for
+	 * @return teleport packet
+	 */
+	private PacketPlayOutEntityTeleport getTeleportPacket(TabPlayer viewer) {
 		return new PacketPlayOutEntityTeleport(entityId, getArmorStandLocationFor(viewer));
 	}
-	
+
+	/**
+	 * Returns location where armor stand should be for specified viewer
+	 * @param viewer - player to get location for
+	 * @return location of armor stand
+	 */
 	private Location getArmorStandLocationFor(TabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
-	
+
+	@Override
 	public void destroy(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 		viewer.sendPacket(destroyPacket);
 	}
-	
+
+	@Override
 	public void teleport() {
 		for (TabPlayer all : getNearbyPlayers()) {
 			all.sendPacket(getTeleportPacket(all));
 		}
 	}
-	
+
+	@Override
 	public void teleport(TabPlayer viewer) {
 		viewer.sendPacket(getTeleportPacket(viewer));
 	}
-	
+
+	@Override
 	public void sneak(boolean sneaking) {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
@@ -159,32 +216,45 @@ public class BukkitArmorStand implements ArmorStand {
 			}
 		}
 	}
-	
+
+	@Override
 	public void destroy() {
 		for (TabPlayer all : Shared.getPlayers()) all.sendPacket(destroyPacket);
 		nearbyPlayers.clear();
 	}
-	
+
+	@Override
 	public void updateVisibility() {
 		if (getVisibility() != visible) {
 			visible = !visible;
 			updateMetadata();
 		}
 	}
-	
+
+	/**
+	 * Updates armor stand's metadata
+	 */
 	private void updateMetadata() {
 		for (TabPlayer viewer : getNearbyPlayers()) {
 			viewer.sendPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
 		}
 	}
-	
-	public boolean getVisibility() {
+
+	/**
+	 * Returns general visibility rule for everyone with limited info
+	 * @return true if should be visible, false if not
+	 */
+	private boolean getVisibility() {
 		if (Configs.SECRET_armorstands_always_visible) return true;
-		if (((me.neznamy.tab.platforms.bukkit.BukkitTabPlayer)owner).isDisguised()) return false;
+		if (((BukkitTabPlayer)owner).isDisguised()) return false;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0 && !owner.isOnBoat();
 	}
-	
-	public Location getLocation() {
+
+	/**
+	 * Returns general location where armor stand should be at time of calling
+	 * @return Location where armor stand should be for everyone
+	 */
+	private Location getLocation() {
 		double x = player.getLocation().getX();
 		double y = getY() + yOffset + 2;
 		double z = player.getLocation().getZ();
@@ -199,7 +269,11 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 		return new Location(null,x,y,z);
 	}
-	
+
+	/**
+	 * Returns Y where player is based on player's vehicle due to bukkit API bug
+	 * @return correct player's Y
+	 */
 	private double getY() {
 		//1.14+ bukkit api bug
 		Entity vehicle = player.getVehicle();
@@ -219,16 +293,24 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 		return player.getLocation().getY();
 	}
-	
+
+	@Override
 	public int getEntityId() {
 		return entityId;
 	}
-	
+
+	@Override
 	public void removeFromRegistered(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
 	}
-	
-	public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
+
+	/**
+	 * Creates data watcher with specified display name for viewer
+	 * @param displayName - armor stand name
+	 * @param viewer - player to apply checks against
+	 * @return datawatcher for viewer
+	 */
+	private DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
 		byte flag = 32; //invisible
@@ -247,11 +329,20 @@ public class BukkitArmorStand implements ArmorStand {
 		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);
 		return datawatcher;
 	}
-	
-	public List<TabPlayer> getNearbyPlayers(){
+
+	/**
+	 * Returns list of players in entity tracking range (48 blocks)
+	 * @return
+	 */
+	private List<TabPlayer> getNearbyPlayers(){
 		return new ArrayList<TabPlayer>(nearbyPlayers);
 	}
-	
+
+	/**
+	 * Returns true if display name is in fact empty, for example only containing color codes
+	 * @param displayName - string to check
+	 * @return true if it's empty, false if not
+	 */
 	private boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}
