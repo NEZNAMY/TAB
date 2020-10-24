@@ -138,9 +138,7 @@ public class BukkitArmorStand implements ArmorStand {
 				if (sneaking) {
 					viewer.sendPacket(destroyPacket);
 				} else {
-					for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
-						viewer.sendPacket(packet);
-					}
+					spawn(viewer, false);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
@@ -149,9 +147,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 					@Override
 					public void run() {
-						for (PacketPlayOut packet : getSpawnPackets(viewer, false)) {
-							viewer.sendPacket(packet);
-						}
+						spawn(viewer, false);
 					}
 				};
 				if (viewer.getVersion().getMinorVersion() == 8) {
