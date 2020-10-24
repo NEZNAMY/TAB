@@ -101,7 +101,7 @@ public class BukkitArmorStand implements ArmorStand {
 	}
 	
 	public void spawn(TabPlayer viewer, boolean addToRegistered) {
-		for (PacketPlayOut packet : getSpawnPackets(viewer, true)) {
+		for (PacketPlayOut packet : getSpawnPackets(viewer, addToRegistered)) {
 			viewer.sendPacket(packet);
 		}
 	}
