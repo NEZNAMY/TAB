@@ -147,16 +147,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
-		Shared.cpu.runTaskLater(100, "Processing player quit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
-
-			@Override
-			public void run() {
-				for (TabPlayer all : Shared.getPlayers()) {
-					if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
-				}
-				disconnectedPlayer.getArmorStandManager().destroy();
-			}
-		});
+		for (TabPlayer all : Shared.getPlayers()) {
+			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
+		}
+		//entity destroy packet is sent too late, need to send it manually
+		disconnectedPlayer.getArmorStandManager().destroy();
 	}
 	
 	@Override
