@@ -19,7 +19,7 @@ public class Animation {
 	public Animation(String name, List<String> list, int interval){
 		this.name = name;
 		this.interval = Shared.errorManager.fixAnimationInterval(name, interval);
-		this.messages =  Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
+		this.messages = Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
 	}
 	
 	/**
