@@ -11,13 +11,13 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class RelationalPlaceholder {
 
 	//refresh interval of the placeholder
-	private final int refresh;
+	private int refresh;
 	
 	//identifier of the placeholder
-	private final String identifier;
+	private String identifier;
 	
 	//last known values
-	public final Map<String, String> lastValue = new HashMap<String, String>();
+	public Map<String, String> lastValue = new HashMap<String, String>();
 
 	/**
 	 * Constructs new instance with given parameters

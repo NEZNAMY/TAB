@@ -26,7 +26,7 @@ import me.neznamy.tab.shared.features.Metrics;
 @SuppressWarnings("unchecked")
 public class BukkitMetrics extends Metrics {
 
-	private final Main plugin;
+	private Main plugin;
 
 	public static void start(Main plugin) {
 		BukkitMetrics metrics = new BukkitMetrics(plugin);
@@ -107,7 +107,7 @@ public class BukkitMetrics extends Metrics {
 	}
 
 	private void startSubmitting() {
-		final Timer timer = new Timer(true); // We use a timer cause the Bukkit scheduler is affected by server lags
+		Timer timer = new Timer(true); // We use a timer cause the Bukkit scheduler is affected by server lags
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
@@ -161,7 +161,7 @@ public class BukkitMetrics extends Metrics {
 	}
 
 	private void submitData() {
-		final JSONObject data = getServerData();
+		JSONObject data = getServerData();
 
 		JSONArray pluginData = new JSONArray();
 		// Search for all other bStats Metrics classes to get their plugin data

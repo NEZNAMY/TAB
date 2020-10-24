@@ -18,7 +18,7 @@ public class ScoreboardDisplay implements MinecraftPacket {
 	public ScoreboardDisplay() {
 	}
 
-	public ScoreboardDisplay(final byte position, final String name) {
+	public ScoreboardDisplay(byte position, String name) {
 		this.position = position;
 		this.name = name;
 	}

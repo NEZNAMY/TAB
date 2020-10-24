@@ -27,7 +27,7 @@ public class ErrorManager {
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	//one time messages already sent into console so they are not sent again
-	private final List<String> oneTimeMessages = new ArrayList<String>();
+	private List<String> oneTimeMessages = new ArrayList<String>();
 
 	//amount of logged startup warns
 	private int startupWarns = 0;

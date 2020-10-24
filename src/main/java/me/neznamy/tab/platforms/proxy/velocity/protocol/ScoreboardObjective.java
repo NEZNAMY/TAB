@@ -22,7 +22,7 @@ public class ScoreboardObjective implements MinecraftPacket {
 	public ScoreboardObjective() {
 	}
 
-	public ScoreboardObjective(final String name, final String value, final HealthDisplay type, final byte action) {
+	public ScoreboardObjective(String name, String value, HealthDisplay type, byte action) {
 		this.name = name;
 		this.value = value;
 		this.type = type;

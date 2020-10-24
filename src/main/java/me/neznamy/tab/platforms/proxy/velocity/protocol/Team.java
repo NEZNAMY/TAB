@@ -65,7 +65,7 @@ public class Team implements MinecraftPacket {
 			}
 		}
 		if (mode == 0 || mode == 3 || mode == 4) {
-			final int len = (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol()) ? ProtocolUtils.readVarInt(buf) : buf.readShort();
+			int len = (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_8.getProtocol()) ? ProtocolUtils.readVarInt(buf) : buf.readShort();
 			players = new String[len];
 			for (int i = 0; i < len; ++i) {
 				players[i] = ProtocolUtils.readString(buf);
@@ -104,7 +104,7 @@ public class Team implements MinecraftPacket {
 			} else {
 				buf.writeShort(players.length);
 			}
-			for (final String player : players) {
+			for (String player : players) {
 				ProtocolUtils.writeString(buf, player);
 			}
 		}

@@ -20,7 +20,7 @@ public class ScoreboardScore implements MinecraftPacket {
 	public ScoreboardScore() {
 	}
 
-	public ScoreboardScore(final String itemName, final byte action, final String scoreName, final int value) {
+	public ScoreboardScore(String itemName, byte action, String scoreName, int value) {
 		this.itemName = itemName;
 		this.action = action;
 		this.scoreName = scoreName;

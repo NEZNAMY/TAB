@@ -80,7 +80,7 @@ public class VelocityPacketRegistry {
 		}
 	}
 	
-	public static PacketMapping map(final int id, final ProtocolVersion version, final boolean encodeOnly) throws Exception {
+	public static PacketMapping map(int id, ProtocolVersion version, boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
 	}
 }

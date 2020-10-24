@@ -30,7 +30,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 @SuppressWarnings("unchecked")
 public class BungeeMetrics extends Metrics {
 	
-	private final Plugin plugin;
+	private Plugin plugin;
 	
 	private static final List<Object> knownMetricsInstances = new ArrayList<Object>();
 
@@ -138,9 +138,9 @@ public class BungeeMetrics extends Metrics {
 	}
 
 	private void submitData() {
-		final JSONObject data = getServerData();
+		JSONObject data = getServerData();
 
-		final JSONArray pluginData = new JSONArray();
+		JSONArray pluginData = new JSONArray();
 		// Search for all other bStats Metrics classes to get their plugin data
 		for (Object metrics : knownMetricsInstances) {
 			try {

@@ -125,7 +125,7 @@ public abstract class Metrics {
 	
 	public static abstract class CustomChart {
 
-		private final String chartId;
+		private String chartId;
 
 		public CustomChart(String chartId) {
 			if (chartId == null || chartId.isEmpty()) {
@@ -154,7 +154,7 @@ public abstract class Metrics {
 	
 	public static class SimplePie extends CustomChart {
 
-		private final Callable<String> callable;
+		private Callable<String> callable;
 
 		public SimplePie(String chartId, Callable<String> callable) {
 			super(chartId);
@@ -175,7 +175,7 @@ public abstract class Metrics {
 	
 	public static class AdvancedPie extends CustomChart {
 
-		private final Callable<Map<String, Integer>> callable;
+		private Callable<Map<String, Integer>> callable;
 
 		public AdvancedPie(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
@@ -208,7 +208,7 @@ public abstract class Metrics {
 	
 	public static class DrilldownPie extends CustomChart {
 
-		private final Callable<Map<String, Map<String, Integer>>> callable;
+		private Callable<Map<String, Map<String, Integer>>> callable;
 
 		public DrilldownPie(String chartId, Callable<Map<String, Map<String, Integer>>> callable) {
 			super(chartId);
@@ -246,7 +246,7 @@ public abstract class Metrics {
 	
 	public static class SingleLineChart extends CustomChart {
 
-		private final Callable<Integer> callable;
+		private Callable<Integer> callable;
 
 		public SingleLineChart(String chartId, Callable<Integer> callable) {
 			super(chartId);
@@ -267,7 +267,7 @@ public abstract class Metrics {
 	
 	public static class MultiLineChart extends CustomChart {
 
-		private final Callable<Map<String, Integer>> callable;
+		private Callable<Map<String, Integer>> callable;
 
 		public MultiLineChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
@@ -300,7 +300,7 @@ public abstract class Metrics {
 	
 	public static class SimpleBarChart extends CustomChart {
 
-		private final Callable<Map<String, Integer>> callable;
+		private Callable<Map<String, Integer>> callable;
 
 		public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
 			super(chartId);
@@ -328,7 +328,7 @@ public abstract class Metrics {
 	
 	public static class AdvancedBarChart extends CustomChart {
 
-		private final Callable<Map<String, int[]>> callable;
+		private Callable<Map<String, int[]>> callable;
 
 		public AdvancedBarChart(String chartId, Callable<Map<String, int[]>> callable) {
 			super(chartId);
