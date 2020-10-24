@@ -186,11 +186,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			return true;
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " on")) {
-			Shared.command.execute(sender, new String[] {"scoreboard on"});
+			Shared.command.execute(sender, new String[] {"scoreboard", "on"});
 			return true;
 		}
 		if (message.equalsIgnoreCase(toggleCommand + " off")) {
-			Shared.command.execute(sender, new String[] {"scoreboard off"});
+			Shared.command.execute(sender, new String[] {"scoreboard", "off"});
 			return true;
 		}
 		return false;
