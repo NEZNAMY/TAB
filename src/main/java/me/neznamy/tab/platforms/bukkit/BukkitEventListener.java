@@ -109,6 +109,11 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer respawned = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (respawned == null) return;
-		Shared.featureManager.onRespawn(respawned);
+		Shared.cpu.runTask("processing PlayerRespawnEvent", new Runnable() {
+
+			public void run() {
+				Shared.featureManager.onRespawn(respawned);
+			}
+		});
 	}
 }

@@ -293,12 +293,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void onRespawn(TabPlayer respawned) {
-		if (!isDisabledWorld(respawned.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, new Runnable() {
-			
-			@Override
-			public void run() {
-				respawned.getArmorStandManager().teleport();
-			}
-		});
+		if (isDisabledWorld(respawned.getWorldName())) return;
+		respawned.getArmorStandManager().teleport();
 	}
 }
