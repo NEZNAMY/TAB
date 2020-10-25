@@ -13,8 +13,7 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -43,7 +42,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			Shared.platform.convertConfig(this);
 			if (!hasHeader()) fixHeader();
 			Placeholders.findAllUsed(values);
-		} catch (ParserException | ScannerException e) {
+		} catch (YAMLException e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
 			Shared.brokenFile = file.getPath();
