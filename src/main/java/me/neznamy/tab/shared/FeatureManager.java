@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,55 +24,17 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
  */
 public class FeatureManager {
 
-	//all features, sometimes we need to get feature by it's name
+	//list of registered features
 	private Map<String, Feature> features = new ConcurrentHashMap<String, Feature>();
 	
-	//lists of feature types to use on forEach in methods
-	private List<PlayerInfoPacketListener> playerInfoListeners = new ArrayList<PlayerInfoPacketListener>();
-	private List<RawPacketFeature> rawpacketfeatures = new ArrayList<RawPacketFeature>();
-	private List<Loadable> loadableFeatures = new ArrayList<Loadable>();
-	private List<JoinEventListener> joinListeners = new ArrayList<JoinEventListener>();
-	private List<QuitEventListener> quitListeners = new ArrayList<QuitEventListener>();
-	private List<WorldChangeListener> worldChangeListeners = new ArrayList<WorldChangeListener>();
-	private List<CommandListener> commandListeners = new ArrayList<CommandListener>();
-	private List<RespawnEventListener> respawnListeners = new ArrayList<RespawnEventListener>();
-	public List<Refreshable> refreshables = new ArrayList<Refreshable>();
-	
 	/**
-	 * Registers a feature by adding it to the core map as well as all lists where applicable
+	 * Registers a feature
 	 * 
 	 * @param featureName - name of feature
 	 * @param featureHandler - the handler
 	 */
 	public void registerFeature(String featureName, Feature featureHandler) {
 		features.put(featureName, featureHandler);
-		if (featureHandler instanceof Loadable) {
-			loadableFeatures.add((Loadable) featureHandler);
-		}
-		if (featureHandler instanceof PlayerInfoPacketListener) {
-			playerInfoListeners.add((PlayerInfoPacketListener) featureHandler);
-		}
-		if (featureHandler instanceof RawPacketFeature) {
-			rawpacketfeatures.add((RawPacketFeature) featureHandler);
-		}
-		if (featureHandler instanceof JoinEventListener) {
-			joinListeners.add((JoinEventListener) featureHandler);
-		}
-		if (featureHandler instanceof QuitEventListener) {
-			quitListeners.add((QuitEventListener) featureHandler);
-		}
-		if (featureHandler instanceof WorldChangeListener) {
-			worldChangeListeners.add((WorldChangeListener) featureHandler);
-		}
-		if (featureHandler instanceof CommandListener) {
-			commandListeners.add((CommandListener) featureHandler);
-		}
-		if (featureHandler instanceof Refreshable) {
-			refreshables.add((Refreshable) featureHandler);
-		}
-		if (featureHandler instanceof RespawnEventListener) {
-			respawnListeners.add((RespawnEventListener) featureHandler);
-		}
 	}
 	
 	/**
@@ -97,11 +58,22 @@ public class FeatureManager {
 	}
 	
 	/**
+	 * Returns list of all loaded features
+	 * @return list of all loaded features
+	 */
+	public Collection<Feature> getAllFeatures(){
+		return features.values();
+	}
+	
+	/**
 	 * Calls load() on all features that implement Loadable
 	 * This function is called on plugin startup
 	 */
 	public void load() {
-		loadableFeatures.forEach(f -> f.load());
+		for (Feature f : features.values()) {
+			if (!(f instanceof Loadable)) continue;
+			((Loadable)f).load();
+		}
 	}
 	
 	/**
@@ -109,7 +81,10 @@ public class FeatureManager {
 	 * This function is called on plugin unload
 	 */
 	public void unload() {
-		loadableFeatures.forEach(f -> f.unload());
+		for (Feature f : features.values()) {
+			if (!(f instanceof Loadable)) continue;
+			((Loadable)f).unload();
+		}
 	}
 	
 	/**
@@ -119,7 +94,10 @@ public class FeatureManager {
 	 * @param force - whether refresh should be forced or not
 	 */
 	public void refresh(TabPlayer refreshed, boolean force) {
-		refreshables.forEach(r -> r.refresh(refreshed, force));
+		for (Feature f : features.values()) {
+			if (!(f instanceof Refreshable)) continue;
+			((Refreshable)f).refresh(refreshed, force);
+		}
 	}
 	
 	/**
@@ -127,7 +105,10 @@ public class FeatureManager {
 	 * This function is called when new placeholders enter the game (usually when a command to assign property is ran)
 	 */
 	public void refreshUsedPlaceholders() {
-		refreshables.forEach(r -> r.refreshUsedPlaceholders());
+		for (Feature f : features.values()) {
+			if (!(f instanceof Refreshable)) continue;
+			((Refreshable)f).refreshUsedPlaceholders();
+		}
 	}
 	
 	/**
@@ -138,9 +119,10 @@ public class FeatureManager {
 	 * @return altered packet or null if packet should be cancelled
 	 */
 	public void onPacketPlayOutPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
-		for (PlayerInfoPacketListener f : playerInfoListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof PlayerInfoPacketListener)) continue;
 			long time = System.nanoTime();
-			f.onPacketSend(receiver, packet);
+			((PlayerInfoPacketListener)f).onPacketSend(receiver, packet);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
 	}
@@ -151,10 +133,11 @@ public class FeatureManager {
 	 * @param disconnectedPlayer - player who disconnected
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (QuitEventListener l : quitListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof QuitEventListener)) continue;
 			long time = System.nanoTime();
-			l.onQuit(disconnectedPlayer);
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
+			((QuitEventListener)f).onQuit(disconnectedPlayer);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
 		}
 	}
 	
@@ -164,10 +147,11 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
-		for (JoinEventListener l : joinListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof JoinEventListener)) continue;
 			long time = System.nanoTime();
-			l.onJoin(connectedPlayer);
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+			((JoinEventListener)f).onJoin(connectedPlayer);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
 		connectedPlayer.markAsLoaded();
 	}
@@ -180,10 +164,11 @@ public class FeatureManager {
 	 * @param to - name of the new world/server
 	 */
 	public void onWorldChange(TabPlayer changed, String from, String to) {
-		for (WorldChangeListener l : worldChangeListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();
-			l.onWorldChange(changed, from, to);
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
+			((WorldChangeListener)f).onWorldChange(changed, from, to);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 		}
 	}
 	
@@ -196,10 +181,11 @@ public class FeatureManager {
 	 */
 	public boolean onCommand(TabPlayer sender, String command) {
 		boolean cancel = false;
-		for (CommandListener l : commandListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof CommandListener)) continue;
 			long time = System.nanoTime();
-			if (l.onCommand(sender, command)) cancel = true;
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
+			if (((CommandListener)f).onCommand(sender, command)) cancel = true;
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
 		}
 		return cancel;
 	}
@@ -213,10 +199,11 @@ public class FeatureManager {
 	 */
 	public Object onPacketReceive(TabPlayer receiver, Object packet){
 		Object newPacket = packet;
-		for (RawPacketFeature f : rawpacketfeatures) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof RawPacketFeature)) continue;
 			long time = System.nanoTime();
 			try {
-				if (newPacket != null) newPacket = f.onPacketReceive(receiver, newPacket);
+				if (newPacket != null) newPacket = ((RawPacketFeature)f).onPacketReceive(receiver, newPacket);
 			} catch (Throwable e) {
 				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
@@ -232,10 +219,11 @@ public class FeatureManager {
 	 * @param packet - OUT packet coming from the server
 	 */
 	public void onPacketSend(TabPlayer receiver, Object packet){
-		for (RawPacketFeature f : rawpacketfeatures) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof RawPacketFeature)) continue;
 			long time = System.nanoTime();
 			try {
-				f.onPacketSend(receiver, packet);
+				((RawPacketFeature)f).onPacketSend(receiver, packet);
 			} catch (Throwable e) {
 				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
@@ -248,10 +236,11 @@ public class FeatureManager {
 	 * @param respawned
 	 */
 	public void onRespawn(TabPlayer respawned) {
-		for (RespawnEventListener l : respawnListeners) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof RespawnEventListener)) continue;
 			long time = System.nanoTime();
-			l.onRespawn(respawned);
-			Shared.cpu.addTime(l.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
+			((RespawnEventListener)f).onRespawn(respawned);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		}
 	}
 	

@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.interfaces.Feature;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -156,8 +157,9 @@ public class PlaceholderManager implements QuitEventListener {
 	}
 	public static Set<Refreshable> getPlaceholderUsage(String identifier){
 		Set<Refreshable> set = new HashSet<Refreshable>();
-		for (Refreshable r : new ArrayList<>(Shared.featureManager.refreshables)) {
-			if (r.getUsedPlaceholders().contains(identifier)) set.add(r);
+		for (Feature r : new ArrayList<>(Shared.featureManager.getAllFeatures())) {
+			if (!(r instanceof Refreshable)) continue;
+			if (((Refreshable)r).getUsedPlaceholders().contains(identifier)) set.add((Refreshable) r);
 		}
 		return set;
 	}
