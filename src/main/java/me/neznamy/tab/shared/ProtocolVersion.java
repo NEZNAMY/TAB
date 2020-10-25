@@ -53,6 +53,7 @@ public enum ProtocolVersion {
 	v1_4_7		(51,  "1.4.7"),
 	v1_4_6		(51,  "1.4.6");
 
+	//server version, always using latest on proxies
 	public static ProtocolVersion SERVER_VERSION;
 
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
