@@ -37,8 +37,13 @@ import net.kyori.adventure.text.Component;
  */
 public class VelocityMethods implements PlatformMethods {
 
+	//instance of proxyserver
 	private ProxyServer server;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param server - instance of proxyserver
+	 */
 	public VelocityMethods(ProxyServer server) {
 		this.server = server;
 		UniversalPacketPlayOut.builder = new VelocityPacketBuilder();

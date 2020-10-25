@@ -34,6 +34,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
+/**
+ * Packet builder for Velocity platform
+ */
 public class VelocityPacketBuilder implements PacketBuilder {
 
 	@Override

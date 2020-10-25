@@ -17,9 +17,16 @@ import net.kyori.adventure.text.Component;
  */
 public class VelocityTabPlayer extends ITabPlayer{
 
+	//the velocity player
 	private Player player;
+	
+	//player's attributes on bukkit server (disguise status, invisibility status)
 	private Map<String, String> attributes = new HashMap<String, String>();
 
+	/**
+	 * Constructs new instance for given player
+	 * @param p - velocity player
+	 */
 	public VelocityTabPlayer(Player p) {
 		player = p;
 		world = p.getCurrentServer().get().getServerInfo().getName();
@@ -68,6 +75,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 		return Boolean.parseBoolean(attributes.get("disguised"));
 	}
 	
+	@Override
 	public void setAttribute(String attribute, String value) {
 		attributes.put(attribute, value);
 	}

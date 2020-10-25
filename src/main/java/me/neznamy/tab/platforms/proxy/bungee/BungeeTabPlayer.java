@@ -40,9 +40,17 @@ public class BungeeTabPlayer extends ITabPlayer {
 		}
 	}
 	
+	//proxy player
 	private ProxiedPlayer player;
+	
+	//player's attributes on bukkit server (disguise status, invisibility status)
 	private Map<String, String> attributes = new HashMap<String, String>();
 
+	/**
+	 * Constructs new instance for given player
+	 * @param p - velocity player
+	 * @throws Exception - if reflection fails
+	 */
 	public BungeeTabPlayer(ProxiedPlayer p) throws Exception {
 		player = p;
 		if (p.getServer() != null) {

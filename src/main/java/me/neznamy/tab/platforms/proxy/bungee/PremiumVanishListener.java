@@ -17,8 +17,13 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class PremiumVanishListener implements Listener {
 
+	//permission to see vanished players
 	private final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";
 	
+	/**
+	 * Listener to player hide event to hide from global playerlist
+	 * @param e - hide event
+	 */
 	@EventHandler
 	public void a(BungeePlayerHideEvent e) {
 		if (!Shared.featureManager.isFeatureEnabled("globalplayerlist")) return;
@@ -30,14 +35,28 @@ public class PremiumVanishListener implements Listener {
 		}
 	}
 	
-	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
+	/**
+	 * Returns remove packet for specified player
+	 * @param p - player to remove
+	 * @return removing packet
+	 */
+	private PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, null, null));
 	}
 	
-	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
+	/**
+	 * Returns add packet for specified player
+	 * @param p - player to add
+	 * @return adding packet
+	 */
+	private PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
 	}
 	
+	/**
+	 * Listener to player show event to show in global playerlist
+	 * @param e - show event
+	 */
 	@EventHandler
 	public void a(BungeePlayerShowEvent e) {
 		if (!Shared.featureManager.isFeatureEnabled("globalplayerlist")) return;

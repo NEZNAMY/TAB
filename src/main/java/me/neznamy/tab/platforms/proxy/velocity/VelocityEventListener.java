@@ -14,6 +14,10 @@ import me.neznamy.tab.shared.cpu.UsageType;
  */
 public class VelocityEventListener {
 
+	/**
+	 * Disconnect event listener to forward the event to all features
+	 * @param e - disconnect event
+	 */
 	@Subscribe
 	public void onQuit(DisconnectEvent e){
 		if (Shared.disabled) return;
@@ -22,6 +26,10 @@ public class VelocityEventListener {
 		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
 	
+	/**
+	 * Listener to join / server switch to forward the event to all features
+	 * @param e
+	 */
 	@Subscribe
 	public void onConnect(ServerPostConnectEvent e){
 		try{

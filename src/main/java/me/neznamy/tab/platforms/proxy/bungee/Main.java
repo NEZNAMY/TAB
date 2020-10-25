@@ -35,6 +35,7 @@ import net.md_5.bungee.protocol.packet.Team;
  */
 public class Main extends Plugin {
 
+	//plugin message handler
 	public static PluginMessageHandler plm;
 
 	@SuppressWarnings("deprecation")
@@ -66,6 +67,10 @@ public class Main extends Plugin {
 		BungeeMetrics.start(this);
 	}
 	
+	/**
+	 * Checks for compatibility and returns true if version is compatible, false if not
+	 * @return true if version is compatible, false if not
+	 */
 	private boolean isVersionSupported() {
 		try {
 			Class.forName("net.md_5.bungee.protocol.packet.ScoreboardObjective$HealthDisplay");
@@ -83,6 +88,10 @@ public class Main extends Plugin {
 		}
 	}
 	
+	/**
+	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
+	 * @param uuid - player's uuid
+	 */
 	public static void inject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
@@ -151,7 +160,12 @@ public class Main extends Plugin {
 			}
 		});
 	}
-	public static void modifyPlayers(Team packet){
+	
+	/**
+	 * Removes all real players from packet if the packet doesn't come from TAB
+	 * @param packet - packet to modify
+	 */
+	private static void modifyPlayers(Team packet){
 		if (packet.getPlayers() == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());

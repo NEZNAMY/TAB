@@ -18,8 +18,13 @@ import me.neznamy.tab.platforms.proxy.velocity.protocol.Team;
  */
 public class VelocityPacketRegistry {
 
+	//packet id mapping method
 	private static Method map;
 	
+	/**
+	 * Registers missing velocity packets
+	 * @return true if registration was successful, false if not
+	 */
 	public static boolean registerPackets() {
 		try {
 			Method register = null;
@@ -80,7 +85,15 @@ public class VelocityPacketRegistry {
 		}
 	}
 	
-	public static PacketMapping map(int id, ProtocolVersion version, boolean encodeOnly) throws Exception {
+	/**
+	 * Calls map method and returns the output packet mapping
+	 * @param id - packet id
+	 * @param version - client version
+	 * @param encodeOnly - no idea
+	 * @return result from map method
+	 * @throws Exception - if reflection fails
+	 */
+	private static PacketMapping map(int id, ProtocolVersion version, boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
 	}
 }

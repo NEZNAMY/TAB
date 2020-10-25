@@ -9,11 +9,21 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
  */
 public class VelocityUtils {
 
+	/**
+	 * Converts provided json string into component
+	 * @param json - string to convert
+	 * @return component from given string or null if string is null
+	 */
 	public static Component stringToComponent(String json) {
 		if (json == null) return null;
 		return GsonComponentSerializer.gson().deserialize(json);
 	}
 	
+	/**
+	 * Converts provided component into json string
+	 * @param component - component to convert
+	 * @return json string or null if component is null
+	 */
 	public static String componentToString(Component component) {
 		if (component == null) return null;
 		return GsonComponentSerializer.gson().serialize(component);

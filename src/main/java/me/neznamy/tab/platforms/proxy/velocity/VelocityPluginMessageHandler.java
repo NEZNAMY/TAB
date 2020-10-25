@@ -16,8 +16,13 @@ import me.neznamy.tab.shared.Shared;
  */
 public class VelocityPluginMessageHandler implements PluginMessageHandler {
 
+	//channel identifier
 	private MinecraftChannelIdentifier mc;
 
+	/**
+	 * Constructs new instance with given parameter and registers events/channel
+	 * @param plugin - instance of main class
+	 */
 	public VelocityPluginMessageHandler(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
 		plugin.server.getChannelRegistrar().register(mc);
@@ -25,6 +30,10 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 
 	}
 
+	/**
+	 * Listener to plugin message event
+	 * @param event - plugin message event
+	 */
 	@Subscribe
 	public void on(PluginMessageEvent event){
 		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;

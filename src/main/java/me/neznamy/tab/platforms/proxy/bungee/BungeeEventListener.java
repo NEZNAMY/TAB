@@ -23,6 +23,10 @@ import net.md_5.bungee.event.EventPriority;
  */
 public class BungeeEventListener implements Listener {
 
+	/**
+	 * tab complete listener to fill suggestions
+	 * @param e - tab complete event
+	 */
 	@EventHandler
 	public void onTabComplete(TabCompleteEvent e) {
 		if (Shared.disabled) return;
@@ -41,6 +45,10 @@ public class BungeeEventListener implements Listener {
 		}
 	}
 
+	/**
+	 * Disconnect event listener to forward the event to all features
+	 * @param e - disconnect event
+	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
 		if (Shared.disabled) return;
@@ -50,6 +58,10 @@ public class BungeeEventListener implements Listener {
 		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
 
+	/**
+	 * Listener to join / server switch to forward the event to all features
+	 * @param e
+	 */
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
 		try{
@@ -73,6 +85,10 @@ public class BungeeEventListener implements Listener {
 		}
 	}
 
+	/**
+	 * Listener to chat packets to forward the event to all features
+	 * @param e
+	 */
 	@EventHandler
 	public void onChat(ChatEvent e) {
 		TabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());

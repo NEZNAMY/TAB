@@ -17,11 +17,19 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class BungeePluginMessageHandler implements Listener, PluginMessageHandler {
 
+	/**
+	 * Constructs new instance with given parameter and registers events/channel
+	 * @param plugin - instance of main class
+	 */
 	public BungeePluginMessageHandler(Plugin plugin) {
 		ProxyServer.getInstance().registerChannel(Shared.CHANNEL_NAME);
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
 	}
 	
+	/**
+	 * Listener to plugin message event
+	 * @param event - plugin message event
+	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
 		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;

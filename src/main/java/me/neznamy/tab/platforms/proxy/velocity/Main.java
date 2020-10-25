@@ -37,13 +37,17 @@ import net.kyori.adventure.text.Component;
 @Plugin(id = "tab", name = "TAB", version = Shared.pluginVersion, description = "Change player tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
 public class Main {
 
+	//instance of proxyserver
 	public ProxyServer server;
+	
+	//plugin message handler
 	public static PluginMessageHandler plm;
 
 	@Inject
 	public Main(ProxyServer server) {
 		this.server = server;
 	}
+	
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!hasRequiredLibs()) {
@@ -83,6 +87,10 @@ public class Main {
 		Shared.load(true);
 	}
 
+	/**
+	 * Check for required libraries and returns true if server has all required libs, false if not
+	 * @return true if version is supported, false if not
+	 */
 	private boolean hasRequiredLibs() {
 		try {
 			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
@@ -93,6 +101,10 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
+	 * @param uuid - player's uuid
+	 */
 	public static void inject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).getChannel();
 		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
@@ -125,7 +137,12 @@ public class Main {
 			}
 		});
 	}
-	public static void modifyPlayers(Team packet){
+	
+	/**
+	 * Removes all real players from packet if the packet doesn't come from TAB
+	 * @param packet - packet to modify
+	 */
+	private static void modifyPlayers(Team packet){
 		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());

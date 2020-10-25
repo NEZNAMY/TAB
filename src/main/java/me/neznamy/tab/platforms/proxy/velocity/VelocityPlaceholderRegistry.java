@@ -13,11 +13,17 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
  */
 public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 
+	//instance of proxyserver
 	private ProxyServer server;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param server - instance of proxyserver
+	 */
 	public VelocityPlaceholderRegistry(ProxyServer server) {
 		this.server = server;
 	}
+	
 	@Override
 	public void registerPlaceholders() {
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%maxplayers%", -1) {

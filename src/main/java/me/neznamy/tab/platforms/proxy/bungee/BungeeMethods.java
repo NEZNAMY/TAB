@@ -35,8 +35,13 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class BungeeMethods implements PlatformMethods {
 
+	//instance of plugin
 	private Plugin plugin;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param plugin - main class
+	 */
 	public BungeeMethods(Plugin plugin) {
 		this.plugin = plugin;
 		UniversalPacketPlayOut.builder = new BungeePacketBuilder();
