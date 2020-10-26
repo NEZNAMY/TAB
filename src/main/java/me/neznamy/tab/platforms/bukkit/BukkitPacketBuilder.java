@@ -427,37 +427,41 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	
 	public Object buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
-		ByteBuf buf = Unpooled.buffer();
-		Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 ? 0x0D : 0x0C);
-		Type.UUID.write(buf, packet.id);
-		Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
-		switch (packet.operation) {
-		case ADD:
-			Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-			Type.FLOAT.writePrimitive(buf, packet.pct);
-			Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
-			Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
-			Type.BYTE.write(buf, packet.getFlags());
-			break;
-		case REMOVE:
-			break;
-		case UPDATE_PCT:
-			Type.FLOAT.writePrimitive(buf, packet.pct);
-			break;
-		case UPDATE_NAME:
-			Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-			break;
-		case UPDATE_STYLE:
-			Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
-			Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
-			break;
-		case UPDATE_PROPERTIES:
-			Type.BYTE.write(buf, packet.getFlags());
-			break;
-		default:
-			break;
+		try {
+			ByteBuf buf = Unpooled.buffer();
+			Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 ? 0x0D : 0x0C);
+			Type.UUID.write(buf, packet.id);
+			Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
+			switch (packet.operation) {
+			case ADD:
+				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+				Type.FLOAT.writePrimitive(buf, packet.pct);
+				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+				Type.BYTE.write(buf, packet.getFlags());
+				break;
+			case REMOVE:
+				break;
+			case UPDATE_PCT:
+				Type.FLOAT.writePrimitive(buf, packet.pct);
+				break;
+			case UPDATE_NAME:
+				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+				break;
+			case UPDATE_STYLE:
+				Type.VAR_INT.writePrimitive(buf, packet.color.ordinal());
+				Type.VAR_INT.writePrimitive(buf, packet.overlay.ordinal());
+				break;
+			case UPDATE_PROPERTIES:
+				Type.BYTE.write(buf, packet.getFlags());
+				break;
+			default:
+				break;
+			}
+			return buf;
+		} catch (Throwable t) {
+			return Shared.errorManager.printError(null, "Failed to create 1.9 bossbar packet using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", t);
 		}
-		return buf;
 	}
 	
 	public Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
