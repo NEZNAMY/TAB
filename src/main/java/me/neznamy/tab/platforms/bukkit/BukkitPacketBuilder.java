@@ -36,6 +36,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import us.myles.ViaVersion.api.type.Type;
 import us.myles.viaversion.libs.gson.JsonParser;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
@@ -145,6 +146,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PlayerInfoData_GAMEMODE;
 	private static Field PlayerInfoData_PROFILE;
 	private static Field PlayerInfoData_LISTNAME;
+	
+	//PacketPlayOutTitle
+	private static Class<?> PacketPlayOutTitle;
+	private static Constructor<?> newPacketPlayOutTitle;
+	private static Class<Enum> EnumTitleAction;
+	
 
 	/**
 	 * Initializes required NMS classes and fields
@@ -200,6 +207,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (minorVersion >= 8) {
 			//1.8+
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
+			PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
+			EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
 			try {
 				//v1_8_R2+
 				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
@@ -263,6 +272,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				//1.8+
 				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
 				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+				newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, NMSHook.IChatBaseComponent, int.class, int.class, int.class);
 			} else {
 				//1.7
 				newPacketPlayOutPlayerInfo0 = PacketPlayOutPlayerInfo.getConstructor();
@@ -624,6 +634,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		PacketPlayOutScoreboardTeam_SIGNATURE.set(nmsPacket, packet.options);
 		if (PacketPlayOutScoreboardTeam_VISIBILITY != null) PacketPlayOutScoreboardTeam_VISIBILITY.set(nmsPacket, packet.nametagVisibility);
 		return nmsPacket;
+	}
+	
+	@Override
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) return null;
+		return newPacketPlayOutTitle.newInstance(Enum.valueOf(EnumTitleAction, packet.action.toString()), NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion)), packet.fadeIn, packet.stay, packet.fadeOut);
 	}
 
 	private static Class<?> getNMSClass(String name) throws ClassNotFoundException {

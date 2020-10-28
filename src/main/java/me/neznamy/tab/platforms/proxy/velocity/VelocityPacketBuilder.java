@@ -10,6 +10,7 @@ import com.velocitypowered.proxy.protocol.packet.Chat;
 import com.velocitypowered.proxy.protocol.packet.HeaderAndFooter;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem;
 import com.velocitypowered.proxy.protocol.packet.PlayerListItem.Item;
+import com.velocitypowered.proxy.protocol.packet.TitlePacket;
 
 import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardDisplay;
 import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardObjective;
@@ -33,6 +34,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 
 /**
  * Packet builder for Velocity platform
@@ -113,6 +115,21 @@ public class VelocityPacketBuilder implements PacketBuilder {
 			color = EnumChatFormat.lastColorsOf(packet.playerPrefix).getNetworkId();
 		}
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
+	}
+	
+	@Override
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
+		TitlePacket velocityPacket = new TitlePacket();
+		int actionId = packet.action.ordinal();
+	    if (clientVersion.getNetworkId() <= ProtocolVersion.v1_10_2.getNetworkId() && actionId >= 2) {
+	    	actionId--;
+	    }
+	    velocityPacket.setAction(actionId);
+	    velocityPacket.setComponent(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+	    velocityPacket.setFadeIn(packet.fadeIn);
+	    velocityPacket.setStay(packet.stay);
+	    velocityPacket.setFadeOut(packet.fadeOut);
+		return velocityPacket;
 	}
 	
 	@Override

@@ -78,6 +78,15 @@ public interface PacketBuilder {
 	 * @throws Exception - when something fails
 	 */
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws Exception;
+	
+	/**
+	 * Constructs platform-specific PacketPlayOutTitle class based on custom packet class
+	 * @param packet - custom packet to be built
+	 * @param clientVersion - version of client to receive the packet
+	 * @return platform-specific packet
+	 * @throws Exception - when something fails
+	 */
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception;
 
 	/**
 	 * Cuts given string to specified character length (or length-1 if last character is a color character)

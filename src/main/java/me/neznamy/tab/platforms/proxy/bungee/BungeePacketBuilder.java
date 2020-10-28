@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.Chat;
@@ -29,6 +30,7 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.Team;
+import net.md_5.bungee.protocol.packet.Title;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 public class BungeePacketBuilder implements PacketBuilder {
@@ -116,6 +118,17 @@ public class BungeePacketBuilder implements PacketBuilder {
 			color = EnumChatFormat.lastColorsOf(packet.playerPrefix).getNetworkId();
 		}
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
+	}
+	
+	@Override
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
+		Title bungeePacket = new Title();
+		bungeePacket.setAction(Title.Action.valueOf(packet.action.toString()));
+		bungeePacket.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+		bungeePacket.setFadeIn(packet.fadeIn);
+		bungeePacket.setStay(packet.stay);
+		bungeePacket.setFadeOut(packet.fadeOut);
+		return bungeePacket;
 	}
 	
 	@Override
