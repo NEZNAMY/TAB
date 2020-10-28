@@ -4,6 +4,7 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -47,7 +48,10 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 				}
 			}
 		});
-		startCollisionRefreshingTask();
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8) {
+			//cannot control collision rule on 1.8 servers in any way
+			startCollisionRefreshingTask();
+		}
 	}
 
 	@Override
