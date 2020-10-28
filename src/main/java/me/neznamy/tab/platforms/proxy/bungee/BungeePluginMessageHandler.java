@@ -25,20 +25,24 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 		ProxyServer.getInstance().registerChannel(Shared.CHANNEL_NAME);
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
 	}
-	
+
 	/**
 	 * Listener to plugin message event
 	 * @param event - plugin message event
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
-		if (event.getReceiver() instanceof ProxiedPlayer) {
-			TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
-			if (receiver == null) return;
-			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-				event.setCancelled(true);
+		try {
+			if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+			if (event.getReceiver() instanceof ProxiedPlayer) {
+				TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+				if (receiver == null) return;
+				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
+					event.setCancelled(true);
+				}
 			}
+		} catch (Exception e) {
+			Shared.errorManager.printError("Failed to handle incoming plugin message", e);
 		}
 	}
 

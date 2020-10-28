@@ -36,16 +36,20 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 	 */
 	@Subscribe
 	public void on(PluginMessageEvent event){
-		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
-		if (event.getTarget() instanceof Player) {
-			TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
-			if (receiver == null) return;
-			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-				event.setResult(ForwardResult.handled());
+		try {
+			if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+			if (event.getTarget() instanceof Player) {
+				TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
+				if (receiver == null) return;
+				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
+					event.setResult(ForwardResult.handled());
+				}
 			}
+		} catch (Exception e) {
+			Shared.errorManager.printError("Failed to handle incoming plugin message", e);
 		}
 	}
-	
+
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
 		Player sender = (Player) player.getPlayer();
