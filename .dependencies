@@ -1,3 +1,3 @@
 # Extra dependencies as they don't have a maven repository
 
-Velocity: https://ci.velocitypowered.com/job/velocity-1.1.0/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-proxy-1.1.0-SNAPSHOT-all.jar
+Velocity: https://versions.velocitypowered.com/download/1.1.0.jar

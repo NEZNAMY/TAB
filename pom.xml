@@ -468,9 +468,9 @@
 		<dependency>
 			<groupId>jars</groupId>
 			<artifactId>Velocity</artifactId>
-			<version>#265</version>
+			<version>1.1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}${file.separator}jars${file.separator}velocity-proxy-1.1.0-SNAPSHOT-all.jar</systemPath>
+			<systemPath>${project.basedir}${file.separator}jars${file.separator}velocity-1.1.0.jar</systemPath>
 		</dependency>
 
 	</dependencies>
