@@ -21,7 +21,7 @@ public abstract class NameTag implements Feature {
 	}
 	
 	public void startCollisionRefreshingTask() {
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing collision", TabFeature.NAMETAGS, UsageType.REFRESHING_COLLISION, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing collision", TabFeature.NAMETAGS, UsageType.REFRESHING_COLLISION, new Runnable() {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
