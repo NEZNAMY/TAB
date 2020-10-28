@@ -12,6 +12,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.event.VelocityTABLoadEvent;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -187,5 +188,10 @@ public class VelocityMethods implements PlatformMethods {
 	@Override
 	public File getDataFolder() {
 		return new File("plugins" + File.separatorChar + "TAB");
+	}
+
+	@Override
+	public void callLoadEvent() {
+		server.getEventManager().fire(new VelocityTABLoadEvent());
 	}
 }

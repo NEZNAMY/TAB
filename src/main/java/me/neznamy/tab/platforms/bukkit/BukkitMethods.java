@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.event.BukkitTABLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
 import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
@@ -353,5 +354,10 @@ public class BukkitMethods implements PlatformMethods {
 		}
 		replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
 		return replaced;
+	}
+
+	@Override
+	public void callLoadEvent() {
+		Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent());
 	}
 }

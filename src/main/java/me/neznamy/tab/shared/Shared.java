@@ -155,6 +155,7 @@ public class Shared {
 			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			platform.callLoadEvent();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;

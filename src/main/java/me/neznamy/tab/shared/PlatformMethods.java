@@ -91,6 +91,12 @@ public interface PlatformMethods {
 	public File getDataFolder();
 	
 	/**
+	 * Calls platform-specific event
+	 * This method is called when plugin is fully enabled
+	 */
+	public void callLoadEvent();
+	
+	/**
 	 * Removes an old config option that is not present anymore
 	 * @param config - configuration file
 	 * @param oldKey - name of removed config option

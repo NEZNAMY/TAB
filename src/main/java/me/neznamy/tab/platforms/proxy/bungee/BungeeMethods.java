@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.event.BungeeTABLoadEvent;
 import me.neznamy.tab.platforms.proxy.bungee.permission.None;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.Shared;
@@ -188,5 +189,10 @@ public class BungeeMethods implements PlatformMethods {
 	@Override
 	public File getDataFolder() {
 		return plugin.getDataFolder();
+	}
+
+	@Override
+	public void callLoadEvent() {
+		ProxyServer.getInstance().getPluginManager().callEvent(new BungeeTABLoadEvent());
 	}
 }
