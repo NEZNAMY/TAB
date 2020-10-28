@@ -14,11 +14,13 @@ public class NotEqualsCondition extends SimpleCondition {
 	private String leftSide;
 	private List<String> leftSidePlaceholders;
 	private String rightSide;
+	private List<String> rightSidePlaceholders;
 	
 	public NotEqualsCondition(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
 		leftSidePlaceholders = Placeholders.detectAll(leftSide);
 		this.rightSide = rightSide;
+		rightSidePlaceholders = Placeholders.detectAll(rightSide);
 	}
 	
 	@Override
@@ -27,6 +29,11 @@ public class NotEqualsCondition extends SimpleCondition {
 		for (String identifier : leftSidePlaceholders) {
 			Placeholder pl = Placeholders.getPlaceholder(identifier);
 			if (pl != null) leftSide = pl.set(leftSide, p);
+		}
+		String rightSide = this.rightSide;
+		for (String identifier : rightSidePlaceholders) {
+			Placeholder pl = Placeholders.getPlaceholder(identifier);
+			if (pl != null) rightSide = pl.set(rightSide, p);
 		}
 		return !leftSide.equals(rightSide);
 	}
