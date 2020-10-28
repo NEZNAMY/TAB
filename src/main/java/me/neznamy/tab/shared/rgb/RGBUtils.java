@@ -1,9 +1,8 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.rgb;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -125,9 +124,9 @@ public class RGBUtils {
 		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
-			TextColor start = new TextColor(format.substring(2, 8));
+			TextColor start = TextColor.of(format.substring(2, 8));
 			String message = format.substring(9, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			TextColor end = TextColor.of(format.substring(format.length()-7, format.length()-1));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
@@ -144,9 +143,9 @@ public class RGBUtils {
 		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
-			TextColor start = new TextColor(format.substring(2, 8));
+			TextColor start = TextColor.of(format.substring(2, 8));
 			String message = format.substring(10, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
+			TextColor end = TextColor.of(format.substring(format.length()-8, format.length()-2));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
@@ -163,9 +162,9 @@ public class RGBUtils {
 		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
-			TextColor start = new TextColor(format.substring(3, 9));
+			TextColor start = TextColor.of(format.substring(3, 9));
 			String message = format.substring(10, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			TextColor end = TextColor.of(format.substring(format.length()-7, format.length()-1));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}

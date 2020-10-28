@@ -15,10 +15,10 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.IChatBaseComponent.TextColor;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
  * Universal variable and method storage
@@ -132,8 +132,8 @@ public class Shared {
 	 */
 	public static void sendPluginInfo(TabPlayer to) {
 		if (Premium.is() && !to.hasPermission("tab.admin")) return;
-		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(new TextColor(EnumChatFormat.DARK_AQUA)).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
-		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(new TextColor(EnumChatFormat.BLACK)));
+		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(TextColor.of(EnumChatFormat.DARK_AQUA)).onHoverShowText(Placeholders.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(TextColor.of(EnumChatFormat.BLACK)));
 		to.sendCustomPacket(new PacketPlayOutChat(message));
 	}
 	

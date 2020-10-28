@@ -9,10 +9,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.RGBUtils;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.rgb.RGBUtils;
+import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
  * A class representing the n.m.s.IChatBaseComponent class to make work with it much easier
@@ -351,18 +352,18 @@ public class IChatBaseComponent {
 					case RESET: 
 						format = EnumChatFormat.WHITE;
 						component = new IChatBaseComponent();
-						component.setColor(new TextColor(format));
+						component.setColor(TextColor.of(format));
 						break;
 					default: 
 						component = new IChatBaseComponent();
-						component.setColor(new TextColor(format));
+						component.setColor(TextColor.of(format));
 						break;
 					}
 				}
 			} else if (Configs.SECRET_rgb_support && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
-					TextColor color = new TextColor(hex); //the validation check is in constructor
+					TextColor color = TextColor.of(hex); //the validation check is in constructor
 
 					if (builder.length() > 0){
 						component.setText(builder.toString());
@@ -374,6 +375,7 @@ public class IChatBaseComponent {
 					component.setColor(color);
 					i += 6;
 				} catch (Exception e) {
+					e.printStackTrace();
 					//invalid hex code
 					builder.append(c);
 				}
@@ -392,7 +394,7 @@ public class IChatBaseComponent {
 	 */
 	public String toLegacyText() {
 		StringBuilder builder = new StringBuilder();
-		if (color != null) builder.append(color.legacy.getFormat());
+		if (color != null) builder.append(color.getLegacyColor().getFormat());
 		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
 		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
 		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
@@ -435,68 +437,5 @@ public class IChatBaseComponent {
 		SHOW_ITEM,
 		SHOW_ENTITY,
 		@Deprecated SHOW_ACHIEVEMENT;//Removed in 1.12
-	}
-
-	public static class TextColor{
-
-		private int red;
-		private int green;
-		private int blue;
-		private EnumChatFormat legacy;
-
-		public TextColor(EnumChatFormat legacy) {
-			this.red = legacy.getRed();
-			this.green = legacy.getGreen();
-			this.blue = legacy.getBlue();
-			this.legacy = legacy;
-		}
-
-		public TextColor(String hexCode) {
-			int hexColor = Integer.parseInt(hexCode, 16);
-			red = (hexColor >> 16) & 0xFF;
-			green = (hexColor >> 8) & 0xFF;
-			blue = hexColor & 0xFF;
-			double minDist = 9999;
-			double dist;
-			for (EnumChatFormat color : EnumChatFormat.values()) {
-				int r = (int) Math.pow(color.getRed() - red, 2);
-				int g = (int) Math.pow(color.getGreen() - green, 2);
-				int b = (int) Math.pow(color.getBlue() - blue, 2);
-				dist = Math.sqrt(r + g + b);
-				if (dist < minDist) {
-					minDist = dist;
-					legacy = color;
-				}
-			}
-		}
-		public String toString(boolean rgbClient) {
-			if (rgbClient) {
-				EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
-				if (legacyEquivalent != null) {
-					//not sending old colors as RGB to 1.16 clients if not needed, also viaversion blocks that as well
-					return legacyEquivalent.toString().toLowerCase();
-				}
-				return "#" + RGBUtils.toHexString(red, green, blue);
-			} else {
-				return legacy.toString().toLowerCase();
-			}
-		}
-		public static TextColor fromString(String string) {
-			if (string == null) return null;
-			if (string.startsWith("#")) {
-				return new TextColor(string.substring(1));
-			} else {
-				return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
-			}
-		}
-		public int getRed() {
-			return red;
-		}
-		public int getGreen() {
-			return green;
-		}
-		public int getBlue() {
-			return blue;
-		}
 	}
 }
