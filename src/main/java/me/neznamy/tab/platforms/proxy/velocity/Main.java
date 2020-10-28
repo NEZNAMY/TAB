@@ -34,7 +34,7 @@ import net.kyori.adventure.text.Component;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = Shared.pluginVersion, description = "Change player tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = Shared.pluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
 	//instance of proxyserver

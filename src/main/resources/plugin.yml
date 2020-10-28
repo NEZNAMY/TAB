@@ -1,10 +1,10 @@
-name: TAB
+name: ${project.name}
 version: ${project.version}
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, ViaVersion, ProtocolSupport, Vault, UltraPermissions, LuckPerms, GroupManager, PermissionsEx, DeluxeTags, Essentials, eGlow, LibsDisguises, CMI]
 website: "https://www.spigotmc.org/resources/57806/"
-description: "Change a player's tablist prefix/suffix, name tag prefix/suffix, header/footer, bossbar and more"
+description: ${project.description}
 commands:
   tab:
