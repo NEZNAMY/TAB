@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
- * "leftSide!=rightSide" condition where leftSide supports placeholders
+ * "leftSide!=rightSide" condition where both sides support placeholders
  */
 public class NotEqualsCondition extends SimpleCondition {
 
