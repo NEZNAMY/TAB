@@ -73,9 +73,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		for (TabPlayer all : Shared.getPlayers()){
 			all.setTeamName(SortingType.INSTANCE.getTeamName(all));
 			updateProperties(all);
+			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName())) continue;
 			all.registerTeam();
-			loadArmorStands(all);
 			if (((Entity) all.getPlayer()).getVehicle() != null) {
 				Entity vehicle = ((Entity) all.getPlayer()).getVehicle();
 				List<Integer> list = new ArrayList<Integer>();
@@ -126,9 +126,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (all == connectedPlayer) continue;
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}
+		loadArmorStands(connectedPlayer);
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
-		loadArmorStands(connectedPlayer);
 		if (((Entity) connectedPlayer.getPlayer()).getVehicle() != null) {
 			Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
 			List<Integer> list = new ArrayList<Integer>();
