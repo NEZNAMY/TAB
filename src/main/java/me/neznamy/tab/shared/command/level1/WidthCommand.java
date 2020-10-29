@@ -45,7 +45,7 @@ public class WidthCommand extends SubCommand {
 				}
 			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
-			IChatBaseComponent charMessage = new IChatBaseComponent(Placeholders.color("&2[TAB] " + c + " &d|"));
+			IChatBaseComponent charMessage = new IChatBaseComponent(Placeholders.color("&2" + c + " &d|"));
 			messages.add(new IChatBaseComponent(Placeholders.colorChar + "b[TAB] Click the line with closest width"));
 			messages.add(getText(1, c));
 			messages.add(charMessage);
@@ -98,6 +98,6 @@ public class WidthCommand extends SubCommand {
 			text += "ii";
 			break;
 		}
-		return new IChatBaseComponent(Placeholders.color("&b[TAB] &k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
+		return new IChatBaseComponent(Placeholders.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
 	}
 }
