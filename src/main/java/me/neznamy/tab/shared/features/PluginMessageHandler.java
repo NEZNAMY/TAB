@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy;
+package me.neznamy.tab.shared.features;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;

@@ -1,10 +1,10 @@
-package me.neznamy.tab.platforms.proxy.bungee;
+package me.neznamy.tab.platforms.bungee;
 
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;

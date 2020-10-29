@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.bungee;
+package me.neznamy.tab.platforms.bungee;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -11,12 +11,12 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;

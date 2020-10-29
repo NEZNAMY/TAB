@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.velocity;
+package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;

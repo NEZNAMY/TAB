@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.velocity;
+package me.neznamy.tab.platforms.velocity;
 
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.Subscribe;
@@ -8,8 +8,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
  * A class to request and read PlaceholderAPI values from bukkit server

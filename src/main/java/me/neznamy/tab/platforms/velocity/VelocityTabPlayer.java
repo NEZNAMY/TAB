@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.velocity;
+package me.neznamy.tab.platforms.velocity;
 
 import java.util.HashMap;
 import java.util.Map;

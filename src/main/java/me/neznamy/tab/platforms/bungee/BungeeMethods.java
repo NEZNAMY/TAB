@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.bungee;
+package me.neznamy.tab.platforms.bungee;
 
 import java.io.File;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BungeeTABLoadEvent;
-import me.neznamy.tab.platforms.proxy.bungee.permission.None;
+import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.shared.PlatformMethods;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;

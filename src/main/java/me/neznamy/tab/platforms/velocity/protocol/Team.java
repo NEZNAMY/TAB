@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.velocity.protocol;
+package me.neznamy.tab.platforms.velocity.protocol;
 
 import java.util.Arrays;
 

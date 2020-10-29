@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.velocity;
+package me.neznamy.tab.platforms.velocity;
 
 import java.lang.reflect.Method;
 import java.util.function.Supplier;
@@ -8,10 +8,10 @@ import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketMapping;
 import com.velocitypowered.proxy.protocol.StateRegistry.PacketRegistry;
 
-import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardDisplay;
-import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardObjective;
-import me.neznamy.tab.platforms.proxy.velocity.protocol.ScoreboardScore;
-import me.neznamy.tab.platforms.proxy.velocity.protocol.Team;
+import me.neznamy.tab.platforms.velocity.protocol.ScoreboardDisplay;
+import me.neznamy.tab.platforms.velocity.protocol.ScoreboardObjective;
+import me.neznamy.tab.platforms.velocity.protocol.ScoreboardScore;
+import me.neznamy.tab.platforms.velocity.protocol.Team;
 
 /**
  * Util to register scoreboard packets which are missing on velocity

@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.proxy.bungee;
+package me.neznamy.tab.platforms.bungee;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
