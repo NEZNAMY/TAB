@@ -30,7 +30,7 @@ public abstract class NameTag implements Feature, Refreshable {
 		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
-					if (isDisabledWorld(p.getWorldName())) continue;
+					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
 					boolean invisible = p.hasInvisibilityPotion();
 					if (invisible && !invisiblePlayers.contains(p.getName())) {
 						invisiblePlayers.add(p.getName());
