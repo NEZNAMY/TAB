@@ -158,7 +158,7 @@ disable-features-in-servers:
     - disabledserver
   nametag:
     - disabledserver
-  tablist-objective:
+  yellow-number:
     - disabledserver
   bossbar:
     - disabledserver

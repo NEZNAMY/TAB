@@ -150,6 +150,7 @@ public class BungeeMethods implements PlatformMethods {
 				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
 			}
 			rename(config, "safe-team-register", "unregister-before-register");
+			rename(config, "disable-features-in-servers.tablist-objective", "disable-features-in-servers.yellow-number");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			convertPremiumConfig(config);

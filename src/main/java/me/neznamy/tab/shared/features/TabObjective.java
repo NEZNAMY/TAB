@@ -35,7 +35,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	public TabObjective() {
 		rawValue = Configs.config.getString("yellow-number-in-tablist", "%ping%");
-		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.tablist-objective", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.yellow-number", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;

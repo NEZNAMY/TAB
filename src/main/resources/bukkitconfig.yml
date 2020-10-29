@@ -166,7 +166,7 @@ disable-features-in-worlds:
     - disabledworld
   nametag:
     - disabledworld
-  tablist-objective:
+  yellow-number:
     - disabledworld
   bossbar:
     - disabledworld

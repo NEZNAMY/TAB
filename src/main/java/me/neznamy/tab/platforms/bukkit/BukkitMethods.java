@@ -277,6 +277,7 @@ public class BukkitMethods implements PlatformMethods {
 				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
 				Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
 			}
+			rename(config, "disable-features-in-worlds.tablist-objective", "disable-features-in-worlds.yellow-number");
 		}
 		if (config.getName().equals("premiumconfig.yml")) {
 			convertPremiumConfig(config);
