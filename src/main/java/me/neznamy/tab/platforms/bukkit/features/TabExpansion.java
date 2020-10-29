@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
@@ -61,16 +61,6 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (player == null) return "";
 		TabPlayer p = Shared.getPlayer(player.getUniqueId());
 		if (p == null) return "";
-		String placeholder = identifier.replace("_raw", "");
-
-		Property prop = p.getProperty(placeholder);
-		if (prop != null) {
-
-		    if (identifier.endsWith("_raw")) {
-			return prop.getCurrentRawValue();
-		    }
-		    return prop.lastReplacedValue;
-		}
 		if (identifier.equals("scoreboard_visible")) {
 			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
 		}
@@ -82,6 +72,14 @@ public class TabExpansion extends PlaceholderExpansion {
 			String output = PluginHooks.setPlaceholders(player, placeholder);
 			Map<Object, Object> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
 			return Placeholder.findReplacement(replacements, output);
+		}
+		String placeholder = identifier.replace("_raw", "");
+		Property prop = p.getProperty(placeholder);
+		if (prop != null) {
+		    if (identifier.endsWith("_raw")) {
+		    	return prop.getCurrentRawValue();
+		    }
+		    return prop.lastReplacedValue;
 		}
 		return null;
 	}
