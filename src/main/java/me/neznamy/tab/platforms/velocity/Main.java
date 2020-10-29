@@ -51,7 +51,7 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!hasRequiredLibs()) {
-			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 build #265 and up to work. Get it at https://ci.velocitypowered.com/job/velocity-1.1.0/");
+			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads");
 			return;
 		}
 		if (!VelocityPacketRegistry.registerPackets()) {
