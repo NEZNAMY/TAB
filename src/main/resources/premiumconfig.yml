@@ -89,7 +89,7 @@ placeholder-output-replacements:
   "%tps%":
     "20": "&aPerfect"
     
-allign-tabsuffix-on-the-right: false
+align-tabsuffix-on-the-right: false
 extra-character-widths: {}
   
 conditions:

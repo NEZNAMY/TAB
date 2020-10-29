@@ -195,6 +195,7 @@ public interface PlatformMethods {
 			Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 		}
 		removeOld(config, "scoreboard.refresh-interval-milliseconds");
+		rename(config, "allign-tabsuffix-on-the-right", "align-tabsuffix-on-the-right");
 	}
 	
 	/**

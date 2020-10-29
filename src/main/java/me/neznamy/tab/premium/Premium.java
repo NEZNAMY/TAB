@@ -24,7 +24,7 @@ public class Premium {
 
 	public static void loadPremiumConfig() throws Exception {
 		premiumconfig = new YamlConfigurationFile(Shared.platform.getDataFolder(), "premiumconfig.yml", null);
-		alignTabsuffix = premiumconfig.getBoolean("allign-tabsuffix-on-the-right", false);
+		alignTabsuffix = premiumconfig.getBoolean("align-tabsuffix-on-the-right", false);
 		conditions = new HashMap<String, Condition>();
 		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
 			List<String> conditions = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
