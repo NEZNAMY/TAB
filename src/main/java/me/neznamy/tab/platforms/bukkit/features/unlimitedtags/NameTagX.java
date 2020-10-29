@@ -43,6 +43,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
+	private boolean disableOnBoats;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
@@ -53,6 +54,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public NameTagX(JavaPlugin plugin) {
 		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
+		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
@@ -93,12 +95,13 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
+					p.getArmorStandManager().updateVisibility();
+					if (!disableOnBoats) continue;
 					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
 					if (p.isOnBoat() != onBoat) {
 						p.setOnBoat(onBoat);
 						p.updateTeamData();
 					}
-					p.getArmorStandManager().updateVisibility();
 				}
 			}
 		});

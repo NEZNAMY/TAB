@@ -111,6 +111,9 @@ unlimited-nametag-prefix-suffix-mode:
   #1.8.0 clients will see wild things
   #automatically enabled for 1.9+
   use-marker-tag-for-1-8-x-clients: false
+  
+  #disabling the feature for players riding boats to prevent massive desync
+  disable-on-boats: true
 
 per-world-settings:
   world1:
