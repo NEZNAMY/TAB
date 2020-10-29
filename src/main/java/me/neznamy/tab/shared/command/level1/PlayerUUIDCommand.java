@@ -43,28 +43,19 @@ public class PlayerUUIDCommand extends SubCommand {
 				}
 				return;
 			}
-			for (String property : usualProperties) {
-				if (type.equals(property)) {
-					if (hasPermission(sender, "tab.change." + property)) {
-						savePlayer(sender, changed, type, value);
-					} else {
-						sendMessage(sender, Configs.no_perm);
+			if (sender.getProperty(type) != null) {
+				if (hasPermission(sender, "tab.change." + type)) {
+					savePlayer(sender, changed, type, value);
+					for (String property : extraProperties) {
+						if (type.equals(property))
+							if (!Shared.featureManager.isFeatureEnabled("nametagx"))
+								sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+
 					}
-					return;
+				} else {
+					sendMessage(sender, Configs.no_perm);
 				}
-			}
-			for (String property : extraProperties) {
-				if (type.equals(property)) {
-					if (hasPermission(sender, "tab.change." + property)) {
-						savePlayer(sender, changed, type, value);
-						if (!Shared.featureManager.isFeatureEnabled("nametagx")) {
-							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
-						}
-					} else {
-						sendMessage(sender, Configs.no_perm);
-					}
-					return;
-				}
+				return;
 			}
 		}
 		sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
