@@ -61,13 +61,15 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (player == null) return "";
 		TabPlayer p = Shared.getPlayer(player.getUniqueId());
 		if (p == null) return "";
-		for (EnumProperty property : EnumProperty.values()) {
-			if (identifier.equals(property.toString())) {
-				return p.getProperty(property.toString()).lastReplacedValue;
-			}
-			if (identifier.equals(property.toString() + "_raw")) {
-				return p.getProperty(property.toString()).getCurrentRawValue();
-			}
+		String placeholder = identifier.replace("_raw", "");
+
+		Property prop = p.getProperty(placeholder);
+		if (prop != null) {
+
+		    if (identifier.endsWith("_raw")) {
+			return prop.getCurrentRawValue();
+		    }
+		    return prop.lastReplacedValue;
 		}
 		if (identifier.equals("scoreboard_visible")) {
 			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
