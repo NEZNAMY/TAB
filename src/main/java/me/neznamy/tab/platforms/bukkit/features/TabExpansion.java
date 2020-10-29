@@ -2,11 +2,11 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import java.util.Map;
 
+import me.neznamy.tab.shared.Property;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.PluginHooks;
 import me.neznamy.tab.premium.Premium;
@@ -61,9 +61,8 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (player == null) return "";
 		TabPlayer p = Shared.getPlayer(player.getUniqueId());
 		if (p == null) return "";
-		String placeholder = identifier.replace("_raw", "");
 
-		Property prop = p.getProperty(placeholder);
+		Property prop = p.getProperty(identifier.replace("_raw", ""));
 		if (prop != null) {
 
 		    if (identifier.endsWith("_raw")) {
