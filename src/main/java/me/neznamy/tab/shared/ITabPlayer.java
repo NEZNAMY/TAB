@@ -43,7 +43,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
 	protected Channel channel;
-	private boolean nameTagVisible = true;
 	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
@@ -76,7 +75,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean getTeamVisibility() {
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
 		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
-		return nameTagVisible;
+		return !Shared.featureManager.getNameTagFeature().getInvisiblePlayers().contains(getName());
 	}
 
 	public void setProperty(String identifier, String rawValue, String source) {
@@ -507,16 +506,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (refreshIfChanged) {
 			forceRefresh();
 		}
-	}
-	
-	@Override
-	public void setNameTagVisible(boolean visible) {
-		nameTagVisible = visible;
-	}
-	
-	@Override
-	public boolean hasNameTagVisible() {
-		return nameTagVisible;
 	}
 	
 	@Override

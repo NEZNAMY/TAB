@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Set;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -12,15 +10,12 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 /**
  * Feature handler for nametag feature
  */
-public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable {
-
-	private Set<String> usedPlaceholders;
+public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener {
 
 	public NameTag16() {
 		refreshUsedPlaceholders();
@@ -31,23 +26,12 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		for (TabPlayer p : Shared.getPlayers()) {
 			p.setTeamName(SortingType.INSTANCE.getTeamName(p));
 			updateProperties(p);
-			p.setNameTagVisible(p.hasInvisibility());
+			if (p.hasInvisibilityPotion()) {
+				invisiblePlayers.add(p.getName());
+			}
 			if (!isDisabledWorld(p.getWorldName())) p.registerTeam();
 		}
-		
-		//fixing a 1.8.x client-sided bug
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
-			public void run() {
-				for (TabPlayer p : Shared.getPlayers()) {
-					if (isDisabledWorld(p.getWorldName())) continue;
-					boolean visible = !p.hasInvisibility();
-					if (p.hasNameTagVisible() != visible) {
-						p.setNameTagVisible(visible);
-						p.updateTeamData();
-					}
-				}
-			}
-		});
+		startInvisibilityRefreshingTask();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() > 8) {
 			//cannot control collision rule on 1.8 servers in any way
 			startCollisionRefreshingTask();
@@ -69,7 +53,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		connectedPlayer.registerTeam();
 		for (TabPlayer all : Shared.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
-			if (all == connectedPlayer) continue; //already registered 2 lines above
+			if (all == connectedPlayer) continue; //already registered 3 lines above
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
 		}
 	}
@@ -77,6 +61,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
+		invisiblePlayers.remove(disconnectedPlayer.getName());
 	}
 
 	@Override
@@ -124,19 +109,10 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
-		return usedPlaceholders;
-	}
-
-	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGS;

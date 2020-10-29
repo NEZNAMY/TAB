@@ -316,11 +316,7 @@ public interface TabPlayer {
 	
 	public void setGroup(String group, boolean refreshIfChanged);
 	
-	public boolean hasInvisibility();
-	
-	public void setNameTagVisible(boolean visible);
-	
-	public boolean hasNameTagVisible();
+	public boolean hasInvisibilityPotion();
 	
 	public boolean hasForcedScoreboard();
 	

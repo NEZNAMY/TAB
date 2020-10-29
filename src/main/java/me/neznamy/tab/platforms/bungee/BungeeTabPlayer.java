@@ -136,7 +136,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	}
 
 	@Override
-	public boolean hasInvisibility() {
+	public boolean hasInvisibilityPotion() {
 		Main.plm.requestAttribute(this, "invisible");
 		if (!attributes.containsKey("invisible")) return false;
 		return Boolean.parseBoolean(attributes.get("invisible"));

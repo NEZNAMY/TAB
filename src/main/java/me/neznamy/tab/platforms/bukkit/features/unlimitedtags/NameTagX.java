@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -34,18 +33,16 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable, RespawnEventListener {
+public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
-	private Set<String> usedPlaceholders;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
@@ -91,7 +88,8 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				all.getArmorStandManager().spawn(worldPlayer);
 			}
 		}
-		Shared.cpu.startRepeatingMeasuredTask(200, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
+		startInvisibilityRefreshingTask();
+		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
@@ -147,6 +145,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
+		invisiblePlayers.remove(disconnectedPlayer.getName());
 		for (TabPlayer all : Shared.getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
@@ -253,11 +252,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 	
-	@Override
-	public Set<String> getUsedPlaceholders() {
-		return usedPlaceholders;
-	}
-	
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
@@ -282,10 +276,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGX;

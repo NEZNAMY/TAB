@@ -109,7 +109,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	}
 
 	@Override
-	public boolean hasInvisibility() {
+	public boolean hasInvisibilityPotion() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
 	
