@@ -26,7 +26,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private Map<Character, Integer> widths = new HashMap<Character, Integer>();
+	private Map<Character, Byte> widths = new HashMap<Character, Byte>();
 	private Playerlist playerlist;
 
 	public AlignedSuffix(Playerlist playerlist) {
@@ -43,7 +43,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 				save = true;
 				continue;
 			}
-			widths.put(c, width);
+			widths.put(c, (byte)width);
 		}
 		if (save) Premium.premiumconfig.save();
 		Shared.debug("Loaded " + widths.size() + " character widths.");
@@ -56,7 +56,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			while ((line = br.readLine()) != null) {
 				if (line.isEmpty()) continue;
 				String[] arr = line.split(":");
-				widths.put((char)Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
+				widths.put((char)Integer.parseInt(arr[0]), (byte)Integer.parseInt(arr[1]));
 			}
 			br.close();
 		} catch (Exception ex) {
