@@ -115,8 +115,13 @@ public abstract class SubCommand {
 	 * @return List of possible arguments
 	 */
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		String argument = arguments[0].toLowerCase();
-		if (arguments.length == 1) {
+		String argument;
+		if (arguments.length == 0) {
+			argument = "";
+		} else {
+			argument = arguments[0].toLowerCase();
+		}
+		if (arguments.length < 2) {
 			List<String> suggestions = new ArrayList<String>();
 			for (String subcommand : subcommands.keySet()) {
 				if (subcommand.startsWith(argument)) suggestions.add(subcommand);

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
@@ -39,7 +40,7 @@ public class Main {
 
 	//instance of proxyserver
 	public ProxyServer server;
-	
+
 	//plugin message handler
 	public static PluginMessageHandler plm;
 
@@ -47,7 +48,7 @@ public class Main {
 	public Main(ProxyServer server) {
 		this.server = server;
 	}
-	
+
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!hasRequiredLibs()) {
@@ -63,6 +64,8 @@ public class Main {
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
+
+			@Override
 			public void execute(CommandSource sender, String[] args) {
 				if (Shared.disabled) {
 					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
@@ -72,16 +75,11 @@ public class Main {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			}
-/*			public List<String> suggest(CommandSource sender, String[] args) {
-				List<String> sug = Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-				if (sug == null) {
-					sug = new ArrayList<String>();
-					for (Player p : server.getAllPlayers()) {
-						sug.add(p.getUsername());
-					}
-				}
-				return sug;
-			}*/
+
+			@Override
+			public List<String> suggest(CommandSource sender, String[] args) {
+				return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+			}
 		});
 		plm = new VelocityPluginMessageHandler(this);
 		Shared.load(true);
@@ -137,7 +135,7 @@ public class Main {
 			}
 		});
 	}
-	
+
 	/**
 	 * Removes all real players from packet if the packet doesn't come from TAB
 	 * @param packet - packet to modify
