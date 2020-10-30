@@ -160,7 +160,7 @@ public class Placeholders {
 			String animationName = identifier.substring(11, identifier.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", a.getInterval()) {
+					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", PlaceholderManager.getInstance().defaultRefresh) {
 						
 						public String get() {
 							return a.getMessage();
