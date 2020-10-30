@@ -119,15 +119,25 @@ public class Main extends Plugin {
 							return;
 						}
 						if (packet instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8) {
-							ByteBuf buf = ((ByteBuf) packet).duplicate();
+                            // No need to clone the packet, if this errors it doesn't get flushed anyway
+							ByteBuf buf = ((ByteBuf) packet);
+                            // Mark where the reader index is at
+							int marker = buf.readerIndex();
 							if (buf.readByte() == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
 								Team team = new Team();
 								team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+                                // From here on this buffers usage has ended, it needs to be released. Refer to
+                                // io.netty.util.ReferenceCounted for an explanation.
+                                // Side-note: Netty ByteBufs should always be read with try{} finally {buf.release()}
+                                // to ensure proper freeing of the buffer all the time.
+								buf.release();
 								modifyPlayers(team);
 								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 								super.write(context, team, channelPromise);
 								return;
 							}
+                            // Reset the reader back if the condition doesnt end the method
+							buf.readerIndex(marker);
 						}
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					}
