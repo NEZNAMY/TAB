@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,14 @@ public class PlaceholderManager implements QuitEventListener {
 
 			@Override
 			public void run() {
+				HashSet<Placeholder> placeholders;
+				try {
+					placeholders = new HashSet<>(Placeholders.usedPlaceholders);
+				} catch (ConcurrentModificationException e) {
+					//list copying during reload and thread was not terminated for some reason, skipping loop
+					//future placeholder recode will fix this in a better way
+					return;
+				}
 				int loopTime = atomic.addAndGet(50);
 				Collection<TabPlayer> players = new ArrayList<TabPlayer>();
 				for (TabPlayer p : Shared.getPlayers()) {
@@ -76,7 +85,7 @@ public class PlaceholderManager implements QuitEventListener {
 					}
 					Shared.cpu.addPlaceholderTime(relPlaceholder.getIdentifier(), System.nanoTime()-startTime);
 				}
-				for (Placeholder placeholder : new HashSet<>(Placeholders.usedPlaceholders)) { //avoiding concurrent modification on reload
+				for (Placeholder placeholder : placeholders) {
 					if (loopTime % placeholder.getRefresh() != 0) continue;
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
