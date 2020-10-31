@@ -29,7 +29,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
 			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
-			return "null";
+			return "<null>";
 		}
 		return user.getPrimaryGroup();
 	}
@@ -40,7 +40,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
 			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
-			return new String[] {"null"};
+			return new String[] {"<null>"};
 		}
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 	}

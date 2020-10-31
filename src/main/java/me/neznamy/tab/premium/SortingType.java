@@ -175,7 +175,7 @@ public enum SortingType {
 		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 4 chars
 		if (chars == null) {
 			chars = "";
-			if (!group.equals("null")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
+			if (!group.equals("<null>")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 			p.setTeamNameNote("&cPlayer's primary group is not in sorting list");
 		} else {
 			p.setTeamNameNote("Primary group is #" + Integer.parseInt(chars) + " in sorting list");

@@ -37,7 +37,7 @@ public class GroupRefresher {
 		try {
 			return Shared.permissionPlugin.getPrimaryGroup(p);
 		} catch (Throwable e) {
-			return Shared.errorManager.printError("null", "Failed to get permission group of " + p.getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
+			return Shared.errorManager.printError("<null>", "Failed to get permission group of " + p.getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
 		}
 	}
 
@@ -54,10 +54,10 @@ public class GroupRefresher {
 				}
 				return playerGroups[0];
 			} else {
-				return "null";
+				return "<null>";
 			}
 		} catch (Throwable e) {
-			return Shared.errorManager.printError("null", "Failed to get permission groups of " + p.getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
+			return Shared.errorManager.printError("<null>", "Failed to get permission groups of " + p.getName() + " using " + Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion(), e);
 		}
 	}
 
@@ -68,6 +68,6 @@ public class GroupRefresher {
 			}
 		}
 		Shared.errorManager.oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
-		return "null";
+		return "<null>";
 	}
 }

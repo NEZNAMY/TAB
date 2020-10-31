@@ -9,12 +9,12 @@ public class None implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		return "null";
+		return "<null>";
 	}
 
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
-		return new String[] {"null"};
+		return new String[] {"<null>"};
 	}
 	
 	@Override

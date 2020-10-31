@@ -29,13 +29,13 @@ public class Vault implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		if (getName().equals("SuperPerms")) return "null";
+		if (getName().equals("SuperPerms")) return "<null>";
 		return permission.getPrimaryGroup((Player) p.getPlayer());
 	}
 
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
-		if (getName().equals("SuperPerms")) return new String[] {"null"};
+		if (getName().equals("SuperPerms")) return new String[] {"<null>"};
 		return permission.getPlayerGroups((Player) p.getPlayer());
 	}
 

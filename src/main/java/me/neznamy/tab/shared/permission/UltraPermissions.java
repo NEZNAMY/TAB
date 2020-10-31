@@ -21,7 +21,7 @@ public class UltraPermissions implements PermissionPlugin {
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws Exception {
 		String[] groups = getAllGroups(p);
-		if (groups.length == 0) return "null";
+		if (groups.length == 0) return "<null>";
 		return groups[0];
 	}
 
@@ -36,13 +36,13 @@ public class UltraPermissions implements PermissionPlugin {
 		}
 		if (api == null) {
 			Shared.errorManager.printError("UltraPermissions v" + version + " returned null API");
-			return new String[]{"null"};
+			return new String[]{"<null>"};
 		}
 		Object users = api.getClass().getMethod("getUsers").invoke(api);
 		Optional<Object> optUser = (Optional<Object>) users.getClass().getMethod("name", String.class).invoke(users, p.getName());
 		if (optUser == null || !optUser.isPresent()) {
 			Shared.errorManager.printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
-			return new String[]{"null"};
+			return new String[]{"<null>"};
 		}
 		Set<String> groups = new HashSet<String>();
 		Object user = optUser.get();

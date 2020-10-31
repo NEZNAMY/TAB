@@ -512,7 +512,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
 		if (this.permissionGroup.equals(permissionGroup)) return;
-		this.permissionGroup = permissionGroup;
+		if (permissionGroup != null) {
+			this.permissionGroup = permissionGroup;
+		} else {
+			this.permissionGroup = "<null>";
+			Shared.errorManager.oneTimeConsoleError(Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion() + " returned null permission group for " + getName());
+		}
 		if (refreshIfChanged) {
 			forceRefresh();
 		}
