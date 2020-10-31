@@ -172,9 +172,9 @@ public enum SortingType {
 		return String.valueOf(DEFAULT_NUMBER - intValue);
 	}
 	public String getGroupChars(String group, TabPlayer p) {
-		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 4 chars
+		String chars = Configs.sortedGroups.get(group.toLowerCase()); // 3 chars
 		if (chars == null) {
-			chars = "";
+			chars = "999";
 			if (!group.equals("<null>")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");
 			p.setTeamNameNote("&cPlayer's primary group is not in sorting list");
 		} else {
