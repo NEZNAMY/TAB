@@ -7,7 +7,6 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
@@ -279,7 +278,7 @@ public interface TabPlayer {
 	
 	public String getOfflineUUID();
 	
-	public Set<BossBarLine> getActiveBossBars();
+	public Set<BossBar> getActiveBossBars();
 	
 	public void setProperty(String identifier, String rawValue);
 	

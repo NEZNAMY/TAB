@@ -80,6 +80,11 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	}
 	
 	@Override
+	public int getEntityId() {
+		return entityId;
+	}
+	
+	@Override
 	public void setTitle(String title) {
 		this.title = title;
 		Placeholders.checkForRegistration(title);

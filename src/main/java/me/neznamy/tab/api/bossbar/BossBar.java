@@ -4,6 +4,8 @@ public interface BossBar {
 
 	public String getName();
 	
+	public int getEntityId();
+	
 	public void setTitle(String title);
 	
 	public void setProgress(String progress);

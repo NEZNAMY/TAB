@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 
 /**
@@ -33,8 +32,8 @@ public class BossBar_legacy implements RespawnEventListener {
 		Shared.cpu.startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {
 				for (TabPlayer all : Shared.getPlayers()) {
-					for (BossBarLine l : all.getActiveBossBars()) {
-						all.sendPacket(new PacketPlayOutEntityTeleport(l.entityId, getWitherLocation(all)));
+					for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
+						all.sendPacket(new PacketPlayOutEntityTeleport(l.getEntityId(), getWitherLocation(all)));
 					}
 				}
 			}

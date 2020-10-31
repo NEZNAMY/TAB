@@ -46,7 +46,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
-	private Set<BossBarLine> activeBossBars = new HashSet<BossBarLine>();
+	private Set<BossBar> activeBossBars = new HashSet<BossBar>();
 	private boolean collision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
@@ -357,7 +357,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public Set<BossBarLine> getActiveBossBars(){
+	public Set<BossBar> getActiveBossBars(){
 		return activeBossBars;
 	}
 

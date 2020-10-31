@@ -5,7 +5,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
 /**
  * Handler for "/tab bossbar" subcommand
@@ -33,8 +32,8 @@ public class BossBarCommand extends SubCommand{
 					Configs.playerdata.set("bossbar-off", bossbar.bossbar_off_players);
 				}
 			} else {
-				for (BossBarLine line : sender.getActiveBossBars()) {
-					line.remove(sender);
+				for (me.neznamy.tab.api.bossbar.BossBar line : sender.getActiveBossBars()) {
+					sender.removeBossBar(line);
 				}
 				sender.getActiveBossBars().clear();
 				sender.sendMessage(Configs.bossbar_off, true);
