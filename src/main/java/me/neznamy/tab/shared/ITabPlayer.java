@@ -4,8 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
@@ -50,6 +52,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean collision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
+	private Set<UUID> hiddenNametagFor = new HashSet<UUID>();
 	private boolean onBoat;
 
 	private Scoreboard activeScoreboard;
@@ -72,9 +75,9 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public abstract Object getSkin();
 
-	private boolean getTeamVisibility() {
+	private boolean getTeamVisibility(TabPlayer viewer) {
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
-		if (hiddenNametag || Configs.SECRET_invisible_nametags) return false;
+		if (hiddenNametag || Configs.SECRET_invisible_nametags || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
 		return !Shared.featureManager.getNameTagFeature().getInvisiblePlayers().contains(getName());
 	}
 
@@ -283,7 +286,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		for (TabPlayer viewer : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(), collision, Arrays.asList(getName()), null);
+			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null);
 		}
 	}
 
@@ -293,7 +296,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		Property tagsuffix = getProperty("tagsuffix");
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(), collision, Arrays.asList(getName()), null);
+		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null);
 	}
 
 	@Override
@@ -313,12 +316,21 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void updateTeamData() {
 		Property tagprefix = getProperty("tagprefix");
 		Property tagsuffix = getProperty("tagsuffix");
-		boolean visible = getTeamVisibility();
 		for (TabPlayer viewer : Shared.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
+			boolean visible = getTeamVisibility(viewer);
 			viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 		}
+	}
+	
+	private void updateTeamData(TabPlayer viewer) {
+		Property tagprefix = getProperty("tagprefix");
+		Property tagsuffix = getProperty("tagsuffix");
+		boolean visible = getTeamVisibility(viewer);
+		String currentPrefix = tagprefix.getFormat(viewer);
+		String currentSuffix = tagsuffix.getFormat(viewer);
+		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 	}
 
 	@Override
@@ -530,5 +542,17 @@ public abstract class ITabPlayer implements TabPlayer {
 		BossBarLine line = (BossBarLine) bossbar;
 		line.remove(this);
 		activeBossBars.remove(line);
+	}
+	
+	public void hideNametag(UUID viewer) {
+		if (hiddenNametagFor.add(viewer)) {
+			updateTeamData(Shared.getPlayer(viewer));
+		}
+	}
+	
+	public void showNametag(UUID viewer) {
+		if (hiddenNametagFor.remove(viewer)) {
+			updateTeamData(Shared.getPlayer(viewer));
+		}
 	}
 }

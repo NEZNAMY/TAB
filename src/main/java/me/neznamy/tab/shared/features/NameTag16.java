@@ -62,6 +62,10 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
 		invisiblePlayers.remove(disconnectedPlayer.getName());
+		for (TabPlayer all : Shared.getPlayers()) {
+			if (all == disconnectedPlayer) continue;
+			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
+		}
 	}
 
 	@Override

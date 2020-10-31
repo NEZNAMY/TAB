@@ -87,6 +87,8 @@ public interface TabPlayer {
 	 */
 	public void hideNametag();
 	
+	public void hideNametag(UUID viewer);
+	
 	
 	/**
 	 * Makes player's nametag visible again
@@ -95,6 +97,8 @@ public interface TabPlayer {
 	 * @since 2.8.3
 	 */
 	public void showNametag();
+	
+	public void showNametag(UUID viewer);
 	
 	
 	/**
