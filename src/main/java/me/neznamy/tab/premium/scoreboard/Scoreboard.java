@@ -1,6 +1,7 @@
 package me.neznamy.tab.premium.scoreboard;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private Condition displayCondition;
 	private String childBoard;
 	public List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
-	public List<TabPlayer> players = new ArrayList<TabPlayer>();
+	public Set<TabPlayer> players = new HashSet<TabPlayer>();
 	private Set<String> usedPlaceholders;
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
@@ -103,7 +104,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		return childBoard;
 	}
 
-	public List<TabPlayer> getRegisteredUsers(){
+	public Set<TabPlayer> getRegisteredUsers(){
 		return players;
 	}
 

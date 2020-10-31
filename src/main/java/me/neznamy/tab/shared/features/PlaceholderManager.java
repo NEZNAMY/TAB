@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,7 +58,7 @@ public class PlaceholderManager implements QuitEventListener {
 					return;
 				}
 				int loopTime = atomic.addAndGet(50);
-				Collection<TabPlayer> players = new ArrayList<TabPlayer>();
+				Set<TabPlayer> players = new HashSet<TabPlayer>();
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (p.isLoaded()) players.add(p);
 				}

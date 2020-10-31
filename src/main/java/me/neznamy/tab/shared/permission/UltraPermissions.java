@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.permission;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -44,7 +44,7 @@ public class UltraPermissions implements PermissionPlugin {
 			Shared.errorManager.printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"null"};
 		}
-		List<String> groups = new ArrayList<String>();
+		Set<String> groups = new HashSet<String>();
 		Object user = optUser.get();
 		Object activeGroups = user.getClass().getMethod("getActiveGroups").invoke(user);
 		Iterable<Object> bestToWorst = (Iterable<Object>) activeGroups.getClass().getMethod("bestToWorst").invoke(activeGroups);

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import net.alpenblock.bungeeperms.Group;
@@ -26,7 +26,7 @@ public class BungeePerms implements PermissionPlugin {
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
 		PermissionsManager pm = net.alpenblock.bungeeperms.BungeePerms.getInstance().getPermissionsManager();
-		List<String> groups = new ArrayList<String>();
+		Set<String> groups = new HashSet<String>();
 		for (Group group : pm.getUser(p.getUniqueId()).getGroups()) {
 			groups.add(group.getName());
 		}

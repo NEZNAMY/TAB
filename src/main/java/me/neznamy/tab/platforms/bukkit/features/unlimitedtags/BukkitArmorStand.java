@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -62,7 +62,7 @@ public class BukkitArmorStand implements ArmorStand {
 	private boolean visible;
 
 	//list of players in entity tracking range (48 blocks)
-	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<TabPlayer>());
+	private Set<TabPlayer> nearbyPlayers = Collections.synchronizedSet(new HashSet<TabPlayer>());
 
 	//property dedicated to this armor stand
 	private Property property;
@@ -128,7 +128,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	public PacketPlayOut[] getSpawnPackets(TabPlayer viewer, boolean addToRegistered) {
 		visible = getVisibility();
-		if (!nearbyPlayers.contains(viewer) && addToRegistered) nearbyPlayers.add(viewer);
+		if (addToRegistered) nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			return new PacketPlayOut[] {
@@ -334,8 +334,8 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns list of players in entity tracking range (48 blocks)
 	 * @return
 	 */
-	private List<TabPlayer> getNearbyPlayers(){
-		return new ArrayList<TabPlayer>(nearbyPlayers);
+	private Set<TabPlayer> getNearbyPlayers(){
+		return new HashSet<TabPlayer>(nearbyPlayers);
 	}
 
 	/**

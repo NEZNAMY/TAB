@@ -1,13 +1,15 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.Sets;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
@@ -135,7 +137,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	public void onEntityMove(TabPlayer receiver, int entityId) {
 		TabPlayer pl = Shared.entityIdMap.get(entityId);
-		List<Integer> vehicleList;
+		Set<Integer> vehicleList;
 		if (pl != null) {
 			//player moved
 			if (!pl.isLoaded()) return;
@@ -169,7 +171,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 					spawnedPlayer.getArmorStandManager().spawn(receiver);
 				} else {
 					//player is not loaded yet and server is already sending entity spawn packet
-					if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new ArrayList<TabPlayer>());
+					if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new HashSet<TabPlayer>());
 					nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
 				}
 			}
@@ -195,7 +197,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			nameTagX.vehicles.remove(vehicle);
 		} else {
 			//attach
-			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toList()));
+			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toSet()));
 		}
 		for (int entity : passengers) {
 			TabPlayer pass = Shared.entityIdMap.get(entity);
@@ -212,10 +214,10 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	public void onAttach(TabPlayer receiver, int vehicle, int passenger) {
 		if (vehicle != -1) {
 			//attach
-			nameTagX.vehicles.put(vehicle, Arrays.asList(passenger));
+			nameTagX.vehicles.put(vehicle, Sets.newHashSet(passenger));
 		} else {
 			//detach
-			for (Entry<Integer, List<Integer>> entry : nameTagX.vehicles.entrySet()) {
+			for (Entry<Integer, Set<Integer>> entry : nameTagX.vehicles.entrySet()) {
 				if (entry.getValue().contains(passenger)) {
 					nameTagX.vehicles.remove(entry.getKey());
 				}

@@ -1,6 +1,6 @@
 package me.neznamy.tab.api;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
@@ -279,7 +279,7 @@ public interface TabPlayer {
 	
 	public String getOfflineUUID();
 	
-	public List<BossBarLine> getActiveBossBars();
+	public Set<BossBarLine> getActiveBossBars();
 	
 	public void setProperty(String identifier, String rawValue);
 	

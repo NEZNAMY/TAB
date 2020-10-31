@@ -1,11 +1,9 @@
 package me.neznamy.tab.shared;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +46,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
-	private List<BossBarLine> activeBossBars = new ArrayList<BossBarLine>();
+	private Set<BossBarLine> activeBossBars = new HashSet<BossBarLine>();
 	private boolean collision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
@@ -359,7 +357,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public List<BossBarLine> getActiveBossBars(){
+	public Set<BossBarLine> getActiveBossBars(){
 		return activeBossBars;
 	}
 

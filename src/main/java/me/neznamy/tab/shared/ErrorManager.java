@@ -4,10 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -27,7 +28,7 @@ public class ErrorManager {
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	//one time messages already sent into console so they are not sent again
-	private List<String> oneTimeMessages = new ArrayList<String>();
+	private Set<String> oneTimeMessages = new HashSet<String>();
 
 	//amount of logged startup warns
 	private int startupWarns = 0;

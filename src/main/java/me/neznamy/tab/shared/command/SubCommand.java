@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 

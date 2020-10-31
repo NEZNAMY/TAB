@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -47,8 +49,8 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
-	public Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
-	public Map<TabPlayer, List<TabPlayer>> delayedSpawn = new HashMap<TabPlayer, List<TabPlayer>>();
+	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
+	public Map<TabPlayer, Set<TabPlayer>> delayedSpawn = new HashMap<TabPlayer, Set<TabPlayer>>();
 	private EventListener eventListener;
 
 	public NameTagX(JavaPlugin plugin) {
@@ -78,7 +80,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			all.registerTeam();
 			if (((Entity) all.getPlayer()).getVehicle() != null) {
 				Entity vehicle = ((Entity) all.getPlayer()).getVehicle();
-				List<Integer> list = new ArrayList<Integer>();
+				Set<Integer> list = new HashSet<Integer>();
 				for (Entity e : getPassengers(vehicle)) {
 					list.add(e.getEntityId());
 				}
@@ -131,7 +133,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		connectedPlayer.registerTeam();
 		if (((Entity) connectedPlayer.getPlayer()).getVehicle() != null) {
 			Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
-			List<Integer> list = new ArrayList<Integer>();
+			Set<Integer> list = new HashSet<Integer>();
 			for (Entity e : getPassengers(vehicle)) {
 				list.add(e.getEntityId());
 			}
@@ -223,7 +225,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			loadArmorStands(refreshed);
 			if (((Entity) refreshed.getPlayer()).getVehicle() != null) {
 				Entity vehicle = ((Entity) refreshed.getPlayer()).getVehicle();
-				List<Integer> list = new ArrayList<Integer>();
+				Set<Integer> list = new HashSet<Integer>();
 				for (Entity e : getPassengers(vehicle)) {
 					list.add(e.getEntityId());
 				}

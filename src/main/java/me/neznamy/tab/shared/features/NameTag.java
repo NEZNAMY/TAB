@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +18,7 @@ public abstract class NameTag implements Feature, Refreshable {
 
 	protected Set<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
-	protected List<String> invisiblePlayers = new ArrayList<String>();
+	protected Set<String> invisiblePlayers = new HashSet<String>();
 
 	public NameTag() {
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.nametag", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
@@ -67,7 +67,7 @@ public abstract class NameTag implements Feature, Refreshable {
 		return isDisabledWorld(disabledWorlds, world);
 	}
 
-	public List<String> getInvisiblePlayers(){
+	public Set<String> getInvisiblePlayers(){
 		return invisiblePlayers;
 	}
 

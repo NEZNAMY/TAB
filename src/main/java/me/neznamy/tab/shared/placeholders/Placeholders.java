@@ -29,7 +29,7 @@ public class Placeholders {
 	public static final char colorChar = '\u00a7';
 
 	//all placeholders used in all configuration files, including invalid ones
-	public static List<String> allUsedPlaceholderIdentifiers = new ArrayList<String>();
+	public static Set<String> allUsedPlaceholderIdentifiers = new HashSet<String>();
 
 	//plugin internals + PAPI + API
 	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();

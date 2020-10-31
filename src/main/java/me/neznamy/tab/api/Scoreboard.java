@@ -1,6 +1,6 @@
 package me.neznamy.tab.api;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * An interface to be worked with to manipulate scoreboard
@@ -13,5 +13,5 @@ public interface Scoreboard {
 
 	public String getName();
 
-	public List<TabPlayer> getRegisteredUsers();
+	public Set<TabPlayer> getRegisteredUsers();
 }

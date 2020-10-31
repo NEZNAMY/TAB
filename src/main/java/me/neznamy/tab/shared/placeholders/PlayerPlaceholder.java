@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 
@@ -13,7 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class PlayerPlaceholder extends Placeholder {
 
 	public Map<String, String> lastValue = new HashMap<String, String>();
-	public List<String> forceUpdate = new ArrayList<String>();
+	public Set<String> forceUpdate = new HashSet<String>();
 
 	public PlayerPlaceholder(String identifier, int refresh) {
 		super(identifier, refresh);
