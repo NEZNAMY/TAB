@@ -15,6 +15,24 @@ You are allowed to make pull requests if you believe you have useful code change
 The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/premium/Premium.java#L22). Keep in mind you will get no support for premium features if you did not buy it. If you don't want to support me then I don't see a reason to provide support to you either.  
   
   
+## Maven Repository
+```
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <!-- TAB -->
+  <dependency>
+    <groupId>com.github.NEZNAMY</groupId>
+    <artifactId>TAB-API</artifactId>
+    <version>2.8.8</version>
+  </dependency>
+</dependencies>
+ ```
 ## Links
 Discord: https://discord.gg/EaSvdk6  
 SpigotMC (free): https://www.spigotmc.org/resources/57806/  
