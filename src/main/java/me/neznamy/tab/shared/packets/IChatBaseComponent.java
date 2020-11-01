@@ -373,7 +373,6 @@ public class IChatBaseComponent {
 					component.setColor(color);
 					i += 6;
 				} catch (Exception e) {
-					e.printStackTrace();
 					//invalid hex code
 					builder.append(c);
 				}
