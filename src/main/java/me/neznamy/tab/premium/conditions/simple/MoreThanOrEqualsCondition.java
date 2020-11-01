@@ -19,7 +19,7 @@ public class MoreThanOrEqualsCondition extends SimpleCondition {
 	public MoreThanOrEqualsCondition(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
 		leftSidePlaceholders = Placeholders.detectAll(leftSide);
-		this.rightValue = Shared.errorManager.parseDouble(rightSide, 0, "right side of MoreThanOrEquals condition");
+		this.rightValue = Shared.errorManager.parseDouble(rightSide, 0, "right side of >= condition");
 	}
 	
 	@Override
@@ -29,7 +29,7 @@ public class MoreThanOrEqualsCondition extends SimpleCondition {
 			Placeholder pl = Placeholders.getPlaceholder(identifier);
 			if (pl != null) leftSide = pl.set(leftSide, p);
 		}
-		double leftValue = Shared.errorManager.parseDouble(leftSide.replace(",", ""), 0, "left side of MoreThanOrEquals condition");
+		double leftValue = Shared.errorManager.parseDouble(leftSide.replace(",", ""), 0, "left side of >= condition");
 		return leftValue >= rightValue;
 	}
 	
