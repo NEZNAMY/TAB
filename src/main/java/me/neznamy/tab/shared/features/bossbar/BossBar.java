@@ -17,6 +17,8 @@ import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * Class for handling bossbar feature
@@ -32,6 +34,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public List<String> bossbar_off_players;
 	public boolean permToToggle;
 	private List<String> disabledWorlds;
+	public long announceEndTime;
 
 	public BossBar() {
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
@@ -84,6 +87,13 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			bossbar_off_players = Configs.getPlayerData("bossbar-off");
 		}
 		if (bossbar_off_players == null) bossbar_off_players = new ArrayList<String>();
+		Placeholders.registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
+
+			@Override
+			public String get() {
+				return "" + (announceEndTime - System.currentTimeMillis()) / 1000;
+			}
+		}, true);
 	}
 	
 	@Override

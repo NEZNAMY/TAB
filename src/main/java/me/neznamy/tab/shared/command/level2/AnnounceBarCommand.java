@@ -39,6 +39,7 @@ public class AnnounceBarCommand extends SubCommand{
 									return;
 								}
 								feature.announcements.add(barname);
+								feature.announceEndTime = System.currentTimeMillis() + duration*1000;
 								for (TabPlayer all : Shared.getPlayers()) {
 									bar.create(all);
 									all.getActiveBossBars().add(bar);
