@@ -26,6 +26,7 @@ public enum UsageType {
 	//nametags
 	REFRESHING_COLLISION("Refreshing collision rule"),
 	REFRESHING_NAMETAG_VISIBILITY("Refreshing nametag visibility"),
+	REFRESHING_TEAM_NAME("Refreshing team name"),
 	
 	//bossbar
 	TELEPORTING_ENTITY("Teleporting entity"),

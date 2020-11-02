@@ -1,15 +1,13 @@
 package me.neznamy.tab.premium;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -29,7 +27,7 @@ public enum SortingType {
 	private final int DEFAULT_NUMBER = 500000000;
 	public static SortingType INSTANCE;
 	public String sortingPlaceholder;
-	private boolean caseSensitiveSorting;
+	private boolean caseSensitiveSorting = true;
 	private List<String> usedPlaceholders;
 	
 	public static void initialize() {
@@ -44,37 +42,24 @@ public enum SortingType {
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
 			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
-			Shared.featureManager.registerFeature("sorting-refresh", new Refreshable(){
-
-				@Override
-				public void refresh(TabPlayer refreshed, boolean force) {
-					if (Shared.featureManager.getNameTagFeature().isDisabledWorld(refreshed.getWorldName())) return;
-					refreshed.updateTeam();
-				}
-
-				@Override
-				public Set<String> getUsedPlaceholders() {
-					return new HashSet<>(INSTANCE.usedPlaceholders);
-				}
-
-				@Override
-				public void refreshUsedPlaceholders() {
-					INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
-				}
-
-				/**
-				 * Returns name of the feature displayed in /tab cpu
-				 * @return name of the feature displayed in /tab cpu
-				 */
-				@Override
-				public TabFeature getFeatureType() {
-					return TabFeature.SORTING;
-				}
-				
-			});
 		} else {
 			INSTANCE = (Configs.config.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
 		}
+		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.NAMETAGS, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
+
+			@Override
+			public void run() {
+				for (TabPlayer p : Shared.getPlayers()) {
+					if (!p.isLoaded()) continue;
+					String newName = INSTANCE.getTeamName(p);
+					if (!p.getTeamName().equals(newName)) {
+						p.unregisterTeam();
+						p.setTeamName(newName);
+						p.registerTeam();
+					}
+				}
+			}
+		});
 	}
 	
 	public String getTeamName(TabPlayer p) {
