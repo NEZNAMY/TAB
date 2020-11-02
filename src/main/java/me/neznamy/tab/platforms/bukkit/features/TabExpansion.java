@@ -71,7 +71,11 @@ public class TabExpansion extends PlaceholderExpansion {
 			String placeholder = "%" + identifier.substring(8) + "%";
 			String output = PluginHooks.setPlaceholders(player, placeholder);
 			Map<Object, Object> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
-			return Placeholder.findReplacement(replacements, output);
+			String replacement = Placeholder.findReplacement(replacements, output);
+			if (replacement.contains("%value%")) {
+				replacement = replacement.replace("%value%", output);
+			}
+			return replacement;
 		}
 		String placeholder = identifier.replace("_raw", "");
 		Property prop = p.getProperty(placeholder);
