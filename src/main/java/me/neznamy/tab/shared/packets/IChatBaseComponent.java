@@ -344,9 +344,11 @@ public class IChatBaseComponent {
 						component.setObfuscated(true);
 						break;
 					case RESET: 
-						format = EnumChatFormat.WHITE;
+						component.setText(builder.toString());
+						components.add(component);
 						component = new IChatBaseComponent();
-						component.setColor(TextColor.of(format));
+						builder = new StringBuilder();
+						component.setColor(TextColor.of(EnumChatFormat.WHITE));
 						break;
 					default:
 						component.setText(builder.toString());
