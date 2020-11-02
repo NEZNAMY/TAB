@@ -57,6 +57,12 @@
 
 	<repositories>
 
+		<!-- Spigot APi -->
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+
 		<!-- BungeeCord API -->
 		<!-- io.netty -->
 		<repository>
@@ -87,8 +93,6 @@
 		<!-- BungeeCord internals -->
 		<!-- Essentials -->
 		<!-- ViaVersion -->
-		<!-- LibsDisguises -->
-		<!-- LD -> Spigot API -->
 		<repository>
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
@@ -98,6 +102,14 @@
 
 	<dependencies>
 
+		<!-- Spigot API -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<!-- json-simple, shaded -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -396,52 +408,6 @@
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
 					<artifactId>jsr305</artifactId>
-				</exclusion>
-
-			</exclusions>
-		</dependency>
-
-		<!-- LibsDisguises -->
-		<!-- Spigot API -->
-		<dependency>
-			<groupId>LibsDisguises</groupId>
-			<artifactId>LibsDisguises</artifactId>
-			<version>10.0.18-SNAPSHOT</version>
-			<exclusions>
-
-				<exclusion>
-					<groupId>org.ow2.asm</groupId>
-					<artifactId>asm</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>org.projectlombok</groupId>
-					<artifactId>lombok</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>com.comphenix.protocol</groupId>
-					<artifactId>ProtocolLib</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>commons-lang</groupId>
-					<artifactId>commons-lang</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>org.yaml</groupId>
-					<artifactId>snakeyaml</artifactId>
 				</exclusion>
 
 			</exclusions>

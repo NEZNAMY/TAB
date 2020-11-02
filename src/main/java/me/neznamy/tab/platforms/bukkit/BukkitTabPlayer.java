@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffectType;
@@ -115,8 +116,16 @@ public class BukkitTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean isDisguised() {
-		if (Bukkit.getPluginManager().isPluginEnabled("LibsDisguises") && me.libraryaddict.disguise.DisguiseAPI.isDisguised(player)) return true;
-		return isDisguisediDis();
+		return isDisguisedLD() || isDisguisediDis();
+	}
+	
+	private boolean isDisguisedLD() {
+		try {
+			if (!Bukkit.getPluginManager().isPluginEnabled("LibsDisguises")) return false;
+			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
+		} catch (Exception e) {
+			return Shared.errorManager.printError(false, "Failed to check disguise status using LibsDisguises", e);
+		}
 	}
 	
 	private boolean isDisguisediDis() {
