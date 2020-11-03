@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.Shared;
  */
 public class UpdateChecker {
 
-	private final String currentVersion = "2.8.7";
+	private final String currentRelease = "2.8.8";
 	
 	public UpdateChecker() {
 		new Thread(new Runnable() {
@@ -26,7 +26,7 @@ public class UpdateChecker {
 					String versionString = br.readLine();
 					br.close();
 					con.disconnect();
-					if (!versionString.equals(currentVersion)) {
+					if (!versionString.equals(currentRelease)) {
 						Shared.platform.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion, true);
 						int resourceId = Premium.is() ? 83967 : 57806;
 						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/" + resourceId + "/", true);
