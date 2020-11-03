@@ -127,7 +127,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 
 	public void sendHighestScoreboard(TabPlayer p) {
-		if (disabledWorlds.contains(p.getWorldName()) || !p.isScoreboardVisible()) return;
+		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.isScoreboardVisible()) return;
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
@@ -180,7 +180,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
-		if (disabledWorlds.contains(sender.getWorldName())) return false;
+		if (isDisabledWorld(disabledWorlds, sender.getWorldName())) return false;
 		if (message.equalsIgnoreCase(toggleCommand)) {
 			Shared.command.execute(sender, new String[] {"scoreboard"});
 			return true;
