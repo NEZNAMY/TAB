@@ -97,6 +97,10 @@
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
+		<repository>
+			<id>viaversion</id>
+			<url>https://repo.viaversion.com/</url>
+		</repository>
 
 	</repositories>
 
