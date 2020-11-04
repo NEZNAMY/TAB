@@ -327,6 +327,12 @@ public class IChatBaseComponent {
 				}
 				EnumChatFormat format = EnumChatFormat.getByChar(c);
 				if (format != null){
+					TextColor color = component.getColor();
+					component.setText(builder.toString());
+					components.add(component);
+					component = new IChatBaseComponent();
+					builder = new StringBuilder();
+					component.setColor(color);
 					switch (format){
 					case BOLD: 
 						component.setBold(true);
@@ -344,17 +350,9 @@ public class IChatBaseComponent {
 						component.setObfuscated(true);
 						break;
 					case RESET: 
-						component.setText(builder.toString());
-						components.add(component);
-						component = new IChatBaseComponent();
-						builder = new StringBuilder();
 						component.setColor(TextColor.of(EnumChatFormat.WHITE));
 						break;
 					default:
-						component.setText(builder.toString());
-						components.add(component);
-						component = new IChatBaseComponent();
-						builder = new StringBuilder();
 						component.setColor(TextColor.of(format));
 						break;
 					}
