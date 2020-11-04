@@ -124,6 +124,14 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		String format = p.getProperty("tabprefix").get() + p.getProperty("customtabname").get() + p.getProperty("tabsuffix").get();
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
+	
+	/**
+	 * Returns a combination of normal and bold spaces to build exactly the requested amount of pixels.
+	 * Must be at least 12 as lower numbers cannot always be built using numbers 4 (normal space + 1 pixel) and 5 (bold space + 1 pixel)
+	 * Returns the result string with normal then bold spaces, such as "   &l   "
+	 * @param pixelWidth - amount of pixels to be built
+	 * @return string consisting of spaces and &l &r (if needed)
+	 */
 	private String buildSpaces(int pixelWidth) {
 		if (pixelWidth < 12) throw new IllegalArgumentException("Cannot build space lower than 12 pixels wide");
 		int pixelsLeft = pixelWidth;
@@ -142,13 +150,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			output += " ";
 		}
 		if (boldSpaces > 0) {
-			output += Placeholders.colorChar + "l";
+			output += "&l";
 			for (int i=0; i<boldSpaces; i++) {
 				output += " ";
 			}
-			output += Placeholders.colorChar + "r";
+			output += "&r";
 		}
-		return output;
+		return Placeholders.color(output);
 	}
 
 	@Override
