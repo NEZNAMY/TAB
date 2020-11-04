@@ -105,14 +105,18 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
 				}
 			}
+			//there is 1 pixel space between characters, but not after last one
 			width += component.getText().length()-1;
 		}
 
 		if (component.getExtra() != null) {
 			for (IChatBaseComponent extra : component.getExtra()) {
-				width += getTextWidth(extra);
+				int extraWidth = getTextWidth(extra);
+				//ignoring empty components
+				if (extraWidth > 0) {
+					width += extraWidth + 1; //1 pixel space between characters
+				}
 			}
-			width += component.getExtra().size()-1;
 		}
 		return width;
 	}
