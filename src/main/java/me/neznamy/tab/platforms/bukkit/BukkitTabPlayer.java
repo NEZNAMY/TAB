@@ -50,7 +50,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private int getProtocolVersionPS(){
 		try {
 			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
-			return (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
+			int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
+			Shared.debug("ProtocolSupport returned protocol version " + version + " for " + getName());
+			return version;
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ProtocolSupport", e);
 		}
@@ -58,7 +60,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	private int getProtocolVersionVia(){
 		try {
-			return Via.getAPI().getPlayerVersion(uniqueId);
+			int version = Via.getAPI().getPlayerVersion(uniqueId);
+			Shared.debug("ViaVersion returned protocol version " + version + " for " + getName());
+			return version;
 		} catch (Throwable e) {
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion", e);
 		}
