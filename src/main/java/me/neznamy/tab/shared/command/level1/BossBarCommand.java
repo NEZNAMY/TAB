@@ -32,7 +32,7 @@ public class BossBarCommand extends SubCommand{
 					Configs.playerdata.set("bossbar-off", bossbar.bossbar_off_players);
 				}
 			} else {
-				for (me.neznamy.tab.api.bossbar.BossBar line : sender.getActiveBossBars()) {
+				for (me.neznamy.tab.api.bossbar.BossBar line : sender.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
 					sender.removeBossBar(line);
 				}
 				sender.getActiveBossBars().clear();

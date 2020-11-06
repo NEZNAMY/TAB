@@ -122,7 +122,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public void unload() {
 		for (TabPlayer p : Shared.getPlayers()) {
-			for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars()) {
+			for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
 				p.removeBossBar(line);
 			}
 		}
@@ -137,7 +137,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars()) {
+		for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
 			p.removeBossBar(line);
 		}
 		detectBossBarsAndSend(p);
