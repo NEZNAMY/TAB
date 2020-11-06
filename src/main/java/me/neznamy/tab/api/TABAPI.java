@@ -192,16 +192,6 @@ public class TABAPI {
 	}
 
 	@Deprecated
-	public static void sendHeaderFooter(UUID player, String header, String footer) {
-		getPlayer(player).sendHeaderFooter(header, footer);
-	}
-
-	@Deprecated
-	public static void clearHeaderFooter(UUID player) {
-		sendHeaderFooter(player, "", "");
-	}
-
-	@Deprecated
 	public static void hideNametag(UUID player) {
 		getPlayer(player).hideNametag();
 	}

@@ -70,15 +70,6 @@ public interface TabPlayer {
 	
 	
 	/**
-	 * Sends requested header and footer to player
-	 * @param header - Header
-	 * @param footer - Footer
-	 * @since 2.8.3
-	 */
-	public void sendHeaderFooter(String header, String footer);
-	
-	
-	/**
 	 * Makes player's nametag invisible until server restart/reload or /plugman reload tab
 	 * @see showNametag 
 	 * @see hasHiddenNametag

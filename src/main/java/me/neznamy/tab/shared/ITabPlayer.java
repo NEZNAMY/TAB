@@ -20,7 +20,6 @@ import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -143,11 +142,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public String getOriginalValue(EnumProperty type) {
 		return getProperty(type.toString()).getOriginalRawValue();
-	}
-
-	@Override
-	public void sendHeaderFooter(String header, String footer) {
-		sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
 	}
 
 	@Override
