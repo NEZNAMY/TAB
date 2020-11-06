@@ -22,6 +22,7 @@ public class VelocityEventListener {
 	public void onQuit(DisconnectEvent e){
 		if (Shared.disabled) return;
 		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (disconnectedPlayer == null) return;
 		Shared.data.remove(e.getPlayer().getUniqueId());
 		Shared.featureManager.onQuit(disconnectedPlayer);
 	}
