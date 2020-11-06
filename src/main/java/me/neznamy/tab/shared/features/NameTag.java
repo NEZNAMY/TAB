@@ -49,18 +49,10 @@ public abstract class NameTag implements Feature, Refreshable {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
-					boolean collision = getCollision(p);
-					if (p.getCollisionRule() != collision) {
-						p.setCollisionRule(collision);
-						p.updateTeamData();
-					}
+					p.updateCollision();
 				}
 			}
 		});
-	}
-
-	private boolean getCollision(TabPlayer p) {
-		return !p.isDisguised() && Configs.getCollisionRule(p.getWorldName());
 	}
 
 	public boolean isDisabledWorld(String world) {

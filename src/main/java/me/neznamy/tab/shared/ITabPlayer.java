@@ -47,6 +47,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean previewingNametag;
 	private Set<BossBar> activeBossBars = new HashSet<BossBar>();
 	private boolean collision;
+	private Boolean forcedCollision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
 	private Set<UUID> hiddenNametagFor = new HashSet<UUID>();
@@ -213,7 +214,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setWorldName(String name) {
 		world = name;
 	}
-	
+
 	@Override
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		sendPacket(packet.create(getVersion()));
@@ -303,7 +304,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			registerTeam();
 		}
 	}
-	
+
 	@Override
 	public void updateTeamData() {
 		Property tagprefix = getProperty("tagprefix");
@@ -315,7 +316,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 		}
 	}
-	
+
 	private void updateTeamData(TabPlayer viewer) {
 		Property tagprefix = getProperty("tagprefix");
 		Property tagsuffix = getProperty("tagsuffix");
@@ -339,7 +340,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public boolean hasBossbarVisible() {
 		return bossbarVisible;
 	}
-	
+
 	@Override
 	public void setBossbarVisible(boolean visible) {
 		bossbarVisible = visible;
@@ -434,28 +435,28 @@ public abstract class ITabPlayer implements TabPlayer {
 	public String getTeamNameNote() {
 		return teamNameNote;
 	}
-	
+
 	@Override
-	public void setCollisionRule(boolean collision) {
-		this.collision = collision;
+	public void setCollisionRule(Boolean collision) {
+		this.forcedCollision = collision;
 	}
-	
+
 	@Override
-	public boolean getCollisionRule() {
-		return collision;
+	public Boolean getCollisionRule() {
+		return forcedCollision;
 	}
-	
+
 	@Override
 	public void setOnBoat(boolean onBoat) {
 		this.onBoat = onBoat;
 	}
-	
+
 	@Override
 	public boolean isOnBoat() {
 		return onBoat;
 	}
-	
-	
+
+
 	@Override
 	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage) {
 		if (scoreboardVisible == visible) return;
@@ -482,17 +483,17 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 		}
 	}
-	
+
 	@Override
 	public void toggleScoreboard(boolean sendToggleMessage) {
 		setScoreboardVisible(!scoreboardVisible, sendToggleMessage);
 	}
-	
+
 	@Override
 	public boolean isScoreboardVisible() {
 		return scoreboardVisible;
 	}
-	
+
 	@Override
 	public void setActiveScoreboard(Scoreboard board) {
 		activeScoreboard = board;
@@ -502,7 +503,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public Scoreboard getActiveScoreboard() {
 		return activeScoreboard;
 	}
-	
+
 	@Override
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
 		if (this.permissionGroup.equals(permissionGroup)) return;
@@ -516,40 +517,55 @@ public abstract class ITabPlayer implements TabPlayer {
 			forceRefresh();
 		}
 	}
-	
+
 	@Override
 	public boolean hasForcedScoreboard() {
 		return forcedScoreboard != null;
 	}
-	
+
 	@Override
 	public boolean isVanished() {
 		return false;
 	}
-	
+
 	@Override
 	public void showBossBar(BossBar bossbar) {
 		BossBarLine line = (BossBarLine) bossbar;
 		line.create(this);
 		activeBossBars.add(line);
 	}
-	
+
 	@Override
 	public void removeBossBar(BossBar bossbar) {
 		BossBarLine line = (BossBarLine) bossbar;
 		line.remove(this);
 		activeBossBars.remove(line);
 	}
-	
+
 	public void hideNametag(UUID viewer) {
 		if (hiddenNametagFor.add(viewer)) {
 			updateTeamData(Shared.getPlayer(viewer));
 		}
 	}
-	
+
 	public void showNametag(UUID viewer) {
 		if (hiddenNametagFor.remove(viewer)) {
 			updateTeamData(Shared.getPlayer(viewer));
+		}
+	}
+
+	public void updateCollision() {
+		if (forcedCollision != null) {
+			if (collision != forcedCollision) {
+				collision = forcedCollision;
+				updateTeamData();
+			}
+		} else {
+			boolean collision = !isDisguised() && Configs.getCollisionRule(getWorldName());
+			if (this.collision != collision) {
+				this.collision = collision;
+				updateTeamData();
+			}
 		}
 	}
 }

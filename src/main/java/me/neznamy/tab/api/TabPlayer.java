@@ -285,9 +285,9 @@ public interface TabPlayer {
 	
 	public String getTeamNameNote();
 	
-	public void setCollisionRule(boolean collision);
+	public void setCollisionRule(Boolean collision);
 	
-	public boolean getCollisionRule();
+	public Boolean getCollisionRule();
 	
 	public boolean isDisguised();
 	
@@ -321,4 +321,6 @@ public interface TabPlayer {
 	public void removeBossBar(BossBar bossbar);
 
 	public void setAttribute(String attribute, String value);
+	
+	public void updateCollision();
 }
