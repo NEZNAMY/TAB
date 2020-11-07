@@ -271,7 +271,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			if (minorVersion >= 8) {
 				//1.8+
 				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
-				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+				try {
+					newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+				} catch (Exception e) {
+					//1.8.8 paper
+					newPlayerInfoData = PlayerInfoData.getConstructor(GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+				}
 				newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, NMSHook.IChatBaseComponent, int.class, int.class, int.class);
 			} else {
 				//1.7
@@ -527,8 +532,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			for (PlayerInfoData data : packet.entries) {
 				Object profile = newGameProfile.newInstance(data.uniqueId, data.name);
 				if (data.skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), data.skin);
-				items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
-						data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
+				if (newPlayerInfoData.getParameterCount() == 5) {
+					items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
+							data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
+				} else {
+					//1.8.8 paper
+					items.add(newPlayerInfoData.newInstance(profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
+							data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
+				}
 			}
 			PacketPlayOutPlayerInfo_PLAYERS.set(nmsPacket, items);
 			return nmsPacket;
