@@ -29,7 +29,12 @@ public class VelocityTabPlayer extends ITabPlayer{
 	 */
 	public VelocityTabPlayer(Player p) {
 		player = p;
-		world = p.getCurrentServer().get().getServerInfo().getName();
+		if (p.getCurrentServer().isPresent()) {
+			world = p.getCurrentServer().get().getServerInfo().getName();
+		} else {
+			//tab reload while a player is connecting, how unfortunate
+			world = "<null>";
+		}
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
 		uniqueId = p.getUniqueId();
 		name = p.getUsername();
