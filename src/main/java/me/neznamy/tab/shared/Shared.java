@@ -32,7 +32,7 @@ public class Shared {
 	public static final String CHANNEL_NAME = "tab:placeholders";
 	
 	//version of plugin
-	public static final String pluginVersion = "2.8.8";
+	public static final String pluginVersion = "2.8.9-pre1";
 
 	//player data
 	public static final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
