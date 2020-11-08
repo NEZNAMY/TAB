@@ -359,7 +359,6 @@
 			<groupId>com.github.NEZNAMY</groupId>
 			<artifactId>YamlAssist</artifactId>
 			<version>1.0.2</version>
-			<scope>provided</scope>
 		</dependency>
 
 
