@@ -41,6 +41,8 @@ public class NotEqualsCondition extends SimpleCondition {
 	public static NotEqualsCondition compile(String line) {
 		if (line.contains("!=")) {
 			String[] arr = line.split("!=");
+			if (arr.length < 2)
+				arr[1] = "";
 			return new NotEqualsCondition(arr[0], arr[1]);
 		} else {
 			return null;
