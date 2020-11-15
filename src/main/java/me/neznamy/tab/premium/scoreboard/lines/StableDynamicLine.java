@@ -67,11 +67,12 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 				ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
 				p.getVersion().getMinorVersion() < 13 ? 14 : 16;
 				
-		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
+		if (p.getVersion().getMinorVersion() < 16) {
 			replaced = IChatBaseComponent.fromColoredText(replaced).toLegacyText(); //converting RGB to legacy here to avoid splitting in the middle of RGB code
-			int prefixLength = Math.min(charLimit, replaced.length()); //in case of short RGB text and it changed length
-			prefix = replaced.substring(0, prefixLength);
-			suffix = replaced.substring(prefixLength, replaced.length());
+		}
+		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
+			prefix = replaced.substring(0, charLimit);
+			suffix = replaced.substring(charLimit, replaced.length());
 			if (prefix.charAt(charLimit-1) == Placeholders.colorChar) {
 				prefix = prefix.substring(0, charLimit-1);
 				suffix = Placeholders.colorChar + suffix;
