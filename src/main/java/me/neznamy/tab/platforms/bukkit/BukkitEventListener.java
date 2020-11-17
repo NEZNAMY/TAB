@@ -25,20 +25,20 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		try {
-			if (Shared.disabled) return;
-			TabPlayer p = new BukkitTabPlayer(e.getPlayer());
-			Shared.data.put(e.getPlayer().getUniqueId(), p);
-			Main.inject(e.getPlayer().getUniqueId());
-			Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
+		if (Shared.disabled) return;
+		Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
 
-				public void run() {
+			public void run() {
+				try {
+					TabPlayer p = new BukkitTabPlayer(e.getPlayer());
+					Shared.data.put(e.getPlayer().getUniqueId(), p);
+					Main.inject(e.getPlayer().getUniqueId());
 					Shared.featureManager.onJoin(p);
+				} catch (Throwable ex) {
+					Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
 				}
-			});
-		} catch (Throwable ex) {
-			Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
-		}
+			}
+		});
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class BukkitEventListener implements Listener {
 		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	
+
 	/**
 	 * Listener to PlayerRespawnEvent to forward the event to features
 	 * @param e respawn event
