@@ -32,7 +32,6 @@ public class BukkitEventListener implements Listener {
 				try {
 					TabPlayer p = new BukkitTabPlayer(e.getPlayer());
 					Shared.data.put(e.getPlayer().getUniqueId(), p);
-					Main.inject(e.getPlayer().getUniqueId());
 					Shared.featureManager.onJoin(p);
 				} catch (Throwable ex) {
 					Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);

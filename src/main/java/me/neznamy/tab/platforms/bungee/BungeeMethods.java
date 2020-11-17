@@ -62,11 +62,12 @@ public class BungeeMethods implements PlatformMethods {
 	}
 
 	@Override
-	public void loadFeatures(boolean inject) throws Exception{
+	public void loadFeatures() throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new BungeePlaceholderRegistry());
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
+		Shared.featureManager.registerFeature("injection", new BungeePipelineInjector());
 		Shared.featureManager.registerFeature("placeholders", plm);
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
@@ -75,7 +76,6 @@ public class BungeeMethods implements PlatformMethods {
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			TabPlayer t = new BungeeTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
-			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 	

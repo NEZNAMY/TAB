@@ -25,9 +25,6 @@ import me.neznamy.tab.shared.rgb.TextColor;
  */
 public class Shared {
 
-	//name of the pipeline decoder injected in netty
-	public static final String DECODER_NAME = "TABReader";
-	
 	//name of plugin messaging channel
 	public static final String CHANNEL_NAME = "tab:placeholders";
 	
@@ -138,7 +135,7 @@ public class Shared {
 	 * Loads the entire plugin
 	 * @param inject - if players should be injected or not
 	 */
-	public static void load(boolean inject) {
+	public static void load() {
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
@@ -147,7 +144,7 @@ public class Shared {
 			featureManager = new FeatureManager();
 			Configs.loadFiles();
 			permissionPlugin = platform.detectPermissionPlugin();
-			platform.loadFeatures(inject);
+			platform.loadFeatures();
 			featureManager.load();
 			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();

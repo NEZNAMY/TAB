@@ -66,7 +66,7 @@ public class TABAPI {
 		Configs.config.set("change-nametag-prefix-suffix", true);
 		Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 		Shared.unload();
-		Shared.load(false);
+		Shared.load();
 	}
 
 

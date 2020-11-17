@@ -13,7 +13,7 @@ public class DisabledCommand {
 		if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 			if (hasReloadPermission) {
 				Shared.unload();
-				Shared.load(false);
+				Shared.load();
 				if (Shared.disabled) {
 					messages.add(Configs.reloadFailed.replace("%file%", Shared.brokenFile));
 				} else {

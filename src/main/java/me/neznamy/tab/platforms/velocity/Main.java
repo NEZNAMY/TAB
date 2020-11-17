@@ -1,10 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandManager;
@@ -15,19 +12,9 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -82,7 +69,7 @@ public class Main {
 			}
 		});
 		plm = new VelocityPluginMessageHandler(this);
-		Shared.load(true);
+		Shared.load();
 	}
 
 	/**
@@ -96,60 +83,6 @@ public class Main {
 			return true;
 		} catch (Exception e) {
 			return false;
-		}
-	}
-
-	/**
-	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
-	 * @param uuid - player's uuid
-	 */
-	public static void inject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
-		channel.pipeline().addBefore("handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
-
-			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				TabPlayer player = Shared.getPlayer(uuid);
-				if (player == null) {
-					super.write(context, packet, channelPromise);
-					return;
-				}
-				try {
-					if (packet.getClass().getSimpleName().equals("PlayerListItem") && player.getVersion().getMinorVersion() >= 8) {
-						PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, player.getVersion());
-						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-						super.write(context, info.create(player.getVersion()), channelPromise);
-						return;
-					}
-					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
-						long time = System.nanoTime();
-						modifyPlayers((Team) packet);
-						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-						super.write(context, packet, channelPromise);
-						return;
-					}
-				} catch (Throwable e){
-					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-				}
-				super.write(context, packet, channelPromise);
-			}
-		});
-	}
-
-	/**
-	 * Removes all real players from packet if the packet doesn't come from TAB
-	 * @param packet - packet to modify
-	 */
-	private static void modifyPlayers(Team packet){
-		if (packet.players == null) return;
-		if (packet.getFriendlyFire() != 69) {
-			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (TabPlayer p : Shared.getPlayers()) {
-				if (col.contains(p.getName()) && !Shared.featureManager.getNameTagFeature().isDisabledWorld(p.getWorldName())) {
-					col.remove(p.getName());
-				}
-			}
-			packet.players = col.toArray(new String[0]);
 		}
 	}
 }

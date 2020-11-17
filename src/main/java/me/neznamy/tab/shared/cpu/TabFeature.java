@@ -24,6 +24,7 @@ public enum TabFeature {
 	PLACEHOLDER_REFRESHING("Refreshing placeholders"),
 	SORTING("Sorting"),
 	WATERFALLFIX("Waterfall fix"),
+	PIPELINE_INJECTION("Pipeline injection"),
 	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu

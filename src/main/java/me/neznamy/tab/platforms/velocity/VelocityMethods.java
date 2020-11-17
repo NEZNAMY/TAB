@@ -62,11 +62,12 @@ public class VelocityMethods implements PlatformMethods {
 	}
 	
 	@Override
-	public void loadFeatures(boolean inject) throws Exception{
+	public void loadFeatures() throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new VelocityPlaceholderRegistry(server));
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
+		Shared.featureManager.registerFeature("injection", new VelocityPipelineInjector());
 		Shared.featureManager.registerFeature("placeholders", plm);
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
@@ -75,7 +76,6 @@ public class VelocityMethods implements PlatformMethods {
 		for (Player p : server.getAllPlayers()) {
 			TabPlayer t = new VelocityTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
-			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 	

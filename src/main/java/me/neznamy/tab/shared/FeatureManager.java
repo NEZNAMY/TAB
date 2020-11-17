@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 public class FeatureManager {
 
 	//list of registered features
-	private Map<String, Feature> features = new ConcurrentHashMap<String, Feature>();
+	private Map<String, Feature> features = new LinkedHashMap<String, Feature>();
 	
 	/**
 	 * Registers a feature

@@ -13,29 +13,26 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
-/**
- * A large source of hate. Packet intercepting to secure proper functionality of some features:
- * Tablist names - anti-override (preventing other plugins from setting this value)
- * Nametags - anti-override
- * SpectatorFix - to change gamemode to something else than spectator
- * PetFix - to remove owner field from entity data
- * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
- */
-public class Injector {
-
-	public static void inject(UUID uuid) {
+public class BukkitPipelineInjector extends PipelineInjector {
+	
+	private static final String INJECT_POSITION = "packet_handler";
+	
+	@Override
+	public void inject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (!channel.pipeline().names().contains("packet_handler")) {
+		if (!channel.pipeline().names().contains(INJECT_POSITION)) {
 			//fake player or waterfall bug
 			return;
 		}
-		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
+		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
 		try {
-			channel.pipeline().addBefore("packet_handler", Shared.DECODER_NAME, new ChannelDuplexHandler() {
-
+			channel.pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
+				
+				@Override
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					try {
 						TabPlayer player = Shared.getPlayer(uuid);
@@ -50,6 +47,7 @@ public class Injector {
 					}
 				}
 
+				@Override
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 					try {
 						TabPlayer player = Shared.getPlayer(uuid);
@@ -85,9 +83,11 @@ public class Injector {
 			//this makes absolutely no sense, there is already a check for "packet_handler" ...
 		}
 	}
-	public static void uninject(UUID uuid) {
+	
+	@Override
+	public void uninject(UUID uuid) {
 		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (channel.pipeline().names().contains(Shared.DECODER_NAME)) channel.pipeline().remove(Shared.DECODER_NAME);
+		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
 	}
 	
 	@SuppressWarnings("unchecked")

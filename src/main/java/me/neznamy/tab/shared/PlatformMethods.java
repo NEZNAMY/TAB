@@ -40,7 +40,7 @@ public interface PlatformMethods {
 	 * @param inject - whether tab's pipleline handler needs to be injected or not
 	 * @throws Exception - if something fails
 	 */
-	public void loadFeatures(boolean inject) throws Exception;
+	public void loadFeatures() throws Exception;
 	
 	/**
 	 * Sends a message into console

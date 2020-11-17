@@ -74,13 +74,16 @@ public class BukkitMethods implements PlatformMethods {
 	}
 
 	@Override
-	public void loadFeatures(boolean inject) throws Exception{
+	public void loadFeatures() throws Exception {
 		Main.detectPlugins();
 		usedExpansions = new HashSet<String>();
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new BukkitPlaceholderRegistry());
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			Shared.featureManager.registerFeature("injection", new BukkitPipelineInjector());
+		}
 		Shared.featureManager.registerFeature("placeholders", plm);
 		loadUniversalFeatures();
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
@@ -108,7 +111,6 @@ public class BukkitMethods implements PlatformMethods {
 		for (Player p : getOnlinePlayers()) {
 			BukkitTabPlayer t = new BukkitTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
-			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 

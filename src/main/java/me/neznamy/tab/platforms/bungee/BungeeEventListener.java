@@ -41,7 +41,6 @@ public class BungeeEventListener implements Listener {
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				TabPlayer p = new BungeeTabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
-				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);
 			} else {
 				TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
