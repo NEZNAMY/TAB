@@ -150,10 +150,6 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-codec-haproxy</artifactId>
 				</exclusion>
