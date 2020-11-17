@@ -39,9 +39,6 @@ public class Configs {
 	public static String noAfk;
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
-	public static boolean usePrimaryGroup;
-	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
-	public static boolean groupsByPermissions;
 	public static double SECRET_NTX_space;
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_unregister_before_register;
@@ -136,9 +133,6 @@ public class Configs {
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
-		usePrimaryGroup = config.getBoolean("use-primary-group", true);
-		primaryGroupFindingList = config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-		groupsByPermissions = config.getBoolean("assign-groups-by-permissions", false);
 		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);

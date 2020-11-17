@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
@@ -56,9 +57,9 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6Permission plugin: &a" + Shared.permissionPlugin.getName());
-		if (Configs.groupsByPermissions) {
+		if (GroupRefresher.groupsByPermissions) {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
-		} else if (Configs.usePrimaryGroup) {
+		} else if (GroupRefresher.usePrimaryGroup) {
 			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions");
 		} else {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
@@ -83,9 +84,9 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed == null) return;
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
-		if (Configs.groupsByPermissions) {
+		if (GroupRefresher.groupsByPermissions) {
 			sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
-		} else if (Configs.usePrimaryGroup) {
+		} else if (GroupRefresher.usePrimaryGroup) {
 			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 		} else {
 			try {
