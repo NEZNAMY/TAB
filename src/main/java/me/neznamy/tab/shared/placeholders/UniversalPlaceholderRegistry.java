@@ -156,7 +156,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			public String[] getNestedPlaceholders(){
 				Set<String> list = new HashSet<String>();
 				for (Object value : Configs.rankAliases.values()) {
-					list.add(String.valueOf(value));
+					list.add(String.valueOf(value).replace("%rank%", "")); //preventing stack overflow when someone uses %rank% as value
 				}
 				return list.toArray(new String[0]);
 			}
