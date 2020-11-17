@@ -43,12 +43,8 @@ public class Configs {
 	public static boolean SECRET_invisible_nametags;
 	public static boolean SECRET_unregister_before_register;
 	public static boolean SECRET_remove_ghost_players;
-	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
-	public static String SECRET_multiWorldSeparator;
 	public static String SECRET_essentials_nickname_prefix;
-	public static boolean SECRET_rgb_support;
-	public static boolean SECRET_autoComplete;
 
 
 	public static ConfigurationFile animation;
@@ -137,12 +133,8 @@ public class Configs {
 		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
 		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
-		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
-		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
 		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
-		SECRET_rgb_support = getSecretOption("rgb-support", true);
-		SECRET_autoComplete = getSecretOption("auto-command-complete", true);
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
@@ -179,12 +171,9 @@ public class Configs {
 	public static <T> T getSecretOption(String path, T defaultValue) {
 		Object value = config.getObject(path);
 		if (value == null) return defaultValue;
-		if (defaultValue instanceof Integer) return (T) (Object) Integer.parseInt(value+"");
-		if (defaultValue instanceof Float) return (T) (Object) Float.parseFloat(value+"");
-		if (defaultValue instanceof Double) return (T) (Object) Double.parseDouble(value+"");
-		if (defaultValue instanceof Long) return (T) (Object) Long.parseLong(value+"");
-		if (defaultValue instanceof String) return (T) (value+"");
-		return (T) value;
+		if (defaultValue instanceof String) return (T) value.toString();
+		if (defaultValue instanceof Boolean) return (T) (Object) Boolean.parseBoolean(value.toString());
+		return (T) (Object) Double.parseDouble(value.toString());
 	}
 	public static List<String> getPlayerData(String key) {
 		if (playerdata == null) {
@@ -207,7 +196,7 @@ public class Configs {
 		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {
+			for (String localWorld : worldGroup.split(Configs.getSecretOption("multi-world-separator", "-"))) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}

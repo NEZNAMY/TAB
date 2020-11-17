@@ -308,7 +308,7 @@ public class IChatBaseComponent {
 	public static IChatBaseComponent fromColoredText(String originalText){
 		if (originalText == null) return new IChatBaseComponent();
 		String text = originalText;
-		if (Configs.SECRET_rgb_support) {
+		if (Configs.getSecretOption("rgb-support", true)) {
 			text = RGBUtils.applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
@@ -359,7 +359,7 @@ public class IChatBaseComponent {
 						break;
 					}
 				}
-			} else if (Configs.SECRET_rgb_support && c == '#'){
+			} else if (Configs.getSecretOption("rgb-support", true) && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
 					TextColor color = TextColor.of(hex); //the validation check is in constructor

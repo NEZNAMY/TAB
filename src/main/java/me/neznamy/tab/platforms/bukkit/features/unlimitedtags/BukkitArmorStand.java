@@ -190,7 +190,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
 					viewer.sendPacket(destroyPacket);
@@ -245,7 +245,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	private boolean getVisibility() {
-		if (Configs.SECRET_armorstands_always_visible) return true;
+		if (Configs.getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) return true;
 		if (((BukkitTabPlayer)owner).isDisguised()) return false;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0 && !owner.isOnBoat();
 	}
