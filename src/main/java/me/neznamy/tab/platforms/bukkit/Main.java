@@ -13,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -41,7 +43,13 @@ public class Main extends JavaPlugin {
 						sender.sendMessage(Placeholders.color(message));
 					}
 				} else {
-					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					Shared.cpu.runMeasuredTask("processing command", TabFeature.COMMAND_PROCESSING, UsageType.COMMAND_PREPROCESS, new Runnable() {
+
+						@Override
+						public void run() {
+							Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+						}
+					});
 				}
 				return false;
 			}

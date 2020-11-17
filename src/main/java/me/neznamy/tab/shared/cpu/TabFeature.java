@@ -25,6 +25,7 @@ public enum TabFeature {
 	SORTING("Sorting"),
 	WATERFALLFIX("Waterfall fix"),
 	PIPELINE_INJECTION("Pipeline injection"),
+	COMMAND_PROCESSING("Command processing"),
 	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu
