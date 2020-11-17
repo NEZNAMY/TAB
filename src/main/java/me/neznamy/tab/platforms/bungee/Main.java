@@ -26,6 +26,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.Team;
@@ -50,18 +51,7 @@ public class Main extends Plugin {
 		Shared.platform = new BungeeMethods(this);
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
-		getProxy().getPluginManager().registerCommand(this, new Command("btab") {
-
-			public void execute(CommandSender sender, String[] args) {
-				if (Shared.disabled) {
-					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Placeholders.color(message));
-					}
-				} else {
-					Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
-				}
-			}
-		});
+		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		plm = new BungeePluginMessageHandler(this);
 		Shared.load(true);
 		BungeeMetrics.start(this);
@@ -185,6 +175,30 @@ public class Main extends Plugin {
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
+		}
+	}
+	
+	public class BTABCommand extends Command implements TabExecutor {
+
+		public BTABCommand() {
+			super("btab", null);
+		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		public void execute(CommandSender sender, String[] args) {
+			if (Shared.disabled) {
+				for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+					sender.sendMessage(Placeholders.color(message));
+				}
+			} else {
+				Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+			}
+		}
+
+		@Override
+		public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+			return Shared.command.complete(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 		}
 	}
 }

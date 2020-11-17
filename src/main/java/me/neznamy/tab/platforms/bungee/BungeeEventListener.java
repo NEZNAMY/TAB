@@ -1,10 +1,5 @@
 package me.neznamy.tab.platforms.bungee;
 
-import java.util.Arrays;
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -13,7 +8,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
-import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -22,28 +16,6 @@ import net.md_5.bungee.event.EventPriority;
  * The core for bungeecord forwarding events into all enabled features
  */
 public class BungeeEventListener implements Listener {
-
-	/**
-	 * tab complete listener to fill suggestions
-	 * @param e - tab complete event
-	 */
-	@EventHandler
-	public void onTabComplete(TabCompleteEvent e) {
-		if (Shared.disabled) return;
-		if (e.getCursor().startsWith("/btab ")) {
-			String arg = e.getCursor();
-			while (arg.contains("  ")) arg = arg.replace("  ", " ");
-			String[] args = arg.split(" ");
-			args = Arrays.copyOfRange(args, 1, args.length);
-			if (arg.endsWith(" ")) {
-				List<String> list = Lists.newArrayList(args);
-				list.add("");
-				args = list.toArray(new String[0]);
-			}
-			e.getSuggestions().clear();
-			e.getSuggestions().addAll(Shared.command.complete(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), args));
-		}
-	}
 
 	/**
 	 * Disconnect event listener to forward the event to all features
