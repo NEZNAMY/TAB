@@ -41,7 +41,10 @@ public class EqualsCondition extends SimpleCondition {
 	public static EqualsCondition compile(String line) {
 		if (line.contains("=")) {
 			String[] arr = line.split("=");
-			return new EqualsCondition(arr[0], arr[1]);
+			String arg = "";
+			if (arr.length >= 2)
+				arg = arr[1];
+			return new EqualsCondition(arr[0], arg);
 		} else {
 			return null;
 		}
