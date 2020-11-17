@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,8 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
  */
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
 
+	private static final int ENTITY_TRACKING_RANGE = 48;
+	
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	private boolean disableOnBoats;
@@ -50,7 +51,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
 	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
-	public Map<TabPlayer, Set<TabPlayer>> delayedSpawn = new HashMap<TabPlayer, Set<TabPlayer>>();
 	private EventListener eventListener;
 
 	public NameTagX(JavaPlugin plugin) {
@@ -87,9 +87,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				vehicles.put(vehicle.getEntityId(), list);
 			}
 			for (TabPlayer worldPlayer : Shared.getPlayers()) {
-				if (all == worldPlayer) continue;
+				if (all == worldPlayer) continue; //not displaying own armorstands
 				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
-				all.getArmorStandManager().spawn(worldPlayer);
+				if (((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
+					all.getArmorStandManager().spawn(worldPlayer);
+				}
 			}
 		}
 		startInvisibilityRefreshingTask();
@@ -139,11 +141,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 			vehicles.put(vehicle.getEntityId(), list);
 		}
-		if (delayedSpawn.containsKey(connectedPlayer)) {
-			for (TabPlayer viewer : delayedSpawn.get(connectedPlayer)) {
+		for (TabPlayer viewer : Shared.getPlayers()) {
+			if (connectedPlayer == viewer) continue; //not displaying own armorstands
+			if (!viewer.getWorldName().equals(connectedPlayer.getWorldName())) continue;
+			if (((Player) viewer.getPlayer()).getLocation().distance(((Player) connectedPlayer.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
 			}
-			delayedSpawn.remove(connectedPlayer);
 		}
 	}
 	
