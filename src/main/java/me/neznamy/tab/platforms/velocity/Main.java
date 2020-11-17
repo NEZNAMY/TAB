@@ -8,6 +8,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -83,6 +84,13 @@ public class Main {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	@Subscribe
+	public void onProxyInitialization(ProxyShutdownEvent event) {
+		if (!Shared.disabled) {
+			Shared.unload();
 		}
 	}
 }
