@@ -29,7 +29,6 @@ public class BukkitEventListener implements Listener {
 			if (Shared.disabled) return;
 			TabPlayer p = new BukkitTabPlayer(e.getPlayer());
 			Shared.data.put(e.getPlayer().getUniqueId(), p);
-			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
 			Main.inject(e.getPlayer().getUniqueId());
 			Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
 
@@ -58,7 +57,6 @@ public class BukkitEventListener implements Listener {
 			}
 		});
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.entityIdMap.remove(e.getPlayer().getEntityId());
 	}
 
 	/**

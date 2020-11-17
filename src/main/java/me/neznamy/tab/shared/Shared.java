@@ -37,9 +37,6 @@ public class Shared {
 	//player data
 	public static final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
 	
-	//player data by entityId, used by unlimited nametag mode for better performance
-	public static final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
-	
 	//the command
 	public static final TabCommand command = new TabCommand();
 	
@@ -175,7 +172,6 @@ public class Shared {
 			cpu.cancelAllTasks();
 			featureManager.unload();
 			data.clear();
-			entityIdMap.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);

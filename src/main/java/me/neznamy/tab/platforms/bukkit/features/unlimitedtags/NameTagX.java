@@ -49,7 +49,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	private boolean disableOnBoats;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
-
+	
+	//player data by entityId, used for better performance
+	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
 	private EventListener eventListener;
 
@@ -73,6 +75,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		for (TabPlayer all : Shared.getPlayers()){
+			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			all.setTeamName(SortingType.INSTANCE.getTeamName(all));
 			updateProperties(all);
 			loadArmorStands(all);
@@ -119,10 +122,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 			p.getArmorStandManager().destroy();
 		}
+		entityIdMap.clear();
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()) {
@@ -164,6 +169,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
+		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 	}
 	
 	@Override
