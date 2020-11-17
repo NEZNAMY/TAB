@@ -140,16 +140,15 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerRankPlaceholder() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(TabPlayer p) {
-				Object rank = null;
 				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
 					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {
-						rank = entry.getValue();
-						break;
+						return entry.getValue().toString();
 					}
 				}
-				if (rank == null) rank = Configs.rankAliases.get("_OTHER_");
-				if (rank == null) rank = p.getGroup();
-				return String.valueOf(rank);
+				if (Configs.rankAliases.containsKey("_OTHER_")) {
+					return Configs.rankAliases.get("_OTHER_").toString();
+				}
+				return p.getGroup();
 			}
 			
 			@Override
