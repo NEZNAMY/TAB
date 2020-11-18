@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,7 +29,13 @@ public class TabExpansion extends PlaceholderExpansion {
 	 */
 	public TabExpansion(JavaPlugin plugin) {
 		this.plugin = plugin;
-		register();
+		Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				register();
+			}
+		});
 	}
 	
 	@Override

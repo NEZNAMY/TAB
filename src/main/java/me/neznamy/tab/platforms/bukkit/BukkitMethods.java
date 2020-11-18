@@ -360,6 +360,12 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void callLoadEvent() {
-		Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent());
+		Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent());
+			}
+		});
 	}
 }
