@@ -140,6 +140,38 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
+		if (identifier.startsWith("%sync:")) {
+			PlaceholderManager pl = PlaceholderManager.getInstance();
+			int refresh;
+			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
+				refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			} else if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
+				refresh = pl.playerPlaceholderRefreshIntervals.get(identifier);
+			} else {
+				refresh = PlaceholderManager.getInstance().defaultRefresh;
+			}
+			
+			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+
+				@Override
+				public String get(TabPlayer p) {
+					Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+						@Override
+						public void run() {
+							long time = System.nanoTime();
+							String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
+							String value = PluginHooks.setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+							lastValue.put(p.getName(), value);
+							if (!forceUpdate.contains(p.getName())) forceUpdate.add(p.getName());
+							Shared.cpu.addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
+						}
+					});
+					return getLastValue(p);
+				}
+			}, true);
+			return;
+		}
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;

@@ -202,7 +202,7 @@ public class Placeholders {
 			Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
 			return;
 		}
-		//placeholderapi or invalid
+		//placeholderapi or invalid or sync
 		Shared.platform.registerUnknownPlaceholder(identifier);
 	}
 	public static void registerPlaceholder(Placeholder placeholder) {
