@@ -156,7 +156,7 @@ public class NMSHook {
 			}
 		} catch (Throwable e) {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
-				String msg = "Your server version is marked as compatible, but a compatibility issue was found. Please report the following error (include your server version & fork too)";
+				String msg = "Your server version is marked as compatible, but a compatibility issue was found. Please report the error above (include your server version & fork too)";
 				e.printStackTrace();
 				return msg;
 			} else {
