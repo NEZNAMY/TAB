@@ -70,8 +70,4 @@ public class Main extends JavaPlugin {
 			Shared.unload();
 		}
 	}
-
-	public static void detectPlugins() {
-		PluginHooks.placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-	}
 }

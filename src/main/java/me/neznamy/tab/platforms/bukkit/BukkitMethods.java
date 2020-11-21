@@ -9,12 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BukkitTABLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
@@ -75,7 +75,6 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void loadFeatures() throws Exception {
-		Main.detectPlugins();
 		usedExpansions = new HashSet<String>();
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new BukkitPlaceholderRegistry());
@@ -103,7 +102,7 @@ public class BukkitMethods implements PlatformMethods {
 		}
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.config.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
 		if (Configs.config.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
-		if (PluginHooks.placeholderAPI) {
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
 		}
@@ -150,7 +149,6 @@ public class BukkitMethods implements PlatformMethods {
 			} else {
 				refresh = PlaceholderManager.getInstance().defaultRefresh;
 			}
-			
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 				@Override
@@ -161,7 +159,7 @@ public class BukkitMethods implements PlatformMethods {
 						public void run() {
 							long time = System.nanoTime();
 							String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
-							String value = PluginHooks.setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+							String value = setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
 							lastValue.put(p.getName(), value);
 							if (!forceUpdate.contains(p.getName())) forceUpdate.add(p.getName());
 							Shared.cpu.addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
@@ -173,68 +171,76 @@ public class BukkitMethods implements PlatformMethods {
 			return;
 		}
 		if (identifier.contains("_")) {
-			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
-			if (plugin.equals("some")) return;
-			if (!usedExpansions.contains(plugin) && !plugin.equals("rel")) {
-				usedExpansions.add(plugin);
-			}
 			PlaceholderManager pl = PlaceholderManager.getInstance();
-			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
-				Shared.debug("Registering SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.serverPlaceholderRefreshIntervals.get(identifier));
-				Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, pl.serverPlaceholderRefreshIntervals.get(identifier)){
-					public String get() {
-						return PluginHooks.setPlaceholders((UUID)null, identifier);
-					}
-				});
-				return;
-			}
-			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
-				Shared.debug("Registering PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.playerPlaceholderRefreshIntervals.get(identifier));
-				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, pl.playerPlaceholderRefreshIntervals.get(identifier)){
-					public String get(TabPlayer p) {
-						return PluginHooks.setPlaceholders((Player) p.getPlayer(), identifier);
-					}
-				});
-				return;
-			}
-			if (pl.relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
-				Shared.debug("Registering RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.relationalPlaceholderRefreshIntervals.get(identifier));
-				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.relationalPlaceholderRefreshIntervals.get(identifier)) {
-
-					@Override
-					public String get(TabPlayer viewer, TabPlayer target) {
-						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
-					}
-				});
-				return;
-			}
-			if (identifier.contains("%rel_")) {
-				Shared.debug("Registering unlisted RELATIONAL PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.defaultRefresh);
-				Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, pl.defaultRefresh) {
-
-					@Override
-					public String get(TabPlayer viewer, TabPlayer target) {
-						return PluginHooks.setRelationalPlaceholders(viewer, target, identifier);
-					}
-				});
+			if (identifier.startsWith("%rel_")) {
+				//relational placeholder
+				registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));
 			} else {
+				//normal placeholder
+				String plugin = identifier.split("_")[0].substring(1).toLowerCase();
+				if (plugin.equals("some")) return;
+				usedExpansions.add(plugin);
+				if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
+					registerServerPlaceholder(identifier, pl.serverPlaceholderRefreshIntervals.get(identifier));
+					return;
+				}
+				if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
+					registerPlayerPlaceholder(identifier, pl.playerPlaceholderRefreshIntervals.get(identifier));
+					return;
+				}
 				if (identifier.startsWith("%server_")) {
-					Shared.debug("Registering unlisted SERVER PlaceholderAPI placeholder " + identifier + " with cooldown " + pl.defaultRefresh);
-					Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, pl.defaultRefresh){
-						public String get() {
-							return PluginHooks.setPlaceholders((UUID)null, identifier);
-						}
-					});
+					registerServerPlaceholder(identifier, pl.defaultRefresh);
 				} else {
-					int cooldown = identifier.startsWith("%cmi_") ? pl.defaultRefresh * 10 : pl.defaultRefresh; //inefficient plugin
-					Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
-					Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
-						public String get(TabPlayer p) {
-							return PluginHooks.setPlaceholders(p == null ? null : (Player) p.getPlayer(), identifier);
-						}
-					});
+					registerPlayerPlaceholder(identifier, pl.defaultRefresh);
 				}
 			}
+		}
+	}
+	
+	private void registerServerPlaceholder(String identifier, int refresh) {
+		Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, refresh){
+			
+			@Override
+			public String get() {
+				return setPlaceholders(null, identifier);
+			}
+		});
+	}
+	
+	private void registerPlayerPlaceholder(String identifier, int refresh) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+
+			@Override
+			public String get(TabPlayer p) {
+				return setPlaceholders((Player) p.getPlayer(), identifier);
+			}
+		});
+	}
+	
+	private void registerRelationalPlaceholder(String identifier, int refresh) {
+		Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
+
+			@Override
+			public String get(TabPlayer viewer, TabPlayer target) {
+				if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) return identifier;
+				try {
+					return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
+				} catch (Throwable t) {
+					Shared.errorManager.printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting relational placeholder " + identifier + " for viewer " + viewer.getName() + " and target " + target.getName(), t, false, Configs.papiErrorFile);
+				}
+				return identifier;
+			}
+		});
+	}
+	
+	public String setPlaceholders(Player player, String placeholder) {
+		if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) return placeholder;
+		try {
+			return PlaceholderAPI.setPlaceholders(player, placeholder);
+		} catch (Throwable t) {
+			String playername = (player == null ? "<null>" : player.getName());
+			Shared.errorManager.printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
+			return "ERROR";
 		}
 	}
 
@@ -386,7 +392,7 @@ public class BukkitMethods implements PlatformMethods {
 				replaced = p.set(replaced, sender);
 			}
 		}
-		replaced = PluginHooks.setPlaceholders(sender == null ? null : sender.getUniqueId(), replaced);
+		replaced = setPlaceholders(sender == null ? null : (Player) sender.getPlayer(), replaced);
 		return replaced;
 	}
 

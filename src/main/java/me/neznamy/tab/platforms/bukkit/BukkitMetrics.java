@@ -37,7 +37,7 @@ public class BukkitMetrics extends Metrics {
 		}));
 		metrics.addCustomChart(new SimplePie("placeholderapi", new Callable<String>() {
 			public String call() {
-				return PluginHooks.placeholderAPI ? "Yes" : "No";
+				return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No";
 			}
 		}));
 		metrics.addCustomChart(new SimplePie("permission_system", new Callable<String>() {

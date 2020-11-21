@@ -33,7 +33,7 @@ public class PlaceholderManager implements QuitEventListener {
 	public int defaultRefresh;
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
-	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
+	private Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 
 	private AFKProvider afk;
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
@@ -197,10 +197,14 @@ public class PlaceholderManager implements QuitEventListener {
 		}
 	}
 	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+	public int getRelationalRefresh(String identifier) {
+		if (relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
+			return relationalPlaceholderRefreshIntervals.get(identifier);
+		} else {
+			return defaultRefresh;
+		}
+	}
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PLACEHOLDER_REFRESHING;
