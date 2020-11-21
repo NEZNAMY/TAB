@@ -34,6 +34,6 @@ public class Premium {
 			String no = premiumconfig.getString("conditions." + condition + ".false");
 			Premium.conditions.put(condition+"", Condition.compile(condition+"", conditions, type, yes, no));
 		}
-		Placeholders.findAllUsed(premiumconfig);
+		Placeholders.findAllUsed(premiumconfig.getValues());
 	}
 }
