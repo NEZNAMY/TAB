@@ -97,7 +97,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				}
 			}
 		}
-		startInvisibilityRefreshingTask();
+		startRefreshingTasks();
 		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
@@ -112,7 +112,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				}
 			}
 		});
-		startCollisionRefreshingTask();
 	}
 	
 	@Override
