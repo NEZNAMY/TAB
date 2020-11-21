@@ -1,7 +1,7 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public abstract class ScoreboardLine implements Refreshable {
 
 	protected static final String ObjectiveName = "TAB-Scoreboard";
-	protected Set<String> usedPlaceholders = new HashSet<String>();
+	protected List<String> usedPlaceholders = new ArrayList<String>();
 	protected String teamName;
 	private String playerName;
 	
@@ -27,7 +27,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	public abstract void unregister(TabPlayer p);
 	
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 	

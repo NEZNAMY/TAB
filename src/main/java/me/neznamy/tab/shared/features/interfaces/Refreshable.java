@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.interfaces;
 
-import java.util.Set;
+import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 
@@ -10,6 +10,6 @@ import me.neznamy.tab.api.TabPlayer;
 public interface Refreshable extends Feature {
 
 	public void refresh(TabPlayer refreshed, boolean force);
-	public Set<String> getUsedPlaceholders();
+	public List<String> getUsedPlaceholders();
 	public void refreshUsedPlaceholders();
 }

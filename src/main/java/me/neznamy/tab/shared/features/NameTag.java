@@ -16,7 +16,7 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 
 public abstract class NameTag implements Feature, Refreshable {
 
-	protected Set<String> usedPlaceholders;
+	protected List<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
 
@@ -64,7 +64,7 @@ public abstract class NameTag implements Feature, Refreshable {
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 }

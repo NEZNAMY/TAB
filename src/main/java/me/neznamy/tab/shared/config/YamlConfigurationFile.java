@@ -16,7 +16,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.yamlassist.YamlAssist;
 
 /**
@@ -41,7 +40,6 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			input.close();
 			Shared.platform.convertConfig(this);
 			if (!hasHeader()) fixHeader();
-			Placeholders.findAllUsed(values);
 		} catch (YAMLException e) {
 			input.close();
 			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");

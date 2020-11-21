@@ -28,24 +28,20 @@ public class Placeholders {
 	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 
-	//all placeholders used in all configuration files, including invalid ones
+	//all placeholders used in all configuration files + API, including invalid ones
 	public static Set<String> allUsedPlaceholderIdentifiers = new HashSet<String>();
 
 	//plugin internals + PAPI + API
 	public static Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
-	public static Map<String, RelationalPlaceholder> registeredRelationalPlaceholders = new HashMap<String, RelationalPlaceholder>();
-
-	public static Set<Placeholder> usedPlaceholders = new HashSet<Placeholder>();
 
 	public static Collection<Placeholder> getAllPlaceholders(){
 		return registeredPlaceholders.values();
 	}
+	
 	public static Placeholder getPlaceholder(String identifier) {
 		return registeredPlaceholders.get(identifier);
 	}
-	public static RelationalPlaceholder getRelationalPlaceholder(String identifier) {
-		return registeredRelationalPlaceholders.get(identifier);
-	}
+
 	public static List<String> detectAll(String text){
 		List<String> placeholders = new ArrayList<>();
 		if (text == null) return placeholders;
@@ -56,19 +52,25 @@ public class Placeholders {
 		return placeholders;
 	}
 
-	public static Set<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
-		Set<String> base = new HashSet<String>();
+	public static List<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
+		List<String> base = new ArrayList<String>();
 		for (String string : strings) {
-			base.addAll(detectAll(string));
+			for (String s : detectAll(string)) {
+				if (!base.contains(s)) base.add(s);
+			}
 		}
-		for (String placeholder : base.toArray(new String[0])) {
-			List<Placeholder> pl = detectPlaceholders(placeholder);
-			for (Placeholder p : pl) {
-				base.add(p.getIdentifier());
+		for (String placeholder : new HashSet<String>(base)) {
+			Placeholder pl = getPlaceholder(placeholder);
+			if (pl == null) continue;
+			for (String nestedString : pl.getNestedStrings()) {
+				for (String s : detectAll(nestedString)) {
+					if (!base.contains(s)) base.add(s);
+				}
 			}
 		}
 		return base;
 	}
+	
 	//code taken from bukkit, so it can work on bungee too
 	public static String color(String textToTranslate){
 		if (textToTranslate == null) return null;
@@ -100,31 +102,7 @@ public class Placeholders {
 		}
 		return result;
 	}
-	public static List<Placeholder> detectPlaceholders(String rawValue) {
-		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<Placeholder>();
-		List<Placeholder> placeholdersTotal = new ArrayList<Placeholder>();
-		for (Placeholder placeholder : getAllPlaceholders()) {
-			if (rawValue.contains(placeholder.getIdentifier())) {
-				placeholdersTotal.add(placeholder);
-				for (String nested : placeholder.getNestedPlaceholders()) {
-					for (Placeholder p : detectPlaceholders(nested)) {
-						placeholdersTotal.add(p);
-					}
-				}
-			}
-		}
-		return placeholdersTotal;
-	}
-	public static List<RelationalPlaceholder> detectRelationalPlaceholders(String rawValue) {
-		if (rawValue == null || !rawValue.contains("%")) return new ArrayList<RelationalPlaceholder>();
-		List<RelationalPlaceholder> placeholders = new ArrayList<RelationalPlaceholder>();
-		for (String identifier : registeredRelationalPlaceholders.keySet()) {
-			if (rawValue.contains(identifier)) {
-				placeholders.add(registeredRelationalPlaceholders.get(identifier));
-			}
-		}
-		return placeholders;
-	}
+
 	@SuppressWarnings("unchecked")
 	public static void findAllUsed(Object object) {
 		if (object instanceof Map) {
@@ -139,51 +117,47 @@ public class Placeholders {
 		}
 		if (object instanceof String) {
 			for (String placeholder : detectAll((String) object)) {
-				if (!allUsedPlaceholderIdentifiers.contains(placeholder)) allUsedPlaceholderIdentifiers.add(placeholder);
+				allUsedPlaceholderIdentifiers.add(placeholder);
 			}
 		}
 	}
 	public static void categorizeUsedPlaceholder(String identifier) {
 		if (identifier.startsWith("%rel_")) {
-			if (registeredRelationalPlaceholders.containsKey(identifier)) return;
 			Shared.platform.registerUnknownPlaceholder(identifier);
 			return;
 		}
 
 		if (registeredPlaceholders.containsKey(identifier)) {
-			usedPlaceholders.add(registeredPlaceholders.get(identifier));
 			return;
 		}
 
-		if (identifier.contains("animation:")) {
-			//animation
+		if (identifier.startsWith("%animation:")) {
 			String animationName = identifier.substring(11, identifier.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerPlaceholder(new ServerPlaceholder("%animation:" + animationName + "%", PlaceholderManager.getInstance().defaultRefresh) {
+					registerPlaceholder(new ServerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
 						
 						public String get() {
 							return a.getMessage();
 						}
 						
 						@Override
-						public String[] getNestedPlaceholders(){
+						public String[] getNestedStrings(){
 							return a.getAllMessages();
 						}
 						
-					}, true);
+					});
 					return;
 				}
 			}
 			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
 			return;
 		}
-		if (identifier.contains("condition:")) {
-			//animation
+		if (identifier.startsWith("%condition:")) {
 			String conditionName = identifier.substring(11, identifier.length()-1);
 			for (Condition c : Premium.conditions.values()) {
 				if (c.getName().equalsIgnoreCase(conditionName)) {
-					registerPlaceholder(new PlayerPlaceholder("%condition:" + conditionName + "%", PlaceholderManager.getInstance().defaultRefresh) {
+					registerPlaceholder(new PlayerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
 
 						@Override
 						public String get(TabPlayer p) {
@@ -191,11 +165,11 @@ public class Placeholders {
 						}
 						
 						@Override
-						public String[] getNestedPlaceholders(){
+						public String[] getNestedStrings(){
 							return new String[] {c.yes, c.no};
 						}
 						
-					}, true);
+					});
 					return;
 				}
 			}
@@ -205,20 +179,15 @@ public class Placeholders {
 		//placeholderapi or invalid or sync
 		Shared.platform.registerUnknownPlaceholder(identifier);
 	}
+	
 	public static void registerPlaceholder(Placeholder placeholder) {
-		registerPlaceholder(placeholder, false);
-	}
-	public static void registerPlaceholder(Placeholder placeholder, boolean addToUsed) {
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		if (addToUsed) usedPlaceholders.add(placeholder);
 	}
-	public static void registerPlaceholder(RelationalPlaceholder placeholder) {
-		registeredRelationalPlaceholders.put(placeholder.getIdentifier(), placeholder);
-	}
+
 	public static void checkForRegistration(String... texts) {
 		for (String text : texts) {
 			for (String identifier : detectAll(text)) {
-				if (!allUsedPlaceholderIdentifiers.contains(identifier)) allUsedPlaceholderIdentifiers.add(identifier);
+				allUsedPlaceholderIdentifiers.add(identifier);
 				categorizeUsedPlaceholder(identifier);
 			}
 		}

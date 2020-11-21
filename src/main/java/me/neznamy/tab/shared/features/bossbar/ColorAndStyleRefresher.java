@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.Set;
+import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 public class ColorAndStyleRefresher implements Refreshable {
 
 	private BossBarLine line;
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	
 	public ColorAndStyleRefresher(BossBarLine line) {
 		this.line = line;
@@ -31,7 +31,7 @@ public class ColorAndStyleRefresher implements Refreshable {
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 	

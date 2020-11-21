@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
@@ -80,9 +80,8 @@ public class Configs {
 		if (errorFile.exists() && errorFile.length() > 10) {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
 		}
-		Placeholders.allUsedPlaceholderIdentifiers.clear();
-		Placeholders.usedPlaceholders = new HashSet<>();
-		Placeholders.registeredPlaceholders.clear();
+//		Placeholders.allUsedPlaceholderIdentifiers = new HashSet<String>(); //not kiling the API on /tab reload
+//		Placeholders.registeredPlaceholders = new HashMap<String, Placeholder>();
 		removeAdvancedConfig();
 		loadConfig();
 		loadAnimations();
@@ -135,6 +134,7 @@ public class Configs {
 		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
 		SECRET_debugMode = getSecretOption("debug", false);
 		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
+		Placeholders.findAllUsed(config.getValues());
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
@@ -142,6 +142,7 @@ public class Configs {
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
+		Placeholders.findAllUsed(animation.getValues());
 	}
 	public static void loadBossbar() throws Exception {
 		bossbar = new YamlConfigurationFile(Shared.platform.getDataFolder(), "bossbar.yml", null);
@@ -151,6 +152,7 @@ public class Configs {
 			return;
 		}
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
+		Placeholders.findAllUsed(bossbar.getValues());
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "translation.yml", null);

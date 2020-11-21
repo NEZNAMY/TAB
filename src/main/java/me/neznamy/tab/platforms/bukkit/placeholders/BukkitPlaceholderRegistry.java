@@ -131,7 +131,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 			@Override
-			public String[] getNestedPlaceholders(){
+			public String[] getNestedStrings(){
 				return new String[] {Configs.yesAfk, Configs.noAfk};
 			}
 		});

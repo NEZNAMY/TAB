@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.AlignedSuffix;
@@ -31,7 +30,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  */
 public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
 
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
 	
 	
@@ -144,7 +143,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 

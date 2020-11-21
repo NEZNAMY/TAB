@@ -169,7 +169,7 @@ public class BukkitMethods implements PlatformMethods {
 					});
 					return getLastValue(p);
 				}
-			}, true);
+			});
 			return;
 		}
 		if (identifier.contains("_")) {
@@ -185,7 +185,7 @@ public class BukkitMethods implements PlatformMethods {
 					public String get() {
 						return PluginHooks.setPlaceholders((UUID)null, identifier);
 					}
-				}, true);
+				});
 				return;
 			}
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
@@ -194,7 +194,7 @@ public class BukkitMethods implements PlatformMethods {
 					public String get(TabPlayer p) {
 						return PluginHooks.setPlaceholders((Player) p.getPlayer(), identifier);
 					}
-				}, true);
+				});
 				return;
 			}
 			if (pl.relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
@@ -224,7 +224,7 @@ public class BukkitMethods implements PlatformMethods {
 						public String get() {
 							return PluginHooks.setPlaceholders((UUID)null, identifier);
 						}
-					}, true);
+					});
 				} else {
 					int cooldown = identifier.startsWith("%cmi_") ? pl.defaultRefresh * 10 : pl.defaultRefresh; //inefficient plugin
 					Shared.debug("Registering unlisted PLAYER PlaceholderAPI placeholder " + identifier + " with cooldown " + cooldown);
@@ -232,7 +232,7 @@ public class BukkitMethods implements PlatformMethods {
 						public String get(TabPlayer p) {
 							return PluginHooks.setPlaceholders(p == null ? null : (Player) p.getPlayer(), identifier);
 						}
-					}, true);
+					});
 				}
 			}
 		}

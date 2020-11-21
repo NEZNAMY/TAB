@@ -106,7 +106,7 @@ public class BungeeMethods implements PlatformMethods {
 					Main.plm.requestPlaceholder(p, identifier);
 					return getLastValue(p);
 				}
-			}, true);
+			});
 			return;
 		}
 	}

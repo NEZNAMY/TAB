@@ -105,7 +105,7 @@ public class VelocityMethods implements PlatformMethods {
 					Main.plm.requestPlaceholder(p, identifier);
 					return getLastValue(p);
 				}
-			}, true);
+			});
 			return;
 		}
 	}

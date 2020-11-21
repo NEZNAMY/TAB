@@ -18,7 +18,6 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -359,15 +358,8 @@ public abstract class ConfigurationFile {
 	 * @param simpleKeys - keys to check
 	 * @return Set of all used identifiers
 	 */
-	public Set<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
-		Set<String> base = getUsedPlaceholders(values, simpleKeys);
-		for (String placeholder : base.toArray(new String[0])) { //avoiding concurrent modification
-			List<Placeholder> pl = Placeholders.detectPlaceholders(placeholder);
-			for (Placeholder p : pl) {
-				base.add(p.getIdentifier());
-			}
-		}
-		return base;
+	public List<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
+		return Placeholders.getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
 	}
 	
 	/**

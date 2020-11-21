@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -70,13 +69,8 @@ public class CpuCommand extends SubCommand {
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
-			if (!entry.getKey().toString().startsWith("%rel_")) {
-				Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
-				if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
-			} else {
-				RelationalPlaceholder rel = Placeholders.getRelationalPlaceholder(entry.getKey()+"");
-				if (rel != null) refresh = " &8(" + rel.getRefresh() + ")&7";
-			}
+			Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
+			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
 		sendMessage(sender, SEPARATOR);

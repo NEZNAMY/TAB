@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -30,7 +29,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	private String rawValue;
 	private final String title = "ms";
 	private EnumScoreboardHealthDisplay displayType;
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 
 	public TabObjective() {
@@ -105,7 +104,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 

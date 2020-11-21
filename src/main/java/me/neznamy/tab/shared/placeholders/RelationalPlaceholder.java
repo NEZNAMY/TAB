@@ -8,13 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 /**
  * A relational placeholder (output different for every pair of players)
  */
-public abstract class RelationalPlaceholder {
-
-	//refresh interval of the placeholder
-	private int refresh;
-	
-	//identifier of the placeholder
-	private String identifier;
+public abstract class RelationalPlaceholder extends Placeholder {
 	
 	//last known values
 	public Map<String, String> lastValue = new HashMap<String, String>();
@@ -25,24 +19,7 @@ public abstract class RelationalPlaceholder {
 	 * @param refresh - refresh interval
 	 */
 	public RelationalPlaceholder(String identifier, int refresh) {
-		this.identifier = identifier;
-		this.refresh = refresh;
-	}
-	
-	/**
-	 * Returns refresh interval of this placeholder
-	 * @return refresh interval
-	 */
-	public int getRefresh() {
-		return refresh;
-	}
-	
-	/**
-	 * Returns identifier of this placeholder
-	 * @return identifier
-	 */
-	public String getIdentifier() {
-		return identifier;
+		super(identifier, refresh);
 	}
 	
 	/**
@@ -70,6 +47,11 @@ public abstract class RelationalPlaceholder {
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!lastValue.containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		return lastValue.get(viewer.getName() + "-" + target.getName());
+	}
+	
+	@Override
+	public String getLastValue(TabPlayer p) {
+		throw new IllegalStateException("Not supported for relational placeholders");
 	}
 
 	/**

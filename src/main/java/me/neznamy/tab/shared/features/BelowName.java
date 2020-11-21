@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -30,7 +29,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	private String number;
 	private Property textProperty;
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 
 	public BelowName() {
@@ -41,7 +40,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		textProperty = new Property(null, text, null);
 		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
 
-			private Set<String> usedPlaceholders;
+			private List<String> usedPlaceholders;
 
 			{
 				refreshUsedPlaceholders();
@@ -54,7 +53,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			}
 
 			@Override
-			public Set<String> getUsedPlaceholders() {
+			public List<String> getUsedPlaceholders() {
 				return usedPlaceholders;
 			}
 
@@ -135,7 +134,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 
