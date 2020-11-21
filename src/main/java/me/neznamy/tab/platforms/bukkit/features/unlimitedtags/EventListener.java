@@ -34,7 +34,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerToggleSneakEvent e) {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || !p.isLoaded()) return;
 		if (!feature.isDisabledWorld(p.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, new Runnable() {
 			
 			@Override
