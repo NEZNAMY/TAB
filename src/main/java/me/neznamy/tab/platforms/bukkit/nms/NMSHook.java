@@ -152,7 +152,7 @@ public class NMSHook {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
 				return null;
 			} else {
-				return "Your server version is not marked as compatible. Disabling..";
+				return "This plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.16.4. Disabling.";
 			}
 		} catch (Throwable e) {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
@@ -160,7 +160,7 @@ public class NMSHook {
 				e.printStackTrace();
 				return msg;
 			} else {
-				return "Your server version is completely unsupported. Disabling..";
+				return "Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.16.4. Disabling.";
 			}
 		}
 	}
