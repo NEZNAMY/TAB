@@ -91,7 +91,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 			for (TabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue; //not displaying own armorstands
-				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
+				if (((Player) worldPlayer.getPlayer()).getWorld() != ((Player) all.getPlayer()).getWorld()) continue;
 				if (((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 					all.getArmorStandManager().spawn(worldPlayer);
 				}
@@ -148,7 +148,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 		for (TabPlayer viewer : Shared.getPlayers()) {
 			if (connectedPlayer == viewer) continue; //not displaying own armorstands
-			if (!viewer.getWorldName().equals(connectedPlayer.getWorldName())) continue;
+			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
 			if (((Player) viewer.getPlayer()).getLocation().distance(((Player) connectedPlayer.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
 			}
