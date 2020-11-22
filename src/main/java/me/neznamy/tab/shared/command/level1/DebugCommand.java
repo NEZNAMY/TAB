@@ -116,7 +116,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
-		if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
+		if (Shared.featureManager.getNameTagFeature() != null) {
 			boolean disabledNametags = Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
