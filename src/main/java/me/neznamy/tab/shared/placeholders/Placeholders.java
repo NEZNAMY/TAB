@@ -127,10 +127,6 @@ public class Placeholders {
 			return;
 		}
 
-		if (registeredPlaceholders.containsKey(identifier)) {
-			return;
-		}
-
 		if (identifier.startsWith("%animation:")) {
 			String animationName = identifier.substring(11, identifier.length()-1);
 			for (Animation a : Configs.animations) {
@@ -176,6 +172,11 @@ public class Placeholders {
 			Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
 			return;
 		}
+
+		if (registeredPlaceholders.containsKey(identifier)) {
+			return;
+		}
+		
 		//placeholderapi or invalid or sync
 		Shared.platform.registerUnknownPlaceholder(identifier);
 	}
