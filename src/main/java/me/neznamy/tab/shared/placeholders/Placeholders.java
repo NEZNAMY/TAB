@@ -173,7 +173,8 @@ public class Placeholders {
 			return;
 		}
 
-		if (registeredPlaceholders.containsKey(identifier)) {
+		if (registeredPlaceholders.containsKey(identifier) && !identifier.contains("_")) {
+			//internal placeholder
 			return;
 		}
 		
