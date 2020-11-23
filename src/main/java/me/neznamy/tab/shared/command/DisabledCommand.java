@@ -24,9 +24,10 @@ public class DisabledCommand {
 			}
 		} else {
 			if (hasAdminPermission) {
+				String command = Shared.platform.getSeparatorType().equals("world") ? "/tab" : "/btab";
 				messages.add("&m                                                                                ");
 				messages.add(" &cPlugin is disabled due to a broken configuration file (" + Shared.brokenFile + "). Check console for more details.");
-				messages.add(" &8>> &3&l/tab reload");
+				messages.add(" &8>> &3&l" + command + " reload");
 				messages.add("      - &7Reloads plugin and config");
 				messages.add("&m                                                                                ");
 			}
