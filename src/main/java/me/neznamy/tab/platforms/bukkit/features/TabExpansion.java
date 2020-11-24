@@ -77,7 +77,7 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (identifier.startsWith("replace_") && Premium.is()) {
 			String placeholder = "%" + identifier.substring(8) + "%";
 			String output = ((BukkitMethods) Shared.platform).setPlaceholders(player, placeholder);
-			Map<Object, Object> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
+			Map<Object, String> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
 			String replacement = Placeholder.findReplacement(replacements, output);
 			if (replacement.contains("%value%")) {
 				replacement = replacement.replace("%value%", output);
