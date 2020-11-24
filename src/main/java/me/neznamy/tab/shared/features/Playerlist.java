@@ -65,7 +65,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.getVersion().getMinorVersion() < 8) return;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return;

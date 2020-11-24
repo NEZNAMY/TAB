@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -30,9 +29,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 	
 	@Override
 	public void inject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
-		channel.pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
+		TabPlayer p = Shared.getPlayer(uuid);
+		if (p.getVersion().getMinorVersion() < 8) return;
+		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
+		p.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				TabPlayer player = Shared.getPlayer(uuid);
@@ -41,7 +41,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 					return;
 				}
 				try {
-					if (packet instanceof PlayerListItem && player.getVersion().getMinorVersion() >= 8) {
+					if (packet instanceof PlayerListItem) {
 						PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, player.getVersion());
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
 						super.write(context, info.create(player.getVersion()), channelPromise);
@@ -55,7 +55,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 							super.write(context, packet, channelPromise);
 							return;
 						}
-						if (packet instanceof ByteBuf && player.getVersion().getMinorVersion() >= 8) {
+						if (packet instanceof ByteBuf) {
                             // No need to clone the packet, if this errors it doesn't get flushed anyway
 							ByteBuf buf = ((ByteBuf) packet);
                             // Mark where the reader index is at
@@ -110,8 +110,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 	
 	@Override
 	public void uninject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
+		TabPlayer p = Shared.getPlayer(uuid);
+		if (p.getVersion().getMinorVersion() < 8) return;
+		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
 	}
 	
 	/**
