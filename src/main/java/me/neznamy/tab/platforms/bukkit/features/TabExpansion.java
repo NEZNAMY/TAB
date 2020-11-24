@@ -78,6 +78,11 @@ public class TabExpansion extends PlaceholderExpansion {
 			}
 			return replacement;
 		}
+		if (identifier.startsWith("placeholder_")) {
+			String placeholder = "%" + identifier.substring(12) + "%";
+			//using Property function for fast & easy handling of nested placeholders and different placeholder types
+			return new Property(p, placeholder, null).get();
+		}
 		String placeholder = identifier.replace("_raw", "");
 		Property prop = p.getProperty(placeholder);
 		if (prop != null) {
