@@ -14,7 +14,7 @@ public class RGBUtils {
 	private static final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");
 	
 	//pattern for &x&R&R&G&G&B&B
-	private static final Pattern fix3 = Pattern.compile("\\&x[\\&0-9a-fA-F]{12}");
+	private static final Pattern fix3 = Pattern.compile("\\\u00a7x[\\\u00a70-9a-fA-F]{12}");
 	
 	//pattern for #<RRGGBB>
 	private static final Pattern fix4 = Pattern.compile("#<[0-9a-fA-F]{6}>");
@@ -88,7 +88,7 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private static String fixFormat3(String text) {
-		String replaced = text.replace('\u00a7', '&');
+		String replaced = text;
 		Matcher m = fix3.matcher(replaced);
 		while (m.find()) {
 			String hexcode = m.group();
@@ -181,7 +181,7 @@ public class RGBUtils {
 	 */
 	private static String asGradient(TextColor start, String text, TextColor end) {
 		//lazy support for magic codes in gradients
-		String magicCodes = Placeholders.getLastColors(Placeholders.color(text));
+		String magicCodes = Placeholders.getLastColors(text);
 		String decolorized = text.substring(magicCodes.length());
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();

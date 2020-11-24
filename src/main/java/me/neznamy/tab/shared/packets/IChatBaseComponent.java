@@ -307,7 +307,7 @@ public class IChatBaseComponent {
 
 	public static IChatBaseComponent fromColoredText(String originalText){
 		if (originalText == null) return new IChatBaseComponent();
-		String text = originalText;
+		String text = Placeholders.color(originalText);
 		if (Configs.getSecretOption("rgb-support", true)) {
 			text = RGBUtils.applyFormats(text);
 		}
@@ -316,7 +316,7 @@ public class IChatBaseComponent {
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
 			char c = text.charAt(i);
-			if (c == Placeholders.colorChar || c == '&'){
+			if (c == Placeholders.colorChar){
 				i++;
 				if (i >= text.length()) {
 					break;
