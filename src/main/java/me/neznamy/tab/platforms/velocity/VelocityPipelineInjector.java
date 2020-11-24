@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 public class VelocityPipelineInjector extends PipelineInjector {
 	
@@ -36,9 +35,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 				}
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
-						PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, player.getVersion());
+						PacketPlayOutPlayerInfo info = deserializeInfoPacket(packet, player);
 						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-						super.write(context, info.create(player.getVersion()), channelPromise);
+						super.write(context, serializeInfoPacket(info, player), channelPromise);
 						return;
 					}
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {

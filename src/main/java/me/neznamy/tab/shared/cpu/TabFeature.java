@@ -26,6 +26,8 @@ public enum TabFeature {
 	WATERFALLFIX("Waterfall fix"),
 	PIPELINE_INJECTION("Pipeline injection"),
 	COMMAND_PROCESSING("Command processing"),
+	PACKET_DESERIALIZING("Packet deserializing"),
+	PACKET_SERIALIZING("Packet serializing"),
 	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu
