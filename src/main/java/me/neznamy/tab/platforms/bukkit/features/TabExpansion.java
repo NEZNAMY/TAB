@@ -29,13 +29,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	 */
 	public TabExpansion(JavaPlugin plugin) {
 		this.plugin = plugin;
-		Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				register();
-			}
-		});
+		Bukkit.getScheduler().runTask(plugin, () -> register());
 	}
 	
 	@Override

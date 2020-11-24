@@ -113,7 +113,7 @@ public interface PacketBuilder {
 		if (clientVersion.getMinorVersion() >= 13) {
 			return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
 		} else {
-			return cutTo(text, length);
+			return cutTo(IChatBaseComponent.fromColoredText(text).toLegacyText(), length);
 		}
 	}
 	

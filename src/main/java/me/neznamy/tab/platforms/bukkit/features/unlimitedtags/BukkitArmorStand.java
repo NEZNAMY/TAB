@@ -200,13 +200,7 @@ public class BukkitArmorStand implements ArmorStand {
 			} else {
 				//respawning so there's no animation and it's instant
 				viewer.sendPacket(destroyPacket);
-				Runnable spawn = new Runnable() {
-
-					@Override
-					public void run() {
-						spawn(viewer, false);
-					}
-				};
+				Runnable spawn = () -> spawn(viewer, false);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
 					Shared.cpu.runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.v1_8_0_BUG_COMPENSATION, spawn);

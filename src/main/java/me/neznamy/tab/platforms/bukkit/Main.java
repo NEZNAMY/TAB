@@ -44,13 +44,8 @@ public class Main extends JavaPlugin {
 						sender.sendMessage(Placeholders.color(message));
 					}
 				} else {
-					Shared.cpu.runMeasuredTask("processing command", TabFeature.COMMAND_PROCESSING, UsageType.COMMAND_PREPROCESS, new Runnable() {
-
-						@Override
-						public void run() {
-							Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-						}
-					});
+					Shared.cpu.runMeasuredTask("processing command", TabFeature.COMMAND_PROCESSING, UsageType.COMMAND_PREPROCESS, () -> 
+						Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args));
 				}
 				return false;
 			}
