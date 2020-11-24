@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
@@ -18,6 +19,7 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
@@ -117,14 +119,22 @@ public class FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
+	 * @throws Exception 
 	 */
-	public void onPacketPlayOutPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
+		long time = System.nanoTime();
+		PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, receiver.getVersion());
+		Shared.cpu.addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (Feature f : features.values()) {
 			if (!(f instanceof PlayerInfoPacketListener)) continue;
-			long time = System.nanoTime();
-			((PlayerInfoPacketListener)f).onPacketSend(receiver, packet);
+			time = System.nanoTime();
+			((PlayerInfoPacketListener)f).onPacketSend(receiver, info);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
+		time = System.nanoTime();
+		Object pack = info.create(receiver.getVersion());
+		Shared.cpu.addTime(TabFeature.PACKET_SERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		return pack;
 	}
 	
 	/**

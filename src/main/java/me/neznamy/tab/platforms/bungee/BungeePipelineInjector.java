@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -41,9 +40,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 				}
 				try {
 					if (packet instanceof PlayerListItem) {
-						PacketPlayOutPlayerInfo info = deserializeInfoPacket(packet, player);
-						Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-						super.write(context, serializeInfoPacket(info, player), channelPromise);
+						super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 						return;
 					}
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {

@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 	
@@ -67,9 +66,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 						}
 						Shared.featureManager.onPacketSend(player, packet);
 						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
-							PacketPlayOutPlayerInfo info = deserializeInfoPacket(packet, player);
-							Shared.featureManager.onPacketPlayOutPlayerInfo(player, info);
-							super.write(context, serializeInfoPacket(info, player), channelPromise);
+							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 							return;
 						}
 						super.write(context, packet, channelPromise);
