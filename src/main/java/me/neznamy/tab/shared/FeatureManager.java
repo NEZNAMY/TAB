@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -122,11 +124,17 @@ public class FeatureManager {
 	 * @throws Exception 
 	 */
 	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
+		List<PlayerInfoPacketListener> listeners = new ArrayList<PlayerInfoPacketListener>();
+		for (Feature f : features.values()) {
+			if (f instanceof PlayerInfoPacketListener) listeners.add((PlayerInfoPacketListener) f);
+		}
+		//not deserializing & serializing when there is not anyone to listen to the packet
+		if (listeners.isEmpty()) return packet;
+		
 		long time = System.nanoTime();
 		PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, receiver.getVersion());
 		Shared.cpu.addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
-		for (Feature f : features.values()) {
-			if (!(f instanceof PlayerInfoPacketListener)) continue;
+		for (PlayerInfoPacketListener f : listeners) {
 			time = System.nanoTime();
 			((PlayerInfoPacketListener)f).onPacketSend(receiver, info);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
