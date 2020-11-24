@@ -93,6 +93,7 @@ public class BungeeMethods implements PlatformMethods {
 	
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
+		if (identifier.startsWith("%rel_")) return;
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;

@@ -122,7 +122,7 @@ public class Placeholders {
 		}
 	}
 	public static void categorizeUsedPlaceholder(String identifier) {
-		if (identifier.startsWith("%rel_")) {
+		if (identifier.startsWith("%rel_") && !registeredPlaceholders.containsKey(identifier)) {
 			Shared.platform.registerUnknownPlaceholder(identifier);
 			return;
 		}
@@ -173,7 +173,7 @@ public class Placeholders {
 			return;
 		}
 
-		if (registeredPlaceholders.containsKey(identifier) && !identifier.contains("_")) {
+		if (registeredPlaceholders.containsKey(identifier)) {
 			//internal placeholder
 			return;
 		}
