@@ -30,7 +30,7 @@ public class PacketAPI {
 	 * @param color - color field (1.13+)
 	 */
 	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
-		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.getSecretOption("unregister-before-register", true) && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
@@ -45,7 +45,7 @@ public class PacketAPI {
 	 * @param displayType - display type of the value (only supported in Playerlist)
 	 */
 	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
-		if (to.getVersion().getMinorVersion() >= 8 && Configs.SECRET_unregister_before_register && Shared.platform.getSeparatorType().equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && Configs.getSecretOption("unregister-before-register", true) && Shared.platform.getSeparatorType().equals("world")) {
 			to.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(objectiveName));
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardObjective.REGISTER(objectiveName, title, displayType));

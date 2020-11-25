@@ -194,7 +194,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getNickname();
 					}
 					if (name == null || name.length() == 0) return p.getName();
-					return Configs.SECRET_essentials_nickname_prefix + name;
+					return Configs.getSecretOption("essentials-nickname-prefix", "") + name;
 				}
 			});
 		} else {

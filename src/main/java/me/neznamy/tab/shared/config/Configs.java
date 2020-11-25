@@ -39,12 +39,7 @@ public class Configs {
 	public static String noAfk;
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
-	public static double SECRET_NTX_space;
-	public static boolean SECRET_invisible_nametags;
-	public static boolean SECRET_unregister_before_register;
-	public static boolean SECRET_remove_ghost_players;
 	public static boolean SECRET_debugMode;
-	public static String SECRET_essentials_nickname_prefix;
 
 
 	public static ConfigurationFile animation;
@@ -126,12 +121,7 @@ public class Configs {
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
-		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
-		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
-		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
-		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
 		SECRET_debugMode = getSecretOption("debug", false);
-		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
 		Placeholders.findAllUsed(config.getValues());
 	}
 	public static void loadAnimations() throws Exception {

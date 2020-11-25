@@ -47,6 +47,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	private boolean disableOnBoats;
+	private float spaceBetweenLines;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 	
@@ -59,6 +60,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
+		spaceBetweenLines = Configs.getSecretOption("ntx-space", 0.22F);
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
@@ -189,11 +191,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
-		double height = -Configs.SECRET_NTX_space;
+		double height = -spaceBetweenLines;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=spaceBetweenLines, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
@@ -205,11 +207,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	
 	public void fixArmorStandHeights(TabPlayer p) {
 		p.getArmorStandManager().refresh();
-		double currentY = -Configs.SECRET_NTX_space;
+		double currentY = -spaceBetweenLines;
 		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
 			if (as.getProperty().get().length() != 0) {
-				currentY += Configs.SECRET_NTX_space;
+				currentY += spaceBetweenLines;
 				as.setOffset(currentY);
 			}
 		}

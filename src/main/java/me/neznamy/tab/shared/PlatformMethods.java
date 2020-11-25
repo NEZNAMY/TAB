@@ -206,7 +206,7 @@ public interface PlatformMethods {
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
 		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.SECRET_remove_ghost_players) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (Configs.getSecretOption("remove-ghost-players", false)) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) Shared.featureManager.registerFeature("tabobjective", new TabObjective());
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();
