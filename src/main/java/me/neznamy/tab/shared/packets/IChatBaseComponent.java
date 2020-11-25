@@ -391,6 +391,29 @@ public class IChatBaseComponent {
 	 */
 	public String toLegacyText() {
 		StringBuilder builder = new StringBuilder();
+		append(builder, "");
+		return builder.toString();
+	}
+
+	private String append(StringBuilder builder, String previousFormatting) {
+		String formatting = previousFormatting;
+		if (text != null) {
+			formatting = getFormatting();
+			if (!formatting.equals(previousFormatting)) {
+				builder.append(formatting);
+			}
+			builder.append(text);
+			
+		}
+		if (extra != null)
+			for (IChatBaseComponent component : extra) {
+				formatting = component.append(builder, formatting);
+			}
+		return formatting;
+	}
+	
+	private String getFormatting() {
+		StringBuilder builder = new StringBuilder();
 		if (color != null) {
 			if (color.getLegacyColor() == EnumChatFormat.WHITE) {
 				//preventing unwanted &r -> &f conversion and stopping the <1.13 client bug fix from working
@@ -404,12 +427,6 @@ public class IChatBaseComponent {
 		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
-		if (text != null) builder.append(text);
-		if (extra != null) {
-			for (IChatBaseComponent component : extra) {
-				builder.append(component.toLegacyText());
-			}
-		}
 		return builder.toString();
 	}
 
