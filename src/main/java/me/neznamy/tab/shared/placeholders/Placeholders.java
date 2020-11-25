@@ -131,7 +131,7 @@ public class Placeholders {
 			String animationName = identifier.substring(11, identifier.length()-1);
 			for (Animation a : Configs.animations) {
 				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerPlaceholder(new ServerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
+					registerPlaceholder(new ServerPlaceholder(identifier, 50) {
 						
 						public String get() {
 							return a.getMessage();
