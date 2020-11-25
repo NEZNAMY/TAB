@@ -57,9 +57,7 @@ public class Placeholders {
 			Placeholder pl = getPlaceholder(placeholder);
 			if (pl == null) continue;
 			for (String nestedString : pl.getNestedStrings()) {
-				for (String s : detectAll(nestedString)) {
-					if (!base.contains(s)) base.add(s);
-				}
+				base.addAll(getUsedPlaceholderIdentifiersRecursive(nestedString));
 			}
 		}
 		return base;
