@@ -78,10 +78,8 @@ public class Configs {
 		errorFile = new File(Shared.platform.getDataFolder(), "errors.txt");
 		papiErrorFile = new File(Shared.platform.getDataFolder(), "PlaceholderAPI.errors.txt");
 		if (errorFile.exists() && errorFile.length() > 10) {
-			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
+			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
-//		Placeholders.allUsedPlaceholderIdentifiers = new HashSet<String>(); //not kiling the API on /tab reload
-//		Placeholders.registeredPlaceholders = new HashMap<String, Placeholder>();
 		removeAdvancedConfig();
 		loadConfig();
 		loadAnimations();
