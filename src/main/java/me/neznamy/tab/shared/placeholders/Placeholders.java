@@ -11,13 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.conditions.Condition;
-import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Messy class to be moved into PlaceholderManager class
@@ -122,63 +116,12 @@ public class Placeholders {
 		}
 	}
 	public static void categorizeUsedPlaceholder(String identifier) {
-		if (identifier.startsWith("%rel_") && !registeredPlaceholders.containsKey(identifier)) {
-			Shared.platform.registerUnknownPlaceholder(identifier);
-			return;
-		}
-
-		if (identifier.startsWith("%animation:")) {
-			String animationName = identifier.substring(11, identifier.length()-1);
-			for (Animation a : Configs.animations) {
-				if (a.getName().equalsIgnoreCase(animationName)) {
-					registerPlaceholder(new ServerPlaceholder(identifier, 50) {
-						
-						public String get() {
-							return a.getMessage();
-						}
-						
-						@Override
-						public String[] getNestedStrings(){
-							return a.getAllMessages();
-						}
-						
-					});
-					return;
-				}
-			}
-			Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
-			return;
-		}
-		if (identifier.startsWith("%condition:")) {
-			String conditionName = identifier.substring(11, identifier.length()-1);
-			for (Condition c : Premium.conditions.values()) {
-				if (c.getName().equalsIgnoreCase(conditionName)) {
-					registerPlaceholder(new PlayerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
-
-						@Override
-						public String get(TabPlayer p) {
-							return c.getText(p);
-						}
-						
-						@Override
-						public String[] getNestedStrings(){
-							return new String[] {c.yes, c.no};
-						}
-						
-					});
-					return;
-				}
-			}
-			Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
-			return;
-		}
-
 		if (registeredPlaceholders.containsKey(identifier)) {
 			//internal placeholder
 			return;
 		}
-		
-		//placeholderapi or invalid or sync
+
+		//placeholderapi or invalid
 		Shared.platform.registerUnknownPlaceholder(identifier);
 	}
 	

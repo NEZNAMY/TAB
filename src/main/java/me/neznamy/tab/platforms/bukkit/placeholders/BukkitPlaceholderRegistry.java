@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitMethods;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
@@ -29,10 +31,12 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
+	private JavaPlugin plugin;
 	private Economy economy;
 	private Chat chat;
 
-	public BukkitPlaceholderRegistry() {
+	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
+		this.plugin = plugin;
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
 			if (rspEconomy != null) economy = rspEconomy.getProvider();
@@ -50,7 +54,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return "-";
 			}
 		});
-		
+
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
@@ -104,6 +108,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		registerVaultPlaceholders();
 		registerPositionPlaceholders();
 		registerEssentialsPlaceholders();
+		registerSyncPlaceholders();
 	}
 
 	private void registerAFKPlaceholder() {
@@ -166,7 +171,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			});
 		}
 	}
-	
+
 	private void registerPositionPlaceholders() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%xPos%", 100) {
 			public String get(TabPlayer p) {
@@ -184,7 +189,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 	}
-	
+
 	private void registerEssentialsPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%essentialsnick%", 1000) {
@@ -203,6 +208,41 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					return p.getName();
 				}
 			});
+		}
+	}
+
+	private void registerSyncPlaceholders() {
+		for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
+			if (identifier.startsWith("%sync:")) {
+				PlaceholderManager pl = PlaceholderManager.getInstance();
+				int refresh;
+				if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
+					refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
+				} else if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) {
+					refresh = pl.playerPlaceholderRefreshIntervals.get(identifier);
+				} else {
+					refresh = PlaceholderManager.getInstance().defaultRefresh;
+				}
+				Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+
+					@Override
+					public String get(TabPlayer p) {
+						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+							@Override
+							public void run() {
+								long time = System.nanoTime();
+								String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
+								String value = ((BukkitMethods) Shared.platform).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+								lastValue.put(p.getName(), value);
+								if (!forceUpdate.contains(p.getName())) forceUpdate.add(p.getName());
+								Shared.cpu.addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
+							}
+						});
+						return getLastValue(p);
+					}
+				});
+			}
 		}
 	}
 }

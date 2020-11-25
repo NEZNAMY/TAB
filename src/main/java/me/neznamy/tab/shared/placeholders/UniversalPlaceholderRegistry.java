@@ -7,8 +7,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.conditions.Condition;
+import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.permission.LuckPerms;
 
 /**
@@ -18,7 +22,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	//decimal formatter for 2 decimal numbers
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
-	
+
 	@Override
 	public void registerPlaceholders() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"%", 1000) {
@@ -36,7 +40,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		
+
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%nick%", 999999999) {
 			public String get(TabPlayer p) {
 				return p.getName();
@@ -76,8 +80,10 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		registerMemoryPlaceholders();
 		registerStaffPlaceholders();
 		registerRankPlaceholder();
+		registerAnimationPlaceholders();
+		registerConditionPlaceholders();
 	}
-	
+
 	private void registerMemoryPlaceholders() {
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
 			public String get() {
@@ -100,7 +106,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 	}
-	
+
 	private void registerLuckPermsPlaceholders() {
 		if (Shared.permissionPlugin instanceof LuckPerms) {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
@@ -115,7 +121,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			});
 		}
 	}
-	
+
 	private void registerStaffPlaceholders() {
 		Placeholders.registerPlaceholder(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
@@ -136,7 +142,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 	}
-	
+
 	private void registerRankPlaceholder() {
 		Placeholders.registerPlaceholder(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(TabPlayer p) {
@@ -150,7 +156,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 				return p.getGroup();
 			}
-			
+
 			@Override
 			public String[] getNestedStrings(){
 				Set<String> list = new HashSet<String>();
@@ -160,5 +166,62 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return list.toArray(new String[0]);
 			}
 		});
+	}
+
+	//making it this complicated to fix case-sensitivity
+	private void registerAnimationPlaceholders() {
+		main:
+			for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
+				if (identifier.startsWith("%animation:")) {
+					String animationName = identifier.substring(11, identifier.length()-1);
+					for (Animation a : Configs.animations) {
+						if (a.getName().equalsIgnoreCase(animationName)) {
+							Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, 50) {
+
+								public String get() {
+									return a.getMessage();
+								}
+
+								@Override
+								public String[] getNestedStrings(){
+									return a.getAllMessages();
+								}
+
+							});
+							continue main;
+						}
+					}
+					Shared.errorManager.startupWarn("Unknown animation &e\"" + animationName + "\"&c used in configuration. You need to define it in animations.yml");
+				}
+			}
+	}
+
+	//making it this complicated to fix case-sensitivity
+	private void registerConditionPlaceholders() {
+		main:
+		for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
+			if (identifier.startsWith("%condition:")) {
+				String conditionName = identifier.substring(11, identifier.length()-1);
+				for (Condition c : Premium.conditions.values()) {
+					if (c.getName().equalsIgnoreCase(conditionName)) {
+						Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
+
+							@Override
+							public String get(TabPlayer p) {
+								return c.getText(p);
+							}
+
+							@Override
+							public String[] getNestedStrings(){
+								return new String[] {c.yes, c.no};
+							}
+
+						});
+						continue main;
+					}
+				}
+				Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
+			}
+		}
 	}
 }
