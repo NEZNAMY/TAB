@@ -46,30 +46,30 @@ public class BungeePipelineInjector extends PipelineInjector {
 					if (Shared.featureManager.isFeatureEnabled("nametag16")) {
 						long time = System.nanoTime();
 						if (packet instanceof Team) {
+							//team packet coming from a bungeecord plugin
 							modifyPlayers((Team) packet);
 							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 							super.write(context, packet, channelPromise);
 							return;
 						}
 						if (packet instanceof ByteBuf) {
-                            // No need to clone the packet, if this errors it doesn't get flushed anyway
 							ByteBuf buf = ((ByteBuf) packet);
-                            // Mark where the reader index is at
 							int marker = buf.readerIndex();
-							if (buf.readByte() == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
+							int packetId = buf.readByte();
+							if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
+								//team packet sent by backend server, proxy does not deserialize those for whatever reason
 								Team team = new Team();
 								team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-                                // From here on this buffers usage has ended, it needs to be released. Refer to
-                                // io.netty.util.ReferenceCounted for an explanation.
-                                // Side-note: Netty ByteBufs should always be read with try{} finally {buf.release()}
-                                // to ensure proper freeing of the buffer all the time.
 								buf.release();
 								modifyPlayers(team);
 								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 								super.write(context, team, channelPromise);
 								return;
+							} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
+								//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
+								buf.release();
+								return;
 							}
-                            // Reset the reader back if the condition doesnt end the method
 							buf.readerIndex(marker);
 						}
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
