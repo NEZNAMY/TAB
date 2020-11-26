@@ -89,17 +89,19 @@ public interface PacketBuilder {
 	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception;
 
 	/**
-	 * Cuts given string to specified character length (or length-1 if last character is a color character)
+	 * Cuts given string to specified character length (or length-1 if last character is a color character) and translates RGB to legacy colors
 	 * @param string - string to cut
 	 * @param length - length to cut to
 	 * @return the cut text or original if cut was not needed
 	 */
 	public default String cutTo(String string, int length) {
-		if (string == null || string.length() <= length) return string;
-		if (string.charAt(length-1) == '\u00a7') {
-			return string.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
+		if (string == null) return null;
+		String legacyText = IChatBaseComponent.fromColoredText(string).toLegacyText();
+		if (legacyText.length() <= length) return legacyText;
+		if (legacyText.charAt(length-1) == '\u00a7') {
+			return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
 		} else {
-			return string.substring(0, length);
+			return legacyText.substring(0, length);
 		}
 	}
 	
@@ -113,7 +115,7 @@ public interface PacketBuilder {
 		if (clientVersion.getMinorVersion() >= 13) {
 			return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
 		} else {
-			return cutTo(IChatBaseComponent.fromColoredText(text).toLegacyText(), length);
+			return cutTo(text, length);
 		}
 	}
 	
