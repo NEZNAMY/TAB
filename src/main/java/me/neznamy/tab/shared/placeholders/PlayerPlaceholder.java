@@ -34,7 +34,6 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValue.containsKey(p.getName())) {
-			lastValue.put(p.getName(), ""); //preventing stack overflow on bungee when initializing
 			update(p);
 		}
 		return lastValue.get(p.getName());
