@@ -54,6 +54,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			Shared.debug("ProtocolSupport returned protocol version " + version + " for " + getName());
 			return version;
 		} catch (Throwable e) {
+			if (e.getCause() != null) e = e.getCause();
 			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ProtocolSupport", e);
 		}
 	}
