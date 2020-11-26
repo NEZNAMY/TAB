@@ -26,6 +26,11 @@ public abstract class ServerPlaceholder extends Placeholder{
 	public boolean update() {
 		String newValue = get();
 		if (newValue == null) newValue = "";
+		
+		//make invalid placeholders return identifier instead of nothing
+		if (newValue.equals(identifier) && lastValue == null) {
+			lastValue = identifier;
+		}
 		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && (lastValue == null || !lastValue.equals(newValue))) {
 			lastValue = newValue;
 			return true;

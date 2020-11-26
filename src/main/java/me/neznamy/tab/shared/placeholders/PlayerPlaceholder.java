@@ -21,6 +21,11 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public boolean update(TabPlayer p) {
 		String newValue = get((TabPlayer) p);
 		if (newValue == null) newValue = "";
+		
+		//make invalid placeholders return identifier instead of nothing
+		if (newValue.equals(identifier) && !lastValue.containsKey(p.getName())) {
+			lastValue.put(p.getName(), identifier);
+		}
 		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
 			lastValue.put(p.getName(), newValue);
 			return true;
