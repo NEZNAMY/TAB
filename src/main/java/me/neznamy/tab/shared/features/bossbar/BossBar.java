@@ -44,7 +44,16 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
 		perWorld = Configs.bossbar.getConfigurationSection("per-world");
 		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
-			boolean permissionRequired = Configs.bossbar.getBoolean("bars." + bar + ".permission-required", false);
+			String condition = null;
+			Object obj = Configs.bossbar.getBoolean("bars." + bar + ".permission-required");
+			if (obj != null) {
+				if ((boolean) obj) {
+					condition = "permission:tab.bossbar." + bar;
+				}
+			} else {
+				condition = Configs.bossbar.getString("bars." + bar + ".display-condition", null);
+			}
+			
 			String style = Configs.bossbar.getString("bars." + bar + ".style");
 			String color = Configs.bossbar.getString("bars." + bar + ".color");
 			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
@@ -65,7 +74,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 				text = "";
 				Shared.errorManager.missingAttribute("BossBar", bar, "text");
 			}
-			lines.put(bar+"", new BossBarLine(bar+"", permissionRequired, color, style, text, progress));
+			lines.put(bar+"", new BossBarLine(bar+"", condition, color, style, text, progress));
 		}
 		for (String bar : defaultBars.toArray(new String[0])) {
 			if (lines.get(bar) == null) {
@@ -107,7 +116,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
-						if (!bar.hasPermission(p)) {
+						if (!bar.isConditionMet(p)) {
 							bar.remove(p);
 							p.getActiveBossBars().remove(bar);
 						}
@@ -164,7 +173,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		if (bars == null) return;
 		for (String defaultBar : bars) {
 			BossBarLine bar = lines.get(defaultBar);
-			if (bar.hasPermission(p) && !p.getActiveBossBars().contains(bar)) {
+			if (bar.isConditionMet(p) && !p.getActiveBossBars().contains(bar)) {
 				bar.create(p);
 				p.getActiveBossBars().add(bar);
 			}

@@ -158,7 +158,7 @@ public class TABAPI {
 	public static BossBar createBossBar(String name, String title, String progress, String color, String style) {
 		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) Shared.featureManager.getFeature("bossbar");
 		if (feature == null) throw new IllegalStateException("Bossbar feature is not enabled");
-		BossBar bar = new BossBarLine(name, false, color, style, title, progress);
+		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
 		feature.lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}

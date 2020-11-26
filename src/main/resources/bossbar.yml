@@ -29,16 +29,13 @@ per-world:
 
 bars:
   ServerInfo:
-    #tab.bossbar.<name>, in this case tab.bossbar.ServerInfo
-    permission-required: false
-    
     #all 4 settings support placeholders including animations, you can use it to achieve changing text
     style: "PROGRESS"
     color: "%animation:barcolors%"
     progress: "100" # in %
     text: "&fWebsite: &bwww.domain.com"
   test:
-    permission-required: false
+    display-condition: "permission:tab.bossbar.test"
     style: PROGRESS
     color: WHITE
     progress: "100"

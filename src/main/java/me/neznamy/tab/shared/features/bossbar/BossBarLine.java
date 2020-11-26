@@ -2,9 +2,13 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.premium.Premium;
+import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -17,7 +21,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	private static int idCounter = 1000000000;
 	
 	public String name;
-	public boolean permissionRequired;
+	public Condition displayCondition;
 	public UUID uuid; //1.9+
 	public int entityId = idCounter++; // <1.9
 	public String style;
@@ -25,9 +29,15 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	public String title;
 	public String progress;
 
-	public BossBarLine(String name, boolean permissionRequired, String color, String style, String title, String progress) {
+	public BossBarLine(String name, String displayCondition, String color, String style, String title, String progress) {
 		this.name = name;
-		this.permissionRequired = permissionRequired;
+		if (displayCondition != null) {
+			if (Premium.conditions.containsKey(displayCondition)) {
+				this.displayCondition = Premium.conditions.get(displayCondition);
+			} else {
+				this.displayCondition = Condition.compile(null, Lists.newArrayList(displayCondition.split(";")), "AND", null, null);
+			}
+		}
 		this.uuid = UUID.randomUUID();
 		this.color = color;
 		this.style = style;
@@ -39,8 +49,9 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
 	}
 	
-	public boolean hasPermission(TabPlayer p) {
-		return !permissionRequired || p.hasPermission("tab.bossbar." + name);
+	public boolean isConditionMet(TabPlayer p) {
+		if (displayCondition == null) return true;
+		return displayCondition.isMet(p);
 	}
 	
 	public BarColor parseColor(String color) {
