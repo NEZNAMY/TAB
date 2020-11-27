@@ -7,13 +7,14 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 
 /**
  * Feature handler for nametag feature
  */
-public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener {
+public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, LoginPacketListener {
 
 	public NameTag16() {
 		refreshUsedPlaceholders();
@@ -103,5 +104,13 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGS;
+	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		for (TabPlayer all : Shared.getPlayers()) {
+			if (!all.isLoaded()) continue;
+			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(packetReceiver);
+		}
 	}
 }

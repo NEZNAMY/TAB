@@ -13,9 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.features.TabObjective;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -74,27 +72,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 						}
 						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					}
+					//client reset packet
 					if (packet instanceof Login) {
-						//registering all teams again because client reset packet is sent
-						Shared.cpu.runTaskLater(100, "Reapplying scoreboard components", TabFeature.WATERFALLFIX, UsageType.PACKET_READING, new Runnable() {
-
-							@Override
-							public void run() {
-								if (Shared.featureManager.isFeatureEnabled("nametag16")) {
-									for (TabPlayer all : Shared.getPlayers()) {
-										all.registerTeam(player);
-									}
-								}
-								TabObjective objective = (TabObjective) Shared.featureManager.getFeature("tabobjective");
-								if (objective != null) {
-									objective.onJoin(player);
-								}
-								BelowName belowname = (BelowName) Shared.featureManager.getFeature("belowname");
-								if (belowname != null) {
-									belowname.onJoin(player);
-								}
-							}
-						});
+						//sending asynchronously to not be faster than login packet itself
+						Shared.cpu.runTask("processing Login packet", () -> Shared.featureManager.onLoginPacket(player));
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);

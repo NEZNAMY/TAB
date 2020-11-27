@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -21,7 +22,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
+public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener {
 
 	private final String ObjectiveName = "TAB-BelowName";
 	private final int DisplaySlot = 2;
@@ -62,10 +63,6 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 
-			/**
-			 * Returns name of the feature displayed in /tab cpu
-			 * @return name of the feature displayed in /tab cpu
-			 */
 			@Override
 			public TabFeature getFeatureType() {
 				return TabFeature.BELOWNAME_TEXT;
@@ -143,12 +140,17 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BELOWNAME_NUMBER;
+	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
+		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		for (TabPlayer all : Shared.getPlayers()){
+			if (all.isLoaded()) PacketAPI.setScoreboardScore(packetReceiver, all.getName(), ObjectiveName, getValue(all));
+		}
 	}
 }

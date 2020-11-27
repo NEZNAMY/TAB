@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.Feature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
@@ -250,8 +251,8 @@ public class FeatureManager {
 	}
 	
 	/**
-	 * 
-	 * @param respawned
+	 * Calls onRespawn on all featurs that implement RespawnEventListener and measures how long it took them to process
+	 * @param respawned - player who respawned
 	 */
 	public void onRespawn(TabPlayer respawned) {
 		for (Feature f : features.values()) {
@@ -259,6 +260,19 @@ public class FeatureManager {
 			long time = System.nanoTime();
 			((RespawnEventListener)f).onRespawn(respawned);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
+		}
+	}
+	
+	/**
+	 * Calls onLoginPacket on all featurs that implement LoginPacketListener and measures how long it took them to process
+	 * @param packetReceiver - player who received the packet
+	 */
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		for (Feature f : features.values()) {
+			if (!(f instanceof LoginPacketListener)) continue;
+			long time = System.nanoTime();
+			((LoginPacketListener)f).onLoginPacket(packetReceiver);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_LOGIN, System.nanoTime()-time);
 		}
 	}
 	

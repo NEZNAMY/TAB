@@ -23,7 +23,6 @@ public enum TabFeature {
 	GROUP_REFRESHING("Permission group refreshing"),
 	PLACEHOLDER_REFRESHING("Refreshing placeholders"),
 	SORTING("Sorting"),
-	WATERFALLFIX("Waterfall fix"),
 	PIPELINE_INJECTION("Pipeline injection"),
 	COMMAND_PROCESSING("Command processing"),
 	PACKET_DESERIALIZING("Packet deserializing"),

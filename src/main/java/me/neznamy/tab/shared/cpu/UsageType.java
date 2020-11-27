@@ -23,6 +23,7 @@ public enum UsageType {
 	PACKET_ENTITY_MOVE("PacketPlayOutEntity"),
 	PACKET_NAMED_ENTITY_SPAWN("PacketPlayOutNamedEntitySpawn"),
 	PACKET_PLAYER_INFO("PacketPlayOutPlayerInfo"),
+	PACKET_LOGIN("PacketLogin"),
 	
 	//nametags
 	REFRESHING_COLLISION("Refreshing collision rule"),
