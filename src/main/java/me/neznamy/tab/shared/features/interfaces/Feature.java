@@ -16,12 +16,12 @@ public interface Feature {
 		if (disabledWorlds == null) return false;
 		if (disabledWorlds.contains("WHITELIST")) {
 			for (String enabled : disabledWorlds) {
-				if (enabled != null && enabled.equals(world)) return false;
+				if (enabled != null && enabled.equalsIgnoreCase(world)) return false;
 			}
 			return true;
 		} else {
 			for (String disabled : disabledWorlds) {
-				if (disabled != null && disabled.equals(world)) return true;
+				if (disabled != null && disabled.equalsIgnoreCase(world)) return true;
 			}
 			return false;
 		}
