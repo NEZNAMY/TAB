@@ -74,8 +74,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 					}
 					//client reset packet
 					if (packet instanceof Login) {
-						//sending asynchronously to not be faster than login packet itself
-						Shared.cpu.runTask("processing Login packet", () -> Shared.featureManager.onLoginPacket(player));
+						//making sure to not send own packets before login packet is actually sent
+						super.write(context, packet, channelPromise);
+						Shared.featureManager.onLoginPacket(player);
+						return;
 					}
 				} catch (Throwable e){
 					Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
