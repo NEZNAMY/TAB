@@ -49,12 +49,7 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return;
-		Shared.cpu.runTask("processing PlayerQuitEvent", new Runnable() {
-
-			public void run() {
-				Shared.featureManager.onQuit(disconnectedPlayer);
-			}
-		});
+		Shared.cpu.runTask("processing PlayerQuitEvent", () -> Shared.featureManager.onQuit(disconnectedPlayer));
 		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 
