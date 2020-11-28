@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.command.level1;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 
 /**
@@ -17,7 +16,7 @@ public class CpuTestCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		Shared.cpu.runTask("testing cpu power", new Runnable() {
+		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -26,7 +25,7 @@ public class CpuTestCommand extends SubCommand {
 				test();
 				sendMessage(sender, "&9Task took &6" + (System.currentTimeMillis()-time) + "ms &9to process");
 			}
-		});
+		}).start();
 	}
 	
 	public void test() {
