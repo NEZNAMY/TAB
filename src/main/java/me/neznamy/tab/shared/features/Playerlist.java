@@ -75,7 +75,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
-				if (ADD && (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
+				if (ADD && Shared.featureManager.getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
 					Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
 					playerInfoData.name = packetPlayer.getName();
 				}

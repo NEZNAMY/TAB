@@ -65,7 +65,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
 
-		boolean sorting = Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx");
+		boolean sorting = Shared.featureManager.getNameTagFeature() != null;
 		String sortingType;
 
 		if (sorting) {
