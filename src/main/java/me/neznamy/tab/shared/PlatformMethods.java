@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -215,5 +216,8 @@ public interface PlatformMethods {
 		}
 		new GroupRefresher();
 		new UpdateChecker();
+		if (Configs.getSecretOption("layout", false)) {
+			Shared.featureManager.registerFeature("layout", new Layout());
+		}
 	}
 }
