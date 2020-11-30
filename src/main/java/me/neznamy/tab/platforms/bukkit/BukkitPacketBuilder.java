@@ -637,8 +637,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PacketPlayOutScoreboardTeam_CHATFORMAT.set(nmsPacket, Enum.valueOf((Class<Enum>)EnumChatFormat_, format.toString()));
 		} else {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, packet.name);
-			PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
-			PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
+			if (prefix != null) PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
+			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
 		}
 		if (PacketPlayOutScoreboardTeam_COLLISION != null) PacketPlayOutScoreboardTeam_COLLISION.set(nmsPacket, packet.collisionRule);
 		PacketPlayOutScoreboardTeam_PLAYERS.set(nmsPacket, packet.players);
