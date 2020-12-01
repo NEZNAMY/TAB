@@ -99,7 +99,7 @@ public class DebugCommand extends SubCommand {
 
 		if (sorting) {
 			if (Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
-				sendMessage(sender, "&eTeam name: &cSorting disabled in player's world");
+				sendMessage(sender, "&eTeam name: &cSorting disabled in player's " + Shared.platform.getSeparatorType());
 			} else {
 				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
 				if (analyzed.getTeamNameNote() != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.getTeamNameNote());
@@ -149,7 +149,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
 		if (disabled) {
-			sendMessage(sender, "&a" + property + ": &cDisabled in player's world");
+			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + Shared.platform.getSeparatorType());
 		} else {
 			Property pr = analyzed.getProperty(property);
 			String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
