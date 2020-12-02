@@ -31,7 +31,7 @@ public class ParentGroup {
 			if (child.getTitle() != null) {
 				String[] title = child.getTitle().split("\\n");
 				for (String line : title) {
-					texts.add(IChatBaseComponent.optimizedComponent(new Property(viewer, line, null).get()));
+					texts.add(IChatBaseComponent.optimizedComponent(new Property(viewer, line).get()));
 				}
 			}
 			for (TabPlayer selectedPlayer : selected) {

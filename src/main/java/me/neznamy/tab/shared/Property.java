@@ -35,6 +35,10 @@ public class Property {
 	//used relational placeholders in current raw value
 	public List<String> relPlaceholders;
 
+	public Property(TabPlayer owner, String rawValue) {
+		this(owner, rawValue, null);
+	}
+	
 	public Property(TabPlayer owner, String rawValue, String source) {
 		this.owner = owner;
 		this.source = source;

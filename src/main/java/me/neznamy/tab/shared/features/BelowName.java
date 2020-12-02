@@ -38,7 +38,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
-		textProperty = new Property(null, text, null);
+		textProperty = new Property(null, text);
 		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
 
 			private List<String> usedPlaceholders;
