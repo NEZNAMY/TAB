@@ -68,6 +68,9 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (identifier.equals("bossbar_visible")) {
 			return p.hasBossbarVisible() ? "Enabled" : "Disabled";
 		}
+		if (identifier.equals("ntpreview")) {
+			return p.isPreviewingNametag() ? "Enabled" : "Disabled";
+		}
 		if (identifier.startsWith("replace_") && Premium.is()) {
 			String placeholder = "%" + identifier.substring(8) + "%";
 			String output = ((BukkitMethods) Shared.platform).setPlaceholders(player, placeholder);
