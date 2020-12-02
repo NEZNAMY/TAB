@@ -159,6 +159,7 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {
+		if (config == null) return defaultValue;
 		Object value = config.getObject(path);
 		if (value == null) return defaultValue;
 		if (defaultValue instanceof String) return (T) value.toString();
