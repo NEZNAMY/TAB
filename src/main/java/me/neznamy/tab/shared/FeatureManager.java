@@ -75,7 +75,7 @@ public class FeatureManager {
 	 * This function is called on plugin startup
 	 */
 	public void load() {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof Loadable)) continue;
 			((Loadable)f).load();
 		}
@@ -86,7 +86,7 @@ public class FeatureManager {
 	 * This function is called on plugin unload
 	 */
 	public void unload() {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof Loadable)) continue;
 			((Loadable)f).unload();
 		}
@@ -99,7 +99,7 @@ public class FeatureManager {
 	 * @param force - whether refresh should be forced or not
 	 */
 	public void refresh(TabPlayer refreshed, boolean force) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof Refreshable)) continue;
 			((Refreshable)f).refresh(refreshed, force);
 		}
@@ -110,7 +110,7 @@ public class FeatureManager {
 	 * This function is called when new placeholders enter the game (usually when a command to assign property is ran)
 	 */
 	public void refreshUsedPlaceholders() {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof Refreshable)) continue;
 			((Refreshable)f).refreshUsedPlaceholders();
 		}
@@ -126,7 +126,7 @@ public class FeatureManager {
 	 */
 	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
 		List<PlayerInfoPacketListener> listeners = new ArrayList<PlayerInfoPacketListener>();
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (f instanceof PlayerInfoPacketListener) listeners.add((PlayerInfoPacketListener) f);
 		}
 		//not deserializing & serializing when there is not anyone to listen to the packet
@@ -152,7 +152,7 @@ public class FeatureManager {
 	 * @param disconnectedPlayer - player who disconnected
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof QuitEventListener)) continue;
 			long time = System.nanoTime();
 			((QuitEventListener)f).onQuit(disconnectedPlayer);
@@ -166,7 +166,7 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof JoinEventListener)) continue;
 			long time = System.nanoTime();
 			((JoinEventListener)f).onJoin(connectedPlayer);
@@ -183,7 +183,7 @@ public class FeatureManager {
 	 * @param to - name of the new world/server
 	 */
 	public void onWorldChange(TabPlayer changed, String from, String to) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();
 			((WorldChangeListener)f).onWorldChange(changed, from, to);
@@ -200,7 +200,7 @@ public class FeatureManager {
 	 */
 	public boolean onCommand(TabPlayer sender, String command) {
 		boolean cancel = false;
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof CommandListener)) continue;
 			long time = System.nanoTime();
 			if (((CommandListener)f).onCommand(sender, command)) cancel = true;
@@ -218,7 +218,7 @@ public class FeatureManager {
 	 */
 	public Object onPacketReceive(TabPlayer receiver, Object packet){
 		Object newPacket = packet;
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof RawPacketFeature)) continue;
 			long time = System.nanoTime();
 			try {
@@ -238,7 +238,7 @@ public class FeatureManager {
 	 * @param packet - OUT packet coming from the server
 	 */
 	public void onPacketSend(TabPlayer receiver, Object packet){
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof RawPacketFeature)) continue;
 			long time = System.nanoTime();
 			try {
@@ -255,7 +255,7 @@ public class FeatureManager {
 	 * @param respawned - player who respawned
 	 */
 	public void onRespawn(TabPlayer respawned) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof RespawnEventListener)) continue;
 			long time = System.nanoTime();
 			((RespawnEventListener)f).onRespawn(respawned);
@@ -268,7 +268,7 @@ public class FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 */
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		for (Feature f : features.values()) {
+		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof LoginPacketListener)) continue;
 			long time = System.nanoTime();
 			((LoginPacketListener)f).onLoginPacket(packetReceiver);
@@ -277,7 +277,7 @@ public class FeatureManager {
 	}
 	
 	public NameTag getNameTagFeature() {
-		if (features.containsKey("nametag16")) return (NameTag) features.get("nametag16");
-		return (NameTag) features.get("nametagx");
+		if (isFeatureEnabled("nametag16")) return (NameTag) getFeature("nametag16");
+		return (NameTag) getFeature("nametagx");
 	}
 }
