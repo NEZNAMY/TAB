@@ -75,8 +75,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					}
 				}
 			});
-		} catch (NoSuchElementException e) {
-			//this makes absolutely no sense, there is already a check for "packet_handler" ...
+		} catch (NoSuchElementException | IllegalArgumentException e) {
+			//idk how does this keep happening but whatever
 		}
 	}
 	
