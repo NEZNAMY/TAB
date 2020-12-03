@@ -60,7 +60,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = Configs.getSecretOption("ntx-space", 0.22F);
+		spaceBetweenLines = Float.parseFloat(Configs.getSecretOption("ntx-space", "0.22"));
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
