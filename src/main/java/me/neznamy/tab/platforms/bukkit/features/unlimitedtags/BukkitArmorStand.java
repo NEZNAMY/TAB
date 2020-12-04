@@ -285,6 +285,10 @@ public class BukkitArmorStand implements ArmorStand {
 				return vehicle.getLocation().getY() + 1.15;
 			}
 		}
+		//1.13+ swimming
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && player.isSwimming()) {
+			return player.getLocation().getY()-1.22;
+		}
 		return player.getLocation().getY();
 	}
 
