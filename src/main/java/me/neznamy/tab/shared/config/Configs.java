@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +128,8 @@ public class Configs {
 		SECRET_debugMode = getSecretOption("debug", false);
 		Placeholders.findAllUsed(config.getValues());
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
-		if (groups.isEmpty()) return;
-		Map<Object, Object> sameValues = config.getConfigurationSection("Groups." + groups.toArray()[0]);
+		if (groups.size() < 2) return;
+		Map<Object, Object> sameValues = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
 		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
 			Map<String, Object> group = (Map<String, Object>) groupSettings;
 			for (Entry<String, Object> entry : group.entrySet()) {
