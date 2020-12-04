@@ -170,24 +170,16 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	//making it this complicated to fix case-sensitivity
 	private void registerAnimationPlaceholders() {
+		for (Animation a : Configs.animations) {
+			registerAnimation(a, "%animation:" + a.getName() + "%");
+		}
 		main:
 			for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
 				if (identifier.startsWith("%animation:")) {
 					String animationName = identifier.substring(11, identifier.length()-1);
 					for (Animation a : Configs.animations) {
 						if (a.getName().equalsIgnoreCase(animationName)) {
-							Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, 50) {
-
-								public String get() {
-									return a.getMessage();
-								}
-
-								@Override
-								public String[] getNestedStrings(){
-									return a.getAllMessages();
-								}
-
-							});
+							registerAnimation(a, identifier);
 							continue main;
 						}
 					}
@@ -195,33 +187,55 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 	}
+	
+	private void registerAnimation(Animation a, String usedIdentifier) {
+		Placeholders.registerPlaceholder(new ServerPlaceholder(usedIdentifier, 50) {
+
+			public String get() {
+				return a.getMessage();
+			}
+
+			@Override
+			public String[] getNestedStrings(){
+				return a.getAllMessages();
+			}
+
+		});
+	}
 
 	//making it this complicated to fix case-sensitivity
 	private void registerConditionPlaceholders() {
+		for (Condition c : Premium.conditions.values()) {
+			registerCondition(c, "%condition:" + c.getName() + "%");
+		}
 		main:
 		for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
 			if (identifier.startsWith("%condition:")) {
 				String conditionName = identifier.substring(11, identifier.length()-1);
 				for (Condition c : Premium.conditions.values()) {
 					if (c.getName().equalsIgnoreCase(conditionName)) {
-						Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, PlaceholderManager.getInstance().defaultRefresh) {
-
-							@Override
-							public String get(TabPlayer p) {
-								return c.getText(p);
-							}
-
-							@Override
-							public String[] getNestedStrings(){
-								return new String[] {c.yes, c.no};
-							}
-
-						});
+						registerCondition(c, identifier);
 						continue main;
 					}
 				}
 				Shared.errorManager.startupWarn("Unknown condition &e\"" + conditionName + "\"&c used in configuration. You need to define it in premiumconfig.yml");
 			}
 		}
+	}
+	
+	private void registerCondition(Condition c, String usedIdentifier) {
+		Placeholders.registerPlaceholder(new PlayerPlaceholder(usedIdentifier, PlaceholderManager.getInstance().defaultRefresh) {
+
+			@Override
+			public String get(TabPlayer p) {
+				return c.getText(p);
+			}
+
+			@Override
+			public String[] getNestedStrings(){
+				return new String[] {c.yes, c.no};
+			}
+
+		});
 	}
 }
