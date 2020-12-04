@@ -1,4 +1,4 @@
-	package me.neznamy.tab.shared.features.layout;
+package me.neznamy.tab.shared.features.layout;
 
 import me.neznamy.tab.api.TabPlayer;
 
