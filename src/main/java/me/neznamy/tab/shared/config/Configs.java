@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 
@@ -99,6 +101,7 @@ public class Configs {
 			f.delete();
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
 		Shared.platform.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
@@ -123,6 +126,21 @@ public class Configs {
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
 		SECRET_debugMode = getSecretOption("debug", false);
 		Placeholders.findAllUsed(config.getValues());
+		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
+		if (groups.isEmpty()) return;
+		Map<Object, Object> sameValues = config.getConfigurationSection("Groups." + groups.toArray()[0]);
+		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
+			Map<String, Object> group = (Map<String, Object>) groupSettings;
+			for (Entry<String, Object> entry : group.entrySet()) {
+				String property = entry.getKey();
+				if (!sameValues.containsKey(property) || !String.valueOf(sameValues.get(property)).equals(entry.getValue())) {
+					sameValues.remove(property);
+				}
+			}
+		}
+		for (Object property : sameValues.keySet()) {
+			Shared.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
+		}
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
