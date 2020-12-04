@@ -177,7 +177,7 @@ public class Layout implements Loadable, JoinEventListener {
 			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 			for (Entry<Integer, IChatBaseComponent> entry : doTick(p).entrySet()) {
 				int slot = translateSlot(entry.getKey());
-				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : slot + ""), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
+				list.add(new PlayerInfoData(uuids.get(slot)));
 			}
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list));
 		}

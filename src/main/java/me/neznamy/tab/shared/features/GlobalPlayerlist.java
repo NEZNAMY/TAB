@@ -126,7 +126,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, null, null));
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getUniqueId()));
 	}
 	
 	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {

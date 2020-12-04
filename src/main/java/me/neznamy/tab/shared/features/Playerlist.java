@@ -21,7 +21,6 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
@@ -50,7 +49,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	public void unload(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (TabPlayer p : Shared.getPlayers()) {
-			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null));
+			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getUniqueId()));
 		}
 		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer all : Shared.getPlayers()) {
@@ -123,7 +122,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getName(), refreshed.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null)).create(ProtocolVersion.SERVER_VERSION);
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getUniqueId())).create(ProtocolVersion.SERVER_VERSION);
 			for (TabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
