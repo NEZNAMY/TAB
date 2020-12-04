@@ -69,10 +69,10 @@ public class BungeeMethods implements PlatformMethods {
 		plm.registerPlaceholders();
 		Shared.featureManager.registerFeature("injection", new BungeePipelineInjector());
 		Shared.featureManager.registerFeature("placeholders", plm);
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			TabPlayer t = new BungeeTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);

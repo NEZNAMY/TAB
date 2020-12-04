@@ -84,7 +84,6 @@ public class BukkitMethods implements PlatformMethods {
 			Shared.featureManager.registerFeature("injection", new BukkitPipelineInjector());
 		}
 		Shared.featureManager.registerFeature("placeholders", plm);
-		loadUniversalFeatures();
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
@@ -95,6 +94,7 @@ public class BukkitMethods implements PlatformMethods {
 				Shared.featureManager.registerFeature("nametag16", new NameTag16());
 			}
 		}
+		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) {
 			BossBar bb = new BossBar();
 			Shared.featureManager.registerFeature("bossbar", bb);
