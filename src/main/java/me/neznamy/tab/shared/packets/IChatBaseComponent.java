@@ -328,12 +328,10 @@ public class IChatBaseComponent {
 				EnumChatFormat format = EnumChatFormat.getByChar(c);
 				if (format != null){
 					if (builder.length() > 0) {
-						TextColor color = component.getColor();
 						component.setText(builder.toString());
 						components.add(component);
-						component = new IChatBaseComponent();
+						component = component.copyFormatting();
 						builder = new StringBuilder();
-						component.setColor(color);
 					}
 					switch (format){
 					case BOLD: 
@@ -355,6 +353,7 @@ public class IChatBaseComponent {
 						component.setColor(TextColor.of(EnumChatFormat.WHITE));
 						break;
 					default:
+						component = new IChatBaseComponent();
 						component.setColor(TextColor.of(format));
 						break;
 					}
@@ -383,6 +382,17 @@ public class IChatBaseComponent {
 		component.setText(builder.toString());
 		components.add(component);
 		return new IChatBaseComponent("").setExtra(components);
+	}
+	
+	public IChatBaseComponent copyFormatting() {
+		IChatBaseComponent component = new IChatBaseComponent();
+		component.setBold(bold);
+		component.setColor(color);
+		component.setItalic(italic);
+		component.setObfuscated(obfuscated);
+		component.setStrikethrough(strikethrough);
+		component.setUnderlined(underlined);
+		return component;
 	}
 	
 	/**
