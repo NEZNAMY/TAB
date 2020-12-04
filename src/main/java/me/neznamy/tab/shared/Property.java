@@ -54,11 +54,11 @@ public class Property {
 	private void analyze(String value) {
 		placeholders = new ArrayList<String>();
 		relPlaceholders = new ArrayList<String>();
-		for (String identifier : Placeholders.detectAll(value)) {
+		for (String identifier : Placeholders.getUsedPlaceholderIdentifiersRecursive(value)) {
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders.add(identifier);
 			} else {
-				placeholders.addAll(Placeholders.getUsedPlaceholderIdentifiersRecursive(identifier));
+				placeholders.add(identifier);
 			}
 		}
 	}
