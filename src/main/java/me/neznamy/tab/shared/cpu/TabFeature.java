@@ -28,6 +28,7 @@ public enum TabFeature {
 	PACKET_DESERIALIZING("Packet deserializing"),
 	PACKET_SERIALIZING("Packet serializing"),
 	TABLIST_LAYOUT("Tablist layout"),
+	PLUGIN_MESSAGE_HANDLING("Plugin message handling"),
 	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu

@@ -4,6 +4,8 @@ import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -32,17 +34,17 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		try {
-			if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
-			if (event.getReceiver() instanceof ProxiedPlayer) {
+		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+		if (event.getReceiver() instanceof ProxiedPlayer) {
+			Shared.cpu.runMeasuredTask("handling plugin message", TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, () -> {
+
 				TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 				if (receiver == null) return;
 				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
 					event.setCancelled(true);
 				}
-			}
-		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to handle incoming plugin message", e);
+			});
+
 		}
 	}
 

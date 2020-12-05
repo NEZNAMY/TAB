@@ -9,6 +9,8 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
@@ -36,17 +38,16 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 	 */
 	@Subscribe
 	public void on(PluginMessageEvent event){
-		try {
-			if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
-			if (event.getTarget() instanceof Player) {
+		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+		if (event.getTarget() instanceof Player) {
+			Shared.cpu.runMeasuredTask("handling plugin message", TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, () -> {
+
 				TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
 				if (receiver == null) return;
 				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
 					event.setResult(ForwardResult.handled());
 				}
-			}
-		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to handle incoming plugin message", e);
+			});
 		}
 	}
 
