@@ -25,21 +25,19 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		try {
-			if (Shared.disabled) return;
-			TabPlayer p = new BukkitTabPlayer(e.getPlayer());
-			Shared.data.put(e.getPlayer().getUniqueId(), p);
-			Shared.entityIdMap.put(e.getPlayer().getEntityId(), p);
-			Main.inject(e.getPlayer().getUniqueId());
-			Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
+		if (Shared.disabled) return;
+		Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
 
-				public void run() {
+			public void run() {
+				try {
+					TabPlayer p = new BukkitTabPlayer(e.getPlayer());
+					Shared.data.put(e.getPlayer().getUniqueId(), p);
 					Shared.featureManager.onJoin(p);
+				} catch (Throwable ex) {
+					Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
 				}
-			});
-		} catch (Throwable ex) {
-			Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
-		}
+			}
+		});
 	}
 
 	/**
@@ -51,14 +49,8 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (disconnectedPlayer == null) return;
-		Shared.cpu.runTask("processing PlayerQuitEvent", new Runnable() {
-
-			public void run() {
-				Shared.featureManager.onQuit(disconnectedPlayer);
-			}
-		});
+		Shared.cpu.runTask("processing PlayerQuitEvent", () -> Shared.featureManager.onQuit(disconnectedPlayer));
 		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.entityIdMap.remove(e.getPlayer().getEntityId());
 	}
 
 	/**
@@ -99,7 +91,7 @@ public class BukkitEventListener implements Listener {
 		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
-	
+
 	/**
 	 * Listener to PlayerRespawnEvent to forward the event to features
 	 * @param e respawn event
@@ -109,11 +101,6 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer respawned = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (respawned == null) return;
-		Shared.cpu.runTask("processing PlayerRespawnEvent", new Runnable() {
-
-			public void run() {
-				Shared.featureManager.onRespawn(respawned);
-			}
-		});
+		Shared.cpu.runTask("processing PlayerRespawnEvent", () -> Shared.featureManager.onRespawn(respawned));
 	}
 }

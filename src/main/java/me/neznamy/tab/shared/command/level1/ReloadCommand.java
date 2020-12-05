@@ -17,7 +17,7 @@ public class ReloadCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		Shared.unload();
-		Shared.load(false);
+		Shared.load();
 		if (Shared.disabled) {
 			if (sender != null) {
 				sendMessage(sender, Configs.reloadFailed.replace("%file%", Shared.brokenFile));

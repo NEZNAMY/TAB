@@ -35,7 +35,7 @@ public class EqualsCondition extends SimpleCondition {
 			Placeholder pl = Placeholders.getPlaceholder(identifier);
 			if (pl != null) rightSide = pl.set(rightSide, p);
 		}
-		return leftSide.equals(rightSide);
+		return Placeholders.color(leftSide).equals(Placeholders.color(rightSide));
 	}
 	
 	public static EqualsCondition compile(String line) {

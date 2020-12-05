@@ -115,7 +115,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 		String prefix = jsonOrCut(packet.playerPrefix, clientVersion, 16);
 		String suffix = jsonOrCut(packet.playerSuffix, clientVersion, 16);
 		if (clientVersion.getMinorVersion() >= 13) {
-			color = EnumChatFormat.lastColorsOf(packet.playerPrefix).getNetworkId();
+			color = (packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(packet.playerPrefix)).getNetworkId();
 		}
 		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}

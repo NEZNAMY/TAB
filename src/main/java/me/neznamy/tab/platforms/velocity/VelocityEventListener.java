@@ -39,7 +39,6 @@ public class VelocityEventListener {
 				//join
 				TabPlayer p = new VelocityTabPlayer(e.getPlayer());
 				Shared.data.put(e.getPlayer().getUniqueId(), p);
-				Main.inject(p.getUniqueId());
 				Shared.featureManager.onJoin(p);
 			} else {
 				//server change

@@ -25,20 +25,14 @@ import me.neznamy.tab.shared.rgb.TextColor;
  */
 public class Shared {
 
-	//name of the pipeline decoder injected in netty
-	public static final String DECODER_NAME = "TABReader";
-	
 	//name of plugin messaging channel
 	public static final String CHANNEL_NAME = "tab:placeholders";
 	
 	//version of plugin
-	public static final String pluginVersion = "2.8.9-pre1";
+	public static final String pluginVersion = "2.8.10-pre2";
 
 	//player data
 	public static final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
-	
-	//player data by entityId, used by unlimited nametag mode for better performance
-	public static final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	
 	//the command
 	public static final TabCommand command = new TabCommand();
@@ -141,7 +135,7 @@ public class Shared {
 	 * Loads the entire plugin
 	 * @param inject - if players should be injected or not
 	 */
-	public static void load(boolean inject) {
+	public static void load() {
 		try {
 			long time = System.currentTimeMillis();
 			disabled = false;
@@ -150,7 +144,7 @@ public class Shared {
 			featureManager = new FeatureManager();
 			Configs.loadFiles();
 			permissionPlugin = platform.detectPermissionPlugin();
-			platform.loadFeatures(inject);
+			platform.loadFeatures();
 			featureManager.load();
 			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();
@@ -175,7 +169,6 @@ public class Shared {
 			cpu.cancelAllTasks();
 			featureManager.unload();
 			data.clear();
-			entityIdMap.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);

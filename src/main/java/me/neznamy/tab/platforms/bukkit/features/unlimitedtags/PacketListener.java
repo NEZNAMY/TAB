@@ -2,11 +2,12 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Sets;
@@ -136,58 +137,46 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	public void onEntityMove(TabPlayer receiver, int entityId) {
-		TabPlayer pl = Shared.entityIdMap.get(entityId);
+		TabPlayer pl = nameTagX.entityIdMap.get(entityId);
 		Set<Integer> vehicleList;
 		if (pl != null) {
 			//player moved
 			if (!pl.isLoaded()) return;
-			Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
-				public void run() {
-					pl.getArmorStandManager().teleport(receiver);
+			Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
+			
+			//player can be a vehicle too
+			List<Entity> riders = nameTagX.getPassengers((Player) pl.getPlayer());
+			for (Entity e : riders) {
+				TabPlayer rider = nameTagX.entityIdMap.get(e.getEntityId());
+				if (rider != null) {
+					Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> {
+						rider.getArmorStandManager().teleport(receiver);
+						rider.getArmorStandManager().teleport(pl); //vehicle player has no other way to get this packet
+					});
 				}
-			});
+			}
 		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Integer entity : vehicleList) {
-				TabPlayer passenger = Shared.entityIdMap.get(entity);
+				TabPlayer passenger = nameTagX.entityIdMap.get(entity);
 				if (passenger != null) {
-					Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, new Runnable() {
-						public void run() {
-							passenger.getArmorStandManager().teleport(receiver);
-						}
-					});
+					Shared.cpu.runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
 		}
 	}
 
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
-		TabPlayer spawnedPlayer = Shared.entityIdMap.get(entityId);
-		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName()) && spawnedPlayer.isLoaded()) Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, new Runnable() {
-
-			@Override
-			public void run() {
-				if (spawnedPlayer.getArmorStandManager() != null) {
-					spawnedPlayer.getArmorStandManager().spawn(receiver);
-				} else {
-					//player is not loaded yet and server is already sending entity spawn packet
-					if (!nameTagX.delayedSpawn.containsKey(spawnedPlayer)) nameTagX.delayedSpawn.put(spawnedPlayer, new HashSet<TabPlayer>());
-					nameTagX.delayedSpawn.get(spawnedPlayer).add(receiver);
-				}
-			}
-		});
+		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
+		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName()) && spawnedPlayer.isLoaded()) 
+			Shared.cpu.runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 	}
 
 	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
 		for (int id : entities) {
-			TabPlayer despawnedPlayer = Shared.entityIdMap.get(id);
-			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, new Runnable() {
-
-				@Override
-				public void run() {
-					despawnedPlayer.getArmorStandManager().destroy(receiver);
-				}
-			});
+			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(id);
+			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
+				Shared.cpu.runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 		}
 	}
 
@@ -200,14 +189,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toSet()));
 		}
 		for (int entity : passengers) {
-			TabPlayer pass = Shared.entityIdMap.get(entity);
-			if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
-
-				@Override
-				public void run() {
-					pass.getArmorStandManager().teleport(receiver);
-				}
-			});
+			TabPlayer pass = nameTagX.entityIdMap.get(entity);
+			if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, () -> pass.getArmorStandManager().teleport(receiver));
 		}
 	}
 
@@ -223,19 +206,13 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 				}
 			}
 		}
-		TabPlayer pass = Shared.entityIdMap.get(passenger);
-		if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, new Runnable() {
-
-			@Override
-			public void run() {
-				pass.getArmorStandManager().teleport(receiver);
-			}
-		});
+		TabPlayer pass = nameTagX.entityIdMap.get(passenger);
+		if (pass != null && pass.isLoaded()) Shared.cpu.runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, () -> pass.getArmorStandManager().teleport(receiver));
 	}
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (!modifyNPCnames || receiver.getVersion().getMinorVersion() < 8 || info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
+		if (!modifyNPCnames || info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {
 				if (playerInfoData.name.length() <= 14) {

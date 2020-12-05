@@ -21,7 +21,12 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public boolean update(TabPlayer p) {
 		String newValue = get((TabPlayer) p);
 		if (newValue == null) newValue = "";
-		if (!newValue.equals("ERROR") && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
+		
+		//make invalid placeholders return identifier instead of nothing
+		if (newValue.equals(identifier) && !lastValue.containsKey(p.getName())) {
+			lastValue.put(p.getName(), identifier);
+		}
+		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && (!lastValue.containsKey(p.getName()) || !lastValue.get(p.getName()).equals(newValue))) {
 			lastValue.put(p.getName(), newValue);
 			return true;
 		}
@@ -34,7 +39,6 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValue.containsKey(p.getName())) {
-			lastValue.put(p.getName(), ""); //preventing stack overflow on bungee when initializing
 			update(p);
 		}
 		return lastValue.get(p.getName());

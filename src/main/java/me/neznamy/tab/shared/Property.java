@@ -30,11 +30,15 @@ public class Property {
 	private String source;
 
 	//used placeholders in current raw value
-	public List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	public List<String> placeholders;
 	
 	//used relational placeholders in current raw value
-	public List<RelationalPlaceholder> relPlaceholders = new ArrayList<RelationalPlaceholder>();
+	public List<String> relPlaceholders;
 
+	public Property(TabPlayer owner, String rawValue) {
+		this(owner, rawValue, null);
+	}
+	
 	public Property(TabPlayer owner, String rawValue, String source) {
 		this.owner = owner;
 		this.source = source;
@@ -48,8 +52,15 @@ public class Property {
 	 * @param value - raw value to be checked
 	 */
 	private void analyze(String value) {
-		placeholders = Placeholders.detectPlaceholders(value);
-		relPlaceholders = Placeholders.detectRelationalPlaceholders(value);
+		placeholders = new ArrayList<String>();
+		relPlaceholders = new ArrayList<String>();
+		for (String identifier : Placeholders.getUsedPlaceholderIdentifiersRecursive(value)) {
+			if (identifier.startsWith("%rel_")) {
+				relPlaceholders.add(identifier);
+			} else {
+				placeholders.add(identifier);
+			}
+		}
 	}
 	
 	/**
@@ -134,8 +145,9 @@ public class Property {
 	 */
 	public boolean update() {
 		String string = getCurrentRawValue();
-		for (Placeholder pl : placeholders) {
-			string = pl.set(string, owner);
+		for (String identifier : placeholders) {
+			Placeholder pl = Placeholders.getPlaceholder(identifier);
+			if (pl != null) string = pl.set(string, owner);
 		}
 		string = Placeholders.color(string);
 		for (String removed : Configs.removeStrings) {
@@ -164,8 +176,9 @@ public class Property {
 	public String getFormat(TabPlayer viewer) {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
-		for (RelationalPlaceholder pl : relPlaceholders) {
-			format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+		for (String identifier : relPlaceholders) {
+			RelationalPlaceholder pl = (RelationalPlaceholder) Placeholders.getPlaceholder(identifier);
+			if (pl != null) format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
 		}
 		return format;
 	}

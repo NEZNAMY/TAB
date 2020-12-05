@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.AlignedSuffix;
@@ -22,7 +21,6 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
@@ -31,7 +29,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  */
 public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
 
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
 	
 	
@@ -51,7 +49,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	public void unload(){
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (TabPlayer p : Shared.getPlayers()) {
-			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null));
+			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getUniqueId()));
 		}
 		Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer all : Shared.getPlayers()) {
@@ -66,7 +64,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.getVersion().getMinorVersion() < 8) return;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return;
@@ -77,7 +74,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
-				if (ADD && (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) && !playerInfoData.name.equals(packetPlayer.getName())) {
+				if (ADD && Shared.featureManager.getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
 					Shared.debug("Blocking name change of player " +  packetPlayer.getName() + " to " + playerInfoData.name + " for " + receiver.getName());
 					playerInfoData.name = packetPlayer.getName();
 				}
@@ -86,13 +83,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, new Runnable() {
-
-				@Override
-				public void run() {
-					receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList));
-				}
-			});
+			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList)));
 		}
 	}
 
@@ -131,7 +122,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getName(), refreshed.getUniqueId(), null, 0, EnumGamemode.SURVIVAL, null)).create(ProtocolVersion.SERVER_VERSION);
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getUniqueId())).create(ProtocolVersion.SERVER_VERSION);
 			for (TabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
@@ -144,7 +135,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 

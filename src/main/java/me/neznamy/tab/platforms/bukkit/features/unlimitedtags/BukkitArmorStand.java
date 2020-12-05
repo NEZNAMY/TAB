@@ -190,7 +190,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.SECRET_armorstands_always_visible) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !Configs.getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
 					viewer.sendPacket(destroyPacket);
@@ -200,13 +200,7 @@ public class BukkitArmorStand implements ArmorStand {
 			} else {
 				//respawning so there's no animation and it's instant
 				viewer.sendPacket(destroyPacket);
-				Runnable spawn = new Runnable() {
-
-					@Override
-					public void run() {
-						spawn(viewer, false);
-					}
-				};
+				Runnable spawn = () -> spawn(viewer, false);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
 					Shared.cpu.runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.v1_8_0_BUG_COMPENSATION, spawn);
@@ -245,7 +239,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	private boolean getVisibility() {
-		if (Configs.SECRET_armorstands_always_visible) return true;
+		if (Configs.getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) return true;
 		if (((BukkitTabPlayer)owner).isDisguised()) return false;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0 && !owner.isOnBoat();
 	}
@@ -290,6 +284,10 @@ public class BukkitArmorStand implements ArmorStand {
 			if (vehicle.getType().toString().equals("STRIDER")) { //preventing errors on <1.16
 				return vehicle.getLocation().getY() + 1.15;
 			}
+		}
+		//1.13+ swimming
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && player.isSwimming()) {
+			return player.getLocation().getY()-1.22;
 		}
 		return player.getLocation().getY();
 	}

@@ -75,7 +75,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	private boolean getTeamVisibility(TabPlayer viewer) {
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
-		if (hiddenNametag || Configs.SECRET_invisible_nametags || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
+		if (hiddenNametag || Configs.getSecretOption("invisible-nametags", false) || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
 		return !Shared.featureManager.getNameTagFeature().getInvisiblePlayers().contains(getName());
 	}
 
@@ -195,6 +195,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = sbm.getScoreboards().get(sbm.detectHighestScoreboard(this));
+		if (sb == null) return; //no scoreboard available
 		activeScoreboard = sb;
 		sb.register(this);
 		forcedScoreboard = null;

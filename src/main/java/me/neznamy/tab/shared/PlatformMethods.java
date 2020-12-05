@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -40,7 +41,7 @@ public interface PlatformMethods {
 	 * @param inject - whether tab's pipleline handler needs to be injected or not
 	 * @throws Exception - if something fails
 	 */
-	public void loadFeatures(boolean inject) throws Exception;
+	public void loadFeatures() throws Exception;
 	
 	/**
 	 * Sends a message into console
@@ -206,7 +207,7 @@ public interface PlatformMethods {
 		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
 		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
 		if (Premium.is() && Premium.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.SECRET_remove_ghost_players) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (Configs.getSecretOption("remove-ghost-players", false)) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) Shared.featureManager.registerFeature("tabobjective", new TabObjective());
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist();
@@ -215,5 +216,8 @@ public interface PlatformMethods {
 		}
 		new GroupRefresher();
 		new UpdateChecker();
+		if (Configs.getSecretOption("layout", false)) {
+			Shared.featureManager.registerFeature("layout", new Layout());
+		}
 	}
 }

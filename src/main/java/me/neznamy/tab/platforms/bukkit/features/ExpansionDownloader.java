@@ -41,7 +41,7 @@ public class ExpansionDownloader {
 			@Override
 			public void run() {
 				//starting the task asynchronously to not freeze the server with Thread.sleep
-				Shared.cpu.runTask("Downloading PlaceholderAPI Expansions", new Runnable() {
+				new Thread(new Runnable() {
 
 					@Override
 					public void run() {
@@ -70,7 +70,7 @@ public class ExpansionDownloader {
 							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
 						}
 					}
-				});
+				}).start();
 			}
 		}, 1);
 	}

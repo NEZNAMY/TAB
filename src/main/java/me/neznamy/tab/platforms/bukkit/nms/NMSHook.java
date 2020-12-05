@@ -101,11 +101,11 @@ public class NMSHook {
 	}
 
 	/**
-	 * Initializes all used NMS classes, constructors, fields and methods and returns true if everything went successfully and version is marked as compatible
+	 * Initializes all used NMS classes, constructors, fields and methods and returns null if everything went successfully and version is marked as compatible
 	 * @param serverPackage NMS class package, such as "v1_16_R1"
-	 * @return true if everything loaded and version is marked as compatible, false otherwise
+	 * @return null if compatible, non-null error message if not
 	 */
-	public static boolean isVersionSupported(String serverPackage){
+	public static String checkCompatibility(String serverPackage){
 		try {
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);
 			if (minor >= 7) {
@@ -149,10 +149,19 @@ public class NMSHook {
 			if (minor >= 9) {
 				PetFix.initializeClass();
 			}
-			return SUPPORTED_VERSIONS.contains(serverPackage);
+			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
+				return null;
+			} else {
+				return "This plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.16.4. Disabling.";
+			}
 		} catch (Throwable e) {
-//			e.printStackTrace();
-			return false;
+			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
+				String msg = "Your server version is marked as compatible, but a compatibility issue was found. Please report the error above (include your server version & fork too)";
+				e.printStackTrace();
+				return msg;
+			} else {
+				return "Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.16.4. Disabling.";
+			}
 		}
 	}
 }

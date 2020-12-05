@@ -8,6 +8,7 @@ import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Core of the premium version
@@ -33,5 +34,6 @@ public class Premium {
 			String no = premiumconfig.getString("conditions." + condition + ".false");
 			Premium.conditions.put(condition+"", Condition.compile(condition+"", conditions, type, yes, no));
 		}
+		Placeholders.findAllUsed(premiumconfig.getValues());
 	}
 }

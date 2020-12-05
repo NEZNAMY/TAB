@@ -37,13 +37,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
 			char c = (char)(int)entry;
 			int width = (int)extraWidths.get(entry);
-			if (widths.containsKey(c) && widths.get(c) == width) {
+			if (widths.containsKey(c)) {
 				extraWidths.remove((int)c);
-				Shared.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin with the same value.");
+				Shared.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
 				save = true;
-				continue;
+			} else {
+				widths.put(c, (byte)width);
 			}
-			widths.put(c, (byte)width);
 		}
 		if (save) Premium.premiumconfig.save();
 		Shared.debug("Loaded " + widths.size() + " character widths.");

@@ -62,20 +62,20 @@ public class VelocityMethods implements PlatformMethods {
 	}
 	
 	@Override
-	public void loadFeatures(boolean inject) throws Exception{
+	public void loadFeatures() throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new VelocityPlaceholderRegistry(server));
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
+		Shared.featureManager.registerFeature("injection", new VelocityPipelineInjector());
 		Shared.featureManager.registerFeature("placeholders", plm);
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		for (Player p : server.getAllPlayers()) {
 			TabPlayer t = new VelocityTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
-			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 	
@@ -103,9 +103,9 @@ public class VelocityMethods implements PlatformMethods {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
-					return getLastValue(p);
+					return lastValue.get(p.getName());
 				}
-			}, true);
+			});
 			return;
 		}
 	}

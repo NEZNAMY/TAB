@@ -126,7 +126,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), null, 0, null, null));
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getUniqueId()));
 	}
 	
 	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
@@ -135,7 +135,6 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 					//not preventing NPC removals

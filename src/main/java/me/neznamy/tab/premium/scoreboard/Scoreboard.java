@@ -39,7 +39,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	private String childBoard;
 	public List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
 	public Set<TabPlayer> players = new HashSet<TabPlayer>();
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
@@ -146,7 +146,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 

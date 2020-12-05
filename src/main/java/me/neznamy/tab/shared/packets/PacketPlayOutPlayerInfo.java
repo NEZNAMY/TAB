@@ -78,7 +78,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		public Object skin;
 
 		/**
-		 * Constructs a new instance with given parameters
+		 * Constructor perfect for ADD_PLAYER action
 		 * @param name - player's name
 		 * @param uniqueId - player's uuid
 		 * @param skin - player's skin
@@ -93,6 +93,44 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 			this.latency = latency;
 			this.gameMode = gameMode;
 			this.displayName = displayName;
+		}
+		
+		/**
+		 * Constructor perfect for UPDATE_GAME_MODE action
+		 * @param uniqueId - player's uuid
+		 * @param gameMode - player's gamemode
+		 */
+		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
+			this.uniqueId = uniqueId;
+			this.gameMode = gameMode;
+		}
+		
+		/**
+		 * Constructor perfect for UPDATE_LATENCY action
+		 * @param uniqueId - player's uuid
+		 * @param latency - player's ping
+		 */
+		public PlayerInfoData(UUID uniqueId, int latency) {
+			this.uniqueId = uniqueId;
+			this.latency = latency;
+		}
+		
+		/**
+		 * Constructor perfect for UPDATE_DISPLAY_NAME action
+		 * @param uniqueId - player's uuid
+		 * @param displayName - player's tablist name
+		 */
+		public PlayerInfoData(UUID uniqueId, IChatBaseComponent displayName) {
+			this.uniqueId = uniqueId;
+			this.displayName = displayName;
+		}
+		
+		/**
+		 * Constructor perfect for REMOVE_PLAYER action
+		 * @param uniqueId - player's uuid
+		 */
+		public PlayerInfoData(UUID uniqueId) {
+			this.uniqueId = uniqueId;
 		}
 
 		/**

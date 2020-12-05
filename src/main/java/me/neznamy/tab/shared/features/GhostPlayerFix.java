@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
@@ -18,7 +17,7 @@ public class GhostPlayerFix implements QuitEventListener {
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		Object removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getName(), disconnectedPlayer.getUniqueId(), null, 0, EnumGamemode.CREATIVE, null)).create(ProtocolVersion.SERVER_VERSION);
+		Object removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())).create(ProtocolVersion.SERVER_VERSION);
 		Shared.cpu.runTaskLater(100, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override

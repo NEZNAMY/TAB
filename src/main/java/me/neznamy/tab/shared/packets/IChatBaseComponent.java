@@ -307,8 +307,8 @@ public class IChatBaseComponent {
 
 	public static IChatBaseComponent fromColoredText(String originalText){
 		if (originalText == null) return new IChatBaseComponent();
-		String text = originalText;
-		if (Configs.SECRET_rgb_support) {
+		String text = Placeholders.color(originalText);
+		if (Configs.getSecretOption("rgb-support", true)) {
 			text = RGBUtils.applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
@@ -316,7 +316,7 @@ public class IChatBaseComponent {
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
 			char c = text.charAt(i);
-			if (c == Placeholders.colorChar || c == '&'){
+			if (c == Placeholders.colorChar){
 				i++;
 				if (i >= text.length()) {
 					break;
@@ -328,12 +328,10 @@ public class IChatBaseComponent {
 				EnumChatFormat format = EnumChatFormat.getByChar(c);
 				if (format != null){
 					if (builder.length() > 0) {
-						TextColor color = component.getColor();
 						component.setText(builder.toString());
 						components.add(component);
-						component = new IChatBaseComponent();
+						component = component.copyFormatting();
 						builder = new StringBuilder();
-						component.setColor(color);
 					}
 					switch (format){
 					case BOLD: 
@@ -355,11 +353,12 @@ public class IChatBaseComponent {
 						component.setColor(TextColor.of(EnumChatFormat.WHITE));
 						break;
 					default:
+						component = new IChatBaseComponent();
 						component.setColor(TextColor.of(format));
 						break;
 					}
 				}
-			} else if (Configs.SECRET_rgb_support && c == '#'){
+			} else if (Configs.getSecretOption("rgb-support", true) && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
 					TextColor color = TextColor.of(hex); //the validation check is in constructor
@@ -385,11 +384,45 @@ public class IChatBaseComponent {
 		return new IChatBaseComponent("").setExtra(components);
 	}
 	
+	public IChatBaseComponent copyFormatting() {
+		IChatBaseComponent component = new IChatBaseComponent();
+		component.setBold(bold);
+		component.setColor(color);
+		component.setItalic(italic);
+		component.setObfuscated(obfuscated);
+		component.setStrikethrough(strikethrough);
+		component.setUnderlined(underlined);
+		return component;
+	}
+	
 	/**
 	 * Converts this component into a simple text with legacy colors (closest match if color is set to RGB)
 	 * @return The simple text format
 	 */
 	public String toLegacyText() {
+		StringBuilder builder = new StringBuilder();
+		append(builder, "");
+		return builder.toString();
+	}
+
+	private String append(StringBuilder builder, String previousFormatting) {
+		String formatting = previousFormatting;
+		if (text != null) {
+			formatting = getFormatting();
+			if (!formatting.equals(previousFormatting)) {
+				builder.append(formatting);
+			}
+			builder.append(text);
+			
+		}
+		if (extra != null)
+			for (IChatBaseComponent component : extra) {
+				formatting = component.append(builder, formatting);
+			}
+		return formatting;
+	}
+	
+	private String getFormatting() {
 		StringBuilder builder = new StringBuilder();
 		if (color != null) {
 			if (color.getLegacyColor() == EnumChatFormat.WHITE) {
@@ -404,12 +437,6 @@ public class IChatBaseComponent {
 		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
-		if (text != null) builder.append(text);
-		if (extra != null) {
-			for (IChatBaseComponent component : extra) {
-				builder.append(component.toLegacyText());
-			}
-		}
 		return builder.toString();
 	}
 

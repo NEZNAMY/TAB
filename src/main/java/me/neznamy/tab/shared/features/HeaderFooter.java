@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -21,7 +20,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
  */
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 	
 	public HeaderFooter() {
@@ -70,7 +69,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 	
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.SortingType;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -16,7 +17,7 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 
 public abstract class NameTag implements Feature, Refreshable {
 
-	protected Set<String> usedPlaceholders;
+	protected List<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
 
@@ -25,10 +26,11 @@ public abstract class NameTag implements Feature, Refreshable {
 		SortingType.initialize();
 	}
 
-	public void startInvisibilityRefreshingTask() {
+	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
+				//nametag visibility
 				for (TabPlayer p : Shared.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
 					boolean invisible = p.hasInvisibilityPotion();
@@ -41,15 +43,14 @@ public abstract class NameTag implements Feature, Refreshable {
 						p.updateTeamData();
 					}
 				}
-			}
-		});
-	}
-	public void startCollisionRefreshingTask() {
-		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing collision", TabFeature.NAMETAGS, UsageType.REFRESHING_COLLISION, new Runnable() {
-			public void run() {
-				for (TabPlayer p : Shared.getPlayers()) {
-					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
-					p.updateCollision();
+				
+				//collision rule
+				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+					//cannot control collision rule on <1.9 servers in any way
+					for (TabPlayer p : Shared.getPlayers()) {
+						if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
+						p.updateCollision();
+					}
 				}
 			}
 		});
@@ -64,7 +65,7 @@ public abstract class NameTag implements Feature, Refreshable {
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 }

@@ -34,14 +34,9 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerToggleSneakEvent e) {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
-		if (!feature.isDisabledWorld(p.getWorldName())) Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, new Runnable() {
-			
-			@Override
-			public void run() {
-				p.getArmorStandManager().sneak(e.isSneaking());
-			}
-		});
+		if (p == null || !p.isLoaded()) return;
+		if (!feature.isDisabledWorld(p.getWorldName())) 
+			Shared.cpu.runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> p.getArmorStandManager().sneak(e.isSneaking()));
 	}
 	
 	/**
@@ -52,12 +47,6 @@ public class EventListener implements Listener {
 	public void a(PlayerMoveEvent e) {
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null) return;
-		if (p.isPreviewingNametag()) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, new Runnable() {
-			
-			@Override
-			public void run() {
-				p.getArmorStandManager().teleport(p);
-			}
-		});
+		if (p.isPreviewingNametag()) Shared.cpu.runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, () -> p.getArmorStandManager().teleport(p));
 	}
 }

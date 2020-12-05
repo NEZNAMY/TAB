@@ -29,7 +29,7 @@ public class AnnounceBarCommand extends SubCommand{
 				int duration;
 				try {
 					duration = Integer.parseInt(args[1]);
-					Shared.cpu.runTask("announcing bossbar", new Runnable() {
+					new Thread(new Runnable() {
 
 						public void run() {
 							try {
@@ -54,7 +54,7 @@ public class AnnounceBarCommand extends SubCommand{
 
 							}
 						}
-					});
+					}).start();
 				} catch (Exception e) {
 					sender.sendMessage(args[3] + " is not a number!", false);
 				}

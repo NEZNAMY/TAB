@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -13,6 +12,7 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
+public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener {
 
 	private final String ObjectiveName = "TAB-BelowName";
 	private final int DisplaySlot = 2;
@@ -30,7 +30,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	private String number;
 	private Property textProperty;
-	private Set<String> usedPlaceholders;
+	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 
 	public BelowName() {
@@ -38,10 +38,10 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
 		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
-		textProperty = new Property(null, text, null);
+		textProperty = new Property(null, text);
 		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
 
-			private Set<String> usedPlaceholders;
+			private List<String> usedPlaceholders;
 
 			{
 				refreshUsedPlaceholders();
@@ -54,7 +54,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			}
 
 			@Override
-			public Set<String> getUsedPlaceholders() {
+			public List<String> getUsedPlaceholders() {
 				return usedPlaceholders;
 			}
 
@@ -63,10 +63,6 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 
-			/**
-			 * Returns name of the feature displayed in /tab cpu
-			 * @return name of the feature displayed in /tab cpu
-			 */
 			@Override
 			public TabFeature getFeatureType() {
 				return TabFeature.BELOWNAME_TEXT;
@@ -135,7 +131,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 
 	@Override
-	public Set<String> getUsedPlaceholders() {
+	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 
@@ -144,12 +140,17 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BELOWNAME_NUMBER;
+	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
+		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		for (TabPlayer all : Shared.getPlayers()){
+			if (all.isLoaded()) PacketAPI.setScoreboardScore(packetReceiver, all.getName(), ObjectiveName, getValue(all));
+		}
 	}
 }

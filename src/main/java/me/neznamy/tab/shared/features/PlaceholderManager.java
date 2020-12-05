@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,7 @@ public class PlaceholderManager implements QuitEventListener {
 	public int defaultRefresh;
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
-	public Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
+	private Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 
 	private AFKProvider afk;
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
@@ -49,14 +48,6 @@ public class PlaceholderManager implements QuitEventListener {
 
 			@Override
 			public void run() {
-				HashSet<Placeholder> placeholders;
-				try {
-					placeholders = new HashSet<>(Placeholders.usedPlaceholders);
-				} catch (ConcurrentModificationException e) {
-					//list copying during reload and thread was not terminated for some reason, skipping loop
-					//future placeholder recode will fix this in a better way
-					return;
-				}
 				int loopTime = atomic.addAndGet(50);
 				Set<TabPlayer> players = new HashSet<TabPlayer>();
 				for (TabPlayer p : Shared.getPlayers()) {
@@ -65,27 +56,29 @@ public class PlaceholderManager implements QuitEventListener {
 				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
 				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
-				for (RelationalPlaceholder relPlaceholder : Placeholders.registeredRelationalPlaceholders.values()) {
-					if (loopTime % relPlaceholder.getRefresh() != 0) continue;
-					long startTime = System.nanoTime();
-					for (TabPlayer p1 : players) {
-						for (TabPlayer p2 : players) {
-							if (relPlaceholder.update(p1, p2)) {
-								if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
-								forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
-								somethingChanged = true;
-							}
-							if (relPlaceholder.update(p2, p1)) {
-								if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
-								forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
-								somethingChanged = true;
+				for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
+					Placeholder placeholder = Placeholders.getPlaceholder(identifier);
+					if (placeholder == null) continue;
+					if (loopTime % placeholder.getRefresh() != 0) continue;
+					if (placeholder instanceof RelationalPlaceholder) {
+						RelationalPlaceholder relPlaceholder = (RelationalPlaceholder) placeholder;
+						long startTime = System.nanoTime();
+						for (TabPlayer p1 : players) {
+							for (TabPlayer p2 : players) {
+								if (relPlaceholder.update(p1, p2)) {
+									if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
+									forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
+									somethingChanged = true;
+								}
+								if (relPlaceholder.update(p2, p1)) {
+									if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
+									forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
+									somethingChanged = true;
+								}
 							}
 						}
+						Shared.cpu.addPlaceholderTime(relPlaceholder.getIdentifier(), System.nanoTime()-startTime);
 					}
-					Shared.cpu.addPlaceholderTime(relPlaceholder.getIdentifier(), System.nanoTime()-startTime);
-				}
-				for (Placeholder placeholder : placeholders) {
-					if (loopTime % placeholder.getRefresh() != 0) continue;
 					if (placeholder instanceof PlayerPlaceholder) {
 						long startTime = System.nanoTime();
 						for (TabPlayer all : players) {
@@ -175,15 +168,15 @@ public class PlaceholderManager implements QuitEventListener {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
+			if (pl instanceof RelationalPlaceholder) {
+				for (TabPlayer all : Shared.getPlayers()) {
+					((RelationalPlaceholder)pl).lastValue.remove(all.getName() + "-" + disconnectedPlayer.getName());
+					((RelationalPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName() + "-" + all.getName());
+				}
+			}
 			if (pl instanceof PlayerPlaceholder) {
 				((PlayerPlaceholder)pl).lastValue.remove(disconnectedPlayer.getName());
 				((PlayerPlaceholder)pl).forceUpdate.remove(disconnectedPlayer.getName());
-			}
-		}
-		for (RelationalPlaceholder pl : Placeholders.registeredRelationalPlaceholders.values()) {
-			for (TabPlayer all : Shared.getPlayers()) {
-				pl.lastValue.remove(all.getName() + "-" + disconnectedPlayer.getName());
-				pl.lastValue.remove(disconnectedPlayer.getName() + "-" + all.getName());
 			}
 		}
 	}
@@ -204,10 +197,14 @@ public class PlaceholderManager implements QuitEventListener {
 		}
 	}
 	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+	public int getRelationalRefresh(String identifier) {
+		if (relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
+			return relationalPlaceholderRefreshIntervals.get(identifier);
+		} else {
+			return defaultRefresh;
+		}
+	}
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PLACEHOLDER_REFRESHING;

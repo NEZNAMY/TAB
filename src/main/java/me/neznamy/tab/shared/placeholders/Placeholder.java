@@ -17,7 +17,7 @@ public abstract class Placeholder {
 
 	private int refresh;
 	protected String identifier;
-	private Map<Object, Object> replacements = new HashMap<Object, Object>();
+	private Map<Object, String> replacements = new HashMap<Object, String>();
 	private List<String> outputPlaceholders = new ArrayList<String>();
 	
 	public Placeholder(String identifier, int refresh) {
@@ -26,7 +26,7 @@ public abstract class Placeholder {
 		if (Premium.is()) {
 			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
-				replacements.put(entry.getKey().toString().replace('&', Placeholders.colorChar), entry.getValue());
+				replacements.put(entry.getKey().toString().replace('&', Placeholders.colorChar), entry.getValue().toString());
 				for (String id : Placeholders.detectAll(entry.getValue()+"")) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
@@ -42,15 +42,15 @@ public abstract class Placeholder {
 		return refresh;
 	}
 	
-	public String[] getNestedPlaceholders(){
-		return new String[0];
+	public String[] getNestedStrings(){
+		return replacements.values().toArray(new String[0]);
 	}
 	
 	public String set(String s, TabPlayer p) {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, value), p);
+			String newValue = setPlaceholders(findReplacement(replacements, Placeholders.color(value)), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
@@ -59,12 +59,12 @@ public abstract class Placeholder {
 			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
-	public static String findReplacement(Map<Object, Object> replacements, String originalOutput) {
+	public static String findReplacement(Map<Object, String> replacements, String originalOutput) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
 			return replacements.get(originalOutput).toString();
 		}
-		for (Entry<Object, Object> entry : replacements.entrySet()) {
+		for (Entry<Object, String> entry : replacements.entrySet()) {
 			String key = entry.getKey().toString();
 			if (key.contains("-")) {
 				try {

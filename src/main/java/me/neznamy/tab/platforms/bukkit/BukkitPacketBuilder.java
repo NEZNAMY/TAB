@@ -208,17 +208,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			//1.8+
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 			PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
-			EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
 			try {
 				//v1_8_R2+
 				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 				PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
 				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
+				EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
 			} catch (ClassNotFoundException e) {
 				//v1_8_R1
 				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
 				PlayerInfoData = getNMSClass("PlayerInfoData");
 				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("EnumScoreboardHealthDisplay");
+				EnumTitleAction = (Class<Enum>) getNMSClass("EnumTitleAction");
 			}
 			try {
 				EnumGamemode_ = (Class<Enum>) getNMSClass("EnumGamemode");
@@ -636,8 +637,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PacketPlayOutScoreboardTeam_CHATFORMAT.set(nmsPacket, Enum.valueOf((Class<Enum>)EnumChatFormat_, format.toString()));
 		} else {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, packet.name);
-			PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
-			PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
+			if (prefix != null) PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
+			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
 		}
 		if (PacketPlayOutScoreboardTeam_COLLISION != null) PacketPlayOutScoreboardTeam_COLLISION.set(nmsPacket, packet.collisionRule);
 		PacketPlayOutScoreboardTeam_PLAYERS.set(nmsPacket, packet.players);

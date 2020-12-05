@@ -93,11 +93,7 @@ public class BungeeMetrics extends Metrics {
 	private void startSubmitting() {
 		// The data collection is async, as well as sending the data
 		// Bungeecord does not have a main thread, everything is async
-		plugin.getProxy().getScheduler().schedule(plugin, new Runnable() {
-			public void run() {
-				submitData();
-			}
-		}, 2, 30, TimeUnit.MINUTES);
+		plugin.getProxy().getScheduler().schedule(plugin, () -> submitData(), 2, 30, TimeUnit.MINUTES);
 		// Submit the data every 30 minutes, first time after 2 minutes to give other plugins enough time to start
 		// WARNING: Changing the frequency has no effect but your plugin WILL be blocked/deleted!
 		// WARNING: Just don't do it!

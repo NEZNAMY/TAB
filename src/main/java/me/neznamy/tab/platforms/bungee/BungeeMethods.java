@@ -62,20 +62,20 @@ public class BungeeMethods implements PlatformMethods {
 	}
 
 	@Override
-	public void loadFeatures(boolean inject) throws Exception{
+	public void loadFeatures() throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
 		plm.addRegistry(new BungeePlaceholderRegistry());
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
+		Shared.featureManager.registerFeature("injection", new BungeePipelineInjector());
 		Shared.featureManager.registerFeature("placeholders", plm);
+		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
 		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			TabPlayer t = new BungeeTabPlayer(p);
 			Shared.data.put(p.getUniqueId(), t);
-			if (inject) Main.inject(t.getUniqueId());
 		}
 	}
 	
@@ -93,6 +93,7 @@ public class BungeeMethods implements PlatformMethods {
 	
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
+		if (identifier.startsWith("%rel_")) return;
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;
@@ -104,9 +105,9 @@ public class BungeeMethods implements PlatformMethods {
 			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
-					return getLastValue(p);
+					return lastValue.get(p.getName());
 				}
-			}, true);
+			});
 			return;
 		}
 	}

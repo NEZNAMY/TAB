@@ -119,7 +119,7 @@ public enum EnumChatFormat {
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
-		String last = Placeholders.getLastColors(string);
+		String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(string).toLegacyText());
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
 			for (EnumChatFormat e : values()) {

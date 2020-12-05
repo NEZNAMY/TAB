@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,20 +42,25 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
  */
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
 
+	private static final int ENTITY_TRACKING_RANGE = 48;
+	
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	private boolean disableOnBoats;
+	private float spaceBetweenLines;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
-
+	
+	//player data by entityId, used for better performance
+	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
-	public Map<TabPlayer, Set<TabPlayer>> delayedSpawn = new HashMap<TabPlayer, Set<TabPlayer>>();
 	private EventListener eventListener;
 
 	public NameTagX(JavaPlugin plugin) {
 		this.plugin = plugin;
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
+		spaceBetweenLines = Float.parseFloat(Configs.getSecretOption("ntx-space", "0.22"));
 		if (Premium.is()) {
 			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
@@ -73,6 +77,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		for (TabPlayer all : Shared.getPlayers()){
+			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			all.setTeamName(SortingType.INSTANCE.getTeamName(all));
 			updateProperties(all);
 			loadArmorStands(all);
@@ -87,12 +92,14 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				vehicles.put(vehicle.getEntityId(), list);
 			}
 			for (TabPlayer worldPlayer : Shared.getPlayers()) {
-				if (all == worldPlayer) continue;
-				if (!worldPlayer.getWorldName().equals(all.getWorldName())) continue;
-				all.getArmorStandManager().spawn(worldPlayer);
+				if (all == worldPlayer) continue; //not displaying own armorstands
+				if (((Player) worldPlayer.getPlayer()).getWorld() != ((Player) all.getPlayer()).getWorld()) continue;
+				if (((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
+					all.getArmorStandManager().spawn(worldPlayer);
+				}
 			}
 		}
-		startInvisibilityRefreshingTask();
+		startRefreshingTasks();
 		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
 				for (TabPlayer p : Shared.getPlayers()) {
@@ -107,7 +114,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				}
 			}
 		});
-		startCollisionRefreshingTask();
 	}
 	
 	@Override
@@ -117,10 +123,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 			p.getArmorStandManager().destroy();
 		}
+		entityIdMap.clear();
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()) {
@@ -139,11 +147,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 			vehicles.put(vehicle.getEntityId(), list);
 		}
-		if (delayedSpawn.containsKey(connectedPlayer)) {
-			for (TabPlayer viewer : delayedSpawn.get(connectedPlayer)) {
+		for (TabPlayer viewer : Shared.getPlayers()) {
+			if (connectedPlayer == viewer) continue; //not displaying own armorstands
+			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
+			if (((Player) viewer.getPlayer()).getLocation().distance(((Player) connectedPlayer.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
 			}
-			delayedSpawn.remove(connectedPlayer);
 		}
 	}
 	
@@ -161,6 +170,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
+		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 	}
 	
 	@Override
@@ -181,11 +191,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
-		double height = -Configs.SECRET_NTX_space;
+		double height = -spaceBetweenLines;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=Configs.SECRET_NTX_space, false));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=spaceBetweenLines, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
@@ -197,11 +207,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	
 	public void fixArmorStandHeights(TabPlayer p) {
 		p.getArmorStandManager().refresh();
-		double currentY = -Configs.SECRET_NTX_space;
+		double currentY = -spaceBetweenLines;
 		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
 			if (as.getProperty().get().length() != 0) {
-				currentY += Configs.SECRET_NTX_space;
+				currentY += spaceBetweenLines;
 				as.setOffset(currentY);
 			}
 		}

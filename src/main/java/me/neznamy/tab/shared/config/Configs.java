@@ -10,10 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
@@ -39,19 +42,7 @@ public class Configs {
 	public static String noAfk;
 	public static String yesAfk;
 	public static Map<String, Object> serverAliases;
-	public static boolean usePrimaryGroup;
-	public static List<String> primaryGroupFindingList = Arrays.asList("Owner", "Admin", "Helper", "default");
-	public static boolean groupsByPermissions;
-	public static double SECRET_NTX_space;
-	public static boolean SECRET_invisible_nametags;
-	public static boolean SECRET_unregister_before_register;
-	public static boolean SECRET_remove_ghost_players;
-	public static boolean SECRET_armorstands_always_visible;
 	public static boolean SECRET_debugMode;
-	public static String SECRET_multiWorldSeparator;
-	public static String SECRET_essentials_nickname_prefix;
-	public static boolean SECRET_rgb_support;
-	public static boolean SECRET_autoComplete;
 
 
 	public static ConfigurationFile animation;
@@ -85,11 +76,8 @@ public class Configs {
 		errorFile = new File(Shared.platform.getDataFolder(), "errors.txt");
 		papiErrorFile = new File(Shared.platform.getDataFolder(), "PlaceholderAPI.errors.txt");
 		if (errorFile.exists() && errorFile.length() > 10) {
-			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Please take a look at the errors and try to correct them. You can also join our discord for assistance. After you resolve them, delete the file.");
+			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
-		Placeholders.allUsedPlaceholderIdentifiers.clear();
-		Placeholders.usedPlaceholders = new HashSet<>();
-		Placeholders.registeredPlaceholders.clear();
 		removeAdvancedConfig();
 		loadConfig();
 		loadAnimations();
@@ -114,6 +102,7 @@ public class Configs {
 			f.delete();
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
 		Shared.platform.loadConfig();
 		collisionRule = config.getBoolean("enable-collision", true);
@@ -136,19 +125,23 @@ public class Configs {
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
-		usePrimaryGroup = config.getBoolean("use-primary-group", true);
-		primaryGroupFindingList = config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-		groupsByPermissions = config.getBoolean("assign-groups-by-permissions", false);
-		SECRET_NTX_space = getSecretOption("ntx-space", 0.22F);
-		SECRET_invisible_nametags = getSecretOption("invisible-nametags", false);
-		SECRET_unregister_before_register = getSecretOption("unregister-before-register", true);
-		SECRET_remove_ghost_players = getSecretOption("remove-ghost-players", false);
-		SECRET_armorstands_always_visible = getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		SECRET_debugMode = getSecretOption("debug", false);
-		SECRET_multiWorldSeparator = getSecretOption("multi-world-separator", "-");
-		SECRET_essentials_nickname_prefix = getSecretOption("essentials-nickname-prefix", "");
-		SECRET_rgb_support = getSecretOption("rgb-support", true);
-		SECRET_autoComplete = getSecretOption("auto-command-complete", true);
+		Placeholders.findAllUsed(config.getValues());
+		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
+		if (groups.size() < 2) return;
+		Map<Object, Object> sameValues = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
+		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
+			Map<String, Object> group = (Map<String, Object>) groupSettings;
+			for (Entry<String, Object> entry : group.entrySet()) {
+				String property = entry.getKey();
+				if (!sameValues.containsKey(property) || !String.valueOf(sameValues.get(property)).equals(entry.getValue())) {
+					sameValues.remove(property);
+				}
+			}
+		}
+		for (Object property : sameValues.keySet()) {
+			Shared.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
+		}
 	}
 	public static void loadAnimations() throws Exception {
 		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
@@ -156,6 +149,7 @@ public class Configs {
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
+		Placeholders.findAllUsed(animation.getValues());
 	}
 	public static void loadBossbar() throws Exception {
 		bossbar = new YamlConfigurationFile(Shared.platform.getDataFolder(), "bossbar.yml", null);
@@ -165,6 +159,7 @@ public class Configs {
 			return;
 		}
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
+		Placeholders.findAllUsed(bossbar.getValues());
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "translation.yml", null);
@@ -183,14 +178,12 @@ public class Configs {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {
+		if (config == null) return defaultValue;
 		Object value = config.getObject(path);
 		if (value == null) return defaultValue;
-		if (defaultValue instanceof Integer) return (T) (Object) Integer.parseInt(value+"");
-		if (defaultValue instanceof Float) return (T) (Object) Float.parseFloat(value+"");
-		if (defaultValue instanceof Double) return (T) (Object) Double.parseDouble(value+"");
-		if (defaultValue instanceof Long) return (T) (Object) Long.parseLong(value+"");
-		if (defaultValue instanceof String) return (T) (value+"");
-		return (T) value;
+		if (defaultValue instanceof String) return (T) value.toString();
+		if (defaultValue instanceof Boolean) return (T) (Object) Boolean.parseBoolean(value.toString());
+		return (T) (Object) Double.parseDouble(value.toString());
 	}
 	public static List<String> getPlayerData(String key) {
 		if (playerdata == null) {
@@ -213,7 +206,7 @@ public class Configs {
 		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split(Configs.SECRET_multiWorldSeparator)) {
+			for (String localWorld : worldGroup.split(Configs.getSecretOption("multi-world-separator", "-"))) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}
