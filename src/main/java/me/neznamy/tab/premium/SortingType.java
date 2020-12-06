@@ -41,7 +41,7 @@ public enum SortingType {
 			}
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
-			INSTANCE.usedPlaceholders = Placeholders.detectAll(INSTANCE.sortingPlaceholder);
+			INSTANCE.usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(INSTANCE.sortingPlaceholder);
 		} else {
 			INSTANCE = (Configs.config.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
 		}
