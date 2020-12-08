@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -111,6 +112,11 @@ public class PlaceholderManager implements QuitEventListener {
 	}
 	
 	private void loadRefreshIntervals() {
+		for (Object category : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals").keySet()) {
+			if (!Arrays.asList("default-refresh-interval", "server", "player", "relational").contains(category.toString())) {
+				Shared.errorManager.startupWarn("Unknown placeholder category \"" + category + "\". Valid categories are \"server\", \"player\" and \"relational\"");
+			}
+		}
 		defaultRefresh = Configs.config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 		for (Entry<Object, Object> placeholder : Configs.config.getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
 			serverPlaceholderRefreshIntervals.put(placeholder.getKey()+"", Shared.errorManager.parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
