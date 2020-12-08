@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -73,6 +74,7 @@ public class CpuCommand extends SubCommand {
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &8Last refresh: &6" + (System.currentTimeMillis()-PlaceholderManager.getInstance().lastSuccessfulRefresh) + "ms ago");
 		sendMessage(sender, SEPARATOR);
 		if (Shared.platform.getSeparatorType().equals("server")) {
 			sendMessage(sender, BUKKIT_BRIDGE_TITLE);

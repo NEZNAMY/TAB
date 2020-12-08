@@ -40,6 +40,8 @@ public class PlaceholderManager implements QuitEventListener {
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
 	
 	private static PlaceholderManager instance;
+	
+	public long lastSuccessfulRefresh;
 
 	public PlaceholderManager(){
 		instance = this;
@@ -107,6 +109,7 @@ public class PlaceholderManager implements QuitEventListener {
 				if (somethingChanged) {
 					refresh(forceUpdate, update);
 				}
+				lastSuccessfulRefresh = System.currentTimeMillis();
 			}
 		});
 	}
