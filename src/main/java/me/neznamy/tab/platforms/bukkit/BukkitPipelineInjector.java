@@ -26,7 +26,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			//fake player or waterfall bug
 			return;
 		}
-		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
+		uninject(uuid);
 		try {
 			channel.pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
 				
@@ -82,8 +82,13 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	
 	@Override
 	public void uninject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
+		try {
+			Channel channel = Shared.getPlayer(uuid).getChannel();
+			if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
+		} catch (NoSuchElementException e) {
+			//for whatever reason this rarely throws
+			//java.util.NoSuchElementException: TABReader
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
