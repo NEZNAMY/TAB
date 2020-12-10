@@ -8,21 +8,22 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.interfaces.Feature;
 
 /**
  * Permission group refresher
  */
-public class GroupRefresher {
+public class GroupRefresher implements Feature {
 
-	public static boolean groupsByPermissions;
-	public static boolean usePrimaryGroup;
-	private static List<String> primaryGroupFindingList;
+	public boolean groupsByPermissions;
+	public boolean usePrimaryGroup;
+	private List<String> primaryGroupFindingList;
 	
 	public GroupRefresher() {
 		usePrimaryGroup = Configs.config.getBoolean("use-primary-group", true);
 		groupsByPermissions = Configs.config.getBoolean("assign-groups-by-permissions", false);
 		primaryGroupFindingList = Configs.config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing permission groups", TabFeature.GROUP_REFRESHING, UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
 			public void run() {
@@ -33,7 +34,7 @@ public class GroupRefresher {
 		});
 	}
 
-	public static String detectPermissionGroup(TabPlayer p) {
+	public String detectPermissionGroup(TabPlayer p) {
 		if (groupsByPermissions) {
 			return getByPermission(p);
 		}
@@ -43,7 +44,7 @@ public class GroupRefresher {
 		return getFromList(p);
 	}
 
-	public static String getByPrimary(TabPlayer p) {
+	public String getByPrimary(TabPlayer p) {
 		try {
 			return Shared.permissionPlugin.getPrimaryGroup(p);
 		} catch (Throwable e) {
@@ -51,7 +52,7 @@ public class GroupRefresher {
 		}
 	}
 
-	public static String getFromList(TabPlayer p) {
+	public String getFromList(TabPlayer p) {
 		try {
 			String[] playerGroups = Shared.permissionPlugin.getAllGroups(p);
 			if (playerGroups != null && playerGroups.length > 0) {
@@ -71,7 +72,7 @@ public class GroupRefresher {
 		}
 	}
 
-	public static String getByPermission(TabPlayer p) {
+	public String getByPermission(TabPlayer p) {
 		for (Object group : primaryGroupFindingList) {
 			if (p.hasPermission("tab.group." + group)) {
 				return String.valueOf(group);
@@ -79,5 +80,10 @@ public class GroupRefresher {
 		}
 		Shared.errorManager.oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
 		return "<null>";
+	}
+
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.GROUP_REFRESHING;
 	}
 }

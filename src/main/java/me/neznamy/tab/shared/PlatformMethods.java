@@ -214,7 +214,7 @@ public interface PlatformMethods {
 			Shared.featureManager.registerFeature("playerlist", playerlist);
 			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
-		new GroupRefresher();
+		Shared.featureManager.registerFeature("group", new GroupRefresher());
 		new UpdateChecker();
 		if (Configs.getSecretOption("layout", false)) {
 			Shared.featureManager.registerFeature("layout", new Layout());

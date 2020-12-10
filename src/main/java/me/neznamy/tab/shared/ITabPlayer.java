@@ -58,7 +58,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private Scoreboard forcedScoreboard;
 
 	public void init() {
-		setGroup(GroupRefresher.detectPermissionGroup(this), false);
+		setGroup(((GroupRefresher)Shared.featureManager.getFeature("group")).detectPermissionGroup(this), false);
 		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)).toString();
 		correctId = uniqueId; //initialization to avoid NPEs
 	}

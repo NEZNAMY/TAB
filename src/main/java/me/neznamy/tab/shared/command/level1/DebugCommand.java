@@ -49,6 +49,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	@SuppressWarnings("unchecked")
 	private void debug(TabPlayer sender, TabPlayer analyzed) {
+		GroupRefresher group = (GroupRefresher) Shared.featureManager.getFeature("group");
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
@@ -57,9 +58,9 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6Permission plugin: &a" + Shared.permissionPlugin.getName());
-		if (GroupRefresher.groupsByPermissions) {
+		if (group.groupsByPermissions) {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
-		} else if (GroupRefresher.usePrimaryGroup) {
+		} else if (group.usePrimaryGroup) {
 			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions");
 		} else {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
@@ -84,9 +85,9 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed == null) return;
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
-		if (GroupRefresher.groupsByPermissions) {
+		if (group.groupsByPermissions) {
 			sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
-		} else if (GroupRefresher.usePrimaryGroup) {
+		} else if (group.usePrimaryGroup) {
 			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 		} else {
 			try {
