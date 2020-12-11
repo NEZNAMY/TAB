@@ -27,7 +27,7 @@ public abstract class Placeholder {
 		if (Premium.is()) {
 			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
-				replacements.put(entry.getKey().toString().replace('&', Placeholders.colorChar), entry.getValue().toString());
+				replacements.put(entry.getKey().toString().replace('&', PlaceholderManager.colorChar), entry.getValue().toString());
 				for (String id : PlaceholderManager.detectAll(entry.getValue()+"")) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
@@ -51,7 +51,7 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, Placeholders.color(value)), p);
+			String newValue = setPlaceholders(findReplacement(replacements, PlaceholderManager.color(value)), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}

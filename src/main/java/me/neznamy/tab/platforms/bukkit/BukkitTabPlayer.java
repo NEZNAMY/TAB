@@ -16,7 +16,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import us.myles.ViaVersion.api.Via;
 
 /**
@@ -111,7 +111,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(translateColors ? Placeholders.color(message): message);
+		player.sendMessage(translateColors ? PlaceholderManager.color(message): message);
 	}
 
 	@Override

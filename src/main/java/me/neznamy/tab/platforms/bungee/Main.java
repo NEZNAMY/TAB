@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.bungee;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -68,7 +68,7 @@ public class Main extends Plugin {
 		public void execute(CommandSender sender, String[] args) {
 			if (Shared.disabled) {
 				for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(Placeholders.color(message));
+					sender.sendMessage(PlaceholderManager.color(message));
 				}
 			} else {
 				Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);

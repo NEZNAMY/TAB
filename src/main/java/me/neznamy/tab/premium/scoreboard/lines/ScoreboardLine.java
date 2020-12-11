@@ -5,8 +5,8 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -34,7 +34,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected String[] split(String string, int firstElementMaxLength) {
 		if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
 		int splitIndex = firstElementMaxLength;
-		if (string.charAt(splitIndex-1) == Placeholders.colorChar) splitIndex--;
+		if (string.charAt(splitIndex-1) == PlaceholderManager.colorChar) splitIndex--;
 		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex, string.length())};
 	}
 	
@@ -54,7 +54,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected static String getPlayerName(int lineNumber) {
 		String id = lineNumber+"";
 		if (id.length() == 1) id = "0" + id;
-		char c = Placeholders.colorChar;
+		char c = PlaceholderManager.colorChar;
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
 	}
 }

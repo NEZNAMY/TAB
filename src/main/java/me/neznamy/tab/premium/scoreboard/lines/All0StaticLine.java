@@ -3,7 +3,7 @@ package me.neznamy.tab.premium.scoreboard.lines;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * A line with static text (no placeholders) with 0 everywhere
@@ -19,7 +19,7 @@ public class All0StaticLine extends StaticLine {
 	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, getPlayerName(lineNumber));
 		this.parent = parent;
-		this.originalText = Placeholders.color(text);
+		this.originalText = PlaceholderManager.color(text);
 	}
 
 	@Override

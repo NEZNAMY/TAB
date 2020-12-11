@@ -9,7 +9,7 @@ import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -83,7 +83,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	@SuppressWarnings("deprecation")
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
-		player.sendMessage(translateColors ? Placeholders.color(message): message);
+		player.sendMessage(translateColors ? PlaceholderManager.color(message): message);
 	}
 	
 	@Override

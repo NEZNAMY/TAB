@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Main class for Bukkit platform
@@ -39,7 +39,7 @@ public class Main extends JavaPlugin {
 			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
 				if (Shared.disabled) {
 					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Placeholders.color(message));
+						sender.sendMessage(PlaceholderManager.color(message));
 					}
 				} else {
 					new Thread(() -> {

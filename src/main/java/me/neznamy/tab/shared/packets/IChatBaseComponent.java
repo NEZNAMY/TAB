@@ -11,7 +11,7 @@ import org.json.simple.parser.ParseException;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 import me.neznamy.tab.shared.rgb.TextColor;
 
@@ -307,7 +307,7 @@ public class IChatBaseComponent {
 
 	public static IChatBaseComponent fromColoredText(String originalText){
 		if (originalText == null) return new IChatBaseComponent();
-		String text = Placeholders.color(originalText);
+		String text = PlaceholderManager.color(originalText);
 		if (Configs.getSecretOption("rgb-support", true)) {
 			text = RGBUtils.applyFormats(text);
 		}
@@ -316,7 +316,7 @@ public class IChatBaseComponent {
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
 			char c = text.charAt(i);
-			if (c == Placeholders.colorChar){
+			if (c == PlaceholderManager.colorChar){
 				i++;
 				if (i >= text.length()) {
 					break;
@@ -452,7 +452,7 @@ public class IChatBaseComponent {
 	}
 	
 	public static IChatBaseComponent optimizedComponent(String text){
-		return text != null && (text.contains("#") || text.contains("&x") || text.contains(Placeholders.colorChar + "x")) ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
+		return text != null && (text.contains("#") || text.contains("&x") || text.contains(PlaceholderManager.colorChar + "x")) ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
 	}
 	public enum ClickAction{
 		OPEN_URL,

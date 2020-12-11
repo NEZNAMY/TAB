@@ -24,7 +24,6 @@ import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * A static mess of config options
@@ -114,7 +113,7 @@ public class Configs {
 		dateFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		removeStrings = new ArrayList<>();
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
-			removeStrings.add(Placeholders.color(s));
+			removeStrings.add(PlaceholderManager.color(s));
 		}
 		sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;

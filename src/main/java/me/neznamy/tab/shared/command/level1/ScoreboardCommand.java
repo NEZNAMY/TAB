@@ -5,7 +5,7 @@ import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab scoreboard" subcommand
@@ -20,7 +20,7 @@ public class ScoreboardCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		ScoreboardManager scoreboard = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
 		if (scoreboard == null) {
-			sendMessage(sender, Placeholders.color("&cScoreboard feature is not enabled, therefore toggle command cannot be used."));
+			sendMessage(sender, PlaceholderManager.color("&cScoreboard feature is not enabled, therefore toggle command cannot be used."));
 			return;
 		}
 		if (!scoreboard.permToToggle || sender.hasPermission("tab.togglescoreboard")) {

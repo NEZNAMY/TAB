@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Feature handler for header and footer
@@ -87,7 +86,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		if (lines == null) lines = new ArrayList<String>();
 		int i = 0;
 		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n" + Placeholders.colorChar + "r");
+			if (++i > 1) rawValue.append("\n" + PlaceholderManager.colorChar + "r");
 			rawValue.append(line);
 		}
 		p.setProperty(name, rawValue.toString());

@@ -27,7 +27,6 @@ import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.kyori.adventure.identity.Identity;
@@ -81,7 +80,7 @@ public class VelocityMethods implements PlatformMethods {
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? Placeholders.color(message): message));
+		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? PlaceholderManager.color(message): message));
 	}
 
 	@Override

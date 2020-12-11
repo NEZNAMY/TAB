@@ -7,7 +7,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
 /**
@@ -150,7 +149,7 @@ public class Property {
 			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
 			if (pl != null) string = pl.set(string, owner);
 		}
-		string = Placeholders.color(string);
+		string = PlaceholderManager.color(string);
 		for (String removed : Configs.removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}

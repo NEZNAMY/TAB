@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Abstract class to be extended by packets which can be sent on all 3 supported platforms
@@ -27,7 +27,7 @@ public abstract class UniversalPacketPlayOut {
 	 */
 	public String cutTo(String string, int length) {
 		if (string == null || string.length() <= length) return string;
-		if (string.charAt(length-1) == Placeholders.colorChar) {
+		if (string.charAt(length-1) == PlaceholderManager.colorChar) {
 			return string.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
 		} else {
 			return string.substring(0, length);

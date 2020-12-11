@@ -34,6 +34,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
  */
 public class PlaceholderManager implements QuitEventListener {
 
+	public static final char colorChar = '\u00a7';
 	private final static Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 	
 	public int defaultRefresh;
@@ -301,6 +302,38 @@ public class PlaceholderManager implements QuitEventListener {
 			}
 		}
 		Shared.featureManager.refreshUsedPlaceholders();
+	}
+	
+	//code taken from bukkit, so it can work on bungee too
+	public static String color(String textToTranslate){
+		if (textToTranslate == null) return null;
+		if (!textToTranslate.contains("&")) return textToTranslate;
+		char[] b = textToTranslate.toCharArray();
+		for (int i = 0; i < b.length - 1; i++) {
+			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)){
+				b[i] = colorChar;
+				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
+			}
+		}
+		return new String(b);
+	}
+	//code taken from bukkit, so it can work on bungee too
+	public static String getLastColors(String input) {
+		String result = "";
+		int length = input.length();
+		for (int index = length - 1; index > -1; index--){
+			char section = input.charAt(index);
+			if ((section == colorChar) && (index < length - 1)){
+				char c = input.charAt(index + 1);
+				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
+					result = colorChar + "" + c + result;
+					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override

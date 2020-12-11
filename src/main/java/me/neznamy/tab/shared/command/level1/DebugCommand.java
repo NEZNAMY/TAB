@@ -14,8 +14,8 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -153,8 +153,8 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + Shared.platform.getSeparatorType());
 		} else {
 			Property pr = analyzed.getProperty(property);
-			String rawValue = pr.getCurrentRawValue().replace(Placeholders.colorChar, '&');
-			String value = Placeholders.color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
+			String rawValue = pr.getCurrentRawValue().replace(PlaceholderManager.colorChar, '&');
+			String value = PlaceholderManager.color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
 			sendRawMessage(sender, value);
 		}
 	}

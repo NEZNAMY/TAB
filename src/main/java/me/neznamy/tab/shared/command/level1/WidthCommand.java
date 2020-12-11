@@ -8,9 +8,9 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Handler for "/tab width" subcommand
@@ -45,8 +45,8 @@ public class WidthCommand extends SubCommand {
 				}
 			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
-			IChatBaseComponent charMessage = new IChatBaseComponent(Placeholders.color("&2" + c + " &d|"));
-			messages.add(new IChatBaseComponent(Placeholders.colorChar + "b[TAB] Click the line with closest width"));
+			IChatBaseComponent charMessage = new IChatBaseComponent(PlaceholderManager.color("&2" + c + " &d|"));
+			messages.add(new IChatBaseComponent(PlaceholderManager.colorChar + "b[TAB] Click the line with closest width"));
 			messages.add(getText(1, c));
 			messages.add(charMessage);
 			messages.add(getText(2, c));
@@ -98,6 +98,6 @@ public class WidthCommand extends SubCommand {
 			text += "ii";
 			break;
 		}
-		return new IChatBaseComponent(Placeholders.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
+		return new IChatBaseComponent(PlaceholderManager.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
 	}
 }

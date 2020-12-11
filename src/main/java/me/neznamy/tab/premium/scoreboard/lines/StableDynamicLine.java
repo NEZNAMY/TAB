@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public abstract class StableDynamicLine extends ScoreboardLine {
 
@@ -74,11 +73,11 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
 			prefix = replaced.substring(0, charLimit);
 			suffix = replaced.substring(charLimit, replaced.length());
-			if (prefix.charAt(charLimit-1) == Placeholders.colorChar) {
+			if (prefix.charAt(charLimit-1) == PlaceholderManager.colorChar) {
 				prefix = prefix.substring(0, charLimit-1);
-				suffix = Placeholders.colorChar + suffix;
+				suffix = PlaceholderManager.colorChar + suffix;
 			}
-			String last = Placeholders.getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
+			String last = PlaceholderManager.getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
 			suffix = last + suffix;
 		} else {
 			prefix = replaced;

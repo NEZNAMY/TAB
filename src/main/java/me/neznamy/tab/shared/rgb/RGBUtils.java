@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.rgb;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -181,7 +181,7 @@ public class RGBUtils {
 	 */
 	private static String asGradient(TextColor start, String text, TextColor end) {
 		//lazy support for magic codes in gradients
-		String magicCodes = Placeholders.getLastColors(text);
+		String magicCodes = PlaceholderManager.getLastColors(text);
 		String decolorized = text.substring(magicCodes.length());
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();

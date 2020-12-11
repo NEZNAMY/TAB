@@ -2,8 +2,8 @@ package me.neznamy.tab.premium.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 public abstract class StaticLine extends ScoreboardLine {
 
@@ -34,7 +34,7 @@ public abstract class StaticLine extends ScoreboardLine {
 			prefix = prefix_other[0];
 			String other = prefix_other[1];
 			if (forcedNameStart.length() > 0) {
-				other = forcedNameStart + Placeholders.getLastColors(prefix) + other;
+				other = forcedNameStart + PlaceholderManager.getLastColors(prefix) + other;
 			}
 			String[] name_suffix = split(other, 40);
 			name = name_suffix[0];
@@ -50,7 +50,7 @@ public abstract class StaticLine extends ScoreboardLine {
 			prefix1_7 = prefix_other[0];
 			String other = prefix_other[1];
 			if (forcedNameStart.length() > 0) {
-				other = forcedNameStart + Placeholders.getLastColors(prefix1_7) + other;
+				other = forcedNameStart + PlaceholderManager.getLastColors(prefix1_7) + other;
 			}
 			String[] name_suffix = split(other, 16);
 			name1_7 = name_suffix[0];

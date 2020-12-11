@@ -24,7 +24,6 @@ import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
@@ -82,7 +81,7 @@ public class BungeeMethods implements PlatformMethods {
 	@Override
 	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		ProxyServer.getInstance().getConsole().sendMessage(translateColors ? Placeholders.color(message): message);
+		ProxyServer.getInstance().getConsole().sendMessage(translateColors ? PlaceholderManager.color(message): message);
 	}
 	
 	@Override

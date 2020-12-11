@@ -15,8 +15,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
@@ -57,7 +57,7 @@ public class Main {
 			public void execute(CommandSource sender, String[] args) {
 				if (Shared.disabled) {
 					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Identity.nil(), Component.text(Placeholders.color(message)));
+						sender.sendMessage(Identity.nil(), Component.text(PlaceholderManager.color(message)));
 					}
 				} else {
 					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);

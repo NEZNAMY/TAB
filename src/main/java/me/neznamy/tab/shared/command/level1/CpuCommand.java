@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -107,8 +106,8 @@ public class CpuCommand extends SubCommand {
 			}
 			if (sender != null) {
 				//player
-				IChatBaseComponent message = new IChatBaseComponent(Placeholders.color(core));
-				message.onHoverShowText(Placeholders.color(String.join("\n", messages)));
+				IChatBaseComponent message = new IChatBaseComponent(PlaceholderManager.color(core));
+				message.onHoverShowText(PlaceholderManager.color(String.join("\n", messages)));
 				sender.sendCustomPacket(new PacketPlayOutChat(message));
 			} else {
 				Shared.platform.sendConsoleMessage(core, true);

@@ -40,7 +40,6 @@ import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -127,7 +126,7 @@ public class BukkitMethods implements PlatformMethods {
 
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		Bukkit.getConsoleSender().sendMessage(translateColors ? Placeholders.color(message): message);
+		Bukkit.getConsoleSender().sendMessage(translateColors ? PlaceholderManager.color(message): message);
 	}
 
 	@Override
