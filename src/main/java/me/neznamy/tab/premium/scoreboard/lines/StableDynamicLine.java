@@ -51,7 +51,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.players.contains(p) && p.getProperty(teamName).get().length() > 0) {
-			PacketAPI.removeScoreboardScore(p, getPlayerName(), teamName);
+			removeLine(p, getPlayerName(), teamName);
 		}
 	}
 
@@ -94,7 +94,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		} else {
 			if (!suppressToggle) {
 				//new string is "", but before it was not
-				PacketAPI.removeScoreboardScore(p, getPlayerName(), teamName);
+				removeLine(p, getPlayerName(), teamName);
 			}
 			return null;
 		}

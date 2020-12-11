@@ -38,7 +38,7 @@ public class All0StaticLine extends StaticLine {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (p.getProperty(teamName).get().length() > 0) {
-			PacketAPI.removeScoreboardScore(p, p.getVersion().getMinorVersion() >= 13 ? getPlayerName() : p.getVersion().getMinorVersion() >= 8 ? this.name : name1_7, teamName);
+			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? getPlayerName() : p.getVersion().getMinorVersion() >= 8 ? this.name : name1_7, teamName);
 		}
 	}
 }

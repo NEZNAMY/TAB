@@ -38,7 +38,7 @@ public class CustomLine extends ScoreboardLine {
 		if (prefix || name || suffix) {
 			if (name) {
 				//name changed as well
-				PacketAPI.removeScoreboardScore(refreshed, oldName, teamName);
+				removeLine(refreshed, oldName, teamName);
 				PacketAPI.registerScoreboardScore(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 
 						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
 			} else {
@@ -66,7 +66,7 @@ public class CustomLine extends ScoreboardLine {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.players.contains(p)) {
-			PacketAPI.removeScoreboardScore(p, p.getProperty(teamName + "-name").get(), teamName);
+			removeLine(p, p.getProperty(teamName + "-name").get(), teamName);
 		}
 	}
 }

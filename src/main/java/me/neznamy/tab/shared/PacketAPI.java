@@ -66,15 +66,4 @@ public class PacketAPI {
 		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective,fakeplayer, score));
 	}
-	
-	/**
-	 * Removes scoreboard score
-	 * @param p - player to send the packet to
-	 * @param fakeplayer - name of the fake player
-	 * @param objective - objective name
-	 */
-	public static void removeScoreboardScore(TabPlayer p, String fakeplayer, String objective) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, objective, fakeplayer, 0));
-		p.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(objective).setTeamOptions(69));
-	}
 }

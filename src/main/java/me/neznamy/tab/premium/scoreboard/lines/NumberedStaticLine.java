@@ -29,7 +29,7 @@ public class NumberedStaticLine extends StaticLine {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (p.getProperty(teamName).get().length() > 0) {
-			PacketAPI.removeScoreboardScore(p, p.getVersion().getMinorVersion() >= 8 ? name: name1_7, teamName);
+			removeLine(p, p.getVersion().getMinorVersion() >= 8 ? name: name1_7, teamName);
 		}
 	}
 }

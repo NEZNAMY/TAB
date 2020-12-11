@@ -7,6 +7,9 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -56,5 +59,10 @@ public abstract class ScoreboardLine implements Refreshable {
 		if (id.length() == 1) id = "0" + id;
 		char c = PlaceholderManager.colorChar;
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
+	}
+	
+	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ObjectiveName, fakeplayer, 0));
+		p.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69));
 	}
 }
