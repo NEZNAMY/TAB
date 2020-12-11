@@ -1,11 +1,6 @@
 package me.neznamy.tab.premium.conditions.simple;
 
-import java.util.List;
-
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -13,31 +8,13 @@ import me.neznamy.tab.shared.placeholders.Placeholders;
  */
 public class NotEqualsCondition extends SimpleCondition {
 
-	private String leftSide;
-	private List<String> leftSidePlaceholders;
-	private String rightSide;
-	private List<String> rightSidePlaceholders;
-	
 	public NotEqualsCondition(String leftSide, String rightSide) {
-		this.leftSide = leftSide;
-		leftSidePlaceholders = PlaceholderManager.detectAll(leftSide);
-		this.rightSide = rightSide;
-		rightSidePlaceholders = PlaceholderManager.detectAll(rightSide);
+		super(leftSide, rightSide);
 	}
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
-		String leftSide = this.leftSide;
-		for (String identifier : leftSidePlaceholders) {
-			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
-			if (pl != null) leftSide = pl.set(leftSide, p);
-		}
-		String rightSide = this.rightSide;
-		for (String identifier : rightSidePlaceholders) {
-			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
-			if (pl != null) rightSide = pl.set(rightSide, p);
-		}
-		return !Placeholders.color(leftSide).equals(Placeholders.color(rightSide));
+		return !Placeholders.color(parseLeftSide(p)).equals(Placeholders.color(parseRightSide(p)));
 	}
 	
 	public static NotEqualsCondition compile(String line) {
