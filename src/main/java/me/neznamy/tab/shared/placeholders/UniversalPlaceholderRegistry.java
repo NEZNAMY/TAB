@@ -1,9 +1,13 @@
 package me.neznamy.tab.shared.placeholders;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -233,7 +237,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 			@Override
 			public String[] getNestedStrings(){
-				return new String[] {c.yes, c.no};
+				List<String> list = new ArrayList<String>(Arrays.asList(super.getNestedStrings()));
+				list.addAll(Arrays.asList(new String[] {c.yes, c.no}));
+				return list.toArray(new String[0]);
 			}
 
 		});
