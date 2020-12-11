@@ -1,9 +1,11 @@
 package me.neznamy.tab.premium.scoreboard.lines;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -59,6 +61,11 @@ public abstract class ScoreboardLine implements Refreshable {
 		if (id.length() == 1) id = "0" + id;
 		char c = PlaceholderManager.colorChar;
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
+	}
+	
+	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, fakeplayer, value));
+		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
 	}
 	
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {

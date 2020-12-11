@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -9,8 +8,6 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
@@ -50,20 +47,5 @@ public class PacketAPI {
 		}
 		to.sendCustomPacket(PacketPlayOutScoreboardObjective.REGISTER(objectiveName, title, displayType));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
-	}
-
-	/**
-	 * Register scoreboard score with given properties
-	 * @param p - player to send the packet to
-	 * @param team - team name of the fake player
-	 * @param fakeplayer - name of the fake player
-	 * @param prefix - prefix
-	 * @param suffix - suffix
-	 * @param objective - objective name
-	 * @param score - score
-	 */
-	public static void registerScoreboardScore(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
-		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective,fakeplayer, score));
 	}
 }

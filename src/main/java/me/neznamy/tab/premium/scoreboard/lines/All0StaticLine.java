@@ -2,7 +2,6 @@ package me.neznamy.tab.premium.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
@@ -26,12 +25,12 @@ public class All0StaticLine extends StaticLine {
 	public void register(TabPlayer p) {
 		p.setProperty(teamName, text);
 		if (p.getVersion().getMinorVersion() >= 13) {
-			PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), originalText, "", ObjectiveName, parent.manager.staticNumber);
+			addLine(p, teamName, getPlayerName(), originalText, "", parent.manager.staticNumber);
 		} else if (p.getVersion().getMinorVersion() >= 8) {
-			PacketAPI.registerScoreboardScore(p, teamName, name, prefix, suffix, ObjectiveName, parent.manager.staticNumber);
+			addLine(p, teamName, name, prefix, suffix, parent.manager.staticNumber);
 		} else {
 			//<1.8 does not support sorting by name which we abuse here
-			PacketAPI.registerScoreboardScore(p, teamName, name1_7, prefix1_7, suffix1_7, ObjectiveName, parent.lines.size() + 1 - lineNumber);
+			addLine(p, teamName, name1_7, prefix1_7, suffix1_7, parent.lines.size() + 1 - lineNumber);
 		}
 	}
 

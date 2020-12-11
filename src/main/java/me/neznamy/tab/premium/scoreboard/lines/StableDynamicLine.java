@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -45,7 +44,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		p.setProperty(teamName, text);
 		List<String> prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix == null) return;
-		PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), ObjectiveName, getScoreFor(p));
+		addLine(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), getScoreFor(p));
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (replaced.length() > 0) {
 			if (emptyBefore) {
 				//was "", now it is not
-				PacketAPI.registerScoreboardScore(p, teamName, getPlayerName(), prefix, suffix, ObjectiveName, getScoreFor(p));
+				addLine(p, teamName, getPlayerName(), prefix, suffix, getScoreFor(p));
 				return null;
 			} else {
 				return Arrays.asList(prefix, suffix);

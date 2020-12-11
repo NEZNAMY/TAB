@@ -2,7 +2,6 @@ package me.neznamy.tab.premium.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
@@ -39,8 +38,8 @@ public class CustomLine extends ScoreboardLine {
 			if (name) {
 				//name changed as well
 				removeLine(refreshed, oldName, teamName);
-				PacketAPI.registerScoreboardScore(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 
-						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
+				addLine(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 
+						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), score);
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
@@ -59,8 +58,8 @@ public class CustomLine extends ScoreboardLine {
 		p.setProperty(teamName + "-prefix", prefix);
 		p.setProperty(teamName + "-name", name);
 		p.setProperty(teamName + "-suffix", suffix);
-		PacketAPI.registerScoreboardScore(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
-				p.getProperty(teamName + "-suffix").get(), ObjectiveName, score);
+		addLine(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
+				p.getProperty(teamName + "-suffix").get(), score);
 	}
 
 	@Override
