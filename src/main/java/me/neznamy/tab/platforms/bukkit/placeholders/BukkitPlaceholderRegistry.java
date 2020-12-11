@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.placeholders;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,6 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
@@ -35,6 +35,8 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
+	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
+	
 	private JavaPlugin plugin;
 	private Economy economy;
 	private Chat chat;
@@ -55,8 +57,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new PlayerPlaceholder("%money%", 1000) {
 			public String get(TabPlayer p) {
-				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) return Placeholders.decimal2.format(((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getMoney().doubleValue());
-				if (economy != null) return Placeholders.decimal2.format(economy.getBalance((Player) p.getPlayer()));
+				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) return decimal2.format(((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getMoney().doubleValue());
+				if (economy != null) return decimal2.format(economy.getBalance((Player) p.getPlayer()));
 				return "-";
 			}
 		});
@@ -81,7 +83,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				try {
 					Object nmsServer = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
 					double value = ((double[]) nmsServer.getClass().getField("recentTps").get(nmsServer))[0];
-					return Placeholders.decimal2.format(Math.min(20, value));
+					return decimal2.format(Math.min(20, value));
 				} catch (Throwable t) {
 					return "-1";
 				}

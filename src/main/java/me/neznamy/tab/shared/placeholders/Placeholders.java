@@ -1,13 +1,10 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.text.DecimalFormat;
-
 /**
  * Messy class to be moved into PlaceholderManager class
  */
 public class Placeholders {
 
-	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	public static final char colorChar = '\u00a7';
 	
 	//code taken from bukkit, so it can work on bungee too
