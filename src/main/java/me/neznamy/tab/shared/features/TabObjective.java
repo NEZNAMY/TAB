@@ -15,7 +15,9 @@ import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 
 /**
  * Feature handler for tablist objective feature
@@ -52,7 +54,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		}
 		for (TabPlayer viewer : Shared.getPlayers()){
 			for (TabPlayer target : Shared.getPlayers()){
-				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getValue(target));
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)));
 			}
 		}
 	}
@@ -73,8 +75,8 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType);
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, value);
-			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), value));
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
 	}
 
@@ -99,7 +101,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : Shared.getPlayers()) {
-			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, value);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), value));
 		}
 	}
 
@@ -123,7 +125,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, title, DisplaySlot, displayType);
 		for (TabPlayer all : Shared.getPlayers()){
-			if (all.isLoaded()) PacketAPI.setScoreboardScore(packetReceiver, all.getName(), ObjectiveName, getValue(all));
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
 	}
 }

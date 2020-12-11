@@ -64,7 +64,7 @@ public class PacketAPI {
 	 */
 	public static void registerScoreboardScore(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, String objective, int score) {
 		registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
-		setScoreboardScore(p, fakeplayer, objective, score);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective,fakeplayer, score));
 	}
 	
 	/**
@@ -76,16 +76,5 @@ public class PacketAPI {
 	public static void removeScoreboardScore(TabPlayer p, String fakeplayer, String objective) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, objective, fakeplayer, 0));
 		p.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(objective).setTeamOptions(69));
-	}
-	
-	/**
-	 * Sets score of player
-	 * @param to - player to send the packet to
-	 * @param player - player who the score belongs to
-	 * @param objective - objective name
-	 * @param score - the score
-	 */
-	public static void setScoreboardScore(TabPlayer to, String player, String objective, int score) {
-		to.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, objective, player, score));
 	}
 }

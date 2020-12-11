@@ -16,7 +16,9 @@ import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 
 /**
  * Feature handler for BelowName feature
@@ -78,7 +80,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		}
 		for (TabPlayer viewer : Shared.getPlayers()){
 			for (TabPlayer target : Shared.getPlayers()){
-				PacketAPI.setScoreboardScore(viewer, target.getName(), ObjectiveName, getValue(target));
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)));
 			}
 		}
 	}
@@ -99,8 +101,8 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()){
-			PacketAPI.setScoreboardScore(all, connectedPlayer.getName(), ObjectiveName, number);
-			if (all.isLoaded()) PacketAPI.setScoreboardScore(connectedPlayer, all.getName(), ObjectiveName, getValue(all));
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), number));
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
 	}
 
@@ -125,7 +127,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int number = getValue(refreshed);
 		for (TabPlayer all : Shared.getPlayers()) {
-			PacketAPI.setScoreboardScore(all, refreshed.getName(), ObjectiveName, number);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), number));
 		}
 	}
 
@@ -149,7 +151,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (TabPlayer all : Shared.getPlayers()){
-			if (all.isLoaded()) PacketAPI.setScoreboardScore(packetReceiver, all.getName(), ObjectiveName, getValue(all));
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
 	}
 }
