@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Representation of any server/player placeholder
@@ -27,7 +28,7 @@ public abstract class Placeholder {
 			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
 				replacements.put(entry.getKey().toString().replace('&', Placeholders.colorChar), entry.getValue().toString());
-				for (String id : Placeholders.detectAll(entry.getValue()+"")) {
+				for (String id : PlaceholderManager.detectAll(entry.getValue()+"")) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
 			}
@@ -84,7 +85,7 @@ public abstract class Placeholder {
 		String replaced = text;
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
-			Placeholder pl = Placeholders.getPlaceholder(s);
+			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(s);
 			if (pl != null && replaced.contains(pl.getIdentifier())) replaced = pl.set(replaced, p);
 		}
 		return replaced;

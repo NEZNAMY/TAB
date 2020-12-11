@@ -19,10 +19,10 @@ import me.neznamy.tab.premium.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * The core class for player
@@ -106,7 +106,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void setValueTemporarily(EnumProperty type, String value) {
-		Placeholders.checkForRegistration(value);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
 		getProperty(type.toString()).setTemporaryValue(value);
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
@@ -116,7 +116,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void setValuePermanently(EnumProperty type, String value) {
-		Placeholders.checkForRegistration(value);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
 		getProperty(type.toString()).changeRawValue(value);
 		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
 		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {

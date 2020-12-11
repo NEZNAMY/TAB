@@ -13,11 +13,11 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
@@ -96,7 +96,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			bossbar_off_players = Configs.getPlayerData("bossbar-off");
 		}
 		if (bossbar_off_players == null) bossbar_off_players = new ArrayList<String>();
-		Placeholders.registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
 			public String get() {

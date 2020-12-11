@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Feature handler for BelowName feature
@@ -60,7 +59,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 			@Override
 			public void refreshUsedPlaceholders() {
-				usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
+				usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(text);
 			}
 
 			@Override
@@ -137,7 +136,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(number);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(number);
 	}
 
 	@Override

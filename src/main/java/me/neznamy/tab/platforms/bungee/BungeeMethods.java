@@ -64,11 +64,11 @@ public class BungeeMethods implements PlatformMethods {
 	@Override
 	public void loadFeatures() throws Exception{
 		PlaceholderManager plm = new PlaceholderManager();
+		Shared.featureManager.registerFeature("placeholders", plm);
 		plm.addRegistry(new BungeePlaceholderRegistry());
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
 		Shared.featureManager.registerFeature("injection", new BungeePipelineInjector());
-		Shared.featureManager.registerFeature("placeholders", plm);
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
 		loadUniversalFeatures();
 		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
@@ -98,11 +98,11 @@ public class BungeeMethods implements PlatformMethods {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;
 			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
-			PlaceholderManager pl = PlaceholderManager.getInstance();
+			PlaceholderManager pl = ((PlaceholderManager)Shared.featureManager.getFeature("placeholders"));
 			int cooldown = pl.defaultRefresh;
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
 			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
-			Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+			((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());

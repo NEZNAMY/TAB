@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab player" subcommand
@@ -82,7 +82,7 @@ public class PlayerCommand extends SubCommand {
 	public void savePlayer(TabPlayer sender, String player, String type, String value){
 		TabPlayer pl = Shared.getPlayer(player);
 		Configs.config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
-		Placeholders.checkForRegistration(value);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
 		if (pl != null) {
 			pl.forceRefresh();
 		}

@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
@@ -54,7 +55,7 @@ public class Property {
 	private void analyze(String value) {
 		placeholders = new ArrayList<String>();
 		relPlaceholders = new ArrayList<String>();
-		for (String identifier : Placeholders.getUsedPlaceholderIdentifiersRecursive(value)) {
+		for (String identifier : PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(value)) {
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders.add(identifier);
 			} else {
@@ -146,7 +147,7 @@ public class Property {
 	public boolean update() {
 		String string = getCurrentRawValue();
 		for (String identifier : placeholders) {
-			Placeholder pl = Placeholders.getPlaceholder(identifier);
+			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
 			if (pl != null) string = pl.set(string, owner);
 		}
 		string = Placeholders.color(string);
@@ -177,7 +178,7 @@ public class Property {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
-			RelationalPlaceholder pl = (RelationalPlaceholder) Placeholders.getPlaceholder(identifier);
+			RelationalPlaceholder pl = (RelationalPlaceholder) ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
 			if (pl != null) format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
 		}
 		return format;

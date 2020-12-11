@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
@@ -21,7 +22,6 @@ import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
@@ -130,7 +130,7 @@ public interface PlatformMethods {
 	 * @param to - the internal placeholder to be replaced by
 	 */
 	public default void suggestPlaceholderSwitch(String from, String to) {
-		if (Placeholders.allUsedPlaceholderIdentifiers.contains(from)) {
+		if (PlaceholderManager.allUsedPlaceholderIdentifiers.contains(from)) {
 			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
 		}
 	}
@@ -143,7 +143,7 @@ public interface PlatformMethods {
 	 */
 	public default String replaceAllPlaceholders(String string, TabPlayer player) {
 		String replaced = string;
-		for (Placeholder p : Placeholders.getAllPlaceholders()) {
+		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();

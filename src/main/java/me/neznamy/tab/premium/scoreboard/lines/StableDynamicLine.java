@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.placeholders.Placeholders;
@@ -29,7 +30,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(text);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(text);
 	}
 
 	@Override

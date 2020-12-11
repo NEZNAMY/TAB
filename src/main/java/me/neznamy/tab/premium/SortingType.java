@@ -8,8 +8,8 @@ import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Enum class for all supported sorting types
@@ -41,7 +41,7 @@ public enum SortingType {
 			}
 			INSTANCE.sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			INSTANCE.caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
-			INSTANCE.usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(INSTANCE.sortingPlaceholder);
+			INSTANCE.usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(INSTANCE.sortingPlaceholder);
 		} else {
 			INSTANCE = (Configs.config.getBoolean("sort-players-by-permissions", false) ? SortingType.GROUP_PERMISSIONS : SortingType.GROUPS);
 		}
@@ -191,7 +191,7 @@ public enum SortingType {
 		String replaced = string;
 		if (string.contains("%")) {
 			for (String identifier : usedPlaceholders) {
-				Placeholder pl = Placeholders.getPlaceholder(identifier);
+				Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
 				if (pl != null && replaced.contains(pl.getIdentifier())) {
 					replaced = pl.set(replaced, player);
 				}

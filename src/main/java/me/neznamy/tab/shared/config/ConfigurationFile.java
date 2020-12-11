@@ -18,7 +18,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Abstract class for configuration file
@@ -359,7 +359,7 @@ public abstract class ConfigurationFile {
 	 * @return Set of all used identifiers
 	 */
 	public List<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
-		return Placeholders.getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
+		return PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
 	}
 	
 	/**
@@ -372,7 +372,7 @@ public abstract class ConfigurationFile {
 		Set<String> values = new HashSet<String>();
 		for (Entry<String, Object> entry : map.entrySet()) {
 			for (String simpleKey : simpleKeys) {
-				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
+				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(PlaceholderManager.detectAll(String.valueOf(entry.getValue())));
 			}
 			if (entry.getValue() instanceof Map) {
 				values.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
@@ -380,7 +380,7 @@ public abstract class ConfigurationFile {
 			if (entry.getValue() instanceof List) {
 				for (Object obj : (List<Object>)entry.getValue()) {
 					for (String simpleKey : simpleKeys) {
-						if (String.valueOf(obj).equals(simpleKey)) values.addAll(Placeholders.detectAll(String.valueOf(entry.getValue())));
+						if (String.valueOf(obj).equals(simpleKey)) values.addAll(PlaceholderManager.detectAll(String.valueOf(entry.getValue())));
 					}
 				}
 			}

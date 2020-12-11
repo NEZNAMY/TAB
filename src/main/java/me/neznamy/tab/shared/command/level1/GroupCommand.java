@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab group" subcommand
@@ -82,7 +82,7 @@ public class GroupCommand extends SubCommand {
 	 */
 	private void saveGroup(TabPlayer sender, String group, String type, String value){
 		Configs.config.set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
-		Placeholders.checkForRegistration(value);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
 		for (TabPlayer pl : Shared.getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();

@@ -19,10 +19,10 @@ import me.neznamy.tab.premium.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * A class representing a scoreboard configured in premiumconfig
@@ -152,7 +152,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(title);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(title);
 	}
 
 	/**

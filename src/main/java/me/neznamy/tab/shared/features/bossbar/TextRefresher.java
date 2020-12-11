@@ -4,9 +4,9 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * An implementation of Refreshable for bossbar text
@@ -34,7 +34,7 @@ public class TextRefresher implements Refreshable {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(line.title);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(line.title);
 	}
 	
 	/**

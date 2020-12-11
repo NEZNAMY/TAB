@@ -77,13 +77,13 @@ public class BukkitMethods implements PlatformMethods {
 	public void loadFeatures() throws Exception {
 		usedExpansions = new HashSet<String>();
 		PlaceholderManager plm = new PlaceholderManager();
+		Shared.featureManager.registerFeature("placeholders", plm);
 		plm.addRegistry(new BukkitPlaceholderRegistry(plugin));
 		plm.addRegistry(new UniversalPlaceholderRegistry());
 		plm.registerPlaceholders();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 			Shared.featureManager.registerFeature("injection", new BukkitPipelineInjector());
 		}
-		Shared.featureManager.registerFeature("placeholders", plm);
 		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
@@ -140,7 +140,7 @@ public class BukkitMethods implements PlatformMethods {
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			PlaceholderManager pl = PlaceholderManager.getInstance();
+			PlaceholderManager pl = (PlaceholderManager) Shared.featureManager.getFeature("placeholders");
 			if (identifier.startsWith("%rel_")) {
 				//relational placeholder
 				registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));
@@ -167,7 +167,7 @@ public class BukkitMethods implements PlatformMethods {
 	}
 	
 	private void registerServerPlaceholder(String identifier, int refresh) {
-		Placeholders.registerPlaceholder(new ServerPlaceholder(identifier, refresh){
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new ServerPlaceholder(identifier, refresh){
 			
 			@Override
 			public String get() {
@@ -177,7 +177,7 @@ public class BukkitMethods implements PlatformMethods {
 	}
 	
 	private void registerPlayerPlaceholder(String identifier, int refresh) {
-		Placeholders.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 			@Override
 			public String get(TabPlayer p) {
@@ -187,7 +187,7 @@ public class BukkitMethods implements PlatformMethods {
 	}
 	
 	private void registerRelationalPlaceholder(String identifier, int refresh) {
-		Placeholders.registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {
@@ -350,7 +350,7 @@ public class BukkitMethods implements PlatformMethods {
 	@Override
 	public String replaceAllPlaceholders(String string, TabPlayer sender) {
 		String replaced = string;
-		for (Placeholder p : Placeholders.getAllPlaceholders()) {
+		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();

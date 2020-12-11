@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,8 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.neznamy.tab.api.AFKProvider;
+import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -21,7 +25,6 @@ import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -31,20 +34,25 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
  */
 public class PlaceholderManager implements QuitEventListener {
 
+	private final static Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
+	
 	public int defaultRefresh;
 	public Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	public Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<String, Integer>();
 	private Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<String, Integer>();
+	
+	//all placeholders used in all configuration files + API, including invalid ones
+	public static Set<String> allUsedPlaceholderIdentifiers = new HashSet<String>();
+
+	//plugin internals + PAPI + API
+	public Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 
 	private AFKProvider afk;
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
 	
-	private static PlaceholderManager instance;
-	
 	public long lastSuccessfulRefresh;
 
 	public PlaceholderManager(){
-		instance = this;
 		loadRefreshIntervals();
 		AtomicInteger atomic = new AtomicInteger();
 		Shared.cpu.startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
@@ -59,8 +67,8 @@ public class PlaceholderManager implements QuitEventListener {
 				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
 				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
-				for (String identifier : Placeholders.allUsedPlaceholderIdentifiers) {
-					Placeholder placeholder = Placeholders.getPlaceholder(identifier);
+				for (String identifier : allUsedPlaceholderIdentifiers) {
+					Placeholder placeholder = getPlaceholder(identifier);
 					if (placeholder == null) continue;
 					if (loopTime % placeholder.getRefresh() != 0) continue;
 					if (placeholder instanceof RelationalPlaceholder) {
@@ -162,9 +170,7 @@ public class PlaceholderManager implements QuitEventListener {
 			}
 		});
 	}
-	public static PlaceholderManager getInstance() {
-		return instance;
-	}
+
 	public static Set<Refreshable> getPlaceholderUsage(String identifier){
 		Set<Refreshable> set = new HashSet<Refreshable>();
 		for (Feature r : new ArrayList<>(Shared.featureManager.getAllFeatures())) {
@@ -176,7 +182,7 @@ public class PlaceholderManager implements QuitEventListener {
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (Placeholder pl : Placeholders.getAllPlaceholders()) {
+		for (Placeholder pl : getAllPlaceholders()) {
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : Shared.getPlayers()) {
 					((RelationalPlaceholder)pl).lastValue.remove(all.getName() + "-" + disconnectedPlayer.getName());
@@ -200,9 +206,14 @@ public class PlaceholderManager implements QuitEventListener {
 		this.registry.add(registry);
 	}
 	public void registerPlaceholders() {
-		registry.forEach(r -> r.registerPlaceholders());
-		for (String placeholder : Placeholders.allUsedPlaceholderIdentifiers) {
-			Placeholders.categorizeUsedPlaceholder(placeholder);
+		for (PlaceholderRegistry r : registry) {
+			for (Placeholder p : r.registerPlaceholders()) {
+				registeredPlaceholders.put(p.getIdentifier(), p);
+			}
+		}
+		registeredPlaceholders.putAll(TABAPI.getAPIPlaceholders());
+		for (String placeholder : allUsedPlaceholderIdentifiers) {
+			categorizeUsedPlaceholder(placeholder);
 		}
 	}
 	
@@ -212,6 +223,84 @@ public class PlaceholderManager implements QuitEventListener {
 		} else {
 			return defaultRefresh;
 		}
+	}
+
+	public Collection<Placeholder> getAllPlaceholders(){
+		return registeredPlaceholders.values();
+	}
+	
+	public Placeholder getPlaceholder(String identifier) {
+		return registeredPlaceholders.get(identifier);
+	}
+	
+	public static List<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
+		List<String> base = new ArrayList<String>();
+		for (String string : strings) {
+			for (String s : detectAll(string)) {
+				if (!base.contains(s)) base.add(s);
+			}
+		}
+		for (String placeholder : new HashSet<String>(base)) {
+			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(placeholder);
+			if (pl == null) continue;
+			for (String nestedString : pl.getNestedStrings()) {
+				base.addAll(getUsedPlaceholderIdentifiersRecursive(nestedString));
+			}
+		}
+		return base;
+	}
+	
+	public static List<String> detectAll(String text){
+		List<String> placeholders = new ArrayList<>();
+		if (text == null) return placeholders;
+		Matcher m = placeholderPattern.matcher(text);
+		while (m.find()) {
+			placeholders.add(m.group());
+		}
+		return placeholders;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void findAllUsed(Object object) {
+		if (object instanceof Map) {
+			for (Object value : ((Map<String, Object>) object).values()) {
+				findAllUsed(value);
+			}
+		}
+		if (object instanceof List) {
+			for (Object line : (List<Object>)object) {
+				findAllUsed(line);
+			}
+		}
+		if (object instanceof String) {
+			for (String placeholder : detectAll((String) object)) {
+				allUsedPlaceholderIdentifiers.add(placeholder);
+			}
+		}
+	}
+	
+	public void categorizeUsedPlaceholder(String identifier) {
+		if (registeredPlaceholders.containsKey(identifier)) {
+			//internal placeholder
+			return;
+		}
+
+		//placeholderapi or invalid
+		Shared.platform.registerUnknownPlaceholder(identifier);
+	}
+	
+	public void registerPlaceholder(Placeholder placeholder) {
+		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
+	}
+
+	public void checkForRegistration(String... texts) {
+		for (String text : texts) {
+			for (String identifier : PlaceholderManager.detectAll(text)) {
+				allUsedPlaceholderIdentifiers.add(identifier);
+				categorizeUsedPlaceholder(identifier);
+			}
+		}
+		Shared.featureManager.refreshUsedPlaceholders();
 	}
 
 	@Override

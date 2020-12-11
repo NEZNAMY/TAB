@@ -3,8 +3,8 @@ package me.neznamy.tab.premium.scoreboard.lines;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Fully customizable line, to use this class user must follow the following formula in a line
@@ -51,7 +51,7 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(prefix, name, suffix);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(prefix, name, suffix);
 	}
 
 	@Override

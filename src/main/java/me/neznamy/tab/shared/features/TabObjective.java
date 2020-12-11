@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Feature handler for tablist objective feature
@@ -111,7 +110,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Placeholders.getUsedPlaceholderIdentifiersRecursive(rawValue);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(rawValue);
 	}
 
 	@Override

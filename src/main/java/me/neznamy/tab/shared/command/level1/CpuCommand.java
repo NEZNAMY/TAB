@@ -70,11 +70,11 @@ public class CpuCommand extends SubCommand {
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
-			Placeholder p = Placeholders.getPlaceholder(entry.getKey()+"");
+			Placeholder p = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(entry.getKey()+"");
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
-		sendMessage(sender, "&8&l" + LINE_CHAR + " &8Last refresh: &6" + (System.currentTimeMillis()-PlaceholderManager.getInstance().lastSuccessfulRefresh) + "ms ago");
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &8Last refresh: &6" + (System.currentTimeMillis()-((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).lastSuccessfulRefresh) + "ms ago");
 		sendMessage(sender, SEPARATOR);
 		if (Shared.platform.getSeparatorType().equals("server")) {
 			sendMessage(sender, BUKKIT_BRIDGE_TITLE);

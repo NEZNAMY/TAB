@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
@@ -78,6 +80,7 @@ public class Configs {
 		if (errorFile.exists() && errorFile.length() > 10) {
 			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
+		PlaceholderManager.allUsedPlaceholderIdentifiers = new HashSet<String>();
 		removeAdvancedConfig();
 		loadConfig();
 		loadAnimations();
@@ -126,7 +129,7 @@ public class Configs {
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
 		SECRET_debugMode = getSecretOption("debug", false);
-		Placeholders.findAllUsed(config.getValues());
+		PlaceholderManager.findAllUsed(config.getValues());
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
 		Map<Object, Object> sameValues = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
@@ -149,7 +152,7 @@ public class Configs {
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
 		}
-		Placeholders.findAllUsed(animation.getValues());
+		PlaceholderManager.findAllUsed(animation.getValues());
 	}
 	public static void loadBossbar() throws Exception {
 		bossbar = new YamlConfigurationFile(Shared.platform.getDataFolder(), "bossbar.yml", null);
@@ -159,7 +162,7 @@ public class Configs {
 			return;
 		}
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
-		Placeholders.findAllUsed(bossbar.getValues());
+		PlaceholderManager.findAllUsed(bossbar.getValues());
 	}
 	public static void loadTranslation() throws Exception {
 		translation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "translation.yml", null);

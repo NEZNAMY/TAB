@@ -10,8 +10,8 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * Class representing a bossbar from configuration
@@ -43,7 +43,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
-		Placeholders.checkForRegistration(title, progress, color, style);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(title, progress, color, style);
 		Shared.featureManager.registerFeature("bossbar-title-" + name, new TextRefresher(this));
 		Shared.featureManager.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
 		Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
@@ -98,7 +98,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setTitle(String title) {
 		this.title = title;
-		Placeholders.checkForRegistration(title);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(title);
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-title-" + name, title);
@@ -110,7 +110,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setProgress(String progress) {
 		this.progress = progress;
-		Placeholders.checkForRegistration(progress);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(progress);
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-progress-" + name, progress);
@@ -127,7 +127,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setColor(String color) {
 		this.color = color;
-		Placeholders.checkForRegistration(color);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(color);
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-color-" + name, color);
@@ -147,7 +147,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setStyle(String style) {
 		this.style = style;
-		Placeholders.checkForRegistration(style);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(style);
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-style-" + name, style);

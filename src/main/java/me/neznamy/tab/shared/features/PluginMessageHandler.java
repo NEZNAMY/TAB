@@ -6,7 +6,6 @@ import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 /**
@@ -50,7 +49,7 @@ public interface PluginMessageHandler {
 			String placeholder = in.readUTF();
 			String output = in.readUTF();
 			long cpu = in.readLong();
-			PlayerPlaceholder pl = (PlayerPlaceholder) Placeholders.getPlaceholder(placeholder); //all bridge placeholders are marked as player
+			PlayerPlaceholder pl = (PlayerPlaceholder) ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			if (pl != null) {
 				pl.lastValue.put(player.getName(), output);
 				pl.forceUpdate.add(player.getName());

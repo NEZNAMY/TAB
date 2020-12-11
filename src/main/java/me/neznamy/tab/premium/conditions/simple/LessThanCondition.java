@@ -4,8 +4,8 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.Placeholders;
 
 /**
  * "leftSide<rightSide" condition where leftSide supports placeholders
@@ -18,7 +18,7 @@ public class LessThanCondition extends SimpleCondition {
 	
 	public LessThanCondition(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
-		leftSidePlaceholders = Placeholders.detectAll(leftSide);
+		leftSidePlaceholders = PlaceholderManager.detectAll(leftSide);
 		this.rightValue = Shared.errorManager.parseDouble(rightSide, 0, "right side of < condition");
 	}
 	
@@ -26,7 +26,7 @@ public class LessThanCondition extends SimpleCondition {
 	public boolean isMet(TabPlayer p) {
 		String leftSide = this.leftSide;
 		for (String identifier : leftSidePlaceholders) {
-			Placeholder pl = Placeholders.getPlaceholder(identifier);
+			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
 			if (pl != null) leftSide = pl.set(leftSide, p);
 		}
 		double leftValue = Shared.errorManager.parseDouble(leftSide.replace(",", ""), 0, "left side of < condition");

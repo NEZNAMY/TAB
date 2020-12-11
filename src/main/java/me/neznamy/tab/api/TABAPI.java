@@ -1,6 +1,8 @@
 package me.neznamy.tab.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -12,7 +14,7 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
@@ -22,6 +24,11 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
  */
 public class TABAPI {
 
+
+	//placeholders registered via API
+	public static Map<String, Placeholder> APIPlaceholders = new HashMap<String, Placeholder>();
+	
+	
 	/**
 	 * Returns player object from given UUID
 	 * @return player object from given UUID
@@ -78,8 +85,8 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		Placeholders.registerPlaceholder(placeholder);
-		Placeholders.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
+		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
 
@@ -91,8 +98,8 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		Placeholders.registerPlaceholder(placeholder);
-		Placeholders.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
+		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 	
 
@@ -102,8 +109,8 @@ public class TABAPI {
 	 * @since 2.8.0
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
-		Placeholders.registerPlaceholder(placeholder);
-		Placeholders.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
+		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
 
@@ -122,7 +129,7 @@ public class TABAPI {
 	 */
 	public static Scoreboard createScoreboard(String name, String title, List<String> lines) {
 		for (String line : lines) {
-			Placeholders.checkForRegistration(line);
+			((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).checkForRegistration(line);
 		}
 		ScoreboardManager sbm = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
@@ -138,7 +145,7 @@ public class TABAPI {
 	 * @since 2.8.3
 	 */
 	public static void registerAFKProvider(AFKProvider afk) {
-		PlaceholderManager.getInstance().setAFKProvider(afk);
+		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).setAFKProvider(afk);
 	}
 	
 	
@@ -161,6 +168,14 @@ public class TABAPI {
 		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
 		feature.lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
+	}
+	
+	/**
+	 * Returns placeholders registered via API
+	 * @return placeholders registered via API
+	 */
+	public static Map<String, Placeholder> getAPIPlaceholders(){
+		return APIPlaceholders;
 	}
 
 

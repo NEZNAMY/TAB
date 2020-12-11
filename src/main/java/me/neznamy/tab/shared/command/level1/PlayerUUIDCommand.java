@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.placeholders.Placeholders;
+import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -83,7 +83,7 @@ public class PlayerUUIDCommand extends SubCommand {
 	 */
 	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
 		Configs.config.set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
-		Placeholders.checkForRegistration(value);
+		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
 		player.forceRefresh();
 		if (value.length() > 0){
 			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
