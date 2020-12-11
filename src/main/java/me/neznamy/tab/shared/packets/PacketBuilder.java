@@ -119,9 +119,30 @@ public interface PacketBuilder {
 		}
 	}
 	
+	/**
+	 * Converts platform-specific instance of player info packet into custom class object
+	 * @param packet - platform-specific info packet
+	 * @param clientVersion - client version
+	 * @return The converted packet
+	 * @throws Exception - if something fails
+	 */
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws Exception;
 	
+	/**
+	 * Converts platform-specific instance of objective packet into custom class object
+	 * @param packet - platform-specific objective packet
+	 * @param clientVersion - client version
+	 * @return The converted packet
+	 * @throws Exception - if something fails
+	 */
 	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws Exception;
 	
+	/**
+	 * Converts platform-specific instance of display objective packet into custom class object
+	 * @param packet - platform-specific display objective packet
+	 * @param clientVersion - client version
+	 * @return The converted packet
+	 * @throws Exception - if something fails
+	 */
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws Exception;
 }

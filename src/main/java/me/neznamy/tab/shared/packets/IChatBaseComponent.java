@@ -25,8 +25,8 @@ public class IChatBaseComponent {
 	public static final String EMPTY_TEXT = "{\"text\":\"\"}";
 
 	private String text;
-	private TextColor color;
 
+	private TextColor color;
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underlined;
@@ -145,25 +145,64 @@ public class IChatBaseComponent {
 		return this;
 	}
 
+	/**
+	 * Returns click action or null if not set
+	 * @return click action
+	 */
 	public ClickAction getClickAction() {
 		return clickAction;
 	}
+
+	/**
+	 * Returns click value or null if not set
+	 * @return click value
+	 */
 	public Object getClickValue() {
 		return clickValue;
 	}
 
+	/**
+	 * Sets click action to OPEN_URL and url to given value
+	 * @param url - url to open
+	 * @return self
+	 */
 	public IChatBaseComponent onClickOpenUrl(String url) {
 		return onClick(ClickAction.OPEN_URL, url);
 	}
+
+	/**
+	 * Sets click action to RUN_COMMAND and command to given value
+	 * @param command - command to perform, might be without / to send a chat message
+	 * @return self
+	 */
 	public IChatBaseComponent onClickRunCommand(String command) {
 		return onClick(ClickAction.RUN_COMMAND, command);
 	}
+
+	/**
+	 * Sets click action to SUGGEST_COMMAND and command to given value
+	 * @param command - command to suggest
+	 * @return self
+	 */
 	public IChatBaseComponent onClickSuggestCommand(String command) {
 		return onClick(ClickAction.SUGGEST_COMMAND, command);
 	}
+
+	/**
+	 * Sets click action to CHANGE_PAGE and page id to given value
+	 * @param newpage - id of new page
+	 * @return self
+	 */
 	public IChatBaseComponent onClickChangePage(int newpage) {
 		return onClick(ClickAction.CHANGE_PAGE, newpage);
 	}
+
+	/**
+	 * Sets click action and value to given values
+	 * @param action - action to perform on click
+	 * @param value - value to perform action with
+	 * @return self
+	 */
 	private IChatBaseComponent onClick(ClickAction action, Object value) {
 		clickAction = action;
 		clickValue = value;
@@ -174,17 +213,37 @@ public class IChatBaseComponent {
 		return this;
 	}
 
+	/**
+	 * Returns hover action or null if not set
+	 * @return hover action
+	 */
 	public HoverAction getHoverAction() {
 		return hoverAction;
 	}
+
+	/**
+	 * Returns hover value or null if not set
+	 * @return hover value
+	 */
 	public String getHoverValue() {
 		return hoverValue;
 	}
 
+	/**
+	 * Sets hover action to SHOW_TEXT and text to given value
+	 * @param text - text to show
+	 * @return self
+	 */
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
-/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
+
+	/**
+	 * Sets hover action to SHOW_ITEM and item to given value
+	 * @param item - item to show
+	 * @return self
+	 */
+	/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
 		try {
 			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			return onHover(HoverAction.SHOW_ITEM, Class.forName("net.minecraft.server." + pack + ".ItemStack")
@@ -198,10 +257,23 @@ public class IChatBaseComponent {
 			return this;
 		}
 	}*/
+
+	/**
+	 * Sets hover action to SHOW_ITEM and item to given value
+	 * @param item - item to show
+	 * @return self
+	 */
 	public IChatBaseComponent onHoverShowItem(String serializedItem) {
 		return onHover(HoverAction.SHOW_ITEM, serializedItem);
 	}
 
+	/**
+	 * Sets hover action to SHOW_ENTITY and entity data to given values
+	 * @param id - entity uuid
+	 * @param customname - entity custom name, can be null
+	 * @param type - entity type, can be null
+	 * @return self
+	 */
 	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
 		JSONObject json = new JSONObject();
 		json.put("id", id.toString());
@@ -209,6 +281,13 @@ public class IChatBaseComponent {
 		if (customname != null) json.put("name", customname);
 		return onHover(HoverAction.SHOW_ENTITY, json.toString());
 	}
+
+	/**
+	 * Sets hover action and value to given values
+	 * @param action - action to perform on hover
+	 * @param value - value to perform action with
+	 * @return self
+	 */
 	private IChatBaseComponent onHover(HoverAction action, String value) {
 		hoverAction = action;
 		hoverValue = value;
@@ -219,8 +298,11 @@ public class IChatBaseComponent {
 		return this;
 	}
 
-
-
+	/**
+	 * Deserializes string and returns created component
+	 * @param json - serialized string
+	 * @return Deserialized component
+	 */
 	public static IChatBaseComponent fromString(String json) {
 		try {
 			if (json == null) return null;
@@ -264,17 +346,35 @@ public class IChatBaseComponent {
 			return fromColoredText(json);
 		}
 	}
-	
+
+	/**
+	 * Returns boolean value of requested key
+	 * @param jsonObject - object to get value from
+	 * @param key - name of key
+	 * @return true if json object contains key and value is true, false otherwise
+	 */
 	private static Boolean getBoolean(JSONObject jsonObject, String key) {
 		if (jsonObject.containsKey(key)) {
 			return Boolean.parseBoolean(String.valueOf(jsonObject.get(key)));
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Serializes this component with colors based on client version
+	 * @param clientVersion - client version
+	 * @return Serialized string
+	 */
 	public String toString(ProtocolVersion clientVersion) {
 		return toString(clientVersion, false);
 	}
+
+	/**
+	 * Serializes this component with colors based on client version
+	 * @param clientVersion - client version
+	 * @param sendTranslatableIfEmpty - if empty translatable should be sent if text is empty or not
+	 * @return Serialized string
+	 */
 	public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
 		if (extra == null) {
 			if (text == null) return null;
@@ -305,6 +405,11 @@ public class IChatBaseComponent {
 		return jsonObject.toString();
 	}
 
+	/**
+	 * Returns organized component from colored text
+	 * @param originalText - text to convert
+	 * @return organized component from colored text
+	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
 		if (originalText == null) return new IChatBaseComponent();
 		String text = PlaceholderManager.color(originalText);
@@ -383,7 +488,11 @@ public class IChatBaseComponent {
 		components.add(component);
 		return new IChatBaseComponent("").setExtra(components);
 	}
-	
+
+	/**
+	 * Returns a new component with identical color and magic codes as current one
+	 * @return New component with identical formatting
+	 */
 	public IChatBaseComponent copyFormatting() {
 		IChatBaseComponent component = new IChatBaseComponent();
 		component.setBold(bold);
@@ -394,7 +503,7 @@ public class IChatBaseComponent {
 		component.setUnderlined(underlined);
 		return component;
 	}
-	
+
 	/**
 	 * Converts this component into a simple text with legacy colors (closest match if color is set to RGB)
 	 * @return The simple text format
@@ -405,6 +514,13 @@ public class IChatBaseComponent {
 		return builder.toString();
 	}
 
+	/**
+	 * Appends text to string builder, might also add color and magic codes if different
+	 * than previous component in chain
+	 * @param builder - builder to append text to
+	 * @param previousFormatting - colors and magic codes in previous component
+	 * @return New formatting, might be identical to previous one
+	 */
 	private String append(StringBuilder builder, String previousFormatting) {
 		String formatting = previousFormatting;
 		if (text != null) {
@@ -413,7 +529,7 @@ public class IChatBaseComponent {
 				builder.append(formatting);
 			}
 			builder.append(text);
-			
+
 		}
 		if (extra != null)
 			for (IChatBaseComponent component : extra) {
@@ -421,7 +537,11 @@ public class IChatBaseComponent {
 			}
 		return formatting;
 	}
-	
+
+	/**
+	 * Returns colors and magic codes of this component
+	 * @return used colors and magic codes
+	 */
 	private String getFormatting() {
 		StringBuilder builder = new StringBuilder();
 		if (color != null) {
@@ -440,6 +560,10 @@ public class IChatBaseComponent {
 		return builder.toString();
 	}
 
+	/**
+	 * Returns raw text without colors, only works correctly when component is organized
+	 * @return raw text in this component
+	 */
 	public String toRawText() {
 		StringBuilder builder = new StringBuilder();
 		if (text != null) builder.append(text);
@@ -450,11 +574,29 @@ public class IChatBaseComponent {
 		}
 		return builder.toString();
 	}
-	
+
+	/**
+	 * Returns the most optimized component based on text. Returns null if text is null,
+	 * organized component if RGB colors are used or simple component with only text field
+	 * containing the whole text when no RGB colors are used
+	 * @param text - text to create component from
+	 * @return The most performance-optimized component based on text
+	 */
 	public static IChatBaseComponent optimizedComponent(String text){
-		return text != null && (text.contains("#") || text.contains("&x") || text.contains(PlaceholderManager.colorChar + "x")) ? IChatBaseComponent.fromColoredText(text) : new IChatBaseComponent(text);
+		if (text == null) return null;
+		if (text.contains("#") || text.contains("&x") || text.contains(PlaceholderManager.colorChar + "x")){
+			//contains RGB colors
+			return IChatBaseComponent.fromColoredText(text);
+		} else {
+			//no RGB
+			return new IChatBaseComponent(text);
+		}
 	}
-	public enum ClickAction{
+
+	/**
+	 * Enum for all possible click actions
+	 */
+	public enum ClickAction {
 		OPEN_URL,
 		@Deprecated OPEN_FILE,//Cannot be sent by server
 		RUN_COMMAND,
@@ -463,7 +605,11 @@ public class IChatBaseComponent {
 		SUGGEST_COMMAND,
 		COPY_TO_CLIPBOARD; //since 1.15
 	}
-	public enum HoverAction{
+
+	/**
+	 * Enum for all possible hover actions
+	 */
+	public enum HoverAction {
 		SHOW_TEXT,
 		SHOW_ITEM,
 		SHOW_ENTITY,
