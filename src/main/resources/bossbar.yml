@@ -19,6 +19,9 @@ permission-required-to-toggle: false
 #saving toggle decision into playerdata.yml to keep it saved after reloads/restarts
 remember-toggle-choice: false
 
+#initially hidden until players run toggle command
+hidden-by-default: false
+
 #to have no default bars, set it to 
 #default-bars: []
 default-bars:

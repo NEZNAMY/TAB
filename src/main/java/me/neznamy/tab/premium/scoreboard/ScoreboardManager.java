@@ -35,6 +35,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
 	public boolean permToToggle;
 	public int staticNumber;
+	private boolean hiddenByDefault;
 
 	public String scoreboard_on;
 	public String scoreboard_off;
@@ -48,6 +49,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		perWorld = Premium.premiumconfig.getConfigurationSection("scoreboard.per-world");
 		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
+		hiddenByDefault = Premium.premiumconfig.getBoolean("scoreboard.hidden-by-default", false);
 		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
 		if (remember_toggle_choice) {
@@ -123,7 +125,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onJoin(TabPlayer p) {
-		p.setScoreboardVisible(!sb_off_players.contains(p.getName()), false);
+		p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 	}
 
 	public void sendHighestScoreboard(TabPlayer p) {

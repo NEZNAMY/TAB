@@ -35,12 +35,14 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public boolean permToToggle;
 	private List<String> disabledWorlds;
 	public long announceEndTime;
+	private boolean hiddenByDefault;
 
 	public BossBar() {
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
 		defaultBars = Configs.bossbar.getStringList("default-bars");
 		permToToggle = Configs.bossbar.getBoolean("permission-required-to-toggle", false);
+		hiddenByDefault = Configs.bossbar.getBoolean("hidden-by-default", false);
 		if (defaultBars == null) defaultBars = new ArrayList<String>();
 		perWorld = Configs.bossbar.getConfigurationSection("per-world");
 		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
@@ -108,8 +110,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public void load() {
 		for (TabPlayer p : Shared.getPlayers()) {
-			p.setBossbarVisible(!bossbar_off_players.contains(p.getName()));
-			detectBossBarsAndSend(p);
+			onJoin(p);
 		}
 		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
@@ -140,7 +141,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setBossbarVisible(!bossbar_off_players.contains(connectedPlayer.getName()));
+		connectedPlayer.setBossbarVisible(!bossbar_off_players.contains(connectedPlayer.getName()) && !hiddenByDefault);
 		detectBossBarsAndSend(connectedPlayer);
 	}
 	
