@@ -112,6 +112,7 @@ public interface PacketBuilder {
 	 * @return component for 1.13+ clients, cut string for 1.12-
 	 */
 	public default String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
+		if (text == null) return null;
 		if (clientVersion.getMinorVersion() >= 13) {
 			return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
 		} else {
