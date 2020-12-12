@@ -63,7 +63,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		public int latency;
 
 		//gamemode
-		public EnumGamemode gameMode;
+		public EnumGamemode gameMode = EnumGamemode.SURVIVAL; //protocollib causes NPE even when action does not use gamemode
 
 		//tablist name
 		public IChatBaseComponent displayName;
