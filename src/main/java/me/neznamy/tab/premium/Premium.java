@@ -20,7 +20,7 @@ public class Premium {
 	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
 
 	public static boolean is() {
-		return true;
+		return false;
 	}
 
 	public static void loadPremiumConfig() throws Exception {
