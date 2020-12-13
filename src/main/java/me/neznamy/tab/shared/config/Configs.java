@@ -122,7 +122,12 @@ public class Configs {
 			while (sort.length() < 3) {
 				sort = "0" + sort;
 			}
-			sortedGroups.put(String.valueOf(group).toLowerCase(), sort);
+		       	if (String.valueOf(group).contains(" ")) {
+				for (String g : String.valueOf(group).split(" "))
+					sortedGroups.put(String.valueOf(g).toLowerCase(), sort);
+			}
+			else
+				sortedGroups.put(String.valueOf(group).toLowerCase(), sort);
 			index++;
 		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
