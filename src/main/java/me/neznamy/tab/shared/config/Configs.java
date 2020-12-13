@@ -131,17 +131,17 @@ public class Configs {
 		PlaceholderManager.findAllUsed(config.getValues());
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
-		Map<Object, Object> sameValues = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
+		Map<Object, Object> sharedProperties = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
 		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
 			Map<String, Object> group = (Map<String, Object>) groupSettings;
-			for (Entry<String, Object> entry : group.entrySet()) {
-				String property = entry.getKey();
-				if (!sameValues.containsKey(property) || !String.valueOf(sameValues.get(property)).equals(entry.getValue())) {
-					sameValues.remove(property);
+			for (Entry<Object, Object> sharedProperty : new HashSet<>(sharedProperties.entrySet())) {
+				String property = sharedProperty.getKey().toString();
+				if (!group.containsKey(property) || !String.valueOf(group.get(property)).equals(sharedProperty.getValue())) {
+					sharedProperties.remove(property);
 				}
 			}
 		}
-		for (Object property : sameValues.keySet()) {
+		for (Object property : sharedProperties.keySet()) {
 			Shared.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
 		}
 	}
