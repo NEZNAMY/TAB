@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -90,6 +91,10 @@ public class ErrorManager {
 	 * @param file - file to log error to
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
+		Throwable error = t;
+		if (error instanceof InvocationTargetException) {
+			error = error.getCause();
+		}
 		try {
 			if (!file.exists()) file.createNewFile();
 			if (file.length() < 1000000) { //not going over 1 MB
