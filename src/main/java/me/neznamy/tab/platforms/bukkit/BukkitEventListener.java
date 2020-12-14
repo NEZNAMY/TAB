@@ -11,8 +11,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * The core for bukkit forwarding events into all enabled features
@@ -40,9 +38,7 @@ public class BukkitEventListener implements Listener {
 
 			public void run() {
 				try {
-					TabPlayer p = new BukkitTabPlayer(e.getPlayer());
-					Shared.data.put(e.getPlayer().getUniqueId(), p);
-					Shared.featureManager.onJoin(p);
+					Shared.featureManager.onJoin(new BukkitTabPlayer(e.getPlayer()));
 				} catch (Throwable ex) {
 					Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
 				}
@@ -59,18 +55,7 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || !p.isLoaded()) return;
-		Shared.cpu.runTask("processing PlayerChangedWorldEvent", new Runnable() {
-
-			@Override
-			public void run() {
-				long time = System.nanoTime();
-				String from = e.getFrom().getName();
-				String to = e.getPlayer().getWorld().getName();
-				p.setWorldName(to);
-				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				Shared.featureManager.onWorldChange(p, from, to);
-			}
-		});
+		Shared.cpu.runTask("processing PlayerChangedWorldEvent", () -> Shared.featureManager.onWorldChange(p, e.getPlayer().getWorld().getName()));
 	}
 
 	/**

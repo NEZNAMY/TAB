@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.bungee;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -33,20 +31,13 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
-		try{
-			if (Shared.disabled) return;
+		if (Shared.disabled) return;
+		try {
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				TabPlayer p = new BungeeTabPlayer(e.getPlayer());
-				Shared.data.put(e.getPlayer().getUniqueId(), p);
-				Shared.featureManager.onJoin(p);
+				Shared.featureManager.onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {
-				TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-				long time = System.nanoTime();
-				String from = p.getWorldName();
-				String to = e.getPlayer().getServer().getInfo().getName();
-				p.setWorldName(to);
-				Shared.cpu.addTime(TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
-				Shared.featureManager.onWorldChange(p, from, to);
+				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), 
+						e.getPlayer().getServer().getInfo().getName());
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);

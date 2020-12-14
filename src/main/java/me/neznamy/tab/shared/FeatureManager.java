@@ -168,6 +168,7 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
+		Shared.data.put(connectedPlayer.getUniqueId(), connectedPlayer);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof JoinEventListener)) continue;
 			long time = System.nanoTime();
@@ -184,7 +185,9 @@ public class FeatureManager {
 	 * @param from - name of the previous world/server
 	 * @param to - name of the new world/server
 	 */
-	public void onWorldChange(TabPlayer changed, String from, String to) {
+	public void onWorldChange(TabPlayer changed, String to) {
+		String from = changed.getWorldName();
+		changed.setWorldName(to);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();
