@@ -25,7 +25,7 @@ import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
-import me.neznamy.tab.shared.PlatformMethods;
+import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -47,14 +47,14 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
 /**
- * Bukkit implementation of PlatformMethods
+ * Bukkit implementation of Platform
  */
-public class BukkitMethods implements PlatformMethods {
+public class BukkitPlatform implements Platform {
 
 	private Set<String> usedExpansions;
 	private JavaPlugin plugin;
 
-	public BukkitMethods(JavaPlugin plugin) {
+	public BukkitPlatform(JavaPlugin plugin) {
 		this.plugin = plugin;
 		UniversalPacketPlayOut.builder = new BukkitPacketBuilder();
 	}

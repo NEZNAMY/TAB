@@ -44,7 +44,7 @@ public class Shared {
 	public static boolean disabled;
 	
 	//platform interface
-	public static PlatformMethods platform;
+	public static Platform platform;
 	
 	//cpu manager
 	public static CPUManager cpu;

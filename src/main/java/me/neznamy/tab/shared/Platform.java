@@ -28,7 +28,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 /**
  * An interface with methods that are called in universal code, but require platform-specific API calls
  */
-public interface PlatformMethods {
+public interface Platform {
 
 	/**
 	 * Detects permission plugin and returns it's representing object

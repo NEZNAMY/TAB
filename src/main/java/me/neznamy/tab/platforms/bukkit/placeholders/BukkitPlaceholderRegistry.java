@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.BukkitMethods;
+import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AntiAFKPlus;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
@@ -242,7 +242,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 							public void run() {
 								long time = System.nanoTime();
 								String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
-								String value = ((BukkitMethods) Shared.platform).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+								String value = ((BukkitPlatform) Shared.platform).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
 								lastValue.put(p.getName(), value);
 								if (!forceUpdate.contains(p.getName())) forceUpdate.add(p.getName());
 								Shared.cpu.addPlaceholderTime(getIdentifier(), System.nanoTime()-time);

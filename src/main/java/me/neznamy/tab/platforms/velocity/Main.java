@@ -48,7 +48,7 @@ public class Main {
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
-		Shared.platform = new VelocityMethods(server);
+		Shared.platform = new VelocityPlatform(server);
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {

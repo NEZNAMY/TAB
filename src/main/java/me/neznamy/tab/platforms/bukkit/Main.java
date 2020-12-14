@@ -33,7 +33,7 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
-		Shared.platform = new BukkitMethods(this);
+		Shared.platform = new BukkitPlatform(this);
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
 			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
