@@ -12,12 +12,11 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.conditions.Condition;
-import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * An implementation of PlaceholderRegistry for universal placeholders

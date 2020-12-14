@@ -8,10 +8,10 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * Class representing a bossbar from configuration

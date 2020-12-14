@@ -1,4 +1,4 @@
-package me.neznamy.tab.premium;
+package me.neznamy.tab.shared.features;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -8,11 +8,10 @@ import java.util.HashSet;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;

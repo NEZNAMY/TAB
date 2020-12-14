@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.conditions.Condition;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
 

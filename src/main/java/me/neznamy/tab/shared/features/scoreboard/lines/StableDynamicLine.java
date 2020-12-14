@@ -1,14 +1,14 @@
-package me.neznamy.tab.premium.scoreboard.lines;
+package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 

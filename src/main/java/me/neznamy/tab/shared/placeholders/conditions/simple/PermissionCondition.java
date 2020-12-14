@@ -1,4 +1,4 @@
-package me.neznamy.tab.premium.conditions.simple;
+package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import me.neznamy.tab.api.TabPlayer;
 

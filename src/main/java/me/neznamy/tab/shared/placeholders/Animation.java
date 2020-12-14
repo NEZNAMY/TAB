@@ -1,6 +1,8 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.placeholders;
 
 import java.util.List;
+
+import me.neznamy.tab.shared.Shared;
 
 /**
  * A class representing an animation from animations.yml

@@ -1,7 +1,7 @@
-package me.neznamy.tab.premium.scoreboard.lines;
+package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 
 /**
  * A line with static text (no placeholders) with numbers 1-15

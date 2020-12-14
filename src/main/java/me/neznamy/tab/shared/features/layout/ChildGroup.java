@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.conditions.Condition;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * Child group for layout

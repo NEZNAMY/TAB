@@ -1,8 +1,8 @@
-package me.neznamy.tab.premium.scoreboard.lines;
+package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public abstract class StaticLine extends ScoreboardLine {

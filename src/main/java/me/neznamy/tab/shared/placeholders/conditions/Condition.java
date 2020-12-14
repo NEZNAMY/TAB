@@ -1,11 +1,11 @@
-package me.neznamy.tab.premium.conditions;
+package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
  * The main condition class

@@ -1,4 +1,4 @@
-package me.neznamy.tab.premium.scoreboard;
+package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,20 +9,20 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.conditions.Condition;
-import me.neznamy.tab.premium.scoreboard.lines.All0StableDynamicLine;
-import me.neznamy.tab.premium.scoreboard.lines.All0StaticLine;
-import me.neznamy.tab.premium.scoreboard.lines.CustomLine;
-import me.neznamy.tab.premium.scoreboard.lines.NumberedStableDynamicLine;
-import me.neznamy.tab.premium.scoreboard.lines.NumberedStaticLine;
-import me.neznamy.tab.premium.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.scoreboard.lines.All0StableDynamicLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.All0StaticLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.NumberedStableDynamicLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.NumberedStaticLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * A class representing a scoreboard configured in premiumconfig

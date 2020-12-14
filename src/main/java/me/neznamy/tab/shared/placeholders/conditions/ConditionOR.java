@@ -1,9 +1,9 @@
-package me.neznamy.tab.premium.conditions;
+package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.conditions.simple.SimpleCondition;
+import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
  * A condition consisting of multiple SimpleConditions with OR type

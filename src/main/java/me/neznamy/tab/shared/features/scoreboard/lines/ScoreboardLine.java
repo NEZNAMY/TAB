@@ -1,4 +1,4 @@
-package me.neznamy.tab.premium.scoreboard.lines;
+package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.ArrayList;
 import java.util.Arrays;

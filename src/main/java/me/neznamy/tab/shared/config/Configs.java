@@ -21,9 +21,9 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.shared.Animation;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.placeholders.Animation;
 
 /**
  * A static mess of config options
