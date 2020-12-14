@@ -8,9 +8,6 @@ import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 
 /**
  * TabPlayer for Velocity
@@ -55,12 +52,6 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
-	}
-	
-	@Override
-	public void sendMessage(String message, boolean translateColors) {
-		if (message == null || message.length() == 0) return;
-		player.sendMessage(Identity.nil(), Component.text(translateColors ? PlaceholderManager.color(message): message));
 	}
 	
 	@Override

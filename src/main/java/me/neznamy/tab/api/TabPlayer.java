@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
@@ -208,6 +209,8 @@ public interface TabPlayer {
 	 * @since 2.8.5
 	 */
 	public void sendMessage(String message, boolean translateColors);
+	
+	public void sendMessage(IChatBaseComponent message);
 	
 	/**
 	 * Returns player's primary permission group

@@ -21,6 +21,8 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -69,7 +71,20 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public abstract void sendPacket(Object nmsPacket);
 
-	public abstract void sendMessage(String message, boolean translateColors);
+	public void sendMessage(String message, boolean translateColors) {
+		if (message == null || message.length() == 0) return;
+		IChatBaseComponent component;
+		if (translateColors) {
+			component = IChatBaseComponent.fromColoredText(message);
+		} else {
+			component = new IChatBaseComponent(message);
+		}
+		sendCustomPacket(new PacketPlayOutChat(component));
+	}
+	
+	public void sendMessage(IChatBaseComponent message) {
+		sendCustomPacket(new PacketPlayOutChat(message));
+	}
 
 	public abstract Object getSkin();
 

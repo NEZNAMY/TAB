@@ -16,7 +16,6 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import us.myles.ViaVersion.api.Via;
 
 /**
@@ -105,12 +104,6 @@ public class BukkitTabPlayer extends ITabPlayer {
 				Shared.errorManager.printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 			}
 		}
-	}
-
-	@Override
-	public void sendMessage(String message, boolean translateColors) {
-		if (message == null || message.length() == 0) return;
-		player.sendMessage(translateColors ? PlaceholderManager.color(message): message);
 	}
 
 	@Override
