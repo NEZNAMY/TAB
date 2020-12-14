@@ -20,6 +20,16 @@ import me.neznamy.tab.shared.cpu.UsageType;
 public class BukkitEventListener implements Listener {
 
 	/**
+	 * Listener to PlayerQuitEvent to remove player data and forward the event to features
+	 * @param e quit event
+	 */
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onQuit(PlayerQuitEvent e){
+		if (Shared.disabled) return;
+		Shared.cpu.runTask("processing PlayerQuitEvent", () -> Shared.featureManager.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId())));
+	}
+	
+	/**
 	 * Listener to PlayerJoinEvent to create player data and forward the event to features
 	 * @param e join event
 	 */
@@ -38,19 +48,6 @@ public class BukkitEventListener implements Listener {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Listener to PlayerQuitEvent to remove player data and forward the event to features
-	 * @param e quit event
-	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onQuit(PlayerQuitEvent e){
-		if (Shared.disabled) return;
-		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (disconnectedPlayer == null) return;
-		Shared.cpu.runTask("processing PlayerQuitEvent", () -> Shared.featureManager.onQuit(disconnectedPlayer));
-		Shared.data.remove(e.getPlayer().getUniqueId());
 	}
 
 	/**

@@ -24,10 +24,7 @@ public class BungeeEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
 		if (Shared.disabled) return;
-		TabPlayer disconnectedPlayer = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (disconnectedPlayer == null) return; //player connected to bungeecord successfully, but not to the bukkit server anymore ? idk the check is needed
-		Shared.data.remove(e.getPlayer().getUniqueId());
-		Shared.featureManager.onQuit(disconnectedPlayer);
+		Shared.featureManager.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
 	}
 
 	/**

@@ -152,12 +152,14 @@ public class FeatureManager {
 	 * @param disconnectedPlayer - player who disconnected
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
+		if (disconnectedPlayer == null) return;
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof QuitEventListener)) continue;
 			long time = System.nanoTime();
 			((QuitEventListener)f).onQuit(disconnectedPlayer);
 			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
 		}
+		Shared.data.remove(disconnectedPlayer.getUniqueId());
 	}
 	
 	/**
