@@ -25,10 +25,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	private Player player;
 
-	public BukkitTabPlayer(Player p) throws Exception {
+	public BukkitTabPlayer(Player p){
 		player = p;
 		world = p.getWorld().getName();
-		channel = (Channel) NMSHook.getChannel(player);
+		try {
+			channel = (Channel) NMSHook.getChannel(player);
+		} catch (Exception e) {
+			Shared.errorManager.printError("Failed to get channel of " + p.getName(), e);
+		}
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		version = ProtocolVersion.fromNetworkId(getProtocolVersion());

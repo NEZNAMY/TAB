@@ -34,16 +34,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		if (Shared.disabled) return;
-		Shared.cpu.runTask("processing PlayerJoinEvent", new Runnable() {
-
-			public void run() {
-				try {
-					Shared.featureManager.onJoin(new BukkitTabPlayer(e.getPlayer()));
-				} catch (Throwable ex) {
-					Shared.errorManager.criticalError("An error occurred when processing PlayerJoinEvent", ex);
-				}
-			}
-		});
+		Shared.cpu.runTask("processing PlayerJoinEvent", () -> Shared.featureManager.onJoin(new BukkitTabPlayer(e.getPlayer())));
 	}
 
 	/**
