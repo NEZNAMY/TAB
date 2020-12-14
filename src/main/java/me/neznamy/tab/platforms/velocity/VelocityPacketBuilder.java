@@ -134,7 +134,6 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object velocityPacket, ProtocolVersion clientVersion){
-		if (!(velocityPacket instanceof PlayerListItem)) return null;
 		PlayerListItem list = (PlayerListItem) velocityPacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(list.getAction())];
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();

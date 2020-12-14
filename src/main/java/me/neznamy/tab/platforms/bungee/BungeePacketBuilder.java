@@ -137,7 +137,6 @@ public class BungeePacketBuilder implements PacketBuilder {
 	
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
-		if (!(bungeePacket instanceof PlayerListItem)) return null;
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE"));
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
