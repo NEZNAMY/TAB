@@ -85,6 +85,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
+		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
 		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
@@ -98,6 +99,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
+		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
 		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
@@ -109,6 +111,7 @@ public class TABAPI {
 	 * @since 2.8.0
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
+		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
 		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
