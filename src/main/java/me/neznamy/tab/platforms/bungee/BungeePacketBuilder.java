@@ -76,7 +76,11 @@ public class BungeePacketBuilder implements PacketBuilder {
 			}
 			if (data.gameMode != null) item.setGamemode(data.gameMode.ordinal()-1);
 			item.setPing(data.latency);
-			item.setProperties((String[][]) data.skin);
+			if (data.skin != null) {
+				item.setProperties((String[][]) data.skin);
+			} else {
+				item.setProperties(new String[0][0]);
+			}
 			item.setUsername(data.name);
 			item.setUuid(data.uniqueId);
 			items.add(item);
