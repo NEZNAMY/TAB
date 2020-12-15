@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -197,6 +198,43 @@ public interface Platform {
 		}
 		removeOld(config, "scoreboard.refresh-interval-milliseconds");
 		rename(config, "allign-tabsuffix-on-the-right", "align-tabsuffix-on-the-right");
+	}
+	
+	public default void convertUniversalOptions(ConfigurationFile file) {
+		if (file.getName().equals("config.yml")) {
+			removeOld(file, "nametag-refresh-interval-milliseconds");
+			removeOld(file, "tablist-refresh-interval-milliseconds");
+			removeOld(file, "header-footer-refresh-interval-milliseconds");
+			removeOld(file, "classic-vanilla-belowname.refresh-interval-milliseconds");
+			rename(file, "belowname", "classic-vanilla-belowname");
+			rename(file, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
+			rename(file, "safe-team-register", "unregister-before-register");
+			rename(file, "disable-features-in-worlds.tablist-objective", "disable-features-in-worlds.yellow-number");
+			if (!file.hasConfigOption("placeholderapi-refresh-intervals")) {
+				Map<String, Object> map = new LinkedHashMap<String, Object>();
+				map.put("default-refresh-interval", 100);
+				Map<String, Integer> server = new HashMap<String, Integer>();
+				server.put("%server_uptime%", 1000);
+				server.put("%server_tps_1_colored%", 1000);
+				map.put("server", server);
+				Map<String, Integer> player = new HashMap<String, Integer>();
+				player.put("%player_health%", 200);
+				player.put("%player_ping%", 1000);
+				player.put("%vault_prefix%", 1000);
+				map.put("player", player);
+				Map<String, Integer> relational = new HashMap<String, Integer>();
+				relational.put("%rel_factionsuuid_relation_color%", 500);
+				map.put("relational", relational);
+				file.set("placeholderapi-refresh-intervals", map);
+				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
+			}
+		}
+		if (file.getName().equals("premiumconfig.yml")) {
+			convertPremiumConfig(file);
+		}
+		if (file.getName().equals("bossbar.yml")) {
+			removeOld(file, "refresh-interval-milliseconds");
+		}
 	}
 	
 	/**
