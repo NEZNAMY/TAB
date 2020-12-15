@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.features.interfaces.Loadable;
 public abstract class PipelineInjector implements JoinEventListener, Loadable {
 
 	//name of the pipeline decoder injected in netty
-	public static final String DECODER_NAME = "TABReader";
+	public static final String DECODER_NAME = "TAB";
 	
 	/**
 	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
