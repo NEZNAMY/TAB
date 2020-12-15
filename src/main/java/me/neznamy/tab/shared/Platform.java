@@ -38,7 +38,6 @@ public interface Platform {
 	
 	/**
 	 * Loads features from config
-	 * @param inject - whether tab's pipleline handler needs to be injected or not
 	 * @throws Exception - if something fails
 	 */
 	public void loadFeatures() throws Exception;

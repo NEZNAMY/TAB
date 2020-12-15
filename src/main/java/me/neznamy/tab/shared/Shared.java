@@ -133,7 +133,6 @@ public class Shared {
 	
 	/**
 	 * Loads the entire plugin
-	 * @param inject - if players should be injected or not
 	 */
 	public static void load() {
 		try {
