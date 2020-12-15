@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungee;
 
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -36,8 +35,7 @@ public class BungeeEventListener implements Listener {
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				Shared.featureManager.onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {
-				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), 
-						e.getPlayer().getServer().getInfo().getName());
+				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getServer().getInfo().getName());
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
@@ -50,8 +48,7 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler
 	public void onChat(ChatEvent e) {
-		TabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
-		if (sender == null) return;
-		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
+		if (Shared.disabled) return;
+		if (Shared.featureManager.onCommand(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
 	}
 }

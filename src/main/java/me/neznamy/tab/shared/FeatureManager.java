@@ -186,6 +186,7 @@ public class FeatureManager {
 	 * @param to - name of the new world/server
 	 */
 	public void onWorldChange(TabPlayer changed, String to) {
+		if (changed == null || !changed.isLoaded()) return;
 		String from = changed.getWorldName();
 		changed.setWorldName(to);
 		for (Feature f : getAllFeatures()) {
@@ -204,6 +205,7 @@ public class FeatureManager {
 	 * @return true if command should be cancelled, false if not
 	 */
 	public boolean onCommand(TabPlayer sender, String command) {
+		if (sender == null) return false;
 		boolean cancel = false;
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof CommandListener)) continue;
@@ -260,6 +262,7 @@ public class FeatureManager {
 	 * @param respawned - player who respawned
 	 */
 	public void onRespawn(TabPlayer respawned) {
+		if (respawned == null) return;
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof RespawnEventListener)) continue;
 			long time = System.nanoTime();

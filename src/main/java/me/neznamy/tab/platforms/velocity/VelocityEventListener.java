@@ -6,7 +6,6 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -35,8 +34,7 @@ public class VelocityEventListener {
 			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
 				Shared.featureManager.onJoin(new VelocityTabPlayer(e.getPlayer()));
 			} else {
-				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), 
-						e.getPlayer().getCurrentServer().get().getServerInfo().getName());
+				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
 			}
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
@@ -49,8 +47,7 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onChat(PlayerChatEvent e) {
-		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (sender == null) return;
-		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
+		if (Shared.disabled) return;
+		if (Shared.featureManager.onCommand(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
 	}
 }

@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -44,9 +43,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		if (Shared.disabled) return;
-		TabPlayer p = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded()) return;
-		Shared.cpu.runTask("processing PlayerChangedWorldEvent", () -> Shared.featureManager.onWorldChange(p, e.getPlayer().getWorld().getName()));
+		Shared.cpu.runTask("processing PlayerChangedWorldEvent", () -> Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getWorld().getName()));
 	}
 
 	/**
@@ -56,9 +53,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (Shared.disabled) return;
-		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (sender == null) return;
-		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
+		if (Shared.featureManager.onCommand(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
 	}
 
 	/**
@@ -68,8 +63,6 @@ public class BukkitEventListener implements Listener {
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
 		if (Shared.disabled) return;
-		TabPlayer respawned = Shared.getPlayer(e.getPlayer().getUniqueId());
-		if (respawned == null) return;
-		Shared.cpu.runTask("processing PlayerRespawnEvent", () -> Shared.featureManager.onRespawn(respawned));
+		Shared.cpu.runTask("processing PlayerRespawnEvent", () -> Shared.featureManager.onRespawn(Shared.getPlayer(e.getPlayer().getUniqueId())));
 	}
 }
