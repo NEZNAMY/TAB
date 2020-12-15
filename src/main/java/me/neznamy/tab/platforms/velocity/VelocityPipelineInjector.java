@@ -31,9 +31,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 						return;
 					}
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
-						long time = System.nanoTime();
 						modifyPlayers((Team) packet);
-						Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 						super.write(context, packet, channelPromise);
 						return;
 					}
@@ -56,6 +54,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 	 * @param packet - packet to modify
 	 */
 	private void modifyPlayers(Team packet){
+		long time = System.nanoTime();
 		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
@@ -66,5 +65,6 @@ public class VelocityPipelineInjector extends PipelineInjector {
 			}
 			packet.players = col.toArray(new String[0]);
 		}
+		Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 }

@@ -14,9 +14,9 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
-	
+
 	private static final String INJECT_POSITION = "packet_handler";
-	
+
 	@Override
 	public void inject(TabPlayer player) {
 		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
@@ -26,7 +26,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		uninject(player);
 		try {
 			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
-				
+
 				@Override
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					try {
@@ -44,16 +44,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 							return;
 						}
-						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
-							//nametag anti-override
-							long time = System.nanoTime();
-							if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-								modifyPlayers(packet);
-								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-								super.write(context, packet, channelPromise);
-								return;
-							}
-							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+						if (Shared.featureManager.getNameTagFeature() != null && BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+							modifyPlayers(packet);
+							super.write(context, packet, channelPromise);
+							return;
 						}
 						Shared.featureManager.onPacketSend(player, packet);
 						super.write(context, packet, channelPromise);
@@ -66,7 +60,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			//idk how does this keep happening but whatever
 		}
 	}
-	
+
 	@Override
 	public void uninject(TabPlayer player) {
 		try {
@@ -76,9 +70,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			//java.util.NoSuchElementException: TABReader
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
+		long time = System.nanoTime();
 		if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			Collection<String> newList = new ArrayList<String>();
@@ -88,5 +83,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			}
 			BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}
+		Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 }

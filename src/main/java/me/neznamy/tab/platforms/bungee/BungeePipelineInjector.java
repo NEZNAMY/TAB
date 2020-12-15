@@ -37,15 +37,14 @@ public class BungeePipelineInjector extends PipelineInjector {
 							return;
 						}
 						if (Shared.featureManager.isFeatureEnabled("nametag16")) {
-							long time = System.nanoTime();
 							if (packet instanceof Team) {
 								//team packet coming from a bungeecord plugin
 								modifyPlayers((Team) packet);
-								Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 								super.write(context, packet, channelPromise);
 								return;
 							}
 							if (packet instanceof ByteBuf) {
+								long time = System.nanoTime();
 								ByteBuf buf = ((ByteBuf) packet);
 								int marker = buf.readerIndex();
 								int packetId = buf.readByte();
@@ -54,8 +53,8 @@ public class BungeePipelineInjector extends PipelineInjector {
 									Team team = new Team();
 									team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
 									buf.release();
-									modifyPlayers(team);
 									Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+									modifyPlayers(team);
 									super.write(context, team, channelPromise);
 									return;
 								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
@@ -65,7 +64,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 								}
 								buf.readerIndex(marker);
 							}
-							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 						}
 						//client reset packet
 						if (packet instanceof Login) {
@@ -96,6 +94,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 	 * @param packet - packet to modify
 	 */
 	private void modifyPlayers(Team packet){
+		long time = System.nanoTime();
 		if (packet.getPlayers() == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
@@ -106,5 +105,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 			}
 			packet.setPlayers(col.toArray(new String[0]));
 		}
+		Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 }
