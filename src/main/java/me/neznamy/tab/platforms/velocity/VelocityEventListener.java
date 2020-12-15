@@ -2,8 +2,11 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.player.PlayerChatEvent;
+import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -38,5 +41,20 @@ public class VelocityEventListener {
 		} catch (Throwable ex){
 			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
 		}
+	}
+	
+	/**
+	 * Listener to chat packets to forward the event to all features
+	 * @param e
+	 */
+	@Subscribe
+	public void onChat(PlayerChatEvent e) {
+		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
+		if (sender == null) return;
+		if (e.getMessage().equalsIgnoreCase("/btab")) {
+			Shared.sendPluginInfo(sender);
+			return;
+		}
+		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
 	}
 }
