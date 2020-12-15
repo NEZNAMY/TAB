@@ -3,9 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -20,24 +18,18 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	private static final String INJECT_POSITION = "packet_handler";
 	
 	@Override
-	public void inject(UUID uuid) {
-		Channel channel = Shared.getPlayer(uuid).getChannel();
-		if (!channel.pipeline().names().contains(INJECT_POSITION)) {
+	public void inject(TabPlayer player) {
+		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
 			//fake player or waterfall bug
 			return;
 		}
-		uninject(uuid);
+		uninject(player);
 		try {
-			channel.pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
 				
 				@Override
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					try {
-						TabPlayer player = Shared.getPlayer(uuid);
-						if (player == null) {
-							super.channelRead(context, packet);
-							return;
-						}
 						Object modifiedPacket = Shared.featureManager.onPacketReceive(player, packet);
 						if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
 					} catch (Throwable e){
@@ -48,9 +40,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				@Override
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 					try {
-						TabPlayer player = Shared.getPlayer(uuid);
-						if (player == null) {
-							super.write(context, packet, channelPromise);
+						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
+							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 							return;
 						}
 						if (Shared.featureManager.isFeatureEnabled("nametag16") || Shared.featureManager.isFeatureEnabled("nametagx")) {
@@ -65,10 +56,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
 							Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 						}
 						Shared.featureManager.onPacketSend(player, packet);
-						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
-							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-							return;
-						}
 						super.write(context, packet, channelPromise);
 					} catch (Throwable e){
 						Shared.errorManager.printError("An error occurred when reading packets", e);
@@ -81,10 +68,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	}
 	
 	@Override
-	public void uninject(UUID uuid) {
+	public void uninject(TabPlayer player) {
 		try {
-			Channel channel = Shared.getPlayer(uuid).getChannel();
-			if (channel.pipeline().names().contains(DECODER_NAME)) channel.pipeline().remove(DECODER_NAME);
+			if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
 		} catch (NoSuchElementException e) {
 			//for whatever reason this rarely throws
 			//java.util.NoSuchElementException: TABReader

@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -20,18 +19,12 @@ public class VelocityPipelineInjector extends PipelineInjector {
 	private static final String INJECT_POSITION = "handler";
 	
 	@Override
-	public void inject(UUID uuid) {
-		TabPlayer p = Shared.getPlayer(uuid);
-		if (p.getVersion().getMinorVersion() < 8) return;
-		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
-		p.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
+	public void inject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8) return;
+		uninject(player);
+		player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
 
 			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				TabPlayer player = Shared.getPlayer(uuid);
-				if (player == null) {
-					super.write(context, packet, channelPromise);
-					return;
-				}
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
 						super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
@@ -53,10 +46,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 	}
 	
 	@Override
-	public void uninject(UUID uuid) {
-		TabPlayer p = Shared.getPlayer(uuid);
-		if (p.getVersion().getMinorVersion() < 8) return;
-		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
+	public void uninject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8) return;
+		if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
 	}
 	
 	/**

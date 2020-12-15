@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.UUID;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -25,27 +23,27 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
 	 * @param uuid - player's uuid
 	 */
-	public abstract void inject(UUID uuid);
+	public abstract void inject(TabPlayer player);
 	
-	public abstract void uninject(UUID uuid);
+	public abstract void uninject(TabPlayer player);
 	
 	@Override
 	public void load() {
 		for (TabPlayer p : Shared.getPlayers()) {
-			inject(p.getUniqueId());
+			inject(p);
 		}
 	}
 
 	@Override
 	public void unload() {
 		for (TabPlayer p : Shared.getPlayers()) {
-			uninject(p.getUniqueId());
+			uninject(p);
 		}
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		inject(connectedPlayer.getUniqueId());
+		inject(connectedPlayer);
 	}
 	
 	@Override

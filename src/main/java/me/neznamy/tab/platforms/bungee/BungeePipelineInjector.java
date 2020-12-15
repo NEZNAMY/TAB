@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bungee;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -25,19 +24,13 @@ public class BungeePipelineInjector extends PipelineInjector {
 	private static final String INJECT_POSITION = "inbound-boss";
 
 	@Override
-	public void inject(UUID uuid) {
-		TabPlayer p = Shared.getPlayer(uuid);
-		if (p.getVersion().getMinorVersion() < 8) return;
-		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
+	public void inject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8) return;
+		uninject(player);
 		try {
-			p.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
 
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					TabPlayer player = Shared.getPlayer(uuid);
-					if (player == null) {
-						super.write(context, packet, channelPromise);
-						return;
-					}
 					try {
 						if (packet instanceof PlayerListItem) {
 							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
@@ -93,10 +86,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 	}
 
 	@Override
-	public void uninject(UUID uuid) {
-		TabPlayer p = Shared.getPlayer(uuid);
-		if (p.getVersion().getMinorVersion() < 8) return;
-		if (p.getChannel().pipeline().names().contains(DECODER_NAME)) p.getChannel().pipeline().remove(DECODER_NAME);
+	public void uninject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8) return;
+		if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
 	}
 
 	/**
