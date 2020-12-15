@@ -23,7 +23,6 @@ import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -78,7 +77,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		for (TabPlayer all : Shared.getPlayers()){
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
-			all.setTeamName(SortingType.INSTANCE.getTeamName(all));
+			all.setTeamName(sorting.getTeamName(all));
 			updateProperties(all);
 			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName())) continue;
@@ -129,7 +128,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
-		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
+		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -14,16 +13,18 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.Feature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public abstract class NameTag implements Feature, Refreshable {
 
 	protected List<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
+	public Sorting sorting;
 
 	public NameTag() {
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.nametag", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		SortingType.initialize();
+		sorting = new Sorting();
 	}
 
 	public void startRefreshingTasks() {

@@ -14,7 +14,6 @@ import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -311,7 +310,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void updateTeam() {
 		if (teamName == null) return; //player not loaded yet
-		String newName = SortingType.INSTANCE.getTeamName(this);
+		String newName = Shared.featureManager.getNameTagFeature().sorting.getTeamName(this);
 		if (teamName.equals(newName)) {
 			updateTeamData();
 		} else {

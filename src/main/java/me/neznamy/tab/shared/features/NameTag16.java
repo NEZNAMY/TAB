@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -23,7 +22,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	@Override
 	public void load(){
 		for (TabPlayer p : Shared.getPlayers()) {
-			p.setTeamName(SortingType.INSTANCE.getTeamName(p));
+			p.setTeamName(sorting.getTeamName(p));
 			updateProperties(p);
 			if (p.hasInvisibilityPotion()) {
 				invisiblePlayers.add(p.getName());
@@ -42,7 +41,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setTeamName(SortingType.INSTANCE.getTeamName(connectedPlayer));
+		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once

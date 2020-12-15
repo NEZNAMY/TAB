@@ -8,12 +8,12 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.premium.Premium;
-import me.neznamy.tab.premium.SortingType;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 
@@ -66,14 +66,14 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
 
-		boolean sorting = Shared.featureManager.getNameTagFeature() != null;
+		NameTag nametag = Shared.featureManager.getNameTagFeature();
 		String sortingType;
 
-		if (sorting) {
+		if (nametag != null) {
 			if (Premium.is()) {
-				sortingType = SortingType.INSTANCE.toString();
-				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + SortingType.INSTANCE.sortingPlaceholder;
-			} else if (SortingType.INSTANCE == SortingType.GROUP_PERMISSIONS) {
+				sortingType = nametag.sorting.typesToString();
+				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + nametag.sorting.sortingPlaceholder;
+			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
 				sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
 			} else {
 				sortingType = "Groups";
@@ -98,7 +98,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
 		}
 
-		if (sorting) {
+		if (nametag != null) {
 			if (Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
 				sendMessage(sender, "&eTeam name: &cSorting disabled in player's " + Shared.platform.getSeparatorType());
 			} else {
