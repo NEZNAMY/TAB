@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
@@ -214,6 +215,7 @@ public interface Platform {
 			if (Premium.alignTabsuffix) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
 		Shared.featureManager.registerFeature("group", new GroupRefresher());
+		Shared.featureManager.registerFeature("info", new PluginInfo());
 		new UpdateChecker();
 		if (Configs.getSecretOption("layout", false)) {
 			Shared.featureManager.registerFeature("layout", new Layout());

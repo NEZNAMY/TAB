@@ -52,10 +52,6 @@ public class BungeeEventListener implements Listener {
 	public void onChat(ChatEvent e) {
 		TabPlayer sender = Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId());
 		if (sender == null) return;
-		if (e.getMessage().equalsIgnoreCase("/btab")) {
-			Shared.sendPluginInfo(sender);
-			return;
-		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 }

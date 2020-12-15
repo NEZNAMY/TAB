@@ -8,17 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
  * Universal variable and method storage
@@ -118,17 +112,6 @@ public class Shared {
 	 */
 	public static void debug(String message) {
 		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
-	}
-	
-	/**
-	 * Sends credit message to players
-	 * @param to - player to send message to
-	 */
-	public static void sendPluginInfo(TabPlayer to) {
-		if (Premium.is() && !to.hasPermission("tab.admin")) return;
-		IChatBaseComponent message = new IChatBaseComponent("TAB v" + pluginVersion).setColor(TextColor.of(EnumChatFormat.DARK_AQUA)).onHoverShowText(PlaceholderManager.colorChar + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
-		message.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(TextColor.of(EnumChatFormat.BLACK)));
-		to.sendCustomPacket(new PacketPlayOutChat(message));
 	}
 	
 	/**

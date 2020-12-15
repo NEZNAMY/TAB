@@ -51,10 +51,6 @@ public class VelocityEventListener {
 	public void onChat(PlayerChatEvent e) {
 		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
-		if (e.getMessage().equalsIgnoreCase("/btab")) {
-			Shared.sendPluginInfo(sender);
-			return;
-		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setResult(ChatResult.denied());
 	}
 }

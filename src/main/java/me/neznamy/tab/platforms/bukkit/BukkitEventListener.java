@@ -58,10 +58,6 @@ public class BukkitEventListener implements Listener {
 		if (Shared.disabled) return;
 		TabPlayer sender = Shared.getPlayer(e.getPlayer().getUniqueId());
 		if (sender == null) return;
-		if (e.getMessage().equalsIgnoreCase("/tab") || e.getMessage().equalsIgnoreCase("/tab:tab")) {
-			Shared.sendPluginInfo(sender);
-			return;
-		}
 		if (Shared.featureManager.onCommand(sender, e.getMessage())) e.setCancelled(true);
 	}
 
