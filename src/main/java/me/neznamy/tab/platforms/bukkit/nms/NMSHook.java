@@ -42,7 +42,8 @@ public class NMSHook {
 	private static Field PLAYER_CONNECTION;
 	private static Field NETWORK_MANAGER;
 	private static Field CHANNEL;
-	private static Method getHandle;
+	public static Method getHandle;
+	public static Method getProfile;
 	private static Method sendPacket;
 	private static Method SERIALIZE;
 	private static Method DESERIALIZE;
@@ -145,6 +146,7 @@ public class NMSHook {
 			if (minor >= 8) {
 				PacketListener.initializeClass();
 				CHANNEL = PacketPlayOut.getFields(PacketPlayOut.getNMSClass("NetworkManager"), Channel.class).get(0);
+				getProfile = PacketPlayOut.getNMSClass("EntityHuman").getMethod("getProfile");
 			}
 			if (minor >= 9) {
 				PetFix.initializeClass();
