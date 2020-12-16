@@ -147,8 +147,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSHook.getProfile.invoke(NMSHook.getHandle.invoke(player)));
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to get skin of " + getName(), e);
-			return null;
+			return Shared.errorManager.printError(null, "Failed to get skin of " + getName(), e);
 		}
 	}
 
