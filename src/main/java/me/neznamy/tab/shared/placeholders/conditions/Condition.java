@@ -3,8 +3,11 @@ package me.neznamy.tab.shared.placeholders.conditions;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
@@ -56,6 +59,15 @@ public abstract class Condition {
 			return new ConditionOR(name, conditions, yes, no);
 		default: 
 			return null;
+		}
+	}
+	
+	public static Condition getCondition(String string) {
+		if (string == null) return null;
+		if (Configs.conditions.containsKey(string)) {
+			return Configs.conditions.get(string);
+		} else {
+			return Condition.compile(null, Lists.newArrayList(string.split(";")), "AND", null, null);
 		}
 	}
 }
