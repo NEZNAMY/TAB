@@ -12,7 +12,7 @@ You are allowed to make pull requests if you believe you have useful code change
   
   
 ## Premium code
-The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/premium/Premium.java#L22).  
+The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/shared/Shared.java#L63).  
   
   
 ## Maven Repository
