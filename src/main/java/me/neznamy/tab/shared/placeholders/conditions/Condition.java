@@ -27,7 +27,7 @@ public abstract class Condition {
 			if (condition != null) {
 				this.conditions.add(condition);
 			} else {
-				Shared.errorManager.startupWarn("Invalid condition line: " + line);
+				Shared.errorManager.startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
 		this.yes = yes;
