@@ -7,7 +7,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.SubCommand;
@@ -53,7 +52,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
-		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Premium.is() ? " Premium" : ""));
+		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Shared.isPremium() ? " Premium" : ""));
 		if (Configs.errorFile.exists()) {
 			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
 		}
@@ -70,7 +69,7 @@ public class DebugCommand extends SubCommand {
 		String sortingType;
 
 		if (nametag != null) {
-			if (Premium.is()) {
+			if (Shared.isPremium()) {
 				sortingType = nametag.sorting.typesToString();
 				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + nametag.sorting.sortingPlaceholder;
 			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
@@ -124,9 +123,9 @@ public class DebugCommand extends SubCommand {
 			if (Shared.featureManager.isFeatureEnabled("nametagx")) {
 				showProperty(sender, analyzed, "customtagname", disabledNametags);
 				List<Object> lines;
-				if (Premium.is()) {
-					lines = Lists.newArrayList((List<Object>) Premium.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
-					lines.addAll(Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
+				if (Shared.isPremium()) {
+					lines = Lists.newArrayList((List<Object>) Configs.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
+					lines.addAll(Configs.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
 				} else {
 					lines = Arrays.asList("belowname", "nametag", "abovename");
 				}

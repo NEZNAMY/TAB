@@ -56,6 +56,14 @@ public class Shared {
 	public static String brokenFile = "-";
 
 	/**
+	 * Returns true if this compilation is premium, false if not
+	 * @return true if this is premium version, false if not
+	 */
+	public static boolean isPremium() {
+		return false;
+	}
+	
+	/**
 	 * Returns all players
 	 * @return all players
 	 */

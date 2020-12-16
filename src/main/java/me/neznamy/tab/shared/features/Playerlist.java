@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -95,8 +94,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			return null;
 		}
 		String format;
-		if (Premium.alignTabsuffix) {
-			format = ((AlignedSuffix)Shared.featureManager.getFeature("alignedsuffix")).fixTextWidth(p, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
+		AlignedSuffix alignedSuffix = (AlignedSuffix) Shared.featureManager.getFeature("alignedsuffix");
+		if (alignedSuffix != null) {
+			format = alignedSuffix.fixTextWidth(p, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
 		} else {
 			format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 		}

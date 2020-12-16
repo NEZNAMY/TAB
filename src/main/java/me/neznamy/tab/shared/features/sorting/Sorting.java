@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -30,14 +29,14 @@ public class Sorting {
 		types.put("GROUPS", new Groups(sortingPlaceholder));
 		types.put("GROUP_PERMISSIONS", new GroupPermission(sortingPlaceholder));
 		
-		if (Premium.is()) {
-			sortingPlaceholder = Premium.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
-			caseSensitiveSorting = Premium.premiumconfig.getBoolean("case-sentitive-sorting", true);
+		if (Configs.premiumconfig != null) {
+			sortingPlaceholder = Configs.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
+			caseSensitiveSorting = Configs.premiumconfig.getBoolean("case-sentitive-sorting", true);
 			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(sortingPlaceholder));
 			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(sortingPlaceholder));
 			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(sortingPlaceholder));
 			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(sortingPlaceholder));
-			sorting = compile(Premium.premiumconfig.getString("sorting-type", "GROUPS"));
+			sorting = compile(Configs.premiumconfig.getString("sorting-type", "GROUPS"));
 		} else {
 			sorting = new ArrayList<SortingType>();
 			if (Configs.config.getBoolean("sort-players-by-permissions", false)) {

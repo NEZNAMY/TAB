@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
 import me.neznamy.tab.shared.command.level1.BossBarCommand;
@@ -42,7 +41,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new PlayerUUIDCommand());
 		registerSubCommand(new ReloadCommand());
 		registerSubCommand(new SetCollisionCommand());
-		if (Premium.is()) {
+		if (Shared.isPremium()) {
 			registerSubCommand(new ScoreboardCommand());
 			registerSubCommand(new WidthCommand());
 		}

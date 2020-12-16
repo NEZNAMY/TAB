@@ -7,8 +7,8 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -32,8 +32,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	public BossBarLine(String name, String displayCondition, String color, String style, String title, String progress) {
 		this.name = name;
 		if (displayCondition != null) {
-			if (Premium.conditions.containsKey(displayCondition)) {
-				this.displayCondition = Premium.conditions.get(displayCondition);
+			if (Configs.conditions.containsKey(displayCondition)) {
+				this.displayCondition = Configs.conditions.get(displayCondition);
 			} else {
 				this.displayCondition = Condition.compile(null, Lists.newArrayList(displayCondition.split(";")), "AND", null, null);
 			}

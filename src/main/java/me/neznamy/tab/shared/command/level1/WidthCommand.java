@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -68,9 +67,9 @@ public class WidthCommand extends SubCommand {
 		} else if (args.length == 2) {
 			int c = Integer.parseInt(args[0]);
 			int width = Integer.parseInt(args[1]);
-			if (!Premium.premiumconfig.hasConfigOption("extra-character-widths")) Premium.premiumconfig.set("extra-character-widths", new HashMap<Integer, Integer>());
-			Premium.premiumconfig.getConfigurationSection("extra-character-widths").put(c, width);
-			Premium.premiumconfig.save();
+			if (!Configs.premiumconfig.hasConfigOption("extra-character-widths")) Configs.premiumconfig.set("extra-character-widths", new HashMap<Integer, Integer>());
+			Configs.premiumconfig.getConfigurationSection("extra-character-widths").put(c, width);
+			Configs.premiumconfig.save();
 			sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char)c + " &2(&6" + c + "&2) to &6" + width + "&2 pixels.");
 			if (Configs.SECRET_debugMode) {
 				execute(sender, new String[] {c+1+""});

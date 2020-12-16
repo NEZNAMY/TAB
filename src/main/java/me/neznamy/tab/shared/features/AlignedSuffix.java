@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -32,7 +32,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
 		boolean save = false;
-		Map<Integer, Integer> extraWidths = Premium.premiumconfig.getConfigurationSection("extra-character-widths");
+		Map<Integer, Integer> extraWidths = Configs.premiumconfig.getConfigurationSection("extra-character-widths");
 		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
 			char c = (char)(int)entry;
 			int width = (int)extraWidths.get(entry);
@@ -44,7 +44,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 				widths.put(c, (byte)width);
 			}
 		}
-		if (save) Premium.premiumconfig.save();
+		if (save) Configs.premiumconfig.save();
 		Shared.debug("Loaded " + widths.size() + " character widths.");
 	}
 	private void loadWidthsFromFile() {

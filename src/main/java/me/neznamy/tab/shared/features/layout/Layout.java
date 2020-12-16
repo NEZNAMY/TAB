@@ -13,8 +13,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -65,11 +65,11 @@ public class Layout implements Loadable, JoinEventListener {
 			}
 			for (Object obj : file.getConfigurationSection("child-groups").keySet()){
 				String title = file.getString("child-groups." + obj + ".title");
-				Condition condition = Premium.conditions.get(file.getString("child-groups." + obj + ".condition"));
+				Condition condition = Configs.conditions.get(file.getString("child-groups." + obj + ".condition"));
 				childGroups.put(obj.toString(), new ChildGroup(title, condition));
 			}
 			for (Object obj : file.getConfigurationSection("parent-groups").keySet()){
-				Condition condition = Premium.conditions.get(file.getString("parent-groups." + obj + ".condition"));
+				Condition condition = Configs.conditions.get(file.getString("parent-groups." + obj + ".condition"));
 				List<Integer> positions = new ArrayList<Integer>();
 				for (String line : file.getStringList("parent-groups." + obj + ".slots")) {
 					String[] arr = line.split("-");

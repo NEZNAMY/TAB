@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -60,12 +59,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		spaceBetweenLines = Float.parseFloat(Configs.getSecretOption("ntx-space", "0.22"));
-		if (Premium.is()) {
-			List<String> realList = Premium.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
+		if (Configs.premiumconfig != null) {
+			List<String> realList = Configs.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
 			dynamicLines.addAll(realList);
 			Collections.reverse(dynamicLines);
-			staticLines = Premium.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
+			staticLines = Configs.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);

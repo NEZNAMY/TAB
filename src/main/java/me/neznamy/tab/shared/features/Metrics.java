@@ -19,7 +19,6 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -53,7 +52,7 @@ public abstract class Metrics {
 
 		String pluginName = "TAB Reborn";
 		String pluginVersion = Shared.pluginVersion;
-		if (Premium.is()) pluginVersion += " Premium";
+		if (Shared.isPremium()) pluginVersion += " Premium";
 
 		data.put("pluginName", pluginName);
 		data.put("pluginVersion", pluginVersion);

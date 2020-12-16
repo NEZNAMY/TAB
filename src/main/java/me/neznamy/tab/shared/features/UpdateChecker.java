@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 
 /**
@@ -29,7 +28,7 @@ public class UpdateChecker {
 					con.disconnect();
 					if (!versionString.equals(currentRelease)) {
 						Shared.platform.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion, true);
-						int resourceId = Premium.is() ? 83967 : 57806;
+						int resourceId = Shared.isPremium() ? 83967 : 57806;
 						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/" + resourceId + "/", true);
 					}
 				} catch (Exception e) {

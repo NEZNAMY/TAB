@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -41,32 +40,32 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public String scoreboard_off;
 
 	public ScoreboardManager() {
-		toggleCommand = Premium.premiumconfig.getString("scoreboard.toggle-command", "/sb");
-		useNumbers = Premium.premiumconfig.getBoolean("scoreboard.use-numbers", false);
-		permToToggle = Premium.premiumconfig.getBoolean("scoreboard.permission-required-to-toggle", false);
-		disabledWorlds = Premium.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
+		toggleCommand = Configs.premiumconfig.getString("scoreboard.toggle-command", "/sb");
+		useNumbers = Configs.premiumconfig.getBoolean("scoreboard.use-numbers", false);
+		permToToggle = Configs.premiumconfig.getBoolean("scoreboard.permission-required-to-toggle", false);
+		disabledWorlds = Configs.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
-		defaultScoreboard = Premium.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		perWorld = Premium.premiumconfig.getConfigurationSection("scoreboard.per-world");
-		remember_toggle_choice = Premium.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
-		hiddenByDefault = Premium.premiumconfig.getBoolean("scoreboard.hidden-by-default", false);
-		scoreboard_on = Premium.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
-		scoreboard_off = Premium.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
+		defaultScoreboard = Configs.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
+		perWorld = Configs.premiumconfig.getConfigurationSection("scoreboard.per-world");
+		remember_toggle_choice = Configs.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
+		hiddenByDefault = Configs.premiumconfig.getBoolean("scoreboard.hidden-by-default", false);
+		scoreboard_on = Configs.premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
+		scoreboard_off = Configs.premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
 		if (remember_toggle_choice) {
 			sb_off_players = Configs.getPlayerData("scoreboard-off");
 		}
 		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
-		staticNumber = Premium.premiumconfig.getInt("scoreboard.static-number", 0);
+		staticNumber = Configs.premiumconfig.getInt("scoreboard.static-number", 0);
 
-		for (Object scoreboard : Premium.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
-			String condition = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
-			String childBoard = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
-			String title = Premium.premiumconfig.getString("scoreboards." + scoreboard + ".title");
+		for (Object scoreboard : Configs.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
+			String condition = Configs.premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
+			String childBoard = Configs.premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
+			String title = Configs.premiumconfig.getString("scoreboards." + scoreboard + ".title");
 			if (title == null) {
 				title = "<Title not defined>";
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "title");
 			}
-			List<String> lines = Premium.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
+			List<String> lines = Configs.premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
 			if (lines == null) {
 				lines = new ArrayList<String>();
 				Shared.errorManager.missingAttribute("Scoreboard", scoreboard, "lines");

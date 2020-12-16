@@ -8,9 +8,9 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -44,8 +44,8 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
 		if (displayCondition != null) {
-			if (Premium.conditions.containsKey(displayCondition)) {
-				this.displayCondition = Premium.conditions.get(displayCondition);
+			if (Configs.conditions.containsKey(displayCondition)) {
+				this.displayCondition = Configs.conditions.get(displayCondition);
 			} else {
 				List<String> conditions = Lists.newArrayList(displayCondition.split(";"));
 				this.displayCondition = Condition.compile(null, conditions, "AND", null, null);

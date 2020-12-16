@@ -13,7 +13,6 @@ import java.util.Set;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
@@ -101,7 +100,7 @@ public class ErrorManager {
 				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 				String currentTime = getCurrentTime();
 				if (message != null) {
-					buf.write(currentTime + "[TAB v" + Shared.pluginVersion + (Premium.is() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
+					buf.write(currentTime + "[TAB v" + Shared.pluginVersion + (Shared.isPremium() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
 					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c[TAB] " + message, true);
 				}
 				if (t != null) {

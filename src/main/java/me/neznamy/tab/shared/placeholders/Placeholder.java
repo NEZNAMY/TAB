@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
@@ -24,8 +24,8 @@ public abstract class Placeholder {
 	public Placeholder(String identifier, int refresh) {
 		this.identifier = identifier;
 		this.refresh = refresh;
-		if (Premium.is()) {
-			Map<Object, Object> original = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+		if (Configs.premiumconfig != null) {
+			Map<Object, Object> original = Configs.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
 				replacements.put(entry.getKey().toString().replace('&', PlaceholderManager.colorChar), entry.getValue().toString());
 				for (String id : PlaceholderManager.detectAll(entry.getValue()+"")) {

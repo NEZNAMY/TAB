@@ -20,10 +20,10 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Animation;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * A static mess of config options
@@ -67,6 +67,9 @@ public class Configs {
 	public static String preview_off;
 	public static String preview_on;
 	public static String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
+	
+	public static ConfigurationFile premiumconfig;
+	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
 
 	public static ConfigurationFile playerdata; 
 
@@ -85,8 +88,8 @@ public class Configs {
 		loadAnimations();
 		loadBossbar();
 		loadTranslation();
-		if (Premium.is()) {
-			Premium.loadPremiumConfig();
+		if (Shared.isPremium()) {
+			loadPremiumConfig();
 		}
 		Shared.platform.suggestPlaceholders();
 	}
@@ -179,6 +182,19 @@ public class Configs {
 		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.");
 		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.");
 		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
+	}
+	
+	public static void loadPremiumConfig() throws Exception {
+		premiumconfig = new YamlConfigurationFile(Shared.platform.getDataFolder(), "premiumconfig.yml", null);
+		conditions = new HashMap<String, Condition>();
+		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
+			List<String> list = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
+			String type = premiumconfig.getString("conditions." + condition + ".type");
+			String yes = premiumconfig.getString("conditions." + condition + ".true");
+			String no = premiumconfig.getString("conditions." + condition + ".false");
+			conditions.put(condition+"", Condition.compile(condition+"", list, type, yes, no));
+		}
+		PlaceholderManager.findAllUsed(premiumconfig.getValues());
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getSecretOption(String path, T defaultValue) {

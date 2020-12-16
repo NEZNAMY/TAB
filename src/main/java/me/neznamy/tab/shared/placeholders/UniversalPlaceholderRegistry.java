@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -194,7 +193,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	//making it this complicated to fix case-sensitivity
 	private void registerConditionPlaceholders() {
-		for (Condition c : Premium.conditions.values()) {
+		for (Condition c : Configs.conditions.values()) {
 			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).defaultRefresh) {
 
 				@Override

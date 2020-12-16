@@ -9,9 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
-import me.neznamy.tab.premium.Premium;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
@@ -71,10 +71,10 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (identifier.equals("ntpreview")) {
 			return p.isPreviewingNametag() ? "Enabled" : "Disabled";
 		}
-		if (identifier.startsWith("replace_") && Premium.is()) {
+		if (identifier.startsWith("replace_") && Configs.premiumconfig != null) {
 			String placeholder = "%" + identifier.substring(8) + "%";
 			String output = ((BukkitPlatform) Shared.platform).setPlaceholders(player, placeholder);
-			Map<Object, String> replacements = Premium.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
+			Map<Object, String> replacements = Configs.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
 			String replacement = Placeholder.findReplacement(replacements, output);
 			if (replacement.contains("%value%")) {
 				replacement = replacement.replace("%value%", output);
