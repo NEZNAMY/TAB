@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
@@ -27,19 +26,19 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	private final String ObjectiveName = "TAB-BelowName";
 	private final int DisplaySlot = 2;
-	private final String propertyName = "belowname-number";
+	private final String numberPropertyName = "belowname-number";
+	private final String textPropertyName = "belowname-text";
 
-	private String number;
-	private Property textProperty;
+	private String rawNumber;
+	private String rawText;
 	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 
 	public BelowName() {
-		number = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
+		rawNumber = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
+		rawText = Configs.config.getString("classic-vanilla-belowname.text", "Health");
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		refreshUsedPlaceholders();
-		String text = Configs.config.getString("classic-vanilla-belowname.text", "Health");
-		textProperty = new Property(null, text);
 		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
 
 			private List<String> usedPlaceholders;
@@ -51,7 +50,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			@Override
 			public void refresh(TabPlayer refreshed, boolean force) {
 				if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
-				refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, textProperty.updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+				refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.getProperty(textPropertyName).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 			}
 
 			@Override
@@ -61,7 +60,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 			@Override
 			public void refreshUsedPlaceholders() {
-				usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(text);
+				usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(rawText);
 			}
 
 			@Override
@@ -74,9 +73,10 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void load() {
 		for (TabPlayer loaded : Shared.getPlayers()){
-			loaded.setProperty(propertyName, number);
+			loaded.setProperty(numberPropertyName, rawNumber);
+			loaded.setProperty(textPropertyName, rawText);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
-			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, textProperty.updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, loaded.getProperty(textPropertyName).updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
 		for (TabPlayer viewer : Shared.getPlayers()){
 			for (TabPlayer target : Shared.getPlayers()){
@@ -96,9 +96,10 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(propertyName, number);
+		connectedPlayer.setProperty(numberPropertyName, rawNumber);
+		connectedPlayer.setProperty(textPropertyName, rawText);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, connectedPlayer.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : Shared.getPlayers()){
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), number));
@@ -119,7 +120,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 
 	private int getValue(TabPlayer p) {
-		return Shared.errorManager.parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "belowname");
+		return Shared.errorManager.parseInteger(p.getProperty(numberPropertyName).updateAndGet(), 0, "belowname");
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(number);
+		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(rawNumber);
 	}
 
 	@Override
@@ -149,7 +150,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, textProperty.get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, packetReceiver.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		for (TabPlayer all : Shared.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
