@@ -20,6 +20,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 */
 	public RelationalPlaceholder(String identifier, int refresh) {
 		super(identifier, refresh);
+		if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
 	}
 	
 	/**
