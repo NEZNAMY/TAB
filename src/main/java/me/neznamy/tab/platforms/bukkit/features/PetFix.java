@@ -52,7 +52,7 @@ public class PetFix implements RawPacketFeature, QuitEventListener {
 	 */
 	private static int getPetOwnerPosition() {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
-			//1.15.x, 1.16.1
+			//1.15.x, 1.16.x
 			return 17;
 		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
 			//1.14.x
