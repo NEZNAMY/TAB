@@ -141,6 +141,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		refresh(connectedPlayer, true);
+		if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
+		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+		for (TabPlayer all : Shared.getPlayers()) {
+			list.add(new PlayerInfoData(all.getUniqueId()));
+		}
+		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
 	}
 	
 	@Override
