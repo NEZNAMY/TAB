@@ -110,6 +110,7 @@ public class Configs {
 	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
 		Shared.platform.loadConfig();
+		Shared.platform.convertConfig(config);
 		collisionRule = config.getBoolean("enable-collision", true);
 		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		timeOffset = config.getDouble("placeholders.time-offset", 0);
@@ -160,6 +161,7 @@ public class Configs {
 	}
 	public static void loadBossbar() throws Exception {
 		bossbar = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bossbar.yml"), new File(Shared.platform.getDataFolder(), "bossbar.yml"));
+		Shared.platform.convertConfig(bossbar);
 		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			BossBarEnabled = false;
@@ -186,6 +188,7 @@ public class Configs {
 	
 	public static void loadPremiumConfig() throws Exception {
 		premiumconfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("premiumconfig.yml"), new File(Shared.platform.getDataFolder(), "premiumconfig.yml"));
+		Shared.platform.convertConfig(premiumconfig);
 		conditions = new HashMap<String, Condition>();
 		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
 			List<String> list = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol

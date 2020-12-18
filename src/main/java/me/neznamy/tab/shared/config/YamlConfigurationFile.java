@@ -61,7 +61,6 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			values = (Map<String, Object>) yaml.load(new InputStreamReader(input, StandardCharsets.UTF_8));
 			if (values == null) values = new HashMap<String, Object>();
 			input.close();
-			Shared.platform.convertConfig(this);
 			if (!hasHeader()) fixHeader();
 		} catch (YAMLException e) {
 			input.close();
