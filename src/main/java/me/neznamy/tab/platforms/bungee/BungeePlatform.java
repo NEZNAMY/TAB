@@ -85,7 +85,7 @@ public class BungeePlatform implements Platform {
 	
 	@Override
 	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(getDataFolder(), "bungeeconfig.yml", "config.yml", Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		Configs.config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("bungeeconfig.yml"), new File(getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
 	}
 	

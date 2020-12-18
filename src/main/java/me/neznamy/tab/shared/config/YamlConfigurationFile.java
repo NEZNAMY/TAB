@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -26,9 +28,30 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	//instance of snakeyaml
 	private Yaml yaml;
 	
+	/**
+	 * Constructs new instance and tried to load configuration file
+	 * @param source - source to copy file from if it does not exist
+	 * @param destination - destination of the file to be copied file to if needed and loaded
+	 * @throws IllegalStateException - when file does not exist and source is null
+	 * @throws YAMLException - when file has invalid yaml syntax
+	 * @throws IOException - when an I/O operation with the file fails
+	 */
+	public YamlConfigurationFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
+		this(source, destination, null);
+	}
+	
+	/**
+	 * Constructs new instance and tried to load configuration file
+	 * @param source - source to copy file from if it does not exist
+	 * @param destination - destination of the file to be copied file to if needed and loaded
+	 * @param header - comments at the beginning of the file to be pasted when file changes or null if you do not want any
+	 * @throws IllegalStateException - when file does not exist and source is null
+	 * @throws YAMLException - when file has invalid yaml syntax
+	 * @throws IOException - when an I/O operation with the file fails
+	 */
 	@SuppressWarnings("unchecked")
-	public YamlConfigurationFile(File dataFolder, String source, String destination, List<String> header) throws Exception{
-		super(dataFolder, source, destination, header);
+	public YamlConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, YAMLException, IOException {
+		super(source, destination, header);
 		FileInputStream input = null;
 		try {
 			DumperOptions options = new DumperOptions();
@@ -54,10 +77,6 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			}
 			throw e;
 		}
-	}
-	
-	public YamlConfigurationFile(File dataFolder, String sourceAndDestination, List<String> header) throws Exception{
-		this(dataFolder, sourceAndDestination, sourceAndDestination, header);
 	}
 	
 	@Override

@@ -151,7 +151,7 @@ public class Configs {
 		}
 	}
 	public static void loadAnimations() throws Exception {
-		animation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "animations.yml", null);
+		animation = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("animations.yml"), new File(Shared.platform.getDataFolder(), "animations.yml"));
 		animations = new ArrayList<Animation>();
 		for (Object s : animation.getConfigurationSection("animations").keySet()) {
 			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
@@ -159,7 +159,7 @@ public class Configs {
 		PlaceholderManager.findAllUsed(animation.getValues());
 	}
 	public static void loadBossbar() throws Exception {
-		bossbar = new YamlConfigurationFile(Shared.platform.getDataFolder(), "bossbar.yml", null);
+		bossbar = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bossbar.yml"), new File(Shared.platform.getDataFolder(), "bossbar.yml"));
 		if (bossbar.hasConfigOption("enabled")) {
 			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			BossBarEnabled = false;
@@ -169,7 +169,7 @@ public class Configs {
 		PlaceholderManager.findAllUsed(bossbar.getValues());
 	}
 	public static void loadTranslation() throws Exception {
-		translation = new YamlConfigurationFile(Shared.platform.getDataFolder(), "translation.yml", null);
+		translation = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("translation.yml"), new File(Shared.platform.getDataFolder(), "translation.yml"));
 		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
 		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");
@@ -185,7 +185,7 @@ public class Configs {
 	}
 	
 	public static void loadPremiumConfig() throws Exception {
-		premiumconfig = new YamlConfigurationFile(Shared.platform.getDataFolder(), "premiumconfig.yml", null);
+		premiumconfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("premiumconfig.yml"), new File(Shared.platform.getDataFolder(), "premiumconfig.yml"));
 		conditions = new HashMap<String, Condition>();
 		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
 			List<String> list = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
@@ -207,10 +207,10 @@ public class Configs {
 	}
 	public static List<String> getPlayerData(String key) {
 		if (playerdata == null) {
-			File file = new File("plugins" + File.separatorChar + "TAB" + File.separatorChar + "playerdata.yml");
+			File file = new File(Shared.platform.getDataFolder(), "playerdata.yml");
 			try {
 				if (!file.exists()) file.createNewFile();
-				playerdata = new YamlConfigurationFile(Shared.platform.getDataFolder(), "playerdata.yml", null);
+				playerdata = new YamlConfigurationFile(null, file);
 			} catch (Exception e) {
 				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
 				return Lists.newArrayList();

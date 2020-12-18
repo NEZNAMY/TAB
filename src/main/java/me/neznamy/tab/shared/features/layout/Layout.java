@@ -38,7 +38,7 @@ public class Layout implements Loadable, JoinEventListener {
 	public Layout() {
 		try {
 			new File(Shared.platform.getDataFolder() + File.separator + "layout").mkdirs();
-			ConfigurationFile file = new YamlConfigurationFile(Shared.platform.getDataFolder(), "layout/default.yml", "layout" + File.separator + "default.yml", null);
+			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(Shared.platform.getDataFolder(), "layout" + File.separator + "default.yml"));
 			String type = file.getString("direction", "COLUMNS");
 			try {
 				direction = LayoutDirection.valueOf(type);

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,12 +36,13 @@ public abstract class ConfigurationFile {
 	//the file
 	protected File file;
 	
-	public ConfigurationFile(File dataFolder, String source, String destination, List<String> header) throws IOException {
+	public ConfigurationFile(InputStream source, File destination, List<String> header) throws IOException {
 		this.header = header;
-		dataFolder.mkdirs();
-		file = new File(dataFolder, destination);
+		this.file = destination;
+		file.getParentFile().mkdirs();
 		if (!file.exists()) {
-			Files.copy(getClass().getClassLoader().getResourceAsStream(source), file.toPath());
+			if (source == null) throw new IllegalStateException("file does not exist and source is null");
+			Files.copy(source, file.toPath());
 		}
 	}
 	
