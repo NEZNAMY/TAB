@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 
@@ -341,7 +339,7 @@ public abstract class ConfigurationFile {
 	public void fixHeader() {
 		if (header == null) return;
 		try {
-			List<String> content = Lists.newArrayList(header);
+			List<String> content = new ArrayList<String>(header);
 			content.addAll(Configs.readAllLines(file));
 			file.delete();
 			file.createNewFile();
