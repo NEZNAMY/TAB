@@ -142,6 +142,7 @@ public interface Platform {
 	 * @return replaced string
 	 */
 	public default String replaceAllPlaceholders(String string, TabPlayer player) {
+		if (string == null) return null;
 		String replaced = string;
 		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {

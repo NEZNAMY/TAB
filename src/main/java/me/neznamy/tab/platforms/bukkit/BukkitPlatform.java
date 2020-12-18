@@ -316,6 +316,7 @@ public class BukkitPlatform implements Platform {
 	
 	@Override
 	public String replaceAllPlaceholders(String string, TabPlayer sender) {
+		if (string == null) return null;
 		String replaced = string;
 		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
