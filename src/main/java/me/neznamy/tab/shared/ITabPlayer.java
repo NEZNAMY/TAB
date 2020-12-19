@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,8 +31,6 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	protected String name;
 	protected UUID uniqueId;
-	private String offlineId;
-	public UUID correctId; //for velocity, the correct UUID to use in tablist
 	protected String world;
 	private String permissionGroup = "< Not Initialized Yet >";
 	private String teamName;
@@ -60,8 +57,6 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void init() {
 		setGroup(((GroupRefresher)Shared.featureManager.getFeature("group")).detectPermissionGroup(this), false);
-		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)).toString();
-		correctId = uniqueId; //initialization to avoid NPEs
 	}
 
 	public abstract boolean hasPermission(String permission);
@@ -115,6 +110,11 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public UUID getUniqueId() {
+		return uniqueId;
+	}
+	
+	@Override
+	public UUID getTablistUUID() {
 		return uniqueId;
 	}
 
@@ -359,11 +359,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void setBossbarVisible(boolean visible) {
 		bossbarVisible = visible;
-	}
-
-	@Override
-	public String getOfflineUUID() {
-		return offlineId;
 	}
 
 	@Override

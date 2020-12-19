@@ -99,8 +99,7 @@ public class Shared {
 	 */
 	public static TabPlayer getPlayerByTablistUUID(UUID tablistId) {
 		for (TabPlayer p : data.values()) {
-			if (p.getUniqueId().toString().equals(tablistId.toString())) return p;
-			if (p.getOfflineUUID().equals(tablistId.toString())) return p;
+			if (p.getTablistUUID().toString().equals(tablistId.toString())) return p;
 		}
 		return null;
 	}

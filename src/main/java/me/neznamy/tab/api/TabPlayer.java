@@ -148,6 +148,8 @@ public interface TabPlayer {
 	 */
 	public UUID getUniqueId();
 	
+	public UUID getTablistUUID();
+	
 	/**
 	 * Returns player's protocol version
 	 * @return player's protocol version
@@ -269,8 +271,6 @@ public interface TabPlayer {
 	public boolean hasBossbarVisible();
 	
 	public void setBossbarVisible(boolean visible);
-	
-	public String getOfflineUUID();
 	
 	public Set<BossBar> getActiveBossBars();
 	

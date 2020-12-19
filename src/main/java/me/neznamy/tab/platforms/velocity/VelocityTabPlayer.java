@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
@@ -16,6 +18,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 
 	//the velocity player
 	private Player player;
+	
+	//offline uuid used in tablist
+	private UUID offlineId;
 	
 	//player's attributes on bukkit server (disguise status, invisibility status)
 	private Map<String, String> attributes = new HashMap<String, String>();
@@ -33,8 +38,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 			world = "<null>";
 		}
 		channel = ((ConnectedPlayer)player).getConnection().getChannel();
-		uniqueId = p.getUniqueId();
 		name = p.getUsername();
+		uniqueId = p.getUniqueId();
+		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
 		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
 		init();
 	}
@@ -62,6 +68,11 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public Player getPlayer() {
 		return player;
+	}
+	
+	@Override
+	public UUID getTablistUUID() {
+		return offlineId;
 	}
 
 	@Override

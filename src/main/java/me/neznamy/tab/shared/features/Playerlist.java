@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
@@ -68,7 +67,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (packetPlayer == receiver && ADD) ((ITabPlayer)packetPlayer).correctId = playerInfoData.uniqueId;
 			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
@@ -121,7 +119,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getUniqueId())).create(ProtocolVersion.SERVER_VERSION);
+			Object packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID())).create(ProtocolVersion.SERVER_VERSION);
 			for (TabPlayer all : Shared.getPlayers()) {
 				if (all.getVersion().getMinorVersion() >= 8) all.sendPacket(packet);
 			}
@@ -144,7 +142,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 		for (TabPlayer all : Shared.getPlayers()) {
-			list.add(new PlayerInfoData(all.getUniqueId()));
+			list.add(new PlayerInfoData(all.getTablistUUID()));
 		}
 		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
 	}
