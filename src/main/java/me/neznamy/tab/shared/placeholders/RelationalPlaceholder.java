@@ -31,7 +31,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 */
 	public boolean update(TabPlayer viewer, TabPlayer target) {
 		String mapKey = viewer.getName() + "-" + target.getName();
-		String newValue = get((TabPlayer) viewer, (TabPlayer) target);
+		String newValue = get(viewer, target);
 		if (!lastValue.containsKey(mapKey) || !lastValue.get(mapKey).equals(newValue)) {
 			lastValue.put(mapKey, newValue);
 			return true;

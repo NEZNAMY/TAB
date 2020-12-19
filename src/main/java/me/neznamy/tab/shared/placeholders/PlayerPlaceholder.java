@@ -19,7 +19,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		super(identifier, refresh);
 	}
 	public boolean update(TabPlayer p) {
-		String newValue = get((TabPlayer) p);
+		String newValue = get(p);
 		if (newValue == null) newValue = "";
 		
 		//make invalid placeholders return identifier instead of nothing
