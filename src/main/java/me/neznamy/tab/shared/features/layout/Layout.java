@@ -141,7 +141,7 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public TabFeature getFeatureType() {
-		return TabFeature.OTHER;
+		return TabFeature.TABLIST_LAYOUT;
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void load() {
-		Shared.cpu.startRepeatingMeasuredTask(500, "ticking layout", TabFeature.TABLIST_LAYOUT, UsageType.REPEATING_TASK, new Runnable() {
+		Shared.cpu.startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
 			public void run() {
