@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.Collection;
 
 import com.google.common.collect.Lists;
+import com.velocitypowered.proxy.protocol.packet.JoinGame;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,6 +34,12 @@ public class VelocityPipelineInjector extends PipelineInjector {
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {
 						modifyPlayers((Team) packet);
 						super.write(context, packet, channelPromise);
+						return;
+					}
+					if (packet instanceof JoinGame) {
+						//making sure to not send own packets before join packet is actually sent
+						super.write(context, packet, channelPromise);
+						Shared.featureManager.onLoginPacket(player);
 						return;
 					}
 				} catch (Throwable e){
