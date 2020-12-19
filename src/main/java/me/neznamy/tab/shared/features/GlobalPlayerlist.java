@@ -92,45 +92,44 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		Object remove = getRemovePacket(disconnectedPlayer).create(ProtocolVersion.SERVER_VERSION);
-		for (TabPlayer all : Shared.getPlayers()) {
-			if (all == disconnectedPlayer) continue;
-			all.sendPacket(remove);
-		}
-	}
-	
-	@Override
-	public void onWorldChange(TabPlayer p, String from, String to) {
-		//delay because VeLoCiTyPoWeReD
-		Shared.cpu.runTaskLater(100, "processing server switch", getFeatureType(), UsageType.WORLD_SWITCH_EVENT, new Runnable() {
-
-			@Override
-			public void run() {
-				Object addChanged = getAddPacket(p).create(ProtocolVersion.SERVER_VERSION);
-				Object removeChanged = getRemovePacket(p).create(ProtocolVersion.SERVER_VERSION);
-				for (TabPlayer all : Shared.getPlayers()) {
-					if (all == p) continue;
-					if (shouldSee(all, p)) {
-						all.sendPacket(addChanged);
-					} else {
-						all.sendPacket(removeChanged);
-					}
-					if (shouldSee(p, all)) {
-						p.sendCustomPacket(getAddPacket(all));
-					} else {
-						p.sendCustomPacket(getRemovePacket(all));
-					}
-				}
+		//delay due to waterfall bug calling server switch when players leave
+		Shared.cpu.runTaskLater(50, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> {
+			
+			Object remove = getRemovePacket(disconnectedPlayer).create(ProtocolVersion.SERVER_VERSION);
+			for (TabPlayer all : Shared.getPlayers()) {
+				if (all == disconnectedPlayer) continue;
+				all.sendPacket(remove);
 			}
 		});
 	}
 	
+	@Override
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		Object addChanged = getAddPacket(p).create(ProtocolVersion.SERVER_VERSION);
+		Object removeChanged = getRemovePacket(p).create(ProtocolVersion.SERVER_VERSION);
+		for (TabPlayer all : Shared.getPlayers()) {
+			if (all == p) continue;
+			if (shouldSee(all, p)) {
+				all.sendPacket(addChanged);
+			} else {
+				all.sendPacket(removeChanged);
+			}
+			if (shouldSee(p, all)) {
+				p.sendCustomPacket(getAddPacket(all));
+			} else {
+				p.sendCustomPacket(getRemovePacket(all));
+			}
+		}
+	}
+	
 	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getUniqueId()));
+		PlayerInfoData data = new PlayerInfoData(p.getTablistUUID());
+		data.name = p.getName();
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
 	}
 	
 	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getUniqueId(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
 	}
 	
 	@Override
@@ -138,7 +137,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 					//not preventing NPC removals
-				if (Shared.getPlayer(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
+				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 					//remove packet sent by bungeecord
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.uniqueId = UUID.randomUUID();
