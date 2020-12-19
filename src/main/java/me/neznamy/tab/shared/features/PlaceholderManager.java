@@ -21,6 +21,8 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.Feature;
+import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
+import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -32,7 +34,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 /**
  * Messy class for placeholder management
  */
-public class PlaceholderManager implements QuitEventListener {
+public class PlaceholderManager implements JoinEventListener, QuitEventListener, Loadable {
 
 	public static final char colorChar = '\u00a7';
 	private final static Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
@@ -181,6 +183,33 @@ public class PlaceholderManager implements QuitEventListener {
 		return set;
 	}
 
+	@Override
+	public void load() {
+		for (TabPlayer p : Shared.getPlayers()) {
+			onJoin(p);
+		}
+	}
+
+	@Override
+	public void unload() {
+		//nothing
+	}
+
+	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		for (Placeholder pl : getAllPlaceholders()) {
+			if (pl instanceof RelationalPlaceholder) {
+				for (TabPlayer all : Shared.getPlayers()) {
+					((RelationalPlaceholder)pl).update(connectedPlayer, all);
+					((RelationalPlaceholder)pl).update(all, connectedPlayer);
+				}
+			}
+			if (pl instanceof PlayerPlaceholder) {
+				((PlayerPlaceholder)pl).update(connectedPlayer);
+			}
+		}
+	}
+	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		for (Placeholder pl : getAllPlaceholders()) {
