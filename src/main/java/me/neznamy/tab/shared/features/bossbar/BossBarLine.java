@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -153,5 +154,39 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setStyle(BarStyle style) {
 		setStyle(style.toString());
+	}
+	
+	public static BossBarLine fromConfig(String bar) {
+		String condition = null;
+		Object obj = Configs.bossbar.getBoolean("bars." + bar + ".permission-required");
+		if (obj != null) {
+			if ((boolean) obj) {
+				condition = "permission:tab.bossbar." + bar;
+			}
+		} else {
+			condition = Configs.bossbar.getString("bars." + bar + ".display-condition", null);
+		}
+		
+		String style = Configs.bossbar.getString("bars." + bar + ".style");
+		String color = Configs.bossbar.getString("bars." + bar + ".color");
+		String progress = Configs.bossbar.getString("bars." + bar + ".progress");
+		String text = Configs.bossbar.getString("bars." + bar + ".text");
+		if (style == null) {
+			Shared.errorManager.missingAttribute("BossBar", bar, "style");
+			style = "PROGRESS";
+		}
+		if (color == null) {
+			Shared.errorManager.missingAttribute("BossBar", bar, "color");
+			color = "WHITE";
+		}
+		if (progress == null) {
+			progress = "100";
+			Shared.errorManager.missingAttribute("BossBar", bar, "progress");
+		}
+		if (text == null) {
+			text = "";
+			Shared.errorManager.missingAttribute("BossBar", bar, "text");
+		}
+		return new BossBarLine(bar, condition, color, style, text, progress);
 	}
 }

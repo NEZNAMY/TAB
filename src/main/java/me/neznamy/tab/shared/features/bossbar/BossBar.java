@@ -40,45 +40,14 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public BossBar() {
 		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
 		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
-		defaultBars = Configs.bossbar.getStringList("default-bars");
+		defaultBars = Configs.bossbar.getStringList("default-bars", new ArrayList<String>());
 		permToToggle = Configs.bossbar.getBoolean("permission-required-to-toggle", false);
 		hiddenByDefault = Configs.bossbar.getBoolean("hidden-by-default", false);
-		if (defaultBars == null) defaultBars = new ArrayList<String>();
 		perWorld = Configs.bossbar.getConfigurationSection("per-world");
 		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
-			String condition = null;
-			Object obj = Configs.bossbar.getBoolean("bars." + bar + ".permission-required");
-			if (obj != null) {
-				if ((boolean) obj) {
-					condition = "permission:tab.bossbar." + bar;
-				}
-			} else {
-				condition = Configs.bossbar.getString("bars." + bar + ".display-condition", null);
-			}
-			
-			String style = Configs.bossbar.getString("bars." + bar + ".style");
-			String color = Configs.bossbar.getString("bars." + bar + ".color");
-			String progress = Configs.bossbar.getString("bars." + bar + ".progress");
-			String text = Configs.bossbar.getString("bars." + bar + ".text");
-			if (style == null) {
-				Shared.errorManager.missingAttribute("BossBar", bar, "style");
-				style = "PROGRESS";
-			}
-			if (color == null) {
-				Shared.errorManager.missingAttribute("BossBar", bar, "color");
-				color = "WHITE";
-			}
-			if (progress == null) {
-				progress = "100";
-				Shared.errorManager.missingAttribute("BossBar", bar, "progress");
-			}
-			if (text == null) {
-				text = "";
-				Shared.errorManager.missingAttribute("BossBar", bar, "text");
-			}
-			lines.put(bar+"", new BossBarLine(bar+"", condition, color, style, text, progress));
+			lines.put(bar+"", BossBarLine.fromConfig(bar+""));
 		}
-		for (String bar : defaultBars.toArray(new String[0])) {
+		for (String bar : new ArrayList<String>(defaultBars)) {
 			if (lines.get(bar) == null) {
 				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
 				defaultBars.remove(bar);
@@ -86,7 +55,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		}
 		for (Entry<String, List<String>> entry : perWorld.entrySet()) {
 			List<String> bars = entry.getValue();
-			for (String bar : bars.toArray(new String[0])) {
+			for (String bar : new ArrayList<String>(bars)) {
 				if (lines.get(bar) == null) {
 					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
 					bars.remove(bar);
