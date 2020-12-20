@@ -12,8 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
@@ -340,7 +338,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			(PacketPlayOutBoss_DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
 			(PacketPlayOutBoss_PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
 			(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
-			
+
 			(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_COLLISION = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h")).setAccessible(true);
@@ -627,28 +625,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
-		if (minorVersion >= 8) {
-			EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
-			List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
-			for (Object nmsData : (List) PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
-				int ping = PlayerInfoData_PING.getInt(nmsData);
-				Object nmsGamemode = PlayerInfoData_GAMEMODE.get(nmsData);
-				EnumGamemode gamemode = nmsGamemode == null ? null : EnumGamemode.valueOf(nmsGamemode.toString());
-				Object profile = PlayerInfoData_PROFILE.get(nmsData);
-				Object nmsComponent = PlayerInfoData_LISTNAME.get(nmsData);
-				IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
-				listData.add(new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName));
-			}
-			return new PacketPlayOutPlayerInfo(action, listData);
-		} else {
-			EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(PacketPlayOutPlayerInfo_ACTION.getInt(nmsPacket))];
-			int ping = PlayerInfoData_PING.getInt(nmsPacket);
-			EnumGamemode gamemode = EnumGamemode.values()[PlayerInfoData_GAMEMODE.getInt(nmsPacket)+1];
-			Object profile = PlayerInfoData_PROFILE.get(nmsPacket);
-			IChatBaseComponent listName = IChatBaseComponent.fromColoredText((String) PlayerInfoData_LISTNAME.get(nmsPacket));
-			PlayerInfoData data = new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), ping, gamemode, listName);
-			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
+		if (minorVersion < 8) return null;
+		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
+		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
+		for (Object nmsData : (List) PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
+			Object nmsGamemode = PlayerInfoData_GAMEMODE.get(nmsData);
+			EnumGamemode gamemode = nmsGamemode == null ? null : EnumGamemode.valueOf(nmsGamemode.toString());
+			Object profile = PlayerInfoData_PROFILE.get(nmsData);
+			Object nmsComponent = PlayerInfoData_LISTNAME.get(nmsData);
+			IChatBaseComponent listName = IChatBaseComponent.fromString(NMSHook.componentToString(nmsComponent));
+			listData.add(new PlayerInfoData((String) GameProfile_NAME.get(profile), (UUID) GameProfile_ID.get(profile), GameProfile_PROPERTIES.get(profile), PlayerInfoData_PING.getInt(nmsData), gamemode, listName));
 		}
+		return new PacketPlayOutPlayerInfo(action, listData);
 	}
 
 	@Override
@@ -680,8 +668,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
 		return new PacketPlayOutScoreboardDisplayObjective(
-			PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
-			(String) PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
-		);
+				PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
+				(String) PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
+				);
 	}
 }
