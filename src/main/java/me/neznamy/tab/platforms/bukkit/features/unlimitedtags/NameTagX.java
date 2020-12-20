@@ -83,9 +83,8 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			all.registerTeam();
 			loadPassengers(all);
 			for (TabPlayer worldPlayer : Shared.getPlayers()) {
-				if (all == worldPlayer) continue; //not displaying own armorstands
-				if (((Player) worldPlayer.getPlayer()).getWorld() != ((Player) all.getPlayer()).getWorld()) continue;
-				if (((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
+				if (all != worldPlayer && ((Player) worldPlayer.getPlayer()).getWorld() == ((Player) all.getPlayer()).getWorld() && 
+					((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 					all.getArmorStandManager().spawn(worldPlayer);
 				}
 			}
