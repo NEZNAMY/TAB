@@ -510,7 +510,6 @@ public class IChatBaseComponent {
 	 * @return organized component from colored text
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
-		if (originalText == null) return new IChatBaseComponent();
 		String text = PlaceholderManager.color(originalText);
 		if (Configs.getSecretOption("rgb-support", true)) {
 			text = RGBUtils.applyFormats(text);
