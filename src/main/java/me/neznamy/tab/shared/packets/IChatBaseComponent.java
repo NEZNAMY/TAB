@@ -41,20 +41,44 @@ public class IChatBaseComponent {
 	private List<IChatBaseComponent> extra;
 	private JSONObject jsonObject = new JSONObject();
 
+	/**
+	 * Constructs a new empty component
+	 */
 	public IChatBaseComponent() {
 	}
+	
+	/**
+	 * Constructs new instance with given text
+	 * @param text - text to display
+	 */
 	public IChatBaseComponent(String text) {
 		setText(text);
 	}
 
+	/**
+	 * Returns list of extra components or null if none are defined
+	 * @return list of extras
+	 */
 	public List<IChatBaseComponent> getExtra(){
 		return extra;
 	}
+	
+	/**
+	 * Sets full list of extra components to given list
+	 * @param components - components to use as extra
+	 * @return self
+	 */
 	public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
 		this.extra = components;
 		jsonObject.put("extra", extra);
 		return this;
 	}
+	
+	/**
+	 * Appends provided component as extra component
+	 * @param child - component to append
+	 * @return self
+	 */
 	public IChatBaseComponent addExtra(IChatBaseComponent child) {
 		if (extra == null) {
 			extra = new ArrayList<IChatBaseComponent>();
@@ -64,28 +88,67 @@ public class IChatBaseComponent {
 		return this;
 	}
 
+	/**
+	 * Returns text of this component
+	 * @return text of this component
+	 */
 	public String getText() {
 		return text;
 	}
+	
+	/**
+	 * Returns color of the text or null if not set
+	 * @return color or null if not set
+	 */
 	public TextColor getColor() {
 		return color;
 	}
+	
+	/**
+	 * Returns true if bold is defined and set to true, false otherwise
+	 * @return true if bold is defined and set to true, false otherwise
+	 */
 	public boolean isBold(){
 		return bold == null ? false : bold;
 	}
+	
+	/**
+	 * Returns true if italic is defined and set to true, false otherwise
+	 * @return true if italic is defined and set to true, false otherwise
+	 */
 	public boolean isItalic(){
 		return italic == null ? false : italic;
 	}
+	
+	/**
+	 * Returns true if underlined is defined and set to true, false otherwise
+	 * @return true if underlined is defined and set to true, false otherwise
+	 */
 	public boolean isUnderlined(){
 		return underlined == null ? false : underlined;
 	}
+	
+	/**
+	 * Returns true if strikethrough is defined and set to true, false otherwise
+	 * @return true if strikethrough is defined and set to true, false otherwise
+	 */
 	public boolean isStrikethrough(){
 		return strikethrough == null ? false : strikethrough;
 	}
+	
+	/**
+	 * Returns true if obfuscation is defined and set to true, false otherwise
+	 * @return true if obfuscation is defined and set to true, false otherwise
+	 */
 	public boolean isObfuscated(){
 		return obfuscated == null ? false : obfuscated;
 	}
 
+	/**
+	 * Sets text of this component
+	 * @param text - text to show
+	 * @return self
+	 */
 	public IChatBaseComponent setText(String text) {
 		this.text = text;
 		if (text != null) {
@@ -95,10 +158,22 @@ public class IChatBaseComponent {
 		}
 		return this;
 	}
+	
+	/**
+	 * Sets color of text
+	 * @param color - text color
+	 * @return self
+	 */
 	public IChatBaseComponent setColor(TextColor color) {
 		this.color = color;
 		return this;
 	}
+	
+	/**
+	 * Sets bold status to requested value
+	 * @param bold - true if bold, false if not, null if not set
+	 * @return self
+	 */
 	public IChatBaseComponent setBold(Boolean bold) {
 		this.bold = bold;
 		if (bold != null) {
@@ -108,6 +183,12 @@ public class IChatBaseComponent {
 		}
 		return this;
 	}
+	
+	/**
+	 * Sets italic status to requested value
+	 * @param italic - true if italic, false if not, null if not set
+	 * @return self
+	 */
 	public IChatBaseComponent setItalic(Boolean italic) {
 		this.italic = italic;
 		if (italic != null) {
@@ -117,6 +198,12 @@ public class IChatBaseComponent {
 		}
 		return this;
 	}
+	
+	/**
+	 * Sets underline status to requested value
+	 * @param underlined - true if underlined, false if not, null if not set
+	 * @return self
+	 */
 	public IChatBaseComponent setUnderlined(Boolean underlined) {
 		this.underlined = underlined;
 		if (underlined != null) {
@@ -126,6 +213,12 @@ public class IChatBaseComponent {
 		}
 		return this;
 	}
+	
+	/**
+	 * Sets strikethrough status to requested value
+	 * @param strikethrough - true if strikethrough, false if not, null if not set
+	 * @return self
+	 */
 	public IChatBaseComponent setStrikethrough(Boolean strikethrough) {
 		this.strikethrough = strikethrough;
 		if (strikethrough != null) {
@@ -135,6 +228,12 @@ public class IChatBaseComponent {
 		}
 		return this;
 	}
+	
+	/**
+	 * Sets obfuscation status to requested value
+	 * @param obfuscated - true if obfuscated, false if not, null if not set
+	 * @return self
+	 */
 	public IChatBaseComponent setObfuscated(Boolean obfuscated) {
 		this.obfuscated = obfuscated;
 		if (obfuscated != null) {
