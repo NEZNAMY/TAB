@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared.features.sorting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +26,23 @@ public class Sorting {
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting = true;
 	public List<SortingType> sorting;
+	public LinkedHashMap<String, String> sortedGroups;
 	
 	public Sorting() {
-		types.put("GROUPS", new Groups(sortingPlaceholder));
-		types.put("GROUP_PERMISSIONS", new GroupPermission(sortingPlaceholder));
+		sortedGroups = new LinkedHashMap<String, String>();
+		int index = 1;
+		for (Object group : Configs.config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
+			String sort = index+"";
+			while (sort.length() < 3) {
+				sort = "0" + sort;
+			}
+			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
+				sortedGroups.put(group0, sort);
+			}
+			index++;
+		}
+		types.put("GROUPS", new Groups(this, sortingPlaceholder));
+		types.put("GROUP_PERMISSIONS", new GroupPermission(this, sortingPlaceholder));
 		
 		if (Configs.premiumconfig != null) {
 			sortingPlaceholder = Configs.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");

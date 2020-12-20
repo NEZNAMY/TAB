@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +33,6 @@ public class Configs {
 	public static ConfigurationFile config;
 	public static boolean collisionRule;
 	public static List<String> revertedCollision;
-	public static LinkedHashMap<String, String> sortedGroups;
 	public static Map<Object, Object> rankAliases;
 	public static SimpleDateFormat dateFormat;
 	public static SimpleDateFormat timeFormat;
@@ -119,22 +117,12 @@ public class Configs {
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			removeStrings.add(PlaceholderManager.color(s));
 		}
-		sortedGroups = new LinkedHashMap<String, String>();
-		int index = 1;
-		for (Object group : config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
-			String sort = index+"";
-			while (sort.length() < 3) {
-				sort = "0" + sort;
-			}
-			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
-				sortedGroups.put(group0, sort);
-			}
-			index++;
-		}
 		rankAliases = config.getConfigurationSection("rank-aliases");
 		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
 		SECRET_debugMode = getSecretOption("debug", false);
 		PlaceholderManager.findAllUsed(config.getValues());
+		
+		//checking for unnecessary copypaste in config
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
 		Map<Object, Object> sharedProperties = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one

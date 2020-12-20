@@ -2,18 +2,21 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class Groups extends SortingType {
 
-	public Groups(String sortingPlaceholder) {
+	private Sorting feature;
+	
+	public Groups(Sorting feature, String sortingPlaceholder) {
 		super(sortingPlaceholder);
+		this.feature = feature;
 	}
 
 	@Override
 	public String getChars(TabPlayer p) {
 		String group = p.getGroup();
-		String chars = Configs.sortedGroups.get(group.toLowerCase());
+		String chars = feature.sortedGroups.get(group.toLowerCase());
 		if (chars == null) {
 			chars = "999";
 			if (!group.equals("<null>")) Shared.errorManager.oneTimeConsoleError("Group \"&e" + group + "&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e" + group + "&c\" into &egroup-sorting-priority-list in config.yml&c.");

@@ -2,20 +2,24 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class GroupPermission extends SortingType {
 
-	public GroupPermission(String sortingPlaceholder) {
+	private Sorting feature;
+	
+	
+	public GroupPermission(Sorting feature, String sortingPlaceholder) {
 		super(sortingPlaceholder);
+		this.feature = feature;
 	}
-
+	
 	@Override
 	public String getChars(TabPlayer p) {
 		String chars = null;
-		for (String localgroup : Configs.sortedGroups.keySet()) {
+		for (String localgroup : feature.sortedGroups.keySet()) {
 			if (p.hasPermission("tab.sort." + localgroup)) {
-				chars = Configs.sortedGroups.get(localgroup.toLowerCase());
+				chars = feature.sortedGroups.get(localgroup.toLowerCase());
 				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)");
 				if (p.hasPermission("random.permission")) {
 					p.setTeamNameNote(p.getTeamNameNote() + ". &cThis user appears to have all permissions. Is he OP?");
