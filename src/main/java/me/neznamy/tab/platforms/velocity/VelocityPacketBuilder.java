@@ -97,7 +97,6 @@ public class VelocityPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-		if (packet.name == null || packet.name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		int color = 0;
 		if (clientVersion.getMinorVersion() >= 13) {
 			color = (packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(packet.playerPrefix)).getNetworkId();

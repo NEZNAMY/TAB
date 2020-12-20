@@ -566,7 +566,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws Exception {
-		if (packet.name == null || packet.name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		String prefix = packet.playerPrefix;
 		String suffix = packet.playerSuffix;
 		if (clientVersion.getMinorVersion() < 13) {

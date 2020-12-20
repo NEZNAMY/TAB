@@ -47,7 +47,10 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * Creates a new instance of the class
 	 * Constructor is private, use one of the static methods to create an instance
 	 */
-	private PacketPlayOutScoreboardTeam() {
+	private PacketPlayOutScoreboardTeam(int method, String name) {
+		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
+		this.method = method;
+		this.name = name;
 	}
 
 	/**
@@ -62,9 +65,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @return the instance with given parameters with CREATE action
 	 */
 	public static PacketPlayOutScoreboardTeam CREATE(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = 0;
-		packet.name = team;
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(0, team);
 		packet.playerPrefix = prefix;
 		packet.playerSuffix = suffix;
 		packet.nametagVisibility = visibility;
@@ -80,10 +81,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @return the instance with given parameter with REMOVE action
 	 */
 	public static PacketPlayOutScoreboardTeam REMOVE(String team) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = 1;
-		packet.name = team;
-		return packet;
+		return new PacketPlayOutScoreboardTeam(1, team);
 	}
 
 	/**
@@ -97,9 +95,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @return the instance with given parameters with UPDATE_TEAM_INFO action
 	 */
 	public static PacketPlayOutScoreboardTeam UPDATE_TEAM_INFO(String team, String prefix, String suffix, String visibility, String collision, int options) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = 2;
-		packet.name = team;
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(2, team);
 		packet.playerPrefix = prefix;
 		packet.playerSuffix = suffix;
 		packet.nametagVisibility = visibility;
@@ -115,9 +111,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @return the instance with given parameters with ADD_PLAYERS action
 	 */
 	public static PacketPlayOutScoreboardTeam ADD_PLAYERS(String team, Collection<String> players) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = 3;
-		packet.name = team;
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(3, team);
 		packet.players = players;
 		return packet;
 	}
@@ -129,9 +123,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @return the instance with given parameters with REMOVE_PLAYERS action
 	 */
 	public static PacketPlayOutScoreboardTeam REMOVE_PLAYERS(String team, Collection<String> players) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-		packet.method = 4;
-		packet.name = team;
+		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(4, team);
 		packet.players = players;
 		return packet;
 	}
