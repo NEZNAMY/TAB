@@ -207,7 +207,7 @@ public class Configs {
 				return Lists.newArrayList();
 			}
 		}
-		return playerdata.getStringList(key);
+		return playerdata.getStringList(key, new ArrayList<String>());
 	}
 	public static boolean getCollisionRule(String world) {
 		return revertedCollision.contains(world) ? !collisionRule : collisionRule;

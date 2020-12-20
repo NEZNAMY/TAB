@@ -44,7 +44,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		useNumbers = Configs.premiumconfig.getBoolean("scoreboard.use-numbers", false);
 		permToToggle = Configs.premiumconfig.getBoolean("scoreboard.permission-required-to-toggle", false);
 		disabledWorlds = Configs.premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
-		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
 		defaultScoreboard = Configs.premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		perWorld = Configs.premiumconfig.getConfigurationSection("scoreboard.per-world");
 		remember_toggle_choice = Configs.premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
@@ -54,7 +53,6 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		if (remember_toggle_choice) {
 			sb_off_players = Configs.getPlayerData("scoreboard-off");
 		}
-		if (sb_off_players == null) sb_off_players = new ArrayList<String>();
 		staticNumber = Configs.premiumconfig.getInt("scoreboard.static-number", 0);
 
 		for (Object scoreboard : Configs.premiumconfig.getConfigurationSection("scoreboards").keySet()) {
