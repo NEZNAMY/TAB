@@ -389,21 +389,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		Object nmsPacket = newPacketPlayOutBoss.newInstance();
 		PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
 		PacketPlayOutBoss_ACTION.set(nmsPacket, Enum.valueOf((Class<Enum>)PacketPlayOutBoss_Action, packet.operation.toString()));
-		if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
-		}
-		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_NAME.set(nmsPacket, NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
-		}
-		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_COLOR.set(nmsPacket, Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
-			PacketPlayOutBoss_STYLE.set(nmsPacket, Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
-		}
-		if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
-			PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
-			PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
-			PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
-		}
+		PacketPlayOutBoss_PROGRESS.set(nmsPacket, packet.pct);
+		PacketPlayOutBoss_NAME.set(nmsPacket, packet.name == null ? null :NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion)));
+		PacketPlayOutBoss_COLOR.set(nmsPacket, packet.color == null ? null : Enum.valueOf((Class<Enum>)BarColor, packet.color.toString()));
+		PacketPlayOutBoss_STYLE.set(nmsPacket, packet.overlay == null ? null : Enum.valueOf((Class<Enum>)BarStyle, packet.overlay.toString()));
+		PacketPlayOutBoss_DARKEN_SKY.set(nmsPacket, packet.darkenScreen);
+		PacketPlayOutBoss_PLAY_MUSIC.set(nmsPacket, packet.playMusic);
+		PacketPlayOutBoss_CREATE_FOG.set(nmsPacket, packet.createWorldFog);
 		return nmsPacket;
 	}
 

@@ -22,7 +22,6 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -47,19 +46,11 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		BossBar velocityPacket = new BossBar();
 		velocityPacket.setUuid(packet.id);
 		velocityPacket.setAction(packet.operation.ordinal());
-		if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
-			velocityPacket.setPercent(packet.pct);
-		}
-		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
-			velocityPacket.setName(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
-		}
-		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-			velocityPacket.setColor(packet.color.ordinal());
-			velocityPacket.setOverlay(packet.overlay.ordinal());
-		}
-		if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
-			velocityPacket.setFlags(packet.getFlags());
-		}
+		velocityPacket.setPercent(packet.pct);
+		velocityPacket.setName(packet.name == null ? null : IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
+		velocityPacket.setColor(packet.color == null ? 0 : packet.color.ordinal());
+		velocityPacket.setOverlay(packet.overlay == null ? 0 : packet.overlay.ordinal());
+		velocityPacket.setFlags(packet.getFlags());
 		return velocityPacket;
 	}
 
@@ -107,14 +98,12 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
 		if (packet.name == null || packet.name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
-		String teamDisplay = jsonOrCut(packet.name, clientVersion, 16);
 		int color = 0;
-		String prefix = jsonOrCut(packet.playerPrefix, clientVersion, 16);
-		String suffix = jsonOrCut(packet.playerSuffix, clientVersion, 16);
 		if (clientVersion.getMinorVersion() >= 13) {
 			color = (packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(packet.playerPrefix)).getNetworkId();
 		}
-		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
+		return new Team(packet.name, (byte)packet.method, jsonOrCut(packet.name, clientVersion, 16), jsonOrCut(packet.playerPrefix, clientVersion, 16), jsonOrCut(packet.playerSuffix, clientVersion, 16), 
+				packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
 	@Override
@@ -135,12 +124,11 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object velocityPacket, ProtocolVersion clientVersion){
 		PlayerListItem list = (PlayerListItem) velocityPacket;
-		EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(list.getAction())];
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (PlayerListItem.Item item : list.getItems()) {
 			listData.add(new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.values()[item.getGameMode()+1], IChatBaseComponent.fromString(VelocityUtils.componentToString(item.getDisplayName()))));
 		}
-		return new PacketPlayOutPlayerInfo(action, listData);
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(list.getAction())], listData);
 	}
 	
 	@Override

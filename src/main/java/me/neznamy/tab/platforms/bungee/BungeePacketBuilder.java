@@ -20,7 +20,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.Chat;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -33,25 +32,20 @@ import net.md_5.bungee.protocol.packet.Team;
 import net.md_5.bungee.protocol.packet.Title;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
+/**
+ * Packet builder for BungeeCord platform
+ */
 public class BungeePacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
 		BossBar bungeePacket = new BossBar(packet.id, packet.operation.ordinal());
-		if (packet.operation == Action.UPDATE_PCT || packet.operation == Action.ADD) {
-			bungeePacket.setHealth(packet.pct);
-		}
-		if (packet.operation == Action.UPDATE_NAME || packet.operation == Action.ADD) {
-			bungeePacket.setTitle(IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
-		}
-		if (packet.operation == Action.UPDATE_STYLE || packet.operation == Action.ADD) {
-			bungeePacket.setColor(packet.color.ordinal());
-			bungeePacket.setDivision(packet.overlay.ordinal());
-		}
-		if (packet.operation == Action.UPDATE_PROPERTIES || packet.operation == Action.ADD) {
-			bungeePacket.setFlags(packet.getFlags());
-		}
+		bungeePacket.setHealth(packet.pct);
+		bungeePacket.setTitle(packet.name == null ? null : IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
+		bungeePacket.setColor(packet.color == null ? 0 : packet.color.ordinal());
+		bungeePacket.setDivision(packet.overlay == null ? 0: packet.overlay.ordinal());
+		bungeePacket.setFlags(packet.getFlags());
 		return bungeePacket;
 	}
 
@@ -114,14 +108,12 @@ public class BungeePacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
 		if (packet.name == null || packet.name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
-		String teamDisplay = jsonOrCut(packet.name, clientVersion, 16);
 		int color = 0;
-		String prefix = jsonOrCut(packet.playerPrefix, clientVersion, 16);
-		String suffix = jsonOrCut(packet.playerSuffix, clientVersion, 16);
 		if (clientVersion.getMinorVersion() >= 13) {
 			color = (packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(packet.playerPrefix)).getNetworkId();
 		}
-		return new Team(packet.name, (byte)packet.method, teamDisplay, prefix, suffix, packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
+		return new Team(packet.name, (byte)packet.method, jsonOrCut(packet.name, clientVersion, 16), jsonOrCut(packet.playerPrefix, clientVersion, 16), jsonOrCut(packet.playerSuffix, clientVersion, 16), 
+				packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
 	}
 	
 	@Override
@@ -138,12 +130,11 @@ public class BungeePacketBuilder implements PacketBuilder {
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
 		PlayerListItem item = (PlayerListItem) bungeePacket;
-		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE"));
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Item i : item.getItems()) {
 			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.fromString(i.getDisplayName())));
 		}
-		return new PacketPlayOutPlayerInfo(action, listData);
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
 	}
 
 	@Override
