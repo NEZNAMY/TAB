@@ -95,7 +95,7 @@ public interface PacketBuilder {
 	 * @return the cut text or original if cut was not needed
 	 */
 	public default String cutTo(String string, int length) {
-		if (string == null) return null;
+		if (string == null) return "";
 		String legacyText = IChatBaseComponent.fromColoredText(string).toLegacyText();
 		if (legacyText.length() <= length) return legacyText;
 		if (legacyText.charAt(length-1) == '\u00a7') {

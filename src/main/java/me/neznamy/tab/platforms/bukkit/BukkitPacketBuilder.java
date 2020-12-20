@@ -49,7 +49,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	private static String serverPackage;
 	private static int minorVersion;
-	
+
 	private static Class<Enum> EnumChatFormat_;
 
 	//PacketPlayOutBoss
@@ -89,8 +89,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME;
 
 	//PacketPlayOutScoreboardObjective
-	private static Class<?> PacketPlayOutScoreboardObjective;
-	private static Class<Enum> EnumScoreboardHealthDisplay;
+	private static Class<?> PacketPlayOutScoreboardObjective_;
+	private static Class<Enum> EnumScoreboardHealthDisplay_;
 	private static Constructor<?> newPacketPlayOutScoreboardObjective;
 	private static Field PacketPlayOutScoreboardObjective_OBJECTIVENAME;
 	private static Field PacketPlayOutScoreboardObjective_DISPLAYNAME;
@@ -98,7 +98,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PacketPlayOutScoreboardObjective_METHOD;
 
 	//PacketPlayOutScoreboardScore
-	private static Class<?> PacketPlayOutScoreboardScore;
+	private static Class<?> PacketPlayOutScoreboardScore_;
 	private static Class<Enum> EnumScoreboardAction;
 	private static Constructor<?> newPacketPlayOutScoreboardScore0;
 	private static Constructor<?> newPacketPlayOutScoreboardScore_String;
@@ -127,7 +127,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Class<Enum> EnumGamemode_;
 	private static Class<Enum> EnumPlayerInfoAction_;
 	private static Class<?> PlayerInfoData;
-	private static Constructor<?> newPacketPlayOutPlayerInfo0;
 	private static Constructor<?> newPacketPlayOutPlayerInfo2;
 	private static Constructor<?> newPlayerInfoData;
 
@@ -146,12 +145,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static Field PlayerInfoData_GAMEMODE;
 	private static Field PlayerInfoData_PROFILE;
 	private static Field PlayerInfoData_LISTNAME;
-	
+
 	//PacketPlayOutTitle
 	private static Class<?> PacketPlayOutTitle;
 	private static Constructor<?> newPacketPlayOutTitle;
 	private static Class<Enum> EnumTitleAction;
-	
+
 
 	/**
 	 * Initializes required NMS classes and fields
@@ -181,44 +180,35 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			//1.7+
 			PacketPlayOutChat = getNMSClass("PacketPlayOutChat");
 			PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective");
-			PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
-			PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
+			PacketPlayOutScoreboardObjective_ = getNMSClass("PacketPlayOutScoreboardObjective");
+			PacketPlayOutScoreboardScore_ = getNMSClass("PacketPlayOutScoreboardScore");
 			PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
-			if (minorVersion >= 8) {
-				//1.8+
-				GameProfile = Class.forName("com.mojang.authlib.GameProfile");
-				PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
-			} else {
-				//1.7
-				GameProfile = Class.forName("net.minecraft.util.com.mojang.authlib.GameProfile");
-				PropertyMap = Class.forName("net.minecraft.util.com.mojang.authlib.properties.PropertyMap");
-			}
 		} else {
 			//1.6-
 			PacketPlayOutChat = getNMSClass("Packet3Chat");
 			PacketPlayOutScoreboardDisplayObjective = getNMSClass("Packet208SetScoreboardDisplayObjective");
-			PacketPlayOutScoreboardObjective = getNMSClass("Packet206SetScoreboardObjective");
-			PacketPlayOutScoreboardScore = getNMSClass("Packet207SetScoreboardScore");
+			PacketPlayOutScoreboardObjective_ = getNMSClass("Packet206SetScoreboardObjective");
+			PacketPlayOutScoreboardScore_ = getNMSClass("Packet207SetScoreboardScore");
 			PacketPlayOutScoreboardTeam = getNMSClass("Packet209SetScoreboardTeam");
-		}
-		if (minorVersion >= 7) {
-			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
 		}
 		if (minorVersion >= 8) {
 			//1.8+
+			GameProfile = Class.forName("com.mojang.authlib.GameProfile");
+			PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
+			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 			PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
 			try {
 				//v1_8_R2+
 				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
 				PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
-				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
+				EnumScoreboardHealthDisplay_ = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
 				EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
 			} catch (ClassNotFoundException e) {
 				//v1_8_R1
 				EnumPlayerInfoAction_ = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
 				PlayerInfoData = getNMSClass("PlayerInfoData");
-				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("EnumScoreboardHealthDisplay");
+				EnumScoreboardHealthDisplay_ = (Class<Enum>) getNMSClass("EnumScoreboardHealthDisplay");
 				EnumTitleAction = (Class<Enum>) getNMSClass("EnumTitleAction");
 			}
 			try {
@@ -259,91 +249,106 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private static void initializeConstructors() throws Exception {
 		newPacketPlayOutChat = PacketPlayOutChat.getConstructor();
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor();
-		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
-		if (minorVersion >= 13) {
-			newPacketPlayOutScoreboardScore_1_13 = PacketPlayOutScoreboardScore.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
-		} else {
-			newPacketPlayOutScoreboardScore0 = PacketPlayOutScoreboardScore.getConstructor();
-			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore.getConstructor(String.class);
-		}
+		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective_.getConstructor();
 		newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor();
-		if (minorVersion >= 7) {
-			newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
-			if (minorVersion >= 8) {
-				//1.8+
-				newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
-				try {
-					newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
-				} catch (Exception e) {
-					//1.8.8 paper
-					newPlayerInfoData = PlayerInfoData.getConstructor(GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
-				}
-				newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, NMSHook.IChatBaseComponent, int.class, int.class, int.class);
-			} else {
-				//1.7
-				newPacketPlayOutPlayerInfo0 = PacketPlayOutPlayerInfo.getConstructor();
-			}
+		if (minorVersion >= 13) {
+			newPacketPlayOutScoreboardScore_1_13 = PacketPlayOutScoreboardScore_.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
+		} else {
+			newPacketPlayOutScoreboardScore0 = PacketPlayOutScoreboardScore_.getConstructor();
+			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore_.getConstructor(String.class);
 		}
 		if (minorVersion >= 8) {
+			//1.8+
+			newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
+			newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, NMSHook.IChatBaseComponent, int.class, int.class, int.class);
+			newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction_, Iterable.class);
+			try {
+				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+			} catch (Exception e) {
+				//1.8.8 paper
+				newPlayerInfoData = PlayerInfoData.getConstructor(GameProfile, int.class, EnumGamemode_, NMSHook.IChatBaseComponent);
+			}
 		}
 		if (minorVersion >= 9) {
 			newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor();
 		}
 	}
 
-	
+
 	/**
 	 * Initializes required NMS fields
 	 * @throws Exception - if something fails
 	 */
 	private static void initializeFields() throws Exception {
-		//PacketPlayOutChat
-		if (minorVersion >= 7) {
-			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("a")).setAccessible(true);
-		} else {
-			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("message")).setAccessible(true);
-		}
-		if (minorVersion >= 8) (PacketPlayOutChat_POSITION = PacketPlayOutChat.getDeclaredField("b")).setAccessible(true);
-		if (minorVersion >= 16) (PacketPlayOutChat_SENDER = PacketPlayOutChat.getDeclaredField("c")).setAccessible(true);
-		
-		//PacketPlayOutScoreboardDisplayObjective
 		(PacketPlayOutScoreboardDisplayObjective_POSITION = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("b")).setAccessible(true);
 
-		//PacketPlayOutScoreboardObjective
-		(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardObjective_DISPLAYNAME = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
-		if (minorVersion >= 8) {
-			(PacketPlayOutScoreboardObjective_RENDERTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
-		} else {
-			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
-		}
+		(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective_.getDeclaredField("a")).setAccessible(true);
+		(PacketPlayOutScoreboardObjective_DISPLAYNAME = PacketPlayOutScoreboardObjective_.getDeclaredField("b")).setAccessible(true);
 
-		//PacketPlayOutScoreboardScore
-		(PacketPlayOutScoreboardScore_PLAYER = PacketPlayOutScoreboardScore.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_OBJECTIVENAME = PacketPlayOutScoreboardScore.getDeclaredField("b")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_SCORE = PacketPlayOutScoreboardScore.getDeclaredField("c")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_ACTION = PacketPlayOutScoreboardScore.getDeclaredField("d")).setAccessible(true);
+		(PacketPlayOutScoreboardScore_PLAYER = PacketPlayOutScoreboardScore_.getDeclaredField("a")).setAccessible(true);
+		(PacketPlayOutScoreboardScore_OBJECTIVENAME = PacketPlayOutScoreboardScore_.getDeclaredField("b")).setAccessible(true);
+		(PacketPlayOutScoreboardScore_SCORE = PacketPlayOutScoreboardScore_.getDeclaredField("c")).setAccessible(true);
+		(PacketPlayOutScoreboardScore_ACTION = PacketPlayOutScoreboardScore_.getDeclaredField("d")).setAccessible(true);
 
-		//PacketPlayOutScoreboardTeam
 		(PacketPlayOutScoreboardTeam_NAME = PacketPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
 		(PacketPlayOutScoreboardTeam_DISPLAYNAME = PacketPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);
 		(PacketPlayOutScoreboardTeam_PREFIX = PacketPlayOutScoreboardTeam.getDeclaredField("c")).setAccessible(true);
 		(PacketPlayOutScoreboardTeam_SUFFIX = PacketPlayOutScoreboardTeam.getDeclaredField("d")).setAccessible(true);
+
+		if (minorVersion >= 7) {
+			//1.7+
+			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("a")).setAccessible(true);
+		} else {
+			//1.6-
+			(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("message")).setAccessible(true);
+		}
+
+		if (minorVersion >= 8) {
+			//1.8+
+			(PacketPlayOutChat_POSITION = PacketPlayOutChat.getDeclaredField("b")).setAccessible(true);
+
+			(PacketPlayOutScoreboardObjective_RENDERTYPE = PacketPlayOutScoreboardObjective_.getDeclaredField("c")).setAccessible(true);
+			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective_.getDeclaredField("d")).setAccessible(true);
+
+			(GameProfile_ID = GameProfile.getDeclaredField("id")).setAccessible(true);
+			(GameProfile_NAME = GameProfile.getDeclaredField("name")).setAccessible(true);
+			(GameProfile_PROPERTIES = GameProfile.getDeclaredField("properties")).setAccessible(true);
+			(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
+			(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
+			(PlayerInfoData_PING = PlayerInfoData.getDeclaredField("b")).setAccessible(true);
+			(PlayerInfoData_GAMEMODE = PlayerInfoData.getDeclaredField("c")).setAccessible(true);
+			(PlayerInfoData_PROFILE = PlayerInfoData.getDeclaredField("d")).setAccessible(true);
+			(PlayerInfoData_LISTNAME = PlayerInfoData.getDeclaredField("e")).setAccessible(true);
+
+			List<Field> fields = getFields(PacketPlayOutPlayerListHeaderFooter, NMSHook.IChatBaseComponent);
+			PacketPlayOutPlayerListHeaderFooter_HEADER = fields.get(0);
+			PacketPlayOutPlayerListHeaderFooter_FOOTER = fields.get(1);
+		} else {
+			//1.7-
+			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective_.getDeclaredField("c")).setAccessible(true);
+		}
 		if (minorVersion >= 9) {
 			//1.9+
+			(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
+			(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
+			(PacketPlayOutBoss_NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
+			(PacketPlayOutBoss_PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
+			(PacketPlayOutBoss_COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
+			(PacketPlayOutBoss_STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
+			(PacketPlayOutBoss_DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
+			(PacketPlayOutBoss_PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
+			(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
+			
 			(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_COLLISION = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("i")).setAccessible(true);
 			(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("j")).setAccessible(true);
-			if (minorVersion >= 13) {
-				(PacketPlayOutScoreboardTeam_CHATFORMAT = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
-			}
 		} else {
-			if (minorVersion >= 8) {
+			//1.8-
+			if (minorVersion == 8) {
 				//1.8.x
 				(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 				(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
@@ -356,50 +361,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
 			}
 		}
-
-		if (minorVersion >= 7) {
-			//PacketPlayOutPlayerInfo
-			if (minorVersion >= 8) {
-				//1.8+
-				(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
-				(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
-				(PlayerInfoData_PING = PlayerInfoData.getDeclaredField("b")).setAccessible(true);
-				(PlayerInfoData_GAMEMODE = PlayerInfoData.getDeclaredField("c")).setAccessible(true);
-				(PlayerInfoData_PROFILE = PlayerInfoData.getDeclaredField("d")).setAccessible(true);
-				(PlayerInfoData_LISTNAME = PlayerInfoData.getDeclaredField("e")).setAccessible(true);
-			} else {
-				try {
-					//1.7.R4
-					(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("action")).setAccessible(true);
-					(PlayerInfoData_PING = PacketPlayOutPlayerInfo.getDeclaredField("ping")).setAccessible(true);
-					(PlayerInfoData_GAMEMODE = PacketPlayOutPlayerInfo.getDeclaredField("gamemode")).setAccessible(true);
-					(PlayerInfoData_PROFILE = PacketPlayOutPlayerInfo.getDeclaredField("player")).setAccessible(true);
-					(PlayerInfoData_LISTNAME = PacketPlayOutPlayerInfo.getDeclaredField("username")).setAccessible(true);
-				} catch (Exception e) {
-					//1.7.R3-
-				}
-			}
-			(GameProfile_ID = GameProfile.getDeclaredField("id")).setAccessible(true);
-			(GameProfile_NAME = GameProfile.getDeclaredField("name")).setAccessible(true);
-			(GameProfile_PROPERTIES = GameProfile.getDeclaredField("properties")).setAccessible(true);
+		if (minorVersion >= 13) {
+			//1.13+
+			(PacketPlayOutScoreboardTeam_CHATFORMAT = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
 		}
-		if (minorVersion >= 8) {
-			//PacketPlayOutPlayerListHeaderFooter
-			List<Field> fields = getFields(PacketPlayOutPlayerListHeaderFooter, NMSHook.IChatBaseComponent);
-			PacketPlayOutPlayerListHeaderFooter_HEADER = fields.get(0);
-			PacketPlayOutPlayerListHeaderFooter_FOOTER = fields.get(1);
-		}
-		if (minorVersion >= 9) {
-			//PacketPlayOutBoss
-			(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
-			(PacketPlayOutBoss_NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutBoss_PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
-			(PacketPlayOutBoss_COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
-			(PacketPlayOutBoss_STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
-			(PacketPlayOutBoss_DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
-			(PacketPlayOutBoss_PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
-			(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
+		if (minorVersion >= 16) {
+			//1.16+
+			(PacketPlayOutChat_SENDER = PacketPlayOutChat.getDeclaredField("c")).setAccessible(true);
 		}
 	}
 
@@ -418,7 +386,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		//<1.9 client and server
 		return buildBossPacketEntity(packet, clientVersion);
 	}
-	
+
 	public Object buildBossPacket19(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		Object nmsPacket = newPacketPlayOutBoss.newInstance();
 		PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
@@ -440,7 +408,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		return nmsPacket;
 	}
-	
+
 	public Object buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
 		try {
@@ -479,7 +447,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			return Shared.errorManager.printError(null, "Failed to create 1.9 bossbar packet using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", t);
 		}
 	}
-	
+
 	public Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (packet.operation == Action.UPDATE_STYLE) return null; //nothing to do here
 
@@ -527,35 +495,23 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
-		if (minorVersion >= 8) {
-			Object nmsPacket = newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(EnumPlayerInfoAction_, packet.action.toString()), Collections.EMPTY_LIST);
-			List<Object> items = new ArrayList<Object>();
-			for (PlayerInfoData data : packet.entries) {
-				Object profile = newGameProfile.newInstance(data.uniqueId, data.name);
-				if (data.skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), data.skin);
-				if (newPlayerInfoData.getParameterCount() == 5) {
-					items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
-							data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
-				} else {
-					//1.8.8 paper
-					items.add(newPlayerInfoData.newInstance(profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
-							data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
-				}
-			}
-			PacketPlayOutPlayerInfo_PLAYERS.set(nmsPacket, items);
-			return nmsPacket;
-		} else {
-			Object nmsPacket = newPacketPlayOutPlayerInfo0.newInstance();
-			PacketPlayOutPlayerInfo_ACTION.set(nmsPacket, packet.action.ordinal());
-			PlayerInfoData data = packet.entries.get(0);
+		if (minorVersion < 8) return null;
+		Object nmsPacket = newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(EnumPlayerInfoAction_, packet.action.toString()), Collections.EMPTY_LIST);
+		List<Object> items = new ArrayList<Object>();
+		for (PlayerInfoData data : packet.entries) {
 			Object profile = newGameProfile.newInstance(data.uniqueId, data.name);
 			if (data.skin != null) PropertyMap_putAll.invoke(GameProfile_PROPERTIES.get(profile), data.skin);
-			PlayerInfoData_PROFILE.set(nmsPacket, profile);
-			PlayerInfoData_GAMEMODE.set(nmsPacket, data.gameMode.ordinal()-1);
-			PlayerInfoData_PING.set(nmsPacket, data.latency);
-			PlayerInfoData_LISTNAME.set(nmsPacket, cutTo(data.displayName.toLegacyText(), 16));
-			return nmsPacket;
+			if (newPlayerInfoData.getParameterCount() == 5) {
+				items.add(newPlayerInfoData.newInstance(newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
+						data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
+			} else {
+				//1.8.8 paper
+				items.add(newPlayerInfoData.newInstance(profile, data.latency, data.gameMode == null ? null : Enum.valueOf(EnumGamemode_, data.gameMode.toString()), 
+						data.displayName == null ? null : NMSHook.stringToComponent(data.displayName.toString(clientVersion))));
+			}
 		}
+		PacketPlayOutPlayerInfo_PLAYERS.set(nmsPacket, items);
+		return nmsPacket;
 	}
 
 	@Override
@@ -589,7 +545,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		if (PacketPlayOutScoreboardObjective_RENDERTYPE != null && packet.renderType != null) {
 			if (minorVersion >= 8) {
-				PacketPlayOutScoreboardObjective_RENDERTYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay, packet.renderType.toString()));
+				PacketPlayOutScoreboardObjective_RENDERTYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay_, packet.renderType.toString()));
 			} else {
 				PacketPlayOutScoreboardObjective_RENDERTYPE.set(nmsPacket, packet.renderType.ordinal());
 			}
@@ -603,7 +559,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (minorVersion >= 13) {
 			return newPacketPlayOutScoreboardScore_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, packet.action.toString()), packet.objectiveName, packet.player, packet.score);
 		}
-		if (packet.action == me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action.REMOVE) {
+		if (packet.action == PacketPlayOutScoreboardScore.Action.REMOVE) {
 			return newPacketPlayOutScoreboardScore_String.newInstance(packet.player);
 		}
 		Object nmsPacket = newPacketPlayOutScoreboardScore0.newInstance();
@@ -637,17 +593,17 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			PacketPlayOutScoreboardTeam_CHATFORMAT.set(nmsPacket, Enum.valueOf((Class<Enum>)EnumChatFormat_, format.toString()));
 		} else {
 			PacketPlayOutScoreboardTeam_DISPLAYNAME.set(nmsPacket, packet.name);
-			if (prefix != null) PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
-			if (suffix != null) PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
+			PacketPlayOutScoreboardTeam_PREFIX.set(nmsPacket, prefix);
+			PacketPlayOutScoreboardTeam_SUFFIX.set(nmsPacket, suffix);
 		}
+		if (PacketPlayOutScoreboardTeam_VISIBILITY != null) PacketPlayOutScoreboardTeam_VISIBILITY.set(nmsPacket, packet.nametagVisibility);
 		if (PacketPlayOutScoreboardTeam_COLLISION != null) PacketPlayOutScoreboardTeam_COLLISION.set(nmsPacket, packet.collisionRule);
 		PacketPlayOutScoreboardTeam_PLAYERS.set(nmsPacket, packet.players);
 		PacketPlayOutScoreboardTeam_ACTION.set(nmsPacket, packet.method);
 		PacketPlayOutScoreboardTeam_SIGNATURE.set(nmsPacket, packet.options);
-		if (PacketPlayOutScoreboardTeam_VISIBILITY != null) PacketPlayOutScoreboardTeam_VISIBILITY.set(nmsPacket, packet.nametagVisibility);
 		return nmsPacket;
 	}
-	
+
 	@Override
 	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) return null;
@@ -685,7 +641,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 			return new PacketPlayOutPlayerInfo(action, listData);
 		} else {
-
 			EnumPlayerInfoAction action = EnumPlayerInfoAction.values()[(PacketPlayOutPlayerInfo_ACTION.getInt(nmsPacket))];
 			int ping = PlayerInfoData_PING.getInt(nmsPacket);
 			EnumGamemode gamemode = EnumGamemode.values()[PlayerInfoData_GAMEMODE.getInt(nmsPacket)+1];
@@ -695,7 +650,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			return new PacketPlayOutPlayerInfo(action, Lists.newArrayList(data));
 		}
 	}
-	
+
 	@Override
 	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
 		String objective = (String) PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
@@ -710,23 +665,23 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			Object nmsRender = PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
 			if (nmsRender != null) {
 				if (minorVersion >= 8) {
-					renderType = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
+					renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
 				} else {
-					renderType = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.values()[(int)nmsRender];
+					renderType = EnumScoreboardHealthDisplay.values()[(int)nmsRender];
 				}
 			}
 		}
 		int method = PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
-		PacketPlayOutScoreboardObjective packet = me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.REGISTER(objective, displayName, renderType);
+		PacketPlayOutScoreboardObjective packet = PacketPlayOutScoreboardObjective.REGISTER(objective, displayName, renderType);
 		packet.method = method;
 		return packet;
 	}
-	
+
 	@Override
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws Exception {
 		return new PacketPlayOutScoreboardDisplayObjective(
-				PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
-				(String) PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
+			PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
+			(String) PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
 		);
 	}
 }
