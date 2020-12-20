@@ -81,21 +81,14 @@ public class WidthCommand extends SubCommand {
 	
 	private IChatBaseComponent getText(int width, int c) {
 		String text = "";
-		int pixelsRemaining = width;
-		while (pixelsRemaining > 3) {
+		int pixelsRemaining = width + 1;
+		while (pixelsRemaining % 2 != 0) {
 			pixelsRemaining -= 3;
 			text += "l";
 		}
-		switch (pixelsRemaining) {
-		case 1:
+		while (pixelsRemaining > 0) {
+			pixelsRemaining -= 2;
 			text += "i";
-			break;
-		case 2:
-			text += "l";
-			break;
-		case 3:
-			text += "ii";
-			break;
 		}
 		return new IChatBaseComponent(PlaceholderManager.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
 	}
