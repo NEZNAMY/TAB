@@ -44,7 +44,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
-	private boolean disableOnBoats;
+	public boolean disableOnBoats;
 	private float spaceBetweenLines;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
