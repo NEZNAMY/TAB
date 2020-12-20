@@ -46,11 +46,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
-		if (displayed == viewer) return true;
+		if (displayed == viewer || spyServers.contains(viewer.getWorldName())) return true;
 		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
-		if (spyServers.contains(viewer.getWorldName())) {
-			return true;
-		}
 		String viewerServerGroup = "null";
 		for (String group : sharedServers.keySet()) {
 			if (sharedServers.get(group).contains(viewer.getWorldName())) viewerServerGroup = group;
