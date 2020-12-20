@@ -41,14 +41,14 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
 
 	private static final int ENTITY_TRACKING_RANGE = 48;
-	
+
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	private boolean disableOnBoats;
 	private float spaceBetweenLines;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
-	
+
 	//player data by entityId, used for better performance
 	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
@@ -70,7 +70,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		eventListener = new EventListener(this);
 		Shared.featureManager.registerFeature("nametagx-packet", new PacketListener(this));
 	}
-	
+
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
@@ -81,14 +81,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName())) continue;
 			all.registerTeam();
-			if (((Entity) all.getPlayer()).getVehicle() != null) {
-				Entity vehicle = ((Entity) all.getPlayer()).getVehicle();
-				Set<Integer> list = new HashSet<Integer>();
-				for (Entity e : getPassengers(vehicle)) {
-					list.add(e.getEntityId());
-				}
-				vehicles.put(vehicle.getEntityId(), list);
-			}
+			loadPassengers(all);
 			for (TabPlayer worldPlayer : Shared.getPlayers()) {
 				if (all == worldPlayer) continue; //not displaying own armorstands
 				if (((Player) worldPlayer.getPlayer()).getWorld() != ((Player) all.getPlayer()).getWorld()) continue;
@@ -113,7 +106,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 		});
 	}
-	
+
 	@Override
 	public void unload() {
 		HandlerList.unregisterAll(eventListener);
@@ -123,7 +116,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 		entityIdMap.clear();
 	}
-	
+
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
@@ -137,14 +130,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		loadArmorStands(connectedPlayer);
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
-		if (((Entity) connectedPlayer.getPlayer()).getVehicle() != null) {
-			Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
-			Set<Integer> list = new HashSet<Integer>();
-			for (Entity e : getPassengers(vehicle)) {
-				list.add(e.getEntityId());
-			}
-			vehicles.put(vehicle.getEntityId(), list);
-		}
+		loadPassengers(connectedPlayer);
 		for (TabPlayer viewer : Shared.getPlayers()) {
 			if (connectedPlayer == viewer) continue; //not displaying own armorstands
 			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
@@ -153,7 +139,17 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 		}
 	}
-	
+
+	private void loadPassengers(TabPlayer p) {
+		if (((Entity) p.getPlayer()).getVehicle() == null) return;
+		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
+		Set<Integer> list = new HashSet<Integer>();
+		for (Entity e : getPassengers(vehicle)) {
+			list.add(e.getEntityId());
+		}
+		vehicles.put(vehicle.getEntityId(), list);
+	}
+
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
@@ -163,14 +159,14 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 		//entity destroy packet is sent too late, need to send it manually
 		disconnectedPlayer.getArmorStandManager().destroy();
-		
+
 		for (TabPlayer all : Shared.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 	}
-	
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (!p.isLoaded()) return;
@@ -185,7 +181,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			fixArmorStandHeights(p);
 		}
 	}
-	
+
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
@@ -202,7 +198,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 		fixArmorStandHeights(pl);
 	}
-	
+
 	public void fixArmorStandHeights(TabPlayer p) {
 		p.getArmorStandManager().refresh();
 		double currentY = -spaceBetweenLines;
@@ -256,7 +252,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (fix) fixArmorStandHeights(refreshed);
 		}
 	}
-	
+
 	private void updateProperties(TabPlayer p) {
 		p.loadPropertyFromConfig("tagprefix");
 		p.loadPropertyFromConfig("customtagname", p.getName());
@@ -269,7 +265,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
 		}
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
@@ -282,7 +278,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 		}
 	}
-	
+
 	@Override
 	public void refreshUsedPlaceholders() {
 		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
