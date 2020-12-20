@@ -31,7 +31,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	private String toggleCommand;
 	public List<String> announcements = new ArrayList<String>();
 	public boolean remember_toggle_choice;
-	public List<String> bossbar_off_players;
+	public List<String> bossbar_off_players = new ArrayList<String>();
 	public boolean permToToggle;
 	private List<String> disabledWorlds;
 	public long announceEndTime;

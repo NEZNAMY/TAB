@@ -30,7 +30,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	public boolean useNumbers;
 	public boolean remember_toggle_choice;
-	public List<String> sb_off_players;
+	public List<String> sb_off_players = new ArrayList<String>();
 	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
 	public boolean permToToggle;
 	public int staticNumber;
