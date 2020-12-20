@@ -54,6 +54,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	private Scoreboard activeScoreboard;
 	private boolean scoreboardVisible;
 	private Scoreboard forcedScoreboard;
+	
+	protected Map<String, String> attributes = new HashMap<String, String>();
 
 	public void init() {
 		setGroup(((GroupRefresher)Shared.featureManager.getFeature("group")).detectPermissionGroup(this), false);
@@ -577,5 +579,11 @@ public abstract class ITabPlayer implements TabPlayer {
 				updateTeamData();
 			}
 		}
+	}
+	
+	
+	@Override
+	public void setAttribute(String attribute, String value) {
+		attributes.put(attribute, value);
 	}
 }

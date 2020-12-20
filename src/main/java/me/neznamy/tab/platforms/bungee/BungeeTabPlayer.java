@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.bungee;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -41,9 +39,6 @@ public class BungeeTabPlayer extends ITabPlayer {
 	
 	//proxy player
 	private ProxiedPlayer player;
-	
-	//player's attributes on bukkit server (disguise status, invisibility status)
-	private Map<String, String> attributes = new HashMap<String, String>();
 
 	/**
 	 * Constructs new instance for given player
@@ -121,10 +116,6 @@ public class BungeeTabPlayer extends ITabPlayer {
 		Main.plm.requestAttribute(this, "disguised");
 		if (!attributes.containsKey("disguised")) return false;
 		return Boolean.parseBoolean(attributes.get("disguised"));
-	}
-	
-	public void setAttribute(String attribute, String value) {
-		attributes.put(attribute, value);
 	}
 
 	@Override
