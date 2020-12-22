@@ -10,10 +10,10 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.Shared;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.interfaces.PostPlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 /**
  * Feature handler for tablist prefix/name/suffix
  */
-public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
+public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, PostPlayerInfoPacketListener, Refreshable {
 
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
@@ -64,7 +64,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return;
-		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
@@ -75,11 +74,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 					playerInfoData.name = packetPlayer.getName();
 				}
 			}
-			if (ADD && packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
-		}
-		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8 && !v180PrefixBugFixList.isEmpty()) { //not sending empty packets due to NPCs
-			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList)));
 		}
 	}
 
@@ -159,5 +153,18 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.TABLIST_NAMES;
+	}
+
+	@Override
+	public void postPacket(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
+		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
+		for (PlayerInfoData playerInfoData : info.entries) {
+			if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) != null) v180PrefixBugFixList.add(playerInfoData);
+		}
+		if (!v180PrefixBugFixList.isEmpty()) { //not sending empty packets due to NPCs
+			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
+			receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList));
+		}
 	}
 }

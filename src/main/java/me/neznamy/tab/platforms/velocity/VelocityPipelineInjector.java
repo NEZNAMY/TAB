@@ -29,6 +29,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 				try {
 					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
 						super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+						Shared.featureManager.postPacketPlayOutPlayerInfo(player, packet);
 						return;
 					}
 					if (packet instanceof Team && Shared.featureManager.isFeatureEnabled("nametag16")) {

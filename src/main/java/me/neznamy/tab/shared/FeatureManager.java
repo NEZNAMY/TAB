@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.interfaces.PostPlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -144,6 +145,25 @@ public class FeatureManager {
 		Object pack = info.create(receiver.getVersion());
 		Shared.cpu.addTime(TabFeature.PACKET_SERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		return pack;
+	}
+	
+	public void postPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
+		if (receiver.getVersion().getMinorVersion() > ProtocolVersion.v1_8.getMinorVersion()) return;
+		List<PostPlayerInfoPacketListener> listeners = new ArrayList<PostPlayerInfoPacketListener>();
+		for (Feature f : getAllFeatures()) {
+			if (f instanceof PostPlayerInfoPacketListener) listeners.add((PostPlayerInfoPacketListener) f);
+		}
+		//not deserializing & serializing when there is not anyone to listen to the packet
+		if (listeners.isEmpty()) return;
+		
+		long time = System.nanoTime();
+		PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, receiver.getVersion());
+		Shared.cpu.addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		for (PostPlayerInfoPacketListener f : listeners) {
+			time = System.nanoTime();
+			((PostPlayerInfoPacketListener)f).postPacket(receiver, info);
+			Shared.cpu.addTime(f.getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, System.nanoTime()-time);
+		}
 	}
 	
 	/**
