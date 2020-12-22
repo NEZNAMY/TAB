@@ -32,7 +32,6 @@ public class GroupCommand extends SubCommand {
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Groups." + group, null);
-					Configs.config.save();
 					for (TabPlayer pl : Shared.getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.forceRefresh();

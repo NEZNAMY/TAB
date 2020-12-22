@@ -32,7 +32,6 @@ public class PlayerCommand extends SubCommand {
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Users." + player, null);
-					Configs.config.save();
 					TabPlayer pl = Shared.getPlayer(player);
 					if (pl != null) {
 						pl.forceRefresh();

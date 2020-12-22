@@ -37,7 +37,6 @@ public class PlayerUUIDCommand extends SubCommand {
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Users." + changed.getUniqueId().toString(), null);
-					Configs.config.save();
 					changed.forceRefresh();
 					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
