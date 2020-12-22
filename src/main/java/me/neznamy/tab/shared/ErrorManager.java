@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -81,7 +82,7 @@ public class ErrorManager {
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
 		printError(message, t, intoConsoleToo, Configs.errorFile);
 	}
-	
+
 	/**
 	 * Prints an error message and stack trace into errors.txt file
 	 * @param message - message to print
@@ -96,31 +97,38 @@ public class ErrorManager {
 		}
 		try {
 			if (!file.exists()) file.createNewFile();
-			if (file.length() < 1000000) { //not going over 1 MB
-				BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-				String currentTime = getCurrentTime();
-				if (message != null) {
-					buf.write(currentTime + "[TAB v" + Shared.pluginVersion + (Shared.isPremium() ? " Premium": "") + "] " + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
-					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c[TAB] " + message, true);
-				}
-				if (t != null) {
-					buf.write(currentTime + t.getClass().getName() +": " + t.getMessage() + newline);
-					if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c" + t.getClass().getName() +": " + t.getMessage(), true);
-					for (StackTraceElement ste : t.getStackTrace()) {
-						buf.write(currentTime + "       at " + ste.toString() + newline);
-						if (Configs.SECRET_debugMode || intoConsoleToo) Shared.platform.sendConsoleMessage("&c       at " + ste.toString(), true);
-					}
-				}
-				buf.close();
+			if (file.length() > 1000000) return; //not going over 1 MB
+			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
+			if (message != null) {
+				write(buf, "&c[TAB v" + Shared.pluginVersion + (Shared.isPremium() ? " Premium": "") + "] " + message, intoConsoleToo);
 			}
+			if (error != null) {
+				write(buf, "&c" + error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
+				for (StackTraceElement ste : error.getStackTrace()) {
+					write(buf, "&c       at " + ste.toString(), intoConsoleToo);
+				}
+			}
+			buf.close();
 		} catch (Throwable ex) {
 			Shared.platform.sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
 			ex.printStackTrace();
 			Shared.platform.sendConsoleMessage("&c[TAB] Original error: " + message, true);
-			if (t != null) t.printStackTrace();
+			if (error != null) error.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Writes message into buffer and console if set
+	 * @param buf - buffered write to write message to
+	 * @param message - message to write
+	 * @param forceConsole - send into console even without debug mode
+	 * @throws IOException - if IO writer operation fails
+	 */
+	private void write(BufferedWriter buf, String message, boolean forceConsole) throws IOException {
+		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
+		if (Configs.SECRET_debugMode || forceConsole) Shared.platform.sendConsoleMessage(message, true);
+	}
+
 	/**
 	 * Prints an error message and stack trace into errors.txt file and console
 	 * @param message - message to print
@@ -129,7 +137,7 @@ public class ErrorManager {
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);
 	}
-	
+
 	/**
 	 * Prints an error message and stack trace into errors.txt file and console
 	 * @param message - message to print
@@ -140,7 +148,7 @@ public class ErrorManager {
 		oneTimeConsoleError(message);
 		return defaultValue;
 	}
-	
+
 	/**
 	 * Sends message into console once
 	 * @param message - message to send
@@ -150,7 +158,7 @@ public class ErrorManager {
 		oneTimeMessages.add(message);
 		printError(message, null, true);
 	}
-	
+
 	/**
 	 * Returns current formatted time
 	 * @return current formatted time
@@ -178,7 +186,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Parses float in given string, returns second argument if string is not valid
 	 * @param string - string to parse
@@ -197,7 +205,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Parses double in given string, returns second argument if string is not valid
 	 * @param string - string to parse
@@ -216,7 +224,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Parses bar color in given string, returns second argument if string is not valid
 	 * @param string - string to parse
@@ -235,7 +243,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Parses bar style in given string, returns second argument if string is not valid
 	 * @param string - string to parse
@@ -278,7 +286,7 @@ public class ErrorManager {
 		}
 		return interval;
 	}
-	
+
 	/**
 	 * Returns the list if not null, empty list and error message if null
 	 * @param name - name of animation used in error message
@@ -303,7 +311,7 @@ public class ErrorManager {
 		Shared.platform.sendConsoleMessage("&c[TAB] " + message, true);
 		startupWarns++;
 	}
-	
+
 	/**
 	 * Sends a startup warn about missing object parameter
 	 * @param objectType - object type missing parameter
@@ -313,7 +321,7 @@ public class ErrorManager {
 	public void missingAttribute(String objectType, Object objectName, String attribute) {
 		startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
 	}
-	
+
 	/**
 	 * Prints amount of startup warns into console if more than 0
 	 */
