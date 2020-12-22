@@ -56,7 +56,7 @@ public class AnnounceBarCommand extends SubCommand{
 						}
 					}).start();
 				} catch (Exception e) {
-					sender.sendMessage(args[3] + " is not a number!", false);
+					sender.sendMessage(args[1] + " is not a number!", false);
 				}
 			} else {
 				sendMessage(sender, "Usage: /tab announce bar <bar name> <length>");
