@@ -77,7 +77,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			}
 			if (ADD && packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
 		}
-		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8) {
+		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8 && !v180PrefixBugFixList.isEmpty()) { //not sending empty packets due to NPCs
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
 			Shared.cpu.runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList)));
 		}
