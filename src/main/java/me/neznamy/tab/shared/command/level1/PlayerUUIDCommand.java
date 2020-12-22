@@ -43,21 +43,11 @@ public class PlayerUUIDCommand extends SubCommand {
 				}
 				return;
 			}
-			for (String property : usualProperties) {
+			for (String property : allProperties) {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, changed, type, value);
-					} else {
-						sendMessage(sender, Configs.no_perm);
-					}
-					return;
-				}
-			}
-			for (String property : extraProperties) {
-				if (type.equals(property)) {
-					if (hasPermission(sender, "tab.change." + property)) {
-						savePlayer(sender, changed, type, value);
-						if (!Shared.featureManager.isFeatureEnabled("nametagx")) {
+						if (extraProperties.contains(property) && !Shared.featureManager.isFeatureEnabled("nametagx")) {
 							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
 						}
 					} else {
@@ -97,10 +87,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		if (arguments.length == 1) return getPlayers(arguments[0]);
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 2) {
-			for (String property : usualProperties) {
-				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
-			}
-			for (String property : extraProperties) {
+			for (String property : allProperties) {
 				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 		}

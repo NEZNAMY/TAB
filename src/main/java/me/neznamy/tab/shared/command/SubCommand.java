@@ -13,8 +13,8 @@ import me.neznamy.tab.shared.Shared;
  */
 public abstract class SubCommand {
 
-	protected final String[] usualProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
-	protected final String[] extraProperties = {"abovename", "belowname", "customtagname"};
+	protected final String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname"};
+	protected final List<String> extraProperties = Arrays.asList("abovename", "belowname", "customtagname");
 	
 	//name of this subcommand
 	private String name;
