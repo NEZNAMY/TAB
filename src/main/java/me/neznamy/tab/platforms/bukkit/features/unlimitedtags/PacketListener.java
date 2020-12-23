@@ -99,6 +99,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			int entityId = PacketPlayInUseEntity_ENTITY.getInt(packet);
 			TabPlayer attacked = null;
 			for (TabPlayer all : Shared.getPlayers()) {
+				if (!all.isLoaded()) continue;
 				if (all.getArmorStandManager().hasArmorStandWithID(entityId)) {
 					attacked = all;
 					break;
