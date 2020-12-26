@@ -74,6 +74,7 @@ public abstract class SubCommand {
 	 * @param message - the message to sent
 	 */
 	public void sendMessage(TabPlayer sender, String message) {
+		if (message == null || message.length() == 0) return;
 		if (sender != null) {
 			sender.sendMessage(message, true);
 		} else {
@@ -87,6 +88,7 @@ public abstract class SubCommand {
 	 * @param message - the message to sent
 	 */
 	public void sendRawMessage(TabPlayer sender, String message) {
+		if (message == null || message.length() == 0) return;
 		if (sender != null) {
 			sender.sendMessage(message, false);
 		} else {
