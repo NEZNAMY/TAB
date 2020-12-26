@@ -41,9 +41,7 @@ public class Main extends JavaPlugin {
 						sender.sendMessage(PlaceholderManager.color(message));
 					}
 				} else {
-					new Thread(() -> {
-						Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-					}).start();
+					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 				return false;
 			}
