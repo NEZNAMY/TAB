@@ -87,7 +87,7 @@ public class BukkitArmorStand implements ArmorStand {
 		this.yOffset = yOffset;
 		this.property = property;
 		markerFor18x = ((NameTagX)Shared.featureManager.getFeature("nametagx")).markerFor18x;
-		refresh();
+		visible = getVisibility();
 	}
 
 	@Override
