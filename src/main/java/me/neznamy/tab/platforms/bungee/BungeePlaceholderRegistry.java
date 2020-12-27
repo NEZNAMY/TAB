@@ -41,7 +41,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
-		placeholders.add(new ServerPlaceholder("%maxplayers%", -1) {
+		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
 			public String get() {
 				return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()+"";
 			}

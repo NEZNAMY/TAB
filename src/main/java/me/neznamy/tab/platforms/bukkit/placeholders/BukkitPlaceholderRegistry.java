@@ -107,7 +107,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		placeholders.add(new ServerPlaceholder("%maxplayers%", -1) {
+		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
 			public String get() {
 				return Bukkit.getMaxPlayers()+"";
 			}
@@ -212,7 +212,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		} else {
-			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 999999) {
+			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 100000000) {
 				public String get(TabPlayer p) {
 					return p.getName();
 				}

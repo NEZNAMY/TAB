@@ -46,12 +46,12 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 
-		placeholders.add(new PlayerPlaceholder("%nick%", 999999999) {
+		placeholders.add(new PlayerPlaceholder("%nick%", 100000000) {
 			public String get(TabPlayer p) {
 				return p.getName();
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%player%", 999999999) {
+		placeholders.add(new PlayerPlaceholder("%player%", 100000000) {
 			public String get(TabPlayer p) {
 				return p.getName();
 			}
@@ -76,7 +76,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getPing()+"";
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%player-version%", 999999999) {
+		placeholders.add(new PlayerPlaceholder("%player-version%", 100000000) {
 			public String get(TabPlayer p) {
 				return p.getVersion().getFriendlyName();
 			}
@@ -96,7 +96,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576) + "");
 			}
 		});
-		placeholders.add(new ServerPlaceholder("%memory-max%", -1) {
+		placeholders.add(new ServerPlaceholder("%memory-max%", 100000000) {
 			public String get() {
 				return ((int) (Runtime.getRuntime().maxMemory() / 1048576))+"";
 			}
@@ -106,7 +106,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return (decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024) + "");
 			}
 		});
-		placeholders.add(new ServerPlaceholder("%memory-max-gb%", -1) {
+		placeholders.add(new ServerPlaceholder("%memory-max-gb%", 100000000) {
 			public String get() {
 				return (decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024))+"";
 			}
