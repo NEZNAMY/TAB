@@ -53,6 +53,7 @@ public abstract class SimpleCondition {
 		if ((c = PermissionCondition.compile(line)) != null) return c;
 		if ((c = NotEqualsCondition.compile(line)) != null) return c;
 		if ((c = EqualsCondition.compile(line)) != null) return c;
+		if ((c = ContainsCondition.compile(line)) != null) return c;
 		if ((c = MoreThanOrEqualsCondition.compile(line)) != null) return c;
 		if ((c = MoreThanCondition.compile(line)) != null) return c;
 		if ((c = LessThanOrEqualsCondition.compile(line)) != null) return c;
