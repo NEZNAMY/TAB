@@ -64,15 +64,14 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @param options - bitmask of team options
 	 * @return the instance with given parameters with CREATE action
 	 */
-	public static PacketPlayOutScoreboardTeam CREATE(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(0, team);
-		packet.playerPrefix = prefix;
-		packet.playerSuffix = suffix;
-		packet.nametagVisibility = visibility;
-		packet.collisionRule = collision;
-		packet.players = players;
-		packet.options = options;
-		return packet;
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+		this(0, team);
+		this.playerPrefix = prefix;
+		this.playerSuffix = suffix;
+		this.nametagVisibility = visibility;
+		this.collisionRule = collision;
+		this.players = players;
+		this.options = options;
 	}
 
 	/**
@@ -80,8 +79,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @param team - team name
 	 * @return the instance with given parameter with REMOVE action
 	 */
-	public static PacketPlayOutScoreboardTeam REMOVE(String team) {
-		return new PacketPlayOutScoreboardTeam(1, team);
+	public PacketPlayOutScoreboardTeam(String team) {
+		this(1, team);
 	}
 
 	/**
@@ -94,38 +93,25 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @param options - bitmask of team options
 	 * @return the instance with given parameters with UPDATE_TEAM_INFO action
 	 */
-	public static PacketPlayOutScoreboardTeam UPDATE_TEAM_INFO(String team, String prefix, String suffix, String visibility, String collision, int options) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(2, team);
-		packet.playerPrefix = prefix;
-		packet.playerSuffix = suffix;
-		packet.nametagVisibility = visibility;
-		packet.collisionRule = collision;
-		packet.options = options;
-		return packet;
+	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
+		this(2, team);
+		this.playerPrefix = prefix;
+		this.playerSuffix = suffix;
+		this.nametagVisibility = visibility;
+		this.collisionRule = collision;
+		this.options = options;
 	}
 
 	/**
 	 * Constructs new packet based on given parameters
 	 * @param team - team name
 	 * @param players - affected entities
-	 * @return the instance with given parameters with ADD_PLAYERS action
+	 * @param add - true if players should be added into team, false if removed
+	 * @return the instance with given parameters with ADD_PLAYERS action if add is true, REMOVE_PLAYERS if false
 	 */
-	public static PacketPlayOutScoreboardTeam ADD_PLAYERS(String team, Collection<String> players) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(3, team);
-		packet.players = players;
-		return packet;
-	}
-
-	/**
-	 * Constructs new packet based on given parameters
-	 * @param team - team name
-	 * @param players - affected entities
-	 * @return the instance with given parameters with REMOVE_PLAYERS action
-	 */
-	public static PacketPlayOutScoreboardTeam REMOVE_PLAYERS(String team, Collection<String> players) {
-		PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(4, team);
-		packet.players = players;
-		return packet;
+	public PacketPlayOutScoreboardTeam(String team, Collection<String> players, boolean add) {
+		this(add ? 3 : 4, team);
+		this.players = players;
 	}
 
 	/**
