@@ -278,7 +278,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void unregisterTeam() {
 		if (teamName == null) return;
-		Object packet = PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
+		Object packet = new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer viewer : Shared.getPlayers()) {
 			viewer.sendPacket(packet);
 		}
@@ -286,7 +286,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void unregisterTeam(TabPlayer viewer) {
-		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69));
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
 	}
 
 	@Override
@@ -330,7 +330,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(viewer);
-			viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 		}
 	}
 
@@ -340,7 +340,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		boolean visible = getTeamVisibility(viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
 	}
 
 	@Override

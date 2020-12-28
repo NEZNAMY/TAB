@@ -28,9 +28,9 @@ public class PacketAPI {
 	 */
 	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.getSecretOption("unregister-before-register", true) && Shared.platform.getSeparatorType().equals("world")) {
-			to.sendCustomPacket(PacketPlayOutScoreboardTeam.REMOVE(teamName).setTeamOptions(69));
+			to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
 		}
-		to.sendCustomPacket(PacketPlayOutScoreboardTeam.CREATE(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
 	}
 
 	/**

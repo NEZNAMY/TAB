@@ -42,7 +42,7 @@ public class CustomLine extends ScoreboardLine {
 						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), score);
 			} else {
 				//only prefix/suffix changed
-				refreshed.sendCustomPacket(PacketPlayOutScoreboardTeam.UPDATE_TEAM_INFO(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
+				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
 						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 69));
 			}
 		}
