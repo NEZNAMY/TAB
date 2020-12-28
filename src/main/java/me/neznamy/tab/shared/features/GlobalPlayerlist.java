@@ -137,10 +137,11 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 				}
 			}
 		}
+		if (!displayAsSpectators) return;
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 				TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
-				if (packetPlayer != null && displayAsSpectators && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
+				if (packetPlayer != null && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
 					playerInfoData.gameMode = EnumGamemode.SPECTATOR;
 				}
 			}
