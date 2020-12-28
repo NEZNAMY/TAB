@@ -130,8 +130,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 					//not preventing NPC removals
-				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0) && info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-					//remove packet sent by bungeecord
+				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0)) {
+					//remove packet not coming from tab
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.uniqueId = UUID.randomUUID();
 				}
