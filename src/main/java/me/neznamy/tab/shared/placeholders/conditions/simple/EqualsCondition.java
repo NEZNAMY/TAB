@@ -8,24 +8,15 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
  */
 public class EqualsCondition extends SimpleCondition {
 	
-	public EqualsCondition(String leftSide, String rightSide) {
-		super(leftSide, rightSide);
+	public EqualsCondition(String line) {
+		String[] arr = line.split("=");
+		String arg = "";
+		if (arr.length >= 2) arg = arr[1];
+		setSides(arr[0], arg);
 	}
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
 		return PlaceholderManager.color(parseLeftSide(p)).equals(PlaceholderManager.color(parseRightSide(p)));
-	}
-	
-	public static EqualsCondition compile(String line) {
-		if (line.contains("=")) {
-			String[] arr = line.split("=");
-			String arg = "";
-			if (arr.length >= 2)
-				arg = arr[1];
-			return new EqualsCondition(arr[0], arg);
-		} else {
-			return null;
-		}
 	}
 }

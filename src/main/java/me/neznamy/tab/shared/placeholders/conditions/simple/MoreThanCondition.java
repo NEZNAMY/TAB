@@ -8,22 +8,14 @@ import me.neznamy.tab.shared.Shared;
  */
 public class MoreThanCondition extends SimpleCondition {
 
-	public MoreThanCondition(String leftSide, String rightSide) {
-		super(leftSide, rightSide);
+	public MoreThanCondition(String line) {
+		String[] arr = line.split(">");
+		setSides(arr[0], arr[1]);
 	}
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
 		return Shared.errorManager.parseDouble(parseLeftSide(p).replace(",", ""), 0, "left side of > condition") > 
 				Shared.errorManager.parseDouble(parseRightSide(p), 0, "right side of > condition");
-	}
-	
-	public static MoreThanCondition compile(String line) {
-		if (line.contains(">")) {
-			String[] arr = line.split(">");
-			return new MoreThanCondition(arr[0], arr[1]);
-		} else {
-			return null;
-		}
 	}
 }

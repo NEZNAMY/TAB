@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Shared;
@@ -12,15 +14,25 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
  */
 public abstract class SimpleCondition {
 	
+	private static LinkedHashMap<String, Class<? extends SimpleCondition>> conditionTypes = new LinkedHashMap<String, Class<? extends SimpleCondition>>();
+	
 	private String leftSide;
 	private List<String> leftSidePlaceholders;
 	private String rightSide;
 	private List<String> rightSidePlaceholders;
 	
-	public SimpleCondition() {
+	static {
+		conditionTypes.put("permission:", PermissionCondition.class);
+		conditionTypes.put("!=", NotEqualsCondition.class);
+		conditionTypes.put("=", EqualsCondition.class);
+		conditionTypes.put("<-", ContainsCondition.class);
+		conditionTypes.put(">=", MoreThanOrEqualsCondition.class);
+		conditionTypes.put(">", MoreThanCondition.class);
+		conditionTypes.put("<=", LessThanOrEqualsCondition.class);
+		conditionTypes.put("<", LessThanCondition.class);
 	}
-	
-	public SimpleCondition(String leftSide, String rightSide) {
+
+	protected void setSides(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
 		leftSidePlaceholders = PlaceholderManager.detectAll(leftSide);
 		this.rightSide = rightSide;
@@ -47,18 +59,17 @@ public abstract class SimpleCondition {
 	public abstract boolean isMet(TabPlayer p);
 	
 	public static SimpleCondition compile(String line) {
-		SimpleCondition c = null;
-		
-		//no idea how to make this more efficient
-		if ((c = PermissionCondition.compile(line)) != null) return c;
-		if ((c = NotEqualsCondition.compile(line)) != null) return c;
-		if ((c = EqualsCondition.compile(line)) != null) return c;
-		if ((c = ContainsCondition.compile(line)) != null) return c;
-		if ((c = MoreThanOrEqualsCondition.compile(line)) != null) return c;
-		if ((c = MoreThanCondition.compile(line)) != null) return c;
-		if ((c = LessThanOrEqualsCondition.compile(line)) != null) return c;
-		if ((c = LessThanCondition.compile(line)) != null) return c;
-
-		return c;
+		for (Entry<String, Class<? extends SimpleCondition>> entry : conditionTypes.entrySet()) {
+			if (line.contains(entry.getKey())) {
+				try {
+					SimpleCondition c = (SimpleCondition) entry.getValue().getConstructor(String.class).newInstance(line);
+					if (c != null) return c;
+				} catch (Exception e) {
+					//should never happen
+					Shared.errorManager.printError("Failed to create condition from line \"" + line + "\"", e);
+				}
+			}
+		}
+		return null;
 	}
 }

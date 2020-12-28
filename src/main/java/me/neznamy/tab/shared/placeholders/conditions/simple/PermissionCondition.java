@@ -9,20 +9,12 @@ public class PermissionCondition extends SimpleCondition {
 
 	private String permission;
 	
-	public PermissionCondition(String permission) {
-		this.permission = permission;
+	public PermissionCondition(String line) {
+		permission = line.split(":")[1];
 	}
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
 		return p.hasPermission(permission);
-	}
-	
-	public static PermissionCondition compile(String line) {
-		if (line.startsWith("permission:")) {
-			return new PermissionCondition(line.split(":")[1]);
-		} else {
-			return null;
-		}
 	}
 }
