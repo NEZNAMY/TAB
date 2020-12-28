@@ -27,7 +27,7 @@ public class ColorAndStyleRefresher implements Refreshable {
 		if (!refreshed.getActiveBossBars().contains(line)) return;
 		Property color = refreshed.getProperty("bossbar-color-" + line.name);
 		Property style = refreshed.getProperty("bossbar-style-" + line.name);
-		refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_STYLE(line.uuid, line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())));
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.uuid, line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())));
 	}
 
 	@Override

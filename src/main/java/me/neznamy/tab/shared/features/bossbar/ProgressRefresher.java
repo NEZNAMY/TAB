@@ -24,7 +24,7 @@ public class ProgressRefresher implements Refreshable {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!refreshed.getActiveBossBars().contains(line)) return;
-		refreshed.sendCustomPacket(PacketPlayOutBoss.UPDATE_PCT(line.uuid, (float)line.parseProgress(refreshed.getProperty("bossbar-progress-" + line.name).updateAndGet())/100));
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.uuid, (float)line.parseProgress(refreshed.getProperty("bossbar-progress-" + line.name).updateAndGet())/100));
 	}
 
 	@Override

@@ -38,13 +38,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	//create fog if bossbar is displayed
 	public boolean createWorldFog;
 
-	/*
-	 * Creates a new instance of the class
-	 * Constructor is private, use one of the static methods to create an instance
-	 */
-	private PacketPlayOutBoss() {
-	}
-
 	/**
 	 * Constructs new packet based on given parameters
 	 * @param id - bossbar uuid
@@ -57,18 +50,16 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param createWorldFog - create fog if bossbar is displayed
 	 * @return the instance with given parameters with ADD action
 	 */
-	public static PacketPlayOutBoss ADD(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.ADD;
-		packet.id = id;
-		packet.name = name;
-		packet.pct = pct;
-		packet.color = color;
-		packet.overlay = overlay;
-		packet.darkenScreen = darkenScreen;
-		packet.playMusic = playMusic;
-		packet.createWorldFog = createWorldFog;
-		return packet;
+	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+		this.operation = Action.ADD;
+		this.id = id;
+		this.name = name;
+		this.pct = pct;
+		this.color = color;
+		this.overlay = overlay;
+		this.darkenScreen = darkenScreen;
+		this.playMusic = playMusic;
+		this.createWorldFog = createWorldFog;
 	}
 
 	/**
@@ -80,15 +71,13 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param overlay - bossbar style
 	 * @return the instance with given parameters with ADD action
 	 */
-	public static PacketPlayOutBoss ADD(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.ADD;
-		packet.id = id;
-		packet.name = name;
-		packet.pct = pct;
-		packet.color = color;
-		packet.overlay = overlay;
-		return packet;
+	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
+		this.operation = Action.ADD;
+		this.id = id;
+		this.name = name;
+		this.pct = pct;
+		this.color = color;
+		this.overlay = overlay;
 	}
 
 	/**
@@ -96,11 +85,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param id - bossbar uuid
 	 * @return the instance with given parameters with REMOVE action
 	 */
-	public static PacketPlayOutBoss REMOVE(UUID id) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.REMOVE;
-		packet.id = id;
-		return packet;
+	public PacketPlayOutBoss(UUID id) {
+		this.operation = Action.REMOVE;
+		this.id = id;
 	}
 
 	/**
@@ -109,12 +96,10 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param pct - bossbar progress
 	 * @return the instance with given parameters with UPDATE_PCT action
 	 */
-	public static PacketPlayOutBoss UPDATE_PCT(UUID id, float pct) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.UPDATE_PCT;
-		packet.id = id;
-		packet.pct = pct;
-		return packet;
+	public PacketPlayOutBoss(UUID id, float pct) {
+		this.operation = Action.UPDATE_PCT;
+		this.id = id;
+		this.pct = pct;
 	}
 
 	/**
@@ -123,12 +108,10 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param name - bossbar title
 	 * @return the instance with given parameters with UPDATE_NAME action
 	 */
-	public static PacketPlayOutBoss UPDATE_NAME(UUID id, String name) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.UPDATE_NAME;
-		packet.id = id;
-		packet.name = name;
-		return packet;
+	public PacketPlayOutBoss(UUID id, String name) {
+		this.operation = Action.UPDATE_NAME;
+		this.id = id;
+		this.name = name;
 	}
 
 	/**
@@ -138,13 +121,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param overlay - bossbar style
 	 * @return the instance with given parameters with UPDATE_STYLE action
 	 */
-	public static PacketPlayOutBoss UPDATE_STYLE(UUID id, BarColor color, BarStyle overlay) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.UPDATE_STYLE;
-		packet.id = id;
-		packet.color = color;
-		packet.overlay = overlay;
-		return packet;
+	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
+		this.operation = Action.UPDATE_STYLE;
+		this.id = id;
+		this.color = color;
+		this.overlay = overlay;
 	}
 
 	/**
@@ -155,14 +136,12 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param createWorldFog - create fog if bossbar is displayed
 	 * @return the instance with given parameters with UPDATE_PROPERTIES action
 	 */
-	public static PacketPlayOutBoss UPDATE_PROPERTIES(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		PacketPlayOutBoss packet = new PacketPlayOutBoss();
-		packet.operation = Action.UPDATE_PROPERTIES;
-		packet.id = id;
-		packet.darkenScreen = darkenScreen;
-		packet.playMusic = playMusic;
-		packet.createWorldFog = createWorldFog;
-		return packet;
+	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+		this.operation = Action.UPDATE_PROPERTIES;
+		this.id = id;
+		this.darkenScreen = darkenScreen;
+		this.playMusic = playMusic;
+		this.createWorldFog = createWorldFog;
 	}
 
 	/**

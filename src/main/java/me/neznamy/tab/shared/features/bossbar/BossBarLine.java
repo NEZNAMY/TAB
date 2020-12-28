@@ -63,7 +63,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		to.setProperty("bossbar-progress-" + name, progress);
 		to.setProperty("bossbar-color-" + name, color);
 		to.setProperty("bossbar-style-" + name, style);
-		to.sendCustomPacket(PacketPlayOutBoss.ADD(
+		to.sendCustomPacket(new PacketPlayOutBoss(
 				uuid, 
 				to.getProperty("bossbar-title-" + name).get(), 
 				(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
@@ -74,7 +74,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	}
 	
 	public void remove(TabPlayer to) {
-		to.sendCustomPacket(PacketPlayOutBoss.REMOVE(uuid));
+		to.sendCustomPacket(new PacketPlayOutBoss(uuid));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-title-" + name, title);
-				p.sendCustomPacket(PacketPlayOutBoss.UPDATE_NAME(uuid, p.getProperty("bossbar-title-" + name).get()));
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty("bossbar-title-" + name).get()));
 			}
 		}
 	}
@@ -106,7 +106,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-progress-" + name, progress);
-				p.sendCustomPacket(PacketPlayOutBoss.UPDATE_PCT(uuid, (float) parseProgress(p.getProperty("bossbar-progress-" + name).get())/100));
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, (float) parseProgress(p.getProperty("bossbar-progress-" + name).get())/100));
 			}
 		}
 	}
@@ -123,7 +123,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-color-" + name, color);
-				p.sendCustomPacket(PacketPlayOutBoss.UPDATE_STYLE(uuid, 
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 					parseColor(p.getProperty("bossbar-color-" + name).get()),
 					parseStyle(p.getProperty("bossbar-style-" + name).get())
 				));
@@ -143,7 +143,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : Shared.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-style-" + name, style);
-				p.sendCustomPacket(PacketPlayOutBoss.UPDATE_STYLE(uuid, 
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 					parseColor(p.getProperty("bossbar-color-" + name).get()),
 					parseStyle(p.getProperty("bossbar-style-" + name).get())
 				));
