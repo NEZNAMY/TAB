@@ -140,9 +140,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 			title = packet.value;
 		}
 		EnumScoreboardHealthDisplay renderType = (packet.type == null ? null : EnumScoreboardHealthDisplay.valueOf(packet.type.toString().toUpperCase()));
-		PacketPlayOutScoreboardObjective pack = PacketPlayOutScoreboardObjective.REGISTER(packet.name, title, renderType);
-		pack.method = packet.action;
-		return pack;
+		return new PacketPlayOutScoreboardObjective(packet.action, packet.name, title, renderType);
 	}
 
 	@Override

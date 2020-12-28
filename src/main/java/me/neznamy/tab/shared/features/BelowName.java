@@ -50,7 +50,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			@Override
 			public void refresh(TabPlayer refreshed, boolean force) {
 				if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
-				refreshed.sendCustomPacket(PacketPlayOutScoreboardObjective.UPDATE_TITLE(ObjectiveName, refreshed.getProperty(textPropertyName).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+				refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ObjectiveName, refreshed.getProperty(textPropertyName).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
 			}
 
 			@Override
@@ -87,7 +87,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void unload() {
-		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
+		Object unregister = new PacketPlayOutScoreboardObjective(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer p : Shared.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 			p.sendPacket(unregister);
@@ -110,7 +110,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
 			return;
 		}
 		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {

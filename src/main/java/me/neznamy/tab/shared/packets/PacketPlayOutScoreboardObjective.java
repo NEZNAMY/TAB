@@ -19,27 +19,19 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	//action
 	public int method;
 
-	/*
-	 * Creates a new instance of the class
-	 * Constructor is private, use one of the static methods to create an instance
-	 */
-	private PacketPlayOutScoreboardObjective() {
-	}
-
 	/**
 	 * Constructs new packet based on given parameters
+	 * @param method - packet action (0 = add, 1 = remove, 2 = update title)
 	 * @param objectiveName - objective name
 	 * @param displayName - title
 	 * @param renderType - display type
-	 * @return the instance with given parameters with REGISTER action
+	 * @return the instance with given parameters
 	 */
-	public static PacketPlayOutScoreboardObjective REGISTER(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
-		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
-		packet.objectiveName = objectiveName;
-		packet.displayName = displayName;
-		packet.renderType = renderType;
-		packet.method = 0;
-		return packet;
+	public PacketPlayOutScoreboardObjective(int method, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
+		this.objectiveName = objectiveName;
+		this.displayName = displayName;
+		this.renderType = renderType;
+		this.method = method;
 	}
 
 	/**
@@ -47,28 +39,10 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	 * @param objectiveName - objective name
 	 * @return the instance with given parameter with UNREGISTER action
 	 */
-	public static PacketPlayOutScoreboardObjective UNREGISTER(String objectiveName) {
-		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
-		packet.objectiveName = objectiveName;
-		packet.displayName = ""; //avoiding NPE on <1.7
-		packet.method = 1;
-		return packet;
-	}
-
-	/**
-	 * Constructs new packet based on given parameters
-	 * @param objectiveName - objective name
-	 * @param displayName - title
-	 * @param renderType - display type
-	 * @return the instance with given parameters with UPDATE_TITLE action
-	 */
-	public static PacketPlayOutScoreboardObjective UPDATE_TITLE(String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
-		PacketPlayOutScoreboardObjective packet =  new PacketPlayOutScoreboardObjective();
-		packet.objectiveName = objectiveName;
-		packet.displayName = displayName;
-		packet.renderType = renderType;
-		packet.method = 2;
-		return packet;
+	public PacketPlayOutScoreboardObjective(String objectiveName) {
+		this.objectiveName = objectiveName;
+		this.displayName = ""; //avoiding NPE on <1.7
+		this.method = 1;
 	}
 
 	/**
@@ -93,7 +67,6 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	 */
 	public enum EnumScoreboardHealthDisplay {
 
-		INTEGER,
-		HEARTS;
+		INTEGER, HEARTS;
 	}
 }

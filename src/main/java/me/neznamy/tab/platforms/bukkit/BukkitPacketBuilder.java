@@ -651,9 +651,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 		}
 		int method = PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
-		PacketPlayOutScoreboardObjective packet = PacketPlayOutScoreboardObjective.REGISTER(objective, displayName, renderType);
-		packet.method = method;
-		return packet;
+		return new PacketPlayOutScoreboardObjective(method, objective, displayName, renderType);
 	}
 
 	@Override

@@ -146,9 +146,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 			title = packet.getValue();
 		}
 		EnumScoreboardHealthDisplay renderType = (packet.getType() == null ? null : EnumScoreboardHealthDisplay.valueOf(packet.getType().toString().toUpperCase()));
-		PacketPlayOutScoreboardObjective pack = PacketPlayOutScoreboardObjective.REGISTER(packet.getName(), title, renderType);
-		pack.method = packet.getAction();
-		return pack;
+		return new PacketPlayOutScoreboardObjective(packet.getAction(), packet.getName(), title, renderType);
 	}
 
 	@Override

@@ -43,9 +43,9 @@ public class PacketAPI {
 	 */
 	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
 		if (to.getVersion().getMinorVersion() >= 8 && Configs.getSecretOption("unregister-before-register", true) && Shared.platform.getSeparatorType().equals("world")) {
-			to.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(objectiveName));
+			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName));
 		}
-		to.sendCustomPacket(PacketPlayOutScoreboardObjective.REGISTER(objectiveName, title, displayType));
+		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, objectiveName, title, displayType));
 		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
 	}
 }

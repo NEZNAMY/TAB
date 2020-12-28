@@ -61,7 +61,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void unload() {
-		Object unregister = PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
+		Object unregister = new PacketPlayOutScoreboardObjective(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer p : Shared.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 			p.sendPacket(unregister);
@@ -83,7 +83,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.sendCustomPacket(PacketPlayOutScoreboardObjective.UNREGISTER(ObjectiveName));
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
 			return;
 		}
 		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
