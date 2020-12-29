@@ -23,12 +23,9 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
-		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + serverPackage + ")");
-		String error = NMSHook.checkCompatibility(serverPackage);
-		if (error != null){
+		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
+		if (!NMSHook.isVersionSupported()){
 			Shared.disabled = true;
-			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] " + error);
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
