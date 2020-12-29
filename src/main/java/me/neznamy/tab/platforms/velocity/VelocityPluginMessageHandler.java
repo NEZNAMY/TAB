@@ -40,14 +40,13 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 	public void on(PluginMessageEvent event){
 		if (!event.getIdentifier().getId().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		if (event.getTarget() instanceof Player) {
-			Shared.cpu.runMeasuredTask("handling plugin message", TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, () -> {
-
-				TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
-				if (receiver == null) return;
-				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-					event.setResult(ForwardResult.handled());
-				}
-			});
+			long time = System.nanoTime();
+			TabPlayer receiver = Shared.getPlayer(((Player) event.getTarget()).getUniqueId());
+			if (receiver == null) return;
+			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
+				event.setResult(ForwardResult.handled());
+			}
+			Shared.cpu.addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
 		}
 	}
 

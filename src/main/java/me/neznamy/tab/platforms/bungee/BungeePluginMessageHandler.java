@@ -36,15 +36,13 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 	public void on(PluginMessageEvent event){
 		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
-			Shared.cpu.runMeasuredTask("handling plugin message", TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, () -> {
-
-				TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
-				if (receiver == null) return;
-				if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-					event.setCancelled(true);
-				}
-			});
-
+			long time = System.nanoTime();
+			TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+			if (receiver == null) return;
+			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
+				event.setCancelled(true);
+			}
+			Shared.cpu.addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
 		}
 	}
 
