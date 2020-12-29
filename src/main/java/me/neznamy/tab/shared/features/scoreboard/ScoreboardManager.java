@@ -180,16 +180,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (isDisabledWorld(disabledWorlds, sender.getWorldName())) return false;
-		if (message.equalsIgnoreCase(toggleCommand)) {
-			Shared.command.execute(sender, new String[] {"scoreboard"});
-			return true;
-		}
-		if (message.equalsIgnoreCase(toggleCommand + " on")) {
-			Shared.command.execute(sender, new String[] {"scoreboard", "on"});
-			return true;
-		}
-		if (message.equalsIgnoreCase(toggleCommand + " off")) {
-			Shared.command.execute(sender, new String[] {"scoreboard", "off"});
+		if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
+			Shared.command.execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
 			return true;
 		}
 		return false;
