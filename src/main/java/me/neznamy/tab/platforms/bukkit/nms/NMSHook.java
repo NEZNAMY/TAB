@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;
@@ -102,11 +103,11 @@ public class NMSHook {
 	}
 
 	/**
-	 * Initializes all used NMS classes, constructors, fields and methods and returns null if everything went successfully and version is marked as compatible
-	 * @param serverPackage NMS class package, such as "v1_16_R1"
-	 * @return null if compatible, non-null error message if not
+	 * Initializes all used NMS classes, constructors, fields and methods and returns true if everything went successfully and version is marked as compatible
+	 * @return true if compatible, false if not
 	 */
-	public static String checkCompatibility(String serverPackage){
+	public static boolean isVersionSupported(){
+		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		try {
 			int minor = Integer.parseInt(serverPackage.split("_")[1]);
 			if (minor >= 7) {
@@ -152,18 +153,18 @@ public class NMSHook {
 				PetFix.initializeClass();
 			}
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
-				return null;
+				return true;
 			} else {
-				return "This plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.16.4. Disabling.";
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] This plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.16.4. Disabling.");
 			}
 		} catch (Throwable e) {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
-				String msg = "Your server version is marked as compatible, but a compatibility issue was found. Please report the error above (include your server version & fork too)";
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
 				e.printStackTrace();
-				return msg;
 			} else {
-				return "Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.16.4. Disabling.";
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.16.4. Disabling.");
 			}
 		}
+		return false;
 	}
 }

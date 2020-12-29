@@ -39,7 +39,7 @@ public class Main {
 
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
-		if (!hasRequiredLibs()) {
+		if (!isVersionSupported()) {
 			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads");
 			return;
 		}
@@ -74,10 +74,10 @@ public class Main {
 	}
 
 	/**
-	 * Check for required libraries and returns true if server has all required libs, false if not
-	 * @return true if version is supported, false if not
+	 * Checks for compatibility and returns true if version is supported, false if not
+	 * @return true if version is compatible, false if not
 	 */
-	private boolean hasRequiredLibs() {
+	private boolean isVersionSupported() {
 		try {
 			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
 			Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
