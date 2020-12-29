@@ -27,13 +27,18 @@ public class ScoreboardCommand extends SubCommand {
 			if (args.length == 0) {
 				sender.toggleScoreboard(true);
 			}
-			if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("on")) {
-					sender.setScoreboardVisible(true, true);
-				}
-				if (args[0].equalsIgnoreCase("off")){
-					sender.setScoreboardVisible(false, true);
-				}
+			TabPlayer p = sender;
+			if (args.length >= 2 && Shared.getPlayer(args[1]) != null)
+				p = Shared.getPlayer(args[1]);
+			if (args.length >= 1) {
+				if (args[0].equalsIgnoreCase("on"))
+					p.setScoreboardVisible(true, true);
+			
+				if (args[0].equalsIgnoreCase("off"))
+					p.setScoreboardVisible(false, true);
+			
+				if (args[0].equalsIgnoreCase("toggle"))
+					p.toggleScoreboard(true);
 			}
 		} else {
 			sender.sendMessage(Configs.no_perm, true);
