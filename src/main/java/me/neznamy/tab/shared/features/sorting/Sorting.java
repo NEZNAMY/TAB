@@ -26,24 +26,10 @@ public class Sorting {
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting = true;
 	public List<SortingType> sorting;
-	public LinkedHashMap<String, String> sortedGroups;
 	
 	public Sorting() {
-		sortedGroups = new LinkedHashMap<String, String>();
-		int index = 1;
-		for (Object group : Configs.config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"))){
-			String sort = index+"";
-			while (sort.length() < 3) {
-				sort = "0" + sort;
-			}
-			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
-				sortedGroups.put(group0, sort);
-			}
-			index++;
-		}
-		types.put("GROUPS", new Groups(this, sortingPlaceholder));
-		types.put("GROUP_PERMISSIONS", new GroupPermission(this, sortingPlaceholder));
-		
+		types.put("GROUPS", new Groups(sortingPlaceholder));
+		types.put("GROUP_PERMISSIONS", new GroupPermission(sortingPlaceholder));
 		if (Configs.premiumconfig != null) {
 			sortingPlaceholder = Configs.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			caseSensitiveSorting = Configs.premiumconfig.getBoolean("case-sentitive-sorting", true);
@@ -126,5 +112,23 @@ public class Sorting {
 			elements[i] = sorting.get(i).toString();
 		}
 		return String.join(" then ", elements);
+	}
+	
+	public static LinkedHashMap<String, String> loadSortingList() {
+		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<String, String>();
+		int index = 1;
+		List<String> configList = Configs.config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
+		int charCount = String.valueOf(configList.size()).length(); //1 char for <10 groups, 2 chars for <100 etc
+		for (Object group : configList){
+			String sort = index+"";
+			while (sort.length() < charCount) { 
+				sort = "0" + sort;
+			}
+			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
+				sortedGroups.put(group0, sort);
+			}
+			index++;
+		}
+		return sortedGroups;
 	}
 }
