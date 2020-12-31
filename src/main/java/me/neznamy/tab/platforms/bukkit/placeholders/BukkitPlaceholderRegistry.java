@@ -168,12 +168,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		} else {
-			placeholders.add(new ServerPlaceholder("%vault-prefix%", -1) {
+			placeholders.add(new ServerPlaceholder("%vault-prefix%", 1000000) {
 				public String get() {
 					return "";
 				}
 			});
-			placeholders.add(new ServerPlaceholder("%vault-suffix%", -1) {
+			placeholders.add(new ServerPlaceholder("%vault-suffix%", 1000000) {
 				public String get() {
 					return "";
 				}
