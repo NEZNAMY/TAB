@@ -160,7 +160,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		initializeClasses();
 		initializeConstructors();
 		initializeFields();
-		if (minorVersion >= 7) {
+		if (minorVersion >= 8) {
 			for (Method m : PropertyMap.getMethods()) {
 				if (m.getName().equals("putAll") && m.getParameterCount() == 1) PropertyMap_putAll = m;
 			}
