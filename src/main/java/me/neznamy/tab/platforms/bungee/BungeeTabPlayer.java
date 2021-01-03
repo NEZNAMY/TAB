@@ -76,7 +76,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		LoginResult loginResult = ((InitialHandler)player.getPendingConnection()).getLoginProfile();
-		if (loginResult == null) return new String[0][0];
+		if (loginResult == null || loginResult.getProperties() == null) return new String[0][0];
 		String[][] s = new String[loginResult.getProperties().length][3];
 		for (int i = 0;i<loginResult.getProperties().length;i++){
 			LoginResult.Property pr = loginResult.getProperties()[i];
