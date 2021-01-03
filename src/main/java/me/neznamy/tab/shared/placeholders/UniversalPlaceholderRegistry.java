@@ -71,7 +71,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return Shared.getPlayers().size()+"";
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%ping%", 500) {
+		placeholders.add(new PlayerPlaceholder("%ping%", 50) {
 			public String get(TabPlayer p) {
 				return p.getPing()+"";
 			}
