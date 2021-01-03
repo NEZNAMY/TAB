@@ -34,6 +34,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 /**
  * Packet builder for Velocity platform
@@ -65,7 +66,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		List<Item> items = new ArrayList<Item>();
 		for (PlayerInfoData data : packet.entries) {
 			Item item = new Item(data.uniqueId);
-			item.setDisplayName(VelocityUtils.stringToComponent(data.displayName == null ? null : data.displayName.toString(clientVersion)));
+			item.setDisplayName(data.displayName == null ? null : GsonComponentSerializer.gson().deserialize(data.displayName.toString(clientVersion)));
 			if (data.gameMode != null) item.setGameMode(data.gameMode.ordinal()-1);
 			item.setLatency(data.latency);
 			item.setProperties((List<Property>) data.skin);
@@ -125,7 +126,8 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		PlayerListItem list = (PlayerListItem) velocityPacket;
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (PlayerListItem.Item item : list.getItems()) {
-			listData.add(new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.values()[item.getGameMode()+1], IChatBaseComponent.fromString(VelocityUtils.componentToString(item.getDisplayName()))));
+			String displayName = item.getDisplayName() == null ? null : GsonComponentSerializer.gson().serialize(item.getDisplayName());
+			listData.add(new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.values()[item.getGameMode()+1], displayName == null ? null : IChatBaseComponent.fromString(displayName)));
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(list.getAction())], listData);
 	}
