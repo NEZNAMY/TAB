@@ -4,8 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 
@@ -23,8 +23,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 	/**
 	 * Constructs new instance for given player
 	 * @param p - velocity player
+	 * @throws Exception - when reflection fails
 	 */
-	public VelocityTabPlayer(Player p) {
+	public VelocityTabPlayer(Player p) throws Exception {
 		player = p;
 		if (p.getCurrentServer().isPresent()) {
 			world = p.getCurrentServer().get().getServerInfo().getName();
@@ -32,7 +33,8 @@ public class VelocityTabPlayer extends ITabPlayer{
 			//tab reload while a player is connecting, how unfortunate
 			world = "<null>";
 		}
-		channel = ((ConnectedPlayer)player).getConnection().getChannel();
+		Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
+		channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
 		name = p.getUsername();
 		uniqueId = p.getUniqueId();
 		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
@@ -52,7 +54,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 	
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null) ((ConnectedPlayer)player).getConnection().write(nmsPacket);
+		if (nmsPacket != null) channel.writeAndFlush(nmsPacket, channel.voidPromise());
 	}
 	
 	@Override
