@@ -164,4 +164,9 @@ public class BungeePlatform implements Platform {
 	public void callLoadEvent() {
 		ProxyServer.getInstance().getPluginManager().callEvent(new BungeeTABLoadEvent());
 	}
+
+	@Override
+	public int getMaxPlayers() {
+		return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
+	}
 }

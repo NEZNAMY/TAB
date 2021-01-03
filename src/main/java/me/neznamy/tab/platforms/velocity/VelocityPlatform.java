@@ -162,4 +162,9 @@ public class VelocityPlatform implements Platform {
 	public void callLoadEvent() {
 		server.getEventManager().fire(new VelocityTABLoadEvent());
 	}
+
+	@Override
+	public int getMaxPlayers() {
+		return server.getConfiguration().getShowMaxPlayers();
+	}
 }

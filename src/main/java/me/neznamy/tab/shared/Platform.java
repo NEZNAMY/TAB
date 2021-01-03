@@ -98,6 +98,12 @@ public interface Platform {
 	public void callLoadEvent();
 	
 	/**
+	 * Returns max player count configured in server files
+	 * @return max player count
+	 */
+	public int getMaxPlayers();
+	
+	/**
 	 * Removes an old config option that is not present anymore
 	 * @param config - configuration file
 	 * @param oldKey - name of removed config option

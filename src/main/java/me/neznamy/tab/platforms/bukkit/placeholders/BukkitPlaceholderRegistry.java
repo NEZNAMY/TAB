@@ -107,11 +107,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
-			public String get() {
-				return Bukkit.getMaxPlayers()+"";
-			}
-		});
 		registerAFKPlaceholder();
 		registerVaultPlaceholders();
 		registerPositionPlaceholders();

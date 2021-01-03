@@ -31,11 +31,6 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public List<Placeholder> registerPlaceholders() {
 		placeholders = new ArrayList<Placeholder>();
-		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
-			public String get() {
-				return server.getConfiguration().getShowMaxPlayers()+"";
-			}
-		});
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
 			placeholders.add(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
 				public String get() {

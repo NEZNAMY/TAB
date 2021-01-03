@@ -337,4 +337,9 @@ public class BukkitPlatform implements Platform {
 	public void callLoadEvent() {
 		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent()));
 	}
+
+	@Override
+	public int getMaxPlayers() {
+		return Bukkit.getMaxPlayers();
+	}
 }

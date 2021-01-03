@@ -81,6 +81,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getVersion().getFriendlyName();
 			}
 		});
+		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
+			public String get() {
+				return Shared.platform.getMaxPlayers()+"";
+			}
+		});
 		registerLuckPermsPlaceholders();
 		registerMemoryPlaceholders();
 		registerStaffPlaceholders();
