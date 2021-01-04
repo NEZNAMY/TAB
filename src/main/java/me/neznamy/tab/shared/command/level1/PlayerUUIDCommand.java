@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command.level1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -29,11 +30,7 @@ public class PlayerUUIDCommand extends SubCommand {
 				return;
 			}
 			String type = args[1].toLowerCase();
-			String value = "";
-			for (int i=2; i<args.length; i++){
-				if (i>2) value += " ";
-				value += args[i];
-			}
+			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
 					Configs.config.set("Users." + changed.getUniqueId().toString(), null);

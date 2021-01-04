@@ -136,6 +136,18 @@ public abstract class SubCommand {
 		return new ArrayList<String>();
 	}
 	
+	public String buildArgument(String[] args) {
+		String value = "";
+		for (int i=0; i<args.length; i++){
+			if (i>0) value += " ";
+			value += args[i];
+		}
+		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+			value = value.substring(1, value.length()-1);
+		}
+		return value;
+	}
+	
 	/**
 	 * Performs the command
 	 * @param sender - command sender or null if console
