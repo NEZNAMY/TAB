@@ -48,7 +48,7 @@ public class TabCommand extends SubCommand {
 	}
 
 	@Override
-	public synchronized void execute(TabPlayer sender, String[] args) {
+	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String arg0 = args[0];
 			SubCommand command = subcommands.get(arg0.toLowerCase());
