@@ -29,7 +29,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * @param target - target who is the text displayed on
 	 * @return true if value changed, false if not
 	 */
-	public boolean update(TabPlayer viewer, TabPlayer target) {
+	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
 		String mapKey = viewer.getName() + "-" + target.getName();
 		String newValue = get(viewer, target);
 		if (!lastValue.containsKey(mapKey) || !lastValue.get(mapKey).equals(newValue)) {
