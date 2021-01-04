@@ -137,11 +137,7 @@ public abstract class SubCommand {
 	}
 	
 	public String buildArgument(String[] args) {
-		String value = "";
-		for (int i=0; i<args.length; i++){
-			if (i>0) value += " ";
-			value += args[i];
-		}
+		String value = String.join(" ", args);
 		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
 			value = value.substring(1, value.length()-1);
 		}
