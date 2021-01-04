@@ -18,11 +18,7 @@ public class ParseCommand extends SubCommand{
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
-			String replaced = "";
-			for (int i=0; i<args.length; i++){
-				if (i>0) replaced += " ";
-				replaced += args[i];
-			}
+			String replaced = String.join(" ", args);
 			String message = PlaceholderManager.color("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace("%placeholder%", replaced);
 			sendRawMessage(sender, message);
 			replaced = Shared.platform.replaceAllPlaceholders(replaced, sender);
