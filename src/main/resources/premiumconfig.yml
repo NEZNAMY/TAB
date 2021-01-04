@@ -78,7 +78,7 @@ scoreboards:
     lines:
       - "This is scoreboard for everyone in testworld world"
 #toggle messages
-scoreboard-on: "&2Scorebord enabled"
+scoreboard-on: "&2Scoreboard enabled"
 scoreboard-off: "&7Scoreboard disabled"
 
 
