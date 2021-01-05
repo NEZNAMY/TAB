@@ -1,12 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,23 +25,17 @@ public class Main extends JavaPlugin {
 		}
 		Shared.platform = new BukkitPlatform(this);
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
-		Bukkit.getPluginCommand("tab").setExecutor(new CommandExecutor() {
-			public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args){
-				if (Shared.disabled) {
-					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(PlaceholderManager.color(message));
-					}
-				} else {
-					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+		Bukkit.getPluginCommand("tab").setExecutor((sender, c, cmd, args) -> {
+			if (Shared.disabled) {
+				for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+					sender.sendMessage(PlaceholderManager.color(message));
 				}
-				return false;
+			} else {
+				Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
+			return false;
 		});
-		Bukkit.getPluginCommand("tab").setTabCompleter(new TabCompleter() {
-			public List<String> onTabComplete(CommandSender sender, Command c, String cmd, String[] args) {
-				return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
-			}
-		});
+		Bukkit.getPluginCommand("tab").setTabCompleter((sender, c, cmd, args) -> Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args));
 		Shared.load();
 		BukkitMetrics.start(this);
 	}
