@@ -595,7 +595,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) return null;
+		if (minorVersion < 8) return null;
 		return newPacketPlayOutTitle.newInstance(Enum.valueOf(EnumTitleAction, packet.action.toString()), 
 				packet.text == null ? null : NMSHook.stringToComponent(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion)), packet.fadeIn, packet.stay, packet.fadeOut);
 	}
