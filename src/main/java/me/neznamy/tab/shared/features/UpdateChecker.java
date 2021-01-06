@@ -28,8 +28,7 @@ public class UpdateChecker {
 					con.disconnect();
 					if (!versionString.equals(currentRelease)) {
 						Shared.platform.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion, true);
-						int resourceId = Shared.isPremium() ? 83967 : 57806;
-						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/" + resourceId + "/", true);
+						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/", true);
 					}
 				} catch (Exception e) {
 					Shared.debug("&cFailed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
