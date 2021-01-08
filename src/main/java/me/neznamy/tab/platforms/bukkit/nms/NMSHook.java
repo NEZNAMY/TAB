@@ -119,7 +119,6 @@ public class NMSHook {
 			DataWatcher.initializeClass();
 			DataWatcherItem.initializeClass();
 			DataWatcherRegistry.initializeClass();
-			PacketPlayOutAnimation.initializeClass();
 			PacketPlayOutEntityDestroy.initializeClass();
 			PacketPlayOutEntityMetadata.initializeClass();
 			PacketPlayOutEntityTeleport.initializeClass();
