@@ -42,7 +42,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					try {
 						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
 							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-							Shared.featureManager.postPacketPlayOutPlayerInfo(player, packet);
 							return;
 						}
 						if (Shared.featureManager.getNameTagFeature() != null && BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {

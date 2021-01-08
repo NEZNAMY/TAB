@@ -34,7 +34,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 					try {
 						if (packet instanceof PlayerListItem) {
 							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-							Shared.featureManager.postPacketPlayOutPlayerInfo(player, packet);
 							return;
 						}
 						if (Shared.featureManager.isFeatureEnabled("nametag16")) {
