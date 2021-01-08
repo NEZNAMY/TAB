@@ -57,10 +57,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 									modifyPlayers(team);
 									super.write(context, team, channelPromise);
 									return;
-								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
-									//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
-									buf.release();
-									return;
+//								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
+//									//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
+//									buf.release();
+//									return;
 								}
 								buf.readerIndex(marker);
 							}
