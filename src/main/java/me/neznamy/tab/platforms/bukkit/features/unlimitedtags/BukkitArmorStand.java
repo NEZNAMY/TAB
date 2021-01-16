@@ -352,7 +352,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return
 	 */
 	private Set<TabPlayer> getNearbyPlayers(){
-		return new HashSet<TabPlayer>(nearbyPlayers);
+		synchronized (nearbyPlayers) {
+			return new HashSet<TabPlayer>(nearbyPlayers);
+		}
 	}
 
 	/**
