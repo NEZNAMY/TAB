@@ -54,7 +54,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 	
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null) channel.writeAndFlush(nmsPacket, channel.voidPromise());
+		if (nmsPacket != null && player.isActive()) channel.writeAndFlush(nmsPacket, channel.voidPromise());
 	}
 	
 	@Override

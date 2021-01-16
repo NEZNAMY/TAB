@@ -1,15 +1,12 @@
 package me.neznamy.tab.shared.features.sorting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
@@ -22,36 +19,38 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
 
 public class Sorting {
 
+	private TAB tab;
 	private Map<String, SortingType> types = new HashMap<String, SortingType>();
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting = true;
 	public List<SortingType> sorting;
 	
-	public Sorting() {
+	public Sorting(TAB tab) {
+		this.tab = tab;
 		types.put("GROUPS", new Groups(sortingPlaceholder));
 		types.put("GROUP_PERMISSIONS", new GroupPermission(sortingPlaceholder));
-		if (Configs.premiumconfig != null) {
-			sortingPlaceholder = Configs.premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
-			caseSensitiveSorting = Configs.premiumconfig.getBoolean("case-sentitive-sorting", true);
+		if (tab.getConfiguration().premiumconfig != null) {
+			sortingPlaceholder = tab.getConfiguration().premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
+			caseSensitiveSorting = tab.getConfiguration().premiumconfig.getBoolean("case-sentitive-sorting", true);
 			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(sortingPlaceholder));
 			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(sortingPlaceholder));
 			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(sortingPlaceholder));
 			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(sortingPlaceholder));
-			sorting = compile(Configs.premiumconfig.getString("sorting-type", "GROUPS"));
+			sorting = compile(tab.getConfiguration().premiumconfig.getString("sorting-type", "GROUPS"));
 		} else {
 			sorting = new ArrayList<SortingType>();
-			if (Configs.config.getBoolean("sort-players-by-permissions", false)) {
+			if (tab.getConfiguration().config.getBoolean("sort-players-by-permissions", false)) {
 				sorting.add(types.get("GROUP_PERMISSIONS"));
 			} else {
 				sorting.add(types.get("GROUPS"));
 			}
 		}
 		
-		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.NAMETAGS, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.NAMETAGS, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
 
 			@Override
 			public void run() {
-				for (TabPlayer p : Shared.getPlayers()) {
+				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded()) continue;
 					String newName = getTeamName(p);
 					if (!p.getTeamName().equals(newName)) {
@@ -69,7 +68,7 @@ public class Sorting {
 		for (String element : string.split("_THEN_")) {
 			SortingType type = types.get(element.toUpperCase());
 			if (type == null) {
-				Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ". &bUsing GROUPS");
+				tab.getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ". &bUsing GROUPS");
 			} else {
 				list.add(type);
 			}
@@ -97,7 +96,7 @@ public class Sorting {
 		String potentialTeamName = currentName;
 		if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 		potentialTeamName += (char)id;
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == p) continue;
 			if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
 				return checkTeamName(p, currentName, id+1);
@@ -112,23 +111,5 @@ public class Sorting {
 			elements[i] = sorting.get(i).toString();
 		}
 		return String.join(" then ", elements);
-	}
-	
-	public static LinkedHashMap<String, String> loadSortingList() {
-		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<String, String>();
-		int index = 1;
-		List<String> configList = Configs.config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
-		int charCount = String.valueOf(configList.size()).length(); //1 char for <10 groups, 2 chars for <100 etc
-		for (Object group : configList){
-			String sort = index+"";
-			while (sort.length() < charCount) { 
-				sort = "0" + sort;
-			}
-			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
-				sortedGroups.put(group0, sort);
-			}
-			index++;
-		}
-		return sortedGroups;
 	}
 }

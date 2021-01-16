@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -14,8 +15,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -23,7 +24,7 @@ import net.kyori.adventure.text.Component;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = Shared.pluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = "2.8.10", description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
 	//instance of proxyserver
@@ -31,6 +32,8 @@ public class Main {
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
+	
+	private DisabledCommand disabledCommand = new DisabledCommand();
 
 	@Inject
 	public Main(ProxyServer server) {
@@ -43,34 +46,35 @@ public class Main {
 			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads");
 			return;
 		}
-		if (!VelocityPacketRegistry.registerPackets()) {
+		if (!new VelocityPacketRegistry().registerPackets()) {
 			System.out.println("\u00a7c[TAB] Your velocity version is way too new for this plugin version. Update the plugin or downgrade Velocity.");
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
-		Shared.platform = new VelocityPlatform(server);
+		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
 		server.getEventManager().register(this, new VelocityEventListener());
 		CommandManager cmd = server.getCommandManager();
 		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
 
 			@Override
 			public void execute(CommandSource sender, String[] args) {
-				if (Shared.disabled) {
-					for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Identity.nil(), Component.text(PlaceholderManager.color(message)));
+				if (TAB.getInstance() == null) {
+					for (String message : disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+						sender.sendMessage(Identity.nil(), Component.text(TAB.getInstance().getPlaceholderManager().color(message)));
 					}
 				} else {
-					Shared.command.execute(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+					TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
 				}
 			}
 
 			@Override
 			public List<String> suggest(CommandSource sender, String[] args) {
-				return Shared.command.complete(sender instanceof Player ? Shared.getPlayer(((Player)sender).getUniqueId()) : null, args);
+				if (TAB.getInstance() == null) return new ArrayList<String>();
+				return TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
 		plm = new VelocityPluginMessageHandler(this);
-		Shared.load();
+		TAB.getInstance().load();
 	}
 
 	/**
@@ -89,8 +93,6 @@ public class Main {
 	
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
-		if (!Shared.disabled) {
-			Shared.unload();
-		}
+		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 }

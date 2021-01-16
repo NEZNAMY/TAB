@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.bungee;
 
+import java.util.ArrayList;
+
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -18,23 +20,24 @@ public class Main extends Plugin {
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
+	
+	private DisabledCommand disabledCommand = new DisabledCommand();
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable(){
 		if (!isVersionSupported()) {
 			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
-			Shared.disabled = true;
 			return;
 		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
-		Shared.platform = new BungeePlatform(this);
+		TAB.setInstance(new TAB(new BungeePlatform(this), new BungeePacketBuilder()));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		plm = new BungeePluginMessageHandler(this);
-		Shared.load();
-		BungeeMetrics.start(this);
+		TAB.getInstance().load();
+		new BungeeMetrics(this);
 	}
 	
 	/**
@@ -52,9 +55,7 @@ public class Main extends Plugin {
 	
 	@Override
 	public void onDisable() {
-		if (!Shared.disabled) {
-			Shared.unload();
-		}
+		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 	
 	public class BTABCommand extends Command implements TabExecutor {
@@ -66,18 +67,19 @@ public class Main extends Plugin {
 		@SuppressWarnings("deprecation")
 		@Override
 		public void execute(CommandSender sender, String[] args) {
-			if (Shared.disabled) {
-				for (String message : Shared.disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(PlaceholderManager.color(message));
+			if (TAB.getInstance() == null) {
+				for (String message : disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+					sender.sendMessage(TAB.getInstance().getPlaceholderManager().color(message));
 				}
 			} else {
-				Shared.command.execute(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+				TAB.getInstance().command.execute(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 			}
 		}
 
 		@Override
 		public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-			return Shared.command.complete(sender instanceof ProxiedPlayer ? Shared.getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+			if (TAB.getInstance() == null) return new ArrayList<String>();
+			return TAB.getInstance().command.complete(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 		}
 	}
 }

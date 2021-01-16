@@ -6,8 +6,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
@@ -28,7 +27,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(text);
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(text);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		String prefix;
 		String suffix;
 		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
-		int charLimit = Shared.platform.getSeparatorType().equals("world") && 
+		int charLimit = TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
 				ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
 				p.getVersion().getMinorVersion() < 13 ? 14 : 16;
 				
@@ -72,11 +71,11 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
 			prefix = replaced.substring(0, charLimit);
 			suffix = replaced.substring(charLimit, replaced.length());
-			if (prefix.charAt(charLimit-1) == PlaceholderManager.colorChar) {
+			if (prefix.charAt(charLimit-1) == '\u00a7') {
 				prefix = prefix.substring(0, charLimit-1);
-				suffix = PlaceholderManager.colorChar + suffix;
+				suffix = '\u00a7' + suffix;
 			}
-			String last = PlaceholderManager.getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
+			String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
 			suffix = last + suffix;
 		} else {
 			prefix = replaced;

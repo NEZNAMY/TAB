@@ -1,8 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -15,13 +14,14 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
  */
 public class NameTag16 extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, LoginPacketListener {
 
-	public NameTag16() {
+	public NameTag16(TAB tab) {
+		super(tab);
 		refreshUsedPlaceholders();
 	}
 
 	@Override
 	public void load(){
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			p.setTeamName(sorting.getTeamName(p));
 			updateProperties(p);
 			if (p.hasInvisibilityPotion()) {
@@ -34,7 +34,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 
 	@Override
 	public void unload() {
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 		}
 	}
@@ -43,7 +43,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue; //already registered 3 lines above
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
@@ -56,7 +56,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
 		invisiblePlayers.remove(disconnectedPlayer.getName());
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
@@ -97,7 +97,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue;
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(packetReceiver);
 		}

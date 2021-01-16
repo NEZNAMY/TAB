@@ -19,7 +19,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Universal code for metrics classes
@@ -48,11 +48,12 @@ public abstract class Metrics {
 	}
 	
 	public JSONObject getPluginData() {
+		TAB tab = TAB.getInstance();
 		JSONObject data = new JSONObject();
 
 		String pluginName = "TAB Reborn";
-		String pluginVersion = Shared.pluginVersion;
-		if (Shared.isPremium()) pluginVersion += " Premium";
+		String pluginVersion = tab.getPluginVersion();
+		if (tab.isPremium()) pluginVersion += " Premium";
 
 		data.put("pluginName", pluginName);
 		data.put("pluginVersion", pluginVersion);

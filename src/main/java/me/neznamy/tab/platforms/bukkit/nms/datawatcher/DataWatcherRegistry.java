@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**
@@ -14,21 +14,20 @@ import me.neznamy.tab.shared.ProtocolVersion;
 public class DataWatcherRegistry {
 
 	//used registry types
-	public static Object Byte;
-	public static Object Integer;
-	public static Object Float;
-	public static Object String;
-	public static Object Optional_IChatBaseComponent;
-	public static Object Boolean;
+	public Object Byte;
+	public Object Integer;
+	public Object Float;
+	public Object String;
+	public Object Optional_IChatBaseComponent;
+	public Object Boolean;
 
 	/**
 	 * Initializes required NMS classes and fields
 	 * @throws Exception - if something fails
 	 */
-	public static void initializeClass() throws Exception {
+	public DataWatcherRegistry(NMSStorage nms) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			Class<?> DataWatcherRegistry = PacketPlayOut.getNMSClass("DataWatcherRegistry");
-			Map<String, Object> fields = getStaticFields(DataWatcherRegistry);
+			Map<String, Object> fields = getStaticFields(nms.DataWatcherRegistry);
 			Byte = fields.get("a");
 			Integer = fields.get("b");
 			Float = fields.get("c");
@@ -52,7 +51,7 @@ public class DataWatcherRegistry {
 	 * @param clazz class to return field values from
 	 * @return map of values
 	 */
-	private static Map<String, Object> getStaticFields(Class<?> clazz){
+	private Map<String, Object> getStaticFields(Class<?> clazz){
 		Map<String, Object> fields = new HashMap<String, Object>();
 		if (clazz == null) return fields;
 		for (Field field : clazz.getDeclaredFields()) {

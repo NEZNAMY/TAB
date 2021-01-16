@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A class representing platform specific packet class
@@ -38,7 +39,7 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut 
 	 */
 	@Override
 	protected Object build(ProtocolVersion clientVersion) throws Exception {
-		return builder.build(this, clientVersion);
+		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
 	/**

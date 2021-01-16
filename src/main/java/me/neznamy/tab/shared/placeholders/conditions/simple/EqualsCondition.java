@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * "leftSide=rightSide" condition where both sides support placeholders
@@ -17,6 +17,6 @@ public class EqualsCondition extends SimpleCondition {
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
-		return PlaceholderManager.color(parseLeftSide(p)).equals(PlaceholderManager.color(parseRightSide(p)));
+		return TAB.getInstance().getPlaceholderManager().color(parseLeftSide(p)).equals(TAB.getInstance().getPlaceholderManager().color(parseRightSide(p)));
 	}
 }

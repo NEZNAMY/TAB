@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 
 public class ContainsCondition extends SimpleCondition {
 
@@ -14,6 +14,6 @@ public class ContainsCondition extends SimpleCondition {
 
 	@Override
 	public boolean isMet(TabPlayer p) {
-		return PlaceholderManager.color(parseLeftSide(p)).contains(PlaceholderManager.color(parseRightSide(p)));
+		return TAB.getInstance().getPlaceholderManager().color(parseLeftSide(p)).contains(TAB.getInstance().getPlaceholderManager().color(parseRightSide(p)));
 	}
 }

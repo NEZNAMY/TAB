@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -33,7 +33,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 			getId.setAccessible(true);
 			(wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
 		} catch (Exception e) {
-			Shared.errorManager.criticalError("Failed to initialize fields for packet analysis", e);
+			TAB.getInstance().getErrorManager().criticalError("Failed to initialize fields for packet analysis", e);
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
+		if (nmsPacket != null && player.isConnected()) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
 	}
 	
 	@Override
@@ -96,7 +96,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 		try {
 			return (int) getId.invoke(directionData, clazz, player.getPendingConnection().getVersion());
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to get packet id for packet " + clazz + " with client version " + player.getPendingConnection().getVersion(), e);
+			TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + player.getPendingConnection().getVersion(), e);
 			return -1;
 		}
 	}

@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Metrics;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -33,20 +33,6 @@ public class BungeeMetrics extends Metrics {
 	private Plugin plugin;
 	
 	private static final List<Object> knownMetricsInstances = new ArrayList<Object>();
-
-	public static void start(Plugin plugin) {
-		BungeeMetrics metrics = new BungeeMetrics(plugin);
-		metrics.addCustomChart(new SimplePie("permission_system", new Callable<String>() {
-			public String call() {
-				return Shared.permissionPlugin.getName();
-			}
-		}));
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", new Callable<String>() {
-			public String call() {
-				return Shared.featureManager.isFeatureEnabled("globalplayerlist") ? "Yes" : "No";
-			}
-		}));
-	}
 	
 	public BungeeMetrics(Plugin plugin) {
 		super("https://bStats.org/submitData/bungeecord");
@@ -84,6 +70,16 @@ public class BungeeMetrics extends Metrics {
 				}
 			}
 		}
+		addCustomChart(new SimplePie("permission_system", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getPermissionPlugin().getName();
+			}
+		}));
+		addCustomChart(new SimplePie("global_playerlist_enabled", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No";
+			}
+		}));
 	}
 
 	public static void linkMetrics(Object metrics) {

@@ -17,7 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Metrics;
 
 /**
@@ -27,30 +27,6 @@ import me.neznamy.tab.shared.features.Metrics;
 public class BukkitMetrics extends Metrics {
 
 	private Main plugin;
-
-	public static void start(Main plugin) {
-		BukkitMetrics metrics = new BukkitMetrics(plugin);
-		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
-			public String call() {
-				return Shared.featureManager.isFeatureEnabled("nametagx") ? "Yes" : "No";
-			}
-		}));
-		metrics.addCustomChart(new SimplePie("placeholderapi", new Callable<String>() {
-			public String call() {
-				return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No";
-			}
-		}));
-		metrics.addCustomChart(new SimplePie("permission_system", new Callable<String>() {
-			public String call() {
-				return Shared.permissionPlugin.getName();
-			}
-		}));
-		metrics.addCustomChart(new SimplePie("server_version", new Callable<String>() {
-			public String call() {
-				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
-			}
-		}));
-	}
 	
 	public BukkitMetrics(Main plugin) {
 		super("https://bStats.org/submitData/bukkit");
@@ -104,6 +80,26 @@ public class BukkitMetrics extends Metrics {
 				startSubmitting();
 			}
 		}
+		addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No";
+			}
+		}));
+		addCustomChart(new SimplePie("placeholderapi", new Callable<String>() {
+			public String call() {
+				return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No";
+			}
+		}));
+		addCustomChart(new SimplePie("permission_system", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getPermissionPlugin().getName();
+			}
+		}));
+		addCustomChart(new SimplePie("server_version", new Callable<String>() {
+			public String call() {
+				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
+			}
+		}));
 	}
 
 	private void startSubmitting() {
@@ -127,7 +123,7 @@ public class BukkitMetrics extends Metrics {
 
 	private JSONObject getServerData() {
 		// Minecraft specific data
-		int playerAmount = Shared.getPlayers().size();
+		int playerAmount = TAB.getInstance().getPlayers().size();
 		int onlineMode = Bukkit.getOnlineMode() ? 1 : 0;
 		String bukkitVersion = Bukkit.getVersion();
 

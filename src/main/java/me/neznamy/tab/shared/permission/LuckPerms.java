@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -28,7 +28,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
-			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
 			return "<null>";
 		}
 		return user.getPrimaryGroup();
@@ -39,7 +39,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
-			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
 			return new String[] {"<null>"};
 		}
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
@@ -50,7 +50,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
-			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
 			return "";
 		}
 		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
@@ -64,7 +64,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
 		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
-			Shared.errorManager.printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
 			return "";
 		}
 		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);

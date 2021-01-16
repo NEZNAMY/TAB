@@ -1,9 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.config.Configs;
 
 /**
  * Handler for "/tab reload" subcommand
@@ -16,14 +15,14 @@ public class ReloadCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		Shared.unload();
-		Shared.load();
-		if (Shared.disabled) {
+		TAB.getInstance().unload();
+		TAB.getInstance().load();
+		if (TAB.getInstance().isDisabled()) {
 			if (sender != null) {
-				sendMessage(sender, Configs.reloadFailed.replace("%file%", Shared.brokenFile));
+				sendMessage(sender, TAB.getInstance().getConfiguration().reloadFailed.replace("%file%", TAB.getInstance().brokenFile));
 			}
 		} else {
-			sendMessage(sender, Configs.reloaded);
+			sendMessage(sender, getTranslation("reloaded"));
 		}
 	}
 }

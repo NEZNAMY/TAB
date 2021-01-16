@@ -17,7 +17,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.yamlassist.YamlAssist;
 
 /**
@@ -64,14 +64,15 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			if (!hasHeader()) fixHeader();
 		} catch (YAMLException e) {
 			input.close();
-			Shared.errorManager.startupWarn("File " + destination + " has broken formatting.");
-			Shared.brokenFile = file.getPath();
-			Shared.platform.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
+			TAB tab = TAB.getInstance();
+			tab.getErrorManager().startupWarn("File " + destination + " has broken formatting.");
+			tab.brokenFile = file.getPath();
+			tab.getPlatform().sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
 			List<String> suggestions = YamlAssist.getSuggestions(file);
 			if (!suggestions.isEmpty()) {
-				Shared.platform.sendConsoleMessage("&d[TAB] Suggestions to fix yaml syntax:", true);
+				tab.getPlatform().sendConsoleMessage("&d[TAB] Suggestions to fix yaml syntax:", true);
 				for (String suggestion : suggestions) {
-					Shared.platform.sendConsoleMessage("&d[TAB] - " + suggestion, true);
+					tab.getPlatform().sendConsoleMessage("&d[TAB] - " + suggestion, true);
 				}
 			}
 			throw e;
@@ -86,7 +87,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			writer.close();
 			if (!hasHeader()) fixHeader();
 		} catch (Throwable e) {
-			Shared.errorManager.criticalError("Failed to save yaml file " + file.getPath(), e);
+			TAB.getInstance().getErrorManager().criticalError("Failed to save yaml file " + file.getPath(), e);
 		}
 	}
 }

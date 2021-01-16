@@ -19,9 +19,7 @@ import me.neznamy.tab.platforms.bukkit.placeholders.afk.AutoAFK;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.Essentials;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.None;
 import me.neznamy.tab.platforms.bukkit.placeholders.afk.xAntiAFK;
-import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
@@ -35,12 +33,12 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
-	public static final DecimalFormat decimal2 = new DecimalFormat("#.##");
+	public final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	
 	private JavaPlugin plugin;
 	private Economy economy;
 	private Chat chat;
-	private static List<Placeholder> placeholders;
+	private List<Placeholder> placeholders;
 
 	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -68,7 +66,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return ((Player) p.getPlayer()).getDisplayName();
 			}
 		});
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 7) placeholders.add(new PlayerPlaceholder("%deaths%", 1000) {
+		placeholders.add(new PlayerPlaceholder("%deaths%", 1000) {
 			public String get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"";
 			}
@@ -92,7 +90,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(TabPlayer p) {
 				int var = 0;
-				for (TabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
 				return var+"";
@@ -101,7 +99,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(TabPlayer p) {
 				int var = 0;
-				for (TabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
 				return var+"";
@@ -116,6 +114,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerAFKPlaceholder() {
+		String noAfk = TAB.getInstance().getConfiguration().config.getString("placeholders.afk-no", "");
+		String yesAfk = TAB.getInstance().getConfiguration().config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		AFKProvider afk;
 		if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
 			afk = new xAntiAFK();
@@ -130,18 +130,18 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		} else {
 			afk = new None();
 		}
-		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).setAFKProvider(afk);
+		TAB.getInstance().getPlaceholderManager().setAFKProvider(afk);
 		placeholders.add(new PlayerPlaceholder("%afk%", 500) {
 			public String get(TabPlayer p) {
 				try {
-					return ((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).getAFKProvider().isAFK(p) ? Configs.yesAfk : Configs.noAfk;
+					return TAB.getInstance().getPlaceholderManager().getAFKProvider().isAFK(p) ? yesAfk : noAfk;
 				} catch (Throwable t) {
-					return Shared.errorManager.printError("", "Failed to check AFK status of " + p.getName() + " using " + ((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).getAFKProvider().getClass().getSimpleName(), t);
+					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName() + " using " + TAB.getInstance().getPlaceholderManager().getAFKProvider().getClass().getSimpleName(), t);
 				}
 			}
 			@Override
 			public String[] getNestedStrings(){
-				return new String[] {Configs.yesAfk, Configs.noAfk};
+				return new String[] {yesAfk, noAfk};
 			}
 		});
 	}
@@ -203,7 +203,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getNickname();
 					}
 					if (name == null || name.length() == 0) return p.getName();
-					return Configs.getSecretOption("essentials-nickname-prefix", "") + name;
+					return TAB.getInstance().getConfiguration().getSecretOption("essentials-nickname-prefix", "") + name;
 				}
 			});
 		} else {
@@ -216,9 +216,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerSyncPlaceholders() {
-		for (String identifier : PlaceholderManager.allUsedPlaceholderIdentifiers) {
+		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
+		for (String identifier : pl.allUsedPlaceholderIdentifiers) {
 			if (identifier.startsWith("%sync:")) {
-				PlaceholderManager pl = ((PlaceholderManager)Shared.featureManager.getFeature("placeholders"));
 				int refresh;
 				if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
 					refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
@@ -237,10 +237,10 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 							public void run() {
 								long time = System.nanoTime();
 								String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
-								String value = ((BukkitPlatform) Shared.platform).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+								String value = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
 								lastValue.put(p.getName(), value);
 								if (!forceUpdate.contains(p.getName())) forceUpdate.add(p.getName());
-								Shared.cpu.addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
+								TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
 							}
 						});
 						return getLastValue(p);

@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 
@@ -34,13 +34,9 @@ public class ProgressRefresher implements Refreshable {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(line.progress);
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.progress);
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

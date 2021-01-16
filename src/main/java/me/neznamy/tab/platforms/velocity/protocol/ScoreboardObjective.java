@@ -41,7 +41,7 @@ public class ScoreboardObjective implements MinecraftPacket {
 			if (version.getProtocol() >= ProtocolVersion.MINECRAFT_1_13.getProtocol()) {
 				type = HealthDisplay.values()[ProtocolUtils.readVarInt(buf)];
 			} else {
-				type = HealthDisplay.fromString(ProtocolUtils.readString(buf));
+				type = HealthDisplay.valueOf(ProtocolUtils.readString(buf).toUpperCase(Locale.ROOT));
 			}
 		}
 	}
@@ -80,10 +80,6 @@ public class ScoreboardObjective implements MinecraftPacket {
 		@Override
 		public String toString(){
 			return super.toString().toLowerCase(Locale.ROOT);
-		}
-
-		public static HealthDisplay fromString(String s){
-			return valueOf(s.toUpperCase(Locale.ROOT));
 		}
 	}
 }

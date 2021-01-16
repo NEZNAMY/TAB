@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -28,21 +27,23 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
+	private TAB tab;
 	private JavaPlugin plugin;
 	private boolean allowBypass;
 	private List<String> ignoredWorlds;
 	private Map<String, List<String>> sharedWorlds;
 
-	public PerWorldPlayerlist(JavaPlugin plugin) {
+	public PerWorldPlayerlist(JavaPlugin plugin, TAB tab) {
 		this.plugin = plugin;
+		this.tab = tab;
 	}
 	
 	@Override
 	public void load(){
-		allowBypass = Configs.config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
-		ignoredWorlds = Configs.config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = Configs.config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
-		for (TabPlayer p : Shared.getPlayers()){
+		allowBypass = tab.getConfiguration().config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
+		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+		for (TabPlayer p : tab.getPlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);
 		}
@@ -50,8 +51,8 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	@Override
 	public void unload(){
-		for (TabPlayer p : Shared.getPlayers()) {
-			for (TabPlayer pl : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
+			for (TabPlayer pl : tab.getPlayers()) {
 				((Player) p.getPlayer()).showPlayer((Player) pl.getPlayer());
 			}
 		}
@@ -75,13 +76,13 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			@Override
 			public void run() {
 				try {
-					for (TabPlayer everyone : Shared.getPlayers()){
+					for (TabPlayer everyone : tab.getPlayers()){
 						if (everyone == shown) continue;
 						if (shouldSee(shown, everyone)) ((Player) shown.getPlayer()).showPlayer((Player) everyone.getPlayer());
 						if (shouldSee(everyone, shown)) ((Player) everyone.getPlayer()).showPlayer((Player) shown.getPlayer());
 					}
 				} catch (Throwable t) {
-					Shared.errorManager.printError("Failed to show players", t);
+					tab.getErrorManager().printError("Failed to show players", t);
 				}
 			}
 		});
@@ -107,13 +108,13 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 			@Override
 			public void run() {
 				try {
-					for (TabPlayer everyone : Shared.getPlayers()){
+					for (TabPlayer everyone : tab.getPlayers()){
 						if (everyone == hidden) continue;
 						((Player) hidden.getPlayer()).hidePlayer((Player) everyone.getPlayer());
 						((Player) everyone.getPlayer()).hidePlayer((Player) hidden.getPlayer());
 					}
 				} catch (Throwable t) {
-					Shared.errorManager.printError("Failed to hide players", t);
+					tab.getErrorManager().printError("Failed to hide players", t);
 				}
 			}
 		});
@@ -125,7 +126,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		if (info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		List<PlayerInfoData> toRemove = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData data : info.entries) {
-			TabPlayer added = Shared.getPlayerByTablistUUID(data.uniqueId);
+			TabPlayer added = tab.getPlayerByTablistUUID(data.uniqueId);
 			if (added != null && !shouldSee(receiver, added)) {
 				toRemove.add(data);
 			}
@@ -136,10 +137,6 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		info.entries = newList;
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.PER_WORLD_PLAYERLIST;

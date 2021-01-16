@@ -10,7 +10,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
@@ -21,7 +21,11 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
 
-	private static final String INJECT_POSITION = "inbound-boss";
+	public BungeePipelineInjector(TAB tab) {
+		super(tab);
+	}
+
+	private final String INJECT_POSITION = "inbound-boss";
 
 	@Override
 	public void inject(TabPlayer player) {
@@ -33,10 +37,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 					try {
 						if (packet instanceof PlayerListItem) {
-							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+							super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 							return;
 						}
-						if (Shared.featureManager.isFeatureEnabled("nametag16")) {
+						if (tab.getFeatureManager().isFeatureEnabled("nametag16")) {
 							if (packet instanceof Team) {
 								//team packet coming from a bungeecord plugin
 								modifyPlayers((Team) packet);
@@ -53,14 +57,14 @@ public class BungeePipelineInjector extends PipelineInjector {
 									Team team = new Team();
 									team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
 									buf.release();
-									Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+									tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 									modifyPlayers(team);
 									super.write(context, team, channelPromise);
 									return;
-//								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
-//									//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
-//									buf.release();
-//									return;
+								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
+									//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
+									buf.release();
+									return;
 								}
 								buf.readerIndex(marker);
 							}
@@ -69,11 +73,11 @@ public class BungeePipelineInjector extends PipelineInjector {
 						if (packet instanceof Login) {
 							//making sure to not send own packets before login packet is actually sent
 							super.write(context, packet, channelPromise);
-							Shared.featureManager.onLoginPacket(player);
+							tab.getFeatureManager().onLoginPacket(player);
 							return;
 						}
 					} catch (Throwable e){
-						Shared.errorManager.printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
+						tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 					}
 					super.write(context, packet, channelPromise);
 				}
@@ -98,13 +102,13 @@ public class BungeePipelineInjector extends PipelineInjector {
 		if (packet.getPlayers() == null) return;
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (TabPlayer p : Shared.getPlayers()) {
-				if (col.contains(p.getName()) && !Shared.featureManager.getNameTagFeature().isDisabledWorld(p.getWorldName())) {
+			for (TabPlayer p : tab.getPlayers()) {
+				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					col.remove(p.getName());
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
 		}
-		Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 }

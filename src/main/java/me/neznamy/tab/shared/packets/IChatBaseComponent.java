@@ -9,9 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 import me.neznamy.tab.shared.rgb.TextColor;
 
@@ -21,8 +19,9 @@ import me.neznamy.tab.shared.rgb.TextColor;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
-	public static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
-	public static final String EMPTY_TEXT = "{\"text\":\"\"}";
+	private final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
+	private final String EMPTY_TEXT = "{\"text\":\"\"}";
+	private static final RGBUtils rgb = new RGBUtils();
 
 	private String text;
 
@@ -438,10 +437,10 @@ public class IChatBaseComponent {
 			}
 			return component;
 		} catch (ParseException e) {
-			Shared.debug("Failed to parse json object: " + json);
+			TAB.getInstance().debug("Failed to parse json object: " + json);
 			return fromColoredText(json);
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to read component: " + json, e);
+			TAB.getInstance().getErrorManager().printError("Failed to read component: " + json, e);
 			return fromColoredText(json);
 		}
 	}
@@ -510,16 +509,16 @@ public class IChatBaseComponent {
 	 * @return organized component from colored text
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
-		String text = PlaceholderManager.color(originalText);
-		if (Configs.getSecretOption("rgb-support", true)) {
-			text = RGBUtils.applyFormats(text);
+		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
+		if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true)) {
+			text = rgb.applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
 			char c = text.charAt(i);
-			if (c == PlaceholderManager.colorChar){
+			if (c == '\u00a7'){
 				i++;
 				if (i >= text.length()) {
 					break;
@@ -553,18 +552,18 @@ public class IChatBaseComponent {
 						component.setObfuscated(true);
 						break;
 					case RESET: 
-						component.setColor(TextColor.of(EnumChatFormat.WHITE));
+						component.setColor(new TextColor(EnumChatFormat.WHITE));
 						break;
 					default:
 						component = new IChatBaseComponent();
-						component.setColor(TextColor.of(format));
+						component.setColor(new TextColor(format));
 						break;
 					}
 				}
-			} else if (Configs.getSecretOption("rgb-support", true) && c == '#'){
+			} else if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true) && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
-					TextColor color = TextColor.of(hex); //the validation check is in constructor
+					TextColor color = new TextColor(hex); //the validation check is in constructor
 
 					if (builder.length() > 0){
 						component.setText(builder.toString());
@@ -682,7 +681,7 @@ public class IChatBaseComponent {
 	 */
 	public static IChatBaseComponent optimizedComponent(String text){
 		if (text == null) return null;
-		if (text.contains("#") || text.contains("&x") || text.contains(PlaceholderManager.colorChar + "x")){
+		if (text.contains("#") || text.contains("&x") || text.contains('\u00a7' + "x")){
 			//contains RGB colors
 			return IChatBaseComponent.fromColoredText(text);
 		} else {

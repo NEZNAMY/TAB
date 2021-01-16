@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A class representing the n.m.s.EnumChatFormat class to make work with it much easier
@@ -119,7 +119,7 @@ public enum EnumChatFormat {
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
-		String last = PlaceholderManager.getLastColors(IChatBaseComponent.fromColoredText(string).toLegacyText());
+		String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(string).toLegacyText());
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
 			for (EnumChatFormat e : values()) {
@@ -134,7 +134,7 @@ public enum EnumChatFormat {
 	 * @return \u00a7 followed by color's character
 	 */
 	public String getFormat() {
-		return PlaceholderManager.colorChar + "" + character;
+		return '\u00a7' + "" + character;
 	}
 	
 	/**

@@ -14,16 +14,12 @@ import java.util.Set;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
  * An error assistant to print internal errors into error file and warn user about misconfiguration
  */
 public class ErrorManager {
-
-	//line separator constant
-	private final String newline = System.getProperty("line.separator");
 
 	//date format used in error messages
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
@@ -33,6 +29,20 @@ public class ErrorManager {
 
 	//amount of logged startup warns
 	private int startupWarns = 0;
+
+	public File errorFile;
+	public File papiErrorFile;
+	
+	private TAB tab;
+	
+	public ErrorManager(TAB tab) {
+		this.tab = tab;
+		errorFile = new File(tab.getPlatform().getDataFolder(), "errors.txt");
+		papiErrorFile = new File(tab.getPlatform().getDataFolder(), "PlaceholderAPI.errors.txt");
+		if (errorFile.exists() && errorFile.length() > 10) {
+			startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
+		}
+	}
 
 	/**
 	 * Prints an error message into errors.txt file
@@ -80,7 +90,7 @@ public class ErrorManager {
 	 * @param intoConsoleToo - if the message should be printed into console as well
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
-		printError(message, t, intoConsoleToo, Configs.errorFile);
+		printError(message, t, intoConsoleToo, errorFile);
 	}
 
 	/**
@@ -100,7 +110,7 @@ public class ErrorManager {
 			if (file.length() > 1000000) return; //not going over 1 MB
 			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 			if (message != null) {
-				write(buf, "&c[TAB v" + Shared.pluginVersion + (Shared.isPremium() ? " Premium": "") + "] " + message, intoConsoleToo);
+				write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] " + message, intoConsoleToo);
 			}
 			if (error != null) {
 				write(buf, "&c" + error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
@@ -110,9 +120,9 @@ public class ErrorManager {
 			}
 			buf.close();
 		} catch (Throwable ex) {
-			Shared.platform.sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
+			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
 			ex.printStackTrace();
-			Shared.platform.sendConsoleMessage("&c[TAB] Original error: " + message, true);
+			tab.getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
 			if (error != null) error.printStackTrace();
 		}
 	}
@@ -125,8 +135,8 @@ public class ErrorManager {
 	 * @throws IOException - if IO writer operation fails
 	 */
 	private void write(BufferedWriter buf, String message, boolean forceConsole) throws IOException {
-		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(message).toRawText() + newline);
-		if (Configs.SECRET_debugMode || forceConsole) Shared.platform.sendConsoleMessage(message, true);
+		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(message).toRawText() + System.getProperty("line.separator"));
+		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(message, true);
 	}
 
 	/**
@@ -308,7 +318,7 @@ public class ErrorManager {
 	public void startupWarn(String message) {
 		if (oneTimeMessages.contains(message)) return;
 		oneTimeMessages.add(message);
-		Shared.platform.sendConsoleMessage("&c[TAB] " + message, true);
+		tab.getPlatform().sendConsoleMessage("&c[TAB] " + message, true);
 		startupWarns++;
 	}
 
@@ -328,9 +338,9 @@ public class ErrorManager {
 	public void printConsoleWarnCount() {
 		if (startupWarns > 0) {
 			if (startupWarns == 1) {
-				Shared.platform.sendConsoleMessage("&e[TAB] There was 1 startup warning.", true);
+				tab.getPlatform().sendConsoleMessage("&e[TAB] There was 1 startup warning.", true);
 			} else {
-				Shared.platform.sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.", true);
+				tab.getPlatform().sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.", true);
 			}
 		}
 	}

@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
@@ -25,19 +24,24 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  */
 public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
+	private TAB tab;
 	public final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
 
+	public GlobalPlayerlist(TAB tab) {
+		this.tab = tab;
+	}
+	
 	@Override
 	public void load() {
-		spyServers = Configs.config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
-		sharedServers = Configs.config.getConfigurationSection("global-playerlist.server-groups");
-		displayAsSpectators = Configs.config.getBoolean("global-playerlist.display-others-as-spectators", false);
-		for (TabPlayer displayed : Shared.getPlayers()) {
+		spyServers = tab.getConfiguration().config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
+		sharedServers = tab.getConfiguration().config.getConfigurationSection("global-playerlist.server-groups");
+		displayAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-others-as-spectators", false);
+		for (TabPlayer displayed : tab.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
-			for (TabPlayer viewer : Shared.getPlayers()) {
+			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
 				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket);
 			}
@@ -59,9 +63,9 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void unload() {
-		for (TabPlayer displayed : Shared.getPlayers()) {
+		for (TabPlayer displayed : tab.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
-			for (TabPlayer viewer : Shared.getPlayers()) {
+			for (TabPlayer viewer : tab.getPlayers()) {
 				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendCustomPacket(displayedRemovePacket);
 			}
 		}
@@ -70,7 +74,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		PacketPlayOutPlayerInfo addConnected = getAddPacket(connectedPlayer);
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
 			if (shouldSee(all, connectedPlayer)) {
@@ -85,10 +89,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		Shared.cpu.runTaskLater(50, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> {
+		tab.getCPUManager().runTaskLater(50, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> {
 			
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
-			for (TabPlayer all : Shared.getPlayers()) {
+			for (TabPlayer all : tab.getPlayers()) {
 				if (all == disconnectedPlayer) continue;
 				all.sendCustomPacket(remove);
 			}
@@ -99,7 +103,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		PacketPlayOutPlayerInfo addChanged = getAddPacket(p);
 		PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == p) continue;
 			if (shouldSee(all, p)) {
 				all.sendCustomPacket(addChanged);
@@ -129,7 +133,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.entries) {
 					//not preventing NPC removals
-				if (Shared.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0)) {
+				if (tab.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0)) {
 					//remove packet not coming from tab
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.uniqueId = UUID.randomUUID();
@@ -139,7 +143,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (!displayAsSpectators) return;
 		if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 			for (PlayerInfoData playerInfoData : info.entries) {
-				TabPlayer packetPlayer = Shared.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (packetPlayer != null && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
 					playerInfoData.gameMode = EnumGamemode.SPECTATOR;
 				}
@@ -147,10 +151,6 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.GLOBAL_PLAYERLIST;

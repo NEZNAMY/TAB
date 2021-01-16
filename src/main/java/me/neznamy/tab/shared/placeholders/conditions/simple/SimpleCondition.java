@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
@@ -34,9 +33,9 @@ public abstract class SimpleCondition {
 
 	protected void setSides(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
-		leftSidePlaceholders = PlaceholderManager.detectAll(leftSide);
+		leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectAll(leftSide);
 		this.rightSide = rightSide;
-		rightSidePlaceholders = PlaceholderManager.detectAll(rightSide);
+		rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectAll(rightSide);
 	}
 	
 	public String parseLeftSide(TabPlayer p) {
@@ -47,10 +46,10 @@ public abstract class SimpleCondition {
 		return parseSide(p, rightSide, rightSidePlaceholders);
 	}
 	
-	public static String parseSide(TabPlayer p, String value, List<String> placeholders) {
+	public String parseSide(TabPlayer p, String value, List<String> placeholders) {
 		String result = value;
 		for (String identifier : placeholders) {
-			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
+			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			if (pl != null) result = pl.set(result, p);
 		}
 		return result;
@@ -66,7 +65,7 @@ public abstract class SimpleCondition {
 					if (c != null) return c;
 				} catch (Exception e) {
 					//should never happen
-					Shared.errorManager.printError("Failed to create condition from line \"" + line + "\"", e);
+					TAB.getInstance().getErrorManager().printError("Failed to create condition from line \"" + line + "\"", e);
 				}
 			}
 		}

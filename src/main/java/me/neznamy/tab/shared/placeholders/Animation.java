@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.List;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A class representing an animation from animations.yml
@@ -20,8 +20,8 @@ public class Animation {
 	
 	public Animation(String name, List<String> list, int interval){
 		this.name = name;
-		this.interval = Shared.errorManager.fixAnimationInterval(name, interval);
-		this.messages = Shared.errorManager.fixAnimationFrames(name, list).toArray(new String[0]);
+		this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
+		this.messages =  TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
 	}
 	
 	/**

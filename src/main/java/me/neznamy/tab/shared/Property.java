@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
@@ -54,7 +52,7 @@ public class Property {
 	private void analyze(String value) {
 		placeholders = new ArrayList<String>();
 		relPlaceholders = new ArrayList<String>();
-		for (String identifier : PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(value)) {
+		for (String identifier : TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(value)) {
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders.add(identifier);
 			} else {
@@ -146,11 +144,11 @@ public class Property {
 	public boolean update() {
 		String string = getCurrentRawValue();
 		for (String identifier : placeholders) {
-			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
+			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			if (pl != null) string = pl.set(string, owner);
 		}
-		string = PlaceholderManager.color(string);
-		for (String removed : Configs.removeStrings) {
+		string = TAB.getInstance().getPlaceholderManager().color(string);
+		for (String removed : TAB.getInstance().getConfiguration().removeStrings) {
 			if (string.contains(removed)) string = string.replace(removed, "");
 		}
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
@@ -177,7 +175,7 @@ public class Property {
 		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
-			RelationalPlaceholder pl = (RelationalPlaceholder) ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(identifier);
+			RelationalPlaceholder pl = (RelationalPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			if (pl != null) format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
 		}
 		return format;

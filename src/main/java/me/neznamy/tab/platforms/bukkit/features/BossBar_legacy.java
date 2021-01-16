@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
@@ -26,14 +26,18 @@ public class BossBar_legacy implements RespawnEventListener {
 	 * Constructs a new instance of the class
 	 * @param mainFeature - main bossbar feature
 	 */
-	public BossBar_legacy(BossBar mainFeature) {
+	public BossBar_legacy(BossBar mainFeature, TAB tab) {
 		this.mainFeature = mainFeature;
 		//bar disappears in client after ~1 second of not seeing boss entity
-		Shared.cpu.startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {
-				for (TabPlayer all : Shared.getPlayers()) {
+				for (TabPlayer all : tab.getPlayers()) {
 					for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
-						all.sendPacket(new PacketPlayOutEntityTeleport(l.getEntityId(), getWitherLocation(all)));
+						try {
+							all.sendPacket(((BukkitPacketBuilder)tab.getPacketBuilder()).buildEntityTeleportPacket(l.getEntityId(), getWitherLocation(all)));
+						} catch (Exception e) {
+							tab.getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
+						}
 					}
 				}
 			}
@@ -59,11 +63,7 @@ public class BossBar_legacy implements RespawnEventListener {
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

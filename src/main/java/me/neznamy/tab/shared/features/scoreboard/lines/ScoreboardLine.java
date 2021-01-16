@@ -7,7 +7,6 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
@@ -18,7 +17,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
  */
 public abstract class ScoreboardLine implements Refreshable {
 
-	protected static final String ObjectiveName = "TAB-Scoreboard";
+	protected final String ObjectiveName = "TAB-Scoreboard";
 	protected List<String> usedPlaceholders = new ArrayList<String>();
 	protected String teamName;
 	private String playerName;
@@ -39,18 +38,14 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected String[] split(String string, int firstElementMaxLength) {
 		if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
 		int splitIndex = firstElementMaxLength;
-		if (string.charAt(splitIndex-1) == PlaceholderManager.colorChar) splitIndex--;
+		if (string.charAt(splitIndex-1) == '\u00a7') splitIndex--;
 		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex, string.length())};
 	}
 	
 	protected String getPlayerName() {
 		return playerName;
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;
@@ -59,7 +54,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected static String getPlayerName(int lineNumber) {
 		String id = lineNumber+"";
 		if (id.length() == 1) id = "0" + id;
-		char c = PlaceholderManager.colorChar;
+		char c = '\u00a7';
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
 	}
 	

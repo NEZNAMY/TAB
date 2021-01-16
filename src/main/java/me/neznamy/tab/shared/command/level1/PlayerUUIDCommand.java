@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -24,18 +22,18 @@ public class PlayerUUIDCommand extends SubCommand {
 		//<uuid> <property> [value...]
 		if (args.length > 1) {
 			String name = args[0];
-			TabPlayer changed = Shared.getPlayer(name);
+			TabPlayer changed = TAB.getInstance().getPlayer(name);
 			if (changed == null) {
-				sendMessage(sender, Configs.player_not_found);
+				sendMessage(sender, getTranslation("player_not_found"));
 				return;
 			}
 			String type = args[1].toLowerCase();
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					Configs.config.set("Users." + changed.getUniqueId().toString(), null);
+					TAB.getInstance().getConfiguration().config.set("Users." + changed.getUniqueId().toString(), null);
 					changed.forceRefresh();
-					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
+					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
 				return;
 			}
@@ -43,11 +41,11 @@ public class PlayerUUIDCommand extends SubCommand {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, changed, type, value);
-						if (extraProperties.contains(property) && !Shared.featureManager.isFeatureEnabled("nametagx")) {
-							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+						if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
+							sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
 						}
 					} else {
-						sendMessage(sender, Configs.no_perm);
+						sendMessage(sender, getTranslation("no_permission"));
 					}
 					return;
 				}
@@ -68,13 +66,13 @@ public class PlayerUUIDCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
-		Configs.config.set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
+		TAB.getInstance().getConfiguration().config.set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		player.forceRefresh();
 		if (value.length() > 0){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		} else {
-			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		}
 	}
 	

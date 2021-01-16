@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
@@ -12,10 +11,9 @@ import org.bukkit.potion.PotionEffectType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import us.myles.ViaVersion.api.Via;
 
 /**
@@ -31,7 +29,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			channel = (Channel) NMSHook.getChannel(player);
 		} catch (Exception e) {
-			Shared.errorManager.printError("Failed to get channel of " + p.getName(), e);
+			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
 		uniqueId = p.getUniqueId();
 		name = p.getName();
@@ -54,20 +52,20 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
 			int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
-			Shared.debug("ProtocolSupport returned protocol version " + version + " for " + getName());
+			TAB.getInstance().debug("ProtocolSupport returned protocol version " + version + " for " + getName());
 			return version;
 		} catch (Throwable e) {
-			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ProtocolSupport", e);
+			return TAB.getInstance().getErrorManager().printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ProtocolSupport", e);
 		}
 	}
 
 	private int getProtocolVersionVia(){
 		try {
 			int version = Via.getAPI().getPlayerVersion(uniqueId);
-			Shared.debug("ViaVersion returned protocol version " + version + " for " + getName());
+			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + getName());
 			return version;
 		} catch (Throwable e) {
-			return Shared.errorManager.printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion", e);
+			return TAB.getInstance().getErrorManager().printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion", e);
 		}
 	}
 
@@ -90,23 +88,15 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (!player.isOnline()) return;
-		if (nmsPacket != null) {
-			try {
-				if (nmsPacket instanceof PacketPlayOut) {
-					NMSHook.sendPacket(player, ((PacketPlayOut)nmsPacket).toNMS(version));
-					return;
-				}
-				if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && nmsPacket instanceof ByteBuf) {
-					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
-					return;
-				}
-				NMSHook.sendPacket(player, nmsPacket);
-			} catch (InvocationTargetException e) {
-				Shared.errorManager.printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e.getTargetException());
-			} catch (Throwable e) {
-				Shared.errorManager.printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
+		if (nmsPacket == null || !player.isOnline()) return;
+		try {
+			if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && nmsPacket instanceof ByteBuf) {
+				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
+				return;
 			}
+			NMSHook.sendPacket(player, nmsPacket);
+		} catch (Throwable e) {
+			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
 	}
 
@@ -114,21 +104,21 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public boolean hasInvisibilityPotion() {
 		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
-	
+
 	@Override
 	public boolean isDisguised() {
 		return isDisguisedLD() || isDisguisediDis();
 	}
-	
+
 	private boolean isDisguisedLD() {
 		try {
 			if (!Bukkit.getPluginManager().isPluginEnabled("LibsDisguises")) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
 		} catch (Exception e) {
-			return Shared.errorManager.printError(false, "Failed to check disguise status using LibsDisguises", e);
+			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
 		}
 	}
-	
+
 	private boolean isDisguisediDis() {
 		try {
 			if (!Bukkit.getPluginManager().isPluginEnabled("iDisguise")) return false;
@@ -138,16 +128,16 @@ public class BukkitTabPlayer extends ITabPlayer {
 			m.setAccessible(true);
 			return (boolean) m.invoke(iDisguise, player);
 		} catch (Exception e) {
-			return Shared.errorManager.printError(false, "Failed to check disguise status using iDisguise", e);
+			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using iDisguise", e);
 		}
 	}
 
 	@Override
 	public Object getSkin() {
 		try {
-			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSHook.getProfile.invoke(NMSHook.getHandle.invoke(player)));
+			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSHook.nms.getProfile.invoke(NMSHook.nms.getHandle.invoke(player)));
 		} catch (Exception e) {
-			return Shared.errorManager.printError(null, "Failed to get skin of " + getName(), e);
+			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}
 	}
 

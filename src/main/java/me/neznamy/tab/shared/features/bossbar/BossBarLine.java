@@ -5,9 +5,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -18,6 +16,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 
 	private static int idCounter = 1000000000;
 	
+	private TAB tab;
 	public String name;
 	public Condition displayCondition;
 	public UUID uuid; //1.9+
@@ -27,7 +26,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	public String title;
 	public String progress;
 
-	public BossBarLine(String name, String displayCondition, String color, String style, String title, String progress) {
+	public BossBarLine(TAB tab, String name, String displayCondition, String color, String style, String title, String progress) {
+		this.tab = tab;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.uuid = UUID.randomUUID();
@@ -35,10 +35,10 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(title, progress, color, style);
-		Shared.featureManager.registerFeature("bossbar-title-" + name, new TextRefresher(this));
-		Shared.featureManager.registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
-		Shared.featureManager.registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(title, progress, color, style);
+		tab.getFeatureManager().registerFeature("bossbar-title-" + name, new TextRefresher(this));
+		tab.getFeatureManager().registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
+		tab.getFeatureManager().registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
 	}
 	
 	public boolean isConditionMet(TabPlayer p) {
@@ -47,15 +47,15 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	}
 	
 	public BarColor parseColor(String color) {
-		return Shared.errorManager.parseColor(color, BarColor.PURPLE, "bossbar color");
+		return tab.getErrorManager().parseColor(color, BarColor.PURPLE, "bossbar color");
 	}
 	
 	public BarStyle parseStyle(String style) {
-		return Shared.errorManager.parseStyle(style, BarStyle.PROGRESS, "bossbar style");
+		return tab.getErrorManager().parseStyle(style, BarStyle.PROGRESS, "bossbar style");
 	}
 	
 	public float parseProgress(String progress) {
-		return Shared.errorManager.parseFloat(progress, 100, "bossbar progress");
+		return tab.getErrorManager().parseFloat(progress, 100, "bossbar progress");
 	}
 	
 	public void create(TabPlayer to){
@@ -90,8 +90,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setTitle(String title) {
 		this.title = title;
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(title);
-		for (TabPlayer p : Shared.getPlayers()) {
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(title);
+		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-title-" + name, title);
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty("bossbar-title-" + name).get()));
@@ -102,8 +102,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setProgress(String progress) {
 		this.progress = progress;
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(progress);
-		for (TabPlayer p : Shared.getPlayers()) {
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(progress);
+		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-progress-" + name, progress);
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, (float) parseProgress(p.getProperty("bossbar-progress-" + name).get())/100));
@@ -119,8 +119,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setColor(String color) {
 		this.color = color;
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(color);
-		for (TabPlayer p : Shared.getPlayers()) {
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(color);
+		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-color-" + name, color);
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
@@ -139,8 +139,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	@Override
 	public void setStyle(String style) {
 		this.style = style;
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(style);
-		for (TabPlayer p : Shared.getPlayers()) {
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(style);
+		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-style-" + name, style);
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
@@ -157,36 +157,37 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	}
 	
 	public static BossBarLine fromConfig(String bar) {
+		TAB tab = TAB.getInstance();
 		String condition = null;
-		Object obj = Configs.bossbar.getBoolean("bars." + bar + ".permission-required");
+		Object obj = tab.getConfiguration().bossbar.getBoolean("bars." + bar + ".permission-required");
 		if (obj != null) {
 			if ((boolean) obj) {
 				condition = "permission:tab.bossbar." + bar;
 			}
 		} else {
-			condition = Configs.bossbar.getString("bars." + bar + ".display-condition", null);
+			condition = tab.getConfiguration().bossbar.getString("bars." + bar + ".display-condition", null);
 		}
 		
-		String style = Configs.bossbar.getString("bars." + bar + ".style");
-		String color = Configs.bossbar.getString("bars." + bar + ".color");
-		String progress = Configs.bossbar.getString("bars." + bar + ".progress");
-		String text = Configs.bossbar.getString("bars." + bar + ".text");
+		String style = tab.getConfiguration().bossbar.getString("bars." + bar + ".style");
+		String color = tab.getConfiguration().bossbar.getString("bars." + bar + ".color");
+		String progress = tab.getConfiguration().bossbar.getString("bars." + bar + ".progress");
+		String text = tab.getConfiguration().bossbar.getString("bars." + bar + ".text");
 		if (style == null) {
-			Shared.errorManager.missingAttribute("BossBar", bar, "style");
+			tab.getErrorManager().missingAttribute("BossBar", bar, "style");
 			style = "PROGRESS";
 		}
 		if (color == null) {
-			Shared.errorManager.missingAttribute("BossBar", bar, "color");
+			tab.getErrorManager().missingAttribute("BossBar", bar, "color");
 			color = "WHITE";
 		}
 		if (progress == null) {
 			progress = "100";
-			Shared.errorManager.missingAttribute("BossBar", bar, "progress");
+			tab.getErrorManager().missingAttribute("BossBar", bar, "progress");
 		}
 		if (text == null) {
 			text = "";
-			Shared.errorManager.missingAttribute("BossBar", bar, "text");
+			tab.getErrorManager().missingAttribute("BossBar", bar, "text");
 		}
-		return new BossBarLine(bar, condition, color, style, text, progress);
+		return new BossBarLine(tab, bar, condition, color, style, text, progress);
 	}
 }

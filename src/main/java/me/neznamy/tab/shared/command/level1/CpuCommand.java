@@ -7,11 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -45,15 +44,16 @@ public class CpuCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		Map<String, Float> placeholders = Shared.cpu.getPlaceholderUsage();
+		TAB tab = TAB.getInstance();
+		Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
 		float placeholdersTotal = 0;
 		for (Float time : placeholders.values()) placeholdersTotal += time;
 		
-		Map<String, Float> bridgeplaceholders = Shared.cpu.getBridgeUsage();
+		Map<String, Float> bridgeplaceholders = tab.getCPUManager().getBridgeUsage();
 		float bridgeplaceholdersTotal = 0;
 		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
 		
-		Map<TabFeature, Map<UsageType, Float>> features = Shared.cpu.getFeatureUsage();
+		Map<TabFeature, Map<UsageType, Float>> features = tab.getCPUManager().getFeatureUsage();
 		float featuresTotal = 0;
 		for (Map<UsageType, Float> map : features.values()) {
 			for (Float time : map.values()) {
@@ -69,13 +69,13 @@ public class CpuCommand extends SubCommand {
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
-			Placeholder p = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(entry.getKey()+"");
+			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey()+"");
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
-		sendMessage(sender, "&8&l" + LINE_CHAR + " &8Last refresh: &6" + (System.currentTimeMillis()-((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).lastSuccessfulRefresh) + "ms ago");
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &8Last refresh: &6" + (System.currentTimeMillis()-TAB.getInstance().getPlaceholderManager().lastSuccessfulRefresh) + "ms ago");
 		sendMessage(sender, SEPARATOR);
-		if (Shared.platform.getSeparatorType().equals("server")) {
+		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			sendMessage(sender, BUKKIT_BRIDGE_TITLE);
 			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
 				if (entry.getValue() < 0.1) continue;
@@ -86,7 +86,7 @@ public class CpuCommand extends SubCommand {
 		if (sender != null) {
 			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
 		} else {
-			Shared.platform.sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
+			tab.getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
 		}
 		for (Entry<TabFeature, Map<UsageType, Float>> entry : features.entrySet()) {
 			float featureTotal = 0;
@@ -106,20 +106,20 @@ public class CpuCommand extends SubCommand {
 			}
 			if (sender != null) {
 				//player
-				IChatBaseComponent message = new IChatBaseComponent(PlaceholderManager.color(core));
-				message.onHoverShowText(PlaceholderManager.color(String.join("\n", messages)));
+				IChatBaseComponent message = new IChatBaseComponent(tab.getPlaceholderManager().color(core));
+				message.onHoverShowText(tab.getPlaceholderManager().color(String.join("\n", messages)));
 				sender.sendCustomPacket(new PacketPlayOutChat(message));
 			} else {
-				Shared.platform.sendConsoleMessage(core, true);
+				tab.getPlatform().sendConsoleMessage(core, true);
 				for (String message : messages) {
-					Shared.platform.sendConsoleMessage(message, true);
+					tab.getPlatform().sendConsoleMessage(message, true);
 				}
 			}
 		}
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, THREADS.replace("%n%", Shared.cpu.getThreadCount()));
+		sendMessage(sender, THREADS.replace("%n%", tab.getCPUManager().getThreadCount()));
 		sendMessage(sender, PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(placeholdersTotal))));
-		if (Shared.platform.getSeparatorType().equals("server")) {
+		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			sendMessage(sender, BRIDGE_PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal))));
 		}
 		sendMessage(sender, PLUGIN_INTERNALS.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal))));

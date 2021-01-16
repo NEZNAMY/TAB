@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-
+import me.neznamy.tab.shared.TAB;
 /**
  * Abstract class representing a subcommand of "/tab" command
  */
@@ -78,7 +77,7 @@ public abstract class SubCommand {
 		if (sender != null) {
 			sender.sendMessage(message, true);
 		} else {
-			Shared.platform.sendConsoleMessage(message, true);
+			TAB.getInstance().getPlatform().sendConsoleMessage(message, true);
 		}
 	}
 	
@@ -92,7 +91,7 @@ public abstract class SubCommand {
 		if (sender != null) {
 			sender.sendMessage(message, false);
 		} else {
-			Shared.platform.sendConsoleMessage(message, false);
+			TAB.getInstance().getPlatform().sendConsoleMessage(message, false);
 		}
 	}
 	
@@ -103,7 +102,7 @@ public abstract class SubCommand {
 	 */
 	public List<String> getPlayers(String nameStart){
 		List<String> suggestions = new ArrayList<String>();
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
 		}
 		return suggestions;
@@ -142,6 +141,10 @@ public abstract class SubCommand {
 			value = value.substring(1, value.length()-1);
 		}
 		return value;
+	}
+	
+	public String getTranslation(String key) {
+		return TAB.getInstance().getConfiguration().translation.getString(key);
 	}
 	
 	/**

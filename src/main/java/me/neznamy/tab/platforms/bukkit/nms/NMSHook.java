@@ -1,19 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
-import me.neznamy.tab.platforms.bukkit.features.PetFix;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.PacketListener;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 
 /**
@@ -22,9 +14,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 public class NMSHook {
 	
 	//list of officially supported server versions
-	private static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
-			"v1_5_R1", "v1_5_R2", "v1_5_R3",
-			"v1_6_R1", "v1_6_R2", "v1_6_R3",
+	private final static List<String> SUPPORTED_VERSIONS = Arrays.asList(
 			"v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4",
 			"v1_8_R1", "v1_8_R2", "v1_8_R3",
 			"v1_9_R1", "v1_9_R2",
@@ -37,39 +27,8 @@ public class NMSHook {
 			"v1_16_R1", "v1_16_R2", "v1_16_R3"
 		);
 	
-	//used NMS classes, fields and methods
-	public static Class<?> IChatBaseComponent;
-	private static Field PING;
-	private static Field PLAYER_CONNECTION;
-	private static Field NETWORK_MANAGER;
-	private static Field CHANNEL;
-	public static Method getHandle;
-	public static Method getProfile;
-	private static Method sendPacket;
-	private static Method SERIALIZE;
-	private static Method DESERIALIZE;
-	
-	/**
-	 * Converts json string into a component
-	 * @param json json as string
-	 * @return NMS component
-	 * @throws Exception if something fails
-	 */
-	public static Object stringToComponent(String json) throws Exception {
-		if (json == null) return null;
-		return DESERIALIZE.invoke(null, json);
-	}
-	
-	/**
-	 * Converts NMS component into a string
-	 * @param component component to convert
-	 * @return json in string format
-	 * @throws Exception if something fails
-	 */
-	public static String componentToString(Object component) throws Exception {
-		if (component == null) return null;
-		return (String) SERIALIZE.invoke(null, component);
-	}
+	public static DataWatcherRegistry registry;
+	public static NMSStorage nms;
 	
 	/**
 	 * Returns netty channel of player
@@ -78,8 +37,8 @@ public class NMSHook {
 	 * @throws Exception if something fails
 	 */
 	public static Object getChannel(Player p) throws Exception {
-		if (CHANNEL == null) return null;
-		return CHANNEL.get(NETWORK_MANAGER.get(PLAYER_CONNECTION.get(getHandle.invoke(p))));
+		if (nms.CHANNEL == null) return null;
+		return nms.CHANNEL.get(nms.NETWORK_MANAGER.get(nms.PLAYER_CONNECTION.get(nms.getHandle.invoke(p))));
 	}
 
 	/**
@@ -89,7 +48,7 @@ public class NMSHook {
 	 * @throws Exception if something fails
 	 */
 	public static void sendPacket(Player p, Object nmsPacket) throws Exception {
-		sendPacket.invoke(PLAYER_CONNECTION.get(getHandle.invoke(p)), nmsPacket);
+		nms.sendPacket.invoke(nms.PLAYER_CONNECTION.get(nms.getHandle.invoke(p)), nmsPacket);
 	}
 	
 	/**
@@ -99,7 +58,7 @@ public class NMSHook {
 	 * @throws Exception if something fails
 	 */
 	public static int getPing(Player p) throws Exception {
-		return PING.getInt(getHandle.invoke(p));
+		return nms.PING.getInt(nms.getHandle.invoke(p));
 	}
 
 	/**
@@ -109,61 +68,25 @@ public class NMSHook {
 	public static boolean isVersionSupported(){
 		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		try {
-			int minor = Integer.parseInt(serverPackage.split("_")[1]);
-			if (minor >= 7) {
-				IChatBaseComponent = PacketPlayOut.getNMSClass("IChatBaseComponent");
-			} else if (minor == 6) {
-				IChatBaseComponent = PacketPlayOut.getNMSClass("ChatMessage");
-			}
-			BukkitPacketBuilder.initializeClass();
-			DataWatcher.initializeClass();
-			DataWatcherItem.initializeClass();
-			DataWatcherRegistry.initializeClass();
-			PacketPlayOutEntityDestroy.initializeClass();
-			PacketPlayOutEntityMetadata.initializeClass();
-			PacketPlayOutEntityTeleport.initializeClass();
-			PacketPlayOutSpawnEntityLiving.initializeClass();
-			PING = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("ping");
-			PLAYER_CONNECTION = PacketPlayOut.getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
-			NETWORK_MANAGER = PLAYER_CONNECTION.getType().getField("networkManager");
-			getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-			sendPacket = PacketPlayOut.getNMSClass("PlayerConnection").getMethod("sendPacket", PacketPlayOut.getNMSClass("Packet"));
-			
-			if (minor >= 7) {
-				Class<?> ChatSerializer;
-				try {
-					//v1_8_R2+
-					ChatSerializer = PacketPlayOut.getNMSClass("IChatBaseComponent$ChatSerializer");
-				} catch (ClassNotFoundException e) {
-					//v1_8_R1-
-					ChatSerializer = PacketPlayOut.getNMSClass("ChatSerializer");
-				}
-				SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
-				DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-			} else if (minor == 6) {
-				DESERIALIZE = IChatBaseComponent.getMethod("d", String.class);
-			}
-			if (minor >= 8) {
-				PacketListener.initializeClass();
-				CHANNEL = PacketPlayOut.getFields(PacketPlayOut.getNMSClass("NetworkManager"), Channel.class).get(0);
-				getProfile = PacketPlayOut.getNMSClass("EntityHuman").getMethod("getProfile");
-			}
-			if (minor >= 9) {
-				PetFix.initializeClass();
-			}
+			nms = new NMSStorage();
+			registry = new DataWatcherRegistry(nms);
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
 				return true;
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] This plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.16.4. Disabling.");
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] This plugin version does not claim to support your server version. This jar has only been tested on 1.7.x - 1.16.4. Disabling.");
 			}
 		} catch (Throwable e) {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
 				e.printStackTrace();
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.16.4. Disabling.");
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.7.x - 1.16.4. Disabling.");
 			}
 		}
 		return false;
+	}
+	
+	public Class<?> getNMSClass(String name) throws ClassNotFoundException {
+		return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
 	}
 }

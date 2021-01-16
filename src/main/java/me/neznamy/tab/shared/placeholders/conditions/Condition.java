@@ -1,22 +1,25 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
  * The main condition class
  */
 public abstract class Condition {
-
+	
+	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
+	
 	private String name;
-	protected List<SimpleCondition> conditions = new ArrayList<SimpleCondition>();
+	protected List<SimpleCondition> subconditions = new ArrayList<SimpleCondition>();
 	public String yes;
 	public String no;
 
@@ -25,9 +28,9 @@ public abstract class Condition {
 		for (String line : conditions) {
 			SimpleCondition condition = SimpleCondition.compile(line);
 			if (condition != null) {
-				this.conditions.add(condition);
+				this.subconditions.add(condition);
 			} else {
-				Shared.errorManager.startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
+				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
 		this.yes = yes;
@@ -50,7 +53,7 @@ public abstract class Condition {
 			type = ConditionType.valueOf(conditionType);
 		} catch (Exception e) {
 			type = ConditionType.AND;
-			if (conditions.size() > 1) Shared.errorManager.startupWarn("Invalid condition type: " + conditionType);
+			if (conditions.size() > 1) TAB.getInstance().getErrorManager().startupWarn("Invalid condition type: " + conditionType);
 		}
 		switch(type) {
 		case AND:
@@ -64,8 +67,8 @@ public abstract class Condition {
 	
 	public static Condition getCondition(String string) {
 		if (string == null) return null;
-		if (Configs.conditions.containsKey(string)) {
-			return Configs.conditions.get(string);
+		if (conditions.containsKey(string)) {
+			return conditions.get(string);
 		} else {
 			return Condition.compile(null, Lists.newArrayList(string.split(";")), "AND", null, null);
 		}

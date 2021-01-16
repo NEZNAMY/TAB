@@ -19,21 +19,62 @@ public class TextColor {
 	//closest legacy color
 	private EnumChatFormat legacyColor;
 
+	
 	/**
-	 * Constructs new instance with all argments
-	 * Private, use TextColor.of methods
+	 * Returns a new instance based on hex code as string
+	 * @param hexCode - a 6-digit combination of hex numbers
+	 * @return TextColor from hex color
+	 */
+	public TextColor(String hexCode) {
+		int hexColor = Integer.parseInt(hexCode, 16);
+		red = ((hexColor >> 16) & 0xFF);
+		green = ((hexColor >> 8) & 0xFF);
+		blue = (hexColor & 0xFF);
+		loadClosestColor();
+	}
+	
+	/**
+	 * Returns a new instance based on legacy color
+	 * @param legacyColor - legacy color
+	 * @return TextColor from legacy color
+	 */
+	public TextColor(EnumChatFormat legacyColor) {
+		red = legacyColor.getRed();
+		green = legacyColor.getGreen();
+		blue = legacyColor.getBlue();
+		this.legacyColor = legacyColor;
+	}
+	
+	/**
+	 * Returns a new instance based on color bytes
 	 * @param red - red value
 	 * @param green - green value
 	 * @param blue - blue value
-	 * @param legacyColor - closest legacy color
+	 * @return TextColor from RGB combination
 	 */
-	private TextColor(int red, int green, int blue, EnumChatFormat legacyColor) {
+	public TextColor(int red, int green, int blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
-		this.legacyColor = legacyColor;
+		loadClosestColor();
 	}
-
+	
+	private void loadClosestColor() {
+		double minDist = 9999;
+		double dist;
+		legacyColor = EnumChatFormat.WHITE;
+		for (EnumChatFormat color : EnumChatFormat.values()) {
+			int rDiff = (int) Math.pow(color.getRed() - red, 2);
+			int gDiff = (int) Math.pow(color.getGreen() - green, 2);
+			int bDiff = (int) Math.pow(color.getBlue() - blue, 2);
+			dist = Math.sqrt(rDiff + gDiff + bDiff);
+			if (dist < minDist) {
+				minDist = dist;
+				legacyColor = color;
+			}
+		}
+	}
+	
 	/**
 	 * Returns amount of red
 	 * @return amount of red
@@ -78,10 +119,24 @@ public class TextColor {
 				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
 				return legacyEquivalent.toString().toLowerCase();
 			}
-			return "#" + RGBUtils.toHexString(red, green, blue);
+			return "#" + toHexString();
 		} else {
 			return legacyColor.toString().toLowerCase();
 		}
+	}
+	
+
+	/**
+	 * Returns a 6-digit HEX output from given colors
+	 * @param red - red
+	 * @param green - green
+	 * @param blue - blue
+	 * @return the hex string
+	 */
+	public String toHexString() {
+		String s = Integer.toHexString((red << 16) + (green << 8) + blue);
+		while (s.length() < 6) s = "0" + s;
+		return s;
 	}
 	
 	/**
@@ -92,58 +147,9 @@ public class TextColor {
 	public static TextColor fromString(String string) {
 		if (string == null) return null;
 		if (string.startsWith("#")) {
-			return of(string.substring(1));
+			return new TextColor(string.substring(1));
 		} else {
-			return of(EnumChatFormat.valueOf(string.toUpperCase()));
+			return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 		}
-	}
-	
-	/**
-	 * Returns a new instance based on hex code as string
-	 * @param hexCode - a 6-digit combination of hex numbers
-	 * @return TextColor from hex color
-	 */
-	public static TextColor of(String hexCode) {
-		int hexColor = Integer.parseInt(hexCode, 16);
-		int red = ((hexColor >> 16) & 0xFF);
-		int green = ((hexColor >> 8) & 0xFF);
-		int blue = (hexColor & 0xFF);
-		return of(red, green, blue);
-	}
-	
-	/**
-	 * Returns a new instance based on legacy color
-	 * @param legacyColor - legacy color
-	 * @return TextColor from legacy color
-	 */
-	public static TextColor of(EnumChatFormat legacyColor) {
-		int red = legacyColor.getRed();
-		int green = legacyColor.getGreen();
-		int blue = legacyColor.getBlue();
-		return new TextColor(red, green, blue, legacyColor);
-	}
-	
-	/**
-	 * Returns a new instance based on color bytes
-	 * @param red - red value
-	 * @param green - green value
-	 * @param blue - blue value
-	 * @return TextColor from RGB combination
-	 */
-	public static TextColor of(int red, int green, int blue) {
-		double minDist = 9999;
-		double dist;
-		EnumChatFormat legacyColor = EnumChatFormat.WHITE;
-		for (EnumChatFormat color : EnumChatFormat.values()) {
-			int rDiff = (int) Math.pow(color.getRed() - red, 2);
-			int gDiff = (int) Math.pow(color.getGreen() - green, 2);
-			int bDiff = (int) Math.pow(color.getBlue() - blue, 2);
-			dist = Math.sqrt(rDiff + gDiff + bDiff);
-			if (dist < minDist) {
-				minDist = dist;
-				legacyColor = color;
-			}
-		}
-		return new TextColor(red, green, blue, legacyColor);
 	}
 }

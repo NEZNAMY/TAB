@@ -8,15 +8,23 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
-	private static final String INJECT_POSITION = "packet_handler";
+	private final String INJECT_POSITION = "packet_handler";
+	
+	private NMSStorage nms;
 
+	public BukkitPipelineInjector(TAB tab, NMSStorage nms) throws ClassNotFoundException {
+		super(tab);
+		this.nms = nms;
+	}
+	
 	@Override
 	public void inject(TabPlayer player) {
 		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
@@ -30,30 +38,30 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				@Override
 				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 					try {
-						Object modifiedPacket = Shared.featureManager.onPacketReceive(player, packet);
+						Object modifiedPacket = tab.getFeatureManager().onPacketReceive(player, packet);
 						if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
 					} catch (Throwable e){
-						Shared.errorManager.printError("An error occurred when reading packets", e);
+						tab.getErrorManager().printError("An error occurred when reading packets", e);
 					}
 				}
 
 				@Override
 				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 					try {
-						if (BukkitPacketBuilder.PacketPlayOutPlayerInfo.isInstance(packet)) {
-							super.write(context, Shared.featureManager.onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+						if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
+							super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 							return;
 						}
-						if (Shared.featureManager.getNameTagFeature() != null && BukkitPacketBuilder.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+						if (tab.getFeatureManager().getNameTagFeature() != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 							modifyPlayers(packet);
 							super.write(context, packet, channelPromise);
 							return;
 						}
-						Shared.featureManager.onPacketSend(player, packet);
-						super.write(context, packet, channelPromise);
+						tab.getFeatureManager().onPacketSend(player, packet);
 					} catch (Throwable e){
-						Shared.errorManager.printError("An error occurred when reading packets", e);
+						tab.getErrorManager().printError("An error occurred when reading packets", e);
 					}
+					super.write(context, packet, channelPromise);
 				}
 			});
 		} catch (NoSuchElementException | IllegalArgumentException e) {
@@ -72,17 +80,25 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
+	private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		long time = System.nanoTime();
-		if (BukkitPacketBuilder.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
-			Collection<String> players = (Collection<String>) BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+		if (nms.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
+			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			Collection<String> newList = new ArrayList<String>();
 			for (String entry : players) {
-				TabPlayer p = Shared.getPlayer(entry);
-				if (p == null || Shared.featureManager.getNameTagFeature().isDisabledWorld(p.getWorldName())) newList.add(entry);
+				TabPlayer p = tab.getPlayer(entry);
+				if (p == null) {
+					newList.add(entry);
+					continue;
+				}
+				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
+					newList.add(entry);
+				} else {
+					tab.getErrorManager().printError("Prevented player " + entry + " in team " + nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam));
+				}
 			}
-			BukkitPacketBuilder.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+			nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}
-		Shared.cpu.addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 }

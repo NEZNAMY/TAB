@@ -1,10 +1,13 @@
 package me.neznamy.tab.shared.config;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,8 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Abstract class for configuration file
@@ -270,7 +272,7 @@ public abstract class ConfigurationFile {
 	 * @param found - found class type
 	 */
 	private void dataMismatch(String path, Class<?> expected, Class<?> found) {
-		Shared.errorManager.startupWarn("Data mismatch in &e" + file.getName() + "&c. Value of &e" + path + "&c is expected to be &e" + expected.getSimpleName() + "&c, but is &e" + found.getSimpleName() + "&c. This is a misconfiguration issue.");
+		TAB.getInstance().getErrorManager().startupWarn("Data mismatch in &e" + file.getName() + "&c. Value of &e" + path + "&c is expected to be &e" + expected.getSimpleName() + "&c, but is &e" + found.getSimpleName() + "&c. This is a misconfiguration issue.");
 	}
 	
 	/**
@@ -327,7 +329,7 @@ public abstract class ConfigurationFile {
 	 */
 	public boolean hasHeader() {
 		if (header == null) return true;
-		for (String line : Configs.readAllLines(file)) {
+		for (String line : readAllLines(file)) {
 			if (line.contains("#")) return true;
 		}
 		return false;
@@ -340,7 +342,7 @@ public abstract class ConfigurationFile {
 		if (header == null) return;
 		try {
 			List<String> content = new ArrayList<String>(header);
-			content.addAll(Configs.readAllLines(file));
+			content.addAll(readAllLines(file));
 			file.delete();
 			file.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
@@ -349,8 +351,27 @@ public abstract class ConfigurationFile {
 			}
 			buf.close();
 		} catch (Exception ex) {
-			Shared.errorManager.criticalError("Failed to modify file " + file, ex);
+			TAB.getInstance().getErrorManager().criticalError("Failed to modify file " + file, ex);
 		}
+	}
+	
+	/**
+	 * Reads all lines in file and returns them as List
+	 * @return list of lines in file
+	 */
+	private List<String> readAllLines(File file) {
+		List<String> list = new ArrayList<String>();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+			String line;
+			while ((line = br.readLine()) != null) {
+				list.add(line);
+			}
+			br.close();
+		} catch (Exception ex) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to read file " + file, ex);
+		}
+		return list;
 	}
 	
 	/**
@@ -359,7 +380,7 @@ public abstract class ConfigurationFile {
 	 * @return Set of all used identifiers
 	 */
 	public List<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
-		return PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
+		return TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
 	}
 	
 	/**
@@ -372,7 +393,7 @@ public abstract class ConfigurationFile {
 		Set<String> values = new HashSet<String>();
 		for (Entry<String, Object> entry : map.entrySet()) {
 			for (String simpleKey : simpleKeys) {
-				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(PlaceholderManager.detectAll(String.valueOf(entry.getValue())));
+				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
 			}
 			if (entry.getValue() instanceof Map) {
 				values.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
@@ -380,7 +401,7 @@ public abstract class ConfigurationFile {
 			if (entry.getValue() instanceof List) {
 				for (Object obj : (List<Object>)entry.getValue()) {
 					for (String simpleKey : simpleKeys) {
-						if (String.valueOf(obj).equals(simpleKey)) values.addAll(PlaceholderManager.detectAll(String.valueOf(entry.getValue())));
+						if (String.valueOf(obj).equals(simpleKey)) values.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
 					}
 				}
 			}

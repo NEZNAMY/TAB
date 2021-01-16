@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,86 +16,55 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.placeholders.Animation;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.TAB;
 
 /**
- * A static mess of config options
+ * A mess of config options
  * Looking to clean this up in the future
  */
 public class Configs {
 
-	public static ConfigurationFile config;
-	public static boolean collisionRule;
-	public static List<String> revertedCollision;
-	public static Map<Object, Object> rankAliases;
-	public static SimpleDateFormat dateFormat;
-	public static SimpleDateFormat timeFormat;
-	public static double timeOffset;
-	public static List<String> removeStrings;
-	public static String noAfk;
-	public static String yesAfk;
-	public static Map<String, Object> serverAliases;
-	public static boolean SECRET_debugMode;
-
-
-	public static ConfigurationFile animation;
-	public static List<Animation> animations;
-
-
-	public static ConfigurationFile bossbar;
-	public static boolean BossBarEnabled;
-
-
-	public static ConfigurationFile translation;
-	public static String no_perm;
-	public static String unlimited_nametag_mode_not_enabled;
-	public static String data_removed;
-	public static String player_not_found;
-	public static String reloaded;
-	public static String value_assigned;
-	public static String value_removed;
-	public static String bossbar_off;
-	public static String bossbar_on;
-	public static String preview_off;
-	public static String preview_on;
-	public static String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
+	private TAB tab;
 	
-	public static ConfigurationFile premiumconfig;
-	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
+	public ConfigurationFile config;
+	public boolean collisionRule;
+	public List<String> revertedCollision;
+	public List<String> removeStrings;
 
-	public static ConfigurationFile playerdata; 
+	public ConfigurationFile animation;
 
-	public static File errorFile;
-	public static File papiErrorFile;
+	public ConfigurationFile bossbar;
+	public boolean BossBarEnabled;
 
-	public static void loadFiles() throws Exception {
-		errorFile = new File(Shared.platform.getDataFolder(), "errors.txt");
-		papiErrorFile = new File(Shared.platform.getDataFolder(), "PlaceholderAPI.errors.txt");
-		if (errorFile.exists() && errorFile.length() > 10) {
-			Shared.errorManager.startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
-		}
-		PlaceholderManager.allUsedPlaceholderIdentifiers = new HashSet<String>();
+	public ConfigurationFile translation;
+	public String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
+	
+	public ConfigurationFile premiumconfig;
+
+	public ConfigurationFile playerdata; 
+
+	public Configs(TAB tab) {
+		this.tab = tab;
+	}
+	public void loadFiles() throws Exception {
+		ClassLoader loader = Configs.class.getClassLoader();
 		removeAdvancedConfig();
 		loadConfig();
-		loadAnimations();
+		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
 		loadBossbar();
-		loadTranslation();
-		if (Shared.isPremium()) {
-			loadPremiumConfig();
+		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
+		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
+		if (tab.isPremium()) {
+			premiumconfig = new YamlConfigurationFile(loader.getResourceAsStream("premiumconfig.yml"), new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml"));
+			tab.getPlatform().convertConfig(premiumconfig);
 		}
-		Shared.platform.suggestPlaceholders();
 	}
 
-	private static void removeAdvancedConfig() {
-		File f = new File(Shared.platform.getDataFolder(), "advancedconfig.yml");
+	private void removeAdvancedConfig() {
+		File f = new File(tab.getPlatform().getDataFolder(), "advancedconfig.yml");
 		if (f.exists()) {
 			List<String> fileLines = readAllLines(f);
-			File config = new File(Shared.platform.getDataFolder(), "config.yml");
+			File config = new File(tab.getPlatform().getDataFolder(), "config.yml");
 			for (String line : fileLines) {
 				if (!line.startsWith("#")) {
 					write(config, line);
@@ -106,21 +74,17 @@ public class Configs {
 		}
 	}
 	@SuppressWarnings("unchecked")
-	public static void loadConfig() throws Exception {
-		Shared.platform.loadConfig();
-		Shared.platform.convertConfig(config);
+	public void loadConfig() throws Exception {
+		String source = tab.getPlatform().getSeparatorType().equals("world") ? "bukkitconfig.yml" : "bungeeconfig.yml";
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(source), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		tab.getPlatform().convertConfig(config);
 		collisionRule = config.getBoolean("enable-collision", true);
-		timeFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
-		timeOffset = config.getDouble("placeholders.time-offset", 0);
-		dateFormat = Shared.errorManager.createDateFormat(config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		removeStrings = new ArrayList<>();
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
-			removeStrings.add(PlaceholderManager.color(s));
+			removeStrings.add(s.replace('&', '\u00a7'));
 		}
-		rankAliases = config.getConfigurationSection("rank-aliases");
-		revertedCollision = config.getStringList("revert-collision-rule-in-" + Shared.platform.getSeparatorType()+"s", Arrays.asList("reverted" + Shared.platform.getSeparatorType()));
-		SECRET_debugMode = getSecretOption("debug", false);
-		PlaceholderManager.findAllUsed(config.getValues());
+		revertedCollision = config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
+		tab.debugMode = (boolean) getSecretOption("debug", false);
 		
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
@@ -136,88 +100,47 @@ public class Configs {
 			}
 		}
 		for (Object property : sharedProperties.keySet()) {
-			Shared.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
+			tab.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
 		}
 	}
-	public static void loadAnimations() throws Exception {
-		animation = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("animations.yml"), new File(Shared.platform.getDataFolder(), "animations.yml"));
-		animations = new ArrayList<Animation>();
-		for (Object s : animation.getConfigurationSection("animations").keySet()) {
-			animations.add(new Animation(s+"", animation.getStringList("animations." + s + ".texts"), animation.getInt("animations." + s + ".change-interval", 0)));
-		}
-		PlaceholderManager.findAllUsed(animation.getValues());
-	}
-	public static void loadBossbar() throws Exception {
-		bossbar = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bossbar.yml"), new File(Shared.platform.getDataFolder(), "bossbar.yml"));
-		Shared.platform.convertConfig(bossbar);
+
+	public void loadBossbar() throws Exception {
+		bossbar = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bossbar.yml"), new File(tab.getPlatform().getDataFolder(), "bossbar.yml"));
+		tab.getPlatform().convertConfig(bossbar);
 		if (bossbar.hasConfigOption("enabled")) {
-			Shared.errorManager.startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
+			tab.getErrorManager().startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
 			BossBarEnabled = false;
 			return;
 		}
 		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
-		PlaceholderManager.findAllUsed(bossbar.getValues());
 	}
-	public static void loadTranslation() throws Exception {
-		translation = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("translation.yml"), new File(Shared.platform.getDataFolder(), "translation.yml"));
-		no_perm = translation.getString("no_permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
-		unlimited_nametag_mode_not_enabled = translation.getString("unlimited_nametag_mode_not_enabled", "&c[TAB] Warning! To make these work, you need to enable unlimited-nametag-prefix-suffix-mode in config !");
-		data_removed = translation.getString("data_removed", "&3[TAB] All data has been successfully removed from %category% &e%value%");
-		player_not_found = translation.getString("player_not_found", "&4[TAB] Player not found !");
-		reloaded = translation.getString("reloaded", "&3[TAB] Reloaded");
-		value_assigned = translation.getString("value_assigned", "&3[TAB] %type% &r'%value%'&r&3 has been successfully assigned to %category% &e%unit%");
-		value_removed = translation.getString("value_removed", "&3[TAB] %type% has been successfully removed from %category% &e%unit%");
-		bossbar_on = translation.getString("bossbar-toggle-on", "&2Bossbar is now visible");
-		bossbar_off = translation.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
-		preview_on = translation.getString("preview-on", "&7Preview mode &aactivated.");
-		preview_off = translation.getString("preview-off", "&7Preview mode &3deactivated.");
-		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
-	}
+
 	
-	public static void loadPremiumConfig() throws Exception {
-		premiumconfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("premiumconfig.yml"), new File(Shared.platform.getDataFolder(), "premiumconfig.yml"));
-		Shared.platform.convertConfig(premiumconfig);
-		conditions = new HashMap<String, Condition>();
-		for (Object condition : premiumconfig.getConfigurationSection("conditions").keySet()) {
-			List<String> list = premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
-			String type = premiumconfig.getString("conditions." + condition + ".type");
-			String yes = premiumconfig.getString("conditions." + condition + ".true");
-			String no = premiumconfig.getString("conditions." + condition + ".false");
-			conditions.put(condition+"", Condition.compile(condition+"", list, type, yes, no));
-		}
-		PlaceholderManager.findAllUsed(premiumconfig.getValues());
-	}
-	@SuppressWarnings("unchecked")
-	public static <T> T getSecretOption(String path, T defaultValue) {
+	public Object getSecretOption(String path, Object defaultValue) {
 		if (config == null) return defaultValue;
 		Object value = config.getObject(path);
-		if (value == null) return defaultValue;
-		if (defaultValue instanceof String) return (T) value.toString();
-		if (defaultValue instanceof Boolean) return (T) (Object) Boolean.parseBoolean(value.toString());
-		return (T) (Object) Double.parseDouble(value.toString());
+		return value == null ? defaultValue : value;
 	}
-	public static List<String> getPlayerData(String key) {
+	
+	public List<String> getPlayerData(String key) {
 		if (playerdata == null) {
-			File file = new File(Shared.platform.getDataFolder(), "playerdata.yml");
+			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
 			try {
 				if (!file.exists()) file.createNewFile();
 				playerdata = new YamlConfigurationFile(null, file);
 			} catch (Exception e) {
-				Shared.errorManager.criticalError("Failed to load playerdata.yml", e);
-				return Lists.newArrayList();
+				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
+				return new ArrayList<String>();
 			}
 		}
 		return playerdata.getStringList(key, new ArrayList<String>());
 	}
-	public static boolean getCollisionRule(String world) {
-		return revertedCollision.contains(world) ? !collisionRule : collisionRule;
-	}
 	
-	public static String getWorldGroupOf(String world) {
-		Map<String, Object> worlds = Configs.config.getConfigurationSection("per-" + Shared.platform.getSeparatorType() + "-settings");
+	public String getWorldGroupOf(String world) {
+		Map<String, Object> worlds = config.getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split(Configs.getSecretOption("multi-world-separator", "-"))) {
+			for (String localWorld : worldGroup.split((String)getSecretOption("multi-world-separator", "-"))) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}
@@ -228,7 +151,7 @@ public class Configs {
 	 * Reads all lines in file and returns them as List
 	 * @return list of lines in file
 	 */
-	public static List<String> readAllLines(File file) {
+	public List<String> readAllLines(File file) {
 		List<String> list = new ArrayList<String>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
@@ -238,12 +161,12 @@ public class Configs {
 			}
 			br.close();
 		} catch (Exception ex) {
-			Shared.errorManager.criticalError("Failed to read file " + file, ex);
+			tab.getErrorManager().criticalError("Failed to read file " + file, ex);
 		}
 		return list;
 	}
 	
-	public static void write(File f, String line){
+	public void write(File f, String line){
 		try {
             BufferedWriter buf = new BufferedWriter(new FileWriter(f, true));
             buf.write(line + System.getProperty("line.separator"));

@@ -22,10 +22,10 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
@@ -40,7 +40,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
  */
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
 
-	private static final int ENTITY_TRACKING_RANGE = 48;
+	private final int ENTITY_TRACKING_RANGE = 48;
 
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
@@ -49,32 +49,36 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
+	//entity id counter to pick unique entity IDs
+	private int idCounter = 2000000000;
+
 	//player data by entityId, used for better performance
 	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
 	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
 	private EventListener eventListener;
 
-	public NameTagX(JavaPlugin plugin) {
+	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
+		super(tab);
 		this.plugin = plugin;
-		markerFor18x = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
-		disableOnBoats = Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = Float.parseFloat(Configs.getSecretOption("ntx-space", "0.22"));
-		if (Configs.premiumconfig != null) {
-			List<String> realList = Configs.premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
+		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
+		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
+		spaceBetweenLines = Float.parseFloat(tab.getConfiguration().getSecretOption("ntx-space", 0.22).toString());
+		if (tab.getConfiguration().premiumconfig != null) {
+			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
 			dynamicLines.addAll(realList);
 			Collections.reverse(dynamicLines);
-			staticLines = Configs.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
+			staticLines = tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);
-		Shared.featureManager.registerFeature("nametagx-packet", new PacketListener(this));
+		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
 	}
 
 	@Override
 	public void load() {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		for (TabPlayer all : Shared.getPlayers()){
+		for (TabPlayer all : tab.getPlayers()){
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			all.setTeamName(sorting.getTeamName(all));
 			updateProperties(all);
@@ -82,7 +86,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (isDisabledWorld(all.getWorldName())) continue;
 			all.registerTeam();
 			loadPassengers(all);
-			for (TabPlayer worldPlayer : Shared.getPlayers()) {
+			for (TabPlayer worldPlayer : tab.getPlayers()) {
 				if (all != worldPlayer && ((Player) worldPlayer.getPlayer()).getWorld() == ((Player) all.getPlayer()).getWorld() && 
 					((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
 					all.getArmorStandManager().spawn(worldPlayer);
@@ -90,9 +94,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			}
 		}
 		startRefreshingTasks();
-		Shared.cpu.startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
 			public void run() {
-				for (TabPlayer p : Shared.getPlayers()) {
+				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
 					p.getArmorStandManager().updateVisibility();
 					if (!disableOnBoats) continue;
@@ -109,7 +113,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	@Override
 	public void unload() {
 		HandlerList.unregisterAll(eventListener);
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
 			p.getArmorStandManager().destroy();
 		}
@@ -121,7 +125,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue;
 			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
@@ -130,7 +134,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
 		connectedPlayer.registerTeam();
 		loadPassengers(connectedPlayer);
-		for (TabPlayer viewer : Shared.getPlayers()) {
+		for (TabPlayer viewer : tab.getPlayers()) {
 			if (connectedPlayer == viewer) continue; //not displaying own armorstands
 			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
 			if (((Player) viewer.getPlayer()).getLocation().distance(((Player) connectedPlayer.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
@@ -153,13 +157,13 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
 		invisiblePlayers.remove(disconnectedPlayer.getName());
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		//entity destroy packet is sent too late, need to send it manually
 		disconnectedPlayer.getArmorStandManager().destroy();
 
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
@@ -188,12 +192,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height+=spaceBetweenLines, false));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height+=spaceBetweenLines, false));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(pl, p, Double.parseDouble(line.getValue()+""), true));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue()+""), true));
 		}
 		fixArmorStandHeights(pl);
 	}
@@ -234,7 +238,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 				}
 				vehicles.put(vehicle.getEntityId(), list);
 			}
-			for (TabPlayer viewer : Shared.getPlayers()) {
+			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer == refreshed) continue;
 				if (viewer.getWorldName().equals(refreshed.getWorldName())) {
 					refreshed.getArmorStandManager().spawn(viewer);
@@ -280,12 +284,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
+		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
 		for (String line : dynamicLines) {
-			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (String line : staticLines.keySet()) {
-			usedPlaceholders.addAll(Configs.config.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 	}
 

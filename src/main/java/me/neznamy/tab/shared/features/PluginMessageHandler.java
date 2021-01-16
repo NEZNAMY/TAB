@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 /**
@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
  */
 public interface PluginMessageHandler {
 
+	//name of plugin messaging channel
+	public String CHANNEL_NAME = "tab:placeholders";
+	
 	/**
 	 * Requests placeholder from bukkit server
 	 * @param player - player to request placeholder for
@@ -49,13 +52,13 @@ public interface PluginMessageHandler {
 			String placeholder = in.readUTF();
 			String output = in.readUTF();
 			long cpu = in.readLong();
-			PlayerPlaceholder pl = (PlayerPlaceholder) ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(placeholder); //all bridge placeholders are marked as player
+			PlayerPlaceholder pl = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			if (pl != null) {
 				pl.lastValue.put(player.getName(), output);
 				pl.forceUpdate.add(player.getName());
-				Shared.cpu.addBridgePlaceholderTime(pl.getIdentifier(), cpu);
+				TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 			} else {
-				Shared.debug("Received output for unknown placeholder " + placeholder);
+				TAB.getInstance().debug("Received output for unknown placeholder " + placeholder);
 			}
 			return true;
 		}

@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Representation of any server/player placeholder
@@ -25,11 +23,11 @@ public abstract class Placeholder {
 		if (refresh % 50 != 0) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
 		this.identifier = identifier;
 		this.refresh = refresh;
-		if (Configs.premiumconfig != null) {
-			Map<Object, Object> original = Configs.premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+		if (TAB.getInstance().getConfiguration().premiumconfig != null) {
+			Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
-				replacements.put(entry.getKey().toString().replace('&', PlaceholderManager.colorChar), entry.getValue().toString());
-				for (String id : PlaceholderManager.detectAll(entry.getValue()+"")) {
+				replacements.put(entry.getKey().toString().replace('&', '\u00a7'), entry.getValue().toString());
+				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue()+"")) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
 			}
@@ -52,13 +50,13 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, PlaceholderManager.color(value)), p);
+			String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
 			return s.replace(identifier, newValue);
 		} catch (Throwable t) {
-			return Shared.errorManager.printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
+			return TAB.getInstance().getErrorManager().printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
 	public static String findReplacement(Map<Object, String> replacements, String originalOutput) {
@@ -86,7 +84,7 @@ public abstract class Placeholder {
 		String replaced = text;
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;
-			Placeholder pl = ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getPlaceholder(s);
+			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
 			if (pl != null && replaced.contains(pl.getIdentifier())) replaced = pl.set(replaced, p);
 		}
 		return replaced;

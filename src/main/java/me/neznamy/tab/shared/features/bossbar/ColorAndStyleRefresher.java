@@ -4,8 +4,8 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 
@@ -37,14 +37,10 @@ public class ColorAndStyleRefresher implements Refreshable {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(line.color);
-		usedPlaceholders.addAll(PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(line.style));
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.color);
+		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.style));
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

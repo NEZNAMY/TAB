@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungee;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -24,7 +24,7 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 	 * @param plugin - instance of main class
 	 */
 	public BungeePluginMessageHandler(Plugin plugin) {
-		ProxyServer.getInstance().registerChannel(Shared.CHANNEL_NAME);
+		ProxyServer.getInstance().registerChannel(CHANNEL_NAME);
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
 	}
 
@@ -34,20 +34,20 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		if (!event.getTag().equalsIgnoreCase(Shared.CHANNEL_NAME)) return;
+		if (!event.getTag().equalsIgnoreCase(CHANNEL_NAME)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
 			long time = System.nanoTime();
-			TabPlayer receiver = Shared.getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+			TabPlayer receiver = TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 			if (receiver == null) return;
 			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
 				event.setCancelled(true);
 			}
-			Shared.cpu.addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
 		}
 	}
 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
-		((ProxiedPlayer) player.getPlayer()).getServer().sendData(Shared.CHANNEL_NAME, message);
+		((ProxiedPlayer) player.getPlayer()).getServer().sendData(CHANNEL_NAME, message);
 	}
 }

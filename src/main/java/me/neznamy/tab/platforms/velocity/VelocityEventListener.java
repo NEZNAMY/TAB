@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * The core for velocity forwarding events into all enabled features
@@ -19,8 +19,8 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onQuit(DisconnectEvent e){
-		if (Shared.disabled) return;
-		Shared.featureManager.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
 	}
 	
 	/**
@@ -29,15 +29,15 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onConnect(ServerPostConnectEvent e){
-		if (Shared.disabled) return;
+		if (TAB.getInstance() == null) return;
 		try {
-			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				Shared.featureManager.onJoin(new VelocityTabPlayer(e.getPlayer()));
+			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
+				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
 			} else {
-				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
+				TAB.getInstance().getFeatureManager().onWorldChange(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
 			}
 		} catch (Throwable ex){
-			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
+			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onChat(PlayerChatEvent e) {
-		if (Shared.disabled) return;
-		if (Shared.featureManager.onCommand(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
+		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
 	}
 }

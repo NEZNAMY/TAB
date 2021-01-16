@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 
 /**
@@ -18,7 +18,7 @@ public class All0StaticLine extends StaticLine {
 	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, getPlayerName(lineNumber));
 		this.parent = parent;
-		this.originalText = PlaceholderManager.color(text);
+		this.originalText = TAB.getInstance().getPlaceholderManager().color(text);
 	}
 
 	@Override

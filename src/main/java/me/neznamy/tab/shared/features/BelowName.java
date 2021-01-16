@@ -6,8 +6,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -29,17 +28,19 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	private final String numberPropertyName = "belowname-number";
 	private final String textPropertyName = "belowname-text";
 
+	private TAB tab;
 	private String rawNumber;
 	private String rawText;
 	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 
-	public BelowName() {
-		rawNumber = Configs.config.getString("classic-vanilla-belowname.number", "%health%");
-		rawText = Configs.config.getString("classic-vanilla-belowname.text", "Health");
-		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.belowname", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+	public BelowName(TAB tab) {
+		this.tab = tab;
+		rawNumber = tab.getConfiguration().config.getString("classic-vanilla-belowname.number", "%health%");
+		rawText = tab.getConfiguration().config.getString("classic-vanilla-belowname.text", "Health");
+		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
-		Shared.featureManager.registerFeature("belowname-text", new Refreshable() {
+		tab.getFeatureManager().registerFeature("belowname-text", new Refreshable() {
 
 			private List<String> usedPlaceholders;
 
@@ -60,7 +61,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 			@Override
 			public void refreshUsedPlaceholders() {
-				usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(rawText);
+				usedPlaceholders = tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawText);
 			}
 
 			@Override
@@ -72,14 +73,14 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void load() {
-		for (TabPlayer loaded : Shared.getPlayers()){
+		for (TabPlayer loaded : tab.getPlayers()){
 			loaded.setProperty(numberPropertyName, rawNumber);
 			loaded.setProperty(textPropertyName, rawText);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
 			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, loaded.getProperty(textPropertyName).updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		}
-		for (TabPlayer viewer : Shared.getPlayers()){
-			for (TabPlayer target : Shared.getPlayers()){
+		for (TabPlayer viewer : tab.getPlayers()){
+			for (TabPlayer target : tab.getPlayers()){
 				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)));
 			}
 		}
@@ -88,7 +89,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void unload() {
 		Object unregister = new PacketPlayOutScoreboardObjective(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
-		for (TabPlayer p : Shared.getPlayers()){
+		for (TabPlayer p : tab.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 			p.sendPacket(unregister);
 		}
@@ -101,7 +102,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, connectedPlayer.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
 		int number = getValue(connectedPlayer);
-		for (TabPlayer all : Shared.getPlayers()){
+		for (TabPlayer all : tab.getPlayers()){
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), number));
 			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
@@ -120,14 +121,14 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 
 	private int getValue(TabPlayer p) {
-		return Shared.errorManager.parseInteger(p.getProperty(numberPropertyName).updateAndGet(), 0, "belowname");
+		return tab.getErrorManager().parseInteger(p.getProperty(numberPropertyName).updateAndGet(), 0, "belowname");
 	}
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int number = getValue(refreshed);
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), number));
 		}
 	}
@@ -139,7 +140,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(rawNumber);
+		usedPlaceholders = tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawNumber);
 	}
 
 	@Override
@@ -151,7 +152,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, packetReceiver.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
-		for (TabPlayer all : Shared.getPlayers()){
+		for (TabPlayer all : tab.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
 		}
 	}

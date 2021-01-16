@@ -1,9 +1,8 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
@@ -19,16 +18,16 @@ public class ParseCommand extends SubCommand{
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String replaced = String.join(" ", args);
-			String message = PlaceholderManager.color("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace("%placeholder%", replaced);
+			String message = TAB.getInstance().getPlaceholderManager().color("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace("%placeholder%", replaced);
 			sendRawMessage(sender, message);
-			replaced = Shared.platform.replaceAllPlaceholders(replaced, sender);
+			replaced = TAB.getInstance().getPlatform().replaceAllPlaceholders(replaced, sender);
 			IChatBaseComponent colored = IChatBaseComponent.fromColoredText("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendMessage(colored);
 			} else {
 				sendRawMessage(sender, colored.toLegacyText());
 			}
-			sendRawMessage(sender, "Without colors: " + replaced.replace(PlaceholderManager.colorChar, '&'));
+			sendRawMessage(sender, "Without colors: " + replaced.replace('\u00a7', '&'));
 		} else {
 			sendMessage(sender, "Usage: /tab parse <placeholder>");
 		}

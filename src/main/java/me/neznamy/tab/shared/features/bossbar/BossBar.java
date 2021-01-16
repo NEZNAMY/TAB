@@ -9,11 +9,9 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -25,6 +23,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
  */
 public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener{
 
+	private TAB tab;
 	public List<String> defaultBars;
 	public Map<String, List<String>> perWorld;
 	public Map<String, BossBarLine> lines = new HashMap<String, BossBarLine>();
@@ -37,19 +36,20 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	public long announceEndTime;
 	private boolean hiddenByDefault;
 
-	public BossBar() {
-		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
-		toggleCommand = Configs.bossbar.getString("bossbar-toggle-command", "/bossbar");
-		defaultBars = Configs.bossbar.getStringList("default-bars", new ArrayList<String>());
-		permToToggle = Configs.bossbar.getBoolean("permission-required-to-toggle", false);
-		hiddenByDefault = Configs.bossbar.getBoolean("hidden-by-default", false);
-		perWorld = Configs.bossbar.getConfigurationSection("per-world");
-		for (Object bar : Configs.bossbar.getConfigurationSection("bars").keySet()){
+	public BossBar(TAB tab) {
+		this.tab = tab;
+		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		toggleCommand = tab.getConfiguration().bossbar.getString("bossbar-toggle-command", "/bossbar");
+		defaultBars = tab.getConfiguration().bossbar.getStringList("default-bars", new ArrayList<String>());
+		permToToggle = tab.getConfiguration().bossbar.getBoolean("permission-required-to-toggle", false);
+		hiddenByDefault = tab.getConfiguration().bossbar.getBoolean("hidden-by-default", false);
+		perWorld = tab.getConfiguration().bossbar.getConfigurationSection("per-world");
+		for (Object bar : tab.getConfiguration().bossbar.getConfigurationSection("bars").keySet()){
 			lines.put(bar+"", BossBarLine.fromConfig(bar+""));
 		}
 		for (String bar : new ArrayList<String>(defaultBars)) {
 			if (lines.get(bar) == null) {
-				Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
+				tab.getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
 				defaultBars.remove(bar);
 			}
 		}
@@ -57,16 +57,16 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			List<String> bars = entry.getValue();
 			for (String bar : new ArrayList<String>(bars)) {
 				if (lines.get(bar) == null) {
-					Shared.errorManager.startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
+					tab.getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
 					bars.remove(bar);
 				}
 			}
 		}
-		remember_toggle_choice = Configs.bossbar.getBoolean("remember-toggle-choice", false);
+		remember_toggle_choice = tab.getConfiguration().bossbar.getBoolean("remember-toggle-choice", false);
 		if (remember_toggle_choice) {
-			bossbar_off_players = Configs.getPlayerData("bossbar-off");
+			bossbar_off_players = tab.getConfiguration().getPlayerData("bossbar-off");
 		}
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
 			public String get() {
@@ -77,12 +77,12 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void load() {
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			onJoin(p);
 		}
-		Shared.cpu.startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
-				for (TabPlayer p : Shared.getPlayers()) {
+				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
 					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
 						if (!bar.isConditionMet(p)) {
@@ -99,7 +99,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void unload() {
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
 				p.removeBossBar(line);
 			}
@@ -124,7 +124,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
-			Shared.command.execute(sender, new String[] {"bossbar"});
+			tab.command.execute(sender, new String[] {"bossbar"});
 			return true;
 		}
 		return false;
@@ -148,11 +148,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 			}
 		}
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.BOSSBAR;

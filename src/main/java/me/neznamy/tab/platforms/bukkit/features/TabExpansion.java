@@ -10,8 +10,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
@@ -60,7 +59,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	@Override
 	public String onPlaceholderRequest(Player player, String identifier){
 		if (player == null) return "";
-		TabPlayer p = Shared.getPlayer(player.getUniqueId());
+		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
 		if (p == null) return "";
 		if (identifier.equals("scoreboard_visible")) {
 			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
@@ -71,10 +70,10 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (identifier.equals("ntpreview")) {
 			return p.isPreviewingNametag() ? "Enabled" : "Disabled";
 		}
-		if (identifier.startsWith("replace_") && Configs.premiumconfig != null) {
+		if (identifier.startsWith("replace_") && TAB.getInstance().getConfiguration().premiumconfig != null) {
 			String placeholder = "%" + identifier.substring(8) + "%";
-			String output = ((BukkitPlatform) Shared.platform).setPlaceholders(player, placeholder);
-			Map<Object, String> replacements = Configs.premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
+			String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
+			Map<Object, String> replacements = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
 			String replacement = Placeholder.findReplacement(replacements, output);
 			if (replacement.contains("%value%")) {
 				replacement = replacement.replace("%value%", output);

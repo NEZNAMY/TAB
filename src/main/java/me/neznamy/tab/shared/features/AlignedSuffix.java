@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -23,29 +22,31 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
  */
 public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
 
+	private TAB tab;
 	private int maxWidth;
 	private TabPlayer maxPlayer;
 	private Map<Character, Byte> widths = new HashMap<Character, Byte>();
 	private Playerlist playerlist;
 
-	public AlignedSuffix(Playerlist playerlist) {
+	public AlignedSuffix(Playerlist playerlist, TAB tab) {
+		this.tab = tab;
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
 		boolean save = false;
-		Map<Integer, Integer> extraWidths = Configs.premiumconfig.getConfigurationSection("extra-character-widths");
+		Map<Integer, Integer> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
 		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
 			char c = (char)(int)entry;
 			int width = (int)extraWidths.get(entry);
 			if (widths.containsKey(c)) {
 				extraWidths.remove((int)c);
-				Shared.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
+				tab.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
 				save = true;
 			} else {
 				widths.put(c, (byte)width);
 			}
 		}
-		if (save) Configs.premiumconfig.save();
-		Shared.debug("Loaded " + widths.size() + " character widths.");
+		if (save) tab.getConfiguration().premiumconfig.save();
+		tab.debug("Loaded " + widths.size() + " character widths.");
 	}
 	private void loadWidthsFromFile() {
 		try {
@@ -59,14 +60,14 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			}
 			br.close();
 		} catch (Exception ex) {
-			Shared.errorManager.criticalError("Failed to read character widths from file", ex);
+			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
 	}
 	public String fixTextWidth(TabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
-			for (TabPlayer all : Shared.getPlayers()) {
+			for (TabPlayer all : tab.getPlayers()) {
 				int localWidth = getPlayerNameWidth(all);
 				if (localWidth > maxWidth) {
 					maxWidth = localWidth;
@@ -79,14 +80,14 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			maxPlayer = player;
 			updateAllNames(player, UsageType.PACKET_READING);
 		}
-		String newFormat = prefixAndName + PlaceholderManager.colorChar + "r";
+		String newFormat = prefixAndName + "\u00a7r";
 		try {
 			newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
 		} catch (IllegalArgumentException e) {
 			//will investigate later
 			newFormat += buildSpaces(12);
 		}
-		newFormat += PlaceholderManager.getLastColors(prefixAndName) + suffix;
+		newFormat += tab.getPlaceholderManager().getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
 	private int getTextWidth(IChatBaseComponent component) {
@@ -101,7 +102,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 						width += localWidth;
 					}
 				} else {
-					Shared.errorManager.oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
+					tab.getErrorManager().oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
 				}
 			}
 			//there is 1 pixel space between characters, but not after last one
@@ -155,7 +156,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			}
 			output += "&r";
 		}
-		return PlaceholderManager.color(output);
+		return tab.getPlaceholderManager().color(output);
 	}
 
 	@Override
@@ -189,11 +190,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	}
 
 	private void updateAllNames(TabPlayer exception, UsageType usage) {
-		Shared.cpu.runMeasuredTask("aligning tabsuffix", TabFeature.ALIGNED_TABSUFFIX, usage, new Runnable() {
+		tab.getCPUManager().runMeasuredTask("aligning tabsuffix", TabFeature.ALIGNED_TABSUFFIX, usage, new Runnable() {
 
 			@Override
 			public void run() {
-				for (TabPlayer all : Shared.getPlayers()) {
+				for (TabPlayer all : tab.getPlayers()) {
 					if (all == exception) continue;
 					playerlist.refresh(all, true);
 				}
@@ -206,7 +207,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		int oldMaxWidth = maxWidth;
 		maxWidth = 0;
 		maxPlayer = null;
-		for (TabPlayer all : Shared.getPlayers()) {
+		for (TabPlayer all : tab.getPlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = getPlayerNameWidth(all);
 			if (localWidth > maxWidth) {
@@ -216,11 +217,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 		return oldMaxWidth != maxWidth;
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.ALIGNED_TABSUFFIX;

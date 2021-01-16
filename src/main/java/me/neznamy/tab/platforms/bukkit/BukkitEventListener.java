@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * The core for bukkit forwarding events into all enabled features
@@ -22,8 +22,8 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e){
-		if (Shared.disabled) return;
-		Shared.cpu.runTask("processing PlayerQuitEvent", () -> Shared.featureManager.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId())));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getCPUManager().runTask("processing PlayerQuitEvent", () -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**
@@ -32,8 +32,8 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		if (Shared.disabled) return;
-		Shared.cpu.runTask("processing PlayerJoinEvent", () -> Shared.featureManager.onJoin(new BukkitTabPlayer(e.getPlayer())));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer())));
 	}
 
 	/**
@@ -42,8 +42,8 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onWorldChange(PlayerChangedWorldEvent e){
-		if (Shared.disabled) return;
-		Shared.cpu.runTask("processing PlayerChangedWorldEvent", () -> Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getWorld().getName()));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getCPUManager().runTask("processing PlayerChangedWorldEvent", () -> TAB.getInstance().getFeatureManager().onWorldChange(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getWorld().getName()));
 	}
 
 	/**
@@ -52,8 +52,8 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
-		if (Shared.disabled) return;
-		if (Shared.featureManager.onCommand(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
+		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class BukkitEventListener implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		if (Shared.disabled) return;
-		Shared.cpu.runTask("processing PlayerRespawnEvent", () -> Shared.featureManager.onRespawn(Shared.getPlayer(e.getPlayer().getUniqueId())));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getCPUManager().runTask("processing PlayerRespawnEvent", () -> TAB.getInstance().getFeatureManager().onRespawn(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.ErrorManager;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -33,8 +33,11 @@ public class CPUManager {
 	private List<Map<String, Long>> bridgePlaceholderUsageLastMinute = Collections.synchronizedList(new ArrayList<Map<String, Long>>());
 
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+	
+	private ErrorManager errorManager;
 
-	public CPUManager() {
+	public CPUManager(ErrorManager errorManager) {
+		this.errorManager = errorManager;
 		exe.submit(new Runnable() {
 
 			@Override
@@ -82,7 +85,7 @@ public class CPUManager {
 					task.run();
 					addTime(feature, type, System.nanoTime()-time);
 				} catch (Throwable t) {
-					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
+					errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});
@@ -95,7 +98,7 @@ public class CPUManager {
 				try {
 					task.run();
 				} catch (Throwable t) {
-					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
+					errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});
@@ -121,7 +124,7 @@ public class CPUManager {
 					} catch (InterruptedException pluginDisabled) {
 						break;
 					} catch (Throwable t) {
-						Shared.errorManager.printError("An error occurred when " + errorDescription, t);
+						errorManager.printError("An error occurred when " + errorDescription, t);
 					}
 				}
 			}
@@ -139,7 +142,7 @@ public class CPUManager {
 					addTime(feature, type, System.nanoTime()-time);
 				} catch (InterruptedException pluginDisabled) {
 				} catch (Throwable t) {
-					Shared.errorManager.printError("An error occurred when " + errorDescription, t);
+					errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});

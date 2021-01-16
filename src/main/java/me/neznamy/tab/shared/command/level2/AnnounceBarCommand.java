@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
@@ -22,8 +22,8 @@ public class AnnounceBarCommand extends SubCommand{
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		if (Shared.featureManager.isFeatureEnabled("bossbar")) {
-			BossBar feature = (BossBar) Shared.featureManager.getFeature("bossbar");
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("bossbar")) {
+			BossBar feature = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 			if (args.length == 2) {
 				String barname = args[0];
 				int duration;
@@ -40,12 +40,12 @@ public class AnnounceBarCommand extends SubCommand{
 								}
 								feature.announcements.add(barname);
 								feature.announceEndTime = System.currentTimeMillis() + duration*1000;
-								for (TabPlayer all : Shared.getPlayers()) {
+								for (TabPlayer all : TAB.getInstance().getPlayers()) {
 									bar.create(all);
 									all.getActiveBossBars().add(bar);
 								}
 								Thread.sleep(duration*1000);
-								for (TabPlayer all : Shared.getPlayers()) {
+								for (TabPlayer all : TAB.getInstance().getPlayers()) {
 									bar.remove(all);
 									all.getActiveBossBars().remove(bar);
 								}
@@ -68,7 +68,7 @@ public class AnnounceBarCommand extends SubCommand{
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		BossBar b = (BossBar) Shared.featureManager.getFeature("bossbar");
+		BossBar b = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (b == null) return new ArrayList<String>();
 		List<String> suggestions = new ArrayList<String>();
 		if (arguments.length == 1) {

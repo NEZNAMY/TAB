@@ -16,7 +16,7 @@ public class ConditionAND extends Condition {
 
 	@Override
 	public boolean isMet(TabPlayer p) {
-		for (SimpleCondition condition : conditions) {
+		for (SimpleCondition condition : subconditions) {
 			if (!condition.isMet(p)) return false;
 		}
 		return true;

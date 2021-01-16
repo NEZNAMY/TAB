@@ -1,43 +1,16 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOut;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcherItem {
-
-	//required NMS constructor
-	private static Constructor<?> newDataWatcherItem;
 	
-	//type of value (position + data type)
+	//type of value (position + data type (1.9+))
 	public DataWatcherObject type;
 	
 	//actual data value
 	public Object value;
-
-	/**
-	 * Initializes required NMS classes and fields
-	 * @throws Exception - if something fails
-	 */
-	public static void initializeClass() throws Exception {
-		Class<?> DataWatcherItem;
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			//1.9+
-			DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$Item");
-		} else {
-			//1.8-
-			try {
-				//v1_8_R2, v1_8_R3
-				DataWatcherItem = PacketPlayOut.getNMSClass("DataWatcher$WatchableObject");
-			} catch (ClassNotFoundException e) {
-				//v1_8_R1-
-				DataWatcherItem = PacketPlayOut.getNMSClass("WatchableObject");
-			}
-		}
-		newDataWatcherItem = DataWatcherItem.getConstructors()[0];
-	}
 	
 	/**
 	 * Constructs new instance of the object with given parameters
@@ -50,19 +23,6 @@ public class DataWatcherItem {
 	}
 	
 	/**
-	 * Returns NMS version of this class
-	 * @return NMS version of this class
-	 * @throws Exception - if something fails
-	 */
-	public Object toNMS() throws Exception {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			return newDataWatcherItem.newInstance(type.toNMS(), value);
-		} else {
-			return newDataWatcherItem.newInstance(type.classType, type.position, value);
-		}
-	}
-	
-	/**
 	 * Returns and instance of this class from given NMS item
 	 * @param nmsItem - NMS item
 	 * @return instance of this class with same data
@@ -70,14 +30,11 @@ public class DataWatcherItem {
 	 */
 	public static DataWatcherItem fromNMS(Object nmsItem) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			DataWatcherObject object = DataWatcherObject.fromNMS(getValue(nmsItem, "a"));
-			Object value = getValue(nmsItem, "b");
-			return new DataWatcherItem(object, value);
+			Object nmsObject = getValue(nmsItem, "a");
+			DataWatcherObject object = new DataWatcherObject((int) DataWatcherItem.getValue(nmsObject, "a"), DataWatcherItem.getValue(nmsObject, "b"));
+			return new DataWatcherItem(object, getValue(nmsItem, "b"));
 		} else {
-			Object classType = getValue(nmsItem, "a");
-			int position = (int) getValue(nmsItem, "b");
-			Object value = getValue(nmsItem, "c");
-			return new DataWatcherItem(new DataWatcherObject(position, classType), value);
+			return new DataWatcherItem(new DataWatcherObject((int) getValue(nmsItem, "b"), getValue(nmsItem, "a")), getValue(nmsItem, "c"));
 		}
 	}
 	

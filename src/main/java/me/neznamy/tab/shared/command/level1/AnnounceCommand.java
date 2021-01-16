@@ -5,7 +5,6 @@ import java.util.Arrays;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
-import me.neznamy.tab.shared.config.Configs;
 
 /**
  * Handler for "/tab announce" subcommand
@@ -26,7 +25,7 @@ public class AnnounceCommand extends SubCommand {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				} else {
-					sendMessage(sender, Configs.no_perm);
+					sendMessage(sender, getTranslation("no_permission"));
 				}
 			} else {
 				sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");

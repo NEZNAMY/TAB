@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
@@ -19,24 +18,26 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
  */
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
 
+	private TAB tab;
 	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
 	
-	public HeaderFooter() {
-		disabledWorlds = Configs.config.getStringList("disable-features-in-"+Shared.platform.getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + Shared.platform.getSeparatorType()));
+	public HeaderFooter(TAB tab) {
+		this.tab = tab;
+		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 	}
 	
 	@Override
 	public void load() {
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			refresh(p, true);
 		}
 	}
 	
 	@Override
 	public void unload() {
-		for (TabPlayer p : Shared.getPlayers()) {
+		for (TabPlayer p : tab.getPlayers()) {
 			if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
 		}
@@ -73,20 +74,20 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 
 	private void updateRawValue(TabPlayer p, String name) {
-		String worldGroup = Configs.getWorldGroupOf(p.getWorldName());
+		String worldGroup = tab.getConfiguration().getWorldGroupOf(p.getWorldName());
 		StringBuilder rawValue = new StringBuilder();
-		List<String> lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Users." + p.getName() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Users." + p.getUniqueId().toString() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + "." + name);
-		if (lines == null) lines = Configs.config.getStringList("Groups." + p.getGroup() + "." + name);
-		if (lines == null) lines = Configs.config.getStringList(name);
+		List<String> lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("Users." + p.getName() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("Users." + p.getUniqueId().toString() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList("Groups." + p.getGroup() + "." + name);
+		if (lines == null) lines = tab.getConfiguration().config.getStringList(name);
 		if (lines == null) lines = new ArrayList<String>();
 		int i = 0;
 		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n" + PlaceholderManager.colorChar + "r");
+			if (++i > 1) rawValue.append("\n" + '\u00a7' + "r");
 			rawValue.append(line);
 		}
 		p.setProperty(name, rawValue.toString());
@@ -94,13 +95,9 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = Configs.config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
+		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
 	}
-	
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
+
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.HEADER_FOOTER;

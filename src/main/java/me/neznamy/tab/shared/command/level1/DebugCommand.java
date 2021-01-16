@@ -8,12 +8,10 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 
 /**
@@ -29,14 +27,14 @@ public class DebugCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		TabPlayer analyzed = null;
 		if (args.length > 0) {
-			analyzed = Shared.getPlayer(args[0]);
+			analyzed = TAB.getInstance().getPlayer(args[0]);
 			if (analyzed == null) {
-				sendMessage(sender, Configs.player_not_found);
+				sendMessage(sender, getTranslation("player_not_found"));
 				return;
 			}
 		}
 		if (analyzed == null && sender != null) {
-			analyzed = Shared.getPlayer(sender.getUniqueId());
+			analyzed = TAB.getInstance().getPlayer(sender.getUniqueId());
 		}
 		debug(sender, analyzed);
 	}
@@ -48,15 +46,16 @@ public class DebugCommand extends SubCommand {
 	 */
 	@SuppressWarnings("unchecked")
 	private void debug(TabPlayer sender, TabPlayer analyzed) {
-		GroupRefresher group = (GroupRefresher) Shared.featureManager.getFeature("group");
+		TAB tab = TAB.getInstance();
+		GroupRefresher group = (GroupRefresher) tab.getFeatureManager().getFeature("group");
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
-		sendMessage(sender, "&6Server version: &a" + Shared.platform.getServerVersion());
-		sendMessage(sender, "&6Plugin version: &a" + Shared.pluginVersion + (Shared.isPremium() ? " Premium" : ""));
-		if (Configs.errorFile.exists()) {
-			sendMessage(sender, "&6" + Configs.errorFile.getPath() + " size: &c" + Configs.errorFile.length()/1024 + "KB");
+		sendMessage(sender, "&6Server version: &a" + tab.getPlatform().getServerVersion());
+		sendMessage(sender, "&6Plugin version: &a" + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
+		if (tab.getErrorManager().errorFile.exists()) {
+			sendMessage(sender, "&6" + tab.getErrorManager().errorFile.getPath() + " size: &c" + tab.getErrorManager().errorFile.length()/1024 + "KB");
 		}
-		sendMessage(sender, "&6Permission plugin: &a" + Shared.permissionPlugin.getName());
+		sendMessage(sender, "&6Permission plugin: &a" + tab.getPermissionPlugin().getName());
 		if (group.groupsByPermissions) {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
 		} else if (group.usePrimaryGroup) {
@@ -65,11 +64,11 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
 		}
 
-		NameTag nametag = Shared.featureManager.getNameTagFeature();
+		NameTag nametag = tab.getFeatureManager().getNameTagFeature();
 		String sortingType;
 
 		if (nametag != null) {
-			if (Shared.isPremium()) {
+			if (tab.isPremium()) {
 				sortingType = nametag.sorting.typesToString();
 				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + nametag.sorting.sortingPlaceholder;
 			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
@@ -90,7 +89,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
 		} else {
 			try {
-				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(Shared.permissionPlugin.getAllGroups(analyzed)));
+				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(tab.getPermissionPlugin().getAllGroups(analyzed)));
 			} catch (Throwable e) {
 				sendMessage(sender, "&eFull permission group list: &a[]");
 			}
@@ -98,15 +97,15 @@ public class DebugCommand extends SubCommand {
 		}
 
 		if (nametag != null) {
-			if (Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
-				sendMessage(sender, "&eTeam name: &cSorting disabled in player's " + Shared.platform.getSeparatorType());
+			if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
+				sendMessage(sender, "&eTeam name: &cSorting disabled in player's " + tab.getPlatform().getSeparatorType());
 			} else {
 				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
 				if (analyzed.getTeamNameNote() != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.getTeamNameNote());
 			}
 		}
-		if (Shared.featureManager.isFeatureEnabled("playerlist")) {
-			Playerlist playerlist = (Playerlist) Shared.featureManager.getFeature("playerlist");
+		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
+			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.disabledWorlds, analyzed.getWorldName());
 			showProperty(sender, analyzed, "tabprefix", disabledPlayerlist);
 			showProperty(sender, analyzed, "tabsuffix", disabledPlayerlist);
@@ -116,16 +115,16 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
-		if (Shared.featureManager.getNameTagFeature() != null) {
-			boolean disabledNametags = Shared.featureManager.getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
+		if (tab.getFeatureManager().getNameTagFeature() != null) {
+			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
-			if (Shared.featureManager.isFeatureEnabled("nametagx")) {
+			if (tab.getFeatureManager().isFeatureEnabled("nametagx")) {
 				showProperty(sender, analyzed, "customtagname", disabledNametags);
 				List<Object> lines;
-				if (Shared.isPremium()) {
-					lines = Lists.newArrayList((List<Object>) Configs.premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
-					lines.addAll(Configs.premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
+				if (tab.isPremium()) {
+					lines = Lists.newArrayList((List<Object>) tab.getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
+					lines.addAll(tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
 				} else {
 					lines = Arrays.asList("belowname", "nametag", "abovename");
 				}
@@ -149,11 +148,11 @@ public class DebugCommand extends SubCommand {
 	 */
 	private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
 		if (disabled) {
-			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + Shared.platform.getSeparatorType());
+			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + TAB.getInstance().getPlatform().getSeparatorType());
 		} else {
 			Property pr = analyzed.getProperty(property);
-			String rawValue = pr.getCurrentRawValue().replace(PlaceholderManager.colorChar, '&');
-			String value = PlaceholderManager.color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
+			String rawValue = pr.getCurrentRawValue().replace('\u00a7', '&');
+			String value = TAB.getInstance().getPlaceholderManager().color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
 			sendRawMessage(sender, value);
 		}
 	}

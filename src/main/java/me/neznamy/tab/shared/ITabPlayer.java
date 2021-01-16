@@ -14,9 +14,7 @@ import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.GroupRefresher;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -58,7 +56,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	protected Map<String, String> attributes = new HashMap<String, String>();
 
 	public void init() {
-		setGroup(((GroupRefresher)Shared.featureManager.getFeature("group")).detectPermissionGroup(this), false);
+		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
 	}
 
 	public abstract boolean hasPermission(String permission);
@@ -85,9 +83,9 @@ public abstract class ITabPlayer implements TabPlayer {
 	public abstract Object getSkin();
 
 	private boolean getTeamVisibility(TabPlayer viewer) {
-		if (Shared.featureManager.isFeatureEnabled("nametagx") && !onBoat) return false;
-		if (hiddenNametag || Configs.getSecretOption("invisible-nametags", false) || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
-		return !Shared.featureManager.getNameTagFeature().getInvisiblePlayers().contains(getName());
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && !onBoat) return false;
+		if (hiddenNametag || (boolean) TAB.getInstance().getConfiguration().getSecretOption("invisible-nametags", false) || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
+		return !TAB.getInstance().getFeatureManager().getNameTagFeature().getInvisiblePlayers().contains(getName());
 	}
 
 	public void setProperty(String identifier, String rawValue, String source) {
@@ -122,11 +120,11 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void setValueTemporarily(EnumProperty type, String value) {
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		Property pr = getProperty(type.toString());
 		if (pr == null) throw new IllegalStateException("Feature handling this property is not enabled");
 		pr.setTemporaryValue(value);
-		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
 		forceRefresh();
@@ -134,9 +132,9 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void setValuePermanently(EnumProperty type, String value) {
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
-		((PlayerCommand)Shared.command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
-		if (Shared.featureManager.isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
+		((PlayerCommand)TAB.getInstance().command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag", getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
 		Property pr = getProperty(type.toString());
@@ -184,7 +182,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void forceRefresh() {
-		Shared.featureManager.refresh(this, true);
+		TAB.getInstance().getFeatureManager().refresh(this, true);
 	}
 
 	@Override
@@ -202,7 +200,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void showScoreboard(String name) {
-		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
+		ScoreboardManager sbm = ((ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard scoreboard = sbm.getScoreboards().get(name);
 		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name: " + name);
@@ -212,7 +210,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void removeCustomScoreboard() {
 		if (forcedScoreboard == null) return;
-		ScoreboardManager sbm = ((ScoreboardManager) Shared.featureManager.getFeature("scoreboard"));
+		ScoreboardManager sbm = ((ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = sbm.getScoreboards().get(sbm.detectHighestScoreboard(this));
 		if (sb == null) return; //no scoreboard available
@@ -256,10 +254,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		if (previewingNametag) {
 			armorStandManager.destroy(this);
-			sendMessage(Configs.preview_off, true);
+			sendMessage(TAB.getInstance().getConfiguration().translation.getString("preview-off"), true);
 		} else {
 			armorStandManager.spawn(this);
-			sendMessage(Configs.preview_on, true);
+			sendMessage(TAB.getInstance().getConfiguration().translation.getString("preview-on"), true);
 		}
 		previewingNametag = !previewingNametag;
 	}
@@ -283,7 +281,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void unregisterTeam() {
 		if (teamName == null) return;
 		Object packet = new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
-		for (TabPlayer viewer : Shared.getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			viewer.sendPacket(packet);
 		}
 	}
@@ -297,7 +295,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void registerTeam() {
 		Property tagprefix = getProperty("tagprefix");
 		Property tagsuffix = getProperty("tagsuffix");
-		for (TabPlayer viewer : Shared.getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null);
@@ -316,7 +314,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void updateTeam() {
 		if (teamName == null) return; //player not loaded yet
-		String newName = Shared.featureManager.getNameTagFeature().sorting.getTeamName(this);
+		String newName = TAB.getInstance().getFeatureManager().getNameTagFeature().sorting.getTeamName(this);
 		if (teamName.equals(newName)) {
 			updateTeamData();
 		} else {
@@ -330,7 +328,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void updateTeamData() {
 		Property tagprefix = getProperty("tagprefix");
 		Property tagsuffix = getProperty("tagsuffix");
-		for (TabPlayer viewer : Shared.getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(viewer);
@@ -385,37 +383,37 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void loadPropertyFromConfig(String property, String ifNotSet) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
-		String worldGroup = Configs.getWorldGroupOf(getWorldName());
+		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(getWorldName());
 		String value;
-		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
-			setProperty(property, value, "Player: " + getName() + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
+		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
+			setProperty(property, value, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
-			setProperty(property, value, "PlayerUUID: " + getName() + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
+		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
+			setProperty(property, value, "PlayerUUID: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("Users." + getName() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().config.getString("Users." + getName() + "." + property)) != null) {
 			setProperty(property, value, "Player: " + getName());
 			return;
 		}
-		if ((value = Configs.config.getString("Users." + getUniqueId().toString() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().config.getString("Users." + getUniqueId().toString() + "." + property)) != null) {
 			setProperty(property, value, "PlayerUUID: " + getName());
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
-			setProperty(property, value, "Group: " + permissionGroup + ", " + Shared.platform.getSeparatorType() + ": " + worldGroup);
+		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
+			setProperty(property, value, "Group: " + permissionGroup + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("per-" + Shared.platform.getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
-			setProperty(property, value, "Group: _OTHER_," + Shared.platform.getSeparatorType() + ": " + worldGroup);
+		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
+			setProperty(property, value, "Group: _OTHER_," + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
 			setProperty(property, value, "Group: " + permissionGroup);
 			return;
 		}
-		if ((value = Configs.config.getString("Groups._OTHER_." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().config.getString("Groups._OTHER_." + property)) != null) {
 			setProperty(property, value, "Group: _OTHER_");
 			return;
 		}
@@ -477,7 +475,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage) {
 		if (scoreboardVisible == visible) return;
 		scoreboardVisible = visible;
-		ScoreboardManager scoreboardManager = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
+		ScoreboardManager scoreboardManager = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (scoreboardManager == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		if (visible) {
 			scoreboardManager.sendHighestScoreboard(this);
@@ -486,7 +484,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.remove(getName());
-				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
 			}
 		} else {
 			scoreboardManager.unregisterScoreboard(this, true);
@@ -495,7 +493,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.add(getName());
-				Configs.playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
 			}
 		}
 	}
@@ -527,7 +525,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			this.permissionGroup = permissionGroup;
 		} else {
 			this.permissionGroup = "<null>";
-			Shared.errorManager.oneTimeConsoleError(Shared.permissionPlugin.getName() + " v" + Shared.permissionPlugin.getVersion() + " returned null permission group for " + getName());
+			TAB.getInstance().getErrorManager().oneTimeConsoleError(TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion() + " returned null permission group for " + getName());
 		}
 		if (refreshIfChanged) {
 			forceRefresh();
@@ -560,13 +558,13 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void hideNametag(UUID viewer) {
 		if (hiddenNametagFor.add(viewer)) {
-			updateTeamData(Shared.getPlayer(viewer));
+			updateTeamData(TAB.getInstance().getPlayer(viewer));
 		}
 	}
 
 	public void showNametag(UUID viewer) {
 		if (hiddenNametagFor.remove(viewer)) {
-			updateTeamData(Shared.getPlayer(viewer));
+			updateTeamData(TAB.getInstance().getPlayer(viewer));
 		}
 	}
 
@@ -577,7 +575,7 @@ public abstract class ITabPlayer implements TabPlayer {
 				updateTeamData();
 			}
 		} else {
-			boolean collision = !isDisguised() && Configs.getCollisionRule(getWorldName());
+			boolean collision = !isDisguised() && TAB.getInstance().getConfiguration().revertedCollision.contains(world) ? !TAB.getInstance().getConfiguration().collisionRule : TAB.getInstance().getConfiguration().collisionRule;
 			if (this.collision != collision) {
 				this.collision = collision;
 				updateTeamData();

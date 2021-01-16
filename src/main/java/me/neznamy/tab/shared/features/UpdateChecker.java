@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Update checker
@@ -15,7 +15,7 @@ public class UpdateChecker {
 	//separate field to prevent false flag on pre releases
 	private final String currentRelease = "2.8.10";
 	
-	public UpdateChecker() {
+	public UpdateChecker(TAB tab) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -27,11 +27,11 @@ public class UpdateChecker {
 					br.close();
 					con.disconnect();
 					if (!versionString.equals(currentRelease)) {
-						Shared.platform.sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + Shared.pluginVersion, true);
-						Shared.platform.sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/", true);
+						tab.getPlatform().sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + tab.getPluginVersion(), true);
+						tab.getPlatform().sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/", true);
 					}
 				} catch (Exception e) {
-					Shared.debug("&cFailed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+					tab.debug("&cFailed to check for updates (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 				}
 			}
 		}).start();

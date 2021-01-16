@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -29,21 +29,23 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout implements Loadable, JoinEventListener {
 
+	private TAB tab;
 	private LayoutDirection direction;
 	private Map<Integer, FixedSlot> fixedSlots = new HashMap<Integer, FixedSlot>();
 	private List<ParentGroup> parentGroups = new ArrayList<ParentGroup>();
 	private Map<String, ChildGroup> childGroups = new HashMap<String, ChildGroup>();
 	private Map<Integer, UUID> uuids = new HashMap<Integer, UUID>();
 
-	public Layout() {
+	public Layout(TAB tab) {
+		this.tab = tab;
 		try {
-			new File(Shared.platform.getDataFolder() + File.separator + "layout").mkdirs();
-			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(Shared.platform.getDataFolder(), "layout" + File.separator + "default.yml"));
+			new File(tab.getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
+			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(tab.getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
 			String type = file.getString("direction", "COLUMNS");
 			try {
 				direction = LayoutDirection.valueOf(type);
 			} catch (Throwable e) {
-				Shared.errorManager.startupWarn("\"&e" + type + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
+				tab.getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
 				direction = LayoutDirection.COLUMNS;
 			}
 			for (int i=1; i<=80; i++) {
@@ -150,7 +152,7 @@ public class Layout implements Loadable, JoinEventListener {
 		for (FixedSlot s : fixedSlots.values()) {
 			s.onJoin(connectedPlayer);
 		}
-		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(Shared.getPlayers())).entrySet()) {
+		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(tab.getPlayers())).entrySet()) {
 			int slot = translateSlot(entry.getKey());
 			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : slot + ""), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
@@ -167,12 +169,12 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void load() {
-		Shared.cpu.startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
 			public void run() {
-				List<TabPlayer> players = sortPlayers(Shared.getPlayers());
-				for (TabPlayer p : Shared.getPlayers()) {
+				List<TabPlayer> players = sortPlayers(tab.getPlayers());
+				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded()) continue;
 					List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 					for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<TabPlayer>(players)).entrySet()) {
@@ -183,8 +185,8 @@ public class Layout implements Loadable, JoinEventListener {
 				}
 			}
 		});
-		List<TabPlayer> players = sortPlayers(Shared.getPlayers());
-		for (TabPlayer p : Shared.getPlayers()) {
+		List<TabPlayer> players = sortPlayers(tab.getPlayers());
+		for (TabPlayer p : tab.getPlayers()) {
 			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 			for (FixedSlot s : fixedSlots.values()) {
 				s.onJoin(p);
@@ -199,8 +201,8 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void unload() {
-		List<TabPlayer> players = sortPlayers(Shared.getPlayers());
-		for (TabPlayer p : Shared.getPlayers()) {
+		List<TabPlayer> players = sortPlayers(tab.getPlayers());
+		for (TabPlayer p : tab.getPlayers()) {
 			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<TabPlayer>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());

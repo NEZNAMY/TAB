@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 public class PlaceholderLowToHigh extends SortingType {
 
@@ -11,7 +11,7 @@ public class PlaceholderLowToHigh extends SortingType {
 
 	@Override
 	public String getChars(TabPlayer p) {
-		int intValue = Shared.errorManager.parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
+		int intValue = TAB.getInstance().getErrorManager().parseInteger(setPlaceholders(sortingPlaceholder, p), 0, "numeric sorting placeholder");
 		return String.valueOf(DEFAULT_NUMBER + intValue);
 	}
 	

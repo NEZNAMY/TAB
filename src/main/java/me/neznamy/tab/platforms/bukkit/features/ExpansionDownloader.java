@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Utility to execute /papi ecloud download <expansion> on expansions which are used but not installed
@@ -48,10 +48,10 @@ public class ExpansionDownloader {
 						try {
 							//initial delay to give PlaceholderAPI time to load
 							Thread.sleep(5000);
-							Shared.debug("Used expansions: " + expansions.toString());
-							Shared.debug("Registered expansions in PlaceholderAPI: " + PlaceholderAPI.getRegisteredIdentifiers());
+							TAB.getInstance().debug("Used expansions: " + expansions.toString());
+							TAB.getInstance().debug("Registered expansions in PlaceholderAPI: " + PlaceholderAPI.getRegisteredIdentifiers());
 							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
-							Shared.debug("Expansions to install: " + expansions.toString());
+							TAB.getInstance().debug("Expansions to install: " + expansions.toString());
 							if (!expansions.isEmpty()) {
 								File expansionsFolder = new File(Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDataFolder(), "expansions");
 								int oldExpansionDownloadedCount = expansionsFolder.listFiles().length;
@@ -67,7 +67,7 @@ public class ExpansionDownloader {
 							}
 						} catch (InterruptedException | ConcurrentModificationException e) {
 						} catch (Throwable e) {
-							Shared.errorManager.printError("Failed to download PlaceholderAPI expansions. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
+							TAB.getInstance().getErrorManager().printError("Failed to download PlaceholderAPI expansions. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
 						}
 					}
 				}).start();

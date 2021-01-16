@@ -1,19 +1,20 @@
 package me.neznamy.tab.shared.placeholders;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -25,21 +26,22 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	//decimal formatter for 2 decimal numbers
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	
-	private static List<Placeholder> placeholders;
+	private List<Placeholder> placeholders;
 
 	@Override
 	public List<Placeholder> registerPlaceholders() {
 		placeholders = new ArrayList<Placeholder>();
-		placeholders.add(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"%", 1000) {
+		Map<String, Object> serverAliases = TAB.getInstance().getConfiguration().config.getConfigurationSection("server-aliases");
+		placeholders.add(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"%", 1000) {
 			public String get(TabPlayer p) {
-				if (Configs.serverAliases != null && Configs.serverAliases.containsKey(p.getWorldName())) return Configs.serverAliases.get(p.getWorldName())+""; //bungee only
+				if (serverAliases.containsKey(p.getWorldName())) return serverAliases.get(p.getWorldName())+""; //bungee only
 				return p.getWorldName();
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%"+Shared.platform.getSeparatorType()+"online%", 1000) {
+		placeholders.add(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"online%", 1000) {
 			public String get(TabPlayer p) {
 				int var = 0;
-				for (TabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (p.getWorldName().equals(all.getWorldName())) var++;
 				}
 				return var+"";
@@ -56,19 +58,22 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getName();
 			}
 		});
+		double timeOffset = TAB.getInstance().getConfiguration().config.getDouble("placeholders.time-offset", 0);
+		SimpleDateFormat timeFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		placeholders.add(new ServerPlaceholder("%time%", 900) {
 			public String get() {
-				return Configs.timeFormat.format(new Date(System.currentTimeMillis() + (int)(Configs.timeOffset*3600000)));
+				return timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
 		});
+		SimpleDateFormat dateFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		placeholders.add(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
-				return Configs.dateFormat.format(new Date(System.currentTimeMillis() + (int)(Configs.timeOffset*3600000)));
+				return dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
 		});
 		placeholders.add(new ServerPlaceholder("%online%", 1000) {
 			public String get() {
-				return Shared.getPlayers().size()+"";
+				return TAB.getInstance().getPlayers().size()+"";
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%ping%", 50) {
@@ -83,7 +88,12 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
 			public String get() {
-				return Shared.platform.getMaxPlayers()+"";
+				return TAB.getInstance().getPlatform().getMaxPlayers()+"";
+			}
+		});
+		placeholders.add(new ServerPlaceholder("%%", 100000000) {
+			public String get() {
+				return "%";
 			}
 		});
 		registerLuckPermsPlaceholders();
@@ -91,7 +101,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		registerStaffPlaceholders();
 		registerRankPlaceholder();
 		registerAnimationPlaceholders();
-		registerConditionPlaceholders();
+		if (TAB.getInstance().isPremium()) registerConditionPlaceholders();
 		return placeholders;
 	}
 
@@ -119,15 +129,15 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerLuckPermsPlaceholders() {
-		if (Shared.permissionPlugin instanceof LuckPerms) {
+		if (TAB.getInstance().getPermissionPlugin() instanceof LuckPerms) {
 			placeholders.add(new PlayerPlaceholder("%luckperms-prefix%", 500) {
 				public String get(TabPlayer p) {
-					return ((LuckPerms)Shared.permissionPlugin).getPrefix(p);
+					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getPrefix(p);
 				}
 			});
 			placeholders.add(new PlayerPlaceholder("%luckperms-suffix%", 500) {
 				public String get(TabPlayer p) {
-					return ((LuckPerms)Shared.permissionPlugin).getSuffix(p);
+					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getSuffix(p);
 				}
 			});
 		}
@@ -137,7 +147,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		placeholders.add(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
 				int var = 0;
-				for (TabPlayer all : Shared.getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (all.isStaff()) var++;
 				}
 				return var+"";
@@ -145,8 +155,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		placeholders.add(new ServerPlaceholder("%nonstaffonline%", 2000) {
 			public String get() {
-				int var = Shared.getPlayers().size();
-				for (TabPlayer all : Shared.getPlayers()){
+				int var = TAB.getInstance().getPlayers().size();
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (all.isStaff()) var--;
 				}
 				return var+"";
@@ -155,15 +165,16 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerRankPlaceholder() {
+		Map<Object, Object> rankAliases = TAB.getInstance().getConfiguration().config.getConfigurationSection("rank-aliases");
 		placeholders.add(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(TabPlayer p) {
-				for (Entry<Object, Object> entry : Configs.rankAliases.entrySet()) {
+				for (Entry<Object, Object> entry : rankAliases.entrySet()) {
 					if (String.valueOf(entry.getKey()).equalsIgnoreCase(p.getGroup())) {
 						return entry.getValue().toString();
 					}
 				}
-				if (Configs.rankAliases.containsKey("_OTHER_")) {
-					return Configs.rankAliases.get("_OTHER_").toString();
+				if (rankAliases.containsKey("_OTHER_")) {
+					return rankAliases.get("_OTHER_").toString();
 				}
 				return p.getGroup();
 			}
@@ -171,7 +182,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			@Override
 			public String[] getNestedStrings(){
 				Set<String> list = new HashSet<String>();
-				for (Object value : Configs.rankAliases.values()) {
+				for (Object value : rankAliases.values()) {
 					list.add(String.valueOf(value).replace("%rank%", "")); //preventing stack overflow when someone uses %rank% as value
 				}
 				return list.toArray(new String[0]);
@@ -180,7 +191,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerAnimationPlaceholders() {
-		for (Animation a : Configs.animations) {
+		for (Object s : TAB.getInstance().getConfiguration().animation.getConfigurationSection("animations").keySet()) {
+			Animation a = new Animation(s+"", TAB.getInstance().getConfiguration().animation.getStringList("animations." + s + ".texts"), TAB.getInstance().getConfiguration().animation.getInt("animations." + s + ".change-interval", 0));
 			placeholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 50) {
 
 				public String get() {
@@ -196,10 +208,16 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
-	//making it this complicated to fix case-sensitivity
 	private void registerConditionPlaceholders() {
-		for (Condition c : Configs.conditions.values()) {
-			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).defaultRefresh) {
+		Condition.conditions = new HashMap<String, Condition>();
+		for (Object condition : TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("conditions").keySet()) {
+			List<String> list = TAB.getInstance().getConfiguration().premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
+			String type = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".type");
+			String yes = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".true");
+			String no = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".false");
+			Condition c = Condition.compile(condition+"", list, type, yes, no);
+			Condition.conditions.put(condition+"", c);
+			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", TAB.getInstance().getConfiguration().config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100)) {
 
 				@Override
 				public String get(TabPlayer p) {

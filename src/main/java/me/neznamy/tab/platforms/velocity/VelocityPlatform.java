@@ -8,20 +8,16 @@ import java.util.Map;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.VelocityTABLoadEvent;
 import me.neznamy.tab.shared.Platform;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
@@ -45,7 +41,6 @@ public class VelocityPlatform implements Platform {
 	 */
 	public VelocityPlatform(ProxyServer server) {
 		this.server = server;
-		UniversalPacketPlayOut.builder = new VelocityPacketBuilder();
 	}
 	
 	@Override
@@ -61,31 +56,24 @@ public class VelocityPlatform implements Platform {
 	
 	@Override
 	public void loadFeatures() throws Exception{
-		PlaceholderManager plm = new PlaceholderManager();
-		Shared.featureManager.registerFeature("placeholders", plm);
-		plm.addRegistry(new VelocityPlaceholderRegistry(server));
-		plm.addRegistry(new UniversalPlaceholderRegistry());
-		plm.registerPlaceholders();
-		Shared.featureManager.registerFeature("injection", new VelocityPipelineInjector());
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) Shared.featureManager.registerFeature("nametag16", new NameTag16());
+		TAB tab = TAB.getInstance();
+		tab.getPlaceholderManager().addRegistry(new VelocityPlaceholderRegistry(server));
+		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
+		tab.getPlaceholderManager().registerPlaceholders();
+		tab.getFeatureManager().registerFeature("injection", new VelocityPipelineInjector(tab));
+		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag16(tab));
 		loadUniversalFeatures();
-		if (Configs.BossBarEnabled) 										Shared.featureManager.registerFeature("bossbar", new BossBar());
-		if (Configs.config.getBoolean("global-playerlist.enabled", false)) 	Shared.featureManager.registerFeature("globalplayerlist", new GlobalPlayerlist());
+		if (tab.getConfiguration().BossBarEnabled) 											tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
+		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (Player p : server.getAllPlayers()) {
 			TabPlayer t = new VelocityTabPlayer(p);
-			Shared.data.put(p.getUniqueId(), t);
+			tab.data.put(p.getUniqueId(), t);
 		}
 	}
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? PlaceholderManager.color(message): message));
-	}
-
-	@Override
-	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("bungeeconfig.yml"), new File(getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
-		Configs.serverAliases = Configs.config.getConfigurationSection("server-aliases");
+		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? message.replace('&', '\u00a7') : message));
 	}
 	
 	@Override
@@ -93,12 +81,12 @@ public class VelocityPlatform implements Platform {
 		if (identifier.contains("_")) {
 			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
 			if (plugin.equals("some")) return;
-			Shared.debug("Detected used PlaceholderAPI placeholder " + identifier);
-			PlaceholderManager pl = (PlaceholderManager) Shared.featureManager.getFeature("placeholders");
+			TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
+			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 			int cooldown = pl.defaultRefresh;
 			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
 			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
-			((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());
@@ -120,7 +108,7 @@ public class VelocityPlatform implements Platform {
 				serverGroups.put("group2", Arrays.asList("server1", "server2"));
 				config.set("global-playerlist.server-groups", serverGroups);
 				config.set("global-playerlist.display-others-as-spectators", false);
-				Shared.print('2', "Converted old global-playerlist section to new one in config.yml.");
+				TAB.getInstance().print('2', "Converted old global-playerlist section to new one in config.yml.");
 			}
 			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
 		}
@@ -129,23 +117,6 @@ public class VelocityPlatform implements Platform {
 	@Override
 	public String getServerVersion() {
 		return server.getVersion().getName() + " v" + server.getVersion().getVersion();
-	}
-	
-	@Override
-	public void suggestPlaceholders() {
-		//bungee only
-		suggestPlaceholderSwitch("%premiumvanish_bungeeplayercount%", "%canseeonline%");
-		suggestPlaceholderSwitch("%bungee_total%", "%online%");
-		for (RegisteredServer server : server.getAllServers()) {
-			suggestPlaceholderSwitch("%bungee_" + server.getServerInfo().getName() + "%", "%online_" + server.getServerInfo().getName() + "%");
-		}
-
-		//both
-		suggestPlaceholderSwitch("%cmi_user_ping%", "%ping%");
-		suggestPlaceholderSwitch("%player_ping%", "%ping%");
-		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
-		suggestPlaceholderSwitch("%player_name%", "%player%");
-		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
 	}
 
 	@Override

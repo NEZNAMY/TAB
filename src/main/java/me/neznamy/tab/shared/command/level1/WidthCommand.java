@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 
@@ -44,8 +43,8 @@ public class WidthCommand extends SubCommand {
 				}
 			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
-			IChatBaseComponent charMessage = new IChatBaseComponent(PlaceholderManager.color("&2" + c + " &d|"));
-			messages.add(new IChatBaseComponent(PlaceholderManager.colorChar + "b[TAB] Click the line with closest width"));
+			IChatBaseComponent charMessage = new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color("&2" + c + " &d|"));
+			messages.add(new IChatBaseComponent('\u00a7' + "b[TAB] Click the line with closest width"));
 			messages.add(getText(1, c));
 			messages.add(charMessage);
 			messages.add(getText(2, c));
@@ -67,11 +66,11 @@ public class WidthCommand extends SubCommand {
 		} else if (args.length == 2) {
 			int c = Integer.parseInt(args[0]);
 			int width = Integer.parseInt(args[1]);
-			if (!Configs.premiumconfig.hasConfigOption("extra-character-widths")) Configs.premiumconfig.set("extra-character-widths", new HashMap<Integer, Integer>());
-			Configs.premiumconfig.getConfigurationSection("extra-character-widths").put(c, width);
-			Configs.premiumconfig.save();
+			if (!TAB.getInstance().getConfiguration().premiumconfig.hasConfigOption("extra-character-widths")) TAB.getInstance().getConfiguration().premiumconfig.set("extra-character-widths", new HashMap<Integer, Integer>());
+			TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths").put(c, width);
+			TAB.getInstance().getConfiguration().premiumconfig.save();
 			sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char)c + " &2(&6" + c + "&2) to &6" + width + "&2 pixels.");
-			if (Configs.SECRET_debugMode) {
+			if (TAB.getInstance().debugMode) {
 				execute(sender, new String[] {c+1+""});
 			}
 		} else {
@@ -90,6 +89,6 @@ public class WidthCommand extends SubCommand {
 			pixelsRemaining -= 2;
 			text += "i";
 		}
-		return new IChatBaseComponent(PlaceholderManager.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
+		return new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
 	}
 }

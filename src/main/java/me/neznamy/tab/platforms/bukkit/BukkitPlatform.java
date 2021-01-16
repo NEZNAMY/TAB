@@ -22,18 +22,16 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -52,10 +50,11 @@ public class BukkitPlatform implements Platform {
 
 	private Set<String> usedExpansions;
 	private JavaPlugin plugin;
+	private NMSStorage nms;
 
-	public BukkitPlatform(JavaPlugin plugin) {
+	public BukkitPlatform(JavaPlugin plugin, NMSStorage nms) {
 		this.plugin = plugin;
-		UniversalPacketPlayOut.builder = new BukkitPacketBuilder();
+		this.nms = nms;
 	}
 
 	@Override
@@ -73,33 +72,32 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void loadFeatures() throws Exception {
+		TAB tab = TAB.getInstance();
 		usedExpansions = new HashSet<String>();
-		PlaceholderManager plm = new PlaceholderManager();
-		Shared.featureManager.registerFeature("placeholders", plm);
-		plm.addRegistry(new BukkitPlaceholderRegistry(plugin));
-		plm.addRegistry(new UniversalPlaceholderRegistry());
-		plm.registerPlaceholders();
+		tab.getPlaceholderManager().addRegistry(new BukkitPlaceholderRegistry(plugin));
+		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
+		tab.getPlaceholderManager().registerPlaceholders();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-			Shared.featureManager.registerFeature("injection", new BukkitPipelineInjector());
+			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(tab, nms));
 		}
-		if (Configs.config.getBoolean("change-nametag-prefix-suffix", true)) {
-			if (Configs.config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) {
-					Shared.errorManager.startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
+		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) {
+			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+				if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) {
+					tab.getErrorManager().startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
 				}
-				Shared.featureManager.registerFeature("nametagx", new NameTagX(plugin));
+				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms, tab));
 			} else {
-				Shared.featureManager.registerFeature("nametag16", new NameTag16());
+				tab.getFeatureManager().registerFeature("nametag16", new NameTag16(tab));
 			}
 		}
 		loadUniversalFeatures();
-		if (Configs.BossBarEnabled) {
-			BossBar bb = new BossBar();
-			Shared.featureManager.registerFeature("bossbar", bb);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) Shared.featureManager.registerFeature("bossbar1.8", new BossBar_legacy(bb));
+		if (tab.getConfiguration().BossBarEnabled) {
+			BossBar bb = new BossBar(tab);
+			tab.getFeatureManager().registerFeature("bossbar", bb);
+			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(bb, tab));
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && Configs.config.getBoolean("fix-pet-names", false)) Shared.featureManager.registerFeature("petfix", new PetFix());
-		if (Configs.config.getBoolean("per-world-playerlist.enabled", false)) Shared.featureManager.registerFeature("pwp", new PerWorldPlayerlist(plugin));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
+		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
@@ -107,7 +105,7 @@ public class BukkitPlatform implements Platform {
 
 		for (Player p : getOnlinePlayers()) {
 			BukkitTabPlayer t = new BukkitTabPlayer(p);
-			Shared.data.put(p.getUniqueId(), t);
+			tab.data.put(p.getUniqueId(), t);
 		}
 	}
 
@@ -125,20 +123,13 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		Bukkit.getConsoleSender().sendMessage(translateColors ? PlaceholderManager.color(message): message);
-	}
-
-	@Override
-	public void loadConfig() throws Exception {
-		Configs.config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("bukkitconfig.yml"), new File(getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
-		Configs.noAfk = Configs.config.getString("placeholders.afk-no", "");
-		Configs.yesAfk = Configs.config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
+		Bukkit.getConsoleSender().sendMessage(translateColors ? message.replace('&', '\u00a7') : message);
 	}
 
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.contains("_")) {
-			PlaceholderManager pl = (PlaceholderManager) Shared.featureManager.getFeature("placeholders");
+			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 			if (identifier.startsWith("%rel_")) {
 				//relational placeholder
 				registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));
@@ -155,17 +146,13 @@ public class BukkitPlatform implements Platform {
 					registerPlayerPlaceholder(identifier, pl.playerPlaceholderRefreshIntervals.get(identifier));
 					return;
 				}
-				if (identifier.startsWith("%server_")) {
-					registerServerPlaceholder(identifier, pl.defaultRefresh);
-				} else {
-					registerPlayerPlaceholder(identifier, pl.defaultRefresh);
-				}
+				registerPlayerPlaceholder(identifier, pl.defaultRefresh);
 			}
 		}
 	}
 	
 	private void registerServerPlaceholder(String identifier, int refresh) {
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new ServerPlaceholder(identifier, refresh){
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder(identifier, refresh){
 			
 			@Override
 			public String get() {
@@ -175,7 +162,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private void registerPlayerPlaceholder(String identifier, int refresh) {
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 			@Override
 			public String get(TabPlayer p) {
@@ -185,7 +172,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private void registerRelationalPlaceholder(String identifier, int refresh) {
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {
@@ -193,7 +180,7 @@ public class BukkitPlatform implements Platform {
 				try {
 					return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
 				} catch (Throwable t) {
-					Shared.errorManager.printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting relational placeholder " + identifier + " for viewer " + viewer.getName() + " and target " + target.getName(), t, false, Configs.papiErrorFile);
+					TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting relational placeholder " + identifier + " for viewer " + viewer.getName() + " and target " + target.getName(), t, false, TAB.getInstance().getErrorManager().papiErrorFile);
 				}
 				return identifier;
 			}
@@ -206,7 +193,7 @@ public class BukkitPlatform implements Platform {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {
 			String playername = (player == null ? "<null>" : player.getName());
-			Shared.errorManager.printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, Configs.papiErrorFile);
+			TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, TAB.getInstance().getErrorManager().papiErrorFile);
 			return "ERROR";
 		}
 	}
@@ -247,7 +234,7 @@ public class BukkitPlatform implements Platform {
 				config.set("tablist-objective", null);
 				config.set("tablist-objective-custom-value", null);
 				config.set("yellow-number-in-tablist", value);
-				Shared.print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
+				TAB.getInstance().print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
 			}
 			if (config.getObject("per-world-playerlist") instanceof Boolean) {
 				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
@@ -257,7 +244,7 @@ public class BukkitPlatform implements Platform {
 				sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
 				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
 				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
-				Shared.print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
+				TAB.getInstance().print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
 			}
 		}
 	}
@@ -265,43 +252,6 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public String getServerVersion() {
 		return Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")";
-	}
-
-	@Override
-	public void suggestPlaceholders() {
-		//bukkit only
-		suggestPlaceholderSwitch("%essentials_afk%", "%afk%");
-		suggestPlaceholderSwitch("%essentials_nickname%", "%essentialsnick%");
-		suggestPlaceholderSwitch("%luckperms_prefix%", "%luckperms-prefix%");
-		suggestPlaceholderSwitch("%luckperms_suffix%", "%luckperms-suffix%");
-		suggestPlaceholderSwitch("%player_displayname%", "%displayname%");
-		suggestPlaceholderSwitch("%player_health%", "%health%");
-		suggestPlaceholderSwitch("%player_health_rounded%", "%health%");
-		suggestPlaceholderSwitch("%player_world%", "%world%");
-		suggestPlaceholderSwitch("%player_x%", "%xPos%");
-		suggestPlaceholderSwitch("%player_y%", "%yPos%");
-		suggestPlaceholderSwitch("%player_z%", "%zPos%");
-		suggestPlaceholderSwitch("%premiumvanish_playercount%", "%canseeonline%");
-		suggestPlaceholderSwitch("%server_max_players%", "%maxplayers%");
-		suggestPlaceholderSwitch("%server_online%", "%online%");
-		suggestPlaceholderSwitch("%server_ram_max%", "%memory-max%");
-		suggestPlaceholderSwitch("%server_ram_used%", "%memory-used%");
-		suggestPlaceholderSwitch("%server_tps_1%", "%tps%");
-		suggestPlaceholderSwitch("%statistic_deaths%", "%deaths%");
-		suggestPlaceholderSwitch("%supervanish_playercount%", "%canseeonline%");
-		suggestPlaceholderSwitch("%uperms_prefix%", "%vault-prefix%");
-		suggestPlaceholderSwitch("%uperms_suffix%", "%vault-suffix%");
-		suggestPlaceholderSwitch("%vault_eco_balance%", "%money%");
-		suggestPlaceholderSwitch("%vault_prefix%", "%vault-prefix%");
-		suggestPlaceholderSwitch("%vault_rank%", "%rank%");
-		suggestPlaceholderSwitch("%vault_suffix%", "%vault-suffix%");
-
-		//both
-		suggestPlaceholderSwitch("%player_ping%", "%ping%");
-		suggestPlaceholderSwitch("%cmi_user_ping%", "%ping%");
-		suggestPlaceholderSwitch("%viaversion_player_protocol_version%", "%player-version%");
-		suggestPlaceholderSwitch("%player_name%", "%player%");
-		suggestPlaceholderSwitch("%uperms_rank%", "%rank%");
 	}
 
 	@Override
@@ -318,7 +268,7 @@ public class BukkitPlatform implements Platform {
 	public String replaceAllPlaceholders(String string, TabPlayer sender) {
 		if (string == null) return null;
 		String replaced = string;
-		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
+		for (Placeholder p : TAB.getInstance().getPlaceholderManager().getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();

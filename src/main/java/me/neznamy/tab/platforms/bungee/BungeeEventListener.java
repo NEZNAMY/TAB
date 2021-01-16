@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bungee;
 
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -20,8 +20,8 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
-		if (Shared.disabled) return;
-		Shared.featureManager.onQuit(Shared.getPlayer(e.getPlayer().getUniqueId()));
+		if (TAB.getInstance() == null) return;
+		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
 	}
 
 	/**
@@ -30,15 +30,15 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
-		if (Shared.disabled) return;
+		if (TAB.getInstance() == null) return;
 		try {
-			if (!Shared.data.containsKey(e.getPlayer().getUniqueId())) {
-				Shared.featureManager.onJoin(new BungeeTabPlayer(e.getPlayer()));
+			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
+				TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {
-				Shared.featureManager.onWorldChange(Shared.getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getServer().getInfo().getName());
+				TAB.getInstance().getFeatureManager().onWorldChange(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getServer().getInfo().getName());
 			}
 		} catch (Throwable ex){
-			Shared.errorManager.criticalError("An error occurred when player joined/changed server", ex);
+			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
 
@@ -48,7 +48,7 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler
 	public void onChat(ChatEvent e) {
-		if (Shared.disabled) return;
-		if (Shared.featureManager.onCommand(Shared.getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
 	}
 }

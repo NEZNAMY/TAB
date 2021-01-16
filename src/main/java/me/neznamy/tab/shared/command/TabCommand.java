@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
 import me.neznamy.tab.shared.command.level1.BossBarCommand;
 import me.neznamy.tab.shared.command.level1.CpuCommand;
@@ -20,15 +20,17 @@ import me.neznamy.tab.shared.command.level1.ReloadCommand;
 import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
 import me.neznamy.tab.shared.command.level1.SetCollisionCommand;
 import me.neznamy.tab.shared.command.level1.WidthCommand;
-import me.neznamy.tab.shared.config.Configs;
 
 /**
  * The core command handler
  */
 public class TabCommand extends SubCommand {
 
-	public TabCommand() {
+	private TAB tab;
+	
+	public TabCommand(TAB tab) {
 		super("tab", null);
+		this.tab = tab;
 		registerSubCommand(new AnnounceCommand());
 		registerSubCommand(new BossBarCommand());
 		registerSubCommand(new CpuCommand());
@@ -41,7 +43,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new PlayerUUIDCommand());
 		registerSubCommand(new ReloadCommand());
 		registerSubCommand(new SetCollisionCommand());
-		if (Shared.isPremium()) {
+		if (tab.isPremium()) {
 			registerSubCommand(new ScoreboardCommand());
 			registerSubCommand(new WidthCommand());
 		}
@@ -56,7 +58,7 @@ public class TabCommand extends SubCommand {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				} else {
-					sendMessage(sender, Configs.no_perm);
+					sendMessage(sender, getTranslation("no_permission"));
 				}
 			} else {
 				help(sender);
@@ -71,9 +73,9 @@ public class TabCommand extends SubCommand {
 	 * @param sender - player who ran command or null if from console
 	 */
 	private void help(TabPlayer sender){
-		if (sender == null) Shared.platform.sendConsoleMessage("&3TAB v" + Shared.pluginVersion, true);
-		if ((sender == null || sender.hasPermission("tab.admin")) && !Shared.disabled) {
-			String command = Shared.platform.getSeparatorType().equals("world") ? "/tab" : "/btab";
+		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + tab.getPluginVersion(), true);
+		if ((sender == null || sender.hasPermission("tab.admin"))) {
+			String command = tab.getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
 			sendMessage(sender, "&m                                                                                ");
 			sendMessage(sender, " &8>> &3&l" + command + " reload");
 			sendMessage(sender, "      - &7Reloads plugin and config");
@@ -97,7 +99,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!Configs.getSecretOption("auto-command-complete", true)) return new ArrayList<String>();
+		if (!(boolean) tab.getConfiguration().getSecretOption("auto-command-complete", true)) return new ArrayList<String>();
 		return super.complete(sender, arguments);
 	}
 }

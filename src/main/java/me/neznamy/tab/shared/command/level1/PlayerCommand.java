@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 
 /**
  * Handler for "/tab player" subcommand
@@ -28,12 +26,12 @@ public class PlayerCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					Configs.config.set("Users." + player, null);
-					TabPlayer pl = Shared.getPlayer(player);
+					TAB.getInstance().getConfiguration().config.set("Users." + player, null);
+					TabPlayer pl = TAB.getInstance().getPlayer(player);
 					if (pl != null) {
 						pl.forceRefresh();
 					}
-					sendMessage(sender, Configs.data_removed.replace("%category%", "player").replace("%value%", player));
+					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", player));
 				}
 				return;
 			}
@@ -41,11 +39,11 @@ public class PlayerCommand extends SubCommand {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, player, type, value);
-						if (extraProperties.contains(property) && !Shared.featureManager.isFeatureEnabled("nametagx")) {
-							sendMessage(sender, Configs.unlimited_nametag_mode_not_enabled);
+						if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
+							sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
 						}
 					} else {
-						sendMessage(sender, Configs.no_perm);
+						sendMessage(sender, getTranslation("no_permission"));
 					}
 					return;
 				}
@@ -66,16 +64,16 @@ public class PlayerCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	public void savePlayer(TabPlayer sender, String player, String type, String value){
-		TabPlayer pl = Shared.getPlayer(player);
-		Configs.config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
-		((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).checkForRegistration(value);
+		TabPlayer pl = TAB.getInstance().getPlayer(player);
+		TAB.getInstance().getConfiguration().config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		if (pl != null) {
 			pl.forceRefresh();
 		}
 		if (value.length() > 0){
-			sendMessage(sender, Configs.value_assigned.replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
+			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
 		} else {
-			sendMessage(sender, Configs.value_removed.replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
+			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
 	}
 	

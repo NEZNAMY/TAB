@@ -22,7 +22,6 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
@@ -31,6 +30,12 @@ public class FeatureManager {
 
 	//list of registered features
 	private Map<String, Feature> features = new LinkedHashMap<String, Feature>();
+	
+	private TAB tab;
+	
+	public FeatureManager(TAB tab) {
+		this.tab = tab;
+	}
 	
 	/**
 	 * Registers a feature
@@ -133,16 +138,16 @@ public class FeatureManager {
 		if (listeners.isEmpty()) return packet;
 		
 		long time = System.nanoTime();
-		PacketPlayOutPlayerInfo info = UniversalPacketPlayOut.builder.readPlayerInfo(packet, receiver.getVersion());
-		Shared.cpu.addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		PacketPlayOutPlayerInfo info = tab.getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
+		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (PlayerInfoPacketListener f : listeners) {
 			time = System.nanoTime();
 			((PlayerInfoPacketListener)f).onPacketSend(receiver, info);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
 		Object pack = info.create(receiver.getVersion());
-		Shared.cpu.addTime(TabFeature.PACKET_SERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		tab.getCPUManager().addTime(TabFeature.PACKET_SERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		return pack;
 	}
 	
@@ -157,9 +162,9 @@ public class FeatureManager {
 			if (!(f instanceof QuitEventListener)) continue;
 			long time = System.nanoTime();
 			((QuitEventListener)f).onQuit(disconnectedPlayer);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
 		}
-		Shared.data.remove(disconnectedPlayer.getUniqueId());
+		tab.removePlayer(disconnectedPlayer);
 	}
 	
 	/**
@@ -168,12 +173,12 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
-		Shared.data.put(connectedPlayer.getUniqueId(), connectedPlayer);
+		tab.addPlayer(connectedPlayer);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof JoinEventListener)) continue;
 			long time = System.nanoTime();
 			((JoinEventListener)f).onJoin(connectedPlayer);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
 		connectedPlayer.markAsLoaded();
 	}
@@ -193,7 +198,7 @@ public class FeatureManager {
 			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();
 			((WorldChangeListener)f).onWorldChange(changed, from, to);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 		}
 	}
 	
@@ -211,7 +216,7 @@ public class FeatureManager {
 			if (!(f instanceof CommandListener)) continue;
 			long time = System.nanoTime();
 			if (((CommandListener)f).onCommand(sender, command)) cancel = true;
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
 		}
 		return cancel;
 	}
@@ -231,9 +236,9 @@ public class FeatureManager {
 			try {
 				if (newPacket != null) newPacket = ((RawPacketFeature)f).onPacketReceive(receiver, newPacket);
 			} catch (Throwable e) {
-				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
+				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
 		return newPacket;
 	}
@@ -251,9 +256,9 @@ public class FeatureManager {
 			try {
 				((RawPacketFeature)f).onPacketSend(receiver, packet);
 			} catch (Throwable e) {
-				Shared.errorManager.printError("Feature " + f.getFeatureType() + " failed to read packet", e);
+				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
 		}
 	}
 	
@@ -267,7 +272,7 @@ public class FeatureManager {
 			if (!(f instanceof RespawnEventListener)) continue;
 			long time = System.nanoTime();
 			((RespawnEventListener)f).onRespawn(respawned);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		}
 	}
 	
@@ -280,7 +285,7 @@ public class FeatureManager {
 			if (!(f instanceof LoginPacketListener)) continue;
 			long time = System.nanoTime();
 			((LoginPacketListener)f).onLoginPacket(packetReceiver);
-			Shared.cpu.addTime(f.getFeatureType(), UsageType.PACKET_LOGIN, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_LOGIN, System.nanoTime()-time);
 		}
 	}
 	

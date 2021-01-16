@@ -18,7 +18,7 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	//instance of proxyserver
 	private ProxyServer server;
 	
-	private static List<Placeholder> placeholders;
+	private List<Placeholder> placeholders;
 	
 	/**
 	 * Constructs new instance with given parameter

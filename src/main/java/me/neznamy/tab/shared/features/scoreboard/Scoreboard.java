@@ -7,9 +7,8 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.lines.All0StableDynamicLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.All0StaticLine;
@@ -52,7 +51,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		for (int i=0; i<lines.size(); i++) {
 			ScoreboardLine score = registerLine(i+1, lines.get(i));
 			this.lines.add(score);
-			Shared.featureManager.registerFeature("scoreboard-score-" + name + "-" + i, score);
+			manager.tab.getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
 	}
 
@@ -142,13 +141,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = PlaceholderManager.getUsedPlaceholderIdentifiersRecursive(title);
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(title);
 	}
 
-	/**
-	 * Returns name of the feature displayed in /tab cpu
-	 * @return name of the feature displayed in /tab cpu
-	 */
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;

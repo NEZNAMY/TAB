@@ -3,8 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import java.util.LinkedHashMap;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.TAB;
 
 public class GroupPermission extends SortingType {
 
@@ -12,7 +11,7 @@ public class GroupPermission extends SortingType {
 	
 	public GroupPermission(String sortingPlaceholder) {
 		super(sortingPlaceholder);
-		sortedGroups = Sorting.loadSortingList();
+		sortedGroups = loadSortingList();
 	}
 	
 	@Override
@@ -30,7 +29,7 @@ public class GroupPermission extends SortingType {
 		}
 		if (chars == null) {
 			chars = "9";
-			Shared.errorManager.oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
+			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
 			p.setTeamNameNote("&cPlayer does not have sorting permission for any group in sorting list");
 		}
 		return chars;

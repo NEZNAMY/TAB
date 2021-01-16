@@ -7,7 +7,7 @@ import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.Shared;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -35,7 +35,7 @@ public class ParentGroup {
 				}
 			}
 			for (TabPlayer selectedPlayer : selected) {
-				texts.add(((Playerlist)Shared.featureManager.getFeature("playerlist")).getTabFormat(selectedPlayer, viewer));
+				texts.add(((Playerlist)TAB.getInstance().getFeatureManager().getFeature("playerlist")).getTabFormat(selectedPlayer, viewer));
 			}
 			playersMeetingCondition.removeAll(selected);
 		}

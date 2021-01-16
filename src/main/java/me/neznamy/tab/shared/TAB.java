@@ -12,62 +12,78 @@ import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
+import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
 /**
  * Universal variable and method storage
  */
-public class Shared {
-
-	//name of plugin messaging channel
-	public static final String CHANNEL_NAME = "tab:placeholders";
+public class TAB {
+	
+	//plugin instance
+	private static TAB instance;
 	
 	//version of plugin
-	public static final String pluginVersion = "2.8.10";
+	private String pluginVersion = "2.8.10";
 
 	//player data
-	public static final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
+	public final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
 	
 	//the command
-	public static final TabCommand command = new TabCommand();
+	public final TabCommand command;
 	
 	//command used if plugin is disabled due to a broken configuration file
-	public static final DisabledCommand disabledCommand = new DisabledCommand();
-	
-	//if plugin is disabled due to a broken configuration file or not
-	public static boolean disabled;
+	public final DisabledCommand disabledCommand = new DisabledCommand();
 	
 	//platform interface
-	public static Platform platform;
+	private Platform platform;
 	
 	//cpu manager
-	public static CPUManager cpu;
+	private CPUManager cpu;
 	
 	//error manager
-	public static ErrorManager errorManager;
+	private ErrorManager errorManager;
 	
 	//permission plugin interface
-	public static PermissionPlugin permissionPlugin;
+	private PermissionPlugin permissionPlugin;
 	
 	//feature manager
-	public static FeatureManager featureManager;
+	private FeatureManager featureManager;
 	
 	//name of broken configuration file filled on load and used in disabledCommand
-	public static String brokenFile = "-";
+	public String brokenFile = "-";
+	
+	//platform-specific packet builder
+	private PacketBuilder packetBuilder;
+	
+	private Configs configuration;
+	
+	public boolean debugMode;
+	
+	private boolean disabled;
+	
+	private PlaceholderManager placeholderManager;
 
+	public TAB(Platform platform, PacketBuilder packetBuilder) {
+		this.platform = platform;
+		this.packetBuilder = packetBuilder;
+		this.command = new TabCommand(this);
+	}
+	
 	/**
 	 * Returns true if this compilation is premium, false if not
 	 * @return true if this is premium version, false if not
 	 */
-	public static boolean isPremium() {
-		return false;
+	public boolean isPremium() {
+		return true;
 	}
 	
 	/**
 	 * Returns all players
 	 * @return all players
 	 */
-	public static Collection<TabPlayer> getPlayers(){
+	public Collection<TabPlayer> getPlayers(){
 		return data.values();
 	}
 	
@@ -76,7 +92,7 @@ public class Shared {
 	 * @param name - exact name of player
 	 * @return the player
 	 */
-	public static TabPlayer getPlayer(String name) {
+	public TabPlayer getPlayer(String name) {
 		for (TabPlayer p : data.values()) {
 			if (p.getName().equals(name)) return p;
 		}
@@ -88,7 +104,7 @@ public class Shared {
 	 * @param uniqueId - player uuid
 	 * @return the player
 	 */
-	public static TabPlayer getPlayer(UUID uniqueId) {
+	public TabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);
 	}
 	
@@ -97,7 +113,7 @@ public class Shared {
 	 * @param tablistId - tablist id of player
 	 * @return the player or null if not found
 	 */
-	public static TabPlayer getPlayerByTablistUUID(UUID tablistId) {
+	public TabPlayer getPlayerByTablistUUID(UUID tablistId) {
 		for (TabPlayer p : data.values()) {
 			if (p.getTablistUUID().toString().equals(tablistId.toString())) return p;
 		}
@@ -109,40 +125,44 @@ public class Shared {
 	 * @param color - color to use
 	 * @param message - message to send
 	 */
-	public static void print(char color, String message) {
-		platform.sendConsoleMessage("&" + color + "[TAB] " + message,true);
+	public void print(char color, String message) {
+		platform.sendConsoleMessage("&" + color + "[TAB] " + message, true);
 	}
 	
 	/**
 	 * Sends a console message with debug prefix if debug is enabled in config
 	 * @param message - message to be sent into console
 	 */
-	public static void debug(String message) {
-		if (Configs.SECRET_debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
+	public void debug(String message) {
+		if (debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
 	
 	/**
 	 * Loads the entire plugin
 	 */
-	public static void load() {
+	public void load() {
 		try {
 			long time = System.currentTimeMillis();
-			disabled = false;
-			errorManager = new ErrorManager();
-			cpu = new CPUManager();
-			featureManager = new FeatureManager();
-			Configs.loadFiles();
-			permissionPlugin = platform.detectPermissionPlugin();
+			this.errorManager = new ErrorManager(this);
+			cpu = new CPUManager(errorManager);
+			featureManager = new FeatureManager(this);
+			configuration = new Configs(this);
+			configuration.loadFiles();
+			setPermissionPlugin(platform.detectPermissionPlugin());
+			placeholderManager = new PlaceholderManager(this);
+			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
 			featureManager.load();
 			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
+			disabled = false;
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
 		} catch (Throwable e) {
+			e.printStackTrace();
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
 		}
@@ -151,9 +171,8 @@ public class Shared {
 	/**
 	 * Properly unloads the entire plugin
 	 */
-	public static void unload() {
+	public void unload() {
 		try {
-			if (disabled) return;
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();
 			featureManager.unload();
@@ -162,5 +181,65 @@ public class Shared {
 		} catch (Throwable e) {
 			errorManager.criticalError("Failed to disable", e);
 		}
+	}
+	
+	public void addPlayer(TabPlayer player) {
+		data.put(player.getUniqueId(), player);
+	}
+	
+	public void removePlayer(TabPlayer player) {
+		data.remove(player.getUniqueId());
+	}
+	
+	public static TAB getInstance() {
+		return instance;
+	}
+	
+	public static void setInstance(TAB instance) {
+		TAB.instance = instance;
+	}
+	
+	public FeatureManager getFeatureManager() {
+		return featureManager;
+	}
+	
+	public Platform getPlatform() {
+		return platform;
+	}
+	
+	public CPUManager getCPUManager() {
+		return cpu;
+	}
+	
+	public PacketBuilder getPacketBuilder() {
+		return packetBuilder;
+	}
+	
+	public ErrorManager getErrorManager() {
+		return errorManager;
+	}
+
+	public PermissionPlugin getPermissionPlugin() {
+		return permissionPlugin;
+	}
+
+	public void setPermissionPlugin(PermissionPlugin permissionPlugin) {
+		this.permissionPlugin = permissionPlugin;
+	}
+
+	public String getPluginVersion() {
+		return pluginVersion;
+	}
+	
+	public Configs getConfiguration() {
+		return configuration;
+	}
+	
+	public boolean isDisabled() {
+		return disabled;
+	}
+	
+	public PlaceholderManager getPlaceholderManager() {
+		return placeholderManager;
 	}
 }

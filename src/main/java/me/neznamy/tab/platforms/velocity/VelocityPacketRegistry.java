@@ -19,13 +19,13 @@ import me.neznamy.tab.platforms.velocity.protocol.Team;
 public class VelocityPacketRegistry {
 
 	//packet id mapping method
-	private static Method map;
+	private Method map;
 	
 	/**
 	 * Registers missing velocity packets
 	 * @return true if registration was successful, false if not
 	 */
-	public static boolean registerPackets() {
+	public boolean registerPackets() {
 		try {
 			Method register = null;
 			for (Method m : PacketRegistry.class.getDeclaredMethods()) {
@@ -93,7 +93,7 @@ public class VelocityPacketRegistry {
 	 * @return result from map method
 	 * @throws Exception - if reflection fails
 	 */
-	private static PacketMapping map(int id, ProtocolVersion version, boolean encodeOnly) throws Exception {
+	private PacketMapping map(int id, ProtocolVersion version, boolean encodeOnly) throws Exception {
 		return (PacketMapping) map.invoke(null, id, version, encodeOnly);
 	}
 }

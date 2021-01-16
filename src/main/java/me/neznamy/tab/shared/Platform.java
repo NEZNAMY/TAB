@@ -6,14 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.AlignedSuffix;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
@@ -49,12 +47,6 @@ public interface Platform {
 	 * @param translateColors - if color codes should be translated
 	 */
 	public void sendConsoleMessage(String message, boolean translateColors);
-		
-	/**
-	 * Loads config.yml and it's platform-specific variables
-	 * @throws Exception - If something fails (such as yaml syntax error)
-	 */
-	public void loadConfig() throws Exception;
 	
 	/**
 	 * Creates an instance of me.neznamy.tab.shared.placeholders.Placeholder to handle this unknown placeholder (typically a PAPI placeholder)
@@ -73,11 +65,6 @@ public interface Platform {
 	 * @return server's version
 	 */
 	public String getServerVersion();
-	
-	/**
-	 * Suggests switch to internal placeholders instead of PAPI's for better performance
-	 */
-	public void suggestPlaceholders();
 	
 	/**
 	 * Returns the word used to separate config options. It's value is "world" for bukkit and "server" for proxies
@@ -111,7 +98,7 @@ public interface Platform {
 	public default void removeOld(ConfigurationFile config, String oldKey) {
 		if (config.hasConfigOption(oldKey)) {
 			config.set(oldKey, null);
-			Shared.print('2', "Removed old " + config.getName() + " option " + oldKey);
+			TAB.getInstance().print('2', "Removed old " + config.getName() + " option " + oldKey);
 		}
 	}
 	
@@ -126,18 +113,7 @@ public interface Platform {
 			Object value = config.getObject(oldName);
 			config.set(oldName, null);
 			config.set(newName, value);
-			Shared.print('2', "Renamed config option " + oldName + " to " + newName);
-		}
-	}
-
-	/**
-	 * Suggests placeholder switch if the "from" placeholder is used
-	 * @param from - PAPI placeholder to be replaced
-	 * @param to - the internal placeholder to be replaced by
-	 */
-	public default void suggestPlaceholderSwitch(String from, String to) {
-		if (PlaceholderManager.allUsedPlaceholderIdentifiers.contains(from)) {
-			Shared.print('9', "Hint: Found used PlaceholderAPI placeholder \"&d" + from + "&9\". Consider replacing it with plugin's internal \"&d" + to + "&9\" for better performance.");
+			TAB.getInstance().print('2', "Renamed config option " + oldName + " to " + newName);
 		}
 	}
 	
@@ -150,7 +126,7 @@ public interface Platform {
 	public default String replaceAllPlaceholders(String string, TabPlayer player) {
 		if (string == null) return null;
 		String replaced = string;
-		for (Placeholder p : ((PlaceholderManager) Shared.featureManager.getFeature("placeholders")).getAllPlaceholders()) {
+		for (Placeholder p : TAB.getInstance().getPlaceholderManager().getAllPlaceholders()) {
 			if (replaced.contains(p.getIdentifier())) {
 				if (p instanceof ServerPlaceholder) {
 					((ServerPlaceholder)p).update();
@@ -180,7 +156,7 @@ public interface Platform {
 			tps.put("20", "&aPerfect");
 			replacements.put("%tps%", tps);
 			config.set("placeholder-output-replacements", replacements);
-			Shared.print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
+			TAB.getInstance().print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
 		}
 		boolean scoreboardsConverted = false;
 		for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
@@ -200,7 +176,7 @@ public interface Platform {
 			}
 		}
 		if (scoreboardsConverted) {
-			Shared.print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
+			TAB.getInstance().print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
 		}
 		removeOld(config, "scoreboard.refresh-interval-milliseconds");
 		rename(config, "allign-tabsuffix-on-the-right", "align-tabsuffix-on-the-right");
@@ -232,7 +208,7 @@ public interface Platform {
 				relational.put("%rel_factionsuuid_relation_color%", 500);
 				map.put("relational", relational);
 				file.set("placeholderapi-refresh-intervals", map);
-				Shared.print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
+				TAB.getInstance().print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
 			}
 		}
 		if (file.getName().equals("premiumconfig.yml")) {
@@ -247,22 +223,23 @@ public interface Platform {
 	 * Loads universal features present on all platforms with the same configuration
 	 */
 	public default void loadUniversalFeatures() {
-		if (Configs.config.getBoolean("enable-header-footer", true)) Shared.featureManager.registerFeature("headerfooter", new HeaderFooter());
-		if (Configs.config.getBoolean("do-not-move-spectators", false)) Shared.featureManager.registerFeature("spectatorfix", new SpectatorFix());
-		if (Configs.config.getBoolean("classic-vanilla-belowname.enabled", true)) Shared.featureManager.registerFeature("belowname", new BelowName());
-		if (Configs.premiumconfig != null && Configs.premiumconfig.getBoolean("scoreboard.enabled", false)) Shared.featureManager.registerFeature("scoreboard", new ScoreboardManager());
-		if (Configs.getSecretOption("remove-ghost-players", false)) Shared.featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
-		if (Configs.config.getString("yellow-number-in-tablist", "%ping%").length() > 0) Shared.featureManager.registerFeature("tabobjective", new TabObjective());
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && Configs.config.getBoolean("change-tablist-prefix-suffix", true)) {
-			Playerlist playerlist = new Playerlist();
-			Shared.featureManager.registerFeature("playerlist", playerlist);
-			if (Configs.premiumconfig != null && Configs.premiumconfig.getBoolean("align-tabsuffix-on-the-right", false)) Shared.featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+		TAB tab = TAB.getInstance();
+		if (tab.getConfiguration().config.getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter(tab));
+		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix(tab));
+		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
+		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
+		if ((boolean)tab.getConfiguration().getSecretOption("remove-ghost-players", false)) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix(tab));
+		if (tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && tab.getConfiguration().config.getBoolean("change-tablist-prefix-suffix", true)) {
+			Playerlist playerlist = new Playerlist(tab);
+			tab.getFeatureManager().registerFeature("playerlist", playerlist);
+			if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist, tab));
 		}
-		Shared.featureManager.registerFeature("group", new GroupRefresher());
-		Shared.featureManager.registerFeature("info", new PluginInfo());
-		new UpdateChecker();
-		if (Configs.getSecretOption("layout", false)) {
-			Shared.featureManager.registerFeature("layout", new Layout());
+		tab.getFeatureManager().registerFeature("group", new GroupRefresher(tab));
+		tab.getFeatureManager().registerFeature("info", new PluginInfo(tab));
+		new UpdateChecker(tab);
+		if ((boolean)tab.getConfiguration().getSecretOption("layout", false)) {
+			tab.getFeatureManager().registerFeature("layout", new Layout(tab));
 		}
 	}
 }

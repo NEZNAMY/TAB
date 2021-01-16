@@ -8,8 +8,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
-import me.neznamy.tab.shared.Shared;
-import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
@@ -36,7 +35,7 @@ public class TABAPI {
 	 * @since 2.8.3
 	 */
 	public static TabPlayer getPlayer(UUID id) {
-		return Shared.getPlayer(id);
+		return TAB.getInstance().getPlayer(id);
 	}
 	
 	
@@ -47,7 +46,7 @@ public class TABAPI {
 	 * @since 2.8.3
 	 */
 	public static TabPlayer getPlayer(String name) {
-		return Shared.getPlayer(name);
+		return TAB.getInstance().getPlayer(name);
 	}
 	
 	
@@ -58,7 +57,7 @@ public class TABAPI {
 	 * @since 2.4.12
 	 */
 	public static boolean isUnlimitedNameTagModeEnabled() {
-		return Shared.featureManager.isFeatureEnabled("nametagx");
+		return TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx");
 	}
 
 
@@ -70,10 +69,10 @@ public class TABAPI {
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {
 		if (isUnlimitedNameTagModeEnabled()) return;
-		Configs.config.set("change-nametag-prefix-suffix", true);
-		Configs.config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
-		Shared.unload();
-		Shared.load();
+		TAB.getInstance().getConfiguration().config.set("change-nametag-prefix-suffix", true);
+		TAB.getInstance().getConfiguration().config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
+		TAB.getInstance().unload();
+		TAB.getInstance().load();
 	}
 
 
@@ -86,8 +85,9 @@ public class TABAPI {
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
-		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
+		pl.registerPlaceholder(placeholder);
+		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
 
@@ -100,8 +100,9 @@ public class TABAPI {
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
-		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
+		pl.registerPlaceholder(placeholder);
+		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 	
 
@@ -112,8 +113,9 @@ public class TABAPI {
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).registerPlaceholder(placeholder);
-		PlaceholderManager.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
+		pl.registerPlaceholder(placeholder);
+		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
 
@@ -132,9 +134,9 @@ public class TABAPI {
 	 */
 	public static Scoreboard createScoreboard(String name, String title, List<String> lines) {
 		for (String line : lines) {
-			((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).checkForRegistration(line);
+			TAB.getInstance().getPlaceholderManager().checkForRegistration(line);
 		}
-		ScoreboardManager sbm = (ScoreboardManager) Shared.featureManager.getFeature("scoreboard");
+		ScoreboardManager sbm = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = new me.neznamy.tab.shared.features.scoreboard.Scoreboard(sbm, name, title, lines);
 		sbm.APIscoreboards.add(sb);
@@ -148,7 +150,7 @@ public class TABAPI {
 	 * @since 2.8.3
 	 */
 	public static void registerAFKProvider(AFKProvider afk) {
-		((PlaceholderManager)Shared.featureManager.getFeature("placeholders")).setAFKProvider(afk);
+		TAB.getInstance().getPlaceholderManager().setAFKProvider(afk);
 	}
 	
 	
@@ -158,7 +160,7 @@ public class TABAPI {
 	 * @since 2.8.3
 	 */
 	public static void registerPermissionPlugin(PermissionPlugin permission) {
-		Shared.permissionPlugin = permission;
+		TAB.getInstance().setPermissionPlugin(permission);
 	}
 	
 	public static BossBar createBossBar(String name, String title, float progress, BarColor color, BarStyle style) {
@@ -166,9 +168,9 @@ public class TABAPI {
 	}
 	
 	public static BossBar createBossBar(String name, String title, String progress, String color, String style) {
-		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) Shared.featureManager.getFeature("bossbar");
+		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (feature == null) throw new IllegalStateException("Bossbar feature is not enabled");
-		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
+		BossBar bar = new BossBarLine(TAB.getInstance(), name, null, color, style, title, progress);
 		feature.lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}
@@ -179,51 +181,5 @@ public class TABAPI {
 	 */
 	public static Map<String, Placeholder> getAPIPlaceholders(){
 		return APIPlaceholders;
-	}
-
-
-	@Deprecated
-	public static void setValueTemporarily(UUID player, EnumProperty type, String value) {
-		getPlayer(player).setValueTemporarily(type, value);
-	}
-
-	@Deprecated
-	public static void setValuePermanently(UUID player, EnumProperty type, String value) {
-		getPlayer(player).setValuePermanently(type, value);
-	}
-
-	@Deprecated
-	public static String getTemporaryValue(UUID player, EnumProperty type) {
-		return getPlayer(player).getTemporaryValue(type);
-	}
-
-	@Deprecated
-	public static boolean hasTemporaryValue(UUID player, EnumProperty type) {
-		return getTemporaryValue(player, type) != null;
-	}
-
-	@Deprecated
-	public static void removeTemporaryValue(UUID player, EnumProperty type) {
-		setValueTemporarily(player, type, null);
-	}
-
-	@Deprecated
-	public static String getOriginalValue(UUID player, EnumProperty type) {
-		return getPlayer(player).getOriginalValue(type);
-	}
-
-	@Deprecated
-	public static void hideNametag(UUID player) {
-		getPlayer(player).hideNametag();
-	}
-
-	@Deprecated
-	public static void showNametag(UUID player) {
-		getPlayer(player).showNametag();
-	}
-
-	@Deprecated
-	public static boolean hasHiddenNametag(UUID player) {
-		return getPlayer(player).hasHiddenNametag();
 	}
 }
