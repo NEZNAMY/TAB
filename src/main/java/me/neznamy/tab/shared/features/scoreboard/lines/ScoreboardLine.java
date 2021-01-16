@@ -20,7 +20,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected final String ObjectiveName = "TAB-Scoreboard";
 	protected List<String> usedPlaceholders = new ArrayList<String>();
 	protected String teamName;
-	private String playerName;
+	protected String playerName;
 	
 	public ScoreboardLine(int lineNumber) {
 		teamName = "TAB-SB-TM-"+lineNumber;

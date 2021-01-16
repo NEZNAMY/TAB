@@ -23,39 +23,40 @@ public abstract class StaticLine extends ScoreboardLine {
 		super(lineNumber);
 		this.parent = parent;
 		this.lineNumber = lineNumber;
-		this.text = IChatBaseComponent.fromColoredText(text).toLegacyText(); //colorizing + translating RGB codes into legacy
+		this.text = text;
+		String legacy = IChatBaseComponent.fromColoredText(text).toLegacyText(); //colorizing + translating RGB codes into legacy
 		//1.8+
-		if (this.text.length() <= (40 - forcedNameStart.length())) {
+		String[] v1_8 = splitText(forcedNameStart, legacy, 40);
+		prefix = v1_8[0];
+		name = v1_8[1];
+		suffix = v1_8[2];
+		//1.7-
+		String[] v1_7 = splitText(forcedNameStart, legacy, 16);
+		prefix1_7 = v1_7[0];
+		name1_7 = v1_7[1];
+		suffix1_7 = v1_7[2];
+	}
+	
+	private String[] splitText(String playerNameStart, String text, int maxNameLength) {
+		String prefix;
+		String name;
+		String suffix;
+		if (text.length() <= (maxNameLength - playerNameStart.length())) {
 			prefix = "";
-			name = forcedNameStart + this.text;
+			name = playerNameStart + text;
 			suffix = "";
 		} else {
-			String[] prefix_other = split(this.text, 16);
+			String[] prefix_other = split(text, 16);
 			prefix = prefix_other[0];
 			String other = prefix_other[1];
-			if (forcedNameStart.length() > 0) {
-				other = forcedNameStart + TAB.getInstance().getPlaceholderManager().getLastColors(prefix) + other;
+			if (playerNameStart.length() > 0) {
+				other = playerNameStart + TAB.getInstance().getPlaceholderManager().getLastColors(prefix) + other;
 			}
-			String[] name_suffix = split(other, 40);
+			String[] name_suffix = split(other, maxNameLength);
 			name = name_suffix[0];
 			suffix = name_suffix[1];
 		}
-		//1.7-
-		if (this.text.length() <= (16 - forcedNameStart.length())) {
-			prefix1_7 = "";
-			name1_7 = forcedNameStart + this.text;
-			suffix1_7 = "";
-		} else {
-			String[] prefix_other = split(this.text, 16);
-			prefix1_7 = prefix_other[0];
-			String other = prefix_other[1];
-			if (forcedNameStart.length() > 0) {
-				other = forcedNameStart + TAB.getInstance().getPlaceholderManager().getLastColors(prefix1_7) + other;
-			}
-			String[] name_suffix = split(other, 16);
-			name1_7 = name_suffix[0];
-			suffix1_7 = name_suffix[1];
-		}
+		return new String[]{prefix, name, suffix};
 	}
 	
 	@Override
