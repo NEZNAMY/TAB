@@ -70,6 +70,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : tab.getPlayers()) {
 				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
+					logTeamOverride(packet.name, p.getName());
 					col.remove(p.getName());
 				}
 			}

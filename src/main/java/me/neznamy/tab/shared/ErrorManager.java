@@ -30,17 +30,21 @@ public class ErrorManager {
 	//amount of logged startup warns
 	private int startupWarns = 0;
 
-	public File errorFile;
-	public File papiErrorFile;
+	//error logs
+	public File errorLog;
+	public File papiErrorLog;
+	public File antiOverrideLog;
 	
+	//plugin instance
 	private TAB tab;
 	
 	public ErrorManager(TAB tab) {
 		this.tab = tab;
-		errorFile = new File(tab.getPlatform().getDataFolder(), "errors.txt");
-		papiErrorFile = new File(tab.getPlatform().getDataFolder(), "PlaceholderAPI.errors.txt");
-		if (errorFile.exists() && errorFile.length() > 10) {
-			startupWarn("File &e" + errorFile.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
+		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
+		papiErrorLog = new File(tab.getPlatform().getDataFolder(), "PlaceholderAPI.errors.log");
+		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
+		if (errorLog.exists() && errorLog.length() > 10) {
+			startupWarn("File &e" + errorLog.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
 	}
 
@@ -90,7 +94,7 @@ public class ErrorManager {
 	 * @param intoConsoleToo - if the message should be printed into console as well
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
-		printError(message, t, intoConsoleToo, errorFile);
+		printError(message, t, intoConsoleToo, errorLog);
 	}
 
 	/**

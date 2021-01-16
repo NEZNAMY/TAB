@@ -84,6 +84,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		long time = System.nanoTime();
 		if (nms.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
 			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 			Collection<String> newList = new ArrayList<String>();
 			for (String entry : players) {
 				TabPlayer p = tab.getPlayer(entry);
@@ -94,7 +95,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					newList.add(entry);
 				} else {
-					tab.getErrorManager().printError("Prevented player " + entry + " in team " + nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam));
+					System.out.println("override");
+					logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);
 				}
 			}
 			nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);

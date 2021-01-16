@@ -56,4 +56,8 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	public TabFeature getFeatureType() {
 		return TabFeature.PIPELINE_INJECTION;
 	}
+	
+	protected void logTeamOverride(String team, String player) {
+		tab.getErrorManager().printError("A plugin just tried to add player " + player + " into team " + team, null, false, tab.getErrorManager().antiOverrideLog);
+	}
 }

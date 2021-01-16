@@ -52,8 +52,8 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + tab.getPlatform().getServerVersion());
 		sendMessage(sender, "&6Plugin version: &a" + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
-		if (tab.getErrorManager().errorFile.exists()) {
-			sendMessage(sender, "&6" + tab.getErrorManager().errorFile.getPath() + " size: &c" + tab.getErrorManager().errorFile.length()/1024 + "KB");
+		if (tab.getErrorManager().errorLog.exists()) {
+			sendMessage(sender, "&6" + tab.getErrorManager().errorLog.getPath() + " size: &c" + tab.getErrorManager().errorLog.length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6Permission plugin: &a" + tab.getPermissionPlugin().getName());
 		if (group.groupsByPermissions) {
