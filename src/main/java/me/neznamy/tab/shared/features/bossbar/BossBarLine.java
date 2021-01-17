@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -69,12 +70,12 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 				(float)parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
 				parseColor(to.getProperty("bossbar-color-" + name).get()), 
 				parseStyle(to.getProperty("bossbar-style-" + name).get())
-			)
+			), TabFeature.BOSSBAR
 		);
 	}
 	
 	public void remove(TabPlayer to) {
-		to.sendCustomPacket(new PacketPlayOutBoss(uuid));
+		to.sendCustomPacket(new PacketPlayOutBoss(uuid), TabFeature.BOSSBAR);
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-title-" + name, title);
-				p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty("bossbar-title-" + name).get()));
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty("bossbar-title-" + name).get()), TabFeature.BOSSBAR);
 			}
 		}
 	}
@@ -106,7 +107,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
 				p.setProperty("bossbar-progress-" + name, progress);
-				p.sendCustomPacket(new PacketPlayOutBoss(uuid, (float) parseProgress(p.getProperty("bossbar-progress-" + name).get())/100));
+				p.sendCustomPacket(new PacketPlayOutBoss(uuid, (float) parseProgress(p.getProperty("bossbar-progress-" + name).get())/100), TabFeature.BOSSBAR);
 			}
 		}
 	}
@@ -126,7 +127,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 					parseColor(p.getProperty("bossbar-color-" + name).get()),
 					parseStyle(p.getProperty("bossbar-style-" + name).get())
-				));
+				), TabFeature.BOSSBAR);
 			}
 		}
 	}
@@ -146,7 +147,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 				p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 					parseColor(p.getProperty("bossbar-color-" + name).get()),
 					parseStyle(p.getProperty("bossbar-style-" + name).get())
-				));
+				), TabFeature.BOSSBAR);
 			}
 		}
 	}

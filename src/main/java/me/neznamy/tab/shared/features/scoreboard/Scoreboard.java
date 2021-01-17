@@ -101,7 +101,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	public void register(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty("scoreboard-title", title);
-		PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.getProperty("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER);
+		PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.getProperty("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
 		for (ScoreboardLine s : lines) {
 			s.register(p);
 		}
@@ -120,7 +120,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
-		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), TabFeature.SCOREBOARD);
 		for (ScoreboardLine s : lines) {
 			s.unregister(p);
 		}
@@ -131,7 +131,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty("scoreboard-title") == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.SCOREBOARD);
 	}
 
 	@Override

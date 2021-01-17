@@ -4,6 +4,7 @@ import de.myzelyam.api.vanish.BungeePlayerHideEvent;
 import de.myzelyam.api.vanish.BungeePlayerShowEvent;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -24,7 +25,7 @@ public class PremiumVanishListener implements Listener {
 		TabPlayer vanished = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all == vanished || all.hasPermission(list.PREMIUMVANISH_SEE_VANISHED_PERMISSION)) continue;
-			all.sendCustomPacket(list.getRemovePacket(vanished));
+			all.sendCustomPacket(list.getRemovePacket(vanished), TabFeature.GLOBAL_PLAYERLIST);
 		}
 	}
 
@@ -39,7 +40,7 @@ public class PremiumVanishListener implements Listener {
 		if (list == null) return;
 		TabPlayer unvanished = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished));
+			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished), TabFeature.GLOBAL_PLAYERLIST);
 		}
 	}
 }

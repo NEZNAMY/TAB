@@ -156,7 +156,7 @@ public class Layout implements Loadable, JoinEventListener {
 			int slot = translateSlot(entry.getKey());
 			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : slot + ""), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
-		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list));
+		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureType());
 	}
 
 	private int translateSlot(int slot) {
@@ -181,7 +181,7 @@ public class Layout implements Loadable, JoinEventListener {
 						int slot = translateSlot(entry.getKey());
 						list.add(new PlayerInfoData(uuids.get(slot), entry.getValue()));
 					}
-					p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
+					p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
 				}
 			}
 		});
@@ -195,7 +195,7 @@ public class Layout implements Loadable, JoinEventListener {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : slot + ""), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list));
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureType());
 		}
 	}
 
@@ -208,7 +208,7 @@ public class Layout implements Loadable, JoinEventListener {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData(uuids.get(slot)));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list));
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), getFeatureType());
 		}
 	}
 }

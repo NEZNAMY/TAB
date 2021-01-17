@@ -7,6 +7,7 @@ import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -71,6 +72,14 @@ public class BungeeTabPlayer extends ITabPlayer {
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null && player.isConnected()) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
+	}
+	
+	@Override
+	public void sendPacket(Object nmsPacket, TabFeature feature) {
+		if (nmsPacket != null && player.isConnected()) {
+			player.unsafe().sendPacket((DefinedPacket) nmsPacket);
+			TAB.getInstance().getCPUManager().packetSent(feature);
+		}
 	}
 	
 	@Override

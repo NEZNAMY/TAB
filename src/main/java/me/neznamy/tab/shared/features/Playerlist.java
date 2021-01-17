@@ -49,7 +49,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getUniqueId()));
 		}
 		for (TabPlayer all : tab.getPlayers()) {
-			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers));
+			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureType());
 		}
 	}
 
@@ -78,7 +78,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8 && !v180PrefixBugFixList.isEmpty()) { //not sending empty packets due to NPCs
 			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			tab.getCPUManager().runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList)));
+			tab.getCPUManager().runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList), getFeatureType()));
 		}
 	}
 
@@ -119,7 +119,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		}
 		if (refresh) {
 			for (TabPlayer all : tab.getPlayers()) {
-				if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID())));
+				if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID())), getFeatureType());
 			}
 		}
 	}
@@ -142,7 +142,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		for (TabPlayer all : tab.getPlayers()) {
 			list.add(new PlayerInfoData(all.getTablistUUID()));
 		}
-		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
+		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
 	}
 
 	@Override

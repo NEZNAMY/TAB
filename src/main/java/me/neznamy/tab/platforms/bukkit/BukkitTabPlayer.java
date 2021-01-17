@@ -14,6 +14,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import us.myles.ViaVersion.api.Via;
 
 /**
@@ -98,6 +99,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 		} catch (Throwable e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
+	}
+	
+	@Override
+	public void sendPacket(Object nmsPacket, TabFeature feature) {
+		sendPacket(nmsPacket);
+		TAB.getInstance().getCPUManager().packetSent(feature);
 	}
 
 	@Override

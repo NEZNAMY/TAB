@@ -25,10 +25,12 @@ public class CPUManager {
 	private Map<TabFeature, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
+	private Map<TabFeature, Integer> packetsCurrent = new ConcurrentHashMap<TabFeature, Integer>();
 
 	private Map<TabFeature, Map<UsageType, Long>> featureUsagePrevious = new HashMap<TabFeature, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsagePrevious = new HashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsagePrevious = new HashMap<String, Long>();
+	private Map<TabFeature, Integer> packetsPrevious = new ConcurrentHashMap<TabFeature, Integer>();
 
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
@@ -47,10 +49,12 @@ public class CPUManager {
 						featureUsagePrevious = featureUsageCurrent;
 						placeholderUsagePrevious = placeholderUsageCurrent;
 						bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
+						packetsPrevious = packetsCurrent;
 
 						featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
 						placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
+						packetsCurrent = new ConcurrentHashMap<TabFeature, Integer>();
 					}
 				} catch (InterruptedException pluginDisabled) {
 
@@ -149,6 +153,10 @@ public class CPUManager {
 	public Map<String, Float> getBridgeUsage(){
 		return getUsage(bridgePlaceholderUsagePrevious);
 	}
+	
+	public Map<TabFeature, Integer> getSentPackets(){
+		return sortByValue(packetsPrevious);
+	}
 
 	private Map<String, Float> getUsage(Map<String, Long> map){
 		Map<String, Long> nanoMap = new HashMap<String, Long>();
@@ -193,7 +201,7 @@ public class CPUManager {
 	}
 
 	private float nanosToPercent(long nanos) {
-		float percent = (float) nanos / bufferSizeMillis / featureUsagePrevious.size() / 1000000; //relative usage (0-1)
+		float percent = (float) nanos / bufferSizeMillis / 1000000; //relative usage (0-1)
 		percent *= 100; //relative into %
 		return percent;
 	}
@@ -264,6 +272,15 @@ public class CPUManager {
 			bridgePlaceholderUsageCurrent.put(placeholder, nanoseconds);
 		} else {
 			bridgePlaceholderUsageCurrent.put(placeholder, current + nanoseconds);
+		}
+	}
+	
+	public void packetSent(TabFeature feature) {
+		Integer current = packetsCurrent.get(feature);
+		if (current == null) {
+			packetsCurrent.put(feature, 1);
+		} else {
+			packetsCurrent.put(feature, current + 1);
 		}
 	}
 }

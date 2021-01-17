@@ -14,6 +14,7 @@ import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
@@ -238,6 +239,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		sendPacket(packet.create(getVersion()));
 	}
+	
+	@Override
+	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature) {
+		sendPacket(packet.create(getVersion()));
+		TAB.getInstance().getCPUManager().packetSent(feature);
+	}
 
 	@Override
 	public Property getProperty(String name) {
@@ -281,13 +288,13 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void unregisterTeam() {
 		if (teamName == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.NAMETAGS);
 		}
 	}
 
 	@Override
 	public void unregisterTeam(TabPlayer viewer) {
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.NAMETAGS);
 	}
 
 	@Override
@@ -297,7 +304,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null);
+			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null, TabFeature.NAMETAGS);
 		}
 	}
 
@@ -307,7 +314,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		Property tagsuffix = getProperty("tagsuffix");
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null);
+		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null, TabFeature.NAMETAGS);
 	}
 
 	@Override
@@ -331,7 +338,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69), TabFeature.NAMETAGS);
 		}
 	}
 
@@ -341,7 +348,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		boolean visible = getTeamVisibility(viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69));
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69), TabFeature.NAMETAGS);
 	}
 
 	@Override

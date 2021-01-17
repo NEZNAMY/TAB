@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -188,6 +189,8 @@ public interface TabPlayer {
 	 * @since 2.8.5
 	 */
 	public void sendCustomPacket(UniversalPacketPlayOut packet);
+
+	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature);
 	
 	/**
 	 * Sends the player a platform-specific packet
@@ -195,6 +198,8 @@ public interface TabPlayer {
 	 * @since 2.8.5
 	 */
 	public void sendPacket(Object packet);
+	
+	public void sendPacket(Object packet, TabFeature feature);
 	
 	/**
 	 * Returns player's property by name

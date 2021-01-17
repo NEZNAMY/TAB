@@ -28,7 +28,7 @@ public class GhostPlayerFix implements QuitEventListener {
 			public void run() {
 				for (TabPlayer all : tab.getPlayers()) {
 					if (all == disconnectedPlayer) continue;
-					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())));
+					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), getFeatureType());
 				}
 			}
 		});

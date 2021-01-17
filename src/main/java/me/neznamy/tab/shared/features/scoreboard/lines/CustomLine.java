@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
@@ -43,7 +44,7 @@ public class CustomLine extends ScoreboardLine {
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
-						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 69));
+						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 69), TabFeature.SCOREBOARD);
 			}
 		}
 	}

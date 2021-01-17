@@ -39,7 +39,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()) {
 			if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) continue;
-			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""));
+			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), getFeatureType());
 		}
 	}
 	
@@ -52,7 +52,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (p.getVersion().getMinorVersion() < 8) return;
 		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-			if (!isDisabledWorld(disabledWorlds, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""));
+			if (!isDisabledWorld(disabledWorlds, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), getFeatureType());
 		} else {
 			refresh(p, true);
 		}
@@ -65,7 +65,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			updateRawValue(p, "footer");
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").updateAndGet(), p.getProperty("footer").updateAndGet()));
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").updateAndGet(), p.getProperty("footer").updateAndGet()), getFeatureType());
 	}
 	
 	@Override

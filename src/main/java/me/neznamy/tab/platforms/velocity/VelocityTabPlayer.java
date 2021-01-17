@@ -8,6 +8,8 @@ import com.velocitypowered.api.proxy.Player;
 import io.netty.channel.Channel;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 
 /**
  * TabPlayer for Velocity
@@ -55,6 +57,14 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket != null && player.isActive()) channel.writeAndFlush(nmsPacket, channel.voidPromise());
+	}
+	
+	@Override
+	public void sendPacket(Object nmsPacket, TabFeature feature) {
+		if (nmsPacket != null && player.isActive()) {
+			channel.writeAndFlush(nmsPacket, channel.voidPromise());
+			TAB.getInstance().getCPUManager().packetSent(feature);
+		}
 	}
 	
 	@Override

@@ -106,7 +106,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(getTeleportPacket(all));
+			all.sendPacket(getTeleportPacket(all), TabFeature.NAMETAGX);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void spawn(TabPlayer viewer, boolean addToRegistered) {
 		for (Object packet : getSpawnPackets(viewer, addToRegistered)) {
-			viewer.sendPacket(packet);
+			viewer.sendPacket(packet, TabFeature.NAMETAGX);
 		}
 	}
 
@@ -151,19 +151,19 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void destroy(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
-		viewer.sendPacket(getDestroyPacket());
+		viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
 	}
 
 	@Override
 	public void teleport() {
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(getTeleportPacket(all));
+			all.sendPacket(getTeleportPacket(all), TabFeature.NAMETAGX);
 		}
 	}
 
 	@Override
 	public void teleport(TabPlayer viewer) {
-		viewer.sendPacket(getTeleportPacket(viewer));
+		viewer.sendPacket(getTeleportPacket(viewer), TabFeature.NAMETAGX);
 	}
 
 	@Override
@@ -174,13 +174,13 @@ public class BukkitArmorStand implements ArmorStand {
 			if (viewer.getVersion().getMinorVersion() == 14 && !(boolean) TAB.getInstance().getConfiguration().getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendPacket(getDestroyPacket());
+					viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
 				} else {
 					spawn(viewer, false);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendPacket(getDestroyPacket());
+				viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
 				Runnable spawn = () -> spawn(viewer, false);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
@@ -194,7 +194,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) all.sendPacket(getDestroyPacket());
+		for (TabPlayer all : TAB.getInstance().getPlayers()) all.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
 		nearbyPlayers.clear();
 	}
 
@@ -249,7 +249,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	private void updateMetadata() {
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)));
+			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), TabFeature.NAMETAGX);
 		}
 	}
 

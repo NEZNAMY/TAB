@@ -8,7 +8,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 
 /**
  * Handler for "/tab width" subcommand
@@ -61,7 +60,7 @@ public class WidthCommand extends SubCommand {
 			messages.add(charMessage);
 			messages.add(getText(10, c));
 			for (IChatBaseComponent message : messages) {
-				sender.sendCustomPacket(new PacketPlayOutChat(message));
+				sender.sendMessage(message);
 			}
 		} else if (args.length == 2) {
 			int c = Integer.parseInt(args[0]);

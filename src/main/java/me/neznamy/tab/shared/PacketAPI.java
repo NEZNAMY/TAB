@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.Collection;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
@@ -25,11 +26,11 @@ public class PacketAPI {
 	 * @param players - player list
 	 * @param color - color field (1.13+)
 	 */
-	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color) {
+	public static void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color, TabFeature feature) {
 		if (to.getVersion().getMinorVersion() >= 8 && (boolean) TAB.getInstance().getConfiguration().getSecretOption("unregister-before-register", true) && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
-			to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
+			to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), feature);
 		}
-		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color));
+		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 69).setColor(color), feature);
 	}
 
 	/**
@@ -40,11 +41,11 @@ public class PacketAPI {
 	 * @param position - objective position (0 = Playerlist, 1 = Sidebar, 2 = Belowname)
 	 * @param displayType - display type of the value (only supported in Playerlist)
 	 */
-	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType) {
+	public static void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, TabFeature feature) {
 		if (to.getVersion().getMinorVersion() >= 8 && (boolean) TAB.getInstance().getConfiguration().getSecretOption("unregister-before-register", true) && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
-			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName));
+			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName), feature);
 		}
-		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, objectiveName, title, displayType));
-		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName));
+		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, objectiveName, title, displayType), feature);
+		to.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(position, objectiveName), feature);
 	}
 }

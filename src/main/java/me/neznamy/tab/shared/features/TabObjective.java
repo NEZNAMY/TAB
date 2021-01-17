@@ -50,11 +50,11 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		for (TabPlayer loaded : tab.getPlayers()){
 			loaded.setProperty(propertyName, rawValue);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
-			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, title, DisplaySlot, displayType);
+			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
 		}
 		for (TabPlayer viewer : tab.getPlayers()){
 			for (TabPlayer target : tab.getPlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)));
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)), getFeatureType());
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), getFeatureType());
 		}
 	}
 
@@ -71,18 +71,18 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(propertyName, rawValue);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType);
+		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), value));
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), value), getFeatureType());
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), getFeatureType());
 		}
 	}
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), getFeatureType());
 			return;
 		}
 		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
@@ -100,7 +100,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : tab.getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), value));
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), value), getFeatureType());
 		}
 	}
 
@@ -122,9 +122,9 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, title, DisplaySlot, displayType);
+		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
 		for (TabPlayer all : tab.getPlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)));
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), getFeatureType());
 		}
 	}
 }

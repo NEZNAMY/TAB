@@ -43,7 +43,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
-				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket);
+				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket, getFeatureType());
 			}
 		}
 	}
@@ -66,7 +66,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		for (TabPlayer displayed : tab.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
 			for (TabPlayer viewer : tab.getPlayers()) {
-				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendCustomPacket(displayedRemovePacket);
+				if (!displayed.getWorldName().equals(viewer.getWorldName())) viewer.sendCustomPacket(displayedRemovePacket, getFeatureType());
 			}
 		}
 	}
@@ -78,10 +78,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			if (all == connectedPlayer) continue;
 			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
 			if (shouldSee(all, connectedPlayer)) {
-				all.sendCustomPacket(addConnected);
+				all.sendCustomPacket(addConnected, getFeatureType());
 			}
 			if (shouldSee(connectedPlayer, all)) {
-				connectedPlayer.sendCustomPacket(getAddPacket(all));
+				connectedPlayer.sendCustomPacket(getAddPacket(all), getFeatureType());
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 			for (TabPlayer all : tab.getPlayers()) {
 				if (all == disconnectedPlayer) continue;
-				all.sendCustomPacket(remove);
+				all.sendCustomPacket(remove, getFeatureType());
 			}
 		});
 	}
@@ -106,14 +106,14 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == p) continue;
 			if (shouldSee(all, p)) {
-				all.sendCustomPacket(addChanged);
+				all.sendCustomPacket(addChanged, getFeatureType());
 			} else {
-				all.sendCustomPacket(removeChanged);
+				all.sendCustomPacket(removeChanged, getFeatureType());
 			}
 			if (shouldSee(p, all)) {
-				p.sendCustomPacket(getAddPacket(all));
+				p.sendCustomPacket(getAddPacket(all), getFeatureType());
 			} else {
-				p.sendCustomPacket(getRemovePacket(all));
+				p.sendCustomPacket(getRemovePacket(all), getFeatureType());
 			}
 		}
 	}

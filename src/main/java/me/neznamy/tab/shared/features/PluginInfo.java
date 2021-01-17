@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.rgb.TextColor;
 
 /*
@@ -26,7 +25,7 @@ public class PluginInfo implements CommandListener {
 		if (message.equalsIgnoreCase(command) && (!tab.isPremium() || sender.hasPermission("tab.admin"))){
 			IChatBaseComponent component = new IChatBaseComponent("TAB v" + tab.getPluginVersion()).setColor(new TextColor(EnumChatFormat.DARK_AQUA)).onHoverShowText('\u00a7' + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 			component.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(new TextColor(EnumChatFormat.BLACK)));
-			sender.sendCustomPacket(new PacketPlayOutChat(component));
+			sender.sendMessage(component);
 		}
 		return false;
 	}

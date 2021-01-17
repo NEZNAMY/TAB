@@ -59,12 +59,12 @@ public abstract class ScoreboardLine implements Refreshable {
 	}
 	
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, fakeplayer, value));
-		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, fakeplayer, value), TabFeature.SCOREBOARD);
+		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, TabFeature.SCOREBOARD);
 	}
 	
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ObjectiveName, fakeplayer, 0));
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ObjectiveName, fakeplayer, 0), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.SCOREBOARD);
 	}
 }

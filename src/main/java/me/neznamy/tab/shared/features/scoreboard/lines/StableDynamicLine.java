@@ -7,6 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
@@ -35,7 +36,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
 		List<String> prefixsuffix = replaceText(refreshed, force, false);
 		if (prefixsuffix == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69));
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69), TabFeature.SCOREBOARD);
 	}
 
 	@Override
