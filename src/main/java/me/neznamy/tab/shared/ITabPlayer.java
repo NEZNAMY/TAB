@@ -280,9 +280,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void unregisterTeam() {
 		if (teamName == null) return;
-		Object packet = new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			viewer.sendPacket(packet);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69));
 		}
 	}
 

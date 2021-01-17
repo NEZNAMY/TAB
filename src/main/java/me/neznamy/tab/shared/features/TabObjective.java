@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
@@ -62,10 +61,9 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void unload() {
-		Object unregister = new PacketPlayOutScoreboardObjective(ObjectiveName).create(ProtocolVersion.SERVER_VERSION);
 		for (TabPlayer p : tab.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
-			p.sendPacket(unregister);
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName));
 		}
 	}
 
