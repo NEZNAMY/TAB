@@ -48,6 +48,7 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
+		if (((ProxiedPlayer) player.getPlayer()).getServer() == null) return; //not connected to any server yet
 		((ProxiedPlayer) player.getPlayer()).getServer().sendData(CHANNEL_NAME, message);
 	}
 }
