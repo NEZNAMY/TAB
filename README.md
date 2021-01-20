@@ -12,7 +12,7 @@ You are allowed to make pull requests if you believe you have useful code change
   
   
 ## Premium code
-The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/shared/Shared.java#L63).  
+The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/shared/TAB.java#L79).  
   
   
 ## Maven Repository
@@ -29,7 +29,7 @@ The source contains content of premium version as well. However, this must be ac
   <dependency>
     <groupId>com.github.NEZNAMY</groupId>
     <artifactId>TAB-API</artifactId>
-    <version>2.8.8</version>
+    <version>2.8.10</version>
   </dependency>
 </dependencies>
  ```
