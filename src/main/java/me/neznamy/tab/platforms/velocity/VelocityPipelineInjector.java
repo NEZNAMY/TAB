@@ -3,12 +3,12 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.Collection;
 
 import com.google.common.collect.Lists;
+import com.velocitypowered.proxy.protocol.packet.Team;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.velocity.protocol.Team;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;

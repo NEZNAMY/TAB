@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.neznamy</groupId>
@@ -37,6 +38,7 @@
 						<includes>
 							<include>com.googlecode.json-simple:json-simple</include>
 							<include>com.github.NEZNAMY:YamlAssist</include>
+							<include>com.github.NEZNAMY:VelocityPacketInjector</include>
 						</includes>
 					</artifactSet>
 
@@ -97,13 +99,20 @@
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
+
 		<repository>
 			<id>viaversion</id>
 			<url>https://repo.viaversion.com/</url>
 		</repository>
+
 		<repository>
 			<id>ender-zone</id>
 			<url>https://ci.ender.zone/plugin/repository/everything/</url>
+		</repository>
+
+		<repository>
+			<id>velocity</id>
+			<url>https://nexus.velocitypowered.com/repository/maven-public/</url>
 		</repository>
 
 	</repositories>
@@ -129,9 +138,13 @@
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- json-simple, shaded -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -208,6 +221,14 @@
 				<exclusion>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -329,6 +350,10 @@
 					<groupId>us.myles</groupId>
 					<artifactId>viaversion-velocity</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -361,18 +386,107 @@
 			<version>1.0.3</version>
 		</dependency>
 
-
-		<!-- Manual Jars -->
-
-		<!-- Velocity-all -->
+		<!-- Velocity API -->
 		<dependency>
-			<groupId>jars</groupId>
-			<artifactId>Velocity</artifactId>
+			<groupId>com.velocitypowered</groupId>
+			<artifactId>velocity-api</artifactId>
 			<version>1.1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}${file.separator}jars${file.separator}velocity-1.1.0.jar</systemPath>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.moandjiezana.toml</groupId>
+					<artifactId>toml4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.checkerframework</groupId>
+					<artifactId>checker-qual</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-hocon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.mojang</groupId>
+					<artifactId>brigadier</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-yaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-legacy-text3
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-legacy
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-plain
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-plain</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.j2objc</groupId>
+					<artifactId>j2objc-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.errorprone</groupId>
+					<artifactId>error_prone_annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-legacy</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>text-serializer-gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>examination-string</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>aopalliance</groupId>
+					<artifactId>aopalliance</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
+		<!-- Missing velocity packets -->
+		<dependency>
+			<groupId>com.github.NEZNAMY</groupId>
+			<artifactId>VelocityPacketInjector</artifactId>
+			<version>1.0.0_fix</version>
+		</dependency>
 	</dependencies>
-
 </project>

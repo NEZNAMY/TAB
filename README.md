@@ -4,7 +4,7 @@ It's already been a year and I still can't see any positives of it. This way I j
   
   
 ## Compiling
-Plugin can be compiled using maven. However, you will need to manually add velocity jar into /jars/ folder as defined in pom.xml due to plugin sending packets which are not available on maven. You can find download link in [.dependencies](https://github.com/NEZNAMY/TAB/blob/master/.dependencies) file.
+Plugin can be compiled using maven.
   
   
 ## Contributing
