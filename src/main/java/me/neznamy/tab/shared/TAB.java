@@ -162,7 +162,6 @@ public class TAB {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
 		} catch (Throwable e) {
-			e.printStackTrace();
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
 		}
