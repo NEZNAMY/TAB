@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,13 +167,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
 		if (nms.minorVersion < 8) return null;
-		Object nmsPacket = nms.newPacketPlayOutPlayerInfo2.newInstance(Enum.valueOf(nms.EnumPlayerInfoAction, packet.action.toString()), Collections.EMPTY_LIST);
+		Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance();
+		nms.PacketPlayOutPlayerInfo_ACTION.set(nmsPacket, Enum.valueOf(nms.EnumPlayerInfoAction, packet.action.toString()));
 		List<Object> items = new ArrayList<Object>();
 		for (PlayerInfoData data : packet.entries) {
 			Object profile = nms.newGameProfile.newInstance(data.uniqueId, data.name);
 			if (data.skin != null) nms.PropertyMap_putAll.invoke(nms.GameProfile_PROPERTIES.get(profile), data.skin);
 			if (nms.newPlayerInfoData.getParameterCount() == 5) {
-				items.add(nms.newPlayerInfoData.newInstance(nms.newPacketPlayOutPlayerInfo2.newInstance(null, Collections.EMPTY_LIST), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(nms.EnumGamemode, data.gameMode.toString()), 
+				items.add(nms.newPlayerInfoData.newInstance(nms.newPacketPlayOutPlayerInfo.newInstance(), profile, data.latency, data.gameMode == null ? null : Enum.valueOf(nms.EnumGamemode, data.gameMode.toString()), 
 						data.displayName == null ? null : stringToComponent(data.displayName.toString(clientVersion))));
 			} else {
 				//1.8.8 paper

@@ -107,7 +107,7 @@ public class NMSStorage {
 	public Class<Enum> EnumGamemode;
 	public Class<Enum> EnumPlayerInfoAction;
 	public Class<?> PlayerInfoData;
-	public Constructor<?> newPacketPlayOutPlayerInfo2;
+	public Constructor<?> newPacketPlayOutPlayerInfo;
 	public Constructor<?> newPlayerInfoData;
 
 	public Class<?> GameProfile;
@@ -321,7 +321,7 @@ public class NMSStorage {
 			newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
 			newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, int.class, int.class, int.class);
-			newPacketPlayOutPlayerInfo2 = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Iterable.class);
+			newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor();
 			try {
 				newPlayerInfoData = PlayerInfoData.getConstructor(PacketPlayOutPlayerInfo, GameProfile, int.class, EnumGamemode, IChatBaseComponent);
 			} catch (Exception e) {
