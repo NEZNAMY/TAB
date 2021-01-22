@@ -18,8 +18,6 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	//instance of proxyserver
 	private ProxyServer server;
 	
-	private List<Placeholder> placeholders;
-	
 	/**
 	 * Constructs new instance with given parameter
 	 * @param server - instance of proxyserver
@@ -30,7 +28,7 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	
 	@Override
 	public List<Placeholder> registerPlaceholders() {
-		placeholders = new ArrayList<Placeholder>();
+		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
 			placeholders.add(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
 				public String get() {

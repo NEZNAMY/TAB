@@ -20,11 +20,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 
-	private List<Placeholder> placeholders;
-	
 	@Override
 	public List<Placeholder> registerPlaceholders() {
-		placeholders = new ArrayList<Placeholder>();
+		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
 			placeholders.add(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
