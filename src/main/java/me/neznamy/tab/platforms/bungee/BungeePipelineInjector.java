@@ -21,11 +21,11 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
 
+	private final String INJECT_POSITION = "inbound-boss";
+
 	public BungeePipelineInjector(TAB tab) {
 		super(tab);
 	}
-
-	private final String INJECT_POSITION = "inbound-boss";
 
 	@Override
 	public void inject(TabPlayer player) {

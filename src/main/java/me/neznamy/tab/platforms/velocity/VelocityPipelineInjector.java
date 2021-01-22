@@ -15,13 +15,13 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class VelocityPipelineInjector extends PipelineInjector {
-	
+
+	private final String INJECT_POSITION = "handler";
+
 	public VelocityPipelineInjector(TAB tab) {
 		super(tab);
 	}
 
-	private final String INJECT_POSITION = "handler";
-	
 	@Override
 	public void inject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8) return;
@@ -52,13 +52,13 @@ public class VelocityPipelineInjector extends PipelineInjector {
 			}
 		});
 	}
-	
+
 	@Override
 	public void uninject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
 	}
-	
+
 	/**
 	 * Removes all real players from packet if the packet doesn't come from TAB
 	 * @param packet - packet to modify
