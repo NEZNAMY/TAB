@@ -62,7 +62,6 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
-		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet)) {
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
@@ -116,6 +115,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	}
 
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
+		if (receiver.getVersion().getMinorVersion() < 8) return;
 		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
 		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName()) && spawnedPlayer.isLoaded()) 
 			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
