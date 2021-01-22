@@ -73,6 +73,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			scoreboards.put(scoreboard+"", sb);
 			tab.getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
 		}
+		checkForMisconfiguration();
+	}
+
+	private void checkForMisconfiguration() {
 		if (!defaultScoreboard.equalsIgnoreCase("NONE") && !scoreboards.containsKey(defaultScoreboard)) {
 			tab.getErrorManager().startupWarn("Unknown scoreboard &e\"" + defaultScoreboard + "\"&c set as default scoreboard.");
 			defaultScoreboard = "NONE";
