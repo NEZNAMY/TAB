@@ -60,7 +60,6 @@ public class TabExpansion extends PlaceholderExpansion {
 	public String onPlaceholderRequest(Player player, String identifier){
 		if (player == null) return "";
 		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
-		if (p == null) return "";
 		if (identifier.equals("scoreboard_visible")) {
 			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
 		}
@@ -74,16 +73,11 @@ public class TabExpansion extends PlaceholderExpansion {
 			String placeholder = "%" + identifier.substring(8) + "%";
 			String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
 			Map<Object, String> replacements = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
-			String replacement = Placeholder.findReplacement(replacements, output);
-			if (replacement.contains("%value%")) {
-				replacement = replacement.replace("%value%", output);
-			}
-			return replacement;
+			return Placeholder.findReplacement(replacements, output).replace("%value%", output);
 		}
 		if (identifier.startsWith("placeholder_")) {
-			String placeholder = "%" + identifier.substring(12) + "%";
 			//using Property function for fast & easy handling of nested placeholders and different placeholder types
-			return new Property(p, placeholder).get();
+			return new Property(p, "%" + identifier.substring(12) + "%").get();
 		}
 		String placeholder = identifier.replace("_raw", "");
 		Property prop = p.getProperty(placeholder);
