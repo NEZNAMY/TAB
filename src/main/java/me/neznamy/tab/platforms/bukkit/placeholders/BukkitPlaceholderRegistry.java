@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.placeholders;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
@@ -33,7 +35,7 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
-	public final DecimalFormat decimal2 = new DecimalFormat("#.##");
+	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 	
 	private JavaPlugin plugin;
 	private Economy economy;
@@ -41,6 +43,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private List<Placeholder> placeholders;
 
 	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
+		decimal2.applyPattern("#.##");
 		this.plugin = plugin;
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
