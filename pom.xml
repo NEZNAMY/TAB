@@ -59,7 +59,7 @@
 
 	<repositories>
 
-		<!-- Spigot APi -->
+		<!-- Spigot API -->
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-proxy</artifactId>
-			<version>1.16-R0.4-SNAPSHOT</version>
+			<version>1.16-R0.5-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -369,14 +369,6 @@
 					<artifactId>jsr305</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<!-- io.netty -->
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>4.1.51.Final</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- YamlAssist -->
