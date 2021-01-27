@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.placeholders;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -58,7 +59,17 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new PlayerPlaceholder("%money%", 1000) {
 			public String get(TabPlayer p) {
-				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) return decimal2.format(((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getMoney().doubleValue());
+				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+					try {
+						Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
+						Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, p.getPlayer());
+						BigDecimal money = (BigDecimal) user.getClass().getMethod("getMoney").invoke(user);
+						return decimal2.format(money.doubleValue());
+					} catch (Exception e) {
+						TAB.getInstance().getErrorManager().printError("Failed to get player balance of " + p.getName() + " using Essentials", e);
+						return "-";
+					} 
+				}
 				if (economy != null) return decimal2.format(economy.getBalance((Player) p.getPlayer()));
 				return "-";
 			}
@@ -203,7 +214,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				public String get(TabPlayer p) {
 					String name = null;
 					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-						name = ((com.earth2me.essentials.Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser((Player) p.getPlayer()).getNickname();
+						try {
+							Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
+							Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, p.getPlayer());
+							name = (String) user.getClass().getMethod("getNickname").invoke(user);
+						} catch (Exception e) {
+							TAB.getInstance().getErrorManager().printError("Failed to get Essentials nickname of " + p.getName(), e);
+						}
 					}
 					if (name == null || name.length() == 0) return p.getName();
 					return TAB.getInstance().getConfiguration().getSecretOption("essentials-nickname-prefix", "") + name;

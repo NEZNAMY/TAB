@@ -11,13 +11,15 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public class Essentials implements AFKProvider {
 
-	private com.earth2me.essentials.Essentials essentials;
+	private Object essentials;
 
 	public Essentials() {
-		essentials = (com.earth2me.essentials.Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	}
+	
 	@Override
-	public boolean isAFK(TabPlayer p) {
-		return essentials.getUser((Player) p.getPlayer()).isAfk();
+	public boolean isAFK(TabPlayer p) throws Exception {
+		Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, p.getPlayer());
+		return (boolean) user.getClass().getMethod("isAfk").invoke(user);
 	}
 }
