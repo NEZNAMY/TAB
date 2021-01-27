@@ -85,12 +85,6 @@
 			<url>https://jitpack.io</url>
 		</repository>
 
-		<!-- BungeePerms -->
-		<repository>
-			<id>bungeeperms-repo</id>
-			<url>http://repo.wea-ondara.net/repository/public/</url>
-		</repository>
-
 		<!-- LuckPerms5 -->
 		<!-- BungeeCord internals -->
 		<!-- Essentials -->
@@ -133,10 +127,6 @@
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.md-5</groupId>
@@ -278,14 +268,6 @@
 			<groupId>net.luckperms</groupId>
 			<artifactId>api</artifactId>
 			<version>5.2</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- BungeePerms -->
-		<dependency>
-			<groupId>net.alpenblock</groupId>
-			<artifactId>BungeePerms</artifactId>
-			<version>4.0-dev-109</version>
 			<scope>provided</scope>
 		</dependency>
 
