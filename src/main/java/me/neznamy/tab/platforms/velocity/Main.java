@@ -25,7 +25,7 @@ import net.kyori.adventure.text.Component;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = "2.8.10", description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = TAB.pluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
 	//instance of proxyserver
