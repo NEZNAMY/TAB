@@ -95,7 +95,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					newList.add(entry);
 				} else {
-					System.out.println("override");
 					logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);
 				}
 			}
