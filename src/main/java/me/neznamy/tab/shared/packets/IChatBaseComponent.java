@@ -552,6 +552,7 @@ public class IChatBaseComponent {
 						component.setObfuscated(true);
 						break;
 					case RESET: 
+						component = new IChatBaseComponent();
 						component.setColor(new TextColor(EnumChatFormat.WHITE));
 						break;
 					default:
