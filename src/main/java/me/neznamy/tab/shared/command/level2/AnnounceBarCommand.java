@@ -41,13 +41,17 @@ public class AnnounceBarCommand extends SubCommand{
 								feature.announcements.add(barname);
 								feature.announceEndTime = System.currentTimeMillis() + duration*1000;
 								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									bar.create(all);
-									all.getActiveBossBars().add(bar);
+									if (all.hasBossbarVisible()) {
+										bar.create(all);
+										all.getActiveBossBars().add(bar);
+									}
 								}
 								Thread.sleep(duration*1000);
 								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									bar.remove(all);
-									all.getActiveBossBars().remove(bar);
+									if (all.hasBossbarVisible()) {
+										bar.remove(all);
+										all.getActiveBossBars().remove(bar);
+									}
 								}
 								feature.announcements.remove(barname);
 							} catch (Exception e) {
