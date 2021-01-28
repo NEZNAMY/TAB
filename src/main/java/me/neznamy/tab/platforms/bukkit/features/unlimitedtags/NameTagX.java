@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -87,8 +88,8 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			all.registerTeam();
 			loadPassengers(all);
 			for (TabPlayer worldPlayer : tab.getPlayers()) {
-				if (all != worldPlayer && ((Player) worldPlayer.getPlayer()).getWorld() == ((Player) all.getPlayer()).getWorld() && 
-					((Player) worldPlayer.getPlayer()).getLocation().distance(((Player) all.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
+				if (all != worldPlayer && ((Player) worldPlayer.getPlayer()).getWorld() == ((Player) all.getPlayer()).getWorld() &&
+						getDistance(worldPlayer, all) <= ENTITY_TRACKING_RANGE) {
 					all.getArmorStandManager().spawn(worldPlayer);
 				}
 			}
@@ -137,10 +138,16 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		for (TabPlayer viewer : tab.getPlayers()) {
 			if (connectedPlayer == viewer) continue; //not displaying own armorstands
 			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
-			if (((Player) viewer.getPlayer()).getLocation().distance(((Player) connectedPlayer.getPlayer()).getLocation()) <= ENTITY_TRACKING_RANGE) {
+			if (getDistance(viewer, connectedPlayer) <= ENTITY_TRACKING_RANGE) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
 			}
 		}
+	}
+	
+	private double getDistance(TabPlayer player1, TabPlayer player2) {
+		Location loc1 = ((Player) player1.getPlayer()).getLocation();
+		Location loc2 = ((Player) player2.getPlayer()).getLocation();
+		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
 	}
 
 	private void loadPassengers(TabPlayer p) {
