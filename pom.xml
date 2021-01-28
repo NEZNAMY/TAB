@@ -65,13 +65,6 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 
-		<!-- BungeeCord API -->
-		<!-- io.netty -->
-		<repository>
-			<id>bungeecord-repo</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-
 		<!-- PlaceholderAPI -->
 		<repository>
 			<id>placeholderapi</id>
@@ -86,7 +79,7 @@
 		</repository>
 
 		<!-- LuckPerms5 -->
-		<!-- BungeeCord internals -->
+		<!-- BungeeCord -->
 		<repository>
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
