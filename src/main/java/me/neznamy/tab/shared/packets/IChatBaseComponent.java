@@ -35,7 +35,7 @@ public class IChatBaseComponent {
 	private ClickAction clickAction;
 	private Object clickValue;
 	private HoverAction hoverAction;
-	private String hoverValue;
+	private Object hoverValue;
 
 	private List<IChatBaseComponent> extra;
 	private JSONObject jsonObject = new JSONObject();
@@ -323,7 +323,7 @@ public class IChatBaseComponent {
 	 * Returns hover value or null if not set
 	 * @return hover value
 	 */
-	public String getHoverValue() {
+	public Object getHoverValue() {
 		return hoverValue;
 	}
 
@@ -334,6 +334,15 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent onHoverShowText(String text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
+	}
+
+	/**
+	 * Sets hover action to SHOW_TEXT and text to given value
+	 * @param text - text to show
+	 * @return self
+	 */
+	public IChatBaseComponent onHoverShowText(IChatBaseComponent text) {
+		return onHover(HoverAction.SHOW_TEXT, text.jsonObject);
 	}
 
 	/**
@@ -358,7 +367,7 @@ public class IChatBaseComponent {
 
 	/**
 	 * Sets hover action to SHOW_ITEM and item to given value
-	 * @param item - item to show
+	 * @param serializedItem - item to show
 	 * @return self
 	 */
 	public IChatBaseComponent onHoverShowItem(String serializedItem) {
@@ -386,7 +395,7 @@ public class IChatBaseComponent {
 	 * @param value - value to perform action with
 	 * @return self
 	 */
-	private IChatBaseComponent onHover(HoverAction action, String value) {
+	private IChatBaseComponent onHover(HoverAction action, Object value) {
 		hoverAction = action;
 		hoverValue = value;
 		JSONObject hover = new JSONObject();
