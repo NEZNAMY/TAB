@@ -66,6 +66,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		if (remember_toggle_choice) {
 			bossbar_off_players = tab.getConfiguration().getPlayerData("bossbar-off");
 		}
+		TAB.getInstance().getPlaceholderManager().allUsedPlaceholderIdentifiers.add("%countdown%");
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
