@@ -85,8 +85,4 @@ public class NMSHook {
 		}
 		return false;
 	}
-	
-	public Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
-	}
 }
