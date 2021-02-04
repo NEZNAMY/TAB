@@ -159,14 +159,14 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	
 	public static BossBarLine fromConfig(String bar) {
 		TAB tab = TAB.getInstance();
-		String condition = null;
-		Object obj = tab.getConfiguration().bossbar.getBoolean("bars." + bar + ".permission-required");
-		if (obj != null) {
-			if ((boolean) obj) {
-				condition = "permission:tab.bossbar." + bar;
+		String condition = tab.getConfiguration().bossbar.getString("bars." + bar + ".display-condition", null);
+		if (condition == null) {
+			Object permRequired = tab.getConfiguration().bossbar.getBoolean("bars." + bar + ".permission-required");
+			if (permRequired != null) {
+				if ((boolean) permRequired) {
+					condition = "permission:tab.bossbar." + bar;
+				}
 			}
-		} else {
-			condition = tab.getConfiguration().bossbar.getString("bars." + bar + ".display-condition", null);
 		}
 		
 		String style = tab.getConfiguration().bossbar.getString("bars." + bar + ".style");
