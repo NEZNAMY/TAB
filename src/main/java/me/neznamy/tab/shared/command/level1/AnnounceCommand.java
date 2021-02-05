@@ -5,6 +5,7 @@ import java.util.Arrays;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
+import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
 
 /**
  * Handler for "/tab announce" subcommand
@@ -14,6 +15,7 @@ public class AnnounceCommand extends SubCommand {
 	public AnnounceCommand() {
 		super("announce", null);
 		subcommands.put("bar", new AnnounceBarCommand());
+		subcommands.put("scoreboard", new AnnounceScoreboardCommand());
 	}
 
 	@Override

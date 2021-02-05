@@ -38,6 +38,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	public String scoreboard_on;
 	public String scoreboard_off;
+	
+	public me.neznamy.tab.api.Scoreboard announcement;
 
 	public ScoreboardManager(TAB tab) {
 		this.tab = tab;
@@ -101,7 +103,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible()) continue;
+					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || announcement != null) continue;
 					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = detectHighestScoreboard(p);
