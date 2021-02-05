@@ -89,14 +89,14 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 		Set<Integer> vehicleList;
 		if (pl != null) {
 			//player moved
-			if (!pl.isLoaded()) return;
+			if (!pl.isLoaded() || nameTagX.isDisabledWorld(pl.getWorldName())) return;
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 
 			//player can be a vehicle too
 			List<Entity> riders = nameTagX.getPassengers((Player) pl.getPlayer());
 			for (Entity e : riders) {
 				TabPlayer rider = nameTagX.entityIdMap.get(e.getEntityId());
-				if (rider != null) {
+				if (rider != null && !nameTagX.isDisabledWorld(rider.getWorldName())) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> {
 						rider.getArmorStandManager().teleport(receiver);
 						rider.getArmorStandManager().teleport(pl); //vehicle player has no other way to get this packet
@@ -107,7 +107,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			//a vehicle carrying something moved
 			for (Integer entity : vehicleList) {
 				TabPlayer passenger = nameTagX.entityIdMap.get(entity);
-				if (passenger != null) {
+				if (passenger != null && !nameTagX.isDisabledWorld(passenger.getWorldName())) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
@@ -117,7 +117,8 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
-		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(spawnedPlayer.getWorldName()) && spawnedPlayer.isLoaded()) 
+		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
+		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(((Player)spawnedPlayer.getPlayer()).getWorld().getName()) && spawnedPlayer.isLoaded()) 
 			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 	}
 
