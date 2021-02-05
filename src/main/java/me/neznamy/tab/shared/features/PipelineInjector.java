@@ -58,6 +58,6 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	}
 	
 	protected void logTeamOverride(String team, String player) {
-		tab.getErrorManager().printError("A plugin just tried to add player " + player + " into team " + team, null, false, tab.getErrorManager().antiOverrideLog);
+		tab.getErrorManager().printError("Something just tried to add player " + player + " into team " + team, null, false, tab.getErrorManager().antiOverrideLog);
 	}
 }

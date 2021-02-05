@@ -7,11 +7,13 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.interfaces.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -20,10 +22,11 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener {
+public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
 
-	private final String ObjectiveName = "TAB-BelowName";
-	private final int DisplaySlot = 2;
+	public static final String ObjectiveName = "TAB-BelowName";
+	public static final int DisplaySlot = 2;
+	
 	private final String numberPropertyName = "belowname-number";
 	private final String textPropertyName = "belowname-text";
 
@@ -153,5 +156,14 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		for (TabPlayer all : tab.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), TabFeature.BELOWNAME_NUMBER);
 		}
+	}
+	
+	@Override
+	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
+			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.objectiveName + "\" in position " + packet.slot, null, false, tab.getErrorManager().antiOverrideLog);
+			return true;
+		}
+		return false;
 	}
 }

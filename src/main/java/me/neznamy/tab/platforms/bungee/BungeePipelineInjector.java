@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
@@ -67,6 +68,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 									return;
 								}
 								buf.readerIndex(marker);
+							}
+							if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+								//TODO add support for serialized packets as above with teams
+								return;
 							}
 						}
 						//client reset packet

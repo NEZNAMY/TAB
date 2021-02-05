@@ -25,6 +25,7 @@ public enum UsageType {
 	PACKET_NAMED_ENTITY_SPAWN("PacketPlayOutNamedEntitySpawn"),
 	PACKET_PLAYER_INFO("PacketPlayOutPlayerInfo"),
 	PACKET_LOGIN("PacketLogin"),
+	PACKET_DISPLAY_OBJECTIVE("PacketPlayOutScoreboardDisplayObjective"),
 	
 	//nametags
 	REFRESHING_COLLISION("Refreshing collision rule"),

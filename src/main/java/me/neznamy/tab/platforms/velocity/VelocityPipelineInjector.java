@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.Collection;
 
 import com.google.common.collect.Lists;
+import com.velocitypowered.proxy.protocol.packet.ScoreboardDisplay;
 import com.velocitypowered.proxy.protocol.packet.Team;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -43,6 +44,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 						//making sure to not send own packets before join packet is actually sent
 						super.write(context, packet, channelPromise);
 						tab.getFeatureManager().onLoginPacket(player);
+						return;
+					}
+					if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 						return;
 					}
 				} catch (Throwable e){

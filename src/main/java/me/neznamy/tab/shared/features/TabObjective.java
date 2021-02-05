@@ -7,11 +7,13 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.interfaces.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -20,10 +22,11 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 /**
  * Feature handler for tablist objective feature
  */
-public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener {
+public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
 
-	private final String ObjectiveName = "TAB-YellowNumber";
-	private final int DisplaySlot = 0;
+	public static final String ObjectiveName = "TAB-YellowNumber";
+	public static final int DisplaySlot = 0;
+	
 	private final String propertyName = "tablist-objective";
 	private final String title = "ms";
 
@@ -126,5 +129,14 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		for (TabPlayer all : tab.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), getFeatureType());
 		}
+	}
+
+	@Override
+	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
+			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.objectiveName + "\" in position " + packet.slot, null, false, tab.getErrorManager().antiOverrideLog);
+			return true;
+		}
+		return false;
 	}
 }

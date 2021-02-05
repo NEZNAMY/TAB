@@ -57,6 +57,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
 							super.write(context, packet, channelPromise);
 							return;
 						}
+						if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+							return;
+						}
 						tab.getFeatureManager().onPacketSend(player, packet);
 					} catch (Throwable e){
 						tab.getErrorManager().printError("An error occurred when reading packets", e);
