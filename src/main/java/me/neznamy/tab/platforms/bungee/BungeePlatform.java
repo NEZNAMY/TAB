@@ -8,7 +8,6 @@ import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BungeeTABLoadEvent;
-import me.neznamy.tab.platforms.bungee.permission.None;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
@@ -20,6 +19,7 @@ import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
+import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
@@ -51,7 +51,7 @@ public class BungeePlatform implements Platform {
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			return new BungeePerms(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
 		} else {
-			return new None();
+			return new VaultBridge();
 		}
 	}
 

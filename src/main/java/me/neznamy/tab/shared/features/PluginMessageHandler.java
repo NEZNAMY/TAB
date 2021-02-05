@@ -68,6 +68,10 @@ public interface PluginMessageHandler {
 			player.setAttribute(attribute, value);
 			return true;
 		}
+		if (subChannel.equals("Group")) {
+			String group = in.readUTF();
+			player.setGroup(group, true);
+		}
 		return false;
 	}
 	

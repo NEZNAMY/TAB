@@ -31,7 +31,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	protected String name;
 	protected UUID uniqueId;
 	protected String world;
-	private String permissionGroup = "< Not Initialized Yet >";
+	private String permissionGroup = "<null>";
 	private String teamName;
 	private String teamNameNote;
 

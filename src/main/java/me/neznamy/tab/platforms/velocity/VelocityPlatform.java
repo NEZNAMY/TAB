@@ -20,8 +20,8 @@ import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.kyori.adventure.identity.Identity;
@@ -50,7 +50,7 @@ public class VelocityPlatform implements Platform {
 		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
 			return new BungeePerms(server.getPluginManager().getPlugin("bungeeperms").get().getDescription().getVersion().get());
 		} else {
-			return new None();
+			return new VaultBridge();
 		}
 	}
 	
