@@ -13,9 +13,12 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
+import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.Team;
@@ -72,6 +75,17 @@ public class BungeePipelineInjector extends PipelineInjector {
 							if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 								//TODO add support for serialized packets as above with teams
 								return;
+							}
+							if (packet instanceof PlayerListHeaderFooter) {
+								//TODO add support for serialized packets as above with teams
+								HeaderFooter hf = (HeaderFooter) tab.getFeatureManager().getFeature("headerfooter");
+								if (hf != null && !hf.isDisabledWorld(hf.disabledWorlds, player.getWorldName())) {
+									IChatBaseComponent header = IChatBaseComponent.fromString(((PlayerListHeaderFooter) packet).getHeader());
+									if (header != null && !header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
+										logHeaderFooterOverride(header.toString(), IChatBaseComponent.fromString(((PlayerListHeaderFooter) packet).getFooter()).toString());
+										return;
+									}
+								}
 							}
 						}
 						//client reset packet

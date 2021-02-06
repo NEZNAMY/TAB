@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 /**
@@ -20,7 +21,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 
 	private TAB tab;
 	private List<String> usedPlaceholders;
-	private List<String> disabledWorlds;
+	public List<String> disabledWorlds;
 	
 	public HeaderFooter(TAB tab) {
 		this.tab = tab;
@@ -65,7 +66,9 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			updateRawValue(p, "footer");
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty("header").updateAndGet(), p.getProperty("footer").updateAndGet()), getFeatureType());
+		IChatBaseComponent header = IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet());
+		if (header.getText() != null) header.setText("\u00a70\u00a71\u00a72\u00a7r" + header.getText());
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
 	}
 	
 	@Override
