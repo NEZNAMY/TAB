@@ -22,7 +22,7 @@ public class GhostPlayerFix implements QuitEventListener {
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		tab.getCPUManager().runTaskLater(100, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
+		tab.getCPUManager().runTaskLater(200, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {
 
 			@Override
 			public void run() {
