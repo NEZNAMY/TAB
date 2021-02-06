@@ -153,4 +153,12 @@ public class BungeePacketBuilder implements PacketBuilder {
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
 	}
+
+	@Override
+	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception {
+		return new PacketPlayOutPlayerListHeaderFooter(
+			IChatBaseComponent.fromString(((PlayerListHeaderFooter)packet).getHeader()),
+			IChatBaseComponent.fromString(((PlayerListHeaderFooter)packet).getFooter())
+		);
+	}
 }

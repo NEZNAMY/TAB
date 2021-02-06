@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 
 import com.google.common.collect.Lists;
@@ -16,7 +15,7 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class VelocityPipelineInjector extends PipelineInjector {
 
@@ -56,13 +55,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 						//TODO add support for serialized packets
 						HeaderFooter hf = (HeaderFooter) tab.getFeatureManager().getFeature("headerfooter");
 						if (hf != null && !hf.isDisabledWorld(hf.disabledWorlds, player.getWorldName())) {
-							Field f1 = packet.getClass().getDeclaredField("header");
-							f1.setAccessible(true);
-							IChatBaseComponent header = IChatBaseComponent.fromString((String) f1.get(packet));
-							if (header != null && !header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
-								Field f2 = packet.getClass().getDeclaredField("footer");
-								f2.setAccessible(true);
-								logHeaderFooterOverride(header.toString(), IChatBaseComponent.fromString((String) f2.get(packet)).toString());
+							PacketPlayOutPlayerListHeaderFooter packet0 = tab.getPacketBuilder().readHeaderFooter(packet, player.getVersion());
+							if (packet0.header.getText() != null && !packet0.header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
+								logHeaderFooterOverride(packet0.header.toString(), packet0.footer.toString());
 								return;
 							}
 						}

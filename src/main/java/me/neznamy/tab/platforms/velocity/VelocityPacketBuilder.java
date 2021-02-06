@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -156,5 +157,17 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	@Override
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).position, ((ScoreboardDisplay) bungeePacket).name);
+	}
+	
+
+	@Override
+	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception {
+		Field f1 = packet.getClass().getDeclaredField("header");
+		f1.setAccessible(true);
+		IChatBaseComponent header = IChatBaseComponent.fromString((String) f1.get(packet));
+		Field f2 = packet.getClass().getDeclaredField("footer");
+		f2.setAccessible(true);
+		IChatBaseComponent footer = IChatBaseComponent.fromString((String) f2.get(packet));
+		return new PacketPlayOutPlayerListHeaderFooter(header, footer);
 	}
 }

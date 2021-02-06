@@ -376,6 +376,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
 		);
 	}
+
+	@Override
+	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception {
+		return new PacketPlayOutPlayerListHeaderFooter(
+			IChatBaseComponent.fromString(componentToString(nms.PacketPlayOutPlayerListHeaderFooter_HEADER.get(packet))),
+			IChatBaseComponent.fromString(componentToString(nms.PacketPlayOutPlayerListHeaderFooter_FOOTER.get(packet)))
+		);
+	}
 	
 	
 	/**
