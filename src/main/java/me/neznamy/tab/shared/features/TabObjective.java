@@ -133,6 +133,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		if (isDisabledWorld(disabledWorlds, receiver.getWorldName())) return false;
 		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
 			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.objectiveName + "\" in position " + packet.slot, null, false, tab.getErrorManager().antiOverrideLog);
 			return true;
