@@ -50,7 +50,7 @@ public class VelocityPlatform implements Platform {
 		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
 			return new BungeePerms(server.getPluginManager().getPlugin("bungeeperms").get().getDescription().getVersion().get());
 		} else {
-			return new VaultBridge();
+			return new VaultBridge(Main.plm);
 		}
 	}
 	

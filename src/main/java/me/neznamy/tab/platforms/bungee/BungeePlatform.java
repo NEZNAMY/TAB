@@ -51,7 +51,7 @@ public class BungeePlatform implements Platform {
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
 			return new BungeePerms(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
 		} else {
-			return new VaultBridge();
+			return new VaultBridge(Main.plm);
 		}
 	}
 
