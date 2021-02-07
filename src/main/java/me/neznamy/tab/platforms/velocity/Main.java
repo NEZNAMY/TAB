@@ -17,7 +17,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import me.neznamy.injector.VelocityPacketRegistry;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -33,8 +32,6 @@ public class Main {
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
-	
-	private DisabledCommand disabledCommand = new DisabledCommand();
 
 	@Inject
 	public Main(ProxyServer server) {
@@ -59,8 +56,8 @@ public class Main {
 
 			@Override
 			public void execute(CommandSource sender, String[] args) {
-				if (TAB.getInstance() == null) {
-					for (String message : disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				if (TAB.getInstance().isDisabled()) {
+					for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 						sender.sendMessage(Identity.nil(), Component.text(TAB.getInstance().getPlaceholderManager().color(message)));
 					}
 				} else {
@@ -70,7 +67,7 @@ public class Main {
 
 			@Override
 			public List<String> suggest(CommandSource sender, String[] args) {
-				if (TAB.getInstance() == null) return new ArrayList<String>();
+				if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
 				return TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
 			}
 		});
@@ -94,6 +91,6 @@ public class Main {
 	
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
-		if (TAB.getInstance() != null) TAB.getInstance().unload();
+		TAB.getInstance().unload();
 	}
 }

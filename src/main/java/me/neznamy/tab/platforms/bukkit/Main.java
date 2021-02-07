@@ -7,14 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.DisabledCommand;
 
 /**
  * Main class for Bukkit platform
  */
 public class Main extends JavaPlugin {
-
-	private DisabledCommand disabledCommand = new DisabledCommand();
 	
 	@Override
 	public void onEnable(){
@@ -27,8 +24,8 @@ public class Main extends JavaPlugin {
 		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSHook.nms), new BukkitPacketBuilder(NMSHook.nms)));
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor((sender, c, cmd, args) -> {
-			if (TAB.getInstance() == null) {
-				for (String message : disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+			if (TAB.getInstance().isDisabled()) {
+				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 					sender.sendMessage(TAB.getInstance().getPlaceholderManager().color(message));
 				}
 			} else {
@@ -43,6 +40,6 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if (TAB.getInstance() != null) TAB.getInstance().unload();
+		TAB.getInstance().unload();
 	}
 }

@@ -171,6 +171,7 @@ public class TAB {
 	 * Properly unloads the entire plugin
 	 */
 	public void unload() {
+		if (disabled) return;
 		try {
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();

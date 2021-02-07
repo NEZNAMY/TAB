@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -20,8 +19,6 @@ public class Main extends Plugin {
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
-	
-	private DisabledCommand disabledCommand = new DisabledCommand();
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -55,7 +52,7 @@ public class Main extends Plugin {
 	
 	@Override
 	public void onDisable() {
-		if (TAB.getInstance() != null) TAB.getInstance().unload();
+		TAB.getInstance().unload();
 	}
 	
 	public class BTABCommand extends Command implements TabExecutor {
@@ -67,8 +64,8 @@ public class Main extends Plugin {
 		@SuppressWarnings("deprecation")
 		@Override
 		public void execute(CommandSender sender, String[] args) {
-			if (TAB.getInstance() == null) {
-				for (String message : disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+			if (TAB.getInstance().isDisabled()) {
+				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 					sender.sendMessage(TAB.getInstance().getPlaceholderManager().color(message));
 				}
 			} else {
@@ -78,7 +75,7 @@ public class Main extends Plugin {
 
 		@Override
 		public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-			if (TAB.getInstance() == null) return new ArrayList<String>();
+			if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
 			return TAB.getInstance().command.complete(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
 		}
 	}
