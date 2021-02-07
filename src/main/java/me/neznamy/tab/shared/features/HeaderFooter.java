@@ -62,8 +62,13 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		if (force) {
-			updateRawValue(p, "header");
-			updateRawValue(p, "footer");
+			String headerAppend = getValue(p, "headerappend");
+			if (headerAppend.length() > 0) headerAppend = "\n\u00a7r" + headerAppend;
+			p.setProperty("header", getValue(p, "header") + headerAppend);
+			
+			String footerAppend = getValue(p, "footerappend");
+			if (footerAppend.length() > 0) footerAppend = "\n\u00a7r" + footerAppend;
+			p.setProperty("footer", getValue(p, "footer") + footerAppend);
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
 		IChatBaseComponent header = IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet());
@@ -76,7 +81,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		return usedPlaceholders;
 	}
 
-	private void updateRawValue(TabPlayer p, String name) {
+	private String getValue(TabPlayer p, String name) {
 		String worldGroup = tab.getConfiguration().getWorldGroupOf(p.getWorldName());
 		StringBuilder rawValue = new StringBuilder();
 		List<String> lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
@@ -90,10 +95,10 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		if (lines == null) lines = new ArrayList<String>();
 		int i = 0;
 		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n" + '\u00a7' + "r");
+			if (++i > 1) rawValue.append("\n\u00a7r");
 			rawValue.append(line);
 		}
-		p.setProperty(name, rawValue.toString());
+		return rawValue.toString();
 	}
 	
 	@Override
