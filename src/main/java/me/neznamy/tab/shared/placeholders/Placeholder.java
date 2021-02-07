@@ -21,6 +21,7 @@ public abstract class Placeholder {
 	
 	public Placeholder(String identifier, int refresh) {
 		if (refresh % 50 != 0) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
+		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
 		this.identifier = identifier;
 		this.refresh = refresh;
 		if (TAB.getInstance().getConfiguration().premiumconfig != null) {
