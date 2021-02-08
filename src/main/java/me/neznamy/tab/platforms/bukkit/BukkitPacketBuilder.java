@@ -350,7 +350,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		String objective = (String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
 		String displayName;
 		if (nms.minorVersion >= 13) {
-			displayName = IChatBaseComponent.fromString(componentToString(nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket))).toLegacyText();
+			Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
+			displayName = component == null ? null : IChatBaseComponent.fromString(componentToString(component)).toLegacyText();
 		} else {
 			displayName = (String) nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
 		}

@@ -146,7 +146,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = IChatBaseComponent.fromString(packet.value).toLegacyText();
+			title = packet.value == null ? null : IChatBaseComponent.fromString(packet.value).toLegacyText();
 		} else {
 			title = packet.value;
 		}

@@ -141,7 +141,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = IChatBaseComponent.fromString(packet.getValue()).toLegacyText();
+			title = packet.getValue() == null ? null : IChatBaseComponent.fromString(packet.getValue()).toLegacyText();
 		} else {
 			title = packet.getValue();
 		}
