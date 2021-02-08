@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.command.level1.PlayerUUIDCommand;
 import me.neznamy.tab.shared.command.level1.ReloadCommand;
 import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
+import me.neznamy.tab.shared.command.level1.SendCommand;
 import me.neznamy.tab.shared.command.level1.SetCollisionCommand;
 import me.neznamy.tab.shared.command.level1.WidthCommand;
 
@@ -42,6 +43,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new PlayerCommand());
 		registerSubCommand(new PlayerUUIDCommand());
 		registerSubCommand(new ReloadCommand());
+		registerSubCommand(new SendCommand());
 		registerSubCommand(new SetCollisionCommand());
 		if (tab.isPremium()) {
 			registerSubCommand(new ScoreboardCommand());
