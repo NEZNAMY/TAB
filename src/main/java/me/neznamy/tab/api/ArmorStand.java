@@ -83,5 +83,5 @@ public interface ArmorStand {
 	 * @param viewer - player to spawn for
 	 * @param addToRegistered - if player should be added to players in range
 	 */
-	public void spawn(TabPlayer viewer, boolean addToRegistered);
+	public void spawn(TabPlayer viewer);
 }

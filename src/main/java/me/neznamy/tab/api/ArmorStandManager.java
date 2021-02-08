@@ -22,7 +22,7 @@ public class ArmorStandManager {
 	
 	public void spawn(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
-		getArmorStands().forEach(a -> a.spawn(viewer, true));
+		getArmorStands().forEach(a -> a.spawn(viewer));
 	}
 
 	public void sneak(boolean sneaking) {

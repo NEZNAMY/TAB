@@ -116,9 +116,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param addToRegistered - if player should be added to registered or not
 	 * @return List of packets that spawn the armor stand
 	 */
-	public Object[] getSpawnPackets(TabPlayer viewer, boolean addToRegistered) {
+	public Object[] getSpawnPackets(TabPlayer viewer) {
 		visible = getVisibility();
-		if (addToRegistered) nearbyPlayers.add(viewer);
+		nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
 			return new Object[] {
@@ -133,8 +133,8 @@ public class BukkitArmorStand implements ArmorStand {
 	}
 
 	@Override
-	public void spawn(TabPlayer viewer, boolean addToRegistered) {
-		for (Object packet : getSpawnPackets(viewer, addToRegistered)) {
+	public void spawn(TabPlayer viewer) {
+		for (Object packet : getSpawnPackets(viewer)) {
 			viewer.sendPacket(packet, TabFeature.NAMETAGX);
 		}
 	}
@@ -176,12 +176,12 @@ public class BukkitArmorStand implements ArmorStand {
 				if (sneaking) {
 					viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
 				} else {
-					spawn(viewer, false);
+					spawn(viewer);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
 				viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
-				Runnable spawn = () -> spawn(viewer, false);
+				Runnable spawn = () -> spawn(viewer);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
 					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.v1_8_0_BUG_COMPENSATION, spawn);
