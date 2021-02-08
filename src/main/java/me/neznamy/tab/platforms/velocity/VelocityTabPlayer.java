@@ -79,7 +79,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 	
 	@Override
 	public UUID getTablistUUID() {
-		return offlineId;
+		return TAB.getInstance().getConfiguration().config.getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
 	}
 
 	@Override
