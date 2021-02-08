@@ -165,6 +165,11 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setColor(TextColor color) {
 		this.color = color;
+		if (color != null) {
+			jsonObject.put("color", color.toString(true));
+		} else {
+			jsonObject.remove("color");
+		}
 		return this;
 	}
 	
@@ -342,7 +347,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onHoverShowText(IChatBaseComponent text) {
-		return onHover(HoverAction.SHOW_TEXT, text.jsonObject);
+		return onHover(HoverAction.SHOW_TEXT, text);
 	}
 
 	/**
@@ -494,22 +499,27 @@ public class IChatBaseComponent {
 			}
 		}
 		//the core component, fixing all colors
-		if (color != null) {
-			jsonObject.put("color", color.toString(clientVersion.getMinorVersion() >= 16));
-		}
-		if (extra != null) {
-			for (IChatBaseComponent extra : extra) {
-				if (extra.color != null) {
-					extra.jsonObject.put("color", extra.color.toString(clientVersion.getMinorVersion() >= 16));
-				}
-			}
-		}
+		if (clientVersion.getMinorVersion() < 16) convertColorsToLegacy();
 		return toString();
 	}
 
 	@Override
 	public String toString() {
 		return jsonObject.toString();
+	}
+	
+	private void convertColorsToLegacy() {
+		if (color != null) {
+			jsonObject.put("color", color.getLegacyColor().toString().toLowerCase());
+		}
+		if (extra != null) {
+			for (IChatBaseComponent extra : extra) {
+				extra.convertColorsToLegacy();
+			}
+		}
+		if (hoverValue instanceof IChatBaseComponent) {
+			((IChatBaseComponent)hoverValue).convertColorsToLegacy();
+		}
 	}
 
 	/**

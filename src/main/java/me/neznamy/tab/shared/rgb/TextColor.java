@@ -21,9 +21,8 @@ public class TextColor {
 
 	
 	/**
-	 * Returns a new instance based on hex code as string
+	 * Creates a new instance based on hex code as string
 	 * @param hexCode - a 6-digit combination of hex numbers
-	 * @return TextColor from hex color
 	 */
 	public TextColor(String hexCode) {
 		int hexColor = Integer.parseInt(hexCode, 16);
@@ -34,9 +33,8 @@ public class TextColor {
 	}
 	
 	/**
-	 * Returns a new instance based on legacy color
+	 * Creates a new instance with given parameter
 	 * @param legacyColor - legacy color
-	 * @return TextColor from legacy color
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
 		red = legacyColor.getRed();
@@ -46,11 +44,10 @@ public class TextColor {
 	}
 	
 	/**
-	 * Returns a new instance based on color bytes
+	 * Creates a new instance with given parameters
 	 * @param red - red value
 	 * @param green - green value
 	 * @param blue - blue value
-	 * @return TextColor from RGB combination
 	 */
 	public TextColor(int red, int green, int blue) {
 		this.red = red;
@@ -59,6 +56,23 @@ public class TextColor {
 		loadClosestColor();
 	}
 	
+	/**
+	 * Creates a new instance with given parameters
+	 * @param red - red value
+	 * @param green - green value
+	 * @param blue - blue value
+	 * @param legacyColor
+	 */
+	public TextColor(int red, int green, int blue, EnumChatFormat legacyColor) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+		this.legacyColor = legacyColor;
+	}
+	
+	/**
+	 * Loads closest legacy color based on current rgb values
+	 */
 	private void loadClosestColor() {
 		double minDist = 9999;
 		double dist;
@@ -100,8 +114,8 @@ public class TextColor {
 	}
 	
 	/**
-	 * Returns the closest legacy color
-	 * @return closest legacy color
+	 * Returns defined legacy color
+	 * @return defined legacy color
 	 */
 	public EnumChatFormat getLegacyColor() {
 		return legacyColor;
