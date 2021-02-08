@@ -6,6 +6,10 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -24,8 +28,14 @@ public class PremiumVanishListener implements Listener {
 		if (list == null) return;
 		TabPlayer vanished = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			if (all == vanished || all.hasPermission(list.PREMIUMVANISH_SEE_VANISHED_PERMISSION)) continue;
-			all.sendCustomPacket(list.getRemovePacket(vanished), TabFeature.GLOBAL_PLAYERLIST);
+			boolean perm = all.hasPermission(list.PREMIUMVANISH_SEE_VANISHED_PERMISSION);
+			if (all == vanished || perm) {
+				if (perm && list.vanishedAsSpectators) {
+					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, new PlayerInfoData(vanished.getUniqueId(), EnumGamemode.SPECTATOR)), TabFeature.GLOBAL_PLAYERLIST);
+				}
+			} else {
+				all.sendCustomPacket(list.getRemovePacket(vanished), TabFeature.GLOBAL_PLAYERLIST);
+			}
 		}
 	}
 

@@ -29,6 +29,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
+	public boolean vanishedAsSpectators;
 
 	public GlobalPlayerlist(TAB tab) {
 		this.tab = tab;
@@ -39,6 +40,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		spyServers = tab.getConfiguration().config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
 		sharedServers = tab.getConfiguration().config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-others-as-spectators", false);
+		vanishedAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
 		for (TabPlayer displayed : tab.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
 			for (TabPlayer viewer : tab.getPlayers()) {
@@ -76,7 +78,6 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		PacketPlayOutPlayerInfo addConnected = getAddPacket(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == connectedPlayer) continue;
-			if (all.getWorldName().equals(connectedPlayer.getWorldName())) continue;
 			if (shouldSee(all, connectedPlayer)) {
 				all.sendCustomPacket(addConnected, getFeatureType());
 			}
@@ -125,7 +126,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), (int)p.getPing(), EnumGamemode.CREATIVE, null));
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
+				(int)p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, null));
 	}
 	
 	@Override
