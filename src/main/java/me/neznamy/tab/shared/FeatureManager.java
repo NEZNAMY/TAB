@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.features.interfaces.HeaderFooterPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
+import me.neznamy.tab.shared.features.interfaces.ObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
@@ -26,6 +27,7 @@ import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
@@ -305,6 +307,18 @@ public class FeatureManager {
 			if (cancel) return true;
 		}
 		return false;
+	}
+	
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws Exception {
+		long time = System.nanoTime();
+		PacketPlayOutScoreboardObjective display = tab.getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
+		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);
+		for (Feature f : getAllFeatures()) {
+			if (!(f instanceof ObjectivePacketListener)) continue;
+			time = System.nanoTime();
+			((ObjectivePacketListener)f).onPacketSend(packetReceiver, display);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
 	}
 	
 	public boolean onHeaderFooter(TabPlayer packetReceiver, Object packet) throws Exception {

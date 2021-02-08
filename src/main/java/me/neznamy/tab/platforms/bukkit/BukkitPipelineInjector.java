@@ -60,6 +60,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
 						if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 							return;
 						}
+						if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+							tab.getFeatureManager().onObjective(player, packet);
+						}
 						if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && tab.getFeatureManager().onHeaderFooter(player, packet)) {
 							return;
 						}

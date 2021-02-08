@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.google.common.collect.Lists;
 import com.velocitypowered.proxy.protocol.packet.ScoreboardDisplay;
+import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective;
 import com.velocitypowered.proxy.protocol.packet.Team;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -48,6 +49,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 					}
 					if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 						return;
+					}
+					if (packet instanceof ScoreboardObjective) {
+						tab.getFeatureManager().onObjective(player, packet);
 					}
 					//TODO add deserialization
 					if (packet.getClass().getSimpleName().equals("HeaderAndFooter") && tab.getFeatureManager().onHeaderFooter(player, packet)) {

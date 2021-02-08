@@ -331,4 +331,8 @@ public interface TabPlayer {
 	public void setAttribute(String attribute, String value);
 	
 	public void updateCollision();
+	
+	public void setOtherPluginScoreboard(String objectiveName);
+	
+	public String getOtherPluginScoreboard();
 }

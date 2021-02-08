@@ -19,6 +19,7 @@ import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
@@ -74,6 +75,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 						if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 							//TODO add support for serialized packets as above with teams
 							return;
+						}
+						if (packet instanceof ScoreboardObjective) {
+							//TODO add support for serialized packets as above with teams
+							tab.getFeatureManager().onObjective(player, packet);
 						}
 						if (packet instanceof PlayerListHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
 							//TODO add support for serialized packets as above with teams

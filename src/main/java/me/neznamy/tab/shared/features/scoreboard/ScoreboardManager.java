@@ -12,16 +12,23 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
+import me.neznamy.tab.shared.features.interfaces.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.interfaces.ObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
 /**
  * Feature handler for scoreboard feature
  */
-public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener{
+public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener, ObjectivePacketListener, DisplayObjectivePacketListener{
 
+	public static final String ObjectiveName = "TAB-Scoreboard";
+	public static final int DisplaySlot = 1;
+	
 	public TAB tab;
 	private String toggleCommand;
 	private List<String> disabledWorlds;
@@ -103,7 +110,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || announcement != null) continue;
+					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || announcement != null || p.getOtherPluginScoreboard() != null) continue;
 					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = detectHighestScoreboard(p);
@@ -201,5 +208,24 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SCOREBOARD;
+	}
+
+	@Override
+	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
+			receiver.setOtherPluginScoreboard(packet.objectiveName);
+			if (receiver.getActiveScoreboard() != null) {
+				tab.getCPUManager().runMeasuredTask("send packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
+		if (packet.method == 1 && receiver.getOtherPluginScoreboard() != null && receiver.getOtherPluginScoreboard().equals(packet.objectiveName)) {
+			receiver.setOtherPluginScoreboard(null);
+			tab.getCPUManager().runMeasuredTask("send packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
+		}
 	}
 }

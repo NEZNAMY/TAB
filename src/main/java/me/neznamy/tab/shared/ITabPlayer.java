@@ -53,6 +53,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private Scoreboard activeScoreboard;
 	private boolean scoreboardVisible;
 	private Scoreboard forcedScoreboard;
+	private String otherPluginScoreboard;
 	
 	protected Map<String, String> attributes = new HashMap<String, String>();
 
@@ -593,5 +594,15 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void setAttribute(String attribute, String value) {
 		attributes.put(attribute, value);
+	}
+	
+	@Override
+	public void setOtherPluginScoreboard(String objectiveName) {
+		this.otherPluginScoreboard = objectiveName;
+	}
+	
+	@Override
+	public String getOtherPluginScoreboard() {
+		return otherPluginScoreboard;
 	}
 }

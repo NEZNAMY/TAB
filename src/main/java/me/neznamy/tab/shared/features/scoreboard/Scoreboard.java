@@ -25,9 +25,6 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
  */
 public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
-	private final String ObjectiveName = "TAB-Scoreboard";
-	private final int DisplaySlot = 1;
-
 	public ScoreboardManager manager;
 	private String name;
 	private String title;
@@ -101,7 +98,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	public void register(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty("scoreboard-title", title);
-		PacketAPI.registerScoreboardObjective(p, ObjectiveName, p.getProperty("scoreboard-title").get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManager.ObjectiveName, p.getProperty("scoreboard-title").get(), ScoreboardManager.DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
 		for (ScoreboardLine s : lines) {
 			s.register(p);
 		}
@@ -120,7 +117,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
-		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManager.ObjectiveName), TabFeature.SCOREBOARD);
 		for (ScoreboardLine s : lines) {
 			s.unregister(p);
 		}
@@ -131,7 +128,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty("scoreboard-title") == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.SCOREBOARD);
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManager.ObjectiveName, refreshed.getProperty("scoreboard-title").updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.SCOREBOARD);
 	}
 
 	@Override

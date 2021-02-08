@@ -26,6 +26,7 @@ public enum UsageType {
 	PACKET_PLAYER_INFO("PacketPlayOutPlayerInfo"),
 	PACKET_LOGIN("PacketLogin"),
 	PACKET_DISPLAY_OBJECTIVE("PacketPlayOutScoreboardDisplayObjective"),
+	PACKET_OBJECTIVE("PacketPlayOutScoreboardObjective"),
 	PACKET_HEADER_FOOTER("PacketPlayOutPlayerListHeaderFooter"),
 	
 	//nametags

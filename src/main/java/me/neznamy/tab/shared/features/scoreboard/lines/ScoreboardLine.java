@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
@@ -17,7 +18,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
  */
 public abstract class ScoreboardLine implements Refreshable {
 
-	protected final String ObjectiveName = "TAB-Scoreboard";
 	protected List<String> usedPlaceholders = new ArrayList<String>();
 	protected String teamName;
 	protected String playerName;
@@ -59,12 +59,12 @@ public abstract class ScoreboardLine implements Refreshable {
 	}
 	
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, fakeplayer, value), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManager.ObjectiveName, fakeplayer, value), TabFeature.SCOREBOARD);
 		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, TabFeature.SCOREBOARD);
 	}
 	
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ObjectiveName, fakeplayer, 0), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManager.ObjectiveName, fakeplayer, 0), TabFeature.SCOREBOARD);
 		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.SCOREBOARD);
 	}
 }
