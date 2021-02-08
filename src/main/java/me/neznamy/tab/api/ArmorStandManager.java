@@ -16,6 +16,10 @@ public class ArmorStandManager {
 		armorStands.put(name, as);
 	}
 	
+	public void removeArmorStand(String name) {
+		armorStands.remove(name);
+	}
+	
 	public void spawn(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		getArmorStands().forEach(a -> a.spawn(viewer, true));
