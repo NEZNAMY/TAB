@@ -148,14 +148,23 @@ public class Property {
 			if (pl != null) string = pl.set(string, owner);
 		}
 		string = TAB.getInstance().getPlaceholderManager().color(string);
-		for (String removed : TAB.getInstance().getConfiguration().removeStrings) {
-			if (string.contains(removed)) string = string.replace(removed, "");
-		}
+		string = applyRemoveStrings(string);
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
 			return true;
 		}
 		return false;
+	}
+	
+	private String applyRemoveStrings(String text) {
+		String reformatted = text;
+		for (String removed : TAB.getInstance().getConfiguration().removeStrings) {
+			if (removed.startsWith("CONTAINS:") && reformatted.contains(removed.substring(9))) return "";
+			if (removed.startsWith("STARTS:") && reformatted.startsWith(removed.substring(7))) return "";
+			if (removed.startsWith("ENDS:") && reformatted.endsWith(removed.substring(5))) return "";
+			if (reformatted.contains(removed)) reformatted = reformatted.replace(removed, "");
+		}
+		return reformatted;
 	}
 	
 	/**
