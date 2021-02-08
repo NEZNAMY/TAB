@@ -121,7 +121,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			if (!Bukkit.getPluginManager().isPluginEnabled("LibsDisguises")) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
 		}
 	}
@@ -134,7 +134,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			Method m = iDisguise.getClass().getMethod("isDisguised", Player.class);
 			m.setAccessible(true);
 			return (boolean) m.invoke(iDisguise, player);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using iDisguise", e);
 		}
 	}
@@ -143,7 +143,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Object getSkin() {
 		try {
 			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSHook.nms.getProfile.invoke(NMSHook.nms.getHandle.invoke(player)));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}
 	}
