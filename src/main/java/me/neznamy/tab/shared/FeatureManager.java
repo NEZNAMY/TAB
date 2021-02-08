@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.interfaces.CommandListener;
 import me.neznamy.tab.shared.features.interfaces.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.interfaces.Feature;
+import me.neznamy.tab.shared.features.interfaces.HeaderFooterPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
@@ -23,6 +24,7 @@ import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
 import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 
 /**
@@ -299,6 +301,20 @@ public class FeatureManager {
 			if (!(f instanceof DisplayObjectivePacketListener)) continue;
 			time = System.nanoTime();
 			boolean cancel = ((DisplayObjectivePacketListener)f).onPacketSend(packetReceiver, display);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			if (cancel) return true;
+		}
+		return false;
+	}
+	
+	public boolean onHeaderFooter(TabPlayer packetReceiver, Object packet) throws Exception {
+		long time = System.nanoTime();
+		PacketPlayOutPlayerListHeaderFooter display = tab.getPacketBuilder().readHeaderFooter(packet, packetReceiver.getVersion());
+		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
+		for (Feature f : getAllFeatures()) {
+			if (!(f instanceof HeaderFooterPacketListener)) continue;
+			time = System.nanoTime();
+			boolean cancel = ((HeaderFooterPacketListener)f).onPacketSend(packetReceiver, display);
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 			if (cancel) return true;
 		}

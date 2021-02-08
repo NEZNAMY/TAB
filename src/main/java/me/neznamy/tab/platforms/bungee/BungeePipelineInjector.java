@@ -13,9 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -72,21 +70,14 @@ public class BungeePipelineInjector extends PipelineInjector {
 								}
 								buf.readerIndex(marker);
 							}
-							if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
-								//TODO add support for serialized packets as above with teams
-								return;
-							}
-							if (packet instanceof PlayerListHeaderFooter) {
-								//TODO add support for serialized packets as above with teams
-								HeaderFooter hf = (HeaderFooter) tab.getFeatureManager().getFeature("headerfooter");
-								if (hf != null && !hf.isDisabledWorld(hf.disabledWorlds, player.getWorldName())) {
-									PacketPlayOutPlayerListHeaderFooter packet0 = tab.getPacketBuilder().readHeaderFooter(packet, player.getVersion());
-									if (packet0.header.getText() != null && !packet0.header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
-										logHeaderFooterOverride(packet0.header.toString(), packet0.footer.toString());
-										return;
-									}
-								}
-							}
+						}
+						if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+							//TODO add support for serialized packets as above with teams
+							return;
+						}
+						if (packet instanceof PlayerListHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+							//TODO add support for serialized packets as above with teams
+							return;
 						}
 						//client reset packet
 						if (packet instanceof Login) {

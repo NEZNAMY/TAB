@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.interfaces.HeaderFooterPacketListener;
 import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
 import me.neznamy.tab.shared.features.interfaces.Loadable;
 import me.neznamy.tab.shared.features.interfaces.Refreshable;
@@ -17,7 +18,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 /**
  * Feature handler for header and footer
  */
-public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable{
+public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, HeaderFooterPacketListener {
 
 	private TAB tab;
 	private List<String> usedPlaceholders;
@@ -109,5 +110,16 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.HEADER_FOOTER;
+	}
+
+	@Override
+	public boolean onPacketSend(TabPlayer packetReciver, PacketPlayOutPlayerListHeaderFooter packet) {
+		if (!isDisabledWorld(disabledWorlds, packetReciver.getWorldName())) {
+			if (packet.header.getText() != null && !packet.header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
+				tab.getErrorManager().printError("Some plugin just tried to send header " + packet.header.toString() + " and footer " + packet.footer.toString(), null, false, tab.getErrorManager().antiOverrideLog);
+				return true;
+			}
+		}
+		return false;
 	}
 }

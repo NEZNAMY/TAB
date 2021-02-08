@@ -13,9 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class VelocityPipelineInjector extends PipelineInjector {
 
@@ -51,16 +49,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
 					if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 						return;
 					}
-					if (packet.getClass().getSimpleName().equals("HeaderAndFooter")) {
-						//TODO add support for serialized packets
-						HeaderFooter hf = (HeaderFooter) tab.getFeatureManager().getFeature("headerfooter");
-						if (hf != null && !hf.isDisabledWorld(hf.disabledWorlds, player.getWorldName())) {
-							PacketPlayOutPlayerListHeaderFooter packet0 = tab.getPacketBuilder().readHeaderFooter(packet, player.getVersion());
-							if (packet0.header.getText() != null && !packet0.header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
-								logHeaderFooterOverride(packet0.header.toString(), packet0.footer.toString());
-								return;
-							}
-						}
+					//TODO add deserialization
+					if (packet.getClass().getSimpleName().equals("HeaderAndFooter") && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+						return;
 					}
 				} catch (Throwable e){
 					tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);

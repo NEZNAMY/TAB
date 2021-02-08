@@ -12,9 +12,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
@@ -62,15 +60,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 						if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 							return;
 						}
-						if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet)) {
-							HeaderFooter hf = (HeaderFooter) tab.getFeatureManager().getFeature("headerfooter");
-							if (hf != null && !hf.isDisabledWorld(hf.disabledWorlds, player.getWorldName())) {
-								PacketPlayOutPlayerListHeaderFooter packet0 = tab.getPacketBuilder().readHeaderFooter(packet, player.getVersion());
-								if (packet0.header.getText() != null && !packet0.header.getText().startsWith("\u00a70\u00a71\u00a72\u00a7r")) {
-									logHeaderFooterOverride(packet0.header.toString(), packet0.footer.toString());
-									return;
-								}
-							}
+						if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+							return;
 						}
 						tab.getFeatureManager().onPacketSend(player, packet);
 					} catch (Throwable e){
