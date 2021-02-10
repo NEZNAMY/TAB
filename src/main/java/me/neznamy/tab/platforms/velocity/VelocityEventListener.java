@@ -19,7 +19,7 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onQuit(DisconnectEvent e){
-		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().isDisabled()) return;
 		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
 	}
 	
@@ -29,7 +29,7 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onConnect(ServerPostConnectEvent e){
-		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().isDisabled()) return;
 		try {
 			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
 				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
@@ -47,7 +47,7 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onChat(PlayerChatEvent e) {
-		if (TAB.getInstance() == null) return;
+		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
 	}
 }
