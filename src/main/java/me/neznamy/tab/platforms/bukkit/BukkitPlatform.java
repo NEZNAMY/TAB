@@ -24,7 +24,6 @@ import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
-import me.neznamy.tab.platforms.bukkit.placeholders.BukkitPlaceholderRegistry;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;

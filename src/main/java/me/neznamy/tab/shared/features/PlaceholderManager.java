@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.api.AFKProvider;
 import me.neznamy.tab.api.TABAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -49,7 +48,6 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	//plugin internals + PAPI + API
 	public Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 
-	private AFKProvider afk;
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
 	
 	public long lastSuccessfulRefresh;
@@ -230,13 +228,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			}
 		}
 	}
-	public AFKProvider getAFKProvider() {
-		return afk;
-	}
-	public void setAFKProvider(AFKProvider afk) {
-		tab.debug("Loaded AFK provider: " + afk.getClass().getSimpleName());
-		this.afk = afk;
-	}
+
 	public void addRegistry(PlaceholderRegistry registry) {
 		this.registry.add(registry);
 	}

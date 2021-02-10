@@ -143,17 +143,6 @@ public class TABAPI {
 		return sb;
 	}
 	
-
-	/**
-	 * Registers a custom provider for %afk% placeholder
-	 * @param afk - AFK provider
-	 * @since 2.8.3
-	 */
-	public static void registerAFKProvider(AFKProvider afk) {
-		TAB.getInstance().getPlaceholderManager().setAFKProvider(afk);
-	}
-	
-	
 	/**
 	 * Registers a custom permission plugin
 	 * @param permission - permission plugin provider
