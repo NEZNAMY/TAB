@@ -67,6 +67,10 @@ public abstract class ConfigurationFile {
 		return values;
 	}
 	
+	public void setValues(Map<String, Object> values){
+		this.values = values;
+	}
+	
 	/**
 	 * Gets config option with specified path. If the option is not present and defaultValue is not null,
 	 * value is inserted, save() called and defaultValue returned.

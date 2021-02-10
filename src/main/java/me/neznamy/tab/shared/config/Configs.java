@@ -51,6 +51,7 @@ public class Configs {
 		removeAdvancedConfig();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
+		tab.getPlatform().convertConfig(animation);
 		loadBossbar();
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
 		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");

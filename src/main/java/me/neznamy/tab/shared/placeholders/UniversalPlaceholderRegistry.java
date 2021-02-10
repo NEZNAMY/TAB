@@ -191,8 +191,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerAnimationPlaceholders() {
-		for (Object s : TAB.getInstance().getConfiguration().animation.getConfigurationSection("animations").keySet()) {
-			Animation a = new Animation(s+"", TAB.getInstance().getConfiguration().animation.getStringList("animations." + s + ".texts"), TAB.getInstance().getConfiguration().animation.getInt("animations." + s + ".change-interval", 0));
+		for (Object s : TAB.getInstance().getConfiguration().animation.getValues().keySet()) {
+			Animation a = new Animation(s+"", TAB.getInstance().getConfiguration().animation.getStringList(s + ".texts"), TAB.getInstance().getConfiguration().animation.getInt(s + ".change-interval", 0));
 			placeholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 50) {
 
 				public String get() {

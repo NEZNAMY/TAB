@@ -217,6 +217,14 @@ public interface Platform {
 		if (file.getName().equals("bossbar.yml")) {
 			removeOld(file, "refresh-interval-milliseconds");
 		}
+		if (file.getName().equals("animations.yml")) {
+			Map<String, Object> values = file.getValues();
+			if (values.size() == 1 && values.containsKey("animations")) {
+				file.setValues(file.getConfigurationSection("animations"));
+				file.save();
+				TAB.getInstance().print('2', "Converted animations.yml to new format.");
+			}
+		}
 	}
 	
 	/**
