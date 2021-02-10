@@ -44,27 +44,24 @@ public class SendBarCommand extends SubCommand{
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
-		new Thread(new Runnable() {
-
-			public void run() {
-				try {
-					BossBarLine bar = feature.lines.get(barname);
-					if (bar == null) {
-						sender.sendMessage("Bar not found", false);
-						return;
-					}
-					if (target.hasBossbarVisible()) {
-						bar.create(target);
-						target.getActiveBossBars().add(bar);
-					}
-					Thread.sleep(duration*1000);
-					if (target.hasBossbarVisible()) {
-						bar.remove(target);
-						target.getActiveBossBars().remove(bar);
-					}
-				} catch (Exception e) {
-
+		BossBarLine bar = feature.lines.get(barname);
+		if (bar == null) {
+			sender.sendMessage("Bar not found", false);
+			return;
+		}
+		new Thread(() -> {
+			try {
+				if (target.hasBossbarVisible()) {
+					bar.create(target);
+					target.getActiveBossBars().add(bar);
 				}
+				Thread.sleep(duration*1000);
+				if (target.hasBossbarVisible()) {
+					bar.remove(target);
+					target.getActiveBossBars().remove(bar);
+				}
+			} catch (Exception e) {
+
 			}
 		}).start();
 	}

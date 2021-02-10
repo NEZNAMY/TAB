@@ -17,60 +17,56 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
  */
 public class AnnounceScoreboardCommand extends SubCommand{
 
-	
+
 	public AnnounceScoreboardCommand() {
 		super("scoreboard", "tab.announce.scoreboard");
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("scoreboard")) {
-			ScoreboardManager feature = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
-			if (args.length == 2) {
-				String scoreboard = args[0];
-				int duration;
-				try {
-					duration = Integer.parseInt(args[1]);
-					new Thread(new Runnable() {
-
-						public void run() {
-							try {
-								Scoreboard sb = feature.getScoreboards().get(scoreboard);
-								if (sb == null) {
-									sender.sendMessage("Scoreboard not found", false);
-									return;
-								}
-								feature.announcement = sb;
-								Map<TabPlayer, Scoreboard> previous = new HashMap<TabPlayer, Scoreboard>();
-								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									if (all.isScoreboardVisible()) {
-										previous.put(all, all.getActiveScoreboard());
-										if (all.getActiveScoreboard() != null) all.getActiveScoreboard().unregister(all);
-										sb.register(all);
-									}
-								}
-								Thread.sleep(duration*1000);
-								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									if (all.hasBossbarVisible()) {
-										sb.unregister(all);
-										if (previous.get(all) != null) previous.get(all).register(all);
-									}
-								}
-								feature.announcement = null;
-							} catch (Exception e) {
-
-							}
-						}
-					}).start();
-				} catch (Exception e) {
-					sender.sendMessage(args[1] + " is not a number!", false);
-				}
-			} else {
-				sendMessage(sender, "Usage: /tab announce scoreboard <scoreboard name> <length>");
-			}
-		} else {
+		ScoreboardManager feature = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		if (feature == null) {
 			sendMessage(sender, "&4This command requires the scoreboard feature to be enabled.");
+			return;
 		}
+		if (args.length != 2) {
+			sendMessage(sender, "Usage: /tab announce scoreboard <scoreboard name> <length>");
+			return;
+		}
+		String scoreboard = args[0];
+		int duration;
+		try {
+			duration = Integer.parseInt(args[1]);
+		} catch (Exception e) {
+			sender.sendMessage(args[1] + " is not a number!", false);
+			return;
+		}
+		Scoreboard sb = feature.getScoreboards().get(scoreboard);
+		if (sb == null) {
+			sender.sendMessage("Scoreboard not found", false);
+			return;
+		}
+		new Thread(() -> {
+			try {
+				feature.announcement = sb;
+				Map<TabPlayer, Scoreboard> previous = new HashMap<TabPlayer, Scoreboard>();
+				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+					if (!all.isScoreboardVisible()) continue;
+					previous.put(all, all.getActiveScoreboard());
+					if (all.getActiveScoreboard() != null) all.getActiveScoreboard().unregister(all);
+					sb.register(all);
+				}
+				Thread.sleep(duration*1000);
+				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+					if (!all.hasBossbarVisible()) continue;
+					sb.unregister(all);
+					if (previous.get(all) != null) previous.get(all).register(all);
+				}
+				feature.announcement = null;
+			} catch (Exception e) {
+
+			}
+		}).start();
 	}
 
 	@Override

@@ -15,59 +15,55 @@ import me.neznamy.tab.shared.features.bossbar.BossBarLine;
  */
 public class AnnounceBarCommand extends SubCommand{
 
-	
+
 	public AnnounceBarCommand() {
 		super("bar", "tab.announce.bar");
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("bossbar")) {
-			BossBar feature = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
-			if (args.length == 2) {
-				String barname = args[0];
-				int duration;
-				try {
-					duration = Integer.parseInt(args[1]);
-					new Thread(new Runnable() {
-
-						public void run() {
-							try {
-								BossBarLine bar = feature.lines.get(barname);
-								if (bar == null) {
-									sender.sendMessage("Bar not found", false);
-									return;
-								}
-								feature.announcements.add(barname);
-								feature.announceEndTime = System.currentTimeMillis() + duration*1000;
-								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									if (all.hasBossbarVisible()) {
-										bar.create(all);
-										all.getActiveBossBars().add(bar);
-									}
-								}
-								Thread.sleep(duration*1000);
-								for (TabPlayer all : TAB.getInstance().getPlayers()) {
-									if (all.hasBossbarVisible()) {
-										bar.remove(all);
-										all.getActiveBossBars().remove(bar);
-									}
-								}
-								feature.announcements.remove(barname);
-							} catch (Exception e) {
-
-							}
-						}
-					}).start();
-				} catch (Exception e) {
-					sender.sendMessage(args[1] + " is not a number!", false);
-				}
-			} else {
-				sendMessage(sender, "Usage: /tab announce bar <bar name> <length>");
-			}
-		} else {
+		BossBar feature = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		if (feature == null) {
 			sendMessage(sender, "&4This command requires the bossbar feature to be enabled.");
+			return;
 		}
+		if (args.length != 2) {
+			sendMessage(sender, "Usage: /tab announce bar <bar name> <length>");
+			return;
+		}
+		String barname = args[0];
+		int duration;
+		try {
+			duration = Integer.parseInt(args[1]);
+		} catch (Exception e) {
+			sender.sendMessage(args[1] + " is not a number!", false);
+			return;
+		}
+		BossBarLine bar = feature.lines.get(barname);
+		if (bar == null) {
+			sender.sendMessage("Bar not found", false);
+			return;
+		}
+		new Thread(() -> {
+			try {
+				feature.announcements.add(barname);
+				feature.announceEndTime = System.currentTimeMillis() + duration*1000;
+				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+					if (!all.hasBossbarVisible()) continue;
+					bar.create(all);
+					all.getActiveBossBars().add(bar);
+				}
+				Thread.sleep(duration*1000);
+				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+					if (!all.hasBossbarVisible()) continue;
+					bar.remove(all);
+					all.getActiveBossBars().remove(bar);
+				}
+				feature.announcements.remove(barname);
+			} catch (Exception e) {
+
+			}
+		}).start();
 	}
 
 	@Override

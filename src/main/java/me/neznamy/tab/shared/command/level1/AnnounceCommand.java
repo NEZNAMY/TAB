@@ -20,18 +20,18 @@ public class AnnounceCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		if (args.length > 0) {
-			String arg0 = args[0].toLowerCase();
-			SubCommand command = subcommands.get(arg0);
-			if (command != null) {
-				if (command.hasPermission(sender)) {
-					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
-				} else {
-					sendMessage(sender, getTranslation("no_permission"));
-				}
+		if (args.length == 0) {
+			sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");
+			sendMessage(sender, "Currently supported types: &lbar");
+			return;
+		}
+		String arg0 = args[0].toLowerCase();
+		SubCommand command = subcommands.get(arg0);
+		if (command != null) {
+			if (command.hasPermission(sender)) {
+				command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 			} else {
-				sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");
-				sendMessage(sender, "Currently supported types: &lbar");
+				sendMessage(sender, getTranslation("no_permission"));
 			}
 		} else {
 			sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");
