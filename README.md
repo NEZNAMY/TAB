@@ -11,6 +11,18 @@ Plugin can be compiled using maven.
 The source contains content of premium version as well. However, this must be activated by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/shared/TAB.java#L79).  
   
   
+## Links
+Discord: https://discord.gg/EaSvdk6  
+SpigotMC (free): https://www.spigotmc.org/resources/57806/  
+MC-Market (paid): https://www.mc-market.org/resources/14009/  
+Wiki: https://github.com/NEZNAMY/TAB/wiki  
+  
+  
+## Downloads
+Official release: https://www.spigotmc.org/resources/57806/  
+Pre-releases: https://github.com/NEZNAMY/TAB/releases  
+  
+  
 ## Maven Repository
 ```
 <repositories>
@@ -29,8 +41,3 @@ The source contains content of premium version as well. However, this must be ac
   </dependency>
 </dependencies>
  ```
-## Links
-Discord: https://discord.gg/EaSvdk6  
-SpigotMC (free): https://www.spigotmc.org/resources/57806/  
-MC-Market (paid): https://www.mc-market.org/resources/14009/  
-Wiki: https://github.com/NEZNAMY/TAB/wiki  
