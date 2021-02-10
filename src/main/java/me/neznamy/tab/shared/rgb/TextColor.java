@@ -18,6 +18,9 @@ public class TextColor {
 	
 	//closest legacy color
 	private EnumChatFormat legacyColor;
+	
+	//true if legacy color was forced via constructor, false if automatically
+	private boolean legacyColorForced;
 
 	
 	/**
@@ -30,6 +33,15 @@ public class TextColor {
 		green = ((hexColor >> 8) & 0xFF);
 		blue = (hexColor & 0xFF);
 		loadClosestColor();
+	}
+	
+	public TextColor(String hexCode, EnumChatFormat legacyColor) {
+		int hexColor = Integer.parseInt(hexCode, 16);
+		red = ((hexColor >> 16) & 0xFF);
+		green = ((hexColor >> 8) & 0xFF);
+		blue = (hexColor & 0xFF);
+		this.legacyColor = legacyColor;
+		legacyColorForced = true;
 	}
 	
 	/**
@@ -68,6 +80,7 @@ public class TextColor {
 		this.green = green;
 		this.blue = blue;
 		this.legacyColor = legacyColor;
+		legacyColorForced = true;
 	}
 	
 	/**
@@ -151,6 +164,14 @@ public class TextColor {
 		String s = Integer.toHexString((red << 16) + (green << 8) + blue);
 		while (s.length() < 6) s = "0" + s;
 		return s;
+	}
+	
+	/**
+	 * Returns true if legacy color was forced with a constructor, false if automatically
+	 * @return true if forced, false if not
+	 */
+	public boolean isLegacyColorForced() {
+		return legacyColorForced;
 	}
 	
 	/**

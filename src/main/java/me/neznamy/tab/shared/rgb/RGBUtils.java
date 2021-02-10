@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -22,11 +23,20 @@ public class RGBUtils {
 	//pattern for <#RRGGBB>Text</#RRGGBB>
 	private final Pattern gradient1 = Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>");
 	
+	//pattern for <#RRGGBB|L>Text</#RRGGBB>
+	private final Pattern gradient1Legacy = Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>");
+	
 	//pattern for {#RRGGBB>}text{#RRGGBB<}
 	private final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
+	//pattern for {#RRGGBB|L>}text{#RRGGBB<}
+	private final Pattern gradient2Legacy = Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
+	
 	//pattern for <$#RRGGBB>Text<$#RRGGBB>
 	private final Pattern gradient3 = Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>");
+	
+	//pattern for <$#RRGGBB|L>Text<$#RRGGBB>
+	private final Pattern gradient3Legacy = Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>");
 
 	/**
 	 * Applies all RGB formats and gradients to text and returns it
@@ -107,8 +117,19 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private String setGradient1(String text) {
-		Matcher m = gradient1.matcher(text);
+		Matcher m = gradient1Legacy.matcher(text);
 		String replaced = text;
+		while (m.find()) {
+			String format = m.group();
+			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(9));
+			if (legacyColor == null) continue;
+			TextColor start = new TextColor(format.substring(2, 8), legacyColor);
+			String message = format.substring(11, format.length()-10);
+			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		m = gradient1.matcher(text);
 		while (m.find()) {
 			String format = m.group();
 			TextColor start = new TextColor(format.substring(2, 8));
@@ -126,8 +147,19 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private String setGradient2(String text) {
-		Matcher m = gradient2.matcher(text);
 		String replaced = text;
+		Matcher m = gradient2Legacy.matcher(text);
+		while (m.find()) {
+			String format = m.group();
+			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(9));
+			if (legacyColor == null) continue;
+			TextColor start = new TextColor(format.substring(2, 8), legacyColor);
+			String message = format.substring(12, format.length()-10);
+			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		m = gradient2.matcher(text);
 		while (m.find()) {
 			String format = m.group();
 			TextColor start = new TextColor(format.substring(2, 8));
@@ -145,8 +177,19 @@ public class RGBUtils {
 	 * @return reformatted text
 	 */
 	private String setGradient3(String text) {
-		Matcher m = gradient3.matcher(text);
 		String replaced = text;
+		Matcher m = gradient3Legacy.matcher(text);
+		while (m.find()) {
+			String format = m.group();
+			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(10));
+			if (legacyColor == null) continue;
+			TextColor start = new TextColor(format.substring(3, 9), legacyColor);
+			String message = format.substring(12, format.length()-10);
+			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		m = gradient3.matcher(text);
 		while (m.find()) {
 			String format = m.group();
 			TextColor start = new TextColor(format.substring(3, 9));
@@ -176,7 +219,9 @@ public class RGBUtils {
 			int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
 			int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
 			int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
-			sb.append("#" + new TextColor(red, green, blue).toHexString() + magicCodes + decolorized.charAt(i));
+			sb.append("#" + new TextColor(red, green, blue).toHexString());
+			if (start.isLegacyColorForced()) sb.append("|" + start.getLegacyColor().getCharacter());
+			sb.append(magicCodes + decolorized.charAt(i));
 		}
 		return sb.toString();
 	}

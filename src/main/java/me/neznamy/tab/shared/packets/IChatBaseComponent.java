@@ -583,8 +583,17 @@ public class IChatBaseComponent {
 			} else if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true) && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
-					TextColor color = new TextColor(hex); //the validation check is in constructor
-
+					TextColor color;
+					try {
+						if (text.charAt(i+7) != '|') throw new Exception();
+						EnumChatFormat legacyColor = EnumChatFormat.getByChar(text.charAt(i+8));
+						if (legacyColor == null) throw new Exception();
+						color = new TextColor(hex, legacyColor);
+						i += 8;
+					} catch (Exception e) {
+						color = new TextColor(hex); //the validation check is in constructor
+						i += 6;
+					}
 					if (builder.length() > 0){
 						component.setText(builder.toString());
 						components.add(component);
@@ -592,7 +601,7 @@ public class IChatBaseComponent {
 					}
 					component = new IChatBaseComponent();
 					component.setColor(color);
-					i += 6;
+					
 				} catch (Exception e) {
 					//invalid hex code
 					builder.append(c);

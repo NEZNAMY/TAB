@@ -137,6 +137,10 @@ public enum EnumChatFormat {
 		return '\u00a7' + "" + character;
 	}
 	
+	public char getCharacter() {
+		return character;
+	}
+	
 	/**
 	 * Returns enum value with exact red, green and blue values or null if no match
 	 * @param red - exact red value
