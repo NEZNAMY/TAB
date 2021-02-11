@@ -284,7 +284,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void callLoadEvent() {
-		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent()));
+		Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent());
 	}
 
 	@Override
