@@ -169,7 +169,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		//entity destroy packet is sent too late, need to send it manually
-		disconnectedPlayer.getArmorStandManager().destroy();
+		if (disconnectedPlayer.getArmorStandManager() != null) disconnectedPlayer.getArmorStandManager().destroy();
 
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
