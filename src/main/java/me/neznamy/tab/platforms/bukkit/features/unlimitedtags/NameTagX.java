@@ -140,7 +140,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			if (((Player) viewer.getPlayer()).getWorld() != ((Player) connectedPlayer.getPlayer()).getWorld()) continue;
 			if (getDistance(viewer, connectedPlayer) <= ENTITY_TRACKING_RANGE) {
 				connectedPlayer.getArmorStandManager().spawn(viewer);
-				viewer.getArmorStandManager().spawn(connectedPlayer);
+				if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().spawn(connectedPlayer);
 			}
 		}
 	}

@@ -107,7 +107,7 @@ public class PacketListener implements RawPacketFeature, PlayerInfoPacketListene
 			//a vehicle carrying something moved
 			for (Integer entity : vehicleList) {
 				TabPlayer passenger = nameTagX.entityIdMap.get(entity);
-				if (passenger != null && !nameTagX.isDisabledWorld(passenger.getWorldName())) {
+				if (passenger != null && passenger.getArmorStandManager() != null && !nameTagX.isDisabledWorld(passenger.getWorldName())) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
