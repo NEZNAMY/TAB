@@ -63,8 +63,9 @@ public interface ArmorStand {
 	
 	/**
 	 * Updates visibility if needed
+	 * @param force - if refresh should be forced
 	 */
-	public void updateVisibility();
+	public void updateVisibility(boolean force);
 	
 	/**
 	 * Removes specified player from list of players in range

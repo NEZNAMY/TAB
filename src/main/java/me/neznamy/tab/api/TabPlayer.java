@@ -102,6 +102,8 @@ public interface TabPlayer {
 	 */
 	public boolean hasHiddenNametag();
 	
+	public boolean hasHiddenNametag(UUID viewer);
+	
 	
 	/**
 	 * Refreshes all visuals on the player

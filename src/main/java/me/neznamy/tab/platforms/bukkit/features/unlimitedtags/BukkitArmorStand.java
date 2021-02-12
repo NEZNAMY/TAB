@@ -199,9 +199,10 @@ public class BukkitArmorStand implements ArmorStand {
 	}
 
 	@Override
-	public void updateVisibility() {
-		if (getVisibility() != visible) {
-			visible = !visible;
+	public void updateVisibility(boolean force) {
+		boolean visible = getVisibility();
+		if (this.visible != visible || force) {
+			this.visible = visible;
 			updateMetadata();
 		}
 	}
@@ -336,7 +337,7 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visible;
-		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player)) {
+		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || owner.hasHiddenNametag(viewer.getUniqueId())) {
 			visible = false;
 		} else {
 			visible = this.visible;

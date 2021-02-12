@@ -41,8 +41,8 @@ public class ArmorStandManager {
 		getArmorStands().forEach(a -> a.refresh());
 	}
 
-	public void updateVisibility() {
-		getArmorStands().forEach(a -> a.updateVisibility());
+	public void updateVisibility(boolean force) {
+		getArmorStands().forEach(a -> a.updateVisibility(force));
 	}
 
 	public void unregisterPlayer(TabPlayer viewer) {

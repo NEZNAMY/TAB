@@ -566,13 +566,19 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void hideNametag(UUID viewer) {
 		if (hiddenNametagFor.add(viewer)) {
 			updateTeamData(TAB.getInstance().getPlayer(viewer));
+			if (armorStandManager != null) armorStandManager.updateVisibility(true);
 		}
 	}
 
 	public void showNametag(UUID viewer) {
 		if (hiddenNametagFor.remove(viewer)) {
 			updateTeamData(TAB.getInstance().getPlayer(viewer));
+			if (armorStandManager != null) armorStandManager.updateVisibility(true);
 		}
+	}
+	
+	public boolean hasHiddenNametag(UUID viewer) {
+		return hiddenNametagFor.contains(viewer);
 	}
 
 	public void updateCollision() {

@@ -99,7 +99,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
-					p.getArmorStandManager().updateVisibility();
+					p.getArmorStandManager().updateVisibility(false);
 					if (!disableOnBoats) continue;
 					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
 					if (p.isOnBoat() != onBoat) {
