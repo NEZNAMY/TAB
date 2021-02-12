@@ -75,7 +75,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			}
 			List<String> lines = tab.getConfiguration().premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
 			if (lines == null) {
-				lines = new ArrayList<String>();
+				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				tab.getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
 			}
 			Scoreboard sb = new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard);
