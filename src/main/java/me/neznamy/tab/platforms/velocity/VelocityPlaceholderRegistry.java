@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.velocity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
@@ -29,10 +29,10 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public List<Placeholder> registerPlaceholders() {
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
-		for (Entry<String, String> servers : server.getConfiguration().getServers().entrySet()) {
-			placeholders.add(new ServerPlaceholder("%online_" + servers.getKey() + "%", 1000) {
+		for (RegisteredServer rServer : server.getAllServers()) {
+			placeholders.add(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
 				public String get() {
-					return server.getServer(servers.getKey()).get().getPlayersConnected().size()+"";
+					return rServer.getPlayersConnected().size()+"";
 				}
 			});
 		}
