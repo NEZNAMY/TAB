@@ -422,7 +422,7 @@ public class IChatBaseComponent {
 				//simple component with only text used, minecraft serializer outputs the text in quotes instead of full json
 				return new IChatBaseComponent(json.substring(1, json.length()-1));
 			}
-			JSONObject jsonObject = ((JSONObject) new JSONParser().parse(json));
+			JSONObject jsonObject = (JSONObject) new JSONParser().parse(json);
 			IChatBaseComponent component = new IChatBaseComponent();
 			component.setText((String) jsonObject.get("text"));
 			component.setBold(getBoolean(jsonObject, "bold"));
@@ -446,7 +446,10 @@ public class IChatBaseComponent {
 			if (jsonObject.containsKey("extra")) {
 				List<Object> list = (List<Object>) jsonObject.get("extra");
 				for (Object extra : list) {
-					component.addExtra(fromString(extra.toString()));
+					String string = extra.toString();
+					//reverting .toString() removing "" for simple text
+					if (!string.startsWith("{")) string = "\"" + string + "\"";
+					component.addExtra(fromString(string));
 				}
 			}
 			return component;
