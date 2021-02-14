@@ -70,7 +70,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 				//preventing plugins from changing player name as nametag feature would not work correctly
 				if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
-					tab.getErrorManager().printError("Blocking name change of player " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().papiErrorLog);
+					tab.getErrorManager().printError("Blocking name change of player " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
 					playerInfoData.name = packetPlayer.getName();
 				}
 			}
