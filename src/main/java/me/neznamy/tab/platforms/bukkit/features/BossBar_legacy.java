@@ -32,6 +32,7 @@ public class BossBar_legacy implements RespawnEventListener {
 		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {
 				for (TabPlayer all : tab.getPlayers()) {
+					if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 					for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
 						try {
 							all.sendPacket(((BukkitPacketBuilder)tab.getPacketBuilder()).buildEntityTeleportPacket(l.getEntityId(), getWitherLocation(all)), TabFeature.BOSSBAR);
