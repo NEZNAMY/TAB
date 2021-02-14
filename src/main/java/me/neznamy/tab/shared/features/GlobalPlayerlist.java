@@ -30,6 +30,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
 	public boolean vanishedAsSpectators;
+	private boolean isolateUnlistedServers;
 
 	public GlobalPlayerlist(TAB tab) {
 		this.tab = tab;
@@ -41,6 +42,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		sharedServers = tab.getConfiguration().config.getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-others-as-spectators", false);
 		vanishedAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
+		isolateUnlistedServers = tab.getConfiguration().config.getBoolean("global-playerlist.isolate-unlisted-servers", false);
 		for (TabPlayer displayed : tab.getPlayers()) {
 			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
 			for (TabPlayer viewer : tab.getPlayers()) {
@@ -60,7 +62,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		for (String group : sharedServers.keySet()) {
 			if (sharedServers.get(group).contains(serverName)) return group;
 		}
-		return "null";
+		return isolateUnlistedServers ? "isolated:" + serverName : "DEFAULT";
 	}
 	
 	@Override

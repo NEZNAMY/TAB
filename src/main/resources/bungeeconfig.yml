@@ -13,6 +13,7 @@ global-playerlist:
   enabled: false
   display-others-as-spectators: false
   display-vanished-players-as-spectators: true
+  isolate-unlisted-servers: false
   spy-servers:
     - spyserver1
     - spyserver2
