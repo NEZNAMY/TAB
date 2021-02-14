@@ -119,7 +119,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public TabFeature getFeatureType() {
-		return TabFeature.BOSSBAR;
+		return TabFeature.YELLOW_NUMBER;
 	}
 
 	@Override
