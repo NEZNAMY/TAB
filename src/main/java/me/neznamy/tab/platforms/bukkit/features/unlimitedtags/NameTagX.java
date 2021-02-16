@@ -30,11 +30,11 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
-import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
+import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
+import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 
 /**
  * The core class for unlimited nametag mode

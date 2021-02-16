@@ -10,20 +10,20 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.interfaces.CommandListener;
-import me.neznamy.tab.shared.features.interfaces.DisplayObjectivePacketListener;
-import me.neznamy.tab.shared.features.interfaces.Feature;
-import me.neznamy.tab.shared.features.interfaces.HeaderFooterPacketListener;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
-import me.neznamy.tab.shared.features.interfaces.LoginPacketListener;
-import me.neznamy.tab.shared.features.interfaces.ObjectivePacketListener;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
-import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
-import me.neznamy.tab.shared.features.interfaces.WorldChangeListener;
+import me.neznamy.tab.shared.features.types.Feature;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.event.CommandListener;
+import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
+import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
+import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
+import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
+import me.neznamy.tab.shared.features.types.packet.HeaderFooterPacketListener;
+import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
+import me.neznamy.tab.shared.features.types.packet.ObjectivePacketListener;
+import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
@@ -228,7 +228,7 @@ public class FeatureManager {
 	}
 	
 	/**
-	 * Calls onPacketReceive(...) on all features that implement RawPacketFeature and measures how long it took them to process
+	 * Calls onPacketReceive(...) on all features that implement RawPacketListener and measures how long it took them to process
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - IN packet coming from player
@@ -237,10 +237,10 @@ public class FeatureManager {
 	public Object onPacketReceive(TabPlayer receiver, Object packet){
 		Object newPacket = packet;
 		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof RawPacketFeature)) continue;
+			if (!(f instanceof RawPacketListener)) continue;
 			long time = System.nanoTime();
 			try {
-				if (newPacket != null) newPacket = ((RawPacketFeature)f).onPacketReceive(receiver, newPacket);
+				if (newPacket != null) newPacket = ((RawPacketListener)f).onPacketReceive(receiver, newPacket);
 			} catch (Throwable e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
@@ -250,17 +250,17 @@ public class FeatureManager {
 	}
 	
 	/**
-	 * Calls onPacketSend(...) on all features that implement RawPacketFeature and measures how long it took them to process
+	 * Calls onPacketSend(...) on all features that implement RawPacketListener and measures how long it took them to process
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - OUT packet coming from the server
 	 */
 	public void onPacketSend(TabPlayer receiver, Object packet){
 		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof RawPacketFeature)) continue;
+			if (!(f instanceof RawPacketListener)) continue;
 			long time = System.nanoTime();
 			try {
-				((RawPacketFeature)f).onPacketSend(receiver, packet);
+				((RawPacketListener)f).onPacketSend(receiver, packet);
 			} catch (Throwable e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}

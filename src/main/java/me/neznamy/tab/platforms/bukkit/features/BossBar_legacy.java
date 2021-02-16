@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.features.interfaces.RespawnEventListener;
+import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
 
 /**
  * An additional class with additional code for <1.9 servers due to an entity being required

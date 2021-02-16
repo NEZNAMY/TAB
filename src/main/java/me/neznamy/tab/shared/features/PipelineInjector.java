@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.interfaces.JoinEventListener;
-import me.neznamy.tab.shared.features.interfaces.Loadable;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 
 /**
  * A large source of hate. Packet intercepting to secure proper functionality of some features:

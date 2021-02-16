@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.Feature;
+import me.neznamy.tab.shared.features.types.Feature;
 
 /**
  * Permission group refresher

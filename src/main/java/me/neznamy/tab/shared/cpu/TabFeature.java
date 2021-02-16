@@ -29,17 +29,31 @@ public enum TabFeature {
 	PACKET_SERIALIZING("Packet serializing"),
 	TABLIST_LAYOUT("Tablist layout"),
 	PLUGIN_MESSAGE_HANDLING("Plugin message handling"),
-	OTHER("Other");
+	OTHER("Other"),
+	ADDON_FEATURE_1(null),
+	ADDON_FEATURE_2(null),
+	ADDON_FEATURE_3(null),
+	ADDON_FEATURE_4(null),
+	ADDON_FEATURE_5(null),
+	ADDON_FEATURE_6(null),
+	ADDON_FEATURE_7(null),
+	ADDON_FEATURE_8(null),
+	ADDON_FEATURE_9(null),
+	ADDON_FEATURE_10(null);
 
 	//user-friendly name to be used in /tab cpu
-	private String friendlyName;
+	private String displayName;
 
-	private TabFeature(String friendlyName){
-		this.friendlyName = friendlyName;
+	private TabFeature(String displayName){
+		this.displayName = displayName;
+	}
+	
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	@Override
 	public String toString() {
-		return friendlyName;
+		return displayName;
 	}
 }

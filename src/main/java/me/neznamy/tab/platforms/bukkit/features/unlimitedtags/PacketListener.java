@@ -17,8 +17,8 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.PlayerInfoPacketListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -27,7 +27,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  * The packet listening part for securing proper functionality of armor stands
  * Bukkit events are too unreliable and delayed/ahead which causes desync
  */
-public class PacketListener implements RawPacketFeature, PlayerInfoPacketListener {
+public class PacketListener implements RawPacketListener, PlayerInfoPacketListener {
 
 	private NameTagX nameTagX;
 	private NMSStorage nms;

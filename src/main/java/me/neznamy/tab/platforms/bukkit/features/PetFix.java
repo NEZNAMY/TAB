@@ -11,14 +11,14 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.interfaces.QuitEventListener;
-import me.neznamy.tab.shared.features.interfaces.RawPacketFeature;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
+import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 
 /**
  * A feature to disable minecraft 1.9+ feature making tamed animals with custom names copy nametag properties of their owner
  * This is achieved by listening to entity spawn (<1.15) / entity metadata packets and removing owner field from the datawatcher list
  */
-public class PetFix implements RawPacketFeature, QuitEventListener {
+public class PetFix implements RawPacketListener, QuitEventListener {
 
 	//datawatcher position of pet owner field
 	private int PET_OWNER_POSITION = getPetOwnerPosition();

@@ -5,7 +5,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
+import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 
 /**

@@ -10,9 +10,9 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.interfaces.Feature;
-import me.neznamy.tab.shared.features.interfaces.Refreshable;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.features.types.Feature;
+import me.neznamy.tab.shared.features.types.Refreshable;
 
 public abstract class NameTag implements Feature, Refreshable {
 

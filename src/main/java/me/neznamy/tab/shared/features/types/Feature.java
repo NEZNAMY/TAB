@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features.interfaces;
+package me.neznamy.tab.shared.features.types;
 
 import java.util.List;
 
