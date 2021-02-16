@@ -40,6 +40,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		TAB.getInstance().unload();
+		//null check due to L22 return making L24 not run
+		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 }
