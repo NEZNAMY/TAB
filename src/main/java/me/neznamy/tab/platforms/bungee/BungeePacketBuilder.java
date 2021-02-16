@@ -119,7 +119,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
 		Title bungeePacket = new Title();
 		bungeePacket.setAction(Title.Action.valueOf(packet.action.toString()));
-		bungeePacket.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+		if (packet.text != null) bungeePacket.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
 		bungeePacket.setFadeIn(packet.fadeIn);
 		bungeePacket.setStay(packet.stay);
 		bungeePacket.setFadeOut(packet.fadeOut);

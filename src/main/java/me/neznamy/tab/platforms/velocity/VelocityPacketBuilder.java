@@ -114,7 +114,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 			actionId--;
 		}
 		velocityPacket.getClass().getMethod("setAction", int.class).invoke(velocityPacket, actionId);
-		velocityPacket.getClass().getMethod("setComponent", String.class).invoke(velocityPacket, IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+		if (packet.text != null) velocityPacket.getClass().getMethod("setComponent", String.class).invoke(velocityPacket, IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
 		velocityPacket.getClass().getMethod("setFadeIn", int.class).invoke(velocityPacket, packet.fadeIn);
 		velocityPacket.getClass().getMethod("setStay", int.class).invoke(velocityPacket, packet.stay);
 		velocityPacket.getClass().getMethod("setFadeOut", int.class).invoke(velocityPacket, packet.fadeOut);
