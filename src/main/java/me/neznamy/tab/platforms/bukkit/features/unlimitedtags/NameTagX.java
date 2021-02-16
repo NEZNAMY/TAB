@@ -46,7 +46,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	private JavaPlugin plugin;
 	public boolean markerFor18x;
 	public boolean disableOnBoats;
-	private float spaceBetweenLines;
+	private double spaceBetweenLines;
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
@@ -63,7 +63,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		this.plugin = plugin;
 		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = Float.parseFloat(tab.getConfiguration().getSecretOption("ntx-space", 0.22).toString());
+		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
 		if (tab.getConfiguration().premiumconfig != null) {
 			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();

@@ -192,6 +192,7 @@ public interface Platform {
 			rename(file, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
 			rename(file, "safe-team-register", "unregister-before-register");
 			rename(file, "disable-features-in-worlds.tablist-objective", "disable-features-in-worlds.yellow-number");
+			rename(file, "ntx-space", "unlimited-nametag-prefix-suffix-mode.space-between-lines");
 			if (!file.hasConfigOption("placeholderapi-refresh-intervals")) {
 				Map<String, Object> map = new LinkedHashMap<String, Object>();
 				map.put("default-refresh-interval", 100);

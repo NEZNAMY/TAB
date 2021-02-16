@@ -114,6 +114,9 @@ unlimited-nametag-prefix-suffix-mode:
   
   #disabling the feature for players riding boats to prevent massive desync
   disable-on-boats: true
+  
+  #in blocks
+  space-between-lines: 0.22
 
 per-world-settings:
   world1:
