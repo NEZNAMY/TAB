@@ -1,10 +1,13 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.command.CommandExecuteEvent;
+import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
+import com.velocitypowered.api.proxy.Player;
 
 import me.neznamy.tab.shared.TAB;
 
@@ -42,12 +45,24 @@ public class VelocityEventListener {
 	}
 	
 	/**
-	 * Listener to chat packets to forward the event to all features
+	 * Listener to chat messages to forward the event to all features
 	 * @param e
 	 */
 	@Subscribe
 	public void onChat(PlayerChatEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
+		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
+	}
+	
+	/**
+	 * Listener to commands to forward the event to all features
+	 * @param e
+	 */
+	@Subscribe
+	public void onCommand(CommandExecuteEvent e) {
+		if (TAB.getInstance().isDisabled()) return;
+		if (e.getCommandSource() instanceof Player) {
+			if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
+		}
 	}
 }

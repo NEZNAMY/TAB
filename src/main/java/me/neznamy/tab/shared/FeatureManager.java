@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.types.Feature;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.event.ChatEventListener;
 import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
@@ -333,6 +334,17 @@ public class FeatureManager {
 			if (cancel) return true;
 		}
 		return false;
+	}
+	
+	public boolean onChat(TabPlayer sender, String message) {
+		boolean cancel = false;
+		for (Feature f : getAllFeatures()) {
+			if (!(f instanceof ChatEventListener)) continue;
+			long time = System.nanoTime();
+			if (((ChatEventListener)f).onChat(sender, message)) cancel = true;
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_CHAT_EVENT, System.nanoTime()-time);
+		}
+		return cancel;
 	}
 	
 	public NameTag getNameTagFeature() {

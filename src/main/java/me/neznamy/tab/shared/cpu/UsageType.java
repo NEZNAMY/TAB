@@ -15,6 +15,7 @@ public enum UsageType {
 	PLAYER_RESPAWN_EVENT("PlayerRespawnEvent"),
 	COMMAND_PREPROCESS("PlayerCommandPreprocessEvent"),
 	PLUGIN_MESSAGE_EVENT("PluginMessageEvent"),
+	PLAYER_CHAT_EVENT("AsyncPlayerChatEvent"),
 	
 	//packets
 	ANTI_OVERRIDE("Anti override"),
