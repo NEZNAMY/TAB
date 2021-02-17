@@ -182,6 +182,17 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (!p.isLoaded()) return;
 		updateProperties(p);
+		p.getArmorStandManager().destroy();
+		loadArmorStands(p);
+		loadPassengers(p);
+		for (TabPlayer viewer : tab.getPlayers()) {
+			if (p == viewer) continue; //not displaying own armorstands
+			if (((Player) viewer.getPlayer()).getWorld() != ((Player) p.getPlayer()).getWorld()) continue;
+			if (getDistance(viewer, p) <= ENTITY_TRACKING_RANGE) {
+				p.getArmorStandManager().spawn(viewer);
+				if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().spawn(p);
+			}
+		}
 		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
 			p.unregisterTeam();
 		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
@@ -189,7 +200,6 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		} else {
 			p.updateTeam();
 			p.getArmorStandManager().refresh();
-			fixArmorStandHeights(p);
 		}
 	}
 
