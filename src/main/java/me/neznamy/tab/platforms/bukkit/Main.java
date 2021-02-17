@@ -21,6 +21,9 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
+		if (ProtocolVersion.SERVER_VERSION == ProtocolVersion.UNKNOWN) {
+			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
+		}
 		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSHook.nms), new BukkitPacketBuilder(NMSHook.nms)));
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		Bukkit.getPluginCommand("tab").setExecutor((sender, c, cmd, args) -> {
@@ -40,7 +43,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		//null check due to L22 return making L24 not run
+		//null check due to L22 return making L27 not run
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 }
