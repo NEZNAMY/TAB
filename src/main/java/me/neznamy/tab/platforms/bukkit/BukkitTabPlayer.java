@@ -41,7 +41,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private int getProtocolVersion() {
 		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 			int version = getProtocolVersionPS();
-			if (version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
+			//some PS versions return -1 on unsupported server versions instead of throwing exception
+			if (version != -1 && version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			return getProtocolVersionVia();
