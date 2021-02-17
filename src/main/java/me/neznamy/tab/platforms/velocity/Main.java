@@ -29,13 +29,16 @@ public class Main {
 
 	//instance of proxyserver
 	public ProxyServer server;
+	
+	private VelocityMetrics.Factory metricsFactory;
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
 
 	@Inject
-	public Main(ProxyServer server) {
+	public Main(ProxyServer server, VelocityMetrics.Factory metricsFactory) {
 		this.server = server;
+		this.metricsFactory = metricsFactory;
 	}
 
 	@Subscribe
@@ -73,6 +76,7 @@ public class Main {
 		});
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
+		metricsFactory.make(this, 10286);
 	}
 
 	/**
