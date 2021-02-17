@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
+import me.neznamy.tab.shared.features.types.event.SneakEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.types.packet.HeaderFooterPacketListener;
@@ -345,6 +346,15 @@ public class FeatureManager {
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_CHAT_EVENT, System.nanoTime()-time);
 		}
 		return cancel;
+	}
+	
+	public void onSneak(TabPlayer sender, boolean isSneaking) {
+		for (Feature f : getAllFeatures()) {
+			if (!(f instanceof SneakEventListener)) continue;
+			long time = System.nanoTime();
+			((SneakEventListener)f).onSneak(sender, isSneaking);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_TOGGLE_SNEAK_EVENT, System.nanoTime()-time);
+		}
 	}
 	
 	public NameTag getNameTagFeature() {

@@ -34,12 +34,13 @@ import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
+import me.neznamy.tab.shared.features.types.event.SneakEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener {
+public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener, SneakEventListener {
 
 	private final int ENTITY_TRACKING_RANGE = 48;
 
@@ -72,7 +73,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			staticLines = tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
-		eventListener = new EventListener(this);
+		eventListener = new EventListener();
 		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
 	}
 
@@ -320,5 +321,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void onRespawn(TabPlayer respawned) {
 		if (isDisabledWorld(respawned.getWorldName())) return;
 		respawned.getArmorStandManager().teleport();
+	}
+
+	@Override
+	public void onSneak(TabPlayer player, boolean isSneaking) {
+		if (isDisabledWorld(player.getWorldName())) return;
+		player.getArmorStandManager().sneak(isSneaking);
 	}
 }
