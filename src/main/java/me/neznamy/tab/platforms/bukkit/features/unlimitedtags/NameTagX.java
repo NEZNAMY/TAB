@@ -73,7 +73,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			staticLines = tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
-		eventListener = new EventListener();
+		eventListener = new EventListener(this);
 		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
 	}
 

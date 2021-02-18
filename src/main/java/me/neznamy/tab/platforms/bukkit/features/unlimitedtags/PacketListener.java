@@ -1,12 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Sets;
@@ -91,18 +89,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 			//player moved
 			if (!pl.isLoaded() || nameTagX.isDisabledWorld(pl.getWorldName())) return;
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
-
-			//player can be a vehicle too
-			List<Entity> riders = nameTagX.getPassengers((Player) pl.getPlayer());
-			for (Entity e : riders) {
-				TabPlayer rider = nameTagX.entityIdMap.get(e.getEntityId());
-				if (rider != null && !nameTagX.isDisabledWorld(rider.getWorldName())) {
-					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> {
-						rider.getArmorStandManager().teleport(receiver);
-						rider.getArmorStandManager().teleport(pl); //vehicle player has no other way to get this packet
-					});
-				}
-			}
 		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Integer entity : vehicleList) {
