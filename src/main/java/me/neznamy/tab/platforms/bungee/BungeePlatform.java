@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -64,11 +63,9 @@ public class BungeePlatform implements Platform {
 		tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag16(tab));
 		loadUniversalFeatures();
-		if (tab.getConfiguration().BossBarEnabled) 										tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
 		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			TabPlayer t = new BungeeTabPlayer(p);
-			tab.data.put(p.getUniqueId(), t);
+			tab.addPlayer(new BungeeTabPlayer(p));
 		}
 	}
 	

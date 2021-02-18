@@ -30,7 +30,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -90,11 +89,8 @@ public class BukkitPlatform implements Platform {
 			}
 		}
 		loadUniversalFeatures();
-		if (tab.getConfiguration().BossBarEnabled) {
-			BossBar bb = new BossBar(tab);
-			tab.getFeatureManager().registerFeature("bossbar", bb);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(bb, tab));
-		}
+		if (tab.getConfiguration().BossBarEnabled && ProtocolVersion.SERVER_VERSION.getMinorVersion() < 9) 
+			tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab));
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -103,8 +99,7 @@ public class BukkitPlatform implements Platform {
 		}
 
 		for (Player p : getOnlinePlayers()) {
-			BukkitTabPlayer t = new BukkitTabPlayer(p);
-			tab.data.put(p.getUniqueId(), t);
+			tab.addPlayer(new BukkitTabPlayer(p));
 		}
 	}
 
@@ -112,7 +107,7 @@ public class BukkitPlatform implements Platform {
 	private Player[] getOnlinePlayers() throws Exception {
 		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
 		if (players instanceof Player[]) {
-			//1.5.x - 1.7.x
+			//1.7.x
 			return (Player[]) players;
 		} else {
 			//1.8+

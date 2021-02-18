@@ -26,8 +26,8 @@ public class BossBar_legacy implements RespawnEventListener {
 	 * Constructs a new instance of the class
 	 * @param mainFeature - main bossbar feature
 	 */
-	public BossBar_legacy(BossBar mainFeature, TAB tab) {
-		this.mainFeature = mainFeature;
+	public BossBar_legacy(TAB tab) {
+		this.mainFeature = (BossBar) tab.getFeatureManager().getFeature("bossbar");
 		//bar disappears in client after ~1 second of not seeing boss entity
 		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
 			public void run() {

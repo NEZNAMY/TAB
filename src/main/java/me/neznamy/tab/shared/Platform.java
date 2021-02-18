@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -250,5 +251,6 @@ public interface Platform {
 		if ((boolean)tab.getConfiguration().getSecretOption("layout", false)) {
 			tab.getFeatureManager().registerFeature("layout", new Layout(tab));
 		}
+		if (tab.getConfiguration().BossBarEnabled) tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
 	}
 }
