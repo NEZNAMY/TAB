@@ -21,6 +21,8 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	
 	protected TAB tab;
 	
+	private String lastTeamOverrideMessage;
+	
 	public PipelineInjector(TAB tab) {
 		this.tab = tab;
 	}
@@ -58,6 +60,11 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	}
 	
 	protected void logTeamOverride(String team, String player) {
-		tab.getErrorManager().printError("Something just tried to add player " + player + " into team " + team, null, false, tab.getErrorManager().antiOverrideLog);
+		String message = "Something just tried to add player " + player + " into team " + team;
+		//not logging the same message for every online player who received the packet
+		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
+			lastTeamOverrideMessage = message;
+			tab.getErrorManager().printError(message, null, false, tab.getErrorManager().antiOverrideLog);
+		}
 	}
 }
