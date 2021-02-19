@@ -51,6 +51,8 @@ public class Main {
 			System.out.println("\u00a7c[TAB] Your velocity version is way too new for this plugin version. Update the plugin or downgrade Velocity.");
 			return;
 		}
+		System.out.println("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+				+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).");
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
 		server.getEventManager().register(this, new VelocityEventListener());
