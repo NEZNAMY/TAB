@@ -52,7 +52,7 @@ public class Main extends Plugin {
 	
 	@Override
 	public void onDisable() {
-		TAB.getInstance().unload();
+		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 	
 	public class BTABCommand extends Command implements TabExecutor {

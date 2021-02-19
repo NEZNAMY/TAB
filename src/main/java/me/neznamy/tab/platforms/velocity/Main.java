@@ -97,6 +97,6 @@ public class Main {
 	
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
-		TAB.getInstance().unload();
+		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 }
