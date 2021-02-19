@@ -55,6 +55,10 @@ public class FeatureManager {
 		features.put(featureName, featureHandler);
 	}
 	
+	public void unregisterFeature(String featureName) {
+		features.remove(featureName);
+	}
+	
 	/**
 	 * Returns whether a feature with said name is registered or not
 	 * 
