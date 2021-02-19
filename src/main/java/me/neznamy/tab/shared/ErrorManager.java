@@ -307,7 +307,25 @@ public class ErrorManager {
 		if (interval % 50 != 0) {
 			int newInterval = interval - interval%50;
 			if (newInterval == 0) newInterval = 50;
-			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+" which is not divisible by 50! Using " + newInterval + ".");
+			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+" which is not divisible by 50! &bUsing " + newInterval + ".");
+			return newInterval;
+		}
+		return interval;
+	}
+	
+	public int fixPlaceholderInterval(String identifier, int interval) {
+		if (interval == 0) {
+			startupWarn("Placeholder \"&e" + identifier + "&c\" has refresh interval of 0 milliseconds! Is that misconfiguration? &bUsing 100.");
+			return 100;
+		}
+		if (interval < 0) {
+			startupWarn("Placeholder \"&e" + identifier + "&c\" has refresh interval of "+interval+". Refresh cannot be negative! &bUsing 100.");
+			return 100;
+		}
+		if (interval % 50 != 0) {
+			int newInterval = interval - interval%50;
+			if (newInterval == 0) newInterval = 50;
+			startupWarn("Placeholder \"&e" + identifier + "&c\" has refresh interval of "+interval+" which is not divisible by 50! &bUsing " + newInterval + ".");
 			return newInterval;
 		}
 		return interval;

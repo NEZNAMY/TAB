@@ -80,10 +80,10 @@ public class VelocityPlatform implements Platform {
 			if (plugin.equals("some")) return;
 			TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
-			int cooldown = pl.defaultRefresh;
-			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.playerPlaceholderRefreshIntervals.get(identifier);
-			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) cooldown = pl.serverPlaceholderRefreshIntervals.get(identifier);
-			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, cooldown){
+			int refresh = pl.defaultRefresh;
+			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.playerPlaceholderRefreshIntervals.get(identifier);
+			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
 					return lastValue.get(p.getName());

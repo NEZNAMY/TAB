@@ -146,7 +146,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private void registerServerPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder(identifier, refresh){
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 			
 			@Override
 			public String get() {
@@ -156,7 +156,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private void registerPlayerPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer p) {
@@ -166,7 +166,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private void registerRelationalPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
+		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new RelationalPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {
