@@ -4,16 +4,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.platforms.bukkit.Main;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NMSStorage {
 
+	private Map<String, String> thermosFieldMappings = new HashMap<String, String>();
+	
 	private String serverPackage;
 	public int minorVersion;
 
@@ -199,12 +204,19 @@ public class NMSStorage {
 	public NMSStorage() throws Exception {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+		loadThermosMappings();
 		initializeClasses();
 		initializeConstructors();
 		initializeFields();
 		initializeMethods();
 	}
 
+	private void loadThermosMappings() {
+		thermosFieldMappings.put("ping", "field_71138_i");
+		thermosFieldMappings.put("playerConnection", "field_71135_a");
+		thermosFieldMappings.put("networkManager", "field_147371_a");
+	}
+	
 	/**
 	 * Initializes required NMS classes
 	 * @throws Exception - if something fails
@@ -269,13 +281,8 @@ public class NMSStorage {
 			BarStyle = (Class<Enum>) getNMSClass("BossBattle$BarStyle");
 			PacketPlayOutBoss_Action = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
 			PacketPlayOutMount = getNMSClass("PacketPlayOutMount");
-			(PacketPlayOutMount_VEHICLE = PacketPlayOutMount.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutMount_PASSENGERS = PacketPlayOutMount.getDeclaredField("b")).setAccessible(true);
 		} else {
 			PacketPlayOutAttachEntity = getNMSClass("PacketPlayOutAttachEntity");
-			(PacketPlayOutAttachEntity_A = PacketPlayOutAttachEntity.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutAttachEntity_PASSENGER = PacketPlayOutAttachEntity.getDeclaredField("b")).setAccessible(true);
-			(PacketPlayOutAttachEntity_VEHICLE = PacketPlayOutAttachEntity.getDeclaredField("c")).setAccessible(true);
 			try {
 				//v1_8_R2, v1_8_R3
 				DataWatcherItem = getNMSClass("DataWatcher$WatchableObject");
@@ -346,128 +353,137 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	public void initializeFields() throws Exception {
-		PING = getNMSClass("EntityPlayer").getDeclaredField("ping");
-		PLAYER_CONNECTION = getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
-		NETWORK_MANAGER = PLAYER_CONNECTION.getType().getField("networkManager");
+		PING = getField(getNMSClass("EntityPlayer"), "ping");
+		PLAYER_CONNECTION = getField(getNMSClass("EntityPlayer"), "playerConnection");
+		NETWORK_MANAGER = getField(PLAYER_CONNECTION.getType(), "networkManager");
 
-		(PacketPlayOutChat_MESSAGE = PacketPlayOutChat.getDeclaredField("a")).setAccessible(true);
+		PacketPlayOutChat_MESSAGE = getField(PacketPlayOutChat, "a");
 
-		(PacketPlayOutScoreboardDisplayObjective_POSITION = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = PacketPlayOutScoreboardDisplayObjective.getDeclaredField("b")).setAccessible(true);
+		PacketPlayOutScoreboardDisplayObjective_POSITION = getField(PacketPlayOutScoreboardDisplayObjective, "a");
+		PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = getField(PacketPlayOutScoreboardDisplayObjective, "b");
 
-		(PacketPlayOutScoreboardObjective_OBJECTIVENAME = PacketPlayOutScoreboardObjective.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardObjective_DISPLAYNAME = PacketPlayOutScoreboardObjective.getDeclaredField("b")).setAccessible(true);
+		PacketPlayOutScoreboardObjective_OBJECTIVENAME = getField(PacketPlayOutScoreboardObjective, "a");
+		PacketPlayOutScoreboardObjective_DISPLAYNAME = getField(PacketPlayOutScoreboardObjective, "b");
 
-		(PacketPlayOutScoreboardScore_PLAYER = PacketPlayOutScoreboardScore.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_OBJECTIVENAME = PacketPlayOutScoreboardScore.getDeclaredField("b")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_SCORE = PacketPlayOutScoreboardScore.getDeclaredField("c")).setAccessible(true);
-		(PacketPlayOutScoreboardScore_ACTION = PacketPlayOutScoreboardScore.getDeclaredField("d")).setAccessible(true);
+		PacketPlayOutScoreboardScore_PLAYER = getField(PacketPlayOutScoreboardScore, "a");
+		PacketPlayOutScoreboardScore_OBJECTIVENAME = getField(PacketPlayOutScoreboardScore, "b");
+		PacketPlayOutScoreboardScore_SCORE = getField(PacketPlayOutScoreboardScore, "c");
+		PacketPlayOutScoreboardScore_ACTION = getField(PacketPlayOutScoreboardScore, "d");
 
-		(PacketPlayOutScoreboardTeam_NAME = PacketPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutScoreboardTeam_DISPLAYNAME = PacketPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);
-		(PacketPlayOutScoreboardTeam_PREFIX = PacketPlayOutScoreboardTeam.getDeclaredField("c")).setAccessible(true);
-		(PacketPlayOutScoreboardTeam_SUFFIX = PacketPlayOutScoreboardTeam.getDeclaredField("d")).setAccessible(true);
+		PacketPlayOutScoreboardTeam_NAME = getField(PacketPlayOutScoreboardTeam, "a");
+		PacketPlayOutScoreboardTeam_DISPLAYNAME = getField(PacketPlayOutScoreboardTeam, "b");
+		PacketPlayOutScoreboardTeam_PREFIX = getField(PacketPlayOutScoreboardTeam, "c");
+		PacketPlayOutScoreboardTeam_SUFFIX = getField(PacketPlayOutScoreboardTeam, "d");
 
-		(PacketPlayOutEntityTeleport_ENTITYID = PacketPlayOutEntityTeleport.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutEntityTeleport_X = PacketPlayOutEntityTeleport.getDeclaredField("b")).setAccessible(true);
-		(PacketPlayOutEntityTeleport_Y = PacketPlayOutEntityTeleport.getDeclaredField("c")).setAccessible(true);
-		(PacketPlayOutEntityTeleport_Z = PacketPlayOutEntityTeleport.getDeclaredField("d")).setAccessible(true);
-		(PacketPlayOutEntityTeleport_YAW = PacketPlayOutEntityTeleport.getDeclaredField("e")).setAccessible(true);
-		(PacketPlayOutEntityTeleport_PITCH = PacketPlayOutEntityTeleport.getDeclaredField("f")).setAccessible(true);
+		PacketPlayOutEntityTeleport_ENTITYID = getField(PacketPlayOutEntityTeleport, "a");
+		PacketPlayOutEntityTeleport_X = getField(PacketPlayOutEntityTeleport, "b");
+		PacketPlayOutEntityTeleport_Y = getField(PacketPlayOutEntityTeleport, "c");
+		PacketPlayOutEntityTeleport_Z = getField(PacketPlayOutEntityTeleport, "d");
+		PacketPlayOutEntityTeleport_YAW = getField(PacketPlayOutEntityTeleport, "e");
+		PacketPlayOutEntityTeleport_PITCH = getField(PacketPlayOutEntityTeleport, "f");
 
-		(PacketPlayInUseEntity_ENTITY = PacketPlayInUseEntity.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayInUseEntity_ACTION = PacketPlayInUseEntity.getDeclaredField("action")).setAccessible(true);
-		(PacketPlayOutEntity_ENTITYID = PacketPlayOutEntity.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOutEntityDestroy.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutNamedEntitySpawn_ENTITYID = PacketPlayOutNamedEntitySpawn.getDeclaredField("a")).setAccessible(true);
-		(PacketPlayOutEntityMetadata_LIST = PacketPlayOutEntityMetadata.getDeclaredField("b")).setAccessible(true);
+		PacketPlayOutEntity_ENTITYID = getField(PacketPlayOutEntity, "a");
+		PacketPlayOutEntityDestroy_ENTITIES = getField(PacketPlayOutEntityDestroy, "a");
+		PacketPlayOutNamedEntitySpawn_ENTITYID = getField(PacketPlayOutNamedEntitySpawn, "a");
+		PacketPlayOutEntityMetadata_LIST = getField(PacketPlayOutEntityMetadata, "b");
 
-		(PacketPlayOutSpawnEntityLiving_ENTITYID = PacketPlayOutSpawnEntityLiving.getDeclaredField("a")).setAccessible(true);
+		PacketPlayOutSpawnEntityLiving_ENTITYID = getField(PacketPlayOutSpawnEntityLiving, "a");
+		
+		PacketPlayInUseEntity_ENTITY = getField(PacketPlayInUseEntity, "a");
 
 		if (minorVersion >= 8) {
 			//1.8+
 			CHANNEL = getFields(getNMSClass("NetworkManager"), Channel.class).get(0);
 
-			(PacketPlayOutChat_POSITION = PacketPlayOutChat.getDeclaredField("b")).setAccessible(true);
+			PacketPlayOutChat_POSITION = getField(PacketPlayOutChat, "b");
 
-			(PacketPlayOutScoreboardObjective_RENDERTYPE = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("d")).setAccessible(true);
+			PacketPlayOutScoreboardObjective_RENDERTYPE = getField(PacketPlayOutScoreboardObjective, "c");
+			PacketPlayOutScoreboardObjective_METHOD = getField(PacketPlayOutScoreboardObjective, "d");
 
-			(GameProfile_ID = GameProfile.getDeclaredField("id")).setAccessible(true);
-			(GameProfile_NAME = GameProfile.getDeclaredField("name")).setAccessible(true);
-			(GameProfile_PROPERTIES = GameProfile.getDeclaredField("properties")).setAccessible(true);
-			(PacketPlayOutPlayerInfo_ACTION = PacketPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutPlayerInfo_PLAYERS = PacketPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
-			(PlayerInfoData_PING = PlayerInfoData.getDeclaredField("b")).setAccessible(true);
-			(PlayerInfoData_GAMEMODE = PlayerInfoData.getDeclaredField("c")).setAccessible(true);
-			(PlayerInfoData_PROFILE = PlayerInfoData.getDeclaredField("d")).setAccessible(true);
-			(PlayerInfoData_LISTNAME = PlayerInfoData.getDeclaredField("e")).setAccessible(true);
+			GameProfile_ID = getField(GameProfile, "id");
+			GameProfile_NAME = getField(GameProfile, "name");
+			GameProfile_PROPERTIES = getField(GameProfile, "properties");
+			PacketPlayOutPlayerInfo_ACTION = getField(PacketPlayOutPlayerInfo, "a");
+			PacketPlayOutPlayerInfo_PLAYERS = getField(PacketPlayOutPlayerInfo, "b");
+			PlayerInfoData_PING = getField(PlayerInfoData, "b");
+			PlayerInfoData_GAMEMODE = getField(PlayerInfoData, "c");
+			PlayerInfoData_PROFILE = getField(PlayerInfoData, "d");
+			PlayerInfoData_LISTNAME = getField(PlayerInfoData, "e");
 
 			List<Field> fields = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent);
 			PacketPlayOutPlayerListHeaderFooter_HEADER = fields.get(0);
 			PacketPlayOutPlayerListHeaderFooter_FOOTER = fields.get(1);
 		} else {
 			//1.7-
-			(PacketPlayOutScoreboardObjective_METHOD = PacketPlayOutScoreboardObjective.getDeclaredField("c")).setAccessible(true);
+			PacketPlayOutScoreboardObjective_METHOD = getField(PacketPlayOutScoreboardObjective, "c");
 		}
 		if (minorVersion >= 9) {
 			//1.9+
-			(PacketPlayOutBoss_UUID = PacketPlayOutBoss.getDeclaredField("a")).setAccessible(true);
-			(PacketPlayOutBoss_ACTION = PacketPlayOutBoss.getDeclaredField("b")).setAccessible(true);
-			(PacketPlayOutBoss_NAME = PacketPlayOutBoss.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutBoss_PROGRESS = PacketPlayOutBoss.getDeclaredField("d")).setAccessible(true);
-			(PacketPlayOutBoss_COLOR = PacketPlayOutBoss.getDeclaredField("e")).setAccessible(true);
-			(PacketPlayOutBoss_STYLE = PacketPlayOutBoss.getDeclaredField("f")).setAccessible(true);
-			(PacketPlayOutBoss_DARKEN_SKY = PacketPlayOutBoss.getDeclaredField("g")).setAccessible(true);
-			(PacketPlayOutBoss_PLAY_MUSIC = PacketPlayOutBoss.getDeclaredField("h")).setAccessible(true);
-			(PacketPlayOutBoss_CREATE_FOG = PacketPlayOutBoss.getDeclaredField("i")).setAccessible(true);
+			PacketPlayOutBoss_UUID = getField(PacketPlayOutBoss, "a");
+			PacketPlayOutBoss_ACTION = getField(PacketPlayOutBoss, "b");
+			PacketPlayOutBoss_NAME = getField(PacketPlayOutBoss, "c");
+			PacketPlayOutBoss_PROGRESS = getField(PacketPlayOutBoss, "d");
+			PacketPlayOutBoss_COLOR = getField(PacketPlayOutBoss, "e");
+			PacketPlayOutBoss_STYLE = getField(PacketPlayOutBoss, "f");
+			PacketPlayOutBoss_DARKEN_SKY = getField(PacketPlayOutBoss, "g");
+			PacketPlayOutBoss_PLAY_MUSIC = getField(PacketPlayOutBoss, "h");
+			PacketPlayOutBoss_CREATE_FOG = getField(PacketPlayOutBoss, "i");
 
-			(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
-			(PacketPlayOutScoreboardTeam_COLLISION = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
-			(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("h")).setAccessible(true);
-			(PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("i")).setAccessible(true);
-			(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("j")).setAccessible(true);
+			PacketPlayOutScoreboardTeam_VISIBILITY = getField(PacketPlayOutScoreboardTeam, "e");
+			PacketPlayOutScoreboardTeam_COLLISION = getField(PacketPlayOutScoreboardTeam, "f");
+			PacketPlayOutScoreboardTeam_PLAYERS = getField(PacketPlayOutScoreboardTeam, "h");
+			PacketPlayOutScoreboardTeam_ACTION = getField(PacketPlayOutScoreboardTeam, "i");
+			PacketPlayOutScoreboardTeam_SIGNATURE = getField(PacketPlayOutScoreboardTeam, "j");
 
-			(PacketPlayOutSpawnEntityLiving_UUID = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_ENTITYTYPE = PacketPlayOutSpawnEntityLiving.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_X = PacketPlayOutSpawnEntityLiving.getDeclaredField("d")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_Y = PacketPlayOutSpawnEntityLiving.getDeclaredField("e")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_Z = PacketPlayOutSpawnEntityLiving.getDeclaredField("f")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("k")).setAccessible(true);
+			PacketPlayOutSpawnEntityLiving_UUID = getField(PacketPlayOutSpawnEntityLiving, "b");
+			PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "c");
+			PacketPlayOutSpawnEntityLiving_X = getField(PacketPlayOutSpawnEntityLiving, "d");
+			PacketPlayOutSpawnEntityLiving_Y = getField(PacketPlayOutSpawnEntityLiving, "e");
+			PacketPlayOutSpawnEntityLiving_Z = getField(PacketPlayOutSpawnEntityLiving, "f");
+			PacketPlayOutSpawnEntityLiving_YAW = getField(PacketPlayOutSpawnEntityLiving, "j");
+			PacketPlayOutSpawnEntityLiving_PITCH = getField(PacketPlayOutSpawnEntityLiving, "k");
+			
+			PacketPlayOutMount_VEHICLE = getField(PacketPlayOutMount, "a");
+			PacketPlayOutMount_PASSENGERS = getField(PacketPlayOutMount, "b");
+			
+			PacketPlayInUseEntity_ACTION = getField(PacketPlayInUseEntity, "action");
 		} else {
 			//1.8-
-			(PacketPlayOutSpawnEntityLiving_ENTITYTYPE = PacketPlayOutSpawnEntityLiving.getDeclaredField("b")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_X = PacketPlayOutSpawnEntityLiving.getDeclaredField("c")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_Y = PacketPlayOutSpawnEntityLiving.getDeclaredField("d")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_Z = PacketPlayOutSpawnEntityLiving.getDeclaredField("e")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_YAW = PacketPlayOutSpawnEntityLiving.getDeclaredField("i")).setAccessible(true);
-			(PacketPlayOutSpawnEntityLiving_PITCH = PacketPlayOutSpawnEntityLiving.getDeclaredField("j")).setAccessible(true);
+			PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "b");
+			PacketPlayOutSpawnEntityLiving_X = getField(PacketPlayOutSpawnEntityLiving, "c");
+			PacketPlayOutSpawnEntityLiving_Y = getField(PacketPlayOutSpawnEntityLiving, "d");
+			PacketPlayOutSpawnEntityLiving_Z = getField(PacketPlayOutSpawnEntityLiving, "e");
+			PacketPlayOutSpawnEntityLiving_YAW = getField(PacketPlayOutSpawnEntityLiving, "i");
+			PacketPlayOutSpawnEntityLiving_PITCH = getField(PacketPlayOutSpawnEntityLiving, "j");
+			
+			PacketPlayOutAttachEntity_A = getField(PacketPlayOutAttachEntity, "a");
+			PacketPlayOutAttachEntity_PASSENGER = getField(PacketPlayOutAttachEntity, "b");
+			PacketPlayOutAttachEntity_VEHICLE = getField(PacketPlayOutAttachEntity, "c");
 			if (minorVersion == 8) {
 				//1.8.x
-				(PacketPlayOutScoreboardTeam_VISIBILITY = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
-				(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
-				(PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("h")).setAccessible(true);
-				(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("i")).setAccessible(true);
+				PacketPlayOutScoreboardTeam_VISIBILITY = getField(PacketPlayOutScoreboardTeam, "e");
+				PacketPlayOutScoreboardTeam_PLAYERS = getField(PacketPlayOutScoreboardTeam, "g");
+				PacketPlayOutScoreboardTeam_ACTION = getField(PacketPlayOutScoreboardTeam, "h");
+				PacketPlayOutScoreboardTeam_SIGNATURE = getField(PacketPlayOutScoreboardTeam, "i");
 			} else {
 				//1.7.x
-				(PacketPlayOutScoreboardTeam_PLAYERS = PacketPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
-				(PacketPlayOutScoreboardTeam_ACTION = PacketPlayOutScoreboardTeam.getDeclaredField("f")).setAccessible(true);
-				(PacketPlayOutScoreboardTeam_SIGNATURE = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
+				PacketPlayOutScoreboardTeam_PLAYERS = getField(PacketPlayOutScoreboardTeam, "e");
+				PacketPlayOutScoreboardTeam_ACTION = getField(PacketPlayOutScoreboardTeam, "f");
+				PacketPlayOutScoreboardTeam_SIGNATURE = getField(PacketPlayOutScoreboardTeam, "g");
 			}
 		}
 		if (minorVersion >= 13) {
 			//1.13+
-			(PacketPlayOutScoreboardTeam_CHATFORMAT = PacketPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true);
+			PacketPlayOutScoreboardTeam_CHATFORMAT = getField(PacketPlayOutScoreboardTeam, "g");
 		}
 
 		if (minorVersion <= 14) {
-			(PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0)).setAccessible(true);
+			PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
 		}
 
 		if (minorVersion >= 16) {
 			//1.16+
-			(PacketPlayOutChat_SENDER = PacketPlayOutChat.getDeclaredField("c")).setAccessible(true);
+			PacketPlayOutChat_SENDER = getField(PacketPlayOutChat, "c");
 		}
 	}
 
@@ -482,11 +498,18 @@ public class NMSStorage {
 			}
 			if (PropertyMap_putAll == null) throw new IllegalStateException("putAll method not found");
 		}
-		ChatSerializer_SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
-		ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
+		try {
+			ChatSerializer_SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
+			ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
+			sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
+		} catch (Exception e) {
+			//modded server?
+			ChatSerializer_SERIALIZE = ChatSerializer.getMethod("func_150696_a", IChatBaseComponent);
+			ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("func_150699_a", String.class);
+			sendPacket = getNMSClass("PlayerConnection").getMethod("func_147359_a", getNMSClass("Packet"));
+		}
 		getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-		sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
-		
+
 		if (minorVersion >= 8) {
 			getProfile = getNMSClass("EntityHuman").getMethod("getProfile");
 		}
@@ -495,13 +518,26 @@ public class NMSStorage {
 			//1.9+
 			DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
 		} else {
-			//1.8-
-			DataWatcher_REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
+			//1.7.x - 1.8.x
+			try {
+				DataWatcher_REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
+			} catch (Exception e) {
+				//modded server
+				DataWatcher_REGISTER = DataWatcher.getMethod("func_75682_a", int.class, Object.class);
+			}
 		}
 	}
 
 	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + serverPackage + "." + name);
+		try {
+			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
+		} catch (ClassNotFoundException e) {
+			//modded server?
+			return Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+		} catch (NullPointerException e) {
+			//nested class in modded server
+			throw new ClassNotFoundException(name);
+		}
 	}
 
 	private List<Field> getFields(Class<?> clazz, Class<?> type){
@@ -512,5 +548,22 @@ public class NMSStorage {
 			if (field.getType() == type) list.add(field);
 		}
 		return list;
+	}
+	
+	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+		for (Field f : clazz.getDeclaredFields()) {
+			if (f.getName().equals(name)) {
+				f.setAccessible(true);
+				return f;
+			}
+			if (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name)) {
+				f.setAccessible(true);
+				return f;
+			}
+		}
+		if (thermosFieldMappings.containsKey(name)) {
+			return getField(clazz, thermosFieldMappings.get(name));
+		}
+		throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
 	}
 }
