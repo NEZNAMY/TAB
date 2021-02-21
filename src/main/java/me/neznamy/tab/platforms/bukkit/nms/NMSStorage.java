@@ -13,11 +13,14 @@ import org.bukkit.Bukkit;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NMSStorage {
 
 	private Map<String, String> thermosFieldMappings = new HashMap<String, String>();
+	
+	public DataWatcherRegistry dataWatcherRegistry;
 	
 	private String serverPackage;
 	public int minorVersion;
@@ -209,6 +212,7 @@ public class NMSStorage {
 		initializeConstructors();
 		initializeFields();
 		initializeMethods();
+		dataWatcherRegistry = new DataWatcherRegistry(DataWatcherRegistry);
 	}
 
 	private void loadThermosMappings() {

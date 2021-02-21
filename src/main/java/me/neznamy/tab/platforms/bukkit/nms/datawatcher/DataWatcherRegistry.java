@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 /**
@@ -25,9 +24,9 @@ public class DataWatcherRegistry {
 	 * Initializes required NMS classes and fields
 	 * @throws Exception - if something fails
 	 */
-	public DataWatcherRegistry(NMSStorage nms) throws Exception {
+	public DataWatcherRegistry(Class<?> registry) throws Exception {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			Map<String, Object> fields = getStaticFields(nms.DataWatcherRegistry);
+			Map<String, Object> fields = getStaticFields(registry);
 			Byte = fields.get("a");
 			Integer = fields.get("b");
 			Float = fields.get("c");

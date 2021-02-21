@@ -27,7 +27,7 @@ public class DataWatcherHelper {
 	 */
 	public DataWatcherHelper(DataWatcher data) {
 		this.data = data;
-		this.registry = NMSHook.registry;
+		this.registry = NMSHook.nms.dataWatcherRegistry;
 	}
 	
 	/**

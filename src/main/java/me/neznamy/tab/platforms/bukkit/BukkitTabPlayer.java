@@ -23,12 +23,19 @@ import us.myles.ViaVersion.api.Via;
 public class BukkitTabPlayer extends ITabPlayer {
 
 	private Player player;
+	private Object playerConnection;
 
 	public BukkitTabPlayer(Player p){
 		player = p;
 		world = p.getWorld().getName();
 		try {
-			channel = (Channel) NMSHook.getChannel(player);
+			playerConnection = NMSHook.nms.PLAYER_CONNECTION.get(NMSHook.nms.getHandle.invoke(player));
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
+		}
+		try {
+			if (NMSHook.nms.CHANNEL != null)
+				channel = (Channel) NMSHook.nms.CHANNEL.get(NMSHook.nms.NETWORK_MANAGER.get(playerConnection));
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
@@ -78,14 +85,13 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public long getPing() {
-		int ping;
 		try {
-			ping = NMSHook.getPing(player);
+			int ping = NMSHook.nms.PING.getInt(NMSHook.nms.getHandle.invoke(player));
+			if (ping > 10000 || ping < 0) ping = -1;
+			return ping;
 		} catch (Exception e) {
 			return -1;
 		}
-		if (ping > 10000 || ping < 0) ping = -1;
-		return ping;
 	}
 
 	@Override
@@ -96,7 +102,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 				return;
 			}
-			NMSHook.sendPacket(player, nmsPacket);
+			NMSHook.nms.sendPacket.invoke(playerConnection, nmsPacket);
 		} catch (Throwable e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
