@@ -337,4 +337,6 @@ public interface TabPlayer {
 	public void setOtherPluginScoreboard(String objectiveName);
 	
 	public String getOtherPluginScoreboard();
+	
+	public boolean isOnline();
 }

@@ -133,4 +133,9 @@ public class BungeeTabPlayer extends ITabPlayer {
 		if (!attributes.containsKey("invisible")) return false;
 		return Boolean.parseBoolean(attributes.get("invisible"));
 	}
+
+	@Override
+	public boolean isOnline() {
+		return player.isConnected();
+	}
 }

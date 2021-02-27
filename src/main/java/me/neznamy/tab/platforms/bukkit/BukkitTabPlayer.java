@@ -159,4 +159,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Player getPlayer() {
 		return player;
 	}
+
+	@Override
+	public boolean isOnline() {
+		return player.isOnline();
+	}
 }
