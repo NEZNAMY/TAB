@@ -330,7 +330,7 @@ public class FeatureManager {
 	public boolean onHeaderFooter(TabPlayer packetReceiver, Object packet) throws Exception {
 		long time = System.nanoTime();
 		PacketPlayOutPlayerListHeaderFooter display = tab.getPacketBuilder().readHeaderFooter(packet, packetReceiver.getVersion());
-		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
+		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_HEADER_FOOTER, System.nanoTime()-time);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof HeaderFooterPacketListener)) continue;
 			time = System.nanoTime();
