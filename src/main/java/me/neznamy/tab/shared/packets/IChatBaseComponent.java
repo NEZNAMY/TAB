@@ -418,7 +418,7 @@ public class IChatBaseComponent {
 	public static IChatBaseComponent fromString(String json) {
 		try {
 			if (json == null) return null;
-			if (json.startsWith("\"") && json.endsWith("\"")) {
+			if (json.startsWith("\"") && json.endsWith("\"") && json.length() > 1) {
 				//simple component with only text used, minecraft serializer outputs the text in quotes instead of full json
 				return new IChatBaseComponent(json.substring(1, json.length()-1));
 			}
