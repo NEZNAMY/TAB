@@ -90,13 +90,13 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 	
 	private boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorldName())) return true;
-		String viewerWorldGroup = viewer.getWorldName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
-		String targetWorldGroup = displayed.getWorldName() + "-default";
+		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(((Player)viewer.getPlayer()).getWorld().getName())) return true;
+		String viewerWorldGroup = ((Player)viewer.getPlayer()).getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
+		String targetWorldGroup = ((Player)displayed.getPlayer()).getWorld().getName() + "-default";
 		for (String group : sharedWorlds.keySet()) {
 			if (sharedWorlds.get(group) != null) {
-				if (sharedWorlds.get(group).contains(viewer.getWorldName())) viewerWorldGroup = group;
-				if (sharedWorlds.get(group).contains(displayed.getWorldName())) targetWorldGroup = group;
+				if (sharedWorlds.get(group).contains(((Player)viewer.getPlayer()).getWorld().getName())) viewerWorldGroup = group;
+				if (sharedWorlds.get(group).contains(((Player)displayed.getPlayer()).getWorld().getName())) targetWorldGroup = group;
 			}
 		}
 		return viewerWorldGroup.equals(targetWorldGroup);
