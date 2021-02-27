@@ -26,9 +26,14 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		User user;
+		try {
+			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		} catch (IllegalStateException e) {
+			return e.getMessage();
+		}
 		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrimaryGroup)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrimaryGroup");
 			return "<null>";
 		}
 		return user.getPrimaryGroup();
@@ -37,9 +42,14 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
 		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
-		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		User user;
+		try {
+			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		} catch (IllegalStateException e) {
+			return new String[] {e.getMessage()};
+		}
 		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getAllGroups)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getAllGroups");
 			return new String[] {"<null>"};
 		}
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
@@ -48,9 +58,14 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getPrefix(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		User user;
+		try {
+			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		} catch (IllegalStateException e) {
+			return e.getMessage();
+		}
 		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getPrefix)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrefix");
 			return "";
 		}
 		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
@@ -62,9 +77,14 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getSuffix(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-		User user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		User user;
+		try {
+			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
+		} catch (IllegalStateException e) {
+			return e.getMessage();
+		}
 		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ") (func: getSuffix)");
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getSuffix");
 			return "";
 		}
 		Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
