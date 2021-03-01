@@ -109,7 +109,7 @@ public class ErrorManager {
 			error = error.getCause();
 		}
 		try {
-			if (!file.exists()) file.createNewFile();
+			if (!createFile(file)) return;
 			if (file.length() > 1000000) return; //not going over 1 MB
 			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 			if (message != null) {
@@ -129,6 +129,23 @@ public class ErrorManager {
 			if (error != null) error.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Creates the file if it does not exist. Returns true if file already existed or creation was successful
+	 * or false if file does not exist and creation failed due to an exception which is then printed into console
+	 * @param file - file to create
+	 * @return true if file already exists / was successfully created, false if creation failed due to an IOException
+	 */
+	private boolean createFile(File file) {
+		if (file.exists()) return true;
+		try {
+			file.createNewFile();
+			return true;
+		} catch (IOException e) {
+			tab.getPlatform().sendConsoleMessage("&c[TAB] Failed to create file " + file.getPath() + ": " + e.getMessage(), true);
+			return false;
+		}
+	}
 
 	/**
 	 * Writes message into buffer and console if set
@@ -142,7 +159,7 @@ public class ErrorManager {
 		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(message, true);
 	}
 	
-	private static String removeColors(String text) {
+	private String removeColors(String text) {
 		StringBuilder sb = new StringBuilder();
 		for (int i=0; i<text.length(); i++) {
 			char c = text.charAt(i);
