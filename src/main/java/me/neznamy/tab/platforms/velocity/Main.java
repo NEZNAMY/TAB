@@ -63,7 +63,7 @@ public class Main {
 			public void execute(CommandSource sender, String[] args) {
 				if (TAB.getInstance().isDisabled()) {
 					for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Identity.nil(), Component.text(TAB.getInstance().getPlaceholderManager().color(message)));
+						sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
 					}
 				} else {
 					TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);

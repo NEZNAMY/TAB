@@ -66,7 +66,7 @@ public class Main extends Plugin {
 		public void execute(CommandSender sender, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(TAB.getInstance().getPlaceholderManager().color(message));
+					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
 				TAB.getInstance().command.execute(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);

@@ -29,7 +29,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginCommand("tab").setExecutor((sender, c, cmd, args) -> {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(TAB.getInstance().getPlaceholderManager().color(message));
+					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
 				TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
