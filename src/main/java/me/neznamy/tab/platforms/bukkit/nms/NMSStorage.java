@@ -227,6 +227,8 @@ public class NMSStorage {
 	 */
 	public void initializeClasses() throws Exception {
 		DataWatcher = getNMSClass("DataWatcher");
+		//1.9+; v1_8_R2 & v1_8_R3; 1.7 - v1_8_R1
+		DataWatcherItem = getNMSClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
 		EnumChatFormat = (Class<Enum>) getNMSClass("EnumChatFormat");
 		IChatBaseComponent = getNMSClass("IChatBaseComponent");
 		PacketPlayInUseEntity = getNMSClass("PacketPlayInUseEntity");
@@ -241,43 +243,29 @@ public class NMSStorage {
 		PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
 		PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
 		PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
-		try {
-			//v1_8_R2+
-			ChatSerializer = getNMSClass("IChatBaseComponent$ChatSerializer");
-		} catch (ClassNotFoundException e) {
-			//1.7 - 1.8.0
-			ChatSerializer = getNMSClass("ChatSerializer");
-		}
+		
+		//v1_8_R2+; //1.7 - 1.8.0
+		ChatSerializer = getNMSClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
 		if (minorVersion >= 8) {
-			//1.8+
 			GameProfile = Class.forName("com.mojang.authlib.GameProfile");
 			PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
 			PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 			PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
-			try {
-				//v1_8_R2+
-				EnumPlayerInfoAction = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
-				PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
-				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay");
-				EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
-			} catch (ClassNotFoundException e) {
-				//v1_8_R1
-				EnumPlayerInfoAction = (Class<Enum>) getNMSClass("EnumPlayerInfoAction");
-				PlayerInfoData = getNMSClass("PlayerInfoData");
-				EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("EnumScoreboardHealthDisplay");
-				EnumTitleAction = (Class<Enum>) getNMSClass("EnumTitleAction");
-			}
-			try {
-				EnumGamemode = (Class<Enum>) getNMSClass("EnumGamemode");
-			} catch (ClassNotFoundException e) {
-				//v1_8_R2 - v1_9_R2
-				EnumGamemode = (Class<Enum>) getNMSClass("WorldSettings$EnumGamemode");
-			}
+			
+			//v1_8_R2+; v1_8_R1
+			EnumPlayerInfoAction = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+			PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+			EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
+			EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
+			
+			//everything; v1_8_R2 - v1_9_R2
+			EnumGamemode = (Class<Enum>) getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
+			
+			//1.13+; 1_8_R2 - 1.12; 1_8_R1
+			EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
 		}
 		if (minorVersion >= 9) {
-			//1.9+
-			DataWatcherItem = getNMSClass("DataWatcher$Item");
 			DataWatcherObject = getNMSClass("DataWatcherObject");
 			DataWatcherRegistry = getNMSClass("DataWatcherRegistry");
 			PacketPlayOutBoss = getNMSClass("PacketPlayOutBoss");
@@ -287,28 +275,9 @@ public class NMSStorage {
 			PacketPlayOutMount = getNMSClass("PacketPlayOutMount");
 		} else {
 			PacketPlayOutAttachEntity = getNMSClass("PacketPlayOutAttachEntity");
-			try {
-				//v1_8_R2, v1_8_R3
-				DataWatcherItem = getNMSClass("DataWatcher$WatchableObject");
-			} catch (ClassNotFoundException e) {
-				//v1_8_R1-
-				DataWatcherItem = getNMSClass("WatchableObject");
-			}
 		}
 		if (minorVersion >= 12) {
-			//1.12+
 			ChatMessageType = (Class<Enum>) getNMSClass("ChatMessageType");
-		}
-		if (minorVersion >= 13) {
-			EnumScoreboardAction = (Class<Enum>) getNMSClass("ScoreboardServer$Action");
-		} else if (minorVersion >= 8) {
-			try {
-				//v1_8_R2+
-				EnumScoreboardAction = (Class<Enum>) getNMSClass("PacketPlayOutScoreboardScore$EnumScoreboardAction");
-			} catch (ClassNotFoundException e) {
-				//v1_8_R1
-				EnumScoreboardAction = (Class<Enum>) getNMSClass("EnumScoreboardAction");
-			}
 		}
 	}
 
@@ -532,6 +501,16 @@ public class NMSStorage {
 		}
 	}
 
+	private Class<?> getNMSClass(String... names) throws ClassNotFoundException {
+		for (String name : names) {
+			try {
+				return getNMSClass(name);
+			} catch (ClassNotFoundException e) {
+			}
+		}
+		throw new ClassNotFoundException("No class found with possible names " + names);
+	}
+	
 	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		try {
 			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
