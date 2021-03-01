@@ -82,24 +82,25 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		return usedPlaceholders;
 	}
 
-	private String getValue(TabPlayer p, String name) {
+	private String getValue(TabPlayer p, String property) {
 		String worldGroup = tab.getConfiguration().getWorldGroupOf(p.getWorldName());
-		StringBuilder rawValue = new StringBuilder();
-		List<String> lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("Users." + p.getName() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("Users." + p.getUniqueId().toString() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList("Groups." + p.getGroup() + "." + name);
-		if (lines == null) lines = tab.getConfiguration().config.getStringList(name);
-		if (lines == null) lines = new ArrayList<String>();
-		int i = 0;
-		for (String line : lines) {
-			if (++i > 1) rawValue.append("\n\u00a7r");
-			rawValue.append(line);
+		String[] priorities = {
+				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + property,
+				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + property,
+				"Users." + p.getName() + "." + property,
+				"Users." + p.getUniqueId().toString() + "." + property,
+				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + property,
+				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + "." + property,
+				"Groups." + p.getGroup() + "." + property,
+				property
+		};
+		List<String> lines = null;
+		for (String path : priorities) {
+			lines = tab.getConfiguration().config.getStringList(path);
+			if (lines != null) break;
 		}
-		return rawValue.toString();
+		if (lines == null) lines = new ArrayList<String>();
+		return String.join("\n\u00a7r", lines);
 	}
 	
 	@Override
