@@ -37,14 +37,14 @@ public class NMSHook {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
 				return true;
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] This plugin version does not claim to support your server version. This jar has only been tested on 1.7.x - 1.16.4. Disabling.");
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] This plugin version does not claim to support your server version. This jar has only been tested on 1.7.x - 1.16.5. Disabling.");
 			}
 		} catch (Throwable e) {
 			if (SUPPORTED_VERSIONS.contains(serverPackage)) {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
 				e.printStackTrace();
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.7.x - 1.16.4. Disabling.");
+				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.7.x - 1.16.5. Disabling.");
 			}
 		}
 		return false;
