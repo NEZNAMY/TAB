@@ -587,13 +587,10 @@ public class IChatBaseComponent {
 				try {
 					String hex = text.substring(i+1, i+7);
 					TextColor color;
-					try {
-						if (text.charAt(i+7) != '|') throw new Exception();
-						EnumChatFormat legacyColor = EnumChatFormat.getByChar(text.charAt(i+8));
-						if (legacyColor == null) throw new Exception();
-						color = new TextColor(hex, legacyColor);
+					if (containsLegacyCode(text, i)) {
+						color = new TextColor(hex, EnumChatFormat.getByChar(text.charAt(i+8)));
 						i += 8;
-					} catch (Exception e) {
+					} else {
 						color = new TextColor(hex); //the validation check is in constructor
 						i += 6;
 					}
@@ -616,6 +613,11 @@ public class IChatBaseComponent {
 		component.setText(builder.toString());
 		components.add(component);
 		return new IChatBaseComponent("").setExtra(components);
+	}
+	
+	private static boolean containsLegacyCode(String text, int i) {
+		if (text.charAt(i+7) != '|') return false;
+		return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
 	}
 
 	/**
