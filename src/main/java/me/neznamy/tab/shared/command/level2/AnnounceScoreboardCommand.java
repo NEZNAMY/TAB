@@ -46,6 +46,10 @@ public class AnnounceScoreboardCommand extends SubCommand{
 			sender.sendMessage("Scoreboard not found", false);
 			return;
 		}
+		announce(feature, sb, duration);
+	}
+	
+	private void announce(ScoreboardManager feature, Scoreboard sb, int duration) {
 		new Thread(() -> {
 			try {
 				feature.announcement = sb;
