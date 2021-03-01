@@ -18,6 +18,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NMSStorage {
 
+	private static NMSStorage instance;
 	private Map<String, String> thermosFieldMappings = new HashMap<String, String>();
 	
 	public DataWatcherRegistry dataWatcherRegistry;
@@ -213,6 +214,14 @@ public class NMSStorage {
 		initializeFields();
 		initializeMethods();
 		dataWatcherRegistry = new DataWatcherRegistry(DataWatcherRegistry);
+	}
+	
+	public static void setInstance(NMSStorage instance) {
+		NMSStorage.instance = instance;
+	}
+	
+	public static NMSStorage getInstance() {
+		return instance;
 	}
 
 	private void loadThermosMappings() {

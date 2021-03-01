@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 
@@ -59,7 +58,7 @@ public class DataWatcher {
 	 * @throws Exception - if something fails
 	 */
 	public Object toNMS() throws Exception {
-		NMSStorage nms = NMSHook.nms;
+		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
 		for (DataWatcherItem item : dataValues.values()) {
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {

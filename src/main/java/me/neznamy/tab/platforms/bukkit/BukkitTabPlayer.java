@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
-import me.neznamy.tab.platforms.bukkit.nms.NMSHook;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -29,13 +29,13 @@ public class BukkitTabPlayer extends ITabPlayer {
 		player = p;
 		world = p.getWorld().getName();
 		try {
-			playerConnection = NMSHook.nms.PLAYER_CONNECTION.get(NMSHook.nms.getHandle.invoke(player));
+			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(NMSStorage.getInstance().getHandle.invoke(player));
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
 		}
 		try {
-			if (NMSHook.nms.CHANNEL != null)
-				channel = (Channel) NMSHook.nms.CHANNEL.get(NMSHook.nms.NETWORK_MANAGER.get(playerConnection));
+			if (NMSStorage.getInstance().CHANNEL != null)
+				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
@@ -86,7 +86,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public long getPing() {
 		try {
-			int ping = NMSHook.nms.PING.getInt(NMSHook.nms.getHandle.invoke(player));
+			int ping = NMSStorage.getInstance().PING.getInt(NMSStorage.getInstance().getHandle.invoke(player));
 			if (ping > 10000 || ping < 0) ping = -1;
 			return ping;
 		} catch (Exception e) {
@@ -102,7 +102,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 				return;
 			}
-			NMSHook.nms.sendPacket.invoke(playerConnection, nmsPacket);
+			NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 		} catch (Throwable e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
@@ -149,7 +149,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		try {
-			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSHook.nms.getProfile.invoke(NMSHook.nms.getHandle.invoke(player)));
+			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getProfile.invoke(NMSStorage.getInstance().getHandle.invoke(player)));
 		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}
