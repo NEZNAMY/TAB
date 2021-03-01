@@ -59,29 +59,12 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		boolean emptyBefore = scoreproperty.get().length() == 0;
 		if (!scoreproperty.update() && !force) return null;
 		String replaced = scoreproperty.get();
-		String prefix;
-		String suffix;
-		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
-		int charLimit = TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
-				ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
-				p.getVersion().getMinorVersion() < 13 ? 14 : 16;
-				
 		if (p.getVersion().getMinorVersion() < 16) {
 			replaced = IChatBaseComponent.fromColoredText(replaced).toLegacyText(); //converting RGB to legacy here to avoid splitting in the middle of RGB code
 		}
-		if (replaced.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
-			prefix = replaced.substring(0, charLimit);
-			suffix = replaced.substring(charLimit, replaced.length());
-			if (prefix.charAt(charLimit-1) == '\u00a7') {
-				prefix = prefix.substring(0, charLimit-1);
-				suffix = '\u00a7' + suffix;
-			}
-			String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
-			suffix = last + suffix;
-		} else {
-			prefix = replaced;
-			suffix = "";
-		}
+		String[] split = split(p, replaced);
+		String prefix = split[0];
+		String suffix = split[1];
 		if (replaced.length() > 0) {
 			if (emptyBefore) {
 				//was "", now it is not
@@ -97,6 +80,29 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			}
 			return null;
 		}
+	}
+	
+	private String[] split(TabPlayer p, String text) {
+		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
+		int charLimit = TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
+			ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
+			p.getVersion().getMinorVersion() < 13 ? 14 : 16;
+		String prefix;
+		String suffix;
+		if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
+			prefix = text.substring(0, charLimit);
+			suffix = text.substring(charLimit, text.length());
+			if (prefix.charAt(charLimit-1) == '\u00a7') {
+				prefix = prefix.substring(0, charLimit-1);
+				suffix = '\u00a7' + suffix;
+			}
+			String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
+			suffix = last + suffix;
+		} else {
+			prefix = text;
+			suffix = "";
+		}
+		return new String[] {prefix, suffix};
 	}
 
 	public abstract int getScoreFor(TabPlayer p);
