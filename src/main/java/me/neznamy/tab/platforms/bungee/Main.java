@@ -1,6 +1,10 @@
 package me.neznamy.tab.platforms.bungee;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+
+import org.bstats.bungeecord.Metrics;
+import org.bstats.charts.SimplePie;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -34,7 +38,17 @@ public class Main extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		plm = new BungeePluginMessageHandler(this);
 		TAB.getInstance().load();
-		new BungeeMetrics(this);
+		Metrics metrics = new Metrics(this, 5305);
+		metrics.addCustomChart(new SimplePie("permission_system", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getPermissionPlugin().getName();
+			}
+		}));
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", new Callable<String>() {
+			public String call() {
+				return TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "TEST" : "TEST";
+			}
+		}));
 	}
 	
 	/**

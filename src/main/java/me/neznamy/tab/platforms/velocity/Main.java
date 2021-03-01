@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bstats.velocity.Metrics;
+
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandManager;
@@ -30,13 +32,13 @@ public class Main {
 	//instance of proxyserver
 	public ProxyServer server;
 	
-	private VelocityMetrics.Factory metricsFactory;
+	private Metrics.Factory metricsFactory;
 
 	//plugin message handler
 	public static PluginMessageHandler plm;
 
 	@Inject
-	public Main(ProxyServer server, VelocityMetrics.Factory metricsFactory) {
+	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
 		this.server = server;
 		this.metricsFactory = metricsFactory;
 	}

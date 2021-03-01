@@ -39,9 +39,19 @@
 							<include>com.googlecode.json-simple:json-simple</include>
 							<include>com.github.NEZNAMY:YamlAssist</include>
 							<include>com.github.NEZNAMY:VelocityPacketInjector</include>
+							<include>org.bstats:bstats-base</include>
+							<include>org.bstats:bstats-bungeecord</include>
+							<include>org.bstats:bstats-velocity</include>
+
 						</includes>
 					</artifactSet>
 
+					<relocations>
+						<relocation>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>me.neznamy.tab.platforms</shadedPattern>
+						</relocation>
+					</relocations>
 
 				</configuration>
 				<executions>
@@ -407,6 +417,22 @@
 					<artifactId>aopalliance</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- Bungee Metrics -->
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bungeecord</artifactId>
+			<version>2.2.1</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Velocity Metrics -->
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-velocity</artifactId>
+			<version>2.2.1</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Missing velocity packets -->
