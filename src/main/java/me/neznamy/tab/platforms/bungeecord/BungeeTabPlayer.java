@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.bungeecord;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungee;
+package me.neznamy.tab.platforms.bungeecord;
 
 import me.neznamy.tab.shared.TAB;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
