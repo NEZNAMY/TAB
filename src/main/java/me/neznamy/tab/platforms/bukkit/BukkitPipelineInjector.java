@@ -33,46 +33,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		}
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
-
-				@Override
-				public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-					try {
-						Object modifiedPacket = tab.getFeatureManager().onPacketReceive(player, packet);
-						if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
-					} catch (Throwable e){
-						tab.getErrorManager().printError("An error occurred when reading packets", e);
-					}
-				}
-
-				@Override
-				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					try {
-						if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
-							super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-							return;
-						}
-						if (tab.getFeatureManager().getNameTagFeature() != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
-							modifyPlayers(packet);
-							super.write(context, packet, channelPromise);
-							return;
-						}
-						if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
-							return;
-						}
-						if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
-							tab.getFeatureManager().onObjective(player, packet);
-						}
-						if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && tab.getFeatureManager().onHeaderFooter(player, packet)) {
-							return;
-						}
-						tab.getFeatureManager().onPacketSend(player, packet);
-					} catch (Throwable e){
-						tab.getErrorManager().printError("An error occurred when reading packets", e);
-					}
-					super.write(context, packet, channelPromise);
-				}
-			});
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BukkitChannelDuplexHandler(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}
@@ -110,5 +71,52 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		}
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+	}
+	
+	public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
+		
+		private TabPlayer player;
+		
+		public BukkitChannelDuplexHandler(TabPlayer player) {
+			this.player = player;
+		}
+
+		@Override
+		public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
+			try {
+				Object modifiedPacket = tab.getFeatureManager().onPacketReceive(player, packet);
+				if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
+			} catch (Throwable e){
+				tab.getErrorManager().printError("An error occurred when reading packets", e);
+			}
+		}
+
+		@Override
+		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+			try {
+				if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
+					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+					return;
+				}
+				if (tab.getFeatureManager().getNameTagFeature() != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+					modifyPlayers(packet);
+					super.write(context, packet, channelPromise);
+					return;
+				}
+				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+					return;
+				}
+				if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+					tab.getFeatureManager().onObjective(player, packet);
+				}
+				if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+					return;
+				}
+				tab.getFeatureManager().onPacketSend(player, packet);
+			} catch (Throwable e){
+				tab.getErrorManager().printError("An error occurred when reading packets", e);
+			}
+			super.write(context, packet, channelPromise);
+		}
 	}
 }

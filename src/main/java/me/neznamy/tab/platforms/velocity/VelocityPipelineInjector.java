@@ -28,41 +28,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 	public void inject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		uninject(player);
-		player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
-
-			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-				try {
-					if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
-						super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-						return;
-					}
-					if (packet instanceof Team && tab.getFeatureManager().isFeatureEnabled("nametag16")) {
-						modifyPlayers((Team) packet);
-						super.write(context, packet, channelPromise);
-						return;
-					}
-					if (packet.getClass().getSimpleName().equals("JoinGame")) {
-						//making sure to not send own packets before join packet is actually sent
-						super.write(context, packet, channelPromise);
-						tab.getFeatureManager().onLoginPacket(player);
-						return;
-					}
-					if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
-						return;
-					}
-					if (packet instanceof ScoreboardObjective) {
-						tab.getFeatureManager().onObjective(player, packet);
-					}
-					//TODO add deserialization
-					if (packet.getClass().getSimpleName().equals("HeaderAndFooter") && tab.getFeatureManager().onHeaderFooter(player, packet)) {
-						return;
-					}
-				} catch (Throwable e){
-					tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-				}
-				super.write(context, packet, channelPromise);
-			}
-		});
+		player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new VelocityChannelDuplexHandler(player));
 	}
 
 	@Override
@@ -89,5 +55,48 @@ public class VelocityPipelineInjector extends PipelineInjector {
 			packet.players = col.toArray(new String[0]);
 		}
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+	}
+	
+	public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
+		
+		private TabPlayer player;
+		
+		public VelocityChannelDuplexHandler(TabPlayer player) {
+			this.player = player;
+		}
+
+		@Override
+		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+			try {
+				if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
+					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+					return;
+				}
+				if (packet instanceof Team && tab.getFeatureManager().isFeatureEnabled("nametag16")) {
+					modifyPlayers((Team) packet);
+					super.write(context, packet, channelPromise);
+					return;
+				}
+				if (packet.getClass().getSimpleName().equals("JoinGame")) {
+					//making sure to not send own packets before join packet is actually sent
+					super.write(context, packet, channelPromise);
+					tab.getFeatureManager().onLoginPacket(player);
+					return;
+				}
+				if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+					return;
+				}
+				if (packet instanceof ScoreboardObjective) {
+					tab.getFeatureManager().onObjective(player, packet);
+				}
+				//TODO add deserialization
+				if (packet.getClass().getSimpleName().equals("HeaderAndFooter") && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+					return;
+				}
+			} catch (Throwable e){
+				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
+			}
+			super.write(context, packet, channelPromise);
+		}
 	}
 }

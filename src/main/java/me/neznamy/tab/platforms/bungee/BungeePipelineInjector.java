@@ -35,68 +35,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new ChannelDuplexHandler() {
-
-				public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
-					try {
-						if (packet instanceof PlayerListItem) {
-							super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-							return;
-						}
-						if (tab.getFeatureManager().isFeatureEnabled("nametag16")) {
-							if (packet instanceof Team) {
-								//team packet coming from a bungeecord plugin
-								modifyPlayers((Team) packet);
-								super.write(context, packet, channelPromise);
-								return;
-							}
-							if (packet instanceof ByteBuf) {
-								long time = System.nanoTime();
-								ByteBuf buf = ((ByteBuf) packet);
-								int marker = buf.readerIndex();
-								int packetId = buf.readByte();
-								if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
-									//team packet sent by backend server, proxy does not deserialize those for whatever reason
-									Team team = new Team();
-									team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-									buf.release();
-									tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-									modifyPlayers(team);
-									super.write(context, team, channelPromise);
-									return;
-								} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
-									//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
-									buf.release();
-									return;
-								}
-								buf.readerIndex(marker);
-							}
-						}
-						if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
-							//TODO add support for serialized packets as above with teams
-							return;
-						}
-						if (packet instanceof ScoreboardObjective) {
-							//TODO add support for serialized packets as above with teams
-							tab.getFeatureManager().onObjective(player, packet);
-						}
-						if (packet instanceof PlayerListHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
-							//TODO add support for serialized packets as above with teams
-							return;
-						}
-						//client reset packet
-						if (packet instanceof Login) {
-							//making sure to not send own packets before login packet is actually sent
-							super.write(context, packet, channelPromise);
-							tab.getFeatureManager().onLoginPacket(player);
-							return;
-						}
-					} catch (Throwable e){
-						tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-					}
-					super.write(context, packet, channelPromise);
-				}
-			});
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BungeeChannelDuplexHandler(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}
@@ -126,5 +65,75 @@ public class BungeePipelineInjector extends PipelineInjector {
 			packet.setPlayers(col.toArray(new String[0]));
 		}
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+	}
+	
+	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
+		
+		private TabPlayer player;
+		
+		public BungeeChannelDuplexHandler(TabPlayer player) {
+			this.player = player;
+		}
+
+		@Override
+		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+			try {
+				if (packet instanceof PlayerListItem) {
+					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+					return;
+				}
+				if (tab.getFeatureManager().isFeatureEnabled("nametag16")) {
+					if (packet instanceof Team) {
+						//team packet coming from a bungeecord plugin
+						modifyPlayers((Team) packet);
+						super.write(context, packet, channelPromise);
+						return;
+					}
+					if (packet instanceof ByteBuf) {
+						long time = System.nanoTime();
+						ByteBuf buf = ((ByteBuf) packet);
+						int marker = buf.readerIndex();
+						int packetId = buf.readByte();
+						if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
+							//team packet sent by backend server, proxy does not deserialize those for whatever reason
+							Team team = new Team();
+							team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+							buf.release();
+							tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+							modifyPlayers(team);
+							super.write(context, team, channelPromise);
+							return;
+						} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
+							//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
+							buf.release();
+							return;
+						}
+						buf.readerIndex(marker);
+					}
+				}
+				if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+					//TODO add support for serialized packets as above with teams
+					return;
+				}
+				if (packet instanceof ScoreboardObjective) {
+					//TODO add support for serialized packets as above with teams
+					tab.getFeatureManager().onObjective(player, packet);
+				}
+				if (packet instanceof PlayerListHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+					//TODO add support for serialized packets as above with teams
+					return;
+				}
+				//client reset packet
+				if (packet instanceof Login) {
+					//making sure to not send own packets before login packet is actually sent
+					super.write(context, packet, channelPromise);
+					tab.getFeatureManager().onLoginPacket(player);
+					return;
+				}
+			} catch (Throwable e){
+				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
+			}
+			super.write(context, packet, channelPromise);
+		}
 	}
 }
