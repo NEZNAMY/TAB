@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.Collection;
 
 import com.google.common.collect.Lists;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardDisplay;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective;
 import com.velocitypowered.proxy.protocol.packet.Team;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -42,6 +40,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 	 * @param packet - packet to modify
 	 */
 	private void modifyPlayers(Team packet){
+		if (!tab.getFeatureManager().isFeatureEnabled("nametag16")) return;
 		long time = System.nanoTime();
 		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
@@ -56,11 +55,11 @@ public class VelocityPipelineInjector extends PipelineInjector {
 		}
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
-	
+
 	public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
-		
+
 		private TabPlayer player;
-		
+
 		public VelocityChannelDuplexHandler(TabPlayer player) {
 			this.player = player;
 		}
@@ -68,35 +67,42 @@ public class VelocityPipelineInjector extends PipelineInjector {
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 			try {
-				if (packet.getClass().getSimpleName().equals("PlayerListItem")) {
+				switch (packet.getClass().getSimpleName()) {
+				case "PlayerListItem":
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
-				}
-				if (packet instanceof Team && tab.getFeatureManager().isFeatureEnabled("nametag16")) {
+				case "Team":
 					modifyPlayers((Team) packet);
 					super.write(context, packet, channelPromise);
 					return;
-				}
-				if (packet.getClass().getSimpleName().equals("JoinGame")) {
+				case "JoinGame":
 					//making sure to not send own packets before join packet is actually sent
 					super.write(context, packet, channelPromise);
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
-				}
-				if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+				case "ScoreboardDisplay":
+					if (!tab.getFeatureManager().onDisplayObjective(player, packet)) {
+						super.write(context, packet, channelPromise);
+					}
 					return;
-				}
-				if (packet instanceof ScoreboardObjective) {
+				case "ScoreboardObjective":
 					tab.getFeatureManager().onObjective(player, packet);
-				}
-				//TODO add deserialization
-				if (packet.getClass().getSimpleName().equals("HeaderAndFooter") && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+					super.write(context, packet, channelPromise);
+					return;
+				case "HeaderAndFooter":
+					//TODO add deserialization
+					if (!tab.getFeatureManager().onHeaderFooter(player, packet)) {
+						super.write(context, packet, channelPromise);
+					}
+					return;
+				default:
+					super.write(context, packet, channelPromise);
 					return;
 				}
 			} catch (Throwable e){
+				super.write(context, packet, channelPromise);
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
-			super.write(context, packet, channelPromise);
 		}
 	}
 }
