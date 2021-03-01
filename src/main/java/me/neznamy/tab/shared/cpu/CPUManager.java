@@ -246,8 +246,15 @@ public class CPUManager {
 			usage = new ConcurrentHashMap<UsageType, Long>();
 			featureUsageCurrent.put(feature, usage);
 		}
-		if (!usage.containsKey(type)) {
-			usage.put(type, 0L);
+		try {
+			if (!usage.containsKey(type)) {
+				usage.put(type, 0L);
+			}
+		} catch (NullPointerException e) {
+			//java.lang.NullPointerException: null
+			//at java.base/java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
+			//at java.base/java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
+			return;
 		}
 		Long current = usage.get(type);
 		if (current == null) {
