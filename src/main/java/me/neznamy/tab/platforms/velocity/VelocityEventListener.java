@@ -61,8 +61,6 @@ public class VelocityEventListener {
 	@Subscribe
 	public void onCommand(CommandExecuteEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		if (e.getCommandSource() instanceof Player) {
-			if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
-		}
+		if (e.getCommandSource() instanceof Player && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
 	}
 }
