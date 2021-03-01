@@ -44,10 +44,8 @@ public class DebugCommand extends SubCommand {
 	 * @param sender - command sender or null if console
 	 * @param analyzed - player to be analyzed
 	 */
-	@SuppressWarnings("unchecked")
 	private void debug(TabPlayer sender, TabPlayer analyzed) {
 		TAB tab = TAB.getInstance();
-		GroupRefresher group = (GroupRefresher) tab.getFeatureManager().getFeature("group");
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
 		sendMessage(sender, "&6Server version: &a" + tab.getPlatform().getServerVersion());
@@ -56,54 +54,13 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&6" + tab.getErrorManager().errorLog.getPath() + " size: &c" + tab.getErrorManager().errorLog.length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6Permission plugin: &a" + tab.getPermissionPlugin().getName());
-		if (group.groupsByPermissions) {
-			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions");
-		} else if (group.usePrimaryGroup) {
-			sendMessage(sender, "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions");
-		} else {
-			sendMessage(sender, "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions");
-		}
-
-		NameTag nametag = tab.getFeatureManager().getNameTagFeature();
-		String sortingType;
-
-		if (nametag != null) {
-			if (tab.isPremium()) {
-				sortingType = nametag.sorting.typesToString();
-				if (sortingType.contains("PLACEHOLDER")) sortingType += " - " + nametag.sorting.sortingPlaceholder;
-			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
-				sortingType = "Permissions &c(this option was enabled by user, it is disabled by default!)";
-			} else {
-				sortingType = "Groups";
-			}
-		} else {
-			sortingType = "&cDISABLED";
-		}
-		sendMessage(sender, "&6Sorting system: &a" + sortingType);
+		sendMessage(sender, getGroupChoiceLogic());
+		sendMessage(sender, "&6Sorting system: &a" + getSortingType());
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed == null) return;
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
-		if (group.groupsByPermissions) {
-			sendMessage(sender, "&eHighest permission for group: &a" + analyzed.getGroup());
-		} else if (group.usePrimaryGroup) {
-			sendMessage(sender, "&ePrimary permission group: &a" + analyzed.getGroup());
-		} else {
-			try {
-				sendMessage(sender, "&eFull permission group list: &a" + Arrays.toString(tab.getPermissionPlugin().getAllGroups(analyzed)));
-			} catch (Throwable e) {
-				sendMessage(sender, "&eFull permission group list: &a[]");
-			}
-			sendMessage(sender, "&eChosen group: &a" + analyzed.getGroup());
-		}
-
-		if (nametag != null) {
-			if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
-				sendMessage(sender, "&eTeam name: &cSorting disabled in player's " + tab.getPlatform().getSeparatorType());
-			} else {
-				sendMessage(sender, "&eTeam name: &a" + analyzed.getTeamName());
-				if (analyzed.getTeamNameNote() != null) sendMessage(sender, "&eTeam name note: &a" + analyzed.getTeamNameNote());
-			}
-		}
+		sendMessage(sender, getGroup(analyzed));
+		sendMessage(sender, getTeamName(analyzed));
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.disabledWorlds, analyzed.getWorldName());
@@ -119,23 +76,85 @@ public class DebugCommand extends SubCommand {
 			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
-			if (tab.getFeatureManager().isFeatureEnabled("nametagx")) {
-				showProperty(sender, analyzed, "customtagname", disabledNametags);
-				List<Object> lines;
-				if (tab.isPremium()) {
-					lines = Lists.newArrayList((List<Object>) tab.getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
-					lines.addAll(tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
-				} else {
-					lines = Arrays.asList("belowname", "nametag", "abovename");
-				}
-				for (Object line : lines) {
-					if (line.toString().equals("nametag")) continue;
-					showProperty(sender, analyzed, line+"", disabledNametags);
-				}
+			for (Object line : getExtraLines(analyzed)) {
+				showProperty(sender, analyzed, line+"", disabledNametags);
 			}
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
 			sendMessage(sender, "&atagsuffix: &cDisabled");
+		}
+		sendMessage(sender, "&7&m>-------------------------------<");
+	}
+	
+	private String getGroupChoiceLogic() {
+		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
+		if (group.groupsByPermissions) {
+			return "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions";
+		} else if (group.usePrimaryGroup) {
+			return "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions";
+		} else {
+			return "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions";
+		}
+	}
+	
+	private String getSortingType() {
+		NameTag nametag = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		if (nametag != null) {
+			if (TAB.getInstance().isPremium()) {
+				String sortingType = nametag.sorting.typesToString();
+				if (sortingType.contains("PLACEHOLDER")) {
+					sortingType += " - " + nametag.sorting.sortingPlaceholder;
+				}
+				return sortingType;
+			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
+				return "Permissions &c(this option was enabled by user, it is disabled by default!)";
+			} else {
+				return "Groups";
+			}
+		} else {
+			return "&cDISABLED";
+		}
+	}
+	
+	private String getGroup(TabPlayer analyzed) {
+		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
+		if (group.groupsByPermissions) {
+			return "&eHighest permission for group: &a" + analyzed.getGroup();
+		} else if (group.usePrimaryGroup) {
+			return "&ePrimary permission group: &a" + analyzed.getGroup();
+		} else {
+			try {
+				return "&eFull permission group list: &a" + Arrays.toString(TAB.getInstance().getPermissionPlugin().getAllGroups(analyzed)) + "\n&eChosen group: &a" + analyzed.getGroup();
+			} catch (Throwable e) {
+				return "&eFull permission group list: &a[]\n&eChosen group: &a" + analyzed.getGroup();
+			}
+		}
+	}
+	
+	private String getTeamName(TabPlayer analyzed) {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null) {
+			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
+				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
+			} else {
+				String s = "&eTeam name: &a" + analyzed.getTeamName();
+				if (analyzed.getTeamNameNote() != null) s += "\n&eTeam name note: &a" + analyzed.getTeamNameNote();
+				return s;
+			}
+		}
+		return "";
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Object> getExtraLines(TabPlayer analyzed){
+		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();
+		if (TAB.getInstance().isPremium()) {
+			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
+			lines.addAll(TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
+			lines.remove("nametag");
+			lines.add("customtagname");
+			return lines;
+		} else {
+			return Arrays.asList("customtagname", "belowname", "abovename");
 		}
 	}
 
