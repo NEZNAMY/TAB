@@ -68,23 +68,31 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (identifier.equals("ntpreview")) {
 			return p.isPreviewingNametag() ? "Enabled" : "Disabled";
 		}
-		if (identifier.startsWith("replace_") && TAB.getInstance().getConfiguration().premiumconfig != null) {
-			String placeholder = "%" + identifier.substring(8) + "%";
-			String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
-			Map<Object, String> replacements = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
-			return Placeholder.findReplacement(replacements, output).replace("%value%", output);
+		if (identifier.startsWith("replace_")) {
+			return findReplacement("%" + identifier.substring(8) + "%", player);
 		}
 		if (identifier.startsWith("placeholder_")) {
 			//using Property function for fast & easy handling of nested placeholders and different placeholder types
 			return new Property(p, "%" + identifier.substring(12) + "%").get();
 		}
-		String placeholder = identifier.replace("_raw", "");
-		Property prop = p.getProperty(placeholder);
+		return getProperty(identifier, p);
+	}
+	
+	private String findReplacement(String placeholder, Player player) {
+		if (!TAB.getInstance().isPremium()) return "Placeholder output replacements require premium version to work";
+		String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
+		Map<Object, String> replacements = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + placeholder);
+		return Placeholder.findReplacement(replacements, output).replace("%value%", output);
+	}
+	
+	private String getProperty(String name, TabPlayer player) {
+		String propName = name.replace("_raw", "");
+		Property prop = player.getProperty(propName);
 		if (prop != null) {
-		    if (identifier.endsWith("_raw")) {
+		    if (name.endsWith("_raw")) {
 		    	return prop.getCurrentRawValue();
 		    }
-		    return prop.lastReplacedValue;
+		    return prop.get();
 		}
 		return null;
 	}
