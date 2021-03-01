@@ -41,6 +41,13 @@ import org.slf4j.Logger;
 
 public class VelocityMetrics {
 
+
+  private final PluginContainer pluginContainer;
+
+  private final ProxyServer server;
+
+  private MetricsBase metricsBase;
+	  
   /** A factory to create new Metrics classes. */
   public static class Factory {
 
@@ -73,12 +80,6 @@ public class VelocityMetrics {
       return new VelocityMetrics(plugin, server, logger, dataDirectory, serviceId);
     }
   }
-
-  private final PluginContainer pluginContainer;
-
-  private final ProxyServer server;
-
-  private MetricsBase metricsBase;
 
   private VelocityMetrics(
       Object plugin, ProxyServer server, Logger logger, Path dataDirectory, int serviceId) {
