@@ -341,7 +341,7 @@ public class FeatureManager {
 		return false;
 	}
 	
-	public boolean onChat(TabPlayer sender, String message) {
+	public boolean onChat(TabPlayer sender, String message, boolean cancelled) {
 		boolean cancel = false;
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof ChatEventListener)) continue;

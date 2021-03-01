@@ -65,7 +65,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
+		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage(), e.isCancelled())) e.setCancelled(true);
 	}
 
 	/**

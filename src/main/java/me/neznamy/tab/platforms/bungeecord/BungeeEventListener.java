@@ -52,7 +52,7 @@ public class BungeeEventListener implements Listener {
 		if (e.getMessage().startsWith("/")) {
 			if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
 		} else {
-			if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+			if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage(), e.isCancelled())) e.setCancelled(true);
 		}
 	}
 }

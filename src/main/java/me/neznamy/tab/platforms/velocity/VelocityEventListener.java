@@ -51,7 +51,7 @@ public class VelocityEventListener {
 	@Subscribe
 	public void onChat(PlayerChatEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setResult(ChatResult.denied());
+		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage(), e.getResult() == PlayerChatEvent.ChatResult.denied())) e.setResult(ChatResult.denied());
 	}
 	
 	/**
