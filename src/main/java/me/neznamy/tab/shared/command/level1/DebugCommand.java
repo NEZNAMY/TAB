@@ -76,7 +76,7 @@ public class DebugCommand extends SubCommand {
 			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
-			for (Object line : getExtraLines(analyzed)) {
+			for (Object line : getExtraLines()) {
 				showProperty(sender, analyzed, line+"", disabledNametags);
 			}
 		} else {
@@ -145,7 +145,7 @@ public class DebugCommand extends SubCommand {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Object> getExtraLines(TabPlayer analyzed){
+	private List<Object> getExtraLines(){
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();
 		if (TAB.getInstance().isPremium()) {
 			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
