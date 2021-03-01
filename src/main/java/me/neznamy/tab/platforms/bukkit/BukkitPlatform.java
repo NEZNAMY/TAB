@@ -80,9 +80,6 @@ public class BukkitPlatform implements Platform {
 		}
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
-				if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) {
-					tab.getErrorManager().startupWarn("Both unlimited nametag mode and belowname features are enabled, this will result in the worst combination: belowname objective not appearing on players, only NPCs. Check wiki for more info.");
-				}
 				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms, tab));
 			} else {
 				tab.getFeatureManager().registerFeature("nametag16", new NameTag16(tab));
