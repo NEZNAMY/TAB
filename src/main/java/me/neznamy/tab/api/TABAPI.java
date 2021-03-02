@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
+import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
  * The primary API class to get instances of other API classes
@@ -170,5 +171,16 @@ public class TABAPI {
 	 */
 	public static Map<String, Placeholder> getAPIPlaceholders(){
 		return APIPlaceholders;
+	}
+	
+	/**
+	 * Registers custom condition type and return true if it was registered or false if it was already registered. Useful since
+	 * /tab reload does not remove registered condition types.
+	 * @param identifier - identifier to detect if condition is of this type
+	 * @param clazz - class that handles the condition
+	 * @return true if it was registered, false if it already was registered before
+	 */
+	public static boolean registerSubCondition(String identifier, Class<? extends SimpleCondition> clazz) {
+		return SimpleCondition.conditionTypes.put(identifier, clazz) == null;
 	}
 }

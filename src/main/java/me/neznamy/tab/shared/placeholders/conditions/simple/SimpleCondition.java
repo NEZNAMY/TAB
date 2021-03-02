@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
  */
 public abstract class SimpleCondition {
 	
-	private static LinkedHashMap<String, Class<? extends SimpleCondition>> conditionTypes = new LinkedHashMap<String, Class<? extends SimpleCondition>>();
+	public static LinkedHashMap<String, Class<? extends SimpleCondition>> conditionTypes = new LinkedHashMap<String, Class<? extends SimpleCondition>>();
 	
 	private String leftSide;
 	private List<String> leftSidePlaceholders;
