@@ -38,7 +38,7 @@ public class Main extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		plm = new BungeePluginMessageHandler(this);
 		TAB.getInstance().load();
-		Metrics metrics = new Metrics(this, 5305);
+		Metrics metrics = new Metrics(this, 10535);
 		metrics.addCustomChart(new SimplePie("permission_system", new Callable<String>() {
 			public String call() {
 				return TAB.getInstance().getPermissionPlugin().getName();
@@ -46,7 +46,7 @@ public class Main extends Plugin {
 		}));
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", new Callable<String>() {
 			public String call() {
-				return TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "TEST" : "TEST";
+				return TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No";
 			}
 		}));
 	}

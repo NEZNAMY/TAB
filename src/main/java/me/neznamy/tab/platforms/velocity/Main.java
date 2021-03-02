@@ -80,7 +80,7 @@ public class Main {
 		});
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
-		metricsFactory.make(this, 10286);
+		metricsFactory.make(this, 10533);
 	}
 
 	/**
