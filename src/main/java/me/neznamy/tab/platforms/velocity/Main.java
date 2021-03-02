@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 
 import com.google.inject.Inject;
@@ -80,7 +81,9 @@ public class Main {
 		});
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
-		metricsFactory.make(this, 10533);
+		Metrics metrics = metricsFactory.make(this, 10533);
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 
 	/**
