@@ -348,11 +348,8 @@ public class BukkitArmorStand implements ArmorStand {
 		return datawatcher;
 	}
 
-	/**
-	 * Returns list of players in entity tracking range (48 blocks)
-	 * @return
-	 */
-	private Set<TabPlayer> getNearbyPlayers(){
+	@Override
+	public Set<TabPlayer> getNearbyPlayers(){
 		synchronized (nearbyPlayers) {
 			return new HashSet<TabPlayer>(nearbyPlayers);
 		}

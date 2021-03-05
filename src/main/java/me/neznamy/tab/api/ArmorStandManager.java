@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A helper class for easy management of armor stands of a player
@@ -68,5 +69,9 @@ public class ArmorStandManager {
 	
 	public Collection<ArmorStand> getArmorStands(){
 		return new ArrayList<>(armorStands.values());
+	}
+	
+	public Set<TabPlayer> getNearbyPlayers(){
+		return armorStands.values().iterator().next().getNearbyPlayers();
 	}
 }

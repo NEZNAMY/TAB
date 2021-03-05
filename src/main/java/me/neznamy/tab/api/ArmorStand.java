@@ -1,5 +1,7 @@
 package me.neznamy.tab.api;
 
+import java.util.Set;
+
 import me.neznamy.tab.shared.Property;
 
 public interface ArmorStand {
@@ -85,4 +87,10 @@ public interface ArmorStand {
 	 * @param addToRegistered - if player should be added to players in range
 	 */
 	public void spawn(TabPlayer viewer);
+	
+	/**
+	 * Returns list of players in entity tracking range (48 blocks)
+	 * @return list of nearby players
+	 */
+	public Set<TabPlayer> getNearbyPlayers();
 }

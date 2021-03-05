@@ -63,15 +63,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 		if (nms.PacketPlayOutEntity.isInstance(packet)) {
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
-		if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
-			onEntityMove(receiver, nms.PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
-		}
-		if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-		}
-		if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
-		}
 		if (nms.PacketPlayOutMount != null && nms.PacketPlayOutMount.isInstance(packet)) {
 			//1.9+ mount detection
 			onMount(receiver, nms.PacketPlayOutMount_VEHICLE.getInt(packet), (int[]) nms.PacketPlayOutMount_PASSENGERS.get(packet));
@@ -97,22 +88,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
-		}
-	}
-
-	public void onEntitySpawn(TabPlayer receiver, int entityId) {
-		if (receiver.getVersion().getMinorVersion() < 8) return;
-		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
-		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
-		if (spawnedPlayer != null && !nameTagX.isDisabledWorld(((Player)spawnedPlayer.getPlayer()).getWorld().getName()) && spawnedPlayer.isLoaded()) 
-			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
-	}
-
-	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
-		for (int id : entities) {
-			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(id);
-			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
-				tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 		}
 	}
 

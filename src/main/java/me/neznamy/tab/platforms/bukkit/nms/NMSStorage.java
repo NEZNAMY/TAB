@@ -142,14 +142,10 @@ public class NMSStorage {
 
 	public Class<?> PacketPlayOutEntityDestroy;
 	public Constructor<?> newPacketPlayOutEntityDestroy;
-	public Field PacketPlayOutEntityDestroy_ENTITIES;
 
 	public Class<?> PacketPlayInUseEntity;
 	public Field PacketPlayInUseEntity_ENTITY;
 	public Field PacketPlayInUseEntity_ACTION;
-
-	public Class<?> PacketPlayOutNamedEntitySpawn;
-	public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
 	public Class<?> PacketPlayOutEntity;
 	public Field PacketPlayOutEntity_ENTITYID;
@@ -246,7 +242,6 @@ public class NMSStorage {
 		PacketPlayOutEntityDestroy = getNMSClass("PacketPlayOutEntityDestroy");
 		PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
 		PacketPlayOutEntityTeleport = getNMSClass("PacketPlayOutEntityTeleport");
-		PacketPlayOutNamedEntitySpawn = getNMSClass("PacketPlayOutNamedEntitySpawn");
 		PacketPlayOutScoreboardDisplayObjective = getNMSClass("PacketPlayOutScoreboardDisplayObjective");
 		PacketPlayOutScoreboardObjective = getNMSClass("PacketPlayOutScoreboardObjective");
 		PacketPlayOutScoreboardScore = getNMSClass("PacketPlayOutScoreboardScore");
@@ -365,8 +360,6 @@ public class NMSStorage {
 		PacketPlayOutEntityTeleport_PITCH = getField(PacketPlayOutEntityTeleport, "f");
 
 		PacketPlayOutEntity_ENTITYID = getField(PacketPlayOutEntity, "a");
-		PacketPlayOutEntityDestroy_ENTITIES = getField(PacketPlayOutEntityDestroy, "a");
-		PacketPlayOutNamedEntitySpawn_ENTITYID = getField(PacketPlayOutNamedEntitySpawn, "a");
 		PacketPlayOutEntityMetadata_LIST = getField(PacketPlayOutEntityMetadata, "b");
 
 		PacketPlayOutSpawnEntityLiving_ENTITYID = getField(PacketPlayOutSpawnEntityLiving, "a");
