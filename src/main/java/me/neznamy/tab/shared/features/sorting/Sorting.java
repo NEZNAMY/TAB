@@ -46,7 +46,7 @@ public class Sorting {
 			}
 		}
 		
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.NAMETAGS, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.SORTING, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
 
 			@Override
 			public void run() {
