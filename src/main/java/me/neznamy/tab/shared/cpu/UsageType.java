@@ -20,10 +20,7 @@ public enum UsageType {
 	//packets
 	ANTI_OVERRIDE("Anti override"),
 	PACKET_READING("Packet reading"),
-	PACKET_MOUNT("PacketPlayOutMount"),
-	PACKET_ENTITY_DESTROY("PacketPlayOutEntityDestroy"),
 	PACKET_ENTITY_MOVE("PacketPlayOutEntity"),
-	PACKET_NAMED_ENTITY_SPAWN("PacketPlayOutNamedEntitySpawn"),
 	PACKET_PLAYER_INFO("PacketPlayOutPlayerInfo"),
 	PACKET_LOGIN("PacketLogin"),
 	PACKET_DISPLAY_OBJECTIVE("PacketPlayOutScoreboardDisplayObjective"),
