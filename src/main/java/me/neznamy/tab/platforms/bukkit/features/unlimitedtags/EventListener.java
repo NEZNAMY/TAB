@@ -40,14 +40,14 @@ public class EventListener implements Listener {
 	public void a(PlayerMoveEvent e) {
 		if (e.getFrom().distance(e.getTo()) == 0) return;
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, () -> processMove(p, e.getTo()));
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void a(PlayerTeleportEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
 		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> processMove(p, e.getTo()));
 	}
 	
