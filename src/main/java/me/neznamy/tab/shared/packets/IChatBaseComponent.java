@@ -705,6 +705,27 @@ public class IChatBaseComponent {
 		}
 		return builder.toString();
 	}
+	
+	/**
+	 * Creates a complete clone of this component and returns it
+	 * @return a clone identical to current component
+	 */
+	public IChatBaseComponent clone() {
+		IChatBaseComponent component = new IChatBaseComponent(text);
+		component.setBold(bold);
+		component.setColor(color);
+		component.setItalic(italic);
+		component.setObfuscated(obfuscated);
+		component.setStrikethrough(strikethrough);
+		component.setUnderlined(underlined);
+		if (hoverAction != null) component.onHover(hoverAction, hoverValue);
+		if (clickAction != null) component.onClick(clickAction, clickValue);
+		if (extra != null) 
+			for (IChatBaseComponent extra : extra) {
+				component.addExtra(extra.clone());
+			}
+		return component;
+	}
 
 	/**
 	 * Returns the most optimized component based on text. Returns null if text is null,
