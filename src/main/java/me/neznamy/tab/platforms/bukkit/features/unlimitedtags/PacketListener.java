@@ -60,7 +60,7 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
-		if (nms.PacketPlayOutEntity.isInstance(packet)) {
+		if (nms.PacketPlayOutEntity.isInstance(packet) && !packet.getClass().getSimpleName().equals("PacketPlayOutEntityLook")) {
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
 		if (nms.PacketPlayOutMount != null && nms.PacketPlayOutMount.isInstance(packet)) {
