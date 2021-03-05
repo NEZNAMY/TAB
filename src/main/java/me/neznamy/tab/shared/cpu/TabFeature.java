@@ -24,7 +24,6 @@ public enum TabFeature {
 	PLACEHOLDER_REFRESHING("Refreshing placeholders"),
 	SORTING("Sorting"),
 	PIPELINE_INJECTION("Pipeline injection"),
-	COMMAND_PROCESSING("Command processing"),
 	PACKET_DESERIALIZING("Packet deserializing"),
 	PACKET_SERIALIZING("Packet serializing"),
 	TABLIST_LAYOUT("Tablist layout"),
