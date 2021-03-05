@@ -346,7 +346,7 @@ public class FeatureManager {
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof ChatEventListener)) continue;
 			long time = System.nanoTime();
-			if (((ChatEventListener)f).onChat(sender, message)) cancel = true;
+			if (((ChatEventListener)f).onChat(sender, message, cancelled)) cancel = true;
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_CHAT_EVENT, System.nanoTime()-time);
 		}
 		return cancel;

@@ -5,5 +5,5 @@ import me.neznamy.tab.shared.features.types.Feature;
 
 public interface ChatEventListener extends Feature {
 
-	public boolean onChat(TabPlayer sender, String message);
+	public boolean onChat(TabPlayer sender, String message, boolean cancelled);
 }
