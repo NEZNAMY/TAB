@@ -37,7 +37,7 @@ public class EventListener implements Listener {
 		this.feature = feature;
 		
 		//tracking vehicle enter & exit, plugins allowing to ride players/entities do not call the events so can't use those
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "tracking vehicles", TabFeature.NAMETAGX, UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "tracking vehicles", TabFeature.NAMETAGX, UsageType.TRACKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (feature.isDisabledWorld(p.getWorldName())) {
