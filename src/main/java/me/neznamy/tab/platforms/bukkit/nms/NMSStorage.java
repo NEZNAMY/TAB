@@ -150,15 +150,6 @@ public class NMSStorage {
 	public Class<?> PacketPlayOutEntity;
 	public Field PacketPlayOutEntity_ENTITYID;
 
-	public Class<?> PacketPlayOutMount;
-	public Field PacketPlayOutMount_VEHICLE;
-	public Field PacketPlayOutMount_PASSENGERS;
-
-	public Class<?> PacketPlayOutAttachEntity;
-	public Field PacketPlayOutAttachEntity_A;
-	public Field PacketPlayOutAttachEntity_PASSENGER;
-	public Field PacketPlayOutAttachEntity_VEHICLE;
-
 	public Class<?> PacketPlayOutEntityTeleport;
 	public Constructor<?> newPacketPlayOutEntityTeleport;
 	public Field PacketPlayOutEntityTeleport_ENTITYID;
@@ -276,9 +267,6 @@ public class NMSStorage {
 			BarColor = (Class<Enum>) getNMSClass("BossBattle$BarColor");
 			BarStyle = (Class<Enum>) getNMSClass("BossBattle$BarStyle");
 			PacketPlayOutBoss_Action = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
-			PacketPlayOutMount = getNMSClass("PacketPlayOutMount");
-		} else {
-			PacketPlayOutAttachEntity = getNMSClass("PacketPlayOutAttachEntity");
 		}
 		if (minorVersion >= 12) {
 			ChatMessageType = (Class<Enum>) getNMSClass("ChatMessageType");
@@ -301,7 +289,6 @@ public class NMSStorage {
 		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
 		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
 		if (minorVersion >= 8) {
-			//1.8+
 			newGameProfile = GameProfile.getConstructor(UUID.class, String.class);
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
 			newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, int.class, int.class, int.class);
@@ -418,9 +405,6 @@ public class NMSStorage {
 			PacketPlayOutSpawnEntityLiving_YAW = getField(PacketPlayOutSpawnEntityLiving, "j");
 			PacketPlayOutSpawnEntityLiving_PITCH = getField(PacketPlayOutSpawnEntityLiving, "k");
 			
-			PacketPlayOutMount_VEHICLE = getField(PacketPlayOutMount, "a");
-			PacketPlayOutMount_PASSENGERS = getField(PacketPlayOutMount, "b");
-			
 			PacketPlayInUseEntity_ACTION = getField(PacketPlayInUseEntity, "action");
 		} else {
 			//1.8-
@@ -430,10 +414,6 @@ public class NMSStorage {
 			PacketPlayOutSpawnEntityLiving_Z = getField(PacketPlayOutSpawnEntityLiving, "e");
 			PacketPlayOutSpawnEntityLiving_YAW = getField(PacketPlayOutSpawnEntityLiving, "i");
 			PacketPlayOutSpawnEntityLiving_PITCH = getField(PacketPlayOutSpawnEntityLiving, "j");
-			
-			PacketPlayOutAttachEntity_A = getField(PacketPlayOutAttachEntity, "a");
-			PacketPlayOutAttachEntity_PASSENGER = getField(PacketPlayOutAttachEntity, "b");
-			PacketPlayOutAttachEntity_VEHICLE = getField(PacketPlayOutAttachEntity, "c");
 			if (minorVersion == 8) {
 				//1.8.x
 				PacketPlayOutScoreboardTeam_VISIBILITY = getField(PacketPlayOutScoreboardTeam, "e");

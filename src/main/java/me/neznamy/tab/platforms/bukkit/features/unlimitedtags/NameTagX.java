@@ -3,11 +3,9 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -56,7 +54,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	//player data by entityId, used for better performance
 	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
-	public Map<Integer, Set<Integer>> vehicles = new ConcurrentHashMap<>();
+	public Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
 	private EventListener eventListener;
 
 	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
@@ -147,11 +145,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	private void loadPassengers(TabPlayer p) {
 		if (((Entity) p.getPlayer()).getVehicle() == null) return;
 		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
-		Set<Integer> list = new HashSet<Integer>();
-		for (Entity e : getPassengers(vehicle)) {
-			list.add(e.getEntityId());
-		}
-		vehicles.put(vehicle.getEntityId(), list);
+		vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
 	}
 
 	@Override
@@ -169,6 +163,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
+		eventListener.onQuit(disconnectedPlayer);
 	}
 
 	@Override
@@ -247,11 +242,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			loadArmorStands(refreshed);
 			if (((Entity) refreshed.getPlayer()).getVehicle() != null) {
 				Entity vehicle = ((Entity) refreshed.getPlayer()).getVehicle();
-				Set<Integer> list = new HashSet<Integer>();
-				for (Entity e : getPassengers(vehicle)) {
-					list.add(e.getEntityId());
-				}
-				vehicles.put(vehicle.getEntityId(), list);
+				vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
 			}
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer == refreshed) continue;

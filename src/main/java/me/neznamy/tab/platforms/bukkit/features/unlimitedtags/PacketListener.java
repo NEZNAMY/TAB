@@ -1,17 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.Arrays;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
-import com.google.common.collect.Sets;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -63,62 +58,24 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !packet.getClass().getSimpleName().equals("PacketPlayOutEntityLook")) {
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
-		if (nms.PacketPlayOutMount != null && nms.PacketPlayOutMount.isInstance(packet)) {
-			//1.9+ mount detection
-			onMount(receiver, nms.PacketPlayOutMount_VEHICLE.getInt(packet), (int[]) nms.PacketPlayOutMount_PASSENGERS.get(packet));
-		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() == 8 && nms.PacketPlayOutAttachEntity.isInstance(packet) && nms.PacketPlayOutAttachEntity_A.getInt(packet) == 0) {
-			//1.8.x mount detection
-			onAttach(receiver, nms.PacketPlayOutAttachEntity_VEHICLE.getInt(packet), nms.PacketPlayOutAttachEntity_PASSENGER.getInt(packet));
-		}
 	}
 
 	public void onEntityMove(TabPlayer receiver, int entityId) {
 		TabPlayer pl = nameTagX.entityIdMap.get(entityId);
-		Set<Integer> vehicleList;
+		List<Entity> vehicleList;
 		if (pl != null) {
 			//player moved
 			if (!pl.isLoaded() || nameTagX.isDisabledWorld(pl.getWorldName())) return;
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
 			//a vehicle carrying something moved
-			for (Integer entity : vehicleList) {
-				TabPlayer passenger = nameTagX.entityIdMap.get(entity);
+			for (Entity entity : vehicleList) {
+				TabPlayer passenger = nameTagX.entityIdMap.get(entity.getEntityId());
 				if (passenger != null && passenger.getArmorStandManager() != null && !nameTagX.isDisabledWorld(passenger.getWorldName())) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
 		}
-	}
-
-	public void onMount(TabPlayer receiver, int vehicle, int[] passengers) {
-		if (passengers.length == 0) {
-			//detach
-			nameTagX.vehicles.remove(vehicle);
-		} else {
-			//attach
-			nameTagX.vehicles.put(vehicle, Arrays.stream(passengers).boxed().collect(Collectors.toSet()));
-		}
-		for (int entity : passengers) {
-			TabPlayer pass = nameTagX.entityIdMap.get(entity);
-			if (pass != null && pass.isLoaded()) tab.getCPUManager().runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, () -> pass.getArmorStandManager().teleport(receiver));
-		}
-	}
-
-	public void onAttach(TabPlayer receiver, int vehicle, int passenger) {
-		if (vehicle != -1) {
-			//attach
-			nameTagX.vehicles.put(vehicle, Sets.newHashSet(passenger));
-		} else {
-			//detach
-			for (Entry<Integer, Set<Integer>> entry : nameTagX.vehicles.entrySet()) {
-				if (entry.getValue().contains(passenger)) {
-					nameTagX.vehicles.remove(entry.getKey());
-				}
-			}
-		}
-		TabPlayer pass = nameTagX.entityIdMap.get(passenger);
-		if (pass != null && pass.isLoaded()) tab.getCPUManager().runMeasuredTask("processing Mount", getFeatureType(), UsageType.PACKET_MOUNT, () -> pass.getArmorStandManager().teleport(receiver));
 	}
 
 	@Override
