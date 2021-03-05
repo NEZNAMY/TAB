@@ -611,4 +611,10 @@ public abstract class ITabPlayer implements TabPlayer {
 	public String getOtherPluginScoreboard() {
 		return otherPluginScoreboard;
 	}
+	
+	@Override
+	public void sendPacket(Object nmsPacket, TabFeature feature) {
+		sendPacket(nmsPacket);
+		TAB.getInstance().getCPUManager().packetSent(feature);
+	}
 }
