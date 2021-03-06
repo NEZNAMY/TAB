@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,7 +19,6 @@ import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
@@ -43,18 +41,16 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	private boolean previewingNametag;
 	private Set<BossBar> activeBossBars = new HashSet<BossBar>();
-	private boolean collision;
 	private Boolean forcedCollision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
 	private Set<UUID> hiddenNametagFor = new HashSet<UUID>();
-	private boolean onBoat;
 
 	private Scoreboard activeScoreboard;
 	private boolean scoreboardVisible;
 	private Scoreboard forcedScoreboard;
 	private String otherPluginScoreboard;
-	
+
 	protected Map<String, String> attributes = new HashMap<String, String>();
 
 	public void init() {
@@ -71,15 +67,9 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 		sendCustomPacket(new PacketPlayOutChat(component));
 	}
-	
+
 	public void sendMessage(IChatBaseComponent message) {
 		sendCustomPacket(new PacketPlayOutChat(message));
-	}
-
-	private boolean getTeamVisibility(TabPlayer viewer) {
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && !onBoat) return false;
-		if (hiddenNametag || (boolean) TAB.getInstance().getConfiguration().getSecretOption("invisible-nametags", false) || hiddenNametagFor.contains(viewer.getUniqueId())) return false;
-		return !TAB.getInstance().getFeatureManager().getNameTagFeature().getInvisiblePlayers().contains(getName());
 	}
 
 	public void setProperty(String identifier, String rawValue, String source) {
@@ -106,7 +96,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public UUID getUniqueId() {
 		return uniqueId;
 	}
-	
+
 	@Override
 	public UUID getTablistUUID() {
 		return uniqueId;
@@ -159,14 +149,16 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void hideNametag() {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
 		hiddenNametag = true;
-		updateTeamData();
+		TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this);
 	}
 
 	@Override
 	public void showNametag() {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
 		hiddenNametag = false;
-		updateTeamData();
+		TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this);
 	}
 
 	@Override
@@ -232,7 +224,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
 		sendPacket(packet.create(getVersion()));
 	}
-	
+
 	@Override
 	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature) {
 		sendPacket(packet.create(getVersion()));
@@ -275,73 +267,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public Channel getChannel() {
 		return channel;
-	}
-
-	@Override
-	public void unregisterTeam() {
-		if (teamName == null) return;
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.NAMETAGS);
-		}
-	}
-
-	@Override
-	public void unregisterTeam(TabPlayer viewer) {
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.NAMETAGS);
-	}
-
-	@Override
-	public void registerTeam() {
-		Property tagprefix = getProperty("tagprefix");
-		Property tagsuffix = getProperty("tagsuffix");
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			String currentPrefix = tagprefix.getFormat(viewer);
-			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, teamName, currentPrefix, currentSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null, TabFeature.NAMETAGS);
-		}
-	}
-
-	@Override
-	public void registerTeam(TabPlayer viewer) {
-		Property tagprefix = getProperty("tagprefix");
-		Property tagsuffix = getProperty("tagsuffix");
-		String replacedPrefix = tagprefix.getFormat(viewer);
-		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, teamName, replacedPrefix, replacedSuffix, getTeamVisibility(viewer), collision, Arrays.asList(getName()), null, TabFeature.NAMETAGS);
-	}
-
-	@Override
-	public void updateTeam() {
-		if (teamName == null) return; //player not loaded yet
-		String newName = TAB.getInstance().getFeatureManager().getNameTagFeature().sorting.getTeamName(this);
-		if (teamName.equals(newName)) {
-			updateTeamData();
-		} else {
-			unregisterTeam();
-			teamName = newName;
-			registerTeam();
-		}
-	}
-
-	@Override
-	public void updateTeamData() {
-		Property tagprefix = getProperty("tagprefix");
-		Property tagsuffix = getProperty("tagsuffix");
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			String currentPrefix = tagprefix.getFormat(viewer);
-			String currentSuffix = tagsuffix.getFormat(viewer);
-			boolean visible = getTeamVisibility(viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69), TabFeature.NAMETAGS);
-		}
-	}
-
-	private void updateTeamData(TabPlayer viewer) {
-		Property tagprefix = getProperty("tagprefix");
-		Property tagsuffix = getProperty("tagsuffix");
-		boolean visible = getTeamVisibility(viewer);
-		String currentPrefix = tagprefix.getFormat(viewer);
-		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, currentPrefix, currentSuffix, visible?"always":"never", collision?"always":"never", 69), TabFeature.NAMETAGS);
 	}
 
 	@Override
@@ -460,17 +385,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void setOnBoat(boolean onBoat) {
-		this.onBoat = onBoat;
-	}
-
-	@Override
-	public boolean isOnBoat() {
-		return onBoat;
-	}
-
-
-	@Override
 	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage) {
 		if (scoreboardVisible == visible) return;
 		scoreboardVisible = visible;
@@ -555,55 +469,44 @@ public abstract class ITabPlayer implements TabPlayer {
 		activeBossBars.remove(line);
 	}
 
+	@Override
 	public void hideNametag(UUID viewer) {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
 		if (hiddenNametagFor.add(viewer)) {
-			updateTeamData(TAB.getInstance().getPlayer(viewer));
+			TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this, TAB.getInstance().getPlayer(viewer));
 			if (armorStandManager != null) armorStandManager.updateVisibility(true);
 		}
 	}
 
+	@Override
 	public void showNametag(UUID viewer) {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
 		if (hiddenNametagFor.remove(viewer)) {
-			updateTeamData(TAB.getInstance().getPlayer(viewer));
+			TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this, TAB.getInstance().getPlayer(viewer));
 			if (armorStandManager != null) armorStandManager.updateVisibility(true);
 		}
 	}
-	
+
+	@Override
 	public boolean hasHiddenNametag(UUID viewer) {
 		return hiddenNametagFor.contains(viewer);
 	}
 
-	public void updateCollision() {
-		if (forcedCollision != null) {
-			if (collision != forcedCollision) {
-				collision = forcedCollision;
-				updateTeamData();
-			}
-		} else {
-			boolean collision = !isDisguised() && TAB.getInstance().getConfiguration().revertedCollision.contains(world) ? !TAB.getInstance().getConfiguration().collisionRule : TAB.getInstance().getConfiguration().collisionRule;
-			if (this.collision != collision) {
-				this.collision = collision;
-				updateTeamData();
-			}
-		}
-	}
-	
-	
 	@Override
 	public void setAttribute(String attribute, String value) {
 		attributes.put(attribute, value);
 	}
-	
+
 	@Override
 	public void setOtherPluginScoreboard(String objectiveName) {
 		this.otherPluginScoreboard = objectiveName;
 	}
-	
+
 	@Override
 	public String getOtherPluginScoreboard() {
 		return otherPluginScoreboard;
 	}
-	
+
 	@Override
 	public void sendPacket(Object nmsPacket, TabFeature feature) {
 		sendPacket(nmsPacket);

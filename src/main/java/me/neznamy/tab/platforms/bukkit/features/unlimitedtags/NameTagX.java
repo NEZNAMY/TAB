@@ -54,8 +54,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	//player data by entityId, used for better performance
 	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
-	public Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
+	public Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<Integer, List<Entity>>();
 	private EventListener eventListener;
+	
+	public List<TabPlayer> playersOnBoats = new ArrayList<TabPlayer>();
 
 	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
 		super(tab);
@@ -82,9 +84,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			all.setTeamName(sorting.getTeamName(all));
 			updateProperties(all);
+			collision.put(all, true);
 			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName())) continue;
-			all.registerTeam();
+			registerTeam(all);
 			loadPassengers(all);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				spawnArmorStands(all, viewer, false);
@@ -98,9 +101,13 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 					p.getArmorStandManager().updateVisibility(false);
 					if (!disableOnBoats) continue;
 					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
-					if (p.isOnBoat() != onBoat) {
-						p.setOnBoat(onBoat);
-						p.updateTeamData();
+					if (onBoat && !playersOnBoats.contains(p)) {
+						playersOnBoats.add(p);
+						updateTeamData(p);
+					}
+					if (!onBoat && playersOnBoats.contains(p)) {
+						playersOnBoats.remove(p);
+						updateTeamData(p);
 					}
 				}
 			}
@@ -111,7 +118,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void unload() {
 		HandlerList.unregisterAll(eventListener);
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
+			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
 			p.getArmorStandManager().destroy();
 		}
 		entityIdMap.clear();
@@ -122,14 +129,15 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
+		collision.put(connectedPlayer, true);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue;
-			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
+			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
 		}
 		loadArmorStands(connectedPlayer);
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
-		connectedPlayer.registerTeam();
+		registerTeam(connectedPlayer);
 		loadPassengers(connectedPlayer);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
@@ -150,8 +158,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
+		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
+		collision.remove(disconnectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
@@ -175,13 +184,14 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		loadPassengers(p);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(p, viewer, true);
+			viewer.getArmorStandManager().destroy(p);
 		}
 		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.unregisterTeam();
+			unregisterTeam(p);
 		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
-			p.registerTeam();
+			registerTeam(p);
 		} else {
-			p.updateTeam();
+			updateTeam(p);
 			p.getArmorStandManager().refresh();
 		}
 	}
@@ -236,7 +246,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			boolean suffix = refreshed.getProperty("tagsuffix").update();
 			refresh = prefix || suffix;
 		}
-		if (refresh) refreshed.updateTeam();
+		if (refresh) updateTeam(refreshed);
 		if (force) {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
@@ -314,5 +324,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	public void onSneak(TabPlayer player, boolean isSneaking) {
 		if (isDisabledWorld(player.getWorldName())) return;
 		player.getArmorStandManager().sneak(isSneaking);
+	}
+
+	@Override
+	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+		return playersOnBoats.contains(p);
 	}
 }

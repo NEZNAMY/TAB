@@ -259,18 +259,6 @@ public interface TabPlayer {
 	
 	public void setArmorStandManager(ArmorStandManager armorStandManager);
 	
-	public void unregisterTeam();
-	
-	public void unregisterTeam(TabPlayer viewer);
-	
-	public void registerTeam();
-	
-	public void registerTeam(TabPlayer viewer);
-	
-	public void updateTeam();
-	
-	public void updateTeamData();
-	
 	public boolean isLoaded();
 	
 	public void markAsLoaded();
@@ -301,13 +289,6 @@ public interface TabPlayer {
 	
 	public boolean isDisguised();
 	
-	
-	
-	
-	public void setOnBoat(boolean onBoat);
-	
-	public boolean isOnBoat();
-	
 	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage);
 	
 	public void toggleScoreboard(boolean sendToggleMessage);
@@ -331,8 +312,6 @@ public interface TabPlayer {
 	public void removeBossBar(BossBar bossbar);
 
 	public void setAttribute(String attribute, String value);
-	
-	public void updateCollision();
 	
 	public void setOtherPluginScoreboard(String objectiveName);
 	

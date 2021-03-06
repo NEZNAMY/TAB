@@ -259,9 +259,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	private boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || (((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).disableOnBoats && owner.isOnBoat())) return false;
+		if (((BukkitTabPlayer)owner).isDisguised() || (((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).playersOnBoats.contains(owner))) return false;
 		if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false)) return true;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0 && !owner.isOnBoat();
+		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
 
 	/**

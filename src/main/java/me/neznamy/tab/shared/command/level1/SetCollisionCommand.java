@@ -21,7 +21,7 @@ public class SetCollisionCommand extends SubCommand {
 			try {
 				boolean value = Boolean.parseBoolean(args[1]);
 				target.setCollisionRule(value);
-				target.updateTeamData();
+				TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(target);
 			} catch (Exception e) {
 				sendMessage(sender, "&c\"" + args[1] + "\" is not a valid true/false value");
 			}

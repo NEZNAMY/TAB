@@ -24,10 +24,11 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 		for (TabPlayer p : tab.getPlayers()) {
 			p.setTeamName(sorting.getTeamName(p));
 			updateProperties(p);
+			collision.put(p, true);
 			if (p.hasInvisibilityPotion()) {
 				invisiblePlayers.add(p.getName());
 			}
-			if (!isDisabledWorld(p.getWorldName())) p.registerTeam();
+			if (!isDisabledWorld(p.getWorldName())) registerTeam(p);
 		}
 		startRefreshingTasks();
 	}
@@ -35,7 +36,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	@Override
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(p.getWorldName())) p.unregisterTeam();
+			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
 		}
 	}
 
@@ -43,19 +44,21 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
+		collision.put(connectedPlayer, true);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue; //already registered 3 lines above
-			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(connectedPlayer);
+			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
 		}
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
-		connectedPlayer.registerTeam();
+		registerTeam(connectedPlayer);
 	}
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) disconnectedPlayer.unregisterTeam();
+		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
+		collision.remove(disconnectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
@@ -66,11 +69,11 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		updateProperties(p);
 		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(from)) {
-			p.unregisterTeam();
+			unregisterTeam(p);
 		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(from)) {
-			p.registerTeam();
+			registerTeam(p);
 		} else {
-			p.updateTeam();
+			updateTeam(p);
 		}
 	}
 
@@ -87,7 +90,7 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 			refresh = prefix || suffix;
 		}
 
-		if (refresh) refreshed.updateTeam();
+		if (refresh) updateTeam(refreshed);
 	}
 
 	private void updateProperties(TabPlayer p) {
@@ -109,7 +112,13 @@ public class NameTag16 extends NameTag implements Loadable, JoinEventListener, Q
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue;
-			if (!isDisabledWorld(all.getWorldName())) all.registerTeam(packetReceiver);
+			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, packetReceiver);
 		}
+	}
+
+	@Override
+	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+		return !p.hasHiddenNametag() && !p.hasHiddenNametag(viewer.getUniqueId()) && 
+			!(boolean) tab.getConfiguration().getSecretOption("invisible-nametags", false) && !invisiblePlayers.contains(p.getName());
 	}
 }

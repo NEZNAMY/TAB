@@ -9,6 +9,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderAtoZ;
@@ -20,6 +21,7 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
 public class Sorting {
 
 	private TAB tab;
+	private NameTag nametags;
 	private Map<String, SortingType> types = new HashMap<String, SortingType>();
 	public String sortingPlaceholder;
 	private boolean caseSensitiveSorting = true;
@@ -54,9 +56,9 @@ public class Sorting {
 					if (!p.isLoaded()) continue;
 					String newName = getTeamName(p);
 					if (!p.getTeamName().equals(newName)) {
-						p.unregisterTeam();
+						nametags.unregisterTeam(p);
 						p.setTeamName(newName);
-						p.registerTeam();
+						nametags.registerTeam(p);
 					}
 				}
 			}
