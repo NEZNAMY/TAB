@@ -200,8 +200,8 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		if (owner == viewer) return; //not displaying own armorstands
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
 		if (getDistance(viewer, owner) <= ENTITY_TRACKING_RANGE) {
-			owner.getArmorStandManager().spawn(viewer);
-			if (sendMutually && viewer.getArmorStandManager() != null) viewer.getArmorStandManager().spawn(owner);
+			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
+			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
 		}
 	}
 

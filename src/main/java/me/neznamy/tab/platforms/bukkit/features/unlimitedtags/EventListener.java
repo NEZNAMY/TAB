@@ -98,18 +98,18 @@ public class EventListener implements Listener {
 			if (other == player || !other.getWorldName().equals(player.getWorldName())) continue;
 			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < ENTITY_TRACKING_RANGE) {
 				//in range
-				if (!player.getArmorStandManager().getNearbyPlayers().contains(other)) {
+				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().spawn(other);
 				}
-				if (!other.getArmorStandManager().getNearbyPlayers().contains(player)) {
+				if (!other.getArmorStandManager().getNearbyPlayers().contains(player) && ((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
 					other.getArmorStandManager().spawn(player);
 				}
 			} else {
 				//out of range
-				if (player.getArmorStandManager().getNearbyPlayers().contains(other)) {
+				if (player.getArmorStandManager().getNearbyPlayers().contains(other) && !((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().destroy(other);
 				}
-				if (other.getArmorStandManager().getNearbyPlayers().contains(player)) {
+				if (other.getArmorStandManager().getNearbyPlayers().contains(player)&& !((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
 					other.getArmorStandManager().destroy(player);
 				}
 			}
