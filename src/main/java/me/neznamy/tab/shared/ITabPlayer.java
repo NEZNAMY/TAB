@@ -61,12 +61,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
 	}
 
-	public abstract boolean hasPermission(String permission);
-
-	public abstract long getPing();
-
-	public abstract void sendPacket(Object nmsPacket);
-
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
 		IChatBaseComponent component;
@@ -81,8 +75,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void sendMessage(IChatBaseComponent message) {
 		sendCustomPacket(new PacketPlayOutChat(message));
 	}
-
-	public abstract Object getSkin();
 
 	private boolean getTeamVisibility(TabPlayer viewer) {
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && !onBoat) return false;
