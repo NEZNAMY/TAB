@@ -6,10 +6,8 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
@@ -63,7 +61,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return;
-		List<PlayerInfoData> v180PrefixBugFixList = new ArrayList<PlayerInfoData>();
 		for (PlayerInfoData playerInfoData : info.entries) {
 			TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
 			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
@@ -74,11 +71,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 					playerInfoData.name = packetPlayer.getName();
 				}
 			}
-			if (ADD && packetPlayer != null && receiver.getVersion() == ProtocolVersion.v1_8) v180PrefixBugFixList.add(playerInfoData.clone());
-		}
-		if (ADD && receiver.getVersion() == ProtocolVersion.v1_8 && !v180PrefixBugFixList.isEmpty()) { //not sending empty packets due to NPCs
-			//1.8.0 bug, sending to all 1.8.x clients as there is no way to find out if they use 1.8.0
-			tab.getCPUManager().runTaskLater(50, "sending PacketPlayOutPlayerInfo", getFeatureType(), UsageType.v1_8_0_BUG_COMPENSATION, () -> receiver.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, v180PrefixBugFixList), getFeatureType()));
 		}
 	}
 
@@ -87,26 +79,21 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		Property name = p.getProperty("customtabname");
 		Property suffix = p.getProperty("tabsuffix");
 		if (prefix == null || name == null || suffix == null) {
-			//			tab.errorManager.printError("TabFormat not initialized for " + p.getName());
+//			tab.errorManager.printError("TabFormat not initialized for " + p.getName());
 			return null;
 		}
 		String format;
 		AlignedSuffix alignedSuffix = (AlignedSuffix) tab.getFeatureManager().getFeature("alignedsuffix");
 		if (alignedSuffix != null) {
-			format = alignedSuffix.fixTextWidth(p, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
+			format = alignedSuffix.formatName(prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
 		} else {
 			format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 		}
-		if (viewer.getVersion().getMinorVersion() >= 9) {
-			return IChatBaseComponent.optimizedComponent(format);
-		} else {
-			//fucking lunar client
-			return new IChatBaseComponent(IChatBaseComponent.fromColoredText(format).toLegacyText());
-		}
+		return IChatBaseComponent.optimizedComponent(format);
 	}
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		//		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
+//		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -118,8 +105,19 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			for (TabPlayer all : tab.getPlayers()) {
-				if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID())), getFeatureType());
+			Property prefix = refreshed.getProperty("tabprefix");
+			Property name = refreshed.getProperty("customtabname");
+			Property suffix = refreshed.getProperty("tabsuffix");
+			for (TabPlayer viewer : tab.getPlayers()) {
+				if (viewer.getVersion().getMinorVersion() < 8) continue;
+				String format;
+				AlignedSuffix alignedSuffix = (AlignedSuffix) tab.getFeatureManager().getFeature("alignedsuffix");
+				if (alignedSuffix != null) {
+					format = alignedSuffix.formatNameAndUpdateLeader(refreshed, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
+				} else {
+					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
+				}
+				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID(), IChatBaseComponent.optimizedComponent(format))), getFeatureType());
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -44,10 +45,9 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		vanishedAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
 		isolateUnlistedServers = tab.getConfiguration().config.getBoolean("global-playerlist.isolate-unlisted-servers", false);
 		for (TabPlayer displayed : tab.getPlayers()) {
-			PacketPlayOutPlayerInfo displayedAddPacket = getAddPacket(displayed);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
-				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(displayedAddPacket, getFeatureType());
+				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), getFeatureType());
 			}
 		}
 	}
@@ -78,14 +78,13 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		PacketPlayOutPlayerInfo addConnected = getAddPacket(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == connectedPlayer) continue;
 			if (shouldSee(all, connectedPlayer)) {
-				all.sendCustomPacket(addConnected, getFeatureType());
+				all.sendCustomPacket(getAddPacket(connectedPlayer, all), getFeatureType());
 			}
 			if (shouldSee(connectedPlayer, all)) {
-				connectedPlayer.sendCustomPacket(getAddPacket(all), getFeatureType());
+				connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), getFeatureType());
 			}
 		}
 	}
@@ -105,17 +104,16 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		PacketPlayOutPlayerInfo addChanged = getAddPacket(p);
 		PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == p) continue;
 			if (shouldSee(all, p)) {
-				all.sendCustomPacket(addChanged, getFeatureType());
+				all.sendCustomPacket(getAddPacket(p, all), getFeatureType());
 			} else {
 				all.sendCustomPacket(removeChanged, getFeatureType());
 			}
 			if (shouldSee(p, all)) {
-				p.sendCustomPacket(getAddPacket(all), getFeatureType());
+				p.sendCustomPacket(getAddPacket(all, p), getFeatureType());
 			} else {
 				p.sendCustomPacket(getRemovePacket(all), getFeatureType());
 			}
@@ -128,9 +126,14 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
 	}
 	
-	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p) {
+	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
+		IChatBaseComponent format = null;
+		Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
+		if (playerlist != null) {
+			format = playerlist.getTabFormat(p, viewer);
+		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
-				(int)p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, null));
+				(int)p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
 	}
 	
 	@Override

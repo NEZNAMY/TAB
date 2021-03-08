@@ -10,7 +10,6 @@ import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
@@ -63,7 +62,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
 	}
-	public String fixTextWidth(TabPlayer player, String prefixAndName, String suffix) {
+	public String formatNameAndUpdateLeader(TabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
@@ -74,12 +73,17 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 					maxPlayer = all;
 				}
 			}
-			updateAllNames(null, UsageType.PACKET_READING);
+			updateAllNames(null);
 		} else if (playerNameWidth > maxWidth) {
 			maxWidth = playerNameWidth;
 			maxPlayer = player;
-			updateAllNames(player, UsageType.PACKET_READING);
+			updateAllNames(player);
 		}
+		return formatName(prefixAndName, suffix);
+	}
+	
+	public String formatName(String prefixAndName, String suffix) {
+		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		String newFormat = prefixAndName + "\u00a7r";
 		try {
 			newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
@@ -173,33 +177,27 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		if (width > maxWidth) {
 			maxWidth = width;
 			maxPlayer = p;
-			updateAllNames(null, UsageType.PLAYER_JOIN_EVENT);
+			updateAllNames(null);
 		}
 	}
 	@Override
 	public void onQuit(TabPlayer p) {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
-			updateAllNames(null, UsageType.PLAYER_QUIT_EVENT);
+			updateAllNames(null);
 		}
 	}
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (maxPlayer == p && recalculateMaxWidth(null)) {
-			updateAllNames(null, UsageType.WORLD_SWITCH_EVENT);
+			updateAllNames(null);
 		}
 	}
 
-	private void updateAllNames(TabPlayer exception, UsageType usage) {
-		tab.getCPUManager().runMeasuredTask("aligning tabsuffix", TabFeature.ALIGNED_TABSUFFIX, usage, new Runnable() {
-
-			@Override
-			public void run() {
-				for (TabPlayer all : tab.getPlayers()) {
-					if (all == exception) continue;
-					playerlist.refresh(all, true);
-				}
-			}
-		});
+	private void updateAllNames(TabPlayer exception) {
+		for (TabPlayer all : tab.getPlayers()) {
+			if (all == exception) continue;
+			playerlist.refresh(all, true);
+		}
 	}
 
 	// returns true if max changed, false if not

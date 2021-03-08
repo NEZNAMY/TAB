@@ -50,7 +50,7 @@ public class PremiumVanishListener implements Listener {
 		if (list == null) return;
 		TabPlayer unvanished = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished), TabFeature.GLOBAL_PLAYERLIST);
+			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished, viewer), TabFeature.GLOBAL_PLAYERLIST);
 		}
 	}
 }
