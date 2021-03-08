@@ -89,7 +89,7 @@ public class EventListener implements Listener {
 		checkForTrackingRange(player, newLocation);
 		processPassengers((Entity) player.getPlayer());
 		if (player.isPreviewingNametag()) {
-			player.getArmorStandManager().teleport(player);
+			if (player.getArmorStandManager() != null) player.getArmorStandManager().teleport(player);
 		}
 	}
 	
