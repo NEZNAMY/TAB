@@ -117,15 +117,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%canseeworldonline%", 1000) {
-			public String get(TabPlayer p) {
-				int var = 0;
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (all.getWorldName().equals(p.getWorldName()) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
-				}
-				return var+"";
-			}
-		});
 		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(TabPlayer p) {
 				int var = 0;
