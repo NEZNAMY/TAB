@@ -8,7 +8,6 @@ import org.bstats.velocity.Metrics;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -59,31 +58,14 @@ public class Main {
 			System.out.println("\u00a7c[TAB] Your velocity version is way too new for this plugin version. Update the plugin or downgrade Velocity.");
 			return;
 		}
-		System.out.println("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-				+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).");
+		if (server.getConfiguration().isOnlineMode()) {
+			System.out.println("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).");
+		}
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
 		server.getEventManager().register(this, new VelocityEventListener());
-		CommandManager cmd = server.getCommandManager();
-		cmd.register(cmd.metaBuilder("btab").build(), new Command() {
-
-			@Override
-			public void execute(CommandSource sender, String[] args) {
-				if (TAB.getInstance().isDisabled()) {
-					for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-						sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
-					}
-				} else {
-					TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
-				}
-			}
-
-			@Override
-			public List<String> suggest(CommandSource sender, String[] args) {
-				if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
-				return TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
-			}
-		});
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), new VelocityTABCommand());
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
@@ -112,5 +94,25 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
+	}
+	
+	public static class VelocityTABCommand implements Command {
+		
+		@Override
+		public void execute(CommandSource sender, String[] args) {
+			if (TAB.getInstance().isDisabled()) {
+				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+					sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
+				}
+			} else {
+				TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+			}
+		}
+
+		@Override
+		public List<String> suggest(CommandSource sender, String[] args) {
+			if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
+			return TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+		}
 	}
 }
