@@ -242,7 +242,7 @@ public interface Platform {
 		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix(tab));
 		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
 		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
-		if ((boolean)tab.getConfiguration().getSecretOption("remove-ghost-players", false)) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix(tab));
+		if ((boolean)tab.getConfiguration().getSecretOption("remove-ghost-players", false)) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && tab.getConfiguration().config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist(tab);
