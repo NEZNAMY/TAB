@@ -50,8 +50,6 @@ public class Layout implements Loadable, JoinEventListener {
 			}
 			for (int i=1; i<=80; i++) {
 				fixedSlots.put(i, new FixedSlot(i, "", null));
-			}
-			for (int i=1; i<=80; i++) {
 				uuids.put(i, UUID.randomUUID());
 			}
 			for (String fixedSlot : file.getStringList("fixed-slots")) {
@@ -64,34 +62,38 @@ public class Layout implements Loadable, JoinEventListener {
 				}
 				fixedSlots.put(slot, new FixedSlot(slot, text, skin));
 			}
-			for (Object obj : file.getConfigurationSection("child-groups").keySet()){
-				String title = file.getString("child-groups." + obj + ".title");
-				Condition condition = Condition.getCondition(file.getString("child-groups." + obj + ".condition"));
-				childGroups.put(obj.toString(), new ChildGroup(title, condition));
-			}
-			for (Object obj : file.getConfigurationSection("parent-groups").keySet()){
-				Condition condition = Condition.getCondition(file.getString("parent-groups." + obj + ".condition"));
-				List<Integer> positions = new ArrayList<Integer>();
-				for (String line : file.getStringList("parent-groups." + obj + ".slots")) {
-					String[] arr = line.split("-");
-					int from = Integer.parseInt(arr[0]);
-					int to = Integer.parseInt(arr[1]);
-					for (int i = from; i<= to; i++) {
-						positions.add(i);
-					}
-				}
-				List<ChildGroup> childs = new ArrayList<ChildGroup>();
-				if (file.hasConfigOption("parent-groups." + obj + ".child-groups")) {
-					for (String child : file.getStringList("parent-groups." + obj + ".child-groups")) {
-						if (childGroups.containsKey(child)) {
-							childs.add(childGroups.get(child));
-						}
-					}
-				}
-				parentGroups.add(new ParentGroup(condition, positions, childs));
-			}
+			loadGroups(file);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void loadGroups(ConfigurationFile file) {
+		for (Object obj : file.getConfigurationSection("child-groups").keySet()){
+			String title = file.getString("child-groups." + obj + ".title");
+			Condition condition = Condition.getCondition(file.getString("child-groups." + obj + ".condition"));
+			childGroups.put(obj.toString(), new ChildGroup(title, condition));
+		}
+		for (Object obj : file.getConfigurationSection("parent-groups").keySet()){
+			Condition condition = Condition.getCondition(file.getString("parent-groups." + obj + ".condition"));
+			List<Integer> positions = new ArrayList<Integer>();
+			for (String line : file.getStringList("parent-groups." + obj + ".slots")) {
+				String[] arr = line.split("-");
+				int from = Integer.parseInt(arr[0]);
+				int to = Integer.parseInt(arr[1]);
+				for (int i = from; i<= to; i++) {
+					positions.add(i);
+				}
+			}
+			List<ChildGroup> childs = new ArrayList<ChildGroup>();
+			if (file.hasConfigOption("parent-groups." + obj + ".child-groups")) {
+				for (String child : file.getStringList("parent-groups." + obj + ".child-groups")) {
+					if (childGroups.containsKey(child)) {
+						childs.add(childGroups.get(child));
+					}
+				}
+			}
+			parentGroups.add(new ParentGroup(condition, positions, childs));
 		}
 	}
 
