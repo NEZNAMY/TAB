@@ -195,6 +195,7 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
+		long millis = System.currentTimeMillis();
 		tab.addPlayer(connectedPlayer);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof JoinEventListener)) continue;
@@ -203,6 +204,7 @@ public class FeatureManager {
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
 		connectedPlayer.markAsLoaded();
+		tab.debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
 	
 	/**
