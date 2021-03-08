@@ -100,8 +100,8 @@ public class EventListener implements Listener {
 	private void processMove(TabPlayer player, Location newLocation) {
 		checkForTrackingRange(player, newLocation);
 		processPassengers((Entity) player.getPlayer());
-		if (player.isPreviewingNametag()) {
-			if (player.getArmorStandManager() != null) player.getArmorStandManager().teleport(player);
+		if (player.isPreviewingNametag() && player.getArmorStandManager() != null) {
+			player.getArmorStandManager().teleport(player);
 		}
 	}
 	

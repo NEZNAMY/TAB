@@ -120,13 +120,16 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 					p.getArmorStandManager().updateVisibility(false);
 					if (!disableOnBoats) continue;
 					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
-					if (onBoat && !playersOnBoats.contains(p)) {
-						playersOnBoats.add(p);
-						updateTeamData(p);
-					}
-					if (!onBoat && playersOnBoats.contains(p)) {
-						playersOnBoats.remove(p);
-						updateTeamData(p);
+					if (onBoat) {
+						if (!playersOnBoats.contains(p)) {
+							playersOnBoats.add(p);
+							updateTeamData(p);
+						}
+					} else {
+						if (playersOnBoats.contains(p)) {
+							playersOnBoats.remove(p);
+							updateTeamData(p);
+						}
 					}
 				}
 			}
