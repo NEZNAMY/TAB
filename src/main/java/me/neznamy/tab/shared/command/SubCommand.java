@@ -12,7 +12,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public abstract class SubCommand {
 
+	//all properties assignable with a command
 	protected final String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
+	
+	//properties that require unlimited nametag mode
 	protected final List<String> extraProperties = Arrays.asList("abovename", "belowname", "customtagname");
 	
 	//name of this subcommand
@@ -24,6 +27,11 @@ public abstract class SubCommand {
 	//subcommands of this command
 	public Map<String, SubCommand> subcommands = new HashMap<String, SubCommand>();
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param name - command name
+	 * @param permission - permission requirement
+	 */
 	public SubCommand(String name, String permission) {
 		this.name = name;
 		this.permission = permission;
@@ -135,6 +143,11 @@ public abstract class SubCommand {
 		return new ArrayList<String>();
 	}
 	
+	/**
+	 * Converts string array into a single string with "" and '' support for spaces
+	 * @param args - array of arguments
+	 * @return argument from array
+	 */
 	public String buildArgument(String[] args) {
 		String value = String.join(" ", args);
 		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
@@ -143,6 +156,11 @@ public abstract class SubCommand {
 		return value;
 	}
 	
+	/**
+	 * Returns message with given key
+	 * @param key - message key
+	 * @return translation from file
+	 */
 	public String getTranslation(String key) {
 		return TAB.getInstance().getConfiguration().translation.getString(key);
 	}

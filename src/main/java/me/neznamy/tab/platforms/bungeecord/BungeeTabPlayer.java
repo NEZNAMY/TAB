@@ -20,10 +20,14 @@ import net.md_5.bungee.protocol.Protocol;
  */
 public class BungeeTabPlayer extends ITabPlayer {
 	
+	//bungee internals to get player channel
 	private static Field wrapperField;
 	private static Object directionData;
 	private static Method getId;
 	
+	/**
+	 * Initializes fields to get player channel later
+	 */
 	static {
 		try {
 			Field f = Protocol.class.getDeclaredField("TO_CLIENT");
@@ -92,6 +96,11 @@ public class BungeeTabPlayer extends ITabPlayer {
 		return player;
 	}
 	
+	/**
+	 * Returns packet ID for this packet of provided packet class
+	 * @param clazz - packet class
+	 * @return - packet ID
+	 */
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
 			return (int) getId.invoke(directionData, clazz, player.getPendingConnection().getVersion());

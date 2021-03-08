@@ -26,8 +26,13 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	//logger of last interacts to prevent feature not working on 1.16
 	private Map<String, Long> lastInteractFix = new HashMap<String, Long>();
 	
+	//nms storage
 	private NMSStorage nms;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param nms
+	 */
 	public PetFix(NMSStorage nms) {
 		this.nms = nms;
 	}

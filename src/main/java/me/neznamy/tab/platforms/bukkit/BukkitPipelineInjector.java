@@ -16,11 +16,18 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
+	//handler to inject before
 	private final String INJECT_POSITION = "packet_handler";
 	
+	//nms storage
 	private NMSStorage nms;
 
-	public BukkitPipelineInjector(TAB tab, NMSStorage nms) throws ClassNotFoundException {
+	/**
+	 * Constructs new instance with given parameters
+	 * @param tab - tab instance
+	 * @param nms - nms storage
+	 */
+	public BukkitPipelineInjector(TAB tab, NMSStorage nms){
 		super(tab);
 		this.nms = nms;
 	}
@@ -49,6 +56,11 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		}
 	}
 
+	/**
+	 * Removes all real players from team if packet does not come from TAB and reports this to override log
+	 * @param packetPlayOutScoreboardTeam - team packet
+	 * @throws Exception - if reflection fails
+	 */
 	@SuppressWarnings("unchecked")
 	private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		long time = System.nanoTime();
@@ -73,10 +85,18 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 	
+	/**
+	 * Custom channel duplex handler override
+	 */
 	public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
 		
+		//injected player
 		private TabPlayer player;
 		
+		/**
+		 * Constructs new instance with given player
+		 * @param player - player to inject
+		 */
 		public BukkitChannelDuplexHandler(TabPlayer player) {
 			this.player = player;
 		}

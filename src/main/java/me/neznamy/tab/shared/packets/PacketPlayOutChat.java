@@ -65,7 +65,7 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutChat{message=" + message.toString(ProtocolVersion.SERVER_VERSION) + ",type=" + type + "}";
+		return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);
 	}
 
 	/**

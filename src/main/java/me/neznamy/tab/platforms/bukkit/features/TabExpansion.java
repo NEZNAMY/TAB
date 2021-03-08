@@ -78,6 +78,12 @@ public class TabExpansion extends PlaceholderExpansion {
 		return getProperty(identifier, p);
 	}
 	
+	/**
+	 * Find replacement for specified placeholder
+	 * @param placeholder - placeholder to find replacement for
+	 * @param player - player to set placeholder for
+	 * @return replacement
+	 */
 	private String findReplacement(String placeholder, Player player) {
 		if (!TAB.getInstance().isPremium()) return "Placeholder output replacements require premium version to work";
 		String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
@@ -85,6 +91,12 @@ public class TabExpansion extends PlaceholderExpansion {
 		return Placeholder.findReplacement(replacements, output).replace("%value%", output);
 	}
 	
+	/**
+	 * Returns value of defined property if found
+	 * @param name - property name
+	 * @param player - player to get property of
+	 * @return value of specified property
+	 */
 	private String getProperty(String name, TabPlayer player) {
 		String propName = name.replace("_raw", "");
 		Property prop = player.getProperty(propName);

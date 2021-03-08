@@ -37,6 +37,9 @@ public class CpuCommand extends SubCommand {
 	private final String PLUGIN_INTERNALS = "&8&l" + LINE_CHAR + " &6&lPlugin internals: &a&l%total%%";
 	private final String TOTAL = "&8&l" + LINE_CHAR + " &6&lTotal: &e&l%total%%";
 
+	/**
+	 * Constructs new instance
+	 */
 	public CpuCommand() {
 		super("cpu", "tab.cpu");
 	}

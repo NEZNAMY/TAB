@@ -17,7 +17,9 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
  */
 public class AnnounceScoreboardCommand extends SubCommand{
 
-
+	/**
+	 * Constructs new instance
+	 */
 	public AnnounceScoreboardCommand() {
 		super("scoreboard", "tab.announce.scoreboard");
 	}
@@ -49,6 +51,12 @@ public class AnnounceScoreboardCommand extends SubCommand{
 		announce(feature, sb, duration);
 	}
 	
+	/**
+	 * Performs accounce
+	 * @param feature - scoreboard feature
+	 * @param sb - scoreboard to announce
+	 * @param duration - duration in seconds
+	 */
 	private void announce(ScoreboardManager feature, Scoreboard sb, int duration) {
 		new Thread(() -> {
 			try {

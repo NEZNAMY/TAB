@@ -52,7 +52,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutPlayerInfo{action=" + action + ",entries=" + entries + "}";
+		return String.format("PacketPlayOutPlayerInfo{action=%s,entries=%s}", action, entries);
 	}
 
 	/**
@@ -146,8 +146,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 */
 		@Override
 		public String toString() {
-			return "PlayerInfoData{latency=" + latency + ",gameMode=" + gameMode + ",displayName=" + displayName + 
-					",name=" + name + ",uniqueId=" + uniqueId + ",skin=" + skin + "}";
+			return String.format("PlayerInfoData{latency=%s,gameMode=%s,displayName=%s,name=%s,uniqueId=%s,skin=%s}",
+					latency, gameMode, displayName, name, uniqueId, skin);
 		}
 	}
 

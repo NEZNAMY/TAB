@@ -13,9 +13,16 @@ import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
  */
 public class TextRefresher implements Refreshable {
 
+	//bossbar line this text belongs to
 	private BossBarLine line;
+	
+	//list of used placeholders in text
 	private List<String> usedPlaceholders;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param line - bossbar line this text belongs to
+	 */
 	public TextRefresher(BossBarLine line) {
 		this.line = line;
 		refreshUsedPlaceholders();

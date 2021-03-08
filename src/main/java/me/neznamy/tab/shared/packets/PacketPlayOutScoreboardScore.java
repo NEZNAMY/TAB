@@ -47,8 +47,8 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutScoreboardScore{action=" + action + ",objectiveName=" + objectiveName + 
-				",player=" + player + ",score=" + score + "}";
+		return String.format("PacketPlayOutScoreboardScore{action=%s,objectiveName=%s,player=%s,score=%s}", 
+				action, objectiveName, player, score);
 	}
 
 	/**

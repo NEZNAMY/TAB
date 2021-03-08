@@ -19,6 +19,7 @@ public class DataWatcherHelper {
 	//original datawatcher to write to
 	private DataWatcher data;
 	
+	//data watcher registry
 	private DataWatcherRegistry registry;
 	
 	/**

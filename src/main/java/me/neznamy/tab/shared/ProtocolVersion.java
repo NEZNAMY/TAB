@@ -61,6 +61,10 @@ public enum ProtocolVersion {
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private int networkId;
 
+	/**
+	 * Constructs new instance with given network id
+	 * @param networkId - network id of this version
+	 */
 	private ProtocolVersion(int networkId){
 		this.networkId = networkId;
 	}

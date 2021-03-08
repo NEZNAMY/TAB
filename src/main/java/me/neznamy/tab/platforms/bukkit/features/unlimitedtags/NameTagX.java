@@ -40,13 +40,22 @@ import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
  */
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener, SneakEventListener {
 
+	//entity tracking range
 	private final int ENTITY_TRACKING_RANGE = 48;
 
-	private JavaPlugin plugin;
+	//if using marker tag for 1.8.x clients or not
 	public boolean markerFor18x;
+	
+	//if disable feature on boats or not
 	public boolean disableOnBoats;
+	
+	//space between lines in blocks
 	private double spaceBetweenLines;
+	
+	//list of defined dynamic lines
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
+	
+	//map of defined static lines
 	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
 
 	//entity id counter to pick unique entity IDs
@@ -54,14 +63,24 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	//player data by entityId, used for better performance
 	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
+	
+	//map of vehicles carrying players
 	public Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<Integer, List<Entity>>();
+	
+	//bukkit event listener
 	private EventListener eventListener;
 	
+	//list of players currently on boats
 	public List<TabPlayer> playersOnBoats = new ArrayList<TabPlayer>();
 
+	/**
+	 * Constructs new instance with given parameters and loads config options
+	 * @param plugin - plugin instance
+	 * @param nms - nms storage
+	 * @param tab - tab instance
+	 */
 	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
 		super(tab);
-		this.plugin = plugin;
 		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
@@ -74,12 +93,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);
+		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
 	}
 
 	@Override
 	public void load() {
-		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		for (TabPlayer all : tab.getPlayers()){
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			all.setTeamName(sorting.getTeamName(all));
@@ -144,12 +163,22 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 	
+	/**
+	 * Returns flat distance between two players ignoring Y value
+	 * @param player1 - first player
+	 * @param player2 - second player
+	 * @return flat distance in blocks
+	 */
 	private double getDistance(TabPlayer player1, TabPlayer player2) {
 		Location loc1 = ((Player) player1.getPlayer()).getLocation();
 		Location loc2 = ((Player) player2.getPlayer()).getLocation();
 		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
 	}
 
+	/**
+	 * Loads all passengers riding this player and adds them to vehicle list
+	 * @param p - player to load passengers of
+	 */
 	private void loadPassengers(TabPlayer p) {
 		if (((Entity) p.getPlayer()).getVehicle() == null) return;
 		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
@@ -196,6 +225,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 	
+	/**
+	 * Spawns armor stands of specified owner to viewer and, mutually if set
+	 * @param owner - armor stand owner
+	 * @param viewer - player to spawn armor stands for
+	 * @param sendMutually - if packets should be sent both ways
+	 */
 	private void spawnArmorStands(TabPlayer owner, TabPlayer viewer, boolean sendMutually) {
 		if (owner == viewer) return; //not displaying own armorstands
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
@@ -205,6 +240,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 
+	/**
+	 * Restarts and loads armor stands from config
+	 * @param pl - player to load
+	 */
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
@@ -222,6 +261,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		fixArmorStandHeights(pl);
 	}
 
+	/**
+	 * Fixes heights of all armor stands of specified player due to dynamic lines
+	 * @param p - player to fix armor stands heights for
+	 */
 	public void fixArmorStandHeights(TabPlayer p) {
 		p.getArmorStandManager().refresh();
 		double currentY = -spaceBetweenLines;
@@ -272,6 +315,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 
+	/**
+	 * Updates raw values of properties for specified player
+	 * @param p - player to update
+	 */
 	private void updateProperties(TabPlayer p) {
 		p.loadPropertyFromConfig("tagprefix");
 		p.loadPropertyFromConfig("customtagname", p.getName());
@@ -285,6 +332,11 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		}
 	}
 
+	/**
+	 * Returns list of all passengers on specified vehicle
+	 * @param vehicle - vehicle to check passengers of
+	 * @return list of passengers
+	 */
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {

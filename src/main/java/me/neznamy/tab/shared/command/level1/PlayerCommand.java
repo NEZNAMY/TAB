@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class PlayerCommand extends SubCommand {
 	
+	/**
+	 * Constructs new instance
+	 */
 	public PlayerCommand() {
 		super("player", null);
 	}

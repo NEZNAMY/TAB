@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
  */
 public class ParseCommand extends SubCommand{
 
+	/**
+	 * Constructs new instance
+	 */
 	public ParseCommand() {
 		super("parse", "tab.parse");
 	}

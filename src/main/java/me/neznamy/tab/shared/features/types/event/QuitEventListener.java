@@ -8,5 +8,9 @@ import me.neznamy.tab.shared.features.types.Feature;
  */
 public interface QuitEventListener extends Feature {
 
+	/**
+	 * Processes quit event
+	 * @param disconnectedPlayer - player who disconnected
+	 */
 	public void onQuit(TabPlayer disconnectedPlayer);
 }

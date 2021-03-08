@@ -37,6 +37,10 @@ public class ErrorManager {
 	//plugin instance
 	private TAB tab;
 	
+	/**
+	 * Constructs new instance
+	 * @param tab - tab instance
+	 */
 	public ErrorManager(TAB tab) {
 		this.tab = tab;
 		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
@@ -159,6 +163,11 @@ public class ErrorManager {
 		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(message, true);
 	}
 	
+	/**
+	 * Removes all color codes from defined text
+	 * @param text - text to remove colors from
+	 * @return text without colors
+	 */
 	private String removeColors(String text) {
 		StringBuilder sb = new StringBuilder();
 		for (int i=0; i<text.length(); i++) {
@@ -330,6 +339,12 @@ public class ErrorManager {
 		return interval;
 	}
 	
+	/**
+	 * Makes interval divisible by 50 and sends error message if it was not already or was 0 or less
+	 * @param identifier - placeholder identifier
+	 * @param interval - configured interval
+	 * @return fixed interval
+	 */
 	public int fixPlaceholderInterval(String identifier, int interval) {
 		if (interval == 0) {
 			startupWarn("Placeholder \"&e" + identifier + "&c\" has refresh interval of 0 milliseconds! Is that misconfiguration? &bUsing 100.");

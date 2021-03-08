@@ -12,16 +12,24 @@ import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
+/**
+ * Line of text with placeholder support
+ * Limitations:
+ *   1.5.x - 1.12.x: 28 - 32 characters (depending on implementation)
+ */
 public abstract class StableDynamicLine extends ScoreboardLine {
-
-	protected Scoreboard parent;
-	protected int lineNumber;
+	
+	//text to display
 	protected String text;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param parent - scoreboard this line belongs to
+	 * @param lineNumber - ID of this line
+	 * @param text - text to display
+	 */
 	public StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
-		super(lineNumber);
-		this.parent = parent;
-		this.lineNumber = lineNumber;
+		super(parent, lineNumber);
 		this.text = text;
 		refreshUsedPlaceholders();
 	}
@@ -54,6 +62,14 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		}
 	}
 
+	/**
+	 * Applies all placeholders and splits the result into prefix/suffix based on client version
+	 * or hides the line entirely if result is empty (and shows back once it's not)
+	 * @param p - player to replace text for
+	 * @param force - if action should be done despite update seemingly not needed
+	 * @param suppressToggle - if line should NOT be removed despite being empty
+	 * @return list of 2 elements for prefix/suffix
+	 */
 	protected List<String> replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
 		Property scoreproperty = p.getProperty(teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
@@ -82,6 +98,12 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		}
 	}
 	
+	/**
+	 * Splits text into 2 values (prefix/suffix) based on client version and text itself
+	 * @param p - player to split text fr
+	 * @param text - text to split
+	 * @return array of 2 elements for prefix and suffix
+	 */
 	private String[] split(TabPlayer p, String text) {
 		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
 		int charLimit = TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
@@ -105,5 +127,10 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		return new String[] {prefix, suffix};
 	}
 
+	/**
+	 * Returns number that should be displayed on the right for specified player
+	 * @param p - player to get number for
+	 * @return number displayed
+	 */
 	public abstract int getScoreFor(TabPlayer p);
 }

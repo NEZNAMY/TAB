@@ -16,13 +16,28 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  */
 public abstract class Condition {
 	
+	//map of all defined conditions in premiumconfig
 	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
 	
+	//name of this condition
 	private String name;
+	
+	//list of subconditions
 	protected List<SimpleCondition> subconditions = new ArrayList<SimpleCondition>();
+	
+	//value to return if condition is met
 	public String yes;
+	
+	//value to return if condition is not met
 	public String no;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param name - name of condition
+	 * @param conditions - list of condition lines
+	 * @param yes - value to return if condition is met
+	 * @param no - value to return if condition is not met
+	 */
 	public Condition(String name, List<String> conditions, String yes, String no) {
 		this.name = name;
 		for (String line : conditions) {
@@ -37,16 +52,39 @@ public abstract class Condition {
 		this.no = no;
 	}
 	
+	/**
+	 * Returns name of this condition
+	 * @return name of this condition
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Returns text for player based on if condition is met or not
+	 * @param p - player to check condition for
+	 * @return yes or no value depending on if condition is met or not
+	 */
 	public String getText(TabPlayer p) {
 		return isMet(p) ? yes : no;
 	}
 
+	/**
+	 * Returns true if condition is met for player, false if not
+	 * @param p - player to check
+	 * @return true if met, false if not
+	 */
 	public abstract boolean isMet(TabPlayer p);
 
+	/**
+	 * Compiles condition from given parameters
+	 * @param name - name of condition
+	 * @param conditions - list of condition lines
+	 * @param conditionType - type of condition AND/OR
+	 * @param yes - value to return if condition is met
+	 * @param no - value to return if condition is not met
+	 * @return compiled condition
+	 */
 	public static Condition compile(String name, List<String> conditions, String conditionType, String yes, String no) {
 		ConditionType type;
 		try {
@@ -65,6 +103,12 @@ public abstract class Condition {
 		}
 	}
 	
+	/**
+	 * Returns condition from given string. If the string is name of a condition, that condition is returned.
+	 * If it's a condition pattern, it is compiled and returned. If the string is null, null is returned
+	 * @param string - condition name or pattern
+	 * @return condition from string
+	 */
 	public static Condition getCondition(String string) {
 		if (string == null) return null;
 		if (conditions.containsKey(string)) {

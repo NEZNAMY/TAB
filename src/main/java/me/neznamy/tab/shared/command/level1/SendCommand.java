@@ -11,6 +11,9 @@ import me.neznamy.tab.shared.command.level2.SendBarCommand;
  */
 public class SendCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public SendCommand() {
 		super("send", null);
 		subcommands.put("bar", new SendBarCommand());

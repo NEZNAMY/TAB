@@ -19,6 +19,9 @@ import me.neznamy.tab.shared.features.Playerlist;
  */
 public class DebugCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public DebugCommand() {
 		super("debug", "tab.debug");
 	}
@@ -86,6 +89,10 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&7&m>-------------------------------<");
 	}
 	
+	/**
+	 * Returns group choice logic
+	 * @return group choice logic
+	 */
 	private String getGroupChoiceLogic() {
 		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
 		if (group.groupsByPermissions) {
@@ -97,6 +104,10 @@ public class DebugCommand extends SubCommand {
 		}
 	}
 	
+	/**
+	 * Returns sorting type
+	 * @return sorting type
+	 */
 	private String getSortingType() {
 		NameTag nametag = TAB.getInstance().getFeatureManager().getNameTagFeature();
 		if (nametag != null) {
@@ -116,6 +127,11 @@ public class DebugCommand extends SubCommand {
 		}
 	}
 	
+	/**
+	 * Returns all info about player's group
+	 * @param analyzed - player to check group of
+	 * @return all info about player's group
+	 */
 	private String getGroup(TabPlayer analyzed) {
 		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
 		if (group.groupsByPermissions) {
@@ -131,6 +147,11 @@ public class DebugCommand extends SubCommand {
 		}
 	}
 	
+	/**
+	 * Returns team name of specified player
+	 * @param analyzed - player to get team name of
+	 * @return team name of specified player
+	 */
 	private String getTeamName(TabPlayer analyzed) {
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null) {
 			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
@@ -144,6 +165,10 @@ public class DebugCommand extends SubCommand {
 		return "";
 	}
 	
+	/**
+	 * Returns list of extra properties if unlimited nametag mode is enabled
+	 * @return list of extra properties
+	 */
 	@SuppressWarnings("unchecked")
 	private List<Object> getExtraLines(){
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();

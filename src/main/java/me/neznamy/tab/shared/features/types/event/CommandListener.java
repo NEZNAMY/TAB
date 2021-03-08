@@ -8,5 +8,11 @@ import me.neznamy.tab.shared.features.types.Feature;
  */
 public interface CommandListener extends Feature {
 
+	/**
+	 * Processes command from player
+	 * @param sender - command sender
+	 * @param message - command line
+	 * @return true if event should be cancelled, false if not
+	 */
 	public boolean onCommand(TabPlayer sender, String message);
 }

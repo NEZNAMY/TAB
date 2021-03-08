@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class CpuTestCommand extends SubCommand {
 	
+	/**
+	 * Constructs new instance
+	 */
 	public CpuTestCommand() {
 		super("cputest", "tab.cputest");
 	}
@@ -28,6 +31,9 @@ public class CpuTestCommand extends SubCommand {
 		}).start();
 	}
 	
+	/**
+	 * Performs the test
+	 */
 	public void test() {
 		String test = UUID.randomUUID().toString();
 		int i=0;

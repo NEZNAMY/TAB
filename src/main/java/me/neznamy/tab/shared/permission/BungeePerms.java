@@ -11,11 +11,17 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public class BungeePerms implements PermissionPlugin {
 
+	//bungeeperms version
 	private String version;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param version - bungeeperms version
+	 */
 	public BungeePerms(String version) {
 		this.version = version;
 	}
+	
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws Exception {
 		Object bungeePerms = Class.forName("net.alpenblock.bungeeperms.BungeePerms").getMethod("getInstance").invoke(null);

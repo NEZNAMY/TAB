@@ -15,7 +15,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBarLine;
  */
 public class SendBarCommand extends SubCommand{
 
-
+	/**
+	 * Constructs new instance
+	 */
 	public SendBarCommand() {
 		super("bar", "tab.send.bar");
 	}

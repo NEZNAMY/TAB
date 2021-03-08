@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
  */
 public class ScoreboardCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public ScoreboardCommand() {
 		super("scoreboard", null);
 	}

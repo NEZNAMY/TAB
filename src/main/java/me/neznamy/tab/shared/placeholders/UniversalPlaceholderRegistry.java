@@ -26,6 +26,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	//decimal formatter for 2 decimal numbers
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
 	
+	//placeholder buffer
 	private List<Placeholder> placeholders;
 
 	@Override
@@ -105,6 +106,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		return placeholders;
 	}
 
+	/**
+	 * Registers all memory-related placeholders
+	 */
 	private void registerMemoryPlaceholders() {
 		placeholders.add(new ServerPlaceholder("%memory-used%", 200) {
 			public String get() {
@@ -128,6 +132,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 	}
 
+	/**
+	 * Registers luckperms placeholders
+	 */
 	private void registerLuckPermsPlaceholders() {
 		if (TAB.getInstance().getPermissionPlugin() instanceof LuckPerms) {
 			placeholders.add(new PlayerPlaceholder("%luckperms-prefix%", 500) {
@@ -143,6 +150,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
+	/**
+	 * Registers staff placeholders
+	 */
 	private void registerStaffPlaceholders() {
 		placeholders.add(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
@@ -164,6 +174,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 	}
 
+	/**
+	 * Registers %rank% placeholder
+	 */
 	private void registerRankPlaceholder() {
 		Map<Object, Object> rankAliases = TAB.getInstance().getConfiguration().config.getConfigurationSection("rank-aliases");
 		placeholders.add(new PlayerPlaceholder("%rank%", 1000) {
@@ -190,6 +203,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 	}
 
+	/**
+	 * Registers animations
+	 */
 	private void registerAnimationPlaceholders() {
 		for (Object s : TAB.getInstance().getConfiguration().animation.getValues().keySet()) {
 			Animation a = new Animation(s+"", TAB.getInstance().getConfiguration().animation.getStringList(s + ".texts"), TAB.getInstance().getConfiguration().animation.getInt(s + ".change-interval", 0));
@@ -208,6 +224,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
+	/**
+	 * Registers conditions
+	 */
 	private void registerConditionPlaceholders() {
 		Condition.conditions = new HashMap<String, Condition>();
 		for (Object condition : TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("conditions").keySet()) {

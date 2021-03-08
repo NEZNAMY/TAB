@@ -46,10 +46,20 @@ import net.milkbowl.vault.permission.Permission;
  */
 public class BukkitPlatform implements Platform {
 
+	//list of used expansions
 	private Set<String> usedExpansions;
+	
+	//plugin instance
 	private JavaPlugin plugin;
+	
+	//nms storage
 	private NMSStorage nms;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param plugin - plugin instance
+	 * @param nms - nms storage
+	 */
 	public BukkitPlatform(JavaPlugin plugin, NMSStorage nms) {
 		this.plugin = plugin;
 		this.nms = nms;
@@ -94,6 +104,10 @@ public class BukkitPlatform implements Platform {
 		}
 	}
 	
+	/**
+	 * Loads nametag feature from config
+	 * @param tab - tab instance
+	 */
 	private void loadNametagFeature(TAB tab) {
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) {
 			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
@@ -104,6 +118,11 @@ public class BukkitPlatform implements Platform {
 		}
 	}
 
+	/**
+	 * Returns list of online players from Bukkit API
+	 * @return list of online players from Bukkit API
+	 * @throws Exception - if reflection fails
+	 */
 	@SuppressWarnings("unchecked")
 	private Player[] getOnlinePlayers() throws Exception {
 		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
@@ -146,6 +165,11 @@ public class BukkitPlatform implements Platform {
 		}
 	}
 	
+	/**
+	 * Registers server placeholder
+	 * @param identifier - placeholder identifier
+	 * @param refresh - refresh interval in milliseconds
+	 */
 	private void registerServerPlaceholder(String identifier, int refresh) {
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 			
@@ -156,6 +180,11 @@ public class BukkitPlatform implements Platform {
 		});
 	}
 	
+	/**
+	 * Registers player placeholder
+	 * @param identifier - placeholder identifier
+	 * @param refresh - refresh interval in milliseconds
+	 */
 	private void registerPlayerPlaceholder(String identifier, int refresh) {
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
@@ -166,6 +195,11 @@ public class BukkitPlatform implements Platform {
 		});
 	}
 	
+	/**
+	 * Registers relational placeholder
+	 * @param identifier - placeholder identifier
+	 * @param refresh - refresh interval in milliseconds
+	 */
 	private void registerRelationalPlaceholder(String identifier, int refresh) {
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new RelationalPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
@@ -182,6 +216,12 @@ public class BukkitPlatform implements Platform {
 		});
 	}
 	
+	/**
+	 * Runs PlaceholderAPI call and returns the output. If the task fails, error is logged and "ERROR" returned instead
+	 * @param player - player to set placeholder for
+	 * @param placeholder - placeholder
+	 * @return result from PlaceholderAPI
+	 */
 	public String setPlaceholders(Player player, String placeholder) {
 		if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) return placeholder;
 		try {

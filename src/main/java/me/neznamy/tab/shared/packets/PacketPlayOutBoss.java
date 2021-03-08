@@ -170,8 +170,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutBoss{id=" + id + ",operation=" + operation + ",name=" + name + ",pct=" + pct +",color=" + color + ",overlay=" + overlay
-				+ ",darkenScreen=" + darkenScreen + ",playMusic=" + playMusic + ",createWorldFog=" + createWorldFog + "}";
+		return String.format("PacketPlayOutBoss{id=%s,operation=%s,name=%s,pct=%s,color=%s,overlay=%s,darkenScreen=%s,playMusic=%s,createWorldFog=%s}", 
+				id, operation, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
 	}
 
 	/**

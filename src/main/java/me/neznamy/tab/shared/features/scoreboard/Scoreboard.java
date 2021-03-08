@@ -25,15 +25,39 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
  */
 public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
+	//scoreboard manager
 	public ScoreboardManager manager;
+	
+	//name of this scoreboard
 	private String name;
+	
+	//scoreboard title
 	private String title;
+	
+	//display condition
 	private Condition displayCondition;
+	
+	//scoreboard to display if condition is not met
 	private String childBoard;
+	
+	//lines of scoreboard
 	public List<ScoreboardLine> lines = new ArrayList<ScoreboardLine>();
+	
+	//players currently seeing this scoreboard
 	public Set<TabPlayer> players = new HashSet<TabPlayer>();
+	
+	//placeholders used in title
 	private List<String> usedPlaceholders;
 
+	/**
+	 * Constructs new instance with given parameters and registers lines to feature manager
+	 * @param manager - scoreboard manager
+	 * @param name - name of this scoreboard
+	 * @param title - scoreboard title
+	 * @param lines - lines of scoreboard
+	 * @param displayCondition - display condition
+	 * @param childBoard - scoreboard to display if condition is not met
+	 */
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
 		this.displayCondition = Condition.getCondition(displayCondition);
@@ -41,6 +65,13 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		refreshUsedPlaceholders();
 	}
 
+	/**
+	 * Constructs new instance with given parameters and registers lines to feature manager
+	 * @param manager - scoreboard manager
+	 * @param name - name of this scoreboard
+	 * @param title - scoreboard title
+	 * @param lines - lines of scoreboard
+	 */
 	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines) {
 		this.manager = manager;
 		this.name = name;
@@ -52,6 +83,12 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		}
 	}
 
+	/**
+	 * Registers line with given text and line number
+	 * @param lineNumber - ID of line
+	 * @param text - text to display
+	 * @return most optimal line from provided text
+	 */
 	private ScoreboardLine registerLine(int lineNumber, String text) {
 		if (text.startsWith("Custom|")) {
 			String[] elements = text.split("\\|");
@@ -81,15 +118,28 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		return name;
 	}
 
+	/**
+	 * Returns true if condition is null or is met, false otherwise
+	 * @param p - player to check
+	 * @return true if condition is null or is met, false otherwise
+	 */
 	public boolean isConditionMet(TabPlayer p) {
 		if (displayCondition == null) return true;
 		return displayCondition.isMet(p);
 	}
 
+	/**
+	 * Returns scoreboard that should be displayed if display condition is not met
+	 * @return scoreboard that should be displayed if display condition is not met
+	 */
 	public String getChildScoreboard() {
 		return childBoard;
 	}
 
+	/**
+	 * Returns list of users currently seeing this scoreboard
+	 * @return list of users currently seeing this scoreboard
+	 */
 	public Set<TabPlayer> getRegisteredUsers(){
 		return players;
 	}
@@ -106,6 +156,9 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 		p.setActiveScoreboard(this);
 	}
 
+	/**
+	 * Unregisters this scoreboard from all players
+	 */
 	public void unregister() {
 		for (TabPlayer all : players.toArray(new TabPlayer[0])) {
 			unregister(all);

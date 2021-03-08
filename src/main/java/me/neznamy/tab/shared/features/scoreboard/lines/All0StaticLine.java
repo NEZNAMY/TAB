@@ -12,12 +12,17 @@ import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
  */
 public class All0StaticLine extends StaticLine {
 
-	private Scoreboard parent;
+	//saving original text to use for 1.13+ clients
 	private String originalText;
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param parent - scoreboard this line belongs to
+	 * @param lineNumber - ID of this line
+	 * @param text - text of line
+	 */
 	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, getPlayerName(lineNumber));
-		this.parent = parent;
 		this.originalText = TAB.getInstance().getPlaceholderManager().color(text);
 	}
 

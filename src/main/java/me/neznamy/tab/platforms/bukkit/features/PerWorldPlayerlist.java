@@ -27,22 +27,36 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
+	//tab instance
 	private TAB tab;
+	
+	//plugin instance
 	private JavaPlugin plugin;
+	
+	//if bypass permission is allowed or not
 	private boolean allowBypass;
+	
+	//list of ignored worlds
 	private List<String> ignoredWorlds;
+	
+	//map of worlds that share playerlist
 	private Map<String, List<String>> sharedWorlds;
 
+	/**
+	 * Constructs new instance with given parameters and loads config options
+	 * @param plugin - plugin instance
+	 * @param tab - tab instance
+	 */
 	public PerWorldPlayerlist(JavaPlugin plugin, TAB tab) {
 		this.plugin = plugin;
 		this.tab = tab;
+		allowBypass = tab.getConfiguration().config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
+		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 	}
 	
 	@Override
 	public void load(){
-		allowBypass = tab.getConfiguration().config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
-		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 		for (TabPlayer p : tab.getPlayers()){
 			hidePlayer(p);
 			showInSameWorldGroup(p);
@@ -70,6 +84,10 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		showInSameWorldGroup(p);
 	}
 	
+	/**
+	 * Shows all players that player should see
+	 * @param shown - player to process mutual visibility for
+	 */
 	private void showInSameWorldGroup(TabPlayer shown){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
@@ -88,6 +106,12 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		});
 	}
 	
+	/**
+	 * Returns true if specified viewer should see player, false if not
+	 * @param viewer - tablist viewer
+	 * @param displayed - player to check if should be visible
+	 * @return true if should, false if not
+	 */
 	private boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
 		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(((Player)viewer.getPlayer()).getWorld().getName())) return true;
@@ -102,6 +126,10 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		return viewerWorldGroup.equals(targetWorldGroup);
 	}
 	
+	/**
+	 * Hides the player from everyone and everyone to the player
+	 * @param hidden - player to hide
+	 */
 	private void hidePlayer(TabPlayer hidden){
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 

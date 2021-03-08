@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class GroupCommand extends SubCommand {
 	
+	/**
+	 * Constructs new instance
+	 */
 	public GroupCommand() {
 		super("group", null);
 	}

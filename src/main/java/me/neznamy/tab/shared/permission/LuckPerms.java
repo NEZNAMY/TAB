@@ -17,8 +17,13 @@ import net.luckperms.api.query.QueryOptions;
  */
 public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
+	//luckperms version
 	private String version;
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param version - luckperms version
+	 */
 	public LuckPerms(String version) {
 		this.version = version;
 	}

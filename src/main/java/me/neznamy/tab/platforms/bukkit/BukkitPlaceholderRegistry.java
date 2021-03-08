@@ -31,13 +31,25 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
+	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 	
+	//plugin instance
 	private JavaPlugin plugin;
+	
+	//vault economy
 	private Economy economy;
+	
+	//vault chat
 	private Chat chat;
+	
+	//placeholder registry buffer
 	private List<Placeholder> placeholders;
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param plugin - plugin instance
+	 */
 	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
 		decimal2.applyPattern("#.##");
 		this.plugin = plugin;
@@ -105,6 +117,15 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return var+"";
 			}
 		});
+		placeholders.add(new PlayerPlaceholder("%canseeworldonline%", 1000) {
+			public String get(TabPlayer p) {
+				int var = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (all.getWorldName().equals(p.getWorldName()) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
+				}
+				return var+"";
+			}
+		});
 		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(TabPlayer p) {
 				int var = 0;
@@ -122,6 +143,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		return placeholders;
 	}
 
+	/**
+	 * Registers AFK placeholder
+	 */
 	private void registerAFKPlaceholder() {
 		String noAfk = TAB.getInstance().getConfiguration().config.getString("placeholders.afk-no", "");
 		String yesAfk = TAB.getInstance().getConfiguration().config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
@@ -164,6 +188,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 	}
 
+	/**
+	 * Registers vault placeholders
+	 */
 	private void registerVaultPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
 			placeholders.add(new PlayerPlaceholder("%vault-prefix%", 500) {
@@ -194,6 +221,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
+	/**
+	 * Registers position placeholders
+	 */
 	private void registerPositionPlaceholders() {
 		placeholders.add(new PlayerPlaceholder("%xPos%", 100) {
 			public String get(TabPlayer p) {
@@ -212,6 +242,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 	}
 
+	/**
+	 * Registers essentials placeholders
+	 */
 	private void registerEssentialsPlaceholders() {
 		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 1000) {
@@ -239,6 +272,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
+	/**
+	 * Registers synchronous placeholders
+	 */
 	private void registerSyncPlaceholders() {
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		for (String identifier : pl.allUsedPlaceholderIdentifiers) {

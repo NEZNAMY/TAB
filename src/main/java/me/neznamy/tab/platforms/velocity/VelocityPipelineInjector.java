@@ -16,8 +16,13 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class VelocityPipelineInjector extends PipelineInjector {
 
+	//handler to inject before
 	private final String INJECT_POSITION = "handler";
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param tab - tab instance
+	 */
 	public VelocityPipelineInjector(TAB tab) {
 		super(tab);
 	}
@@ -56,10 +61,18 @@ public class VelocityPipelineInjector extends PipelineInjector {
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 
+	/**
+	 * Custom channel duplex handler override
+	 */
 	public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
 
+		//injected player
 		private TabPlayer player;
-
+		
+		/**
+		 * Constructs new instance with given player
+		 * @param player - player to inject
+		 */
 		public VelocityChannelDuplexHandler(TabPlayer player) {
 			this.player = player;
 		}

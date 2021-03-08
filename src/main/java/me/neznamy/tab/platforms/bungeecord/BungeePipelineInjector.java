@@ -24,8 +24,13 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
 
+	//handler to inject before
 	private final String INJECT_POSITION = "inbound-boss";
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param tab - tab instance
+	 */
 	public BungeePipelineInjector(TAB tab) {
 		super(tab);
 	}
@@ -67,10 +72,18 @@ public class BungeePipelineInjector extends PipelineInjector {
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 	
+	/**
+	 * Custom channel duplex handler override
+	 */
 	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 		
+		//injected player
 		private TabPlayer player;
 		
+		/**
+		 * Constructs new instance with given player
+		 * @param player - player to inject
+		 */
 		public BungeeChannelDuplexHandler(TabPlayer player) {
 			this.player = player;
 		}

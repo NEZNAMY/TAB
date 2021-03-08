@@ -18,12 +18,19 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NMSStorage {
 
+	//instance of this class
 	private static NMSStorage instance;
+	
+	//field mapping changes in thermos
 	private Map<String, String> thermosFieldMappings = new HashMap<String, String>();
 	
+	//data watcher registry
 	public DataWatcherRegistry dataWatcherRegistry;
 	
+	//server package, such as "v1_16_R3"
 	private String serverPackage;
+	
+	//server minor version such as "16"
 	public int minorVersion;
 
 	public Field PING;
@@ -203,14 +210,25 @@ public class NMSStorage {
 		dataWatcherRegistry = new DataWatcherRegistry(DataWatcherRegistry);
 	}
 	
+	/**
+	 * Sets new instance
+	 * @param instance - new instance
+	 */
 	public static void setInstance(NMSStorage instance) {
 		NMSStorage.instance = instance;
 	}
 	
+	/**
+	 * Returns instance
+	 * @return instance
+	 */
 	public static NMSStorage getInstance() {
 		return instance;
 	}
 
+	/**
+	 * Puts thermos mapping changes into map
+	 */
 	private void loadThermosMappings() {
 		thermosFieldMappings.put("ping", "field_71138_i");
 		thermosFieldMappings.put("playerConnection", "field_71135_a");
@@ -483,6 +501,12 @@ public class NMSStorage {
 		}
 	}
 
+	/**
+	 * Returns class with given potential names in same order
+	 * @param names - possible class names
+	 * @return class for specified name(s)
+	 * @throws ClassNotFoundException - if class does not exist
+	 */
 	private Class<?> getNMSClass(String... names) throws ClassNotFoundException {
 		for (String name : names) {
 			try {
@@ -493,6 +517,12 @@ public class NMSStorage {
 		throw new ClassNotFoundException("No class found with possible names " + names);
 	}
 	
+	/**
+	 * Returns class from given name
+	 * @param name - class name
+	 * @return class from given name
+	 * @throws ClassNotFoundException - if class was not found
+	 */
 	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		try {
 			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
@@ -505,6 +535,12 @@ public class NMSStorage {
 		}
 	}
 
+	/**
+	 * Returns all fields of class with defined class type
+	 * @param clazz - class to check fields of
+	 * @param type - field type to check for
+	 * @return list of all fields with specified class type
+	 */
 	private List<Field> getFields(Class<?> clazz, Class<?> type){
 		List<Field> list = new ArrayList<Field>();
 		if (clazz == null) return list;
@@ -515,6 +551,13 @@ public class NMSStorage {
 		return list;
 	}
 	
+	/**
+	 * Returns field with specified name and makes it accessible
+	 * @param clazz - class to get field from
+	 * @param name - field name
+	 * @return accessible field with defined name
+	 * @throws NoSuchFieldException - if field was not found
+	 */
 	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
 		for (Field f : clazz.getDeclaredFields()) {
 			if (f.getName().equals(name)) {

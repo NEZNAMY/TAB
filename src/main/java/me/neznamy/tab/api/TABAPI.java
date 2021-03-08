@@ -24,49 +24,40 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  */
 public class TABAPI {
 
-
 	//placeholders registered via API
 	public static Map<String, Placeholder> APIPlaceholders = new HashMap<String, Placeholder>();
-	
-	
+
 	/**
 	 * Returns player object from given UUID
 	 * @return player object from given UUID
 	 * @param id - Player UUID
-	 * @since 2.8.3
 	 */
 	public static TabPlayer getPlayer(UUID id) {
 		return TAB.getInstance().getPlayer(id);
 	}
-	
-	
+
 	/**
 	 * Returns player object from given name
 	 * @return player object from given name
 	 * @param name - Player name
-	 * @since 2.8.3
 	 */
 	public static TabPlayer getPlayer(String name) {
 		return TAB.getInstance().getPlayer(name);
 	}
-	
-	
+
 	/**
 	 * Returns true if enabled, false if disabled
 	 * @return Whether unlimited nametag mode is enabled or not
 	 * @see enableUnlimitedNameTagModePermanently
-	 * @since 2.4.12
 	 */
 	public static boolean isUnlimitedNameTagModeEnabled() {
 		return TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx");
 	}
 
-
 	/**
 	 * Enables unlimited nametag mode permanently in config
 	 * @throws IllegalStateException if called from a proxy
 	 * @see isUnlimitedNameTagModeEnabled
-	 * @since 2.4.12
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {
 		if (isUnlimitedNameTagModeEnabled()) return;
@@ -76,11 +67,9 @@ public class TABAPI {
 		TAB.getInstance().load();
 	}
 
-
 	/**
 	 * Registers a player placeholder (placeholder with player-specific output)
 	 * @param placeholder - Placeholder handler
-	 * @since 2.6.5
 	 * @see registerServerPlaceholder
 	 * @see registerServerConstant
 	 */
@@ -91,11 +80,9 @@ public class TABAPI {
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
-
 	/**
 	 * Registers a server placeholder (placeholder with same output for all players)
 	 * @param placeholder - Placeholder handler
-	 * @since 2.6.5
 	 * @see registerPlayerPlaceholder
 	 * @see registerServerConstant
 	 */
@@ -105,12 +92,10 @@ public class TABAPI {
 		pl.registerPlaceholder(placeholder);
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
-	
 
 	/**
 	 * Registers a relational placeholder
 	 * @param placeholder - Placeholder handler
-	 * @since 2.8.0
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
@@ -119,19 +104,12 @@ public class TABAPI {
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
 	}
 
-
-	@Deprecated
-	public static Scoreboard createScoreboard(String title, List<String> lines) {
-		return createScoreboard("Unnamed scoreboard", title, lines);
-	}
-	
 	/**
 	 * Creates a new scoreboard
 	 * @param name - name of the scoreboard
 	 * @param title - the scoreboard title
 	 * @param lines - up to 15 lines of text (supports placeholders)
 	 * @return The new scoreboard
-	 * @since 2.8.8
 	 */
 	public static Scoreboard createScoreboard(String name, String title, List<String> lines) {
 		for (String line : lines) {
@@ -143,28 +121,45 @@ public class TABAPI {
 		sbm.APIscoreboards.add(sb);
 		return sb;
 	}
-	
+
 	/**
 	 * Registers a custom permission plugin
 	 * @param permission - permission plugin provider
-	 * @since 2.8.3
 	 */
 	public static void registerPermissionPlugin(PermissionPlugin permission) {
 		TAB.getInstance().setPermissionPlugin(permission);
 	}
-	
+
+	/**
+	 * Creates bossbar with specified parameters
+	 * @param name - internal name of bossbar
+	 * @param title - title
+	 * @param progress - progress (0-1)
+	 * @param color - color
+	 * @param style - style
+	 * @return the bossbar
+	 */
 	public static BossBar createBossBar(String name, String title, float progress, BarColor color, BarStyle style) {
 		return createBossBar(name, title, progress+"", color.toString(), style.toString());
 	}
-	
+
+	/**
+	 * Creates bossbar with specified parameters as strings to allow placeholder support
+	 * @param name - internal name of bossbar
+	 * @param title - title
+	 * @param progress - progress
+	 * @param color - color
+	 * @param style - style
+	 * @return the bossbar
+	 */
 	public static BossBar createBossBar(String name, String title, String progress, String color, String style) {
 		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (feature == null) throw new IllegalStateException("Bossbar feature is not enabled");
-		BossBar bar = new BossBarLine(TAB.getInstance(), name, null, color, style, title, progress);
+		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
 		feature.lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}
-	
+
 	/**
 	 * Returns placeholders registered via API
 	 * @return placeholders registered via API
@@ -172,7 +167,7 @@ public class TABAPI {
 	public static Map<String, Placeholder> getAPIPlaceholders(){
 		return APIPlaceholders;
 	}
-	
+
 	/**
 	 * Registers custom condition type and return true if it was registered or false if it was already registered. Useful since
 	 * /tab reload does not remove registered condition types.

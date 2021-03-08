@@ -15,7 +15,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBarLine;
  */
 public class AnnounceBarCommand extends SubCommand{
 
-
+	/**
+	 * Constructs new instance
+	 */
 	public AnnounceBarCommand() {
 		super("bar", "tab.announce.bar");
 	}

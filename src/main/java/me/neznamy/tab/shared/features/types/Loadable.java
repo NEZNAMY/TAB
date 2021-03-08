@@ -5,6 +5,13 @@ package me.neznamy.tab.shared.features.types;
  */
 public interface Loadable extends Feature {
 
+	/**
+	 * Loads all players and sends packets
+	 */
 	public void load();
+	
+	/**
+	 * Unloads all players and sends clear packets
+	 */
 	public void unload();
 }

@@ -33,6 +33,7 @@ public class Main {
 	//instance of proxyserver
 	public ProxyServer server;
 	
+	//metrics factory I guess
 	private Metrics.Factory metricsFactory;
 
 	//plugin message handler
@@ -44,6 +45,10 @@ public class Main {
 		this.metricsFactory = metricsFactory;
 	}
 
+	/**
+	 * Initializes plugin for velocity
+	 * @param event - velocity initialize event
+	 */
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!isVersionSupported()) {
@@ -100,6 +105,10 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * Unloads the plugin
+	 * @param event - proxy disable event
+	 */
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();

@@ -183,6 +183,10 @@ public interface Platform {
 		rename(config, "allign-tabsuffix-on-the-right", "align-tabsuffix-on-the-right");
 	}
 	
+	/**
+	 * Converts configuration options same on all platforms
+	 * @param file - file to convert
+	 */
 	public default void convertUniversalOptions(ConfigurationFile file) {
 		if (file.getName().equals("config.yml")) {
 			removeOld(file, "nametag-refresh-interval-milliseconds");

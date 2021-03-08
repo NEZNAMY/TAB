@@ -148,8 +148,8 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutScoreboardTeam{name=" + name + ",playerPrefix=" + playerPrefix + ",playerSuffix=" + playerSuffix + 
-				",nametagVisibility=" + nametagVisibility +",collisionRule=" + collisionRule + ",color=" + color + 
-				",players=" + players + ",method=" + method + ",options=" + options + "}";
+		return String.format("PacketPlayOutScoreboardTeam{name=%s,playerPrefix=%s,playerSuffix=%s,nametagVisibility=%s,"
+				+ "collisionRule=%s,color=%s,players=%s,method=%s,options=%s}",
+				name, playerPrefix, playerSuffix, nametagVisibility, collisionRule, color, players, method, options);
 	}
 }

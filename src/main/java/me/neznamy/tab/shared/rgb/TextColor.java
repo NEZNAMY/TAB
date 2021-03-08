@@ -24,7 +24,7 @@ public class TextColor {
 
 	
 	/**
-	 * Creates a new instance based on hex code as string
+	 * Constructs new instance based on hex code as string
 	 * @param hexCode - a 6-digit combination of hex numbers
 	 */
 	public TextColor(String hexCode) {
@@ -35,6 +35,11 @@ public class TextColor {
 		loadClosestColor();
 	}
 	
+	/**
+	 * Constructs new instance from given 6-digit hex code and legacy color
+	 * @param hexCode - 6-digit hex code
+	 * @param legacyColor color to use for legacy clients
+	 */
 	public TextColor(String hexCode, EnumChatFormat legacyColor) {
 		int hexColor = Integer.parseInt(hexCode, 16);
 		red = ((hexColor >> 16) & 0xFF);
@@ -45,7 +50,7 @@ public class TextColor {
 	}
 	
 	/**
-	 * Creates a new instance with given parameter
+	 * Constructs new instance with given parameter
 	 * @param legacyColor - legacy color
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
@@ -56,7 +61,7 @@ public class TextColor {
 	}
 	
 	/**
-	 * Creates a new instance with given parameters
+	 * Constructs new instance with given parameters
 	 * @param red - red value
 	 * @param green - green value
 	 * @param blue - blue value
@@ -69,11 +74,11 @@ public class TextColor {
 	}
 	
 	/**
-	 * Creates a new instance with given parameters
+	 * Constructs new instance with given parameters
 	 * @param red - red value
 	 * @param green - green value
 	 * @param blue - blue value
-	 * @param legacyColor
+	 * @param legacyColor - color to use for legacy clients
 	 */
 	public TextColor(int red, int green, int blue, EnumChatFormat legacyColor) {
 		this.red = red;
@@ -152,9 +157,8 @@ public class TextColor {
 		}
 	}
 	
-
 	/**
-	 * Returns a 6-digit HEX output from given colors
+	 * Returns a 6-digit HEX output of this color
 	 * @param red - red
 	 * @param green - green
 	 * @param blue - blue

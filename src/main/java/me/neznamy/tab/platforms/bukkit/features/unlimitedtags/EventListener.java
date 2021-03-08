@@ -22,11 +22,13 @@ import me.neznamy.tab.shared.cpu.UsageType;
  */
 public class EventListener implements Listener {
 
+	//entity tracking range
 	private final int ENTITY_TRACKING_RANGE = 48;
 	
 	//the nametag feature handler
 	private NameTagX feature;
 	
+	//list of players currently in a vehicle
 	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<TabPlayer, Entity>();
 
 	/**
@@ -62,7 +64,7 @@ public class EventListener implements Listener {
 	}
 
 	/**
-	 * Move event listener to send packets when /tab ntpreview is used
+	 * Move event listener to track vehicles & send own packets when using nametag preview
 	 * @param e - move event
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -73,6 +75,10 @@ public class EventListener implements Listener {
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, () -> processMove(p, e.getTo()));
 	}
 	
+	/**
+	 * Teleport event listener to track vehicles & send own packets when using nametag preview
+	 * @param e - teleport event
+	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onTeleport(PlayerTeleportEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
@@ -85,6 +91,12 @@ public class EventListener implements Listener {
 		playersInVehicle.remove(p);
 	}
 	
+	/**
+	 * Checks player for entity tracking range, processes packets of passengers and sends own
+	 * armor stand move if preview is used
+	 * @param player - player to process move of
+	 * @param newLocation - location player is moving/teleporting to
+	 */
 	private void processMove(TabPlayer player, Location newLocation) {
 		checkForTrackingRange(player, newLocation);
 		processPassengers((Entity) player.getPlayer());
@@ -93,6 +105,11 @@ public class EventListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Checks for tracking range and spawns/despawns armor stands if needed
+	 * @param player - player to check tracking range of
+	 * @param newLocation - location player moved/teleported to
+	 */
 	private void checkForTrackingRange(TabPlayer player, Location newLocation) {
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
 			if (other == player || !other.getWorldName().equals(player.getWorldName())) continue;
@@ -116,10 +133,20 @@ public class EventListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Returns flat distance between two locations ignoring Y value
+	 * @param loc1 - first location
+	 * @param loc2 - second location
+	 * @return distance in blocks
+	 */
 	private double getFlatDistance(Location loc1, Location loc2) {
 		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
 	}
 	
+	/**
+	 * Teleports armor stands of all passengers on specified vehicle
+	 * @param vehicle - entity to check passengers of
+	 */
 	private void processPassengers(Entity vehicle) {
 		for (Entity passenger : feature.getPassengers(vehicle)) {
 			if (passenger instanceof Player) {

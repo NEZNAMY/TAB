@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class PlayerUUIDCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public PlayerUUIDCommand() {
 		super("playeruuid", null);
 	}

@@ -27,8 +27,13 @@ import me.neznamy.tab.shared.command.level1.WidthCommand;
  */
 public class TabCommand extends SubCommand {
 
+	//tab instance
 	private TAB tab;
 	
+	/**
+	 * Constructs new instance with given parameter and registers all subcommands
+	 * @param tab - tab instance
+	 */
 	public TabCommand(TAB tab) {
 		super("tab", null);
 		this.tab = tab;

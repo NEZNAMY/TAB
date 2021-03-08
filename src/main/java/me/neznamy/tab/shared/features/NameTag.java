@@ -24,6 +24,8 @@ public abstract class NameTag implements Feature, Refreshable {
 	protected TAB tab;
 	protected List<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
+	private boolean collisionRule;
+	private List<String> revertedCollision;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
 	public Sorting sorting;
 	protected Map<TabPlayer, Boolean> collision = new HashMap<TabPlayer, Boolean>();
@@ -31,6 +33,8 @@ public abstract class NameTag implements Feature, Refreshable {
 	public NameTag(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.nametag", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		collisionRule = tab.getConfiguration().config.getBoolean("enable-collision", true);
+		revertedCollision = tab.getConfiguration().config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
 		sorting = new Sorting(tab);
 	}
 
@@ -148,7 +152,7 @@ public abstract class NameTag implements Feature, Refreshable {
 				updateTeamData(p);
 			}
 		} else {
-			boolean collision = !p.isDisguised() && TAB.getInstance().getConfiguration().revertedCollision.contains(p.getWorldName()) ? !TAB.getInstance().getConfiguration().collisionRule : TAB.getInstance().getConfiguration().collisionRule;
+			boolean collision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
 			if (this.collision.get(p) != collision) {
 				this.collision.put(p, collision);
 				updateTeamData(p);

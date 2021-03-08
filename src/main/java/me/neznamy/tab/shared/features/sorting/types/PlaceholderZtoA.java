@@ -2,15 +2,22 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.api.TabPlayer;
 
+/**
+ * Sorting by a placeholder from Z to A
+ */
 public class PlaceholderZtoA extends SortingType {
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param sortingPlaceholder - placeholder to sort by
+	 */
 	public PlaceholderZtoA(String sortingPlaceholder) {
 		super(sortingPlaceholder);
 	}
 	
 	@Override
 	public String getChars(TabPlayer p) {
-		char[] chars = setPlaceholders(sortingPlaceholder, p).toCharArray();
+		char[] chars = setPlaceholders(p).toCharArray();
 		for (int i=0; i<chars.length; i++) {
 			char c = chars[i];
 			if (c >= 65 && c <= 90) {

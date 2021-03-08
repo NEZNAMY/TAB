@@ -43,10 +43,18 @@ public enum TabFeature {
 	//user-friendly name to be used in /tab cpu
 	private String displayName;
 
+	/**
+	 * Constructs new instance with given display name
+	 * @param displayName - name to display in /tab cpu
+	 */
 	private TabFeature(String displayName){
 		this.displayName = displayName;
 	}
 	
+	/**
+	 * Sets display name to new value
+	 * @param displayName - new display name
+	 */
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}

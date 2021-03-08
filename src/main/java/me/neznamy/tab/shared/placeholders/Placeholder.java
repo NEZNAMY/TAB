@@ -10,15 +10,27 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * Representation of any server/player placeholder
+ * Representation of any placeholder
  */
 public abstract class Placeholder {
 
+	//refresh interval of the placeholder
 	private int refresh;
+	
+	//placeholder identifier including %
 	protected String identifier;
+	
+	//premium replacements
 	private Map<Object, String> replacements = new HashMap<Object, String>();
+	
+	//placeholders used in outputs of replacements
 	private List<String> outputPlaceholders = new ArrayList<String>();
 	
+	/**
+	 * Constructs new instance with given parameters and loads placeholder output replacements
+	 * @param identifier - placeholder identifier
+	 * @param refresh - refresh interval in millieconds
+	 */
 	public Placeholder(String identifier, int refresh) {
 		if (refresh % 50 != 0) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
 		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
@@ -35,18 +47,36 @@ public abstract class Placeholder {
 		}
 	}
 	
+	/**
+	 * Returns placeholder's identifier
+	 * @return placeholder's identifier
+	 */
 	public String getIdentifier() {
 		return identifier;
 	}
 	
+	/**
+	 * Returns placeholder's refresh interval
+	 * @return placeholder's refresh interval
+	 */
 	public int getRefresh() {
 		return refresh;
 	}
 	
+	/**
+	 * Returns list of all nested strings containing placeholder that this placeholder may return
+	 * @return list of all nested strings containing placeholder that this placeholder may return
+	 */
 	public String[] getNestedStrings(){
 		return replacements.values().toArray(new String[0]);
 	}
 	
+	/**
+	 * Replaces this placeholder in given string and returns output
+	 * @param s - string to replace this placeholder in
+	 * @param p - player to set placeholder for
+	 * @return string with this placeholder replaced
+	 */
 	public String set(String s, TabPlayer p) {
 		try {
 			String value = getLastValue(p);
@@ -60,6 +90,13 @@ public abstract class Placeholder {
 			return TAB.getInstance().getErrorManager().printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}
+	
+	/**
+	 * Finds placeholder output replacement
+	 * @param replacements - map of replacements from premiumconfig
+	 * @param originalOutput - original output of the placeholder
+	 * @return replaced placeholder output
+	 */
 	public static String findReplacement(Map<Object, String> replacements, String originalOutput) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
@@ -81,6 +118,13 @@ public abstract class Placeholder {
 		if (replacements.containsKey("else")) return replacements.get("else").toString();
 		return originalOutput;
 	}
+	
+	/**
+	 * Applies all placeholders from outputs
+	 * @param text - replaced placeholder
+	 * @param p - player to replace for
+	 * @return text with replaced placeholders in output
+	 */
 	private String setPlaceholders(String text, TabPlayer p) {
 		String replaced = text;
 		for (String s : outputPlaceholders) {
@@ -91,5 +135,10 @@ public abstract class Placeholder {
 		return replaced;
 	}
 	
+	/**
+	 * Returns last known value for defined player
+	 * @param p - player to check value for
+	 * @return last known value
+	 */
 	public abstract String getLastValue(TabPlayer p);
 }

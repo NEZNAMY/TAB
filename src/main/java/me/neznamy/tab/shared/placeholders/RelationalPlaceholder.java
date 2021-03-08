@@ -10,7 +10,7 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public abstract class RelationalPlaceholder extends Placeholder {
 	
-	//last known values
+	//last known values with key formatted as "viewer-target" to avoid extra dimension
 	public Map<String, String> lastValue = new HashMap<String, String>();
 
 	/**

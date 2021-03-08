@@ -37,6 +37,6 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutScoreboardDisplayObjective{slot=" + slot + ",objectiveName=" + objectiveName + "}";
+		return String.format("PacketPlayOutScoreboardDisplayObjective{slot=%s,objectiveName=%s}", slot, objectiveName);
 	}
 }

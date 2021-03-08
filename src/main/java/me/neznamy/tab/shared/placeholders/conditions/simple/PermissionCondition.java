@@ -7,8 +7,13 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public class PermissionCondition extends SimpleCondition {
 
+	//permission requirement
 	private String permission;
 	
+	/**
+	 * Constructs new instance with given condition line
+	 * @param line - condition line
+	 */
 	public PermissionCondition(String line) {
 		permission = line.split(":")[1];
 	}

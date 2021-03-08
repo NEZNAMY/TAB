@@ -4,10 +4,14 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * "leftSide!=rightSide" condition where both sides support placeholders
+ * "leftSide!=rightSide" condition
  */
 public class NotEqualsCondition extends SimpleCondition {
 
+	/**
+	 * Constructs new instance with given condition line
+	 * @param line - condition line
+	 */
 	public NotEqualsCondition(String line) {
 		String[] arr = line.split("!=");
 		String arg = "";

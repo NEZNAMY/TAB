@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class ReloadCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public ReloadCommand() {
 		super("reload", "tab.reload");
 	}

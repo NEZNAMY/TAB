@@ -21,21 +21,48 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 /**
  * Class for handling bossbar feature
  */
-public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener{
+public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener {
 
+	//tab instance
 	private TAB tab;
+	
+	//default bossbars
 	public List<String> defaultBars;
+	
+	//per-world / per-server bossbars
 	public Map<String, List<String>> perWorld;
+	
+	//registered bossbars
 	public Map<String, BossBarLine> lines = new HashMap<String, BossBarLine>();
+	
+	//toggle command
 	private String toggleCommand;
+	
+	//list of currently running bossbar announcements
 	public List<String> announcements = new ArrayList<String>();
+	
+	//saving toggle choice into file
 	public boolean remember_toggle_choice;
+	
+	//players with toggled bossbar
 	public List<String> bossbar_off_players = new ArrayList<String>();
+	
+	//if permission is required to toggle
 	public boolean permToToggle;
+	
+	//list of worlds / servers where bossbar feature is disabled entirely
 	private List<String> disabledWorlds;
+	
+	//time when bossbar announce ends, used for placeholder
 	public long announceEndTime;
+	
+	//if bossbar is hidden by default until toggle command is used
 	private boolean hiddenByDefault;
 
+	/**
+	 * Constructs new instance and loads configuration
+	 * @param tab - tab instance
+	 */
 	public BossBar(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
@@ -131,6 +158,10 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		return false;
 	}
 	
+	/**
+	 * Clears and resends all bossbars to specified player
+	 * @param p - player to process
+	 */
 	public void detectBossBarsAndSend(TabPlayer p) {
 		p.getActiveBossBars().clear();
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
@@ -139,6 +170,11 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		showBossBars(p, perWorld.get(p.getWorldName()));
 	}
 	
+	/**
+	 * Shows bossbars to player if display condition is met
+	 * @param p - player to show bossbars to
+	 * @param bars - list of bossbars to check
+	 */
 	private void showBossBars(TabPlayer p, List<String> bars) {
 		if (bars == null) return;
 		for (String defaultBar : bars) {
@@ -155,6 +191,11 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		return TabFeature.BOSSBAR;
 	}
 	
+	/**
+	 * Returns line from specified uuid
+	 * @param id - uuid of bossbar
+	 * @return bossbar with specified uuid
+	 */
 	public BossBarLine getLine(UUID id) {
 		for (BossBarLine line : lines.values()) {
 			if (line.uuid == id) return line;

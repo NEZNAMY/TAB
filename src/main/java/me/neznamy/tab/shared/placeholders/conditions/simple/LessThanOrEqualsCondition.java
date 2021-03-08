@@ -3,10 +3,14 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 /**
- * "leftSide<=rightSide" condition where leftSide supports placeholders
+ * "leftSide<=rightSide" condition
  */
 public class LessThanOrEqualsCondition extends SimpleCondition {
 
+	/**
+	 * Constructs new instance with given condition line
+	 * @param line - condition line
+	 */
 	public LessThanOrEqualsCondition(String line) {
 		String[] arr = line.split("<=");
 		setSides(arr[0], arr[1]);

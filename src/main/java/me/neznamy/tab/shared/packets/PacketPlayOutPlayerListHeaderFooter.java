@@ -47,7 +47,6 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut 
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutPlayerListHeaderFooter{header=" + header.toString(ProtocolVersion.SERVER_VERSION) + 
-				",footer=" + footer.toString(ProtocolVersion.SERVER_VERSION) + "}";
+		return String.format("PacketPlayOutPlayerListHeaderFooter{header=%s,footer=%s}", header, footer);
 	}
 }

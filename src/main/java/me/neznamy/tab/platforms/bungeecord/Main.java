@@ -61,8 +61,14 @@ public class Main extends Plugin {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 	
+	/**
+	 * TAB command for bungeecord
+	 */
 	public class BTABCommand extends Command implements TabExecutor {
 
+		/**
+		 * Constructs new instance
+		 */
 		public BTABCommand() {
 			super("btab", null);
 		}

@@ -10,6 +10,13 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  */
 public class ConditionOR extends Condition {
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param name - name of condition
+	 * @param conditions - list of condition lines
+	 * @param yes - value to return if at least one condition is met
+	 * @param no - value to return if no conditions are met
+	 */
 	public ConditionOR(String name, List<String> conditions, String yes, String no) {
 		super(name, conditions, yes, no);
 	}

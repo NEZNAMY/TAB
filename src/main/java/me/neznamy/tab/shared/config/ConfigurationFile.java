@@ -36,7 +36,15 @@ public abstract class ConfigurationFile {
 	//the file
 	protected File file;
 	
-	public ConfigurationFile(InputStream source, File destination, List<String> header) throws IOException {
+	/**
+	 * Constructs new instance and copies file from source to destination if it does not exist
+	 * @param source - source to copy from if file does not exist
+	 * @param destination - destination to load
+	 * @param header - comments on top of the file
+	 * @throws IllegalStateException - if file does not exist and source is null
+	 * @throws IOException - if I/O file operation fails
+	 */
+	public ConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, IOException {
 		this.header = header;
 		this.file = destination;
 		file.getParentFile().mkdirs();
@@ -67,6 +75,10 @@ public abstract class ConfigurationFile {
 		return values;
 	}
 	
+	/**
+	 * Replaces values with provided map
+	 * @param values - values to replace map with
+	 */
 	public void setValues(Map<String, Object> values){
 		this.values = values;
 	}

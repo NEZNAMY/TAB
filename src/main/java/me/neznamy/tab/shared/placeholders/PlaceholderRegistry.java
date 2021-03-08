@@ -7,5 +7,9 @@ import java.util.List;
  */
 public interface PlaceholderRegistry {
 
+	/**
+	 * Returns list of all placeholders that can be registered
+	 * @return list of all placeholders that can be registered
+	 */
 	public List<Placeholder> registerPlaceholders();
 }

@@ -21,9 +21,16 @@ import us.myles.ViaVersion.api.Via;
  */
 public class BukkitTabPlayer extends ITabPlayer {
 
+	//bukkit player
 	private Player player;
+	
+	//player connection
 	private Object playerConnection;
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param p - bukkit player
+	 */
 	public BukkitTabPlayer(Player p){
 		player = p;
 		world = p.getWorld().getName();
@@ -44,6 +51,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		init();
 	}
 
+	/**
+	 * Gets protocol version and returns it
+	 * @return protocol version of this player
+	 */
 	private int getProtocolVersion() {
 		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 			int version = getProtocolVersionPS();
@@ -56,6 +67,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		return ProtocolVersion.SERVER_VERSION.getNetworkId();
 	}
 
+	/**
+	 * Returns protocol version of this player using ProtocolSupport
+	 * @return protocol version of this player using ProtocolSupport
+	 */
 	private int getProtocolVersionPS(){
 		try {
 			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
@@ -67,6 +82,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 	}
 
+	/**
+	 * Returns protocol version of this player using ViaVersion
+	 * @return protocol version of this player using ViaVersion
+	 */
 	private int getProtocolVersionVia(){
 		try {
 			int version = Via.getAPI().getPlayerVersion(uniqueId);
@@ -117,6 +136,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		return isDisguisedLD() || isDisguisediDis();
 	}
 
+	/**
+	 * Returns disguise status of player using LibsDisguises
+	 * @return disguise status of player using LibsDisguises
+	 */
 	private boolean isDisguisedLD() {
 		try {
 			if (!Bukkit.getPluginManager().isPluginEnabled("LibsDisguises")) return false;
@@ -126,6 +149,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 	}
 
+	/**
+	 * Returns disguise status of player using iDisguise
+	 * @return disguise status of player using iDisguise
+	 */
 	private boolean isDisguisediDis() {
 		try {
 			if (!Bukkit.getPluginManager().isPluginEnabled("iDisguise")) return false;

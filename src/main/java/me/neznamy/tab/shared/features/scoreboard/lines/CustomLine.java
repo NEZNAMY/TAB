@@ -13,15 +13,29 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
  */
 public class CustomLine extends ScoreboardLine {
 
-	private Scoreboard parent;
+	//configured prefix
 	private String prefix;
+	
+	//configured name
 	private String name;
+	
+	//configured suffix
 	private String suffix;
+	
+	//configured score
 	private int score;
 	
+	/**
+	 * Constructs new instance with given parameters
+	 * @param parent - scoreboard this line belongs to
+	 * @param lineNumber - ID of this line
+	 * @param prefix - prefix
+	 * @param name - name
+	 * @param suffix - suffix
+	 * @param score - score
+	 */
 	public CustomLine(Scoreboard parent, int lineNumber, String prefix, String name, String suffix, int score) {
-		super(lineNumber);
-		this.parent = parent;
+		super(parent, lineNumber);
 		this.prefix = prefix;
 		this.name = name;
 		this.suffix = suffix;

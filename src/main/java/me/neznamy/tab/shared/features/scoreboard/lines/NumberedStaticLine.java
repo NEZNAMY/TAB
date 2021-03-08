@@ -11,6 +11,12 @@ import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
  */
 public class NumberedStaticLine extends StaticLine {
 
+	/**
+	 * Constructs new instance with given parameters
+	 * @param parent - scoreboard this line belongs to
+	 * @param lineNumber - ID of this line
+	 * @param text - text to display
+	 */
 	public NumberedStaticLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, "");
 	}

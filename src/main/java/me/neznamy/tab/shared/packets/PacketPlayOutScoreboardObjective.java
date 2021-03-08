@@ -59,8 +59,8 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return "PacketPlayOutScoreboardObjective{objectiveName=" + objectiveName + ",displayName=" + displayName + 
-				",renderType=" + renderType + ",method=" + method + "}";
+		return String.format("PacketPlayOutScoreboardObjective{objectiveName=%s,displayName=%s,renderType=%s,method=%s}",
+				objectiveName, displayName, renderType, method);
 	}
 	
 	/**

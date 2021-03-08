@@ -39,8 +39,13 @@ public class FeatureManager {
 	//list of registered features
 	private Map<String, Feature> features = new LinkedHashMap<String, Feature>();
 	
+	//tab instance
 	private TAB tab;
 	
+	/**
+	 * Constructs new instance
+	 * @param tab - tab instance
+	 */
 	public FeatureManager(TAB tab) {
 		this.tab = tab;
 	}
@@ -55,6 +60,11 @@ public class FeatureManager {
 		features.put(featureName, featureHandler);
 	}
 	
+	/**
+	 * Unregisters feature making it no longer receive events. This does not run unload method nor cancel
+	 * tasks created by the feature
+	 * @param featureName
+	 */
 	public void unregisterFeature(String featureName) {
 		features.remove(featureName);
 	}
@@ -301,6 +311,13 @@ public class FeatureManager {
 		}
 	}
 	
+	/**
+	 * Calls onPacketSend on all featurs that implement DisplayObjectivePacketListener and measures how long it took them to process
+	 * @param packetReceiver - player who received the packet
+	 * @param packet - the packet
+	 * @return true if packet should be cancelled, false if not
+	 * @throws Exception - if something fails
+	 */
 	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws Exception {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = tab.getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
@@ -315,6 +332,10 @@ public class FeatureManager {
 		return false;
 	}
 	
+	/**
+	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
+	 * @param packetReceiver - player who received the packet
+	 */
 	public void onObjective(TabPlayer packetReceiver, Object packet) throws Exception {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = tab.getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
@@ -327,6 +348,13 @@ public class FeatureManager {
 		}
 	}
 	
+	/**
+	 * Calls onPacketSend on all featurs that implement HeaderFooterPacketListener and measures how long it took them to process
+	 * @param packetReceiver - player who received the packet
+	 * @param packet - the packet
+	 * @return true if packet should be cancelled, false if not
+	 * @throws Exception - if something fails
+	 */
 	public boolean onHeaderFooter(TabPlayer packetReceiver, Object packet) throws Exception {
 		long time = System.nanoTime();
 		PacketPlayOutPlayerListHeaderFooter display = tab.getPacketBuilder().readHeaderFooter(packet, packetReceiver.getVersion());
@@ -341,6 +369,13 @@ public class FeatureManager {
 		return false;
 	}
 	
+	/**
+	 * Calls onChat on all featurs that implement ChatEventListener and measures how long it took them to process
+	 * @param sender - player who sent chat message
+	 * @param message - the message
+	 * @param cancelled - if event is cancelled or not
+	 * @return true if event should be cancelled, false if not
+	 */
 	public boolean onChat(TabPlayer sender, String message, boolean cancelled) {
 		boolean cancel = false;
 		for (Feature f : getAllFeatures()) {
@@ -352,15 +387,24 @@ public class FeatureManager {
 		return cancel;
 	}
 	
-	public void onSneak(TabPlayer sender, boolean isSneaking) {
+	/**
+	 * Calls onSneak on all featurs that implement SneakEventListener and measures how long it took them to process
+	 * @param player - player who sneaked
+	 * @param isSneaking - new sneak status
+	 */
+	public void onSneak(TabPlayer player, boolean isSneaking) {
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof SneakEventListener)) continue;
 			long time = System.nanoTime();
-			((SneakEventListener)f).onSneak(sender, isSneaking);
+			((SneakEventListener)f).onSneak(player, isSneaking);
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_TOGGLE_SNEAK_EVENT, System.nanoTime()-time);
 		}
 	}
 	
+	/**
+	 * Returns currently loaded nametag feature or null if disabled
+	 * @return currently loaded nametag feature
+	 */
 	public NameTag getNameTagFeature() {
 		if (isFeatureEnabled("nametag16")) return (NameTag) getFeature("nametag16");
 		return (NameTag) getFeature("nametagx");

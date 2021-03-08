@@ -10,6 +10,9 @@ import me.neznamy.tab.shared.features.bossbar.BossBar;
  */
 public class BossBarCommand extends SubCommand{
 
+	/**
+	 * Constructs new instance
+	 */
 	public BossBarCommand() {
 		super("bossbar", null);
 	}

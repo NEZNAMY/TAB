@@ -26,28 +26,64 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
  */
 public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener, ObjectivePacketListener, DisplayObjectivePacketListener{
 
+	//objective name
 	public static final String ObjectiveName = "TAB-Scoreboard";
+	
+	//display slot
 	public static final int DisplaySlot = 1;
 	
+	//tab instance
 	public TAB tab;
+	
+	//toggle command
 	private String toggleCommand;
+	
+	//list of disabled worlds/servers
 	private List<String> disabledWorlds;
+	
+	//default scoreboard
 	private String defaultScoreboard;
+	
+	//per-world / per-server scoreboards
 	private Map<String, String> perWorld;
+	
+	//defined scoreboards
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
+	
+	//using 1-15
 	public boolean useNumbers;
+	
+	//saving toggle choice into file
 	public boolean remember_toggle_choice;
+	
+	//list of players with disabled scoreboard
 	public List<String> sb_off_players = new ArrayList<String>();
+	
+	//scoreboards registered via API
 	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
+	
+	//permission required to toggle
 	public boolean permToToggle;
+	
+	//if use-numbers is false, displaying this number in all lines
 	public int staticNumber;
+	
+	//hidden by default, toggle command must be ran to show it
 	private boolean hiddenByDefault;
 
+	//scoreboard toggle on message
 	public String scoreboard_on;
+	
+	//scoreboard toggle off message
 	public String scoreboard_off;
 	
+	//currently active scoreboard announcement
 	public me.neznamy.tab.api.Scoreboard announcement;
 
+	/**
+	 * Constructs new instance and loads configuration
+	 * @param tab - tab instance
+	 */
 	public ScoreboardManager(TAB tab) {
 		this.tab = tab;
 		toggleCommand = tab.getConfiguration().premiumconfig.getString("scoreboard.toggle-command", "/sb");
@@ -85,6 +121,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		checkForMisconfiguration();
 	}
 
+	/**
+	 * Checks for misconfiguration and sends console warns if anything was found
+	 */
 	private void checkForMisconfiguration() {
 		if (!defaultScoreboard.equalsIgnoreCase("NONE") && !scoreboards.containsKey(defaultScoreboard)) {
 			tab.getErrorManager().startupWarn("Unknown scoreboard &e\"" + defaultScoreboard + "\"&c set as default scoreboard.");
@@ -139,6 +178,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 	}
 
+	/**
+	 * Sends the player scoreboard he should see according to conditions and worlds
+	 * @param p - player to send scoreboard to
+	 */
 	public void sendHighestScoreboard(TabPlayer p) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.isScoreboardVisible()) return;
 		String scoreboard = detectHighestScoreboard(p);
@@ -156,6 +199,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		unregisterScoreboard(p, false);
 	}
 
+	/**
+	 * Removes this player from registered users in scoreboard and sends unregister packets if set
+	 * @param p - player to unregister scoreboard to
+	 * @param sendUnregisterPacket - if unregister packets should be sent or not
+	 */
 	public void unregisterScoreboard(TabPlayer p, boolean sendUnregisterPacket) {
 		if (p.getActiveScoreboard() != null) {
 			if (sendUnregisterPacket) {
@@ -173,6 +221,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		sendHighestScoreboard(p);
 	}
 
+	/**
+	 * Returns currently highest scoreboard in chain for specified player
+	 * @param p - player to check
+	 * @return highest scoreboard player should see
+	 */
 	public String detectHighestScoreboard(TabPlayer p) {
 		String scoreboard = perWorld.get(p.getWorldName());
 		if (scoreboard == null) {
@@ -201,6 +254,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		return false;
 	}
 
+	/**
+	 * Returns map of currently defined scoreboards
+	 * @return map of currently defined scoreboards
+	 */
 	public Map<String, Scoreboard> getScoreboards(){
 		return scoreboards;
 	}
@@ -215,7 +272,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
 			receiver.setOtherPluginScoreboard(packet.objectiveName);
 			if (receiver.getActiveScoreboard() != null) {
-				tab.getCPUManager().runMeasuredTask("send packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
+				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
 			}
 		}
 		return false;
@@ -225,7 +282,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
 		if (packet.method == 1 && receiver.getOtherPluginScoreboard() != null && receiver.getOtherPluginScoreboard().equals(packet.objectiveName)) {
 			receiver.setOtherPluginScoreboard(null);
-			tab.getCPUManager().runMeasuredTask("send packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
+			tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
 	}
 }

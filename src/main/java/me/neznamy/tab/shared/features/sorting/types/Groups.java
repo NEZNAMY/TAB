@@ -5,12 +5,18 @@ import java.util.LinkedHashMap;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
+/**
+ * Sorting by primary permission groups
+ */
 public class Groups extends SortingType {
 
+	//map of sorted groups in config
 	private LinkedHashMap<String, String> sortedGroups;
 	
-	public Groups(String sortingPlaceholder) {
-		super(sortingPlaceholder);
+	/**
+	 * Constructs new instance
+	 */
+	public Groups() {
 		sortedGroups = loadSortingList();
 	}
 

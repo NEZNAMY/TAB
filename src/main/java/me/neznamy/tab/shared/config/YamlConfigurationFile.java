@@ -29,7 +29,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	private Yaml yaml;
 	
 	/**
-	 * Constructs new instance and tried to load configuration file
+	 * Constructs new instance and tries to load configuration file
 	 * @param source - source to copy file from if it does not exist
 	 * @param destination - destination of the file to be copied file to if needed and loaded
 	 * @throws IllegalStateException - when file does not exist and source is null
@@ -41,7 +41,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	}
 	
 	/**
-	 * Constructs new instance and tried to load configuration file
+	 * Constructs new instance and tries to load configuration file
 	 * @param source - source to copy file from if it does not exist
 	 * @param destination - destination of the file to be copied file to if needed and loaded
 	 * @param header - comments at the beginning of the file to be pasted when file changes or null if you do not want any

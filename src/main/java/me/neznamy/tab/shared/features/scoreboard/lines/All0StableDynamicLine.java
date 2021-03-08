@@ -10,6 +10,12 @@ import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
  */
 public class All0StableDynamicLine extends StableDynamicLine {
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param parent - scoreboard this line belongs to
+	 * @param lineNumber - ID of this line
+	 * @param text - text to display in the line
+	 */
 	public All0StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text);
 	}

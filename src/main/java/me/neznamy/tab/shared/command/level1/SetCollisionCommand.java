@@ -6,6 +6,9 @@ import me.neznamy.tab.shared.command.SubCommand;
 
 public class SetCollisionCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public SetCollisionCommand() {
 		super("setcollision", "tab.setcollision");
 	}

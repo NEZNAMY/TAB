@@ -8,5 +8,9 @@ import me.neznamy.tab.shared.features.types.Feature;
  */
 public interface JoinEventListener extends Feature {
 
+	/**
+	 * Processes join event
+	 * @param connectedPlayer - player who connected
+	 */
 	public void onJoin(TabPlayer connectedPlayer);
 }

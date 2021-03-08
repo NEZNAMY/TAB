@@ -221,6 +221,10 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 	}
 	
+	/**
+	 * Returns destroy packet
+	 * @return destroy packet
+	 */
 	private Object getDestroyPacket() {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityDestroyPacket(entityId);
@@ -229,6 +233,11 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 	}
 	
+	/**
+	 * Returns metadata packet with specified datawatcher
+	 * @param dataWatcher - datawatcher
+	 * @return metadata packet
+	 */
 	private Object getMetadataPacket(DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
@@ -237,6 +246,12 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 	}
 	
+	/**
+	 * Returns spawn packet with specified parameters
+	 * @param loc - location to spawn at
+	 * @param dataWatcher - datawatcher
+	 * @return spawn packet
+	 */
 	private Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);

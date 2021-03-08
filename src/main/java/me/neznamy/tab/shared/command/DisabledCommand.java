@@ -5,8 +5,18 @@ import java.util.List;
 
 import me.neznamy.tab.shared.TAB;
 
+/**
+ * Command processor when TAB is disabled due to broken configuration file
+ */
 public class DisabledCommand {
 
+	/**
+	 * Performs command and return messages to be sent back
+	 * @param args - command arguments
+	 * @param hasReloadPermission - if player has reload permission or not
+	 * @param hasAdminPermission - if player has admin permission or not
+	 * @return list of messages to send back
+	 */
 	public List<String> execute(String[] args, boolean hasReloadPermission, boolean hasAdminPermission) {
 		List<String> messages = new ArrayList<String>();
 		if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {

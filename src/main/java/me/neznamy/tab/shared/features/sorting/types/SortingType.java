@@ -10,18 +10,38 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 
 public abstract class SortingType {
 
+	//number to add to / subtract from to prevent incorrect sorting with negative values
 	protected final int DEFAULT_NUMBER = 500000000;
+	
+	//placeholder to sort by, if sorting type uses it
 	protected String sortingPlaceholder;
+	
+	//used placeholders in sorting placeholder
 	private List<String> usedPlaceholders;
 	
+	/**
+	 * Constructs new instance
+	 */
+	public SortingType() {
+	}
+	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param sortingPlaceholder - placeholder to sort by
+	 */
 	public SortingType(String sortingPlaceholder){
 		this.sortingPlaceholder = sortingPlaceholder;
 		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(sortingPlaceholder);
 	}
 	
-	protected String setPlaceholders(String string, TabPlayer player) {
-		String replaced = string;
-		if (string.contains("%")) {
+	/**
+	 * Applies all placeholders for specified player
+	 * @param player - player to set placeholders for
+	 * @return text with replaced placeholders
+	 */
+	protected String setPlaceholders(TabPlayer player) {
+		String replaced = sortingPlaceholder;
+		if (sortingPlaceholder.contains("%")) {
 			for (String identifier : usedPlaceholders) {
 				Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 				if (pl != null && replaced.contains(pl.getIdentifier())) {
@@ -32,6 +52,10 @@ public abstract class SortingType {
 		return replaced;
 	}
 	
+	/**
+	 * Loads sorting list from config and applies sorting numbers
+	 * @return map of lowercased groups with their sorting characters
+	 */
 	protected LinkedHashMap<String, String> loadSortingList() {
 		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<String, String>();
 		int index = 1;
@@ -50,5 +74,10 @@ public abstract class SortingType {
 		return sortedGroups;
 	}
 	
+	/**
+	 * Returns current sorting characters of this sorting type for specified player
+	 * @param p - player to get chars for
+	 * @return an as-short-as-possible character sequence for unique sorting
+	 */
 	public abstract String getChars(TabPlayer p);
 }

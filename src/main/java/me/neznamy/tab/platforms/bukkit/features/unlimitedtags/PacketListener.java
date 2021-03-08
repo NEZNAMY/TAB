@@ -22,11 +22,24 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  */
 public class PacketListener implements RawPacketListener, PlayerInfoPacketListener {
 
+	//main feature
 	private NameTagX nameTagX;
+	
+	//nms storage
 	private NMSStorage nms;
+	
+	//tab instance
 	private TAB tab;
+	
+	//if modifying npc names or not
 	private boolean modifyNPCnames;
 
+	/**
+	 * Constructs new instance with given parameters and loads config options
+	 * @param nameTagX - main feature
+	 * @param nms - nms storage
+	 * @param tab - tab instance
+	 */
 	public PacketListener(NameTagX nameTagX, NMSStorage nms, TAB tab) {
 		this.nameTagX = nameTagX;
 		this.nms = nms;
@@ -60,6 +73,11 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 		}
 	}
 
+	/**
+	 * Processes entity move packet
+	 * @param receiver - packet receiver
+	 * @param entityId - entity that moved
+	 */
 	public void onEntityMove(TabPlayer receiver, int entityId) {
 		TabPlayer pl = nameTagX.entityIdMap.get(entityId);
 		List<Entity> vehicleList;

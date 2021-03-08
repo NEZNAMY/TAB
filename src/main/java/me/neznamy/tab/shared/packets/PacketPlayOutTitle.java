@@ -100,6 +100,14 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	protected Object build(ProtocolVersion clientVersion) throws Exception {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
+	
+	/**
+	 * An override to toString() method for better output
+	 */
+	@Override
+	public String toString() {
+		return String.format("PacketPlayOutTitle{action%s,text=%s,fadeIn=%s,stay=%s,fadeOut=%s}", action, text, fadeIn, stay, fadeOut);
+	}
 
 	/**
 	 * List of possible packet actions

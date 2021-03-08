@@ -40,9 +40,16 @@ import us.myles.viaversion.libs.gson.JsonParser;
 @SuppressWarnings("unchecked")
 public class BukkitPacketBuilder implements PacketBuilder {
 
+	//nms storage
 	private NMSStorage nms;
+	
+	//entity type ids
 	private Map<EntityType, Integer> entityIds = new HashMap<EntityType, Integer>();
 
+	/**
+	 * Constructs new instance with given parameter
+	 * @param nms - nms storage
+	 */
 	public BukkitPacketBuilder(NMSStorage nms) {
 		this.nms = nms;
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
@@ -72,6 +79,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return buildBossPacketEntity(packet, clientVersion);
 	}
 
+	/**
+	 * Build 1.9 boss packet
+	 * @param packet - packet to build
+	 * @param clientVersion - client version
+	 * @return 1.9 bossbar packet
+	 * @throws Exception - if something fails
+	 */
 	private Object buildBossPacket19(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		Object nmsPacket = nms.newPacketPlayOutBoss.newInstance();
 		nms.PacketPlayOutBoss_UUID.set(nmsPacket, packet.id);
@@ -86,7 +100,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return nmsPacket;
 	}
 
-	private Object buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
+	/**
+	 * Builds 1.9 bossbar packet bytebuf using viaversion
+	 * @param packet - packet to build
+	 * @param clientVersion - client version
+	 * @return bytebuf with 1.9 bossbar packet content
+	 * @throws Exception - if something fails
+	 */
+	private ByteBuf buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
 		try {
 			ByteBuf buf = Unpooled.buffer();
@@ -125,6 +146,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 	}
 
+	/**
+	 * Builds entity bossbar packet
+	 * @param packet - packet to build
+	 * @param clientVersion - client version
+	 * @return entity bossbar packet
+	 * @throws Exception - if something fails
+	 */
 	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (packet.operation == Action.UPDATE_STYLE) return null; //nothing to do here
 
@@ -282,14 +310,37 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				packet.text == null ? null : stringToComponent(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion)), packet.fadeIn, packet.stay, packet.fadeOut);
 	}
 	
+	/**
+	 * Builds entity destroy packet with given parameter
+	 * @param ids - entity ids to destroy
+	 * @return destroy packet
+	 * @throws Exception - if reflection fails
+	 */
 	public Object buildEntityDestroyPacket(int... ids) throws Exception {
 		return nms.newPacketPlayOutEntityDestroy.newInstance(ids);
 	}
 	
+	/**
+	 * Builds entity metadata packet with given parameters
+	 * @param entityId - entity id
+	 * @param dataWatcher - datawatcher
+	 * @return metadata packet
+	 * @throws Exception - if reflection fails
+	 */
 	public Object buildEntityMetadataPacket(int entityId, DataWatcher dataWatcher) throws Exception {
 		return nms.newPacketPlayOutEntityMetadata.newInstance(entityId, dataWatcher.toNMS(), true);
 	}
 	
+	/**
+	 * Builds entity spawn packet with given parameters
+	 * @param entityId - entity id
+	 * @param uuid - entity uuid
+	 * @param entityType - entity type
+	 * @param loc - location to spawn at
+	 * @param dataWatcher - datawatcher
+	 * @return entity spawn packet
+	 * @throws Exception - if reflection fails
+	 */
 	public Object buildEntitySpawnPacket(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) throws Exception {
 		Object nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance();
 		nms.PacketPlayOutSpawnEntityLiving_ENTITYID.set(nmsPacket, entityId);
@@ -312,6 +363,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return nmsPacket;
 	}
 	
+	/**
+	 * Builds entity teleport packet with given parameters
+	 * @param entityId - entity id
+	 * @param location - location to teleport to
+	 * @return entity teleport packet
+	 * @throws Exception - if reflection fails
+	 */
 	public Object buildEntityTeleportPacket(int entityId, Location location) throws Exception {
 		Object nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance();
 		nms.PacketPlayOutEntityTeleport_ENTITYID.set(nmsPacket, entityId);

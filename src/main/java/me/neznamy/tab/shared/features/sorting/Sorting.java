@@ -18,19 +18,37 @@ import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderZtoA;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 
+/**
+ * Class for handling player sorting rules
+ */
 public class Sorting {
 
+	//tab instance
 	private TAB tab;
+	
+	//nametag feature
 	private NameTag nametags;
+	
+	//map of all registered sorting types
 	private Map<String, SortingType> types = new HashMap<String, SortingType>();
+	
+	//placeholder to sort by, if sorting type uses it
 	public String sortingPlaceholder;
+	
+	//if sorting is case senstitive or not
 	private boolean caseSensitiveSorting = true;
+	
+	//active sorting types
 	public List<SortingType> sorting;
 	
+	/**
+	 * Constructs new instance, loads data from configuration and starts repeating task
+	 * @param tab - tab instance
+	 */
 	public Sorting(TAB tab) {
 		this.tab = tab;
-		types.put("GROUPS", new Groups(sortingPlaceholder));
-		types.put("GROUP_PERMISSIONS", new GroupPermission(sortingPlaceholder));
+		types.put("GROUPS", new Groups());
+		types.put("GROUP_PERMISSIONS", new GroupPermission());
 		if (tab.getConfiguration().premiumconfig != null) {
 			sortingPlaceholder = tab.getConfiguration().premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			caseSensitiveSorting = tab.getConfiguration().premiumconfig.getBoolean("case-sentitive-sorting", true);
@@ -65,6 +83,11 @@ public class Sorting {
 		});
 	}
 	
+	/**
+	 * Compiles sorting type chain into classes
+	 * @param string - sorting types separated by "_THEN_"
+	 * @return list of compiled sorting types
+	 */
 	private List<SortingType> compile(String string){
 		List<SortingType> list = new ArrayList<SortingType>();
 		for (String element : string.split("_THEN_")) {
@@ -79,6 +102,11 @@ public class Sorting {
 		return list;
 	}
 	
+	/**
+	 * Constructs team name for specified player
+	 * @param p - player to build team name for
+	 * @return unique up to 16 character long sequence that sorts the player
+	 */
 	public String getTeamName(TabPlayer p) {
 		String teamName = "";
 		for (SortingType type : sorting) {
@@ -94,6 +122,13 @@ public class Sorting {
 		return checkTeamName(p, teamName, 65);
 	}
 	
+	/**
+	 * Checks if team name is available and proceeds to try new values until free name is found
+	 * @param p - player to build team name for
+	 * @param currentName - current up to 15 character long teamname start
+	 * @param id - current character to check as 16th character
+	 * @return first available full team name
+	 */
 	private String checkTeamName(TabPlayer p, String currentName, int id) {
 		String potentialTeamName = currentName;
 		if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
@@ -107,6 +142,10 @@ public class Sorting {
 		return potentialTeamName;
 	}
 	
+	/**
+	 * Converts sorting types into user-friendly sorting types into /tab debug
+	 * @return user-friendly representation of sorting types
+	 */
 	public String typesToString() {
 		String[] elements = new String[sorting.size()];
 		for (int i=0; i<sorting.size(); i++) {

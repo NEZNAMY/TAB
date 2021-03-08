@@ -14,6 +14,9 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
  */
 public class WidthCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance
+	 */
 	public WidthCommand() {
 		super("width", "tab.width");
 	}
@@ -77,6 +80,12 @@ public class WidthCommand extends SubCommand {
 		}
 	}
 	
+	/**
+	 * Returns line of text with characters that build specified text width
+	 * @param width - with to display
+	 * @param c - character to set click action to
+	 * @return line of text with characters that build specified text width
+	 */
 	private IChatBaseComponent getText(int width, int c) {
 		String text = "";
 		int pixelsRemaining = width + 1;

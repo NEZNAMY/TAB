@@ -137,6 +137,10 @@ public enum EnumChatFormat {
 		return '\u00a7' + "" + character;
 	}
 	
+	/**
+	 * Returns character representing this color
+	 * @return character representing this color
+	 */
 	public char getCharacter() {
 		return character;
 	}

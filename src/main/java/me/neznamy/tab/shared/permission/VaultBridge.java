@@ -7,12 +7,17 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
- * Class to take groups from bungeecord config.yml when no permission plugin is found
+ * Class to take groups from Vault on bukkit side if no permission plugin on bungeecord is found
  */
 public class VaultBridge implements PermissionPlugin {
 
+	//plugin message handler to request groups through
 	private PluginMessageHandler plm;
 	
+	/**
+	 * Constructs new instance with given parameter
+	 * @param plm - plugin message handler to request groups through
+	 */
 	public VaultBridge(PluginMessageHandler plm) {
 		this.plm = plm;
 	}

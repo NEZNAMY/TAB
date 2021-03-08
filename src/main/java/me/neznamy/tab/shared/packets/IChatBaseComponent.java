@@ -19,25 +19,52 @@ import me.neznamy.tab.shared.rgb.TextColor;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
+	//empty translatable
 	private final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
+	
+	//empty text
 	private final String EMPTY_TEXT = "{\"text\":\"\"}";
+	
+	//rgb utils instance
 	private static final RGBUtils rgb = new RGBUtils();
 
+	//component text
 	private String text;
 
+	//component color
 	private TextColor color;
+	
+	//bold flag
 	private Boolean bold;
+	
+	//italic flag
 	private Boolean italic;
+	
+	//underlines flag
 	private Boolean underlined;
+	
+	//strikethrough flag
 	private Boolean strikethrough;
+	
+	//obfuscated flag
 	private Boolean obfuscated;
 
+	//click action
 	private ClickAction clickAction;
+	
+	//value on click
 	private Object clickValue;
+	
+	//hover action
 	private HoverAction hoverAction;
+	
+	//value on hover
 	private Object hoverValue;
 
+	//extra components
 	private List<IChatBaseComponent> extra;
+	
+	//json builder
 	private JSONObject jsonObject = new JSONObject();
 
 	/**
@@ -355,7 +382,7 @@ public class IChatBaseComponent {
 	 * @param item - item to show
 	 * @return self
 	 */
-	/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
+/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
 		try {
 			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			return onHover(HoverAction.SHOW_ITEM, Class.forName("net.minecraft.server." + pack + ".ItemStack")
@@ -511,6 +538,9 @@ public class IChatBaseComponent {
 		return jsonObject.toString();
 	}
 	
+	/**
+	 * Converts all RGB colors everywhere in this component and it's extras into legacy codes
+	 */
 	private void convertColorsToLegacy() {
 		if (color != null) {
 			jsonObject.put("color", color.getLegacyColor().toString().toLowerCase());
@@ -615,6 +645,12 @@ public class IChatBaseComponent {
 		return new IChatBaseComponent("").setExtra(components);
 	}
 	
+	/**
+	 * Returns true if text contains legacy color request at defined RGB index start
+	 * @param text - text to check
+	 * @param i - current index start
+	 * @return true if legacy color is defined, false if not
+	 */
 	private static boolean containsLegacyCode(String text, int i) {
 		if (text.charAt(i+7) != '|') return false;
 		return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
@@ -750,9 +786,7 @@ public class IChatBaseComponent {
 	 */
 	public enum ClickAction {
 		OPEN_URL,
-		@Deprecated OPEN_FILE,//Cannot be sent by server
 		RUN_COMMAND,
-		@Deprecated TWITCH_USER_INFO, //Removed in 1.9
 		CHANGE_PAGE,
 		SUGGEST_COMMAND,
 		COPY_TO_CLIPBOARD; //since 1.15
@@ -765,6 +799,5 @@ public class IChatBaseComponent {
 		SHOW_TEXT,
 		SHOW_ITEM,
 		SHOW_ENTITY,
-		@Deprecated SHOW_ACHIEVEMENT;//Removed in 1.12
 	}
 }

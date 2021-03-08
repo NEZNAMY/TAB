@@ -12,6 +12,9 @@ import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
  */
 public class AnnounceCommand extends SubCommand {
 
+	/**
+	 * Constructs new instance and registers subcommands
+	 */
 	public AnnounceCommand() {
 		super("announce", null);
 		subcommands.put("bar", new AnnounceBarCommand());

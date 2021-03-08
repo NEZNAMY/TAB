@@ -53,10 +53,21 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	protected Map<String, String> attributes = new HashMap<String, String>();
 
-	public void init() {
+	protected void init() {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
 	}
 
+	private void setProperty(String identifier, String rawValue, String source) {
+		Property p = getProperty(identifier);
+		if (p == null) {
+			properties.put(identifier, new Property(this, rawValue, source));
+		} else {
+			p.changeRawValue(rawValue);
+			p.setSource(source);
+		}
+	}
+	
+	@Override
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
 		IChatBaseComponent component;
@@ -68,24 +79,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		sendCustomPacket(new PacketPlayOutChat(component));
 	}
 
+	@Override
 	public void sendMessage(IChatBaseComponent message) {
 		sendCustomPacket(new PacketPlayOutChat(message));
 	}
-
-	public void setProperty(String identifier, String rawValue, String source) {
-		Property p = getProperty(identifier);
-		if (p == null) {
-			properties.put(identifier, new Property(this, rawValue, source));
-		} else {
-			p.changeRawValue(rawValue);
-			p.setSource(source);
-		}
-	}
-
-
-	/*
-	 *  Implementing interface
-	 */
 
 	@Override
 	public String getName() {
@@ -389,7 +386,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (scoreboardVisible == visible) return;
 		scoreboardVisible = visible;
 		ScoreboardManager scoreboardManager = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
-		if (scoreboardManager == null) throw new IllegalStateException("Scoreboard feature is not enabled");
+		if (scoreboardManager == null) return;
 		if (visible) {
 			scoreboardManager.sendHighestScoreboard(this);
 			if (sendToggleMessage) {

@@ -9,6 +9,9 @@ import me.neznamy.tab.shared.command.SubCommand;
  */
 public class NTPreviewCommand extends SubCommand{
 
+	/**
+	 * Constructs new instance
+	 */
 	public NTPreviewCommand() {
 		super("ntpreview", "tab.ntpreview");
 	}

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.cpu;
 
 /**
  * Enum containing all reasons features require CPU time
+ * This includes events, packets, repeating tasks and other
  */
 public enum UsageType {
 

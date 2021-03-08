@@ -4,10 +4,14 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * "leftSide>=rightSide" condition where leftSide supports placeholders
+ * "leftSide>=rightSide" condition
  */
 public class MoreThanOrEqualsCondition extends SimpleCondition {
 
+	/**
+	 * Constructs new instance with given condition line
+	 * @param line - condition line
+	 */
 	public MoreThanOrEqualsCondition(String line) {
 		String[] arr = line.split(">=");
 		setSides(arr[0], arr[1]);
