@@ -49,8 +49,6 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	public Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
-	
-	public long lastSuccessfulRefresh;
 
 	public PlaceholderManager(TAB tab){
 		this.tab = tab;
@@ -58,7 +56,6 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		findAllUsed(tab.getConfiguration().animation.getValues());
 		findAllUsed(tab.getConfiguration().bossbar.getValues());
 		if (tab.getConfiguration().premiumconfig != null) findAllUsed(tab.getConfiguration().premiumconfig.getValues());
-		
 		loadRefreshIntervals();
 		AtomicInteger atomic = new AtomicInteger();
 		tab.getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
@@ -75,57 +72,64 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				boolean somethingChanged = false;
 				for (String identifier : allUsedPlaceholderIdentifiers) {
 					Placeholder placeholder = getPlaceholder(identifier);
-					if (placeholder == null) continue;
-					if (loopTime % placeholder.getRefresh() != 0) continue;
-					if (placeholder instanceof RelationalPlaceholder) {
-						RelationalPlaceholder relPlaceholder = (RelationalPlaceholder) placeholder;
-						long startTime = System.nanoTime();
-						for (TabPlayer p1 : players) {
-							for (TabPlayer p2 : players) {
-								if (relPlaceholder.update(p1, p2)) {
-									if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
-									forceUpdate.get(p2).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
-									somethingChanged = true;
-								}
-								if (relPlaceholder.update(p2, p1)) {
-									if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
-									forceUpdate.get(p1).addAll(getPlaceholderUsage(relPlaceholder.getIdentifier()));
-									somethingChanged = true;
-								}
-							}
-						}
-						tab.getCPUManager().addPlaceholderTime(relPlaceholder.getIdentifier(), System.nanoTime()-startTime);
-					}
-					if (placeholder instanceof PlayerPlaceholder) {
-						long startTime = System.nanoTime();
-						for (TabPlayer all : players) {
-							if (((PlayerPlaceholder)placeholder).update(all)) {
-								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
-								update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
-								somethingChanged = true;
-							}
-						}
-						tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
-					}
-					if (placeholder instanceof ServerPlaceholder) {
-						long startTime = System.nanoTime();
-						if (((ServerPlaceholder)placeholder).update()) {
-							Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
-							somethingChanged = true;
-							for (TabPlayer all : players) {
-								if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
-								update.get(all).addAll(usage);
-							}
-						}
-						tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
-					}
+					if (placeholder == null || loopTime % placeholder.getRefresh() != 0) continue;
+					if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder(players, (RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
+					if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder(players, (PlayerPlaceholder) placeholder, update)) somethingChanged = true;
+					if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder(players, (ServerPlaceholder) placeholder, update)) somethingChanged = true;
 				}
-				if (somethingChanged) {
-					refresh(forceUpdate, update);
-				}
-				lastSuccessfulRefresh = System.currentTimeMillis();
+				if (somethingChanged) refresh(forceUpdate, update);
 			}
 		});
+	}
+	
+	private boolean updateRelationalPlaceholder(Collection<TabPlayer> players, RelationalPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> forceUpdate) {
+		boolean somethingChanged = false;
+		long startTime = System.nanoTime();
+		for (TabPlayer p1 : players) {
+			for (TabPlayer p2 : players) {
+				if (placeholder.update(p1, p2)) {
+					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
+					forceUpdate.get(p2).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+					somethingChanged = true;
+				}
+				if (placeholder.update(p2, p1)) {
+					if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
+					forceUpdate.get(p1).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+					somethingChanged = true;
+				}
+			}
+		}
+		tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+		return somethingChanged;
+	}
+	
+	private boolean updatePlayerPlaceholder(Collection<TabPlayer> players, PlayerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
+		boolean somethingChanged = false;
+		long startTime = System.nanoTime();
+		for (TabPlayer all : players) {
+			if (placeholder.update(all)) {
+				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
+				update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+				somethingChanged = true;
+			}
+		}
+		tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+		return somethingChanged;
+	}
+	
+	private boolean updateServerPlaceholder(Collection<TabPlayer> players, ServerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
+		boolean somethingChanged = false;
+		long startTime = System.nanoTime();
+		if (placeholder.update()) {
+			Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
+			somethingChanged = true;
+			for (TabPlayer all : players) {
+				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
+				update.get(all).addAll(usage);
+			}
+		}
+		tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+		return somethingChanged;
 	}
 	
 	private void loadRefreshIntervals() {
