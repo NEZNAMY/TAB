@@ -239,7 +239,7 @@ public interface Platform {
 	public default void loadUniversalFeatures() {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().config.getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter(tab));
-		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix(tab));
+		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
 		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
 		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
 		if ((boolean)tab.getConfiguration().getSecretOption("remove-ghost-players", false)) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
@@ -250,7 +250,7 @@ public interface Platform {
 			if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist, tab));
 		}
 		tab.getFeatureManager().registerFeature("group", new GroupRefresher(tab));
-		tab.getFeatureManager().registerFeature("info", new PluginInfo(tab));
+		tab.getFeatureManager().registerFeature("info", new PluginInfo());
 		new UpdateChecker(tab);
 		if ((boolean)tab.getConfiguration().getSecretOption("layout", false)) {
 			tab.getFeatureManager().registerFeature("layout", new Layout(tab));

@@ -10,16 +10,20 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
- * Feature handler for spectator fix feature
+ * Cancelling gamemode change packet to spectator gamemode to avoid players being moved on
+ * the bottom of tablist with transparent name. Does not work on self as that would result
+ * in players not being able to clip through walls.
  */
 public class SpectatorFix implements PlayerInfoPacketListener {
 
-	private TAB tab;
+	//if bypass permission should be enabled
 	private boolean allowBypass;
 	
-	public SpectatorFix(TAB tab) {
-		this.tab = tab;
-		allowBypass = tab.getConfiguration().config.getBoolean("allow-spectator-bypass-permission", false);
+	/**
+	 * Constructs new instance and loads config options
+	 */
+	public SpectatorFix() {
+		allowBypass = TAB.getInstance().getConfiguration().config.getBoolean("allow-spectator-bypass-permission", false);
 	}
 	
 	@Override
@@ -28,7 +32,7 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 		if (info.action != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.entries) {
 			if (playerInfoData.gameMode == EnumGamemode.SPECTATOR) {
-				TabPlayer changed = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				TabPlayer changed = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (changed != receiver) playerInfoData.gameMode = EnumGamemode.CREATIVE;
 			}
 		}
