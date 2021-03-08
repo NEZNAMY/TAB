@@ -153,7 +153,7 @@ public abstract class NameTag implements Feature, Refreshable {
 			}
 		} else {
 			boolean collision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
-			if (this.collision.get(p) != collision) {
+			if (this.collision.get(p) == null || this.collision.get(p) != collision) {
 				this.collision.put(p, collision);
 				updateTeamData(p);
 			}
