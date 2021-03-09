@@ -16,7 +16,6 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;
@@ -156,7 +155,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (packet.operation == Action.UPDATE_STYLE) return null; //nothing to do here
 
-		int entityId = ((BossBar)TAB.getInstance().getFeatureManager().getFeature("bossbar")).getLine(packet.id).entityId;
+		int entityId = Math.abs(packet.id.hashCode());
 		if (packet.operation == Action.REMOVE) {
 			return buildEntityDestroyPacket(entityId);
 		}

@@ -15,20 +15,14 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
  */
 public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 
-	//entity id counter
-	private static int idCounter = 1000000000;
-	
 	//bossbar name
 	public String name;
 	
 	//display condition
 	public Condition displayCondition;
 	
-	//uuid for 1.9+
+	//uuid
 	public UUID uuid;
-	
-	//entity id for <1.9
-	public int entityId = idCounter++;
 	
 	//bossbar style
 	public String style;
@@ -138,8 +132,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	}
 	
 	@Override
-	public int getEntityId() {
-		return entityId;
+	public UUID getUniqueId() {
+		return uuid;
 	}
 	
 	@Override

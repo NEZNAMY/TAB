@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.bossbar;
 
+import java.util.UUID;
+
 public interface BossBar {
 
 	/**
@@ -9,10 +11,10 @@ public interface BossBar {
 	public String getName();
 	
 	/**
-	 * Returns entity id of this wither on 1.8
-	 * @return entity id of this wither
+	 * Returns uuid of this bossbar
+	 * @return uuid of this bossbar
 	 */
-	public int getEntityId();
+	public UUID getUniqueId();
 	
 	/**
 	 * Sets bossbar title to specified string, supporting placeholders

@@ -35,7 +35,7 @@ public class BossBar_legacy implements RespawnEventListener {
 					if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 					for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
 						try {
-							all.sendPacket(((BukkitPacketBuilder)tab.getPacketBuilder()).buildEntityTeleportPacket(l.getEntityId(), getWitherLocation(all)), TabFeature.BOSSBAR);
+							all.sendPacket(((BukkitPacketBuilder)tab.getPacketBuilder()).buildEntityTeleportPacket(Math.abs(l.getUniqueId().hashCode()), getWitherLocation(all)), TabFeature.BOSSBAR);
 						} catch (Exception e) {
 							tab.getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
 						}
