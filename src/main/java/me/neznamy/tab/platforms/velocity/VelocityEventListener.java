@@ -37,7 +37,7 @@ public class VelocityEventListener {
 			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
 				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
 			} else {
-				TAB.getInstance().getFeatureManager().onWorldChange(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
+				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
 			}
 		} catch (Throwable ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);

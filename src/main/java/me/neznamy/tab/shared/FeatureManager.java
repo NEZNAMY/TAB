@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -214,8 +215,12 @@ public class FeatureManager {
 	 * @param from - name of the previous world/server
 	 * @param to - name of the new world/server
 	 */
-	public void onWorldChange(TabPlayer changed, String to) {
-		if (changed == null || !changed.isLoaded()) return;
+	public void onWorldChange(UUID playerUUID, String to) {
+		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
+		if (changed == null || !changed.isLoaded()) {
+			tab.getCPUManager().runTaskLater(100, "processing delayed world/server switch", TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, () -> onWorldChange(playerUUID, to));
+			return;
+		}
 		String from = changed.getWorldName();
 		changed.setWorldName(to);
 		for (Feature f : getAllFeatures()) {

@@ -35,7 +35,7 @@ public class BungeeEventListener implements Listener {
 			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
 				TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {
-				TAB.getInstance().getFeatureManager().onWorldChange(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getServer().getInfo().getName());
+				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
 			}
 		} catch (Throwable ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
