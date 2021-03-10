@@ -112,7 +112,7 @@ public class EventListener implements Listener {
 	 */
 	private void checkForTrackingRange(TabPlayer player, Location newLocation) {
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
-			if (other == player || !other.getWorldName().equals(player.getWorldName())) continue;
+			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded()) continue;
 			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < ENTITY_TRACKING_RANGE) {
 				//in range
 				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
