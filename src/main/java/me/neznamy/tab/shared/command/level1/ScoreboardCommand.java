@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 
 /**
- * Handler for "/tab scoreboard" subcommand
+ * Handler for "/tab scoreboard [on/off/toggle] [player] [options]" subcommand
  */
 public class ScoreboardCommand extends SubCommand {
 
@@ -31,15 +31,16 @@ public class ScoreboardCommand extends SubCommand {
 			TabPlayer p = sender;
 			if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null)
 				p = TAB.getInstance().getPlayer(args[1]);
+			boolean silent = args.length >= 3 && args[2].equals("-s");
 			if (args.length >= 1) {
 				if (args[0].equalsIgnoreCase("on"))
-					p.setScoreboardVisible(true, true);
+					p.setScoreboardVisible(true, !silent);
 			
 				if (args[0].equalsIgnoreCase("off"))
-					p.setScoreboardVisible(false, true);
+					p.setScoreboardVisible(false, !silent);
 			
 				if (args[0].equalsIgnoreCase("toggle"))
-					p.toggleScoreboard(true);
+					p.toggleScoreboard(!silent);
 			}
 		} else {
 			sender.sendMessage(getTranslation("no_permission"), true);
