@@ -172,6 +172,7 @@ public class TAB {
 	 */
 	public void unload() {
 		if (disabled) return;
+		disabled = true;
 		try {
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();
