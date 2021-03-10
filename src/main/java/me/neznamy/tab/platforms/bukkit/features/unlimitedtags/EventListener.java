@@ -83,7 +83,11 @@ public class EventListener implements Listener {
 	public void onTeleport(PlayerTeleportEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
-		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> processMove(p, e.getTo()));
+		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> {
+			
+			processMove(p, e.getTo());
+			p.getArmorStandManager().teleport();
+		});
 	}
 	
 	//preventing memory leak
