@@ -31,6 +31,7 @@ public class ScoreboardCommand extends SubCommand {
 			TabPlayer p = sender;
 			if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null)
 				p = TAB.getInstance().getPlayer(args[1]);
+			if (p.getOtherPluginScoreboard() != null) return; //not overriding other plugins
 			boolean silent = args.length >= 3 && args[2].equals("-s");
 			if (args.length >= 1) {
 				if (args[0].equalsIgnoreCase("on"))
