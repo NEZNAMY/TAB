@@ -2,6 +2,7 @@ package me.neznamy.tab.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +129,7 @@ public class ArmorStandManager {
 	 * @return list of nearby players
 	 */
 	public Set<TabPlayer> getNearbyPlayers(){
+		if (armorStands.values().size() == 0) return new HashSet<>(); //not initialized yet
 		return armorStands.values().iterator().next().getNearbyPlayers();
 	}
 }
