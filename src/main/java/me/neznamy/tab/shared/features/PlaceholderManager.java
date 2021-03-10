@@ -182,6 +182,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	}
 
 	public Set<Refreshable> getPlaceholderUsage(String identifier){
+		if (tab.isDisabled()) return new HashSet<>(); //avoiding concurrent modification on /tab reload
 		Set<Refreshable> set = new HashSet<Refreshable>();
 		for (Feature r : new ArrayList<>(tab.getFeatureManager().getAllFeatures())) {
 			if (!(r instanceof Refreshable)) continue;
