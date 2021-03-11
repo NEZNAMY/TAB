@@ -29,8 +29,14 @@ public class ScoreboardCommand extends SubCommand {
 				sender.toggleScoreboard(true);
 			}
 			TabPlayer p = sender;
-			if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null)
-				p = TAB.getInstance().getPlayer(args[1]);
+			if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
+				if (sender.hasPermission("tab.togglescoreboard.other")) {
+					p = TAB.getInstance().getPlayer(args[1]);
+				} else {
+					sender.sendMessage(getTranslation("no_permission"), true);
+					return;
+				}
+			}
 			if (p.getOtherPluginScoreboard() != null) return; //not overriding other plugins
 			boolean silent = args.length >= 3 && args[2].equals("-s");
 			if (args.length >= 1) {
