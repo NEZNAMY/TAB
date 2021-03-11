@@ -12,10 +12,16 @@ The source contains content of premium version as well. However, this must be ac
   
   
 ## Links
-Discord: https://discord.gg/EaSvdk6  
-SpigotMC (free): https://www.spigotmc.org/resources/57806/  
-MC-Market (paid): https://www.mc-market.org/resources/14009/  
-Wiki: https://github.com/NEZNAMY/TAB/wiki  
+Free version
+    Spigot (releases): https://www.spigotmc.org/resources/57806/  
+    Pre-releases https://github.com/NEZNAMY/TAB/releases  
+Premium version  
+    Polymart (releases): https://polymart.org/resource/484  
+    MC-Market (releases): https://www.mc-market.org/resources/14009/  
+    Pre-releases in discord for verified buyers  
+Bukkit bridge https://www.spigotmc.org/resources/83966/  
+Wiki https://github.com/NEZNAMY/TAB/wiki  
+Discord invite link: https://discord.gg/EaSvdk6  
   
   
 ## Downloads
