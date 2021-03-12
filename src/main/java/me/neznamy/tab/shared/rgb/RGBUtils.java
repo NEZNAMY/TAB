@@ -13,30 +13,33 @@ public class RGBUtils {
 
 	//pattern for {#RRGGBB}
 	private final Pattern fix2 = Pattern.compile("\\{#[0-9a-fA-F]{6}\\}");
-	
+
 	//pattern for &x&R&R&G&G&B&B
 	private final Pattern fix3 = Pattern.compile("\\\u00a7x[\\\u00a70-9a-fA-F]{12}");
-	
+
 	//pattern for #<RRGGBB>
 	private final Pattern fix4 = Pattern.compile("#<[0-9a-fA-F]{6}>");
-	
+
 	//pattern for <#RRGGBB>Text</#RRGGBB>
 	private final Pattern gradient1 = Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>");
-	
+
 	//pattern for <#RRGGBB|L>Text</#RRGGBB>
 	private final Pattern gradient1Legacy = Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>");
-	
+
 	//pattern for {#RRGGBB>}text{#RRGGBB<}
 	private final Pattern gradient2 = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 
 	//pattern for {#RRGGBB|L>}text{#RRGGBB<}
 	private final Pattern gradient2Legacy = Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
-	
+
 	//pattern for <$#RRGGBB>Text<$#RRGGBB>
 	private final Pattern gradient3 = Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>");
-	
+
 	//pattern for <$#RRGGBB|L>Text<$#RRGGBB>
 	private final Pattern gradient3Legacy = Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>");
+
+	//pattern for <gradient:#RRGGBB:#RRGGBB>Text</gradient>
+	private final Pattern gradient4Kyori = Pattern.compile("<gradient:#[0-9a-fA-F]{6}:#[0-9a-fA-F]{6}>[^<]*</gradient>");
 
 	/**
 	 * Applies all RGB formats and gradients to text and returns it
@@ -51,6 +54,7 @@ public class RGBUtils {
 		replaced = setGradient1(replaced);
 		replaced = setGradient2(replaced);
 		replaced = setGradient3(replaced);
+		replaced = setGradient4(replaced);
 		return replaced;
 	}
 
@@ -94,7 +98,7 @@ public class RGBUtils {
 		}
 		return replaced;
 	}
-	
+
 	/**
 	 * Reformats #<RRGGBB> into #RRGGBB
 	 * @param text - text to be reformatted
@@ -201,6 +205,30 @@ public class RGBUtils {
 		return replaced;
 	}
 
+	private String setGradient4(String text) {
+		Matcher m = gradient4Kyori.matcher(text);
+		String replaced = text;
+		while (m.find()) {
+			String format = m.group();
+			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(10));
+			if (legacyColor == null) continue;
+			TextColor start = new TextColor(format.substring(11, 17), legacyColor);
+			String message = format.substring(26, format.length()-11);
+			TextColor end = new TextColor(format.substring(19,25));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		m = gradient4Kyori.matcher(text);
+		while (m.find()) {
+			String format = m.group();
+			TextColor start = new TextColor(format.substring(11, 17));
+			String message = format.substring(26, format.length()-11);
+			TextColor end = new TextColor(format.substring(19,25));
+			String applied = asGradient(start, message, end);
+			replaced = replaced.replace(format, applied);
+		}
+		return replaced;
+	}
 
 	/**
 	 * Returns gradient text based on start color, end color and text
