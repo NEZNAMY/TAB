@@ -114,7 +114,8 @@ public class EventListener implements Listener {
 	private void checkForTrackingRange(TabPlayer player, Location newLocation) {
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
 			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded()) continue;
-			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < feature.entityTrackingRange) {
+			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < feature.entityTrackingRange &&
+					!((Player)player.getPlayer()).isDead() && !((Player)other.getPlayer()).isDead()) {
 				//in range
 				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().spawn(other);
@@ -124,10 +125,10 @@ public class EventListener implements Listener {
 				}
 			} else {
 				//out of range
-				if (player.getArmorStandManager().getNearbyPlayers().contains(other) && !((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
+				if (player.getArmorStandManager().getNearbyPlayers().contains(other)) {
 					player.getArmorStandManager().destroy(other);
 				}
-				if (other.getArmorStandManager().getNearbyPlayers().contains(player)&& !((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
+				if (other.getArmorStandManager().getNearbyPlayers().contains(player)) {
 					other.getArmorStandManager().destroy(player);
 				}
 			}
