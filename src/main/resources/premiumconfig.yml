@@ -49,6 +49,7 @@ scoreboard:
   #using 1-15 instead of 0s everywhere
   use-numbers: false
   static-number: 0
+  delay-on-join-milliseconds: 0
   disable-in-worlds: 
     - disabledworld
   #set to NONE to have no default scoreboard

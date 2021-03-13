@@ -79,6 +79,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	
 	//currently active scoreboard announcement
 	public me.neznamy.tab.api.Scoreboard announcement;
+	
+	//config option someone requested
+	private int joinDelay;
+	private List<TabPlayer> joinDelayed = new ArrayList<TabPlayer>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -100,6 +104,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			sb_off_players = tab.getConfiguration().getPlayerData("scoreboard-off");
 		}
 		staticNumber = tab.getConfiguration().premiumconfig.getInt("scoreboard.static-number", 0);
+		joinDelay = tab.getConfiguration().premiumconfig.getInt("scoreboard.delay-on-join-milliseconds", 0);
 
 		for (Object scoreboard : tab.getConfiguration().premiumconfig.getConfigurationSection("scoreboards").keySet()) {
 			String condition = tab.getConfiguration().premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
@@ -149,7 +154,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || announcement != null || p.getOtherPluginScoreboard() != null) continue;
+					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || 
+						announcement != null || p.getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
 					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = detectHighestScoreboard(p);
@@ -175,7 +181,16 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onJoin(TabPlayer p) {
-		p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+		if (joinDelay > 0) {
+			joinDelayed.add(p);
+			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
+				
+				p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+				joinDelayed.remove(p);
+			});
+		} else {
+			p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+		}
 	}
 
 	/**
