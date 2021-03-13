@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -84,6 +85,22 @@ public class EventListener implements Listener {
 			
 			processMove(p, e.getTo());
 			p.getArmorStandManager().teleport();
+		});
+	}
+	
+	/**
+	 * Death event listener to destroy armor stands for players in range of dead player
+	 * @param e - death event
+	 */
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onDeath(PlayerDeathEvent e) {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerDeathEvent", TabFeature.NAMETAGX, UsageType.PLAYER_DEATH_EVENT, () -> {
+			
+			TabPlayer player = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
+			for (TabPlayer other : player.getArmorStandManager().getNearbyPlayers()) {
+				player.getArmorStandManager().destroy(other);
+				other.getArmorStandManager().destroy(player);
+			}
 		});
 	}
 	

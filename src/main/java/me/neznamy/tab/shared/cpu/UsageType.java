@@ -17,6 +17,7 @@ public enum UsageType {
 	COMMAND_PREPROCESS("PlayerCommandPreprocessEvent"),
 	PLUGIN_MESSAGE_EVENT("PluginMessageEvent"),
 	PLAYER_CHAT_EVENT("AsyncPlayerChatEvent"),
+	PLAYER_DEATH_EVENT("PlayerDeathEvent"),
 	
 	//packets
 	ANTI_OVERRIDE("Anti override"),
