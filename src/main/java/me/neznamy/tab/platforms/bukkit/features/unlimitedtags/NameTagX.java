@@ -41,7 +41,7 @@ import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener, SneakEventListener {
 
 	//entity tracking range
-	private final int ENTITY_TRACKING_RANGE = 48;
+	public double entityTrackingRange;
 
 	//if using marker tag for 1.8.x clients or not
 	public boolean markerFor18x;
@@ -84,6 +84,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
+		entityTrackingRange = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.tracking-range", 48);
 		if (tab.getConfiguration().premiumconfig != null) {
 			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
@@ -236,7 +237,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	private void spawnArmorStands(TabPlayer owner, TabPlayer viewer, boolean sendMutually) {
 		if (owner == viewer) return; //not displaying own armorstands
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
-		if (getDistance(viewer, owner) <= ENTITY_TRACKING_RANGE) {
+		if (getDistance(viewer, owner) <= entityTrackingRange) {
 			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
 			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
 		}

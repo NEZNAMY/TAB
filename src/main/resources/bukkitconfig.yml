@@ -117,6 +117,7 @@ unlimited-nametag-prefix-suffix-mode:
   
   #in blocks
   space-between-lines: 0.22
+  tracking-range: 48
 
 per-world-settings:
   world1:

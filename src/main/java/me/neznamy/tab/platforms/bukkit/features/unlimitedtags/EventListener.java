@@ -21,9 +21,6 @@ import me.neznamy.tab.shared.cpu.UsageType;
  * The event listener part for securing proper functionality of armor stands
  */
 public class EventListener implements Listener {
-
-	//entity tracking range
-	private final int ENTITY_TRACKING_RANGE = 48;
 	
 	//the nametag feature handler
 	private NameTagX feature;
@@ -117,7 +114,7 @@ public class EventListener implements Listener {
 	private void checkForTrackingRange(TabPlayer player, Location newLocation) {
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
 			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded()) continue;
-			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < ENTITY_TRACKING_RANGE) {
+			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < feature.entityTrackingRange) {
 				//in range
 				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().spawn(other);
