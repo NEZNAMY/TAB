@@ -631,7 +631,6 @@ public class IChatBaseComponent {
 					}
 					component = new IChatBaseComponent();
 					component.setColor(color);
-					
 				} catch (Exception e) {
 					//invalid hex code
 					builder.append(c);
@@ -652,7 +651,7 @@ public class IChatBaseComponent {
 	 * @return true if legacy color is defined, false if not
 	 */
 	private static boolean containsLegacyCode(String text, int i) {
-		if (text.charAt(i+7) != '|') return false;
+		if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
 		return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
 	}
 
