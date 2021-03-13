@@ -210,17 +210,6 @@ public class RGBUtils {
 		String replaced = text;
 		while (m.find()) {
 			String format = m.group();
-			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(10));
-			if (legacyColor == null) continue;
-			TextColor start = new TextColor(format.substring(11, 17), legacyColor);
-			String message = format.substring(26, format.length()-11);
-			TextColor end = new TextColor(format.substring(19,25));
-			String applied = asGradient(start, message, end);
-			replaced = replaced.replace(format, applied);
-		}
-		m = gradient4Kyori.matcher(text);
-		while (m.find()) {
-			String format = m.group();
 			TextColor start = new TextColor(format.substring(11, 17));
 			String message = format.substring(26, format.length()-11);
 			TextColor end = new TextColor(format.substring(19,25));
