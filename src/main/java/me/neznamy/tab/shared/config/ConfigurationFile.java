@@ -47,9 +47,9 @@ public abstract class ConfigurationFile {
 	public ConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, IOException {
 		this.header = header;
 		this.file = destination;
-		file.getParentFile().mkdirs();
+		if (file.getParentFile() != null) file.getParentFile().mkdirs();
 		if (!file.exists()) {
-			if (source == null) throw new IllegalStateException("file does not exist and source is null");
+			if (source == null) throw new IllegalStateException("File does not exist and source is null");
 			Files.copy(source, file.toPath());
 		}
 	}
