@@ -66,6 +66,9 @@ public class ExpansionDownloader {
 								}
 							}
 						} catch (InterruptedException | ConcurrentModificationException e) {
+							//fast shutdown probably
+						} catch (NoClassDefFoundError e){
+							//PAPI class not found, fast shutdown probably
 						} catch (Throwable e) {
 							TAB.getInstance().getErrorManager().printError("Failed to download PlaceholderAPI expansions. PlaceholderAPI version: " + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion(), e);
 						}
