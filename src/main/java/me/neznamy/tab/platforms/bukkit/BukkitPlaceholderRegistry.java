@@ -187,15 +187,23 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			placeholders.add(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(TabPlayer p) {
-					String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
-					return prefix != null ? prefix : "";
+					try {
+						String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
+						return prefix != null ? prefix : "";
+					} catch (Exception e) {
+						return TAB.getInstance().getErrorManager().printError("", "Placeholder %vault-prefix% threw an exception", e);
+					}
 				}
 			});
 			placeholders.add(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(TabPlayer p) {
-					String suffix = chat.getPlayerSuffix((Player) p.getPlayer());
-					return suffix != null ? suffix : "";
+					try {
+						String suffix = chat.getPlayerSuffix((Player) p.getPlayer());
+						return suffix != null ? suffix : "";
+					} catch (Exception e) {
+						return TAB.getInstance().getErrorManager().printError("", "Placeholder %vault-suffix% threw an exception", e);
+					}
 				}
 			});
 		} else {
