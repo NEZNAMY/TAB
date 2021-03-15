@@ -62,13 +62,14 @@ public class EventListener implements Listener {
 		});
 	}
 
+
 	/**
 	 * Move event listener to track vehicles & send own packets when using nametag preview
 	 * @param e - move event
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onMove(PlayerMoveEvent e) {
-		if (e.getFrom().distance(e.getTo()) == 0) return;
+		if (e.getFrom().getX() == e.getTo().getX() && e.getFrom().getY() == e.getTo().getY() && e.getFrom().getZ() == e.getTo().getZ()) return;
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, () -> processMove(p, e.getTo()));
