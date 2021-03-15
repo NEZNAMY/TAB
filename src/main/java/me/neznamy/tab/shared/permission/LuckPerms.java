@@ -103,7 +103,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			String suffix = user.getCachedData().getMetaData(options.get()).getSuffix();
 			return suffix == null ? "" : suffix;
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("Luckperms v" + version + " threw an exception when retrieving player prefix of " + p.getName(), e);
+			TAB.getInstance().getErrorManager().printError("Luckperms v" + version + " threw an exception when retrieving player suffix of " + p.getName(), e);
 			return "";
 		}
 	}
