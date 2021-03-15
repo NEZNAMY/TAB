@@ -43,9 +43,8 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 			long time = System.nanoTime();
 			TabPlayer receiver = TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
 			if (receiver == null) return;
-			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-				event.setResult(ForwardResult.handled());
-			}
+			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
+			event.setResult(ForwardResult.handled());
 			TAB.getInstance().getCPUManager().addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
 		}
 	}

@@ -39,9 +39,8 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 			long time = System.nanoTime();
 			TabPlayer receiver = TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 			if (receiver == null) return;
-			if (onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()))) {
-				event.setCancelled(true);
-			}
+			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
+			event.setCancelled(true);
 			TAB.getInstance().getCPUManager().addTime(TabFeature.PLUGIN_MESSAGE_HANDLING, UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
 		}
 	}

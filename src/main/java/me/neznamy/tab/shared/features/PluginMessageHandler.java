@@ -41,12 +41,12 @@ public interface PluginMessageHandler {
 	}
 	
 	/**
-	 * Handles incoming plugin message
+	 * Handles incoming plugin message with tab's channel name
 	 * @param player - plugin message receiver
 	 * @param in - incoming message
-	 * @return true if message was for TAB and event should be cancelled, false if not
 	 */
-	public default boolean onPluginMessage(TabPlayer player, ByteArrayDataInput in) {
+	public default void onPluginMessage(TabPlayer player, ByteArrayDataInput in) {
+		if (TAB.getInstance().isDisabled()) return; //reload in progress
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){
 			String placeholder = in.readUTF();
@@ -60,19 +60,16 @@ public interface PluginMessageHandler {
 			} else {
 				TAB.getInstance().debug("Received output for unknown placeholder " + placeholder);
 			}
-			return true;
 		}
 		if (subChannel.equals("Attribute")) {
 			String attribute = in.readUTF();
 			String value = in.readUTF();
 			player.setAttribute(attribute, value);
-			return true;
 		}
 		if (subChannel.equals("Group")) {
 			String group = in.readUTF();
 			player.setGroup(group, true);
 		}
-		return false;
 	}
 	
 	/**
