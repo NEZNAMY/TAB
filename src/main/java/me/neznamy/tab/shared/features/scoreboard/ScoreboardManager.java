@@ -149,7 +149,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void load() {
 		for (TabPlayer p : tab.getPlayers()) {
-			onJoin(p);
+			p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 		}
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
