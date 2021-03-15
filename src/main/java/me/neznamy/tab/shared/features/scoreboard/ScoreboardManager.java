@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean remember_toggle_choice;
 	
 	//list of players with disabled scoreboard
-	public List<String> sb_off_players = new ArrayList<String>();
+	public List<String> sb_off_players = Collections.synchronizedList(new ArrayList<String>());
 	
 	//scoreboards registered via API
 	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
@@ -101,7 +102,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		scoreboard_on = tab.getConfiguration().premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = tab.getConfiguration().premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
 		if (remember_toggle_choice) {
-			sb_off_players = tab.getConfiguration().getPlayerData("scoreboard-off");
+			sb_off_players = Collections.synchronizedList(new ArrayList<String>(tab.getConfiguration().getPlayerData("scoreboard-off")));
 		}
 		staticNumber = tab.getConfiguration().premiumconfig.getInt("scoreboard.static-number", 0);
 		joinDelay = tab.getConfiguration().premiumconfig.getInt("scoreboard.delay-on-join-milliseconds", 0);

@@ -394,7 +394,9 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.remove(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				synchronized (scoreboardManager.sb_off_players){
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				}
 			}
 		} else {
 			scoreboardManager.unregisterScoreboard(this, true);
@@ -403,7 +405,9 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 			if (scoreboardManager.remember_toggle_choice) {
 				scoreboardManager.sb_off_players.add(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);synchronized (scoreboardManager.sb_off_players){
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				}
 			}
 		}
 	}
