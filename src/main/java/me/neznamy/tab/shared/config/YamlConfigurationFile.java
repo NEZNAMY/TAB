@@ -87,7 +87,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			writer.close();
 			if (!hasHeader()) fixHeader();
 		} catch (Throwable e) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to save yaml file " + file.getPath(), e);
+			TAB.getInstance().getErrorManager().criticalError("Failed to save yaml file " + file.getPath() + " with content " + values.toString(), e);
 		}
 	}
 }
