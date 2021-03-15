@@ -40,6 +40,7 @@ public class EventListener implements Listener {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "tracking vehicles", TabFeature.NAMETAGX, UsageType.TRACKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+				if (!p.isLoaded()) continue;
 				if (feature.isDisabledWorld(p.getWorldName())) {
 					playersInVehicle.remove(p);
 					continue;
