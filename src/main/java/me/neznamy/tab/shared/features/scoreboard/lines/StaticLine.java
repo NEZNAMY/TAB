@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 public abstract class StaticLine extends ScoreboardLine {
 
-	//text to display
+	//text for 1.13+
 	protected String text;
 	
 	//values for 1.7 clients with 16 character limit for player name
@@ -15,14 +15,14 @@ public abstract class StaticLine extends ScoreboardLine {
 	protected String name1_7;
 	protected String suffix1_7;
 
-	//values for 1.8+ clients with 40 character limit for player name
+	//values for 1.8-1.12 clients with 40 character limit for player name
 	protected String prefix;
 	protected String name;
 	protected String suffix;
 	
 	public StaticLine(Scoreboard parent, int lineNumber, String text, String forcedNameStart) {
 		super(parent, lineNumber);
-		this.text = text;
+		this.text = TAB.getInstance().getPlaceholderManager().color(text);
 		String legacy = IChatBaseComponent.fromColoredText(text).toLegacyText(); //colorizing + translating RGB codes into legacy
 		//1.8+
 		String[] v1_8 = splitText(forcedNameStart, legacy, 40);

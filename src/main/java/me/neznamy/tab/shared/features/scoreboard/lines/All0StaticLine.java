@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
 
 /**
@@ -12,9 +11,6 @@ import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
  */
 public class All0StaticLine extends StaticLine {
 
-	//saving original text to use for 1.13+ clients
-	private String originalText;
-
 	/**
 	 * Constructs new instance with given parameters
 	 * @param parent - scoreboard this line belongs to
@@ -23,14 +19,12 @@ public class All0StaticLine extends StaticLine {
 	 */
 	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, getPlayerName(lineNumber));
-		this.originalText = TAB.getInstance().getPlaceholderManager().color(text);
 	}
 
 	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(teamName, text);
 		if (p.getVersion().getMinorVersion() >= 13) {
-			addLine(p, teamName, getPlayerName(), originalText, "", parent.manager.staticNumber);
+			addLine(p, teamName, playerName, text, "", parent.manager.staticNumber);
 		} else if (p.getVersion().getMinorVersion() >= 8) {
 			addLine(p, teamName, name, prefix, suffix, parent.manager.staticNumber);
 		} else {
@@ -41,8 +35,8 @@ public class All0StaticLine extends StaticLine {
 
 	@Override
 	public void unregister(TabPlayer p) {
-		if (p.getProperty(teamName).get().length() > 0) {
-			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? getPlayerName() : p.getVersion().getMinorVersion() >= 8 ? this.name : name1_7, teamName);
+		if (text.length() > 0) {
+			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? playerName : p.getVersion().getMinorVersion() >= 8 ? name : name1_7, teamName);
 		}
 	}
 }
