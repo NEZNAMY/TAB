@@ -100,7 +100,7 @@ public abstract class NameTag implements Feature, Refreshable {
 		for (TabPlayer viewer : tab.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), collision.get(p), Arrays.asList(p.getName()), null, TabFeature.NAMETAGS);
+			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, TabFeature.NAMETAGS);
 		}
 	}
 
@@ -109,7 +109,7 @@ public abstract class NameTag implements Feature, Refreshable {
 		Property tagsuffix = p.getProperty("tagsuffix");
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), collision.get(p), Arrays.asList(p.getName()), null, TabFeature.NAMETAGS);
+		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, TabFeature.NAMETAGS);
 	}
 
 	public void updateTeam(TabPlayer p) {
@@ -131,7 +131,7 @@ public abstract class NameTag implements Feature, Refreshable {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", collision.get(p)?"always":"never", 69), TabFeature.NAMETAGS);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 69), TabFeature.NAMETAGS);
 		}
 	}
 
@@ -141,22 +141,30 @@ public abstract class NameTag implements Feature, Refreshable {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", collision.get(p)?"always":"never", 69), TabFeature.NAMETAGS);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 69), TabFeature.NAMETAGS);
 	}
 	
 	private void updateCollision(TabPlayer p) {
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
 		if (p.getCollisionRule() != null) {
-			if (collision.get(p) != p.getCollisionRule()) {
+			if (getCollision(p) != p.getCollisionRule()) {
 				collision.put(p, p.getCollisionRule());
 				updateTeamData(p);
 			}
 		} else {
 			boolean collision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
-			if (this.collision.get(p) == null || this.collision.get(p) != collision) {
+			if (this.collision.get(p) == null || this.getCollision(p) != collision) {
 				this.collision.put(p, collision);
 				updateTeamData(p);
 			}
 		}
+	}
+	
+	protected boolean getCollision(TabPlayer p) {
+		if (p.getCollisionRule() != null) return p.getCollisionRule();
+		if (!collision.containsKey(p)) {
+			collision.put(p, revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule);
+		}
+		return collision.get(p);
 	}
 }
