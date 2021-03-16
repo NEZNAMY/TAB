@@ -24,9 +24,6 @@ public class IChatBaseComponent {
 	
 	//empty text
 	private final String EMPTY_TEXT = "{\"text\":\"\"}";
-	
-	//rgb utils instance
-	private static final RGBUtils rgb = new RGBUtils();
 
 	//component text
 	private String text;
@@ -563,7 +560,7 @@ public class IChatBaseComponent {
 	public static IChatBaseComponent fromColoredText(String originalText){
 		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
 		if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true)) {
-			text = rgb.applyFormats(text);
+			text = RGBUtils.getInstance().applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();

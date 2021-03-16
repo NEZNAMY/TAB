@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.rgb;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.rgb.format.CMIFormat;
@@ -19,22 +19,33 @@ import me.neznamy.tab.shared.rgb.gradient.KyoriGradient;
  */
 public class RGBUtils {
 
+	//instance of class
+	private static RGBUtils instance = new RGBUtils();
+	
 	//list of rgb formatters
-	private List<RGBFormatter> formats = new ArrayList<RGBFormatter>();
+	private Set<RGBFormatter> formats = new HashSet<RGBFormatter>();
 	
 	//list of gradient patterns
-	private List<GradientPattern> gradients = new ArrayList<GradientPattern>();
+	private Set<GradientPattern> gradients = new HashSet<GradientPattern>();
 
 	public RGBUtils() {
-		formats.add(new BukkitFormat());
-		formats.add(new CMIFormat());
-		formats.add(new UnnamedFormat1());
-		formats.add(new UnnamedFormat2());
+		registerRGBFormatter(new BukkitFormat());
+		registerRGBFormatter(new CMIFormat());
+		registerRGBFormatter(new UnnamedFormat1());
+		registerRGBFormatter(new UnnamedFormat2());
 		
-		gradients.add(new CMIGradient());
-		gradients.add(new HtmlGradient());
-		gradients.add(new IridescentGradient());
-		gradients.add(new KyoriGradient());
+		registerGradient(new CMIGradient());
+		registerGradient(new HtmlGradient());
+		registerGradient(new IridescentGradient());
+		registerGradient(new KyoriGradient());
+	}
+	
+	/**
+	 * Returns instance of this class
+	 * @return instance
+	 */
+	public static RGBUtils getInstance() {
+		return instance;
 	}
 	
 	/**
@@ -51,5 +62,21 @@ public class RGBUtils {
 			replaced = pattern.applyPattern(replaced);
 		}
 		return replaced;
+	}
+	
+	/**
+	 * Registers RGB formatter
+	 * @param formatter - formatter to register
+	 */
+	public void registerRGBFormatter(RGBFormatter formatter) {
+		formats.add(formatter);
+	}
+	
+	/**
+	 * Registers gradient pattern
+	 * @param pattern - gradient pattern to register
+	 */
+	public void registerGradient(GradientPattern pattern) {
+		gradients.add(pattern);
 	}
 }
