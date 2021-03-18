@@ -95,7 +95,7 @@ public class FeatureManager {
 	 * @return list of all loaded features
 	 */
 	public Collection<Feature> getAllFeatures(){
-		return features.values();
+		return new ArrayList<Feature>(features.values());
 	}
 	
 	/**
