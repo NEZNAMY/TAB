@@ -215,7 +215,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		if (condition == null) {
 			Object permRequired = TAB.getInstance().getConfiguration().bossbar.getBoolean("bars." + bar + ".permission-required");
 			if (permRequired != null && (boolean) permRequired) {
-				condition = "permission:TAB.getInstance().bossbar." + bar;
+				condition = "permission:tab.bossbar." + bar;
 			}
 		}
 		
