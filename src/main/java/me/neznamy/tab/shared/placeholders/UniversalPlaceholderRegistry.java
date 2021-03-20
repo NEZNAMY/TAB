@@ -87,6 +87,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getVersion().getFriendlyName();
 			}
 		});
+		placeholders.add(new PlayerPlaceholder("%player-version-id%", 100000000) {
+			public String get(TabPlayer p) {
+				return p.getVersion().getNetworkId()+"";
+			}
+		});
 		placeholders.add(new ServerPlaceholder("%maxplayers%", 100000000) {
 			public String get() {
 				return TAB.getInstance().getPlatform().getMaxPlayers()+"";
