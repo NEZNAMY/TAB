@@ -105,10 +105,14 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @return array of 2 elements for prefix and suffix
 	 */
 	private String[] split(TabPlayer p, String text) {
-		//ProtocolSupport limiting length to 14 for <1.13 on 1.13+ server
-		int charLimit = TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
+		int charLimit = 16;
+		if (TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
 			ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
-			p.getVersion().getMinorVersion() < 13 ? 14 : 16;
+			p.getVersion().getMinorVersion() < 13) {
+			//ProtocolSupport bug
+			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, 16));
+			charLimit -= lastColors.length() == 0 ? 2 : lastColors.length();
+		}
 		String prefix;
 		String suffix;
 		if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
