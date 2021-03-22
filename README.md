@@ -12,7 +12,7 @@ The source contains content of premium version as well. However, this must be ac
   
   
 ## Links
-Free version
+Free version  
     Spigot (releases): https://www.spigotmc.org/resources/57806/  
     Pre-releases https://github.com/NEZNAMY/TAB/releases  
 Premium version  
