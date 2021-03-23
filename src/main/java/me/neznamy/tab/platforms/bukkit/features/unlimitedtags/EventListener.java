@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -28,6 +27,8 @@ public class EventListener implements Listener {
 	
 	//list of players currently in a vehicle
 	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<TabPlayer, Entity>();
+	
+	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<TabPlayer, Location>();
 
 	/**
 	 * Constructs new instance with given parameters
@@ -35,44 +36,45 @@ public class EventListener implements Listener {
 	 */
 	public EventListener(NameTagX feature) {
 		this.feature = feature;
-		
-		//tracking vehicle enter & exit, plugins allowing to ride players/entities do not call the events so can't use those
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "tracking vehicles", TabFeature.NAMETAGX, UsageType.TRACKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "ticking unlimited nametag mode", TabFeature.NAMETAGX, UsageType.TICKING_UNLIMITED_NAMETAGS, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded()) continue;
+				processVehicles(p);
 				if (feature.isDisabledWorld(p.getWorldName())) {
-					playersInVehicle.remove(p);
+					playerLocations.remove(p);
 					continue;
 				}
-				Entity vehicle = ((Player)p.getPlayer()).getVehicle();
-				if (playersInVehicle.containsKey(p) && vehicle == null) {
-					//vehicle exit
-					feature.vehicles.remove(playersInVehicle.get(p).getEntityId());
-					p.getArmorStandManager().teleport();
-					playersInVehicle.remove(p);
-				}
-				if (!playersInVehicle.containsKey(p) && vehicle != null) {
-					//vehicle enter
-					feature.vehicles.put(vehicle.getEntityId(), feature.getPassengers(vehicle));
-					p.getArmorStandManager().teleport();
-					playersInVehicle.put(p, vehicle);
+				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
+					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
+					processMove(p, ((Player)p.getPlayer()).getLocation());
 				}
 			}
 		});
 	}
-
-
+	
 	/**
-	 * Move event listener to track vehicles & send own packets when using nametag preview
-	 * @param e - move event
+	 * Checks for vehicle changes of player and sends packets if needed
+	 * @param p - player to check
 	 */
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onMove(PlayerMoveEvent e) {
-		if (e.getFrom().getX() == e.getTo().getX() && e.getFrom().getY() == e.getTo().getY() && e.getFrom().getZ() == e.getTo().getZ()) return;
-		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerMoveEvent", TabFeature.NAMETAGX, UsageType.PLAYER_MOVE_EVENT, () -> processMove(p, e.getTo()));
+	private void processVehicles(TabPlayer p) {
+		if (feature.isDisabledWorld(p.getWorldName())) {
+			playersInVehicle.remove(p);
+			return;
+		}
+		Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+		if (playersInVehicle.containsKey(p) && vehicle == null) {
+			//vehicle exit
+			feature.vehicles.remove(playersInVehicle.get(p).getEntityId());
+			p.getArmorStandManager().teleport();
+			playersInVehicle.remove(p);
+		}
+		if (!playersInVehicle.containsKey(p) && vehicle != null) {
+			//vehicle enter
+			feature.vehicles.put(vehicle.getEntityId(), feature.getPassengers(vehicle));
+			p.getArmorStandManager().teleport();
+			playersInVehicle.put(p, vehicle);
+		}
 	}
 	
 	/**
@@ -83,11 +85,7 @@ public class EventListener implements Listener {
 	public void onTeleport(PlayerTeleportEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || feature.isDisabledWorld(p.getWorldName())) return;
-		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> {
-			
-			processMove(p, e.getTo());
-			p.getArmorStandManager().teleport();
-		});
+		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> p.getArmorStandManager().teleport());
 	}
 	
 	/**
@@ -109,6 +107,7 @@ public class EventListener implements Listener {
 	//preventing memory leak
 	public void onQuit(TabPlayer p) {
 		playersInVehicle.remove(p);
+		playerLocations.remove(p);
 	}
 	
 	/**

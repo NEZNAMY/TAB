@@ -40,7 +40,7 @@ public enum UsageType {
 	//other
 	REFRESHING("Refreshing"),
 	REPEATING_TASK("Repeating task"),
-	TRACKING_VEHICLES("Tracking vehicles"),
+	TICKING_UNLIMITED_NAMETAGS("Ticking unlimited nametag mode"),
 	v1_8_0_BUG_COMPENSATION("Compensating for 1.8.0 bugs");
 	
 	//user-friendly name to be used in /tab cpu
