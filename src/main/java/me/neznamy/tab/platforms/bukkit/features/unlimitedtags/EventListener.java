@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -48,17 +46,18 @@ public class EventListener implements Listener {
 				}
 				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
 					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
-					processMove(p, ((Player)p.getPlayer()).getLocation());
-				}
-				//vanishing
-				Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
-				for (TabPlayer other : TAB.getInstance().getPlayers()) {
-					if (p == other) continue;
-					if (nearby.contains(other) && !((Player)other.getPlayer()).canSee((Player)p.getPlayer())) {
-						p.getArmorStandManager().destroy(other);
+					processPassengers((Entity) p.getPlayer());
+					if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
+						p.getArmorStandManager().teleport(p);
 					}
-					if (!nearby.contains(other) && ((Player)other.getPlayer()).canSee((Player)p.getPlayer())) {
-						p.getArmorStandManager().spawn(other);
+				}
+				checkForTrackingRange(p);
+				
+				//death
+				if (((Player)p.getPlayer()).isDead()) {
+					for (TabPlayer other : p.getArmorStandManager().getNearbyPlayers()) {
+						p.getArmorStandManager().destroy(other);
+						other.getArmorStandManager().destroy(p);
 					}
 				}
 			}
@@ -100,22 +99,6 @@ public class EventListener implements Listener {
 		TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerTeleportEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TELEPORT_EVENT, () -> p.getArmorStandManager().teleport());
 	}
 	
-	/**
-	 * Death event listener to destroy armor stands for players in range of dead player
-	 * @param e - death event
-	 */
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onDeath(PlayerDeathEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerDeathEvent", TabFeature.NAMETAGX, UsageType.PLAYER_DEATH_EVENT, () -> {
-			
-			TabPlayer player = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
-			for (TabPlayer other : player.getArmorStandManager().getNearbyPlayers()) {
-				player.getArmorStandManager().destroy(other);
-				other.getArmorStandManager().destroy(player);
-			}
-		});
-	}
-	
 	//preventing memory leak
 	public void onQuit(TabPlayer p) {
 		playersInVehicle.remove(p);
@@ -123,35 +106,27 @@ public class EventListener implements Listener {
 	}
 	
 	/**
-	 * Checks player for entity tracking range, processes packets of passengers and sends own
-	 * armor stand move if preview is used
-	 * @param player - player to process move of
-	 * @param newLocation - location player is moving/teleporting to
-	 */
-	private void processMove(TabPlayer player, Location newLocation) {
-		checkForTrackingRange(player, newLocation);
-		processPassengers((Entity) player.getPlayer());
-		if (player.isPreviewingNametag() && player.getArmorStandManager() != null) {
-			player.getArmorStandManager().teleport(player);
-		}
-	}
-	
-	/**
 	 * Checks for tracking range and spawns/despawns armor stands if needed
 	 * @param player - player to check tracking range of
 	 * @param newLocation - location player moved/teleported to
 	 */
-	private void checkForTrackingRange(TabPlayer player, Location newLocation) {
+	private void checkForTrackingRange(TabPlayer player) {
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
-			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded()) continue;
-			if (getFlatDistance(((Player)other.getPlayer()).getLocation(), newLocation) < feature.entityTrackingRange &&
-					!((Player)player.getPlayer()).isDead() && !((Player)other.getPlayer()).isDead()) {
+			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded() || 
+					((Player)player.getPlayer()).isDead() || ((Player)other.getPlayer()).isDead()) continue;
+			if (inRange(((Player)other.getPlayer()).getLocation(), ((Player)player.getPlayer()).getLocation())) {
 				//in range
 				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().spawn(other);
 				}
 				if (!other.getArmorStandManager().getNearbyPlayers().contains(player) && ((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
 					other.getArmorStandManager().spawn(player);
+				}
+				if (player.getArmorStandManager().getNearbyPlayers().contains(other) && !((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
+					player.getArmorStandManager().destroy(other);
+				}
+				if (other.getArmorStandManager().getNearbyPlayers().contains(player) && !((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
+					other.getArmorStandManager().destroy(player);
 				}
 			} else {
 				//out of range
@@ -166,13 +141,16 @@ public class EventListener implements Listener {
 	}
 	
 	/**
-	 * Returns flat distance between two locations ignoring Y value
+	 * Method with extra performance-saving checks that returns true if distance between locations is
+	 * lower than entity tracking range, false otherwise
 	 * @param loc1 - first location
 	 * @param loc2 - second location
-	 * @return distance in blocks
+	 * @return true if distance is in tracking range, false if not
 	 */
-	private double getFlatDistance(Location loc1, Location loc2) {
-		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
+	private boolean inRange(Location loc1, Location loc2) {
+		if (Math.abs(loc1.getX() - loc2.getX()) > feature.entityTrackingRange || 
+			Math.abs(loc1.getZ() - loc2.getZ()) > feature.entityTrackingRange) return false;
+		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2)) <= feature.entityTrackingRange;
 	}
 	
 	/**
