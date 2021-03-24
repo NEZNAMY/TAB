@@ -40,6 +40,11 @@ public abstract class Condition {
 	 */
 	public Condition(String name, List<String> conditions, String yes, String no) {
 		this.name = name;
+		this.yes = yes;
+		this.no = no;
+		if (conditions == null) {
+			TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
+		}
 		for (String line : conditions) {
 			SimpleCondition condition = SimpleCondition.compile(line);
 			if (condition != null) {
@@ -48,8 +53,6 @@ public abstract class Condition {
 				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
-		this.yes = yes;
-		this.no = no;
 	}
 	
 	/**
