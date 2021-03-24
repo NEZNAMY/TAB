@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -48,6 +49,16 @@ public class EventListener implements Listener {
 				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
 					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
 					processMove(p, ((Player)p.getPlayer()).getLocation());
+				}
+				//vanishing
+				Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
+				for (TabPlayer other : TAB.getInstance().getPlayers()) {
+					if (nearby.contains(other) && !((Player)other.getPlayer()).canSee((Player)p.getPlayer())) {
+						p.getArmorStandManager().destroy(other);
+					}
+					if (!nearby.contains(other) && ((Player)other.getPlayer()).canSee((Player)p.getPlayer())) {
+						p.getArmorStandManager().spawn(other);
+					}
 				}
 			}
 		});
