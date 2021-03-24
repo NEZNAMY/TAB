@@ -110,7 +110,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug
-			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, 16));
+			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, Math.min(16, text.length())));
 			charLimit -= lastColors.length() == 0 ? 2 : lastColors.length();
 		}
 		String prefix;
