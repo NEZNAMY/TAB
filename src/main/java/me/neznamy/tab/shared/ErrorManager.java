@@ -266,6 +266,7 @@ public class ErrorManager {
 	 * @return parsed double
 	 */
 	public double parseDouble(String string, double defaultValue, String place) {
+		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
 			return Double.parseDouble(string);
 		} catch (Throwable e) {
