@@ -53,6 +53,7 @@ public class EventListener implements Listener {
 				//vanishing
 				Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
 				for (TabPlayer other : TAB.getInstance().getPlayers()) {
+					if (p == other) continue;
 					if (nearby.contains(other) && !((Player)other.getPlayer()).canSee((Player)p.getPlayer())) {
 						p.getArmorStandManager().destroy(other);
 					}
