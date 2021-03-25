@@ -117,7 +117,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 		if (nmsPacket == null || !player.isOnline()) return;
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && nmsPacket instanceof ByteBuf) {
-				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
+				try {
+					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
+				} catch (IllegalArgumentException e) {
+					//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
+					//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
+				}
 				return;
 			}
 			NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
