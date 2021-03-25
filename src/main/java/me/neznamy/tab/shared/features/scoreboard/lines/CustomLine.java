@@ -45,6 +45,7 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
+		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
 		String oldName = refreshed.getProperty(teamName + "-name").get();
 		boolean prefix = refreshed.getProperty(teamName + "-prefix").update();
 		boolean name = refreshed.getProperty(teamName + "-name").update();
