@@ -26,9 +26,14 @@ public class ScoreboardCommand extends SubCommand {
 		}
 		if (scoreboard.permToToggle && !hasPermission(sender, "tab.togglescoreboard")) {
 			sendMessage(sender, getTranslation("no_permission"));
+			return;
 		}
-		if (args.length == 0 && sender == null) {
-			sendMessage(sender, "Toggle command must be ran from the game");
+		if (args.length == 0) {
+			if (sender == null) {
+				sendMessage(sender, "Toggle command must be ran from the game");
+			} else {
+				sender.toggleScoreboard(true);
+			}
 			return;
 		}
 		TabPlayer p = sender;
