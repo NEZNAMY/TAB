@@ -26,10 +26,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	private TAB tab;
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
+	private boolean antiOverrideNames;
 
 	public Playerlist(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
 		refreshUsedPlaceholders();
 	}
 
@@ -58,6 +60,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (!antiOverrideNames) return;
 		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 		if (!UPDATE_NAME && !ADD) return;

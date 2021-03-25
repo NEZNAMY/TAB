@@ -8,8 +8,10 @@ import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 
 /**
  * A large source of hate. Packet intercepting to secure proper functionality of some features:
- * Tablist names - anti-override (preventing other plugins from setting this value)
+ * Tablist names - anti-override
  * Nametags - anti-override
+ * TabObjective & Belowname - anti-override
+ * Scoreboard - disabling tab's scoreboard to prevent conflict
  * SpectatorFix - to change gamemode to something else than spectator
  * PetFix - to remove owner field from entity data
  * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
@@ -19,12 +21,26 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	//name of the pipeline decoder injected in netty
 	public final String DECODER_NAME = "TAB";
 	
+	//tab instance
 	protected TAB tab;
 	
+	//preventing spam when packet is sent to everyone
 	private String lastTeamOverrideMessage;
 	
+	//anti-override rules
+	protected boolean antiOverrideTeams;
+	protected boolean antiOverrideObjectives;
+	protected boolean antiOverrideHeaderFooter;
+	
+	/**
+	 * Constructs new instance
+	 * @param tab
+	 */
 	public PipelineInjector(TAB tab) {
 		this.tab = tab;
+		antiOverrideTeams = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-teams", true);
+		antiOverrideObjectives = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-objectives", true);
+		antiOverrideHeaderFooter = tab.getConfiguration().config.getBoolean("anti-override.header-footer", true);
 	}
 	
 	/**

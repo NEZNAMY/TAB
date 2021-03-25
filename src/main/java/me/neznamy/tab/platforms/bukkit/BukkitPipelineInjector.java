@@ -118,18 +118,18 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (tab.getFeatureManager().getNameTagFeature() != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+				if (tab.getFeatureManager().getNameTagFeature() != null && antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 					return;
 				}
-				if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+				if (antiOverrideObjectives && nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
 					tab.getFeatureManager().onObjective(player, packet);
 				}
-				if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+				if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
 					return;
 				}
 				tab.getFeatureManager().onPacketSend(player, packet);

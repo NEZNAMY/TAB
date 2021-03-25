@@ -235,3 +235,10 @@ primary-group-finding-list:
   
 #if none of the above fits your needs, you can enable this to give groups using tab.group.<group name from the list above> permission
 assign-groups-by-permissions: false
+
+#preventing other plugins from overriding TAB
+anti-override:
+  scoreboard-teams: true
+  scoreboard-objectives: true
+  tablist-names: true
+  header-footer: true

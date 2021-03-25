@@ -95,7 +95,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (tab.getFeatureManager().isFeatureEnabled("nametag16")) {
+				if (tab.getFeatureManager().isFeatureEnabled("nametag16") && antiOverrideTeams) {
 					if (packet instanceof Team) {
 						//team packet coming from a bungeecord plugin
 						modifyPlayers((Team) packet);
@@ -124,15 +124,15 @@ public class BungeePipelineInjector extends PipelineInjector {
 						buf.readerIndex(marker);
 					}
 				}
-				if (packet instanceof ScoreboardDisplay && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+				if (packet instanceof ScoreboardDisplay && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 					//TODO add support for serialized packets as above with teams
 					return;
 				}
-				if (packet instanceof ScoreboardObjective) {
+				if (packet instanceof ScoreboardObjective && antiOverrideObjectives) {
 					//TODO add support for serialized packets as above with teams
 					tab.getFeatureManager().onObjective(player, packet);
 				}
-				if (packet instanceof PlayerListHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
+				if (packet instanceof PlayerListHeaderFooter && antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
 					//TODO add support for serialized packets as above with teams
 					return;
 				}

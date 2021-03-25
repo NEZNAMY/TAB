@@ -68,7 +68,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 
 		//injected player
 		private TabPlayer player;
-		
+
 		/**
 		 * Constructs new instance with given player
 		 * @param player - player to inject
@@ -85,37 +85,30 @@ public class VelocityPipelineInjector extends PipelineInjector {
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				case "Team":
-					modifyPlayers((Team) packet);
-					super.write(context, packet, channelPromise);
-					return;
+					if (antiOverrideTeams) modifyPlayers((Team) packet);
+					break;
 				case "JoinGame":
 					//making sure to not send own packets before join packet is actually sent
 					super.write(context, packet, channelPromise);
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
 				case "ScoreboardDisplay":
-					if (!tab.getFeatureManager().onDisplayObjective(player, packet)) {
-						super.write(context, packet, channelPromise);
-					}
-					return;
+					if (antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) return;
+					break;
 				case "ScoreboardObjective":
-					tab.getFeatureManager().onObjective(player, packet);
-					super.write(context, packet, channelPromise);
-					return;
+					if (antiOverrideObjectives) tab.getFeatureManager().onObjective(player, packet);
+					break;
 				case "HeaderAndFooter":
 					//TODO add deserialization
-					if (!tab.getFeatureManager().onHeaderFooter(player, packet)) {
-						super.write(context, packet, channelPromise);
-					}
-					return;
+					if (antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) return;
+					break;
 				default:
-					super.write(context, packet, channelPromise);
-					return;
+					break;
 				}
 			} catch (Throwable e){
-				super.write(context, packet, channelPromise);
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
+			super.write(context, packet, channelPromise);
 		}
 	}
 }
