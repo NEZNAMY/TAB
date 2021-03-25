@@ -196,6 +196,10 @@ public class FeatureManager {
 	 * @param connectedPlayer - player who connected
 	 */
 	public void onJoin(TabPlayer connectedPlayer) {
+		if (!connectedPlayer.isOnline()) {
+			tab.debug("Player " + connectedPlayer.getName() + " was offline during login process.");
+			return;
+		}
 		long millis = System.currentTimeMillis();
 		tab.addPlayer(connectedPlayer);
 		for (Feature f : getAllFeatures()) {
