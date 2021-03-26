@@ -572,11 +572,7 @@ public class NMSStorage {
 	 */
 	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
 		for (Field f : clazz.getDeclaredFields()) {
-			if (f.getName().equals(name)) {
-				f.setAccessible(true);
-				return f;
-			}
-			if (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name)) {
+			if (f.getName().equals(name) || (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name))) {
 				f.setAccessible(true);
 				return f;
 			}
