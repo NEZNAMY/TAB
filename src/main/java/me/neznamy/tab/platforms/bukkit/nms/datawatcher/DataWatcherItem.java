@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.lang.reflect.Field;
-
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcherItem {
@@ -29,25 +28,12 @@ public class DataWatcherItem {
 	 * @throws Exception - if something fails
 	 */
 	public static DataWatcherItem fromNMS(Object nmsItem) throws Exception {
+		NMSStorage nms = NMSStorage.getInstance();
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-			Object nmsObject = getValue(nmsItem, "a");
-			DataWatcherObject object = new DataWatcherObject((int) DataWatcherItem.getValue(nmsObject, "a"), DataWatcherItem.getValue(nmsObject, "b"));
-			return new DataWatcherItem(object, getValue(nmsItem, "b"));
+			Object nmsObject = nms.DataWatcherItem_TYPE.get(nmsItem);
+			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherObject_SLOT.getInt(nmsObject), nms.DataWatcherObject_SERIALIZER.get(nmsObject)), nms.DataWatcherItem_VALUE.get(nmsItem));
 		} else {
-			return new DataWatcherItem(new DataWatcherObject((int) getValue(nmsItem, "b"), getValue(nmsItem, "a")), getValue(nmsItem, "c"));
+			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherItem_TYPE.getInt(nmsItem), null), nms.DataWatcherItem_VALUE.get(nmsItem));
 		}
-	}
-	
-	/**
-	 * Returns value of a field
-	 * @param obj - object to get value from
-	 * @param field - name of field to get
-	 * @return value of field
-	 * @throws Exception - if something fails
-	 */
-	public static Object getValue(Object obj, String field) throws Exception {
-		Field f = obj.getClass().getDeclaredField(field);
-		f.setAccessible(true);
-		return f.get(obj);
 	}
 }

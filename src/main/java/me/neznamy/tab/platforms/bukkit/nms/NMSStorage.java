@@ -189,9 +189,13 @@ public class NMSStorage {
 
 	public Class<?> DataWatcherItem;
 	public Constructor<?> newDataWatcherItem;
+	public Field DataWatcherItem_TYPE;
+	public Field DataWatcherItem_VALUE;
 
 	public Class<?> DataWatcherObject;
 	public Constructor<?> newDataWatcherObject;
+	public Field DataWatcherObject_SLOT;
+	public Field DataWatcherObject_SERIALIZER;
 
 	public Class<?> DataWatcherRegistry;
 
@@ -399,6 +403,11 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 9) {
 			//1.9+
+			DataWatcherItem_TYPE = getField(DataWatcherItem, "a");
+			DataWatcherItem_VALUE = getField(DataWatcherItem, "b");
+			DataWatcherObject_SLOT = getField(DataWatcherObject, "a");
+			DataWatcherObject_SERIALIZER = getField(DataWatcherObject, "b");
+			
 			PacketPlayOutBoss_UUID = getField(PacketPlayOutBoss, "a");
 			PacketPlayOutBoss_ACTION = getField(PacketPlayOutBoss, "b");
 			PacketPlayOutBoss_NAME = getField(PacketPlayOutBoss, "c");
@@ -426,6 +435,9 @@ public class NMSStorage {
 			PacketPlayInUseEntity_ACTION = getField(PacketPlayInUseEntity, "action");
 		} else {
 			//1.8-
+			DataWatcherItem_TYPE = getField(DataWatcherItem, "b");
+			DataWatcherItem_VALUE = getField(DataWatcherItem, "c");
+			
 			PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "b");
 			PacketPlayOutSpawnEntityLiving_X = getField(PacketPlayOutSpawnEntityLiving, "c");
 			PacketPlayOutSpawnEntityLiving_Y = getField(PacketPlayOutSpawnEntityLiving, "d");
