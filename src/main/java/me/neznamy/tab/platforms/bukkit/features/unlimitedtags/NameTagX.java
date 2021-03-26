@@ -142,7 +142,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 		HandlerList.unregisterAll(eventListener);
 		for (TabPlayer p : tab.getPlayers()) {
 			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
-			p.getArmorStandManager().destroy();
+			if (p.getArmorStandManager() != null) p.getArmorStandManager().destroy();
 		}
 		entityIdMap.clear();
 	}
