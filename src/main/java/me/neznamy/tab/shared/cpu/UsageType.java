@@ -21,7 +21,8 @@ public enum UsageType {
 	
 	//packets
 	ANTI_OVERRIDE("Anti override"),
-	PACKET_READING("Packet reading"),
+	PACKET_READING_IN("Packet reading (in)"),
+	PACKET_READING_OUT("Packet reading (out)"),
 	PACKET_ENTITY_MOVE("PacketPlayOutEntity"),
 	PACKET_PLAYER_INFO("PacketPlayOutPlayerInfo"),
 	PACKET_LOGIN("PacketLogin"),

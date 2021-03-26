@@ -166,7 +166,7 @@ public class FeatureManager {
 		for (PlayerInfoPacketListener f : listeners) {
 			time = System.nanoTime();
 			((PlayerInfoPacketListener)f).onPacketSend(receiver, info);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
 		Object pack = info.create(receiver.getVersion());
@@ -271,7 +271,7 @@ public class FeatureManager {
 			} catch (Throwable e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_IN, System.nanoTime()-time);
 		}
 		return newPacket;
 	}
@@ -291,7 +291,7 @@ public class FeatureManager {
 			} catch (Throwable e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING, System.nanoTime()-time);
+			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 	}
 	
