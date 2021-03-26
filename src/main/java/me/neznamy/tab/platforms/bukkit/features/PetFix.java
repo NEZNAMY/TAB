@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 /**
  * A feature to disable minecraft 1.9+ feature making tamed animals with custom names copy nametag properties of their owner
  * This is achieved by listening to entity spawn (<1.15) / entity metadata packets and removing owner field from the datawatcher list
+ * Since 1.16 this results in client sending entity use packet twice, so we must cancel the 2nd one to prevent double toggle
  */
 public class PetFix implements RawPacketListener, QuitEventListener {
 
