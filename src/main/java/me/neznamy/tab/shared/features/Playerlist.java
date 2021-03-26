@@ -21,18 +21,44 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 /**
  * Feature handler for tablist prefix/name/suffix
  */
-public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, PlayerInfoPacketListener, Refreshable {
+public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, Refreshable {
 
 	private TAB tab;
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
-	private boolean antiOverrideNames;
 
 	public Playerlist(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
 		refreshUsedPlaceholders();
+		if (tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true)) {
+			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
+
+				@Override
+				public TabFeature getFeatureType() {
+					return TabFeature.TABLIST_NAMES;
+				}
+
+				@Override
+				public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+					boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
+					boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
+					if (!UPDATE_NAME && !ADD) return;
+					for (PlayerInfoData playerInfoData : info.entries) {
+						TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
+						if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
+							playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
+							//preventing plugins from changing player name as nametag feature would not work correctly
+							if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
+								tab.getErrorManager().printError("Blocking name change of player " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
+								playerInfoData.name = packetPlayer.getName();
+							}
+						}
+					}
+				}
+				
+			});
+		}
 	}
 
 	@Override
@@ -56,25 +82,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		refresh(p, true);
-	}
-
-	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (!antiOverrideNames) return;
-		boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
-		boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
-		if (!UPDATE_NAME && !ADD) return;
-		for (PlayerInfoData playerInfoData : info.entries) {
-			TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
-			if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
-				playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
-				//preventing plugins from changing player name as nametag feature would not work correctly
-				if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
-					tab.getErrorManager().printError("Blocking name change of player " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
-					playerInfoData.name = packetPlayer.getName();
-				}
-			}
-		}
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
