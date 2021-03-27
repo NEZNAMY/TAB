@@ -61,11 +61,13 @@ public class DataWatcher {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
 		for (DataWatcherItem item : dataValues.values()) {
+			Object position;
 			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
-				nms.DataWatcher_REGISTER.invoke(nmsWatcher, nms.newDataWatcherObject.newInstance(item.type.position, item.type.classType), item.value);
+				position = nms.newDataWatcherObject.newInstance(item.type.position, item.type.classType);
 			} else {
-				nms.DataWatcher_REGISTER.invoke(nmsWatcher, item.type.position, item.value);
+				position = item.type.position;
 			}
+			nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.value);
 		}
 		return nmsWatcher;
 	}
