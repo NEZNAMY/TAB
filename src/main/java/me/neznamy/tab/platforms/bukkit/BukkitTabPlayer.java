@@ -24,7 +24,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 	//bukkit player
 	private Player player;
 	
-	//player connection
+	//nms handle
+	private Object handle;
+	
+	//nms player connection
 	private Object playerConnection;
 
 	/**
@@ -35,7 +38,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 		player = p;
 		world = p.getWorld().getName();
 		try {
-			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(NMSStorage.getInstance().getHandle.invoke(player));
+			handle = NMSStorage.getInstance().getHandle.invoke(player);
+			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
 		}
@@ -104,7 +108,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public long getPing() {
 		try {
-			int ping = NMSStorage.getInstance().PING.getInt(NMSStorage.getInstance().getHandle.invoke(player));
+			int ping = NMSStorage.getInstance().PING.getInt(handle);
 			if (ping > 10000 || ping < 0) ping = -1;
 			return ping;
 		} catch (Exception e) {
@@ -174,7 +178,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		try {
-			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getProfile.invoke(NMSStorage.getInstance().getHandle.invoke(player)));
+			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getProfile.invoke(handle));
 		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}
