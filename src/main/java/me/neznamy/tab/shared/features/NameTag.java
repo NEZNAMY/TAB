@@ -35,7 +35,7 @@ public abstract class NameTag implements Feature, Refreshable {
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.nametag", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		collisionRule = tab.getConfiguration().config.getBoolean("enable-collision", true);
 		revertedCollision = tab.getConfiguration().config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
-		sorting = new Sorting(tab);
+		sorting = new Sorting(tab, this);
 	}
 
 	public void startRefreshingTasks() {

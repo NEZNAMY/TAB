@@ -25,10 +25,7 @@ public class Sorting {
 
 	//tab instance
 	private TAB tab;
-	
-	//nametag feature
-	private NameTag nametags;
-	
+
 	//map of all registered sorting types
 	private Map<String, SortingType> types = new HashMap<String, SortingType>();
 	
@@ -44,8 +41,9 @@ public class Sorting {
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
 	 * @param tab - tab instance
+	 * @param nametags - nametag feature
 	 */
-	public Sorting(TAB tab) {
+	public Sorting(TAB tab, NameTag nametags) {
 		this.tab = tab;
 		types.put("GROUPS", new Groups());
 		types.put("GROUP_PERMISSIONS", new GroupPermission());
