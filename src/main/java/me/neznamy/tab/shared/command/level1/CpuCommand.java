@@ -22,19 +22,6 @@ public class CpuCommand extends SubCommand {
 
 	private final char LINE_CHAR = (char)9553;
 	private final String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
-	private final String HEADER_FOOTER = "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ";
-	private final String TITLE = "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds";
-	private final String PLACEHOLDERS_TITLE = "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.1%:";
-	private final String PLACEHOLDER_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
-	private final String BUKKIT_BRIDGE_TITLE = "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:";
-	private final String BUKKIT_BRIDGE_LINE = "&8&l" + LINE_CHAR + " &7%identifier% - %usage%%";
-	private final String FEATURE_NAME = "&8&l" + LINE_CHAR + " &7%name% (%usage%%&7):";
-	private final String FEATURE_LINE = "&8&l" + LINE_CHAR + "     &7%category% - %usage%%";
-	private final String THREADS = "&8&l" + LINE_CHAR + " &7Threads created by the plugin (active/total): &7%n%";
-	private final String PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%total%%";
-	private final String BRIDGE_PLACEHOLDERS_TOTAL = "&8&l" + LINE_CHAR + " &6&lBukkit bridge placeholders Total: &a&l%total%%";
-	private final String PLUGIN_INTERNALS = "&8&l" + LINE_CHAR + " &6&lPlugin internals: &a&l%total%%";
-	private final String TOTAL = "&8&l" + LINE_CHAR + " &6&lTotal: &e&l%total%%";
 
 	/**
 	 * Constructs new instance
@@ -63,23 +50,23 @@ public class CpuCommand extends SubCommand {
 		}
 
 		sendMessage(sender, " ");
-		sendMessage(sender, HEADER_FOOTER);
-		sendMessage(sender, TITLE);
+		sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds");
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, PLACEHOLDERS_TITLE);
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.1%:");
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
 			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey()+"");
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
-			sendMessage(sender, PLACEHOLDER_LINE.replace("%identifier%", entry.getKey() + refresh).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
+			sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &7%s - %s%%", entry.getKey() + refresh, colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
 		sendMessage(sender, SEPARATOR);
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
-			sendMessage(sender, BUKKIT_BRIDGE_TITLE);
+			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:");
 			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
 				if (entry.getValue() < 0.1) continue;
-				sendMessage(sender, BUKKIT_BRIDGE_LINE.replace("%identifier%", entry.getKey()).replace("%usage%", colorizePlaceholder(decimal3.format(entry.getValue()))));
+				sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &7%s - %s%%", entry.getKey(), colorizePlaceholder(decimal3.format(entry.getValue()))));
 			}
 			sendMessage(sender, SEPARATOR);
 		}
@@ -89,19 +76,19 @@ public class CpuCommand extends SubCommand {
 			sendToConsole(features);
 		}
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, THREADS.replace("%n%", tab.getCPUManager().getThreadCount()));
+		sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &7Threads created by the plugin (active/total): &7%s", tab.getCPUManager().getThreadCount()));
 		if (sender != null) {
 			sendPacketCountToPlayer(sender);
 		} else {
 			sendPacketCountToConsole();
 		}
-		sendMessage(sender, PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(placeholdersTotal))));
+		sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &6&lPlaceholders Total: &a&l%s%%", colorizeTotalUsage(decimal3.format(placeholdersTotal))));
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
-			sendMessage(sender, BRIDGE_PLACEHOLDERS_TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal))));
+			sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &6&lBukkit bridge placeholders Total: &a&l%s%%", colorizeTotalUsage(decimal3.format(bridgeplaceholdersTotal))));
 		}
-		sendMessage(sender, PLUGIN_INTERNALS.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal))));
-		sendMessage(sender, TOTAL.replace("%total%", colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal))));
-		sendMessage(sender, HEADER_FOOTER);
+		sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &6&lPlugin internals: &a&l%s%%", colorizeTotalUsage(decimal3.format(featuresTotal-placeholdersTotal))));
+		sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &6&lTotal: &e&l%s%%", colorizeTotalUsage(decimal3.format(featuresTotal + bridgeplaceholdersTotal))));
+		sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}
 
@@ -112,10 +99,10 @@ public class CpuCommand extends SubCommand {
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
 			}
-			String core = FEATURE_NAME.replace("%name%", entry.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(featureTotal)));
+			String core = String.format("&8&l" + LINE_CHAR + " &7%s (%s%%&7):", entry.getKey(), colorizeFeature(decimal3.format(featureTotal)));
 			List<String> messages = new ArrayList<String>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
-				messages.add(FEATURE_LINE.replace("%category%", type.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(type.getValue()))));
+				messages.add(String.format("&8&l" + LINE_CHAR + "     &7%s - %s%%", type.getKey(), colorizeFeature(decimal3.format(type.getValue()))));
 			}
 			TAB.getInstance().getPlatform().sendConsoleMessage(core, true);
 			for (String message : messages) {
@@ -131,7 +118,7 @@ public class CpuCommand extends SubCommand {
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
 			}
-			String core = FEATURE_NAME.replace("%name%", entry.getKey().toString()).replace("%usage%", colorizeFeature(decimal3.format(featureTotal)));
+			String core = String.format("&8&l" + LINE_CHAR + " &7%s (%s%%&7):", entry.getKey(), colorizeFeature(decimal3.format(featureTotal)));
 			List<String> messages = new ArrayList<String>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
 				messages.add("&3" + type.getKey().toString() + " - " + colorizeFeature(decimal3.format(type.getValue())) + "%");
