@@ -28,17 +28,7 @@ public enum TabFeature {
 	PACKET_SERIALIZING("Packet serializing"),
 	TABLIST_LAYOUT("Tablist layout"),
 	PLUGIN_MESSAGE_HANDLING("Plugin message handling"),
-	OTHER("Other"),
-	ADDON_FEATURE_1(null),
-	ADDON_FEATURE_2(null),
-	ADDON_FEATURE_3(null),
-	ADDON_FEATURE_4(null),
-	ADDON_FEATURE_5(null),
-	ADDON_FEATURE_6(null),
-	ADDON_FEATURE_7(null),
-	ADDON_FEATURE_8(null),
-	ADDON_FEATURE_9(null),
-	ADDON_FEATURE_10(null);
+	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu
 	private String displayName;
@@ -48,14 +38,6 @@ public enum TabFeature {
 	 * @param displayName - name to display in /tab cpu
 	 */
 	private TabFeature(String displayName){
-		this.displayName = displayName;
-	}
-	
-	/**
-	 * Sets display name to new value
-	 * @param displayName - new display name
-	 */
-	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
 

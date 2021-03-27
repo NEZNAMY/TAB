@@ -24,20 +24,20 @@ public class CPUManager {
 	private final int bufferSizeMillis = 10000;
 
 	//nanoseconds worked in the current 10 seconds
-	private Map<TabFeature, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
+	private Map<Object, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 	
 	//packets sent in the current 10 seconds
-	private Map<TabFeature, Integer> packetsCurrent = new ConcurrentHashMap<TabFeature, Integer>();
+	private Map<Object, Integer> packetsCurrent = new ConcurrentHashMap<Object, Integer>();
 
 	//nanoseconds worked in the previous 10 seconds
-	private Map<TabFeature, Map<UsageType, Long>> featureUsagePrevious = new HashMap<TabFeature, Map<UsageType, Long>>();
+	private Map<Object, Map<UsageType, Long>> featureUsagePrevious = new HashMap<Object, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsagePrevious = new HashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsagePrevious = new HashMap<String, Long>();
 	
 	//packets sent in the previous 10 seconds
-	private Map<TabFeature, Integer> packetsPrevious = new ConcurrentHashMap<TabFeature, Integer>();
+	private Map<Object, Integer> packetsPrevious = new ConcurrentHashMap<Object, Integer>();
 
 	//thread pool
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -64,10 +64,10 @@ public class CPUManager {
 						bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
 						packetsPrevious = packetsCurrent;
 
-						featureUsageCurrent = new ConcurrentHashMap<TabFeature, Map<UsageType, Long>>();
+						featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
 						placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
-						packetsCurrent = new ConcurrentHashMap<TabFeature, Integer>();
+						packetsCurrent = new ConcurrentHashMap<Object, Integer>();
 					}
 				} catch (InterruptedException pluginDisabled) {
 
@@ -101,7 +101,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runMeasuredTask(String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void runMeasuredTask(String errorDescription, Object feature, UsageType type, Runnable task) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -142,7 +142,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
 		exe.submit(new Runnable() {
 
@@ -177,7 +177,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
 		exe.submit(new Runnable() {
 
 			public void run() {
@@ -215,7 +215,7 @@ public class CPUManager {
 	 * Returns map of sent packets per feature in previous 10 seconds
 	 * @return map of sent packets per feature
 	 */
-	public Map<TabFeature, Integer> getSentPackets(){
+	public Map<Object, Integer> getSentPackets(){
 		return sortByValue(packetsPrevious);
 	}
 
@@ -243,10 +243,10 @@ public class CPUManager {
 	 * Returns map of CPU usage per feature per type in the previous 10 seconds
 	 * @return map of CPU usage per feature per type
 	 */
-	public Map<TabFeature, Map<UsageType, Float>> getFeatureUsage(){
-		Map<TabFeature, Map<UsageType, Long>> total = new HashMap<TabFeature, Map<UsageType, Long>>();
-		for (Entry<TabFeature, Map<UsageType, Long>> nanos : featureUsagePrevious.entrySet()) {
-			TabFeature key = nanos.getKey();
+	public Map<Object, Map<UsageType, Float>> getFeatureUsage(){
+		Map<Object, Map<UsageType, Long>> total = new HashMap<Object, Map<UsageType, Long>>();
+		for (Entry<Object, Map<UsageType, Long>> nanos : featureUsagePrevious.entrySet()) {
+			Object key = nanos.getKey();
 			if (!total.containsKey(key)) {
 				total.put(key, new HashMap<UsageType, Long>());
 			}
@@ -258,8 +258,8 @@ public class CPUManager {
 				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue());
 			}
 		}
-		Map<TabFeature, Map<UsageType, Float>> sorted = new LinkedHashMap<TabFeature, Map<UsageType, Float>>();
-		for (TabFeature key : sortKeys(total)) {
+		Map<Object, Map<UsageType, Float>> sorted = new LinkedHashMap<Object, Map<UsageType, Float>>();
+		for (Object key : sortKeys(total)) {
 			Map<UsageType, Long> local = sortByValue(total.get(key));
 			Map<UsageType, Float> percent = new LinkedHashMap<UsageType, Float>();
 			for (Entry<UsageType, Long> entry : local.entrySet()) {
@@ -340,7 +340,7 @@ public class CPUManager {
 	 * @param type - usage to add time to of the feature
 	 * @param nanoseconds - time to add
 	 */
-	public void addTime(TabFeature feature, UsageType type, long nanoseconds) {
+	public void addTime(Object feature, UsageType type, long nanoseconds) {
 		Map<UsageType, Long> usage = featureUsageCurrent.get(feature);
 		if (usage == null) {
 			usage = new ConcurrentHashMap<UsageType, Long>();
@@ -396,7 +396,7 @@ public class CPUManager {
 	 * Increments packets sent by 1 of specified feature
 	 * @param feature - feature to increment packet counter of
 	 */
-	public void packetSent(TabFeature feature) {
+	public void packetSent(Object feature) {
 		Integer current = packetsCurrent.get(feature);
 		if (current == null) {
 			packetsCurrent.put(feature, 1);

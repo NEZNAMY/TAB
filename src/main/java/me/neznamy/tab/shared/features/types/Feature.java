@@ -2,18 +2,16 @@ package me.neznamy.tab.shared.features.types;
 
 import java.util.List;
 
-import me.neznamy.tab.shared.cpu.TabFeature;
-
 /**
  * The main interface for features
  */
 public interface Feature {
 
 	/**
-	 * Returns name of the feature displayed in /tab cpu
+	 * Returns name of the feature displayed in /tab cpu. Can be anything which then .toString() will be called on.
 	 * @return name of the feature displayed in /tab cpu
 	 */
-	public TabFeature getFeatureType();
+	public Object getFeatureType();
 	
 	/**
 	 * Returns true if world belongs in disabled worlds, false if not

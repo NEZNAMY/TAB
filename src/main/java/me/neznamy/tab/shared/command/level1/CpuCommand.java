@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -55,7 +54,7 @@ public class CpuCommand extends SubCommand {
 		float bridgeplaceholdersTotal = 0;
 		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
 
-		Map<TabFeature, Map<UsageType, Float>> features = tab.getCPUManager().getFeatureUsage();
+		Map<Object, Map<UsageType, Float>> features = tab.getCPUManager().getFeatureUsage();
 		float featuresTotal = 0;
 		for (Map<UsageType, Float> map : features.values()) {
 			for (Float time : map.values()) {
@@ -106,9 +105,9 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, " ");
 	}
 
-	public void sendToConsole(Map<TabFeature, Map<UsageType, Float>> features) {
+	public void sendToConsole(Map<Object, Map<UsageType, Float>> features) {
 		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
-		for (Entry<TabFeature, Map<UsageType, Float>> entry : features.entrySet()) {
+		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
 			float featureTotal = 0;
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
@@ -125,9 +124,9 @@ public class CpuCommand extends SubCommand {
 		}
 	}
 
-	public void sendToPlayer(TabPlayer sender, Map<TabFeature, Map<UsageType, Float>> features) {
+	public void sendToPlayer(TabPlayer sender, Map<Object, Map<UsageType, Float>> features) {
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
-		for (Entry<TabFeature, Map<UsageType, Float>> entry : features.entrySet()) {
+		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
 			float featureTotal = 0;
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
@@ -144,10 +143,10 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToConsole() {
-		Map<TabFeature, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<Object, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<String>();
-		for (Entry<TabFeature, Integer> entry : packets.entrySet()) {
+		for (Entry<Object, Integer> entry : packets.entrySet()) {
 			count += entry.getValue();
 			messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey().toString() + " - " + entry.getValue());
 		}
@@ -158,10 +157,10 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToPlayer(TabPlayer sender) {
-		Map<TabFeature, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<Object, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<String>();
-		for (Entry<TabFeature, Integer> entry : packets.entrySet()) {
+		for (Entry<Object, Integer> entry : packets.entrySet()) {
 			count += entry.getValue();
 			messages.add("&3" + entry.getKey().toString() + " - " + entry.getValue());
 		}
