@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
@@ -47,8 +46,6 @@ public class BungeePlatform implements Platform {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null) {
-			return new BungeePerms(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
 		} else {
 			return new VaultBridge(Main.plm);
 		}

@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag16;
 import me.neznamy.tab.shared.features.PlaceholderManager;
-import me.neznamy.tab.shared.permission.BungeePerms;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
@@ -46,8 +45,6 @@ public class VelocityPlatform implements Platform {
 	public PermissionPlugin detectPermissionPlugin() {
 		if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
-		} else if (server.getPluginManager().getPlugin("bungeeperms").isPresent()) {
-			return new BungeePerms(server.getPluginManager().getPlugin("bungeeperms").get().getDescription().getVersion().get());
 		} else {
 			return new VaultBridge(Main.plm);
 		}
