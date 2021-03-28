@@ -44,7 +44,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * @param text - text to display
 	 * @return Created packet with with TITLE action and given text
 	 */
-	public static PacketPlayOutTitle TITLE(String text) {
+	public static PacketPlayOutTitle title(String text) {
 		return new PacketPlayOutTitle(EnumTitleAction.TITLE, text, 0, 0, 0);
 	}
 	
@@ -54,7 +54,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * @param text - text to display
 	 * @return Created packet with with0 SUBTITLE action and given text
 	 */
-	public static PacketPlayOutTitle SUBTITLE(String text) {
+	public static PacketPlayOutTitle subtitle(String text) {
 		return new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, text, 0, 0, 0);
 	}
 	
@@ -64,7 +64,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * @param text - text to display
 	 * @return Created packet with with ACTIONBAR action and given text
 	 */
-	public static PacketPlayOutTitle ACTIONBAR(String text) {
+	public static PacketPlayOutTitle actionbar(String text) {
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 11) throw new IllegalStateException("Not supported on <1.11");
 		return new PacketPlayOutTitle(EnumTitleAction.ACTIONBAR, text, 0, 0, 0);
 	}
@@ -76,7 +76,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * @param fadeOut - ticks to fade out
 	 * @return Created packet with TIMES action and given parameters
 	 */
-	public static PacketPlayOutTitle TIMES(int fadeIn, int stay, int fadeOut) {
+	public static PacketPlayOutTitle times(int fadeIn, int stay, int fadeOut) {
 		return new PacketPlayOutTitle(EnumTitleAction.TIMES, null, fadeIn, stay, fadeOut);
 	}
 	
@@ -84,7 +84,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * Clears current title/subtitle and prevents any new from appearing
 	 * @return Created packet with CLEAR action
 	 */
-	public static PacketPlayOutTitle CLEAR() {
+	public static PacketPlayOutTitle clear() {
 		return new PacketPlayOutTitle(EnumTitleAction.CLEAR, null, 0, 0, 0);
 	}
 	
@@ -92,7 +92,7 @@ public class PacketPlayOutTitle extends UniversalPacketPlayOut {
 	 * Resets title times to their original values and makes titles appear again if CLEAR was used before
 	 * @return Created packet with RESET action
 	 */
-	public static PacketPlayOutTitle RESET() {
+	public static PacketPlayOutTitle reset() {
 		return new PacketPlayOutTitle(EnumTitleAction.RESET, null, 0, 0, 0);
 	}
 	
