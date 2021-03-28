@@ -274,7 +274,7 @@ public class NMSStorage {
 			EnumPlayerInfoAction = (Class<Enum>) getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
 			PlayerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
 			EnumScoreboardHealthDisplay = (Class<Enum>) getNMSClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
-			EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction");
+			EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction", "EnumTitleAction");
 			
 			//everything; v1_8_R2 - v1_9_R2
 			EnumGamemode = (Class<Enum>) getNMSClass("EnumGamemode", "WorldSettings$EnumGamemode");
