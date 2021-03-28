@@ -307,7 +307,7 @@ public class NMSStorage {
 		newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
 		newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor();
 		newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
-		newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, getNMSClass("DataWatcher"), boolean.class);
+		newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class);
 		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
 		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
 		if (minorVersion >= 8) {
