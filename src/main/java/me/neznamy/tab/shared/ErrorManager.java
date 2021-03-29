@@ -60,16 +60,6 @@ public class ErrorManager {
 	}
 
 	/**
-	 * Prints an error message into errors.txt file and returns first argument
-	 * @param defaultValue - value to return
-	 * @param message - message to print
-	 * @return first argument
-	 */
-	public <T> T printError(T defaultValue, String message) {
-		return printError(defaultValue, message, null);
-	}
-
-	/**
 	 * Prints an error message and stack trace into errors.txt file and returns first argument
 	 * @param defaultValue - value to return
 	 * @param message - message to print
