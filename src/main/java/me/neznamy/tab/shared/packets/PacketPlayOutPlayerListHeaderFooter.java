@@ -8,10 +8,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut {
 
-	//header
+	//tablist header
 	public IChatBaseComponent header;
 	
-	//footer
+	//tablist footer
 	public IChatBaseComponent footer;
 
 	/**

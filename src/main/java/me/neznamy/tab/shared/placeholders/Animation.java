@@ -18,6 +18,13 @@ public class Animation {
 	//change interval
 	private int interval;
 	
+	/**
+	 * Constructs new instance with given arguments which are fixed if necessary, such as when
+	 * refresh is not divisible by 50
+	 * @param name - animations name
+	 * @param list - list of animation framrs
+	 * @param interval - refresh interval to next frame
+	 */
 	public Animation(String name, List<String> list, int interval){
 		this.name = name;
 		this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);

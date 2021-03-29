@@ -40,7 +40,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	public boolean createWorldFog;
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters with ADD action
 	 * @param id - bossbar uuid
 	 * @param name - bossbar title
 	 * @param pct - bossbar progress
@@ -49,7 +49,6 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 * @param darkenScreen - darker screen if bossbar is displayed
 	 * @param playMusic - play boss music when bossbar is displayed
 	 * @param createWorldFog - create fog if bossbar is displayed
-	 * @return the instance with given parameters with ADD action
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		this.operation = Action.ADD;
@@ -64,13 +63,12 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters with ADD action
 	 * @param id - bossbar uuid
 	 * @param name - bossbar title
 	 * @param pct - bossbar progress
 	 * @param color - bossbar color
 	 * @param overlay - bossbar style
-	 * @return the instance with given parameters with ADD action
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		this.operation = Action.ADD;
@@ -82,9 +80,8 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters with REMOVE action
 	 * @param id - bossbar uuid
-	 * @return the instance with given parameters with REMOVE action
 	 */
 	public PacketPlayOutBoss(UUID id) {
 		this.operation = Action.REMOVE;
@@ -92,10 +89,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters UPDATE_PCT action
 	 * @param id - bossbar uuid
 	 * @param pct - bossbar progress
-	 * @return the instance with given parameters with UPDATE_PCT action
 	 */
 	public PacketPlayOutBoss(UUID id, float pct) {
 		this.operation = Action.UPDATE_PCT;
@@ -104,10 +100,9 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters UPDATE_NAME action
 	 * @param id - bossbar uuid
 	 * @param name - bossbar title
-	 * @return the instance with given parameters with UPDATE_NAME action
 	 */
 	public PacketPlayOutBoss(UUID id, String name) {
 		this.operation = Action.UPDATE_NAME;
@@ -116,11 +111,10 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters UPDATE_STYLE action
 	 * @param id - bossbar uuid
 	 * @param color - bossbar color
 	 * @param overlay - bossbar style
-	 * @return the instance with given parameters with UPDATE_STYLE action
 	 */
 	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
 		this.operation = Action.UPDATE_STYLE;
@@ -130,12 +124,11 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new packet based on given parameters with UPDATE_PROPERTIES action
 	 * @param id - bossbar uuid
 	 * @param darkenScreen - darker screen if bossbar is displayed
 	 * @param playMusic - play boss music when bossbar is displayed
 	 * @param createWorldFog - create fog if bossbar is displayed
-	 * @return the instance with given parameters with UPDATE_PROPERTIES action
 	 */
 	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		this.operation = Action.UPDATE_PROPERTIES;
@@ -175,7 +168,7 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * An enum representing boss packet action
+	 * An enum representing all valid boss packet actions
 	 */
 	public enum Action {
 

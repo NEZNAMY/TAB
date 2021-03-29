@@ -29,9 +29,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	//collision rule
 	public String collisionRule;
 	
-	//good question
-	//either name or glow color
-	//will investigate some day
+	//name and glow color, start color of prefix if not set
 	public EnumChatFormat color;
 	
 	//affected entities
