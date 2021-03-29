@@ -242,3 +242,4 @@ anti-override:
   scoreboard-objectives: true
   tablist-names: true
   header-footer: true
+  usernames: true

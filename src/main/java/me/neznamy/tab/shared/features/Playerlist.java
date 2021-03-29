@@ -26,10 +26,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	private TAB tab;
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
+	private boolean antiOverrideNames;
 
 	public Playerlist(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true);
 		refreshUsedPlaceholders();
 		if (tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true)) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
@@ -49,8 +51,8 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 						if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
 							playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 							//preventing plugins from changing player name as nametag feature would not work correctly
-							if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName())) {
-								tab.getErrorManager().printError("Blocking name change of player " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
+							if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName()) && antiOverrideNames) {
+								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
 								playerInfoData.name = packetPlayer.getName();
 							}
 						}
