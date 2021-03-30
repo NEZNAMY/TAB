@@ -288,8 +288,9 @@ public interface TabPlayer {
 	 * Sets bossbar visibility for the player and performs all packet sending if new value is
 	 * different than previous value (true->false, false->true)
 	 * @param visible - whether bossbar should be visible or not
+	 * @param sendToggleMessage - if toggle message should be sent or not
 	 */
-	public void setBossbarVisible(boolean visible);
+	public void setBossbarVisible(boolean visible, boolean sendToggleMessage);
 
 	/**
 	 * Returns list of all bossbars player can currently see

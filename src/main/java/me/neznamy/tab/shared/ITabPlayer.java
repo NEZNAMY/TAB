@@ -282,8 +282,28 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void setBossbarVisible(boolean visible) {
+	public void setBossbarVisible(boolean visible, boolean sendToggleMessage) {
 		bossbarVisible = visible;
+		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		if (feature == null) return;
+		if (hasBossbarVisible()) {
+			feature.detectBossBarsAndSend(this);
+			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().translation.getString("bossbar-toggle-on"), true);
+			if (feature.remember_toggle_choice) {
+				feature.bossbar_off_players.remove(getName());
+				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
+			}
+		} else {
+			for (BossBar line : getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
+				removeBossBar(line);
+			}
+			getActiveBossBars().clear();
+			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().translation.getString("bossbar-toggle-off"), true);
+			if (feature.remember_toggle_choice && !feature.bossbar_off_players.contains(getName())) {
+				feature.bossbar_off_players.add(getName());
+				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
+			}
+		}
 	}
 
 	@Override

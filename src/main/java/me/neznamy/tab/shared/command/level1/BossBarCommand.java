@@ -24,26 +24,12 @@ public class BossBarCommand extends SubCommand{
 			sender.sendMessage("&cBossbar feature is not enabled, therefore toggle command cannot be used.", true);
 			return;
 		}
+		if (sender == null) {
+			sendMessage(sender, "&cThis command must be ran from the game");
+			return;
+		}
 		if (!bossbar.permToToggle || sender.hasPermission("tab.togglebar")) {
-			sender.setBossbarVisible(!sender.hasBossbarVisible());
-			if (sender.hasBossbarVisible()) {
-				if (sender != null) bossbar.detectBossBarsAndSend(sender);
-				sender.sendMessage(getTranslation("bossbar-toggle-on"), true);
-				if (bossbar.remember_toggle_choice) {
-					bossbar.bossbar_off_players.remove(sender.getName());
-					TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", bossbar.bossbar_off_players);
-				}
-			} else {
-				for (me.neznamy.tab.api.bossbar.BossBar line : sender.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
-					sender.removeBossBar(line);
-				}
-				sender.getActiveBossBars().clear();
-				sender.sendMessage(getTranslation("bossbar-toggle-off"), true);
-				if (bossbar.remember_toggle_choice && !bossbar.bossbar_off_players.contains(sender.getName())) {
-					bossbar.bossbar_off_players.add(sender.getName());
-					TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", bossbar.bossbar_off_players);
-				}
-			}
+			sender.setBossbarVisible(!sender.hasBossbarVisible(), true);
 		} else {
 			sender.sendMessage(getTranslation("no_permission"), true);
 		}
