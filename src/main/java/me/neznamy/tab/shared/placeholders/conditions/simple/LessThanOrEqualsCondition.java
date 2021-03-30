@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+
 /**
  * "leftSide<=rightSide" condition
  */
@@ -13,7 +14,7 @@ public class LessThanOrEqualsCondition extends SimpleCondition {
 	 */
 	public LessThanOrEqualsCondition(String line) {
 		String[] arr = line.split("<=");
-		setSides(arr[0], arr[1]);
+		setSides(arr.length < 1 ? "" : arr[0], arr.length < 2 ? "" : arr[1]);
 	}
 	
 	@Override

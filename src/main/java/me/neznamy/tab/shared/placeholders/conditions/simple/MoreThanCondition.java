@@ -14,7 +14,7 @@ public class MoreThanCondition extends SimpleCondition {
 	 */
 	public MoreThanCondition(String line) {
 		String[] arr = line.split(">");
-		setSides(arr[0], arr[1]);
+		setSides(arr.length < 1 ? "" : arr[0], arr.length < 2 ? "" : arr[1]);
 	}
 	
 	@Override

@@ -14,9 +14,7 @@ public class ContainsCondition extends SimpleCondition {
 	 */
 	public ContainsCondition(String line) {
 		String[] arr = line.split("<-");
-		String arg = "";
-		if (arr.length >= 2) arg = arr[1];
-		setSides(arr[0], arg);
+		setSides(arr.length < 1 ? "" : arr[0], arr.length < 2 ? "" : arr[1]);
 	}
 
 	@Override
