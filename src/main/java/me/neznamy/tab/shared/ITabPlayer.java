@@ -15,6 +15,7 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -32,6 +33,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String permissionGroup = "<null>";
 	private String teamName;
 	private String teamNameNote;
+	private String forcedTeamName;
 
 	private Map<String, Property> properties = new HashMap<String, Property>();
 	private ArmorStandManager armorStandManager;
@@ -378,6 +380,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public String getTeamName() {
+		if (forcedTeamName != null) return forcedTeamName;
 		return teamName;
 	}
 
@@ -532,5 +535,21 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void sendPacket(Object nmsPacket, TabFeature feature) {
 		sendPacket(nmsPacket);
 		TAB.getInstance().getCPUManager().packetSent(feature);
+	}
+	
+	@Override
+	public void forceTeamName(String name) {
+		if (forcedTeamName == name) return;
+		NameTag nametags = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		if (nametags == null) return;
+		nametags.unregisterTeam(this);
+		forcedTeamName = name;
+		nametags.registerTeam(this);
+		if (name != null) teamNameNote = "Set using API";
+	}
+	
+	@Override
+	public String getForcedTeamName() {
+		return forcedTeamName;
 	}
 }

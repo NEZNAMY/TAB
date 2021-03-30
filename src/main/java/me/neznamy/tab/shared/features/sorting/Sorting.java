@@ -69,7 +69,7 @@ public class Sorting {
 			@Override
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded()) continue;
+					if (!p.isLoaded() || p.getForcedTeamName() != null) continue;
 					String newName = getTeamName(p);
 					if (!p.getTeamName().equals(newName)) {
 						nametags.unregisterTeam(p);

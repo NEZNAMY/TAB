@@ -477,4 +477,17 @@ public interface TabPlayer {
 	 * @return name of scoreboard objective from other plugin
 	 */
 	public String getOtherPluginScoreboard();
+	
+	/**
+	 * Forces new team name for the player until this method is called again with null argument and 
+	 * performs all actions to change player's team name
+	 * @param name - forced team name
+	 */
+	public void forceTeamName(String name);
+	
+	/**
+	 * Returns forced team name or null if not forced
+	 * @return forced team name or null if not forced
+	 */
+	public String getForcedTeamName();
 }
