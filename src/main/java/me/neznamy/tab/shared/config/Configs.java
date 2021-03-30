@@ -115,8 +115,8 @@ public class Configs {
 		if (groups.size() < 2) return;
 		Map<Object, Object> sharedProperties = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
 		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
+			if (!(groupSettings instanceof Map)) continue;
 			Map<String, Object> group = (Map<String, Object>) groupSettings;
-			if (group == null) continue; // #261
 			for (Entry<Object, Object> sharedProperty : new HashSet<>(sharedProperties.entrySet())) {
 				String property = sharedProperty.getKey().toString();
 				if (!group.containsKey(property) || !String.valueOf(group.get(property)).equals(sharedProperty.getValue())) {
