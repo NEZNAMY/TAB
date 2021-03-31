@@ -296,7 +296,7 @@ public abstract class ITabPlayer implements TabPlayer {
 				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
 			}
 		} else {
-			for (BossBar line : getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
+			for (BossBar line : getActiveBossBars().toArray(new BossBar[0])) {
 				removeBossBar(line);
 			}
 			getActiveBossBars().clear();
