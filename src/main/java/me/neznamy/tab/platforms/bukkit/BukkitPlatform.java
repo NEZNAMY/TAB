@@ -28,7 +28,7 @@ import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.features.NameTag16;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
@@ -113,7 +113,7 @@ public class BukkitPlatform implements Platform {
 			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
 				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms, tab));
 			} else {
-				tab.getFeatureManager().registerFeature("nametag16", new NameTag16(tab));
+				tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));
 			}
 		}
 	}

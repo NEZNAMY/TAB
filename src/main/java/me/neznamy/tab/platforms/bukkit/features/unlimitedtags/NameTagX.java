@@ -16,8 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
@@ -28,29 +26,19 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
-import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
 import me.neznamy.tab.shared.features.types.event.SneakEventListener;
-import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, RespawnEventListener, SneakEventListener {
+public class NameTagX extends NameTag implements RespawnEventListener, SneakEventListener {
 
-	//entity tracking range
-	public double entityTrackingRange;
-
-	//if using marker tag for 1.8.x clients or not
+	//config options
 	public boolean markerFor18x;
-	
-	//if disable feature on boats or not
 	public boolean disableOnBoats;
-	
-	//space between lines in blocks
 	private double spaceBetweenLines;
+	public double entityTrackingRange;
 	
 	//list of defined dynamic lines
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
@@ -100,21 +88,17 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void load() {
-		for (TabPlayer all : tab.getPlayers()){
+		super.load();
+		for (TabPlayer all : tab.getPlayers()) {
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
-			all.setTeamName(sorting.getTeamName(all));
-			updateProperties(all);
-			collision.put(all, true);
 			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName())) continue;
-			registerTeam(all);
 			loadPassengers(all);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				spawnArmorStands(all, viewer, false);
 			}
 		}
-		startRefreshingTasks();
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
@@ -139,9 +123,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void unload() {
+		super.unload();
 		HandlerList.unregisterAll(eventListener);
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().destroy();
 		}
 		entityIdMap.clear();
@@ -149,18 +133,10 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		super.onJoin(connectedPlayer);
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
-		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
-		updateProperties(connectedPlayer);
-		collision.put(connectedPlayer, true);
-		for (TabPlayer all : tab.getPlayers()) {
-			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
-			if (all == connectedPlayer) continue;
-			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
-		}
 		loadArmorStands(connectedPlayer);
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
-		registerTeam(connectedPlayer);
 		loadPassengers(connectedPlayer);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
@@ -191,15 +167,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
-		invisiblePlayers.remove(disconnectedPlayer.getName());
-		collision.remove(disconnectedPlayer);
+		super.onQuit(disconnectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
-		}
-		for (TabPlayer all : tab.getPlayers()) {
-			if (all == disconnectedPlayer) continue;
-			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
 		}
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		eventListener.onQuit(disconnectedPlayer);
@@ -209,23 +179,14 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (!p.isLoaded()) return;
-		updateProperties(p);
+		super.onWorldChange(p, from, to);
 		p.getArmorStandManager().destroy();
-		loadArmorStands(p);
-		loadPassengers(p);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(p, viewer, true);
 			viewer.getArmorStandManager().destroy(p);
 		}
-		if (isDisabledWorld(p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			unregisterTeam(p);
-		} else if (!isDisabledWorld(p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
-			registerTeam(p);
-		} else {
-			updateTeam(p);
-			p.getArmorStandManager().refresh();
-		}
+		loadArmorStands(p);
+		loadPassengers(p);
 	}
 	
 	/**
@@ -282,24 +243,12 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
+		super.refresh(refreshed, force);
 		if (isDisabledWorld(refreshed.getWorldName())) return;
-		boolean refresh;
-		if (force) {
-			updateProperties(refreshed);
-			refresh = true;
-		} else {
-			boolean prefix = refreshed.getProperty("tagprefix").update();
-			boolean suffix = refreshed.getProperty("tagsuffix").update();
-			refresh = prefix || suffix;
-		}
-		if (refresh) updateTeam(refreshed);
 		if (force) {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
-			if (((Entity) refreshed.getPlayer()).getVehicle() != null) {
-				Entity vehicle = ((Entity) refreshed.getPlayer()).getVehicle();
-				vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
-			}
+			loadPassengers(refreshed);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer == refreshed) continue;
 				if (viewer.getWorldName().equals(refreshed.getWorldName())) {
@@ -322,10 +271,9 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 	 * Updates raw values of properties for specified player
 	 * @param p - player to update
 	 */
-	private void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig("tagprefix");
+	public void updateProperties(TabPlayer p) {
+		super.updateProperties(p);
 		p.loadPropertyFromConfig("customtagname", p.getName());
-		p.loadPropertyFromConfig("tagsuffix");
 		p.setProperty("nametag", p.getProperty("tagprefix").getCurrentRawValue() + p.getProperty("customtagname").getCurrentRawValue() + p.getProperty("tagsuffix").getCurrentRawValue());
 		for (String property : dynamicLines) {
 			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
@@ -346,7 +294,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 			return vehicle.getPassengers();
 		} else {
 			if (vehicle.getPassenger() != null) {
-				return Lists.newArrayList(vehicle.getPassenger()); 
+				return Arrays.asList(vehicle.getPassenger());
 			} else {
 				return new ArrayList<Entity>();
 			}
@@ -383,6 +331,7 @@ public class NameTagX extends NameTag implements Loadable, JoinEventListener, Qu
 
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		return playersOnBoats.contains(p);
+		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug)
+		return playersOnBoats.contains(p) && !invisiblePlayers.contains(p.getName());
 	}
 }

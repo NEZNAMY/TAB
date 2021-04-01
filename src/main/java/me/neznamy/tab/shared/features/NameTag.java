@@ -15,17 +15,22 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.sorting.Sorting;
-import me.neznamy.tab.shared.features.types.Feature;
+import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
+import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
+import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
-public abstract class NameTag implements Feature, Refreshable {
+public class NameTag implements Loadable, Refreshable, LoginPacketListener, QuitEventListener, WorldChangeListener, JoinEventListener {
 
 	protected TAB tab;
 	protected List<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
 	private boolean collisionRule;
 	private List<String> revertedCollision;
+	private boolean invisibleNametags;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
 	public Sorting sorting;
 	protected Map<TabPlayer, Boolean> collision = new HashMap<TabPlayer, Boolean>();
@@ -35,12 +40,34 @@ public abstract class NameTag implements Feature, Refreshable {
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.nametag", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		collisionRule = tab.getConfiguration().config.getBoolean("enable-collision", true);
 		revertedCollision = tab.getConfiguration().config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
+		invisibleNametags = tab.getConfiguration().config.getBoolean("invisible-nametags", false);
 		sorting = new Sorting(tab, this);
+		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
 	}
-
+	
+	@Override
+	public void load(){
+		for (TabPlayer all : tab.getPlayers()) {
+			all.setTeamName(sorting.getTeamName(all));
+			updateProperties(all);
+			collision.put(all, true);
+			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
+			if (isDisabledWorld(all.getWorldName())) continue;
+			registerTeam(all);
+		}
+		startRefreshingTasks();
+	}
+	
+	@Override
+	public void unload() {
+		for (TabPlayer p : tab.getPlayers()) {
+			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
+		}
+	}
+	
 	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
 			public void run() {
 				//nametag visibility
 				for (TabPlayer p : tab.getPlayers()) {
@@ -80,8 +107,6 @@ public abstract class NameTag implements Feature, Refreshable {
 	public List<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
-	
-	public abstract boolean getTeamVisibility(TabPlayer p, TabPlayer viewer);
 	
 	public void unregisterTeam(TabPlayer p) {
 		if (p.getTeamName() == null) return;
@@ -166,5 +191,87 @@ public abstract class NameTag implements Feature, Refreshable {
 			collision.put(p, revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule);
 		}
 		return collision.get(p);
+	}
+	
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		for (TabPlayer all : tab.getPlayers()) {
+			if (!all.isLoaded()) continue;
+			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, packetReceiver);
+		}
+	}
+	
+	@Override
+	public void refresh(TabPlayer refreshed, boolean force) {
+		if (isDisabledWorld(refreshed.getWorldName())) return;
+		boolean refresh;
+		if (force) {
+			updateProperties(refreshed);
+			refresh = true;
+		} else {
+			boolean prefix = refreshed.getProperty("tagprefix").update();
+			boolean suffix = refreshed.getProperty("tagsuffix").update();
+			refresh = prefix || suffix;
+		}
+
+		if (refresh) updateTeam(refreshed);
+	}
+
+	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
+		updateProperties(connectedPlayer);
+		collision.put(connectedPlayer, true);
+		for (TabPlayer all : tab.getPlayers()) {
+			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
+			if (all == connectedPlayer) continue; //already registered 3 lines above
+			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
+		}
+		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
+		registerTeam(connectedPlayer);
+	}
+	
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
+		invisiblePlayers.remove(disconnectedPlayer.getName());
+		collision.remove(disconnectedPlayer);
+		for (TabPlayer all : tab.getPlayers()) {
+			if (all == disconnectedPlayer) continue;
+			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
+		}
+	}
+
+	@Override
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		updateProperties(p);
+		if (isDisabledWorld(to) && !isDisabledWorld(from)) {
+			unregisterTeam(p);
+		} else if (!isDisabledWorld(to) && isDisabledWorld(from)) {
+			registerTeam(p);
+		} else {
+			updateTeam(p);
+		}
+	}
+
+	@Override
+	public void refreshUsedPlaceholders() {
+		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+	}
+
+	public void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig("tagprefix");
+		p.loadPropertyFromConfig("tagsuffix");
+	}
+	
+	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+		return !p.hasHiddenNametag() && !p.hasHiddenNametag(viewer.getUniqueId()) && 
+			!invisibleNametags && !invisiblePlayers.contains(p.getName());
+	}
+	
+	@Override
+	public TabFeature getFeatureType() {
+		return TabFeature.NAMETAGS;
 	}
 }

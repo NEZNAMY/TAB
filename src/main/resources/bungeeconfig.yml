@@ -203,3 +203,6 @@ anti-override:
   tablist-names: true
   header-footer: true
   usernames: true
+
+#permanently invisible nametags
+invisible-nametags: false
