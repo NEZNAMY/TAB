@@ -171,7 +171,8 @@ public class DebugCommand extends SubCommand {
 	private List<Object> getExtraLines(){
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();
 		if (TAB.getInstance().isPremium()) {
-			List<Object> lines = Arrays.asList((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
+			List<Object> lines = new ArrayList<Object>();
+			lines.addAll((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
 			lines.addAll(TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
 			lines.remove("nametag");
 			lines.add("customtagname");
