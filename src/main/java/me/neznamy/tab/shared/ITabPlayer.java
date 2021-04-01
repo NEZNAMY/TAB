@@ -540,6 +540,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void forceTeamName(String name) {
 		if (forcedTeamName == name) return;
+		if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
 		NameTag nametags = TAB.getInstance().getFeatureManager().getNameTagFeature();
 		if (nametags == null) return;
 		nametags.unregisterTeam(this);
