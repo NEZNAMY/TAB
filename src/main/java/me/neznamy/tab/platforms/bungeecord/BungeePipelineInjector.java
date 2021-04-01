@@ -1,9 +1,8 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
@@ -60,7 +59,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		long time = System.nanoTime();
 		if (packet.getPlayers() == null) return;
 		if (packet.getFriendlyFire() != 69) {
-			Collection<String> col = Lists.newArrayList(packet.getPlayers());
+			Collection<String> col = Arrays.asList(packet.getPlayers());
 			for (TabPlayer p : tab.getPlayers()) {
 				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					logTeamOverride(packet.getName(), p.getName());

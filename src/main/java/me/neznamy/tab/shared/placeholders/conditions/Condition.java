@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -117,7 +116,7 @@ public abstract class Condition {
 		if (conditions.containsKey(string)) {
 			return conditions.get(string);
 		} else {
-			return Condition.compile(null, Lists.newArrayList(string.split(";")), "AND", null, null);
+			return Condition.compile(null, Arrays.asList(string.split(";")), "AND", null, null);
 		}
 	}
 }

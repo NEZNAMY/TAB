@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.util.Arrays;
 import java.util.Collection;
 
-import com.google.common.collect.Lists;
 import com.velocitypowered.proxy.protocol.packet.Team;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -49,7 +49,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 		long time = System.nanoTime();
 		if (packet.players == null) return;
 		if (packet.getFriendlyFire() != 69) {
-			Collection<String> col = Lists.newArrayList(packet.getPlayers());
+			Collection<String> col = Arrays.asList(packet.getPlayers());
 			for (TabPlayer p : tab.getPlayers()) {
 				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
 					logTeamOverride(packet.name, p.getName());
