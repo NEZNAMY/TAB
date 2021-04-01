@@ -258,7 +258,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	}
 
 	public Collection<Placeholder> getAllPlaceholders(){
-		return registeredPlaceholders.values();
+		return new ArrayList<>(registeredPlaceholders.values());
 	}
 	
 	public Placeholder getPlaceholder(String identifier) {
