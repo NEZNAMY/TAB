@@ -19,7 +19,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 /**
  * Additional code for Playerlist class to secure alignment
  */
-public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener{
+public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener {
 
 	private TAB tab;
 	private int maxWidth;
@@ -31,22 +31,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		this.tab = tab;
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		boolean save = false;
-		Map<Integer, Integer> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
-		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
-			char c = (char)(int)entry;
-			int width = (int)extraWidths.get(entry);
-			if (widths.containsKey(c)) {
-				extraWidths.remove((int)c);
-				tab.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
-				save = true;
-			} else {
-				widths.put(c, (byte)width);
-			}
-		}
-		if (save) tab.getConfiguration().premiumconfig.save();
+		loadExtraWidths();
 		tab.debug("Loaded " + widths.size() + " character widths.");
 	}
+	
+	/**
+	 * Loads all predefined widths from included widths.txt file
+	 */
 	private void loadWidthsFromFile() {
 		try {
 			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
@@ -62,6 +53,27 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
 	}
+	
+	/**
+	 * Loads extra widths defined in premiumconfig and deletes redundant ones already listed in widths.txt
+	 */
+	private void loadExtraWidths() {
+		boolean save = false;
+		Map<Integer, Integer> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
+		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
+			char c = (char)(int)entry;
+			int width = (int)extraWidths.get(entry);
+			if (widths.containsKey(c)) {
+				extraWidths.remove((int)c);
+				tab.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
+				save = true;
+			} else {
+				widths.put(c, (byte)width);
+			}
+		}
+		if (save) tab.getConfiguration().premiumconfig.save();
+	}
+	
 	public String formatNameAndUpdateLeader(TabPlayer player, String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
@@ -94,6 +106,12 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		newFormat += tab.getPlaceholderManager().getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
+	
+	/**
+	 * Returns text width of characters in given component
+	 * @param component - component to get width of
+	 * @return text width of characters in given component
+	 */
 	private int getTextWidth(IChatBaseComponent component) {
 		int width = 0;
 		if (component.getText() != null) {
@@ -124,6 +142,12 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 		return width;
 	}
+	
+	/**
+	 * Returns width of player's tablist name format
+	 * @param p - player to get width for
+	 * @return width of player's tablist name format
+	 */
 	private int getPlayerNameWidth(TabPlayer p) {
 		String format = p.getProperty("tabprefix").get() + p.getProperty("customtabname").get() + p.getProperty("tabsuffix").get();
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
@@ -132,45 +156,38 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	/**
 	 * Returns a combination of normal and bold spaces to build exactly the requested amount of pixels.
 	 * Must be at least 12 as lower numbers cannot always be built using numbers 4 (normal space + 1 pixel) and 5 (bold space + 1 pixel)
-	 * Returns the result string with normal then bold spaces, such as "   &l   "
+	 * Returns the result string with normal then bold spaces, such as "   &l   &r"
 	 * @param pixelWidth - amount of pixels to be built
-	 * @return string consisting of spaces and &l &r (if needed)
+	 * @return string consisting of spaces and &l &r
+	 * @throws IllegalArgumentException if pixelWidth is < 12
 	 */
 	private String buildSpaces(int pixelWidth) {
 		if (pixelWidth < 12) throw new IllegalArgumentException("Cannot build space lower than 12 pixels wide");
 		int pixelsLeft = pixelWidth;
-		int boldSpaces = 0;
-		int normalSpaces = 0;
-		while (pixelsLeft % 4 != 0) {
-			pixelsLeft -= 5;
-			boldSpaces++;
-		}
-		while (pixelsLeft > 0) {
-			pixelsLeft -= 4;
-			normalSpaces++;
-		}
 		String output = "";
-		for (int i=0; i<normalSpaces; i++) {
+		while (pixelsLeft % 5 != 0) {
+			pixelsLeft -= 4;
 			output += " ";
 		}
-		if (boldSpaces > 0) {
-			output += "&l";
-			for (int i=0; i<boldSpaces; i++) {
-				output += " ";
-			}
-			output += "&r";
+		output += "\u00a7l";
+		while (pixelsLeft > 0) {
+			pixelsLeft -= 5;
+			output += " ";
 		}
-		return tab.getPlaceholderManager().color(output);
+		output += "\u00a7r";
+		return output;
 	}
 
 	@Override
 	public void load() {
 		recalculateMaxWidth(null);
 	}
+	
 	@Override
 	public void unload() {
 		//nothing to do here, Playerlist feature handles unloading
 	}
+	
 	@Override
 	public void onJoin(TabPlayer p) {
 		int width = getPlayerNameWidth(p);
@@ -180,12 +197,14 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			updateAllNames(null);
 		}
 	}
+	
 	@Override
 	public void onQuit(TabPlayer p) {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
 	}
+	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (maxPlayer == p && recalculateMaxWidth(null)) {
