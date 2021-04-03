@@ -179,6 +179,8 @@ disable-features-in-worlds:
     - disabledworld
   belowname:
     - disabledworld
+  unlimited-nametags:
+    - disabledworld
 
 placeholderapi-refresh-intervals:
   default-refresh-interval: 100

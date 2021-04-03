@@ -60,6 +60,9 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 	
 	//list of players currently on boats
 	public List<TabPlayer> playersOnBoats = new ArrayList<TabPlayer>();
+	
+	//list of worlds with unlimited nametag mode disabled
+	protected List<String> disabledUnlimitedWorlds;
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -73,6 +76,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
 		entityTrackingRange = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.tracking-range", 48);
+		disabledUnlimitedWorlds = tab.getConfiguration().config.getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
 		if (tab.getConfiguration().premiumconfig != null) {
 			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
 			dynamicLines = new ArrayList<String>();
@@ -92,7 +96,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		for (TabPlayer all : tab.getPlayers()) {
 			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
 			loadArmorStands(all);
-			if (isDisabledWorld(all.getWorldName())) continue;
+			if (isDisabledWorld(all.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, all.getWorldName())) continue;
 			loadPassengers(all);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				spawnArmorStands(all, viewer, false);
@@ -101,7 +105,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
+					if (!p.isLoaded() || isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) continue;
 					p.getArmorStandManager().updateVisibility(false);
 					if (!disableOnBoats) continue;
 					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
@@ -136,7 +140,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		super.onJoin(connectedPlayer);
 		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		loadArmorStands(connectedPlayer);
-		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
+		if (isDisabledWorld(connectedPlayer.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, connectedPlayer.getWorldName())) return;
 		loadPassengers(connectedPlayer);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
@@ -244,7 +248,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		super.refresh(refreshed, force);
-		if (isDisabledWorld(refreshed.getWorldName())) return;
+		if (isDisabledWorld(refreshed.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, refreshed.getWorldName())) return;
 		if (force) {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
