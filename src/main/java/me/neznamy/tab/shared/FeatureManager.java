@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,11 @@ public class FeatureManager {
 	 * @return list of all loaded features
 	 */
 	public Collection<Feature> getAllFeatures(){
-		return new ArrayList<Feature>(features.values());
+		try {
+			return features.values();
+		} catch (ConcurrentModificationException e) {
+			return getAllFeatures();
+		}
 	}
 	
 	/**
