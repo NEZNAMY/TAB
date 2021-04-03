@@ -27,6 +27,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
 	private boolean antiOverrideNames;
+	private boolean disabling = false;
 
 	public Playerlist(TAB tab) {
 		this.tab = tab;
@@ -43,6 +44,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 				@Override
 				public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+					if (disabling) return;
 					boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
 					boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
 					if (!UPDATE_NAME && !ADD) return;
@@ -66,12 +68,14 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void load(){
 		for (TabPlayer all : tab.getPlayers()) {
+			if (isDisabledWorld(disabledWorlds, all.getWorldName())) updateProperties(all);
 			refresh(all, true);
 		}
 	}
 
 	@Override
 	public void unload(){
+		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (TabPlayer p : tab.getPlayers()) {
 			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getUniqueId()));
@@ -83,7 +87,14 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		refresh(p, true);
+		if (isDisabledWorld(disabledWorlds, to) && !isDisabledWorld(disabledWorlds, from)) {
+			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID()));
+			for (TabPlayer all : tab.getPlayers()) {
+				if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(packet);
+			}
+		} else {
+			refresh(p, true);
+		}
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
@@ -105,7 +116,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-//		if (refreshed.disabledTablistNames) return; //prevented unloading when switching to disabled world, will find a better fix later
+		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
