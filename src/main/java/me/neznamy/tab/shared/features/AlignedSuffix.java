@@ -183,7 +183,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	@Override
 	public void onQuit(TabPlayer p) {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
-			updateAllNames(null);
+			updateAllNames(p);
 		}
 	}
 	@Override
