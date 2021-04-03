@@ -68,17 +68,18 @@ public class GroupCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	private void saveGroup(TabPlayer sender, String group, String type, String value){
+		if (value.length() > 0){
+			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group"));
+		} else {
+			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
+		}
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().config.getObject("Groups." + group.replace(".", "@#@") + "." + type)))) return;
 		TAB.getInstance().getConfiguration().config.set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();
 			}
-		}
-		if (value.length() > 0){
-			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group"));
-		} else {
-			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
 	}
 

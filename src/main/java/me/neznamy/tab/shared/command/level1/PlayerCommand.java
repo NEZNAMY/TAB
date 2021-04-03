@@ -67,16 +67,17 @@ public class PlayerCommand extends SubCommand {
 	 * @param value - new value
 	 */
 	public void savePlayer(TabPlayer sender, String player, String type, String value){
-		TabPlayer pl = TAB.getInstance().getPlayer(player);
-		TAB.getInstance().getConfiguration().config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
-		if (pl != null) {
-			pl.forceRefresh();
-		}
 		if (value.length() > 0){
 			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
+		}
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().config.getObject("Users." + player + "." + type)))) return;
+		TAB.getInstance().getConfiguration().config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
+		TabPlayer pl = TAB.getInstance().getPlayer(player);
+		if (pl != null) {
+			pl.forceRefresh();
 		}
 	}
 	
