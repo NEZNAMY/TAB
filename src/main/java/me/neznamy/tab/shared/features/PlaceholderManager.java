@@ -206,6 +206,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		for (Placeholder pl : getAllPlaceholders()) {
+			if (!allUsedPlaceholderIdentifiers.contains(pl.getIdentifier())) continue;
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : tab.getPlayers()) {
 					((RelationalPlaceholder)pl).update(connectedPlayer, all);
