@@ -181,12 +181,12 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);
 		p.getArmorStandManager().destroy();
+		loadArmorStands(p);
+		loadPassengers(p);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			spawnArmorStands(p, viewer, true);
 			viewer.getArmorStandManager().destroy(p);
 		}
-		loadArmorStands(p);
-		loadPassengers(p);
 	}
 	
 	/**
