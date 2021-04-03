@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 
-	//team name
+	//team name, limited to 16 characters, used for sorting in tablist alphabetically
 	public String name;
 	
 	//team's display name - appears to be unused
@@ -23,10 +23,10 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	//suffix of players in team
 	public String playerSuffix;
 	
-	//nametag visibility rule
+	//nametag visibility rule, possible options are: always, hideForOtherTeams, hideForOwnTeam, never
 	public String nametagVisibility;
 	
-	//collision rule
+	//collision rule, possible options are: always, pushOtherTeams, pushOwnTeam, never
 	public String collisionRule;
 	
 	//name and glow color, start color of prefix if not set
@@ -36,15 +36,14 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	//for players their name, for other entities their UUID
 	public Collection<String> players = Collections.emptyList();
 	
-	//packet action
+	//packet action, 0 = create, 1 = remove, 2 = update team info, 3 = add entries, 4 = remove entries
 	public int method;
 	
-	//bitmask of team options
+	//Bit mask. 0x01: Allow friendly fire, 0x02: can see invisible players on same team.
 	public int options;
 
 	/*
-	 * Creates a new instance of the class
-	 * Constructor is private, use one of the static methods to create an instance
+	 * Constructs new instance with given parameters
 	 */
 	private PacketPlayOutScoreboardTeam(int method, String name) {
 		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
@@ -53,7 +52,7 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new instance with given parameters and 0 (CREATE) action
 	 * @param team - team name
 	 * @param prefix - prefix of players in team
 	 * @param suffix - suffix of players in team
@@ -61,7 +60,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	 * @param collision - collision rule
 	 * @param players - affected entities
 	 * @param options - bitmask of team options
-	 * @return the instance with given parameters with CREATE action
 	 */
 	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
 		this(0, team);
@@ -74,23 +72,21 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameter
+	 * Constructs new instance with given parameters and 1 (REMOVE) action
 	 * @param team - team name
-	 * @return the instance with given parameter with REMOVE action
 	 */
 	public PacketPlayOutScoreboardTeam(String team) {
 		this(1, team);
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new instance with given parameters and 2 (UPDATE_TEAM_INFO) action
 	 * @param team - team name
 	 * @param prefix - prefix of players in team
 	 * @param suffix - suffix of players in team
 	 * @param visibility - nametag visibility rule
 	 * @param collision - collision rule
 	 * @param options - bitmask of team options
-	 * @return the instance with given parameters with UPDATE_TEAM_INFO action
 	 */
 	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
 		this(2, team);
@@ -102,11 +98,11 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters
+	 * Constructs new instance with given parameters and 3 (ADD_PLAYERS) if add is true, or 4 (REMOVE_PLAYERS) action
+	 * if add is false
 	 * @param team - team name
 	 * @param players - affected entities
 	 * @param add - true if players should be added into team, false if removed
-	 * @return the instance with given parameters with ADD_PLAYERS action if add is true, REMOVE_PLAYERS if false
 	 */
 	public PacketPlayOutScoreboardTeam(String team, Collection<String> players, boolean add) {
 		this(add ? 3 : 4, team);
