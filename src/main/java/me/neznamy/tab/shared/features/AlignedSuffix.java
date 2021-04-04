@@ -30,6 +30,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	public AlignedSuffix(Playerlist playerlist, TAB tab) {
 		this.tab = tab;
 		this.playerlist = playerlist;
+		tab.debug("Loading widths from file");
 		loadWidthsFromFile();
 		loadExtraWidths();
 		tab.debug("Loaded " + widths.size() + " character widths.");
@@ -43,8 +44,13 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String line;
+			int i=0;
 			while ((line = br.readLine()) != null) {
-				if (line.isEmpty()) continue;
+				i++;
+				if (line.isEmpty()) {
+					tab.debug("Skipping missing character " + i);
+					continue;
+				}
 				String[] arr = line.split(":");
 				widths.put((char)Integer.parseInt(arr[0]), (byte)Integer.parseInt(arr[1]));
 			}
