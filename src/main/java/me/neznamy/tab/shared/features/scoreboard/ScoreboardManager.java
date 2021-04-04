@@ -186,8 +186,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			joinDelayed.add(p);
 			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
-				p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 				joinDelayed.remove(p);
+				if (p.getOtherPluginScoreboard() == null) p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 			});
 		} else {
 			p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
