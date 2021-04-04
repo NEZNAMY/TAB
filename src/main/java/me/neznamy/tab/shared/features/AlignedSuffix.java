@@ -52,7 +52,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 					continue;
 				}
 				String[] arr = line.split(":");
-				widths.put((char)Integer.parseInt(arr[0]), (byte)Integer.parseInt(arr[1]));
+				widths.put((char)Integer.parseInt(arr[0]), (byte)Float.parseFloat(arr[1]));
 			}
 			br.close();
 		} catch (Exception ex) {
@@ -65,7 +65,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	 */
 	private void loadExtraWidths() {
 		boolean save = false;
-		Map<Integer, Integer> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
+		Map<Integer, Number> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
 		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
 			char c = (char)(int)entry;
 			int width = (int)extraWidths.get(entry);
