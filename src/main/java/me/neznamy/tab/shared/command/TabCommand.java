@@ -106,7 +106,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!(boolean) tab.getConfiguration().getSecretOption("auto-command-complete", true)) return new ArrayList<String>();
+		if (!sender.hasPermission("tab.tabcomplete")) return new ArrayList<String>();
 		return super.complete(sender, arguments);
 	}
 }
