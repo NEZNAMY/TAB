@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.ArmorStand;
@@ -320,11 +321,16 @@ public class BukkitArmorStand implements ArmorStand {
 				return vehicle.getLocation().getY() + 1.15;
 			}
 		}
-		//1.13+ swimming
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && player.isSwimming()) {
-			return player.getLocation().getY()-1.22;
-		}
+        //1.13+ swimming or 1.9+ flying with elytra
+        if (isSwimming() || (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && player.isGliding())) {
+            return player.getLocation().getY()-1.22;
+        }
 		return player.getLocation().getY();
+	}
+	
+	private boolean isSwimming() {
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+		return ProtocolVersion.SERVER_VERSION.getMinorVersion() == 13 && player.isSwimming();
 	}
 
 	@Override
