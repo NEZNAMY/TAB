@@ -157,11 +157,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) updateProperties(connectedPlayer);
 		refresh(connectedPlayer, true);
 		if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 		for (TabPlayer all : tab.getPlayers()) {
-			if (all == connectedPlayer) continue; //already set on L149
+			if (all == connectedPlayer) continue; //already sent on L161
 			list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
 		}
 		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
