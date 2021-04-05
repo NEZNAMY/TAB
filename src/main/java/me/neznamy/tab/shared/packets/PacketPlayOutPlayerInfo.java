@@ -1,8 +1,9 @@
 package me.neznamy.tab.shared.packets;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -25,7 +26,7 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 	 */
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
 		this.action = action;
-		this.entries = Arrays.asList(entries);
+		this.entries = Lists.newArrayList(entries);
 	}
 
 	/**
