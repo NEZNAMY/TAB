@@ -63,30 +63,28 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			@Override
 			public void run() {
 				int loopTime = atomic.addAndGet(50);
-				Set<TabPlayer> players = new HashSet<TabPlayer>();
-				for (TabPlayer p : tab.getPlayers()) {
-					if (p.isLoaded()) players.add(p);
-				}
 				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
 				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
 				for (String identifier : allUsedPlaceholderIdentifiers) {
 					Placeholder placeholder = getPlaceholder(identifier);
 					if (placeholder == null || loopTime % placeholder.getRefresh() != 0) continue;
-					if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder(players, (RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
-					if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder(players, (PlayerPlaceholder) placeholder, update)) somethingChanged = true;
-					if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder(players, (ServerPlaceholder) placeholder, update)) somethingChanged = true;
+					if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
+					if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
+					if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
 				}
 				if (somethingChanged) refresh(forceUpdate, update);
 			}
 		});
 	}
 	
-	private boolean updateRelationalPlaceholder(Collection<TabPlayer> players, RelationalPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> forceUpdate) {
+	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> forceUpdate) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
-		for (TabPlayer p1 : players) {
-			for (TabPlayer p2 : players) {
+		for (TabPlayer p1 : tab.getPlayers()) {
+			if (!p1.isLoaded()) continue;
+			for (TabPlayer p2 : tab.getPlayers()) {
+				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
 					forceUpdate.get(p2).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
@@ -103,10 +101,11 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		return somethingChanged;
 	}
 	
-	private boolean updatePlayerPlaceholder(Collection<TabPlayer> players, PlayerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
+	private boolean updatePlayerPlaceholder(PlayerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
-		for (TabPlayer all : players) {
+		for (TabPlayer all : tab.getPlayers()) {
+			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
 				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 				update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
@@ -117,13 +116,14 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		return somethingChanged;
 	}
 	
-	private boolean updateServerPlaceholder(Collection<TabPlayer> players, ServerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
+	private boolean updateServerPlaceholder(ServerPlaceholder placeholder, Map<TabPlayer, Set<Refreshable>> update) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		if (placeholder.update()) {
 			Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
 			somethingChanged = true;
-			for (TabPlayer all : players) {
+			for (TabPlayer all : tab.getPlayers()) {
+				if (!all.isLoaded()) continue;
 				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
 				update.get(all).addAll(usage);
 			}
@@ -140,15 +140,15 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		}
 		defaultRefresh = tab.getConfiguration().config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().config.getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
-			serverPlaceholderRefreshIntervals.put(placeholder.getKey()+"", tab.getErrorManager().parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			serverPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), defaultRefresh, "refresh interval"));
 			tab.debug("Loaded refresh " + placeholder.getValue() + " for SERVER placeholder " + placeholder.getKey());
 		}
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().config.getConfigurationSection("placeholderapi-refresh-intervals.player").entrySet()) {
-			playerPlaceholderRefreshIntervals.put(placeholder.getKey()+"", tab.getErrorManager().parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			playerPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), defaultRefresh, "refresh interval"));
 			tab.debug("Loaded refresh " + placeholder.getValue() + " for PLAYER placeholder " + placeholder.getKey());
 		}
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().config.getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
-			relationalPlaceholderRefreshIntervals.put(placeholder.getKey()+"", tab.getErrorManager().parseInteger(placeholder.getValue()+"", defaultRefresh, "refresh interval"));
+			relationalPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), defaultRefresh, "refresh interval"));
 			tab.debug("Loaded refresh " + placeholder.getValue() + " for RELATIONAL placeholder " + placeholder.getKey());
 		}
 	}
@@ -163,17 +163,17 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 
 			@Override
 			public void run() {
-				for (Entry<TabPlayer, Set<Refreshable>> entry : forceUpdate.entrySet()) {
-					for (Refreshable r : entry.getValue()) {
+				for (TabPlayer p : forceUpdate.keySet()) {
+					for (Refreshable r : forceUpdate.get(p)) {
 						long startTime = System.nanoTime();
-						r.refresh(entry.getKey(), true);
+						r.refresh(p, true);
 						tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 					}
 				}
-				for (Entry<TabPlayer, Set<Refreshable>> entry : update.entrySet()) {
-					for (Refreshable r : entry.getValue()) {
+				for (TabPlayer p : update.keySet()) {
+					for (Refreshable r : update.get(p)) {
 						long startTime = System.nanoTime();
-						r.refresh(entry.getKey(), false);
+						r.refresh(p, false);
 						tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 					}
 				}
@@ -358,9 +358,9 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			char section = input.charAt(index);
 			if ((section == '\u00a7') && (index < length - 1)){
 				char c = input.charAt(index + 1);
-				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(c+"")) {
-					result = '\u00a7' + "" + c + result;
-					if ("0123456789AaBbCcDdEeFfRr".contains(c+"")) {
+				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
+					result = "\u00a7" + c + result;
+					if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
 						break;
 					}
 				}

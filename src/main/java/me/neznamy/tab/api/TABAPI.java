@@ -140,7 +140,7 @@ public class TABAPI {
 	 * @return the bossbar
 	 */
 	public static BossBar createBossBar(String name, String title, float progress, BarColor color, BarStyle style) {
-		return createBossBar(name, title, progress+"", color.toString(), style.toString());
+		return createBossBar(name, title, String.valueOf(progress), color.toString(), style.toString());
 	}
 
 	/**

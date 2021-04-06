@@ -76,7 +76,7 @@ public class TAB {
 	 * @return true if this is premium version, false if not
 	 */
 	public boolean isPremium() {
-		return false;
+		return true;
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class TAB {
 	 */
 	public TabPlayer getPlayerByTablistUUID(UUID tablistId) {
 		for (TabPlayer p : data.values()) {
-			if (p.getTablistUUID().toString().equals(tablistId.toString())) return p;
+			if (p.getTablistUUID().equals(tablistId)) return p;
 		}
 		return null;
 	}

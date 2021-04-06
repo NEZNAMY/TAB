@@ -40,7 +40,7 @@ public abstract class Placeholder {
 			Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
 				replacements.put(entry.getKey().toString().replace('&', '\u00a7'), entry.getValue().toString());
-				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue()+"")) {
+				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
 			}
@@ -81,11 +81,16 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), p);
+			String newValue = setPlaceholders(findReplacement(replacements, value.contains("&") ? value.replace('&', '\u00a7') : value), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
-			return s.replace(identifier, newValue);
+			if (s.equals(identifier)) {
+				//small performance and memory save
+				return newValue;
+			} else {
+				return s.replace(identifier, newValue);
+			}
 		} catch (Throwable t) {
 			return TAB.getInstance().getErrorManager().printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}

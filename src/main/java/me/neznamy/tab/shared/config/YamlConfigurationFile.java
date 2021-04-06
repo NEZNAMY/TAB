@@ -65,7 +65,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 		} catch (YAMLException e) {
 			input.close();
 			TAB tab = TAB.getInstance();
-			tab.getErrorManager().startupWarn("File " + destination + " has broken formatting.");
+			tab.getErrorManager().startupWarn("File " + destination + " has broken syntax.");
 			tab.brokenFile = file.getPath();
 			tab.getPlatform().sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
 			List<String> suggestions = YamlAssist.getSuggestions(file);

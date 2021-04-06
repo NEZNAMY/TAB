@@ -162,7 +162,7 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 
 	@Override
 	public void setProgress(float progress) {
-		setProgress(progress+"");
+		setProgress(String.valueOf(progress));
 	}
 
 	@Override

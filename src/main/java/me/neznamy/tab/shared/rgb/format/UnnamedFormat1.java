@@ -7,6 +7,6 @@ public class UnnamedFormat1 extends RGBFormatter {
 
 	@Override
 	public String reformat(String text) {
-		return text.replace("&#", "#");
+		return text.contains("&#") ? text.replace("&#", "#") : text;
 	}
 }

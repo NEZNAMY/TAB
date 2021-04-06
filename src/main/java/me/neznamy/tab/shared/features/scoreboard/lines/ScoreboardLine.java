@@ -95,7 +95,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @return forced name start
 	 */
 	protected static String getPlayerName(int lineNumber) {
-		String id = lineNumber+"";
+		String id = String.valueOf(lineNumber);
 		if (id.length() == 1) id = "0" + id;
 		char c = '\u00a7';
 		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";

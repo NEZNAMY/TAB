@@ -224,7 +224,7 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue()+""), true));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true));
 		}
 		fixArmorStandHeights(pl);
 	}

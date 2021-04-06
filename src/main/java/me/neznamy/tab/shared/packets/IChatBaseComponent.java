@@ -362,7 +362,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onHoverShowText(String text) {
-		return onHover(HoverAction.SHOW_TEXT, text);
+		return onHoverShowText(text);
 	}
 
 	/**
@@ -559,7 +559,7 @@ public class IChatBaseComponent {
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
 		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
-		if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true)) {
+		if (TAB.getInstance().getConfiguration().rgbSupport) {
 			text = RGBUtils.getInstance().applyFormats(text);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
@@ -610,7 +610,7 @@ public class IChatBaseComponent {
 						break;
 					}
 				}
-			} else if ((boolean) TAB.getInstance().getConfiguration().getSecretOption("rgb-support", true) && c == '#'){
+			} else if (TAB.getInstance().getConfiguration().rgbSupport && c == '#'){
 				try {
 					String hex = text.substring(i+1, i+7);
 					TextColor color;

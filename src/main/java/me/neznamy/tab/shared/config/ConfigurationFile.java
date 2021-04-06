@@ -150,7 +150,7 @@ public abstract class ConfigurationFile {
 	public String getString(String path, String defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
-		return value+"";
+		return String.valueOf(value);
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public abstract class ConfigurationFile {
 		}
 		List<String> fixedList = new ArrayList<String>();
 		for (Object key : (List<Object>)value) {
-			fixedList.add(key+"");
+			fixedList.add(key.toString());
 		}
 		return fixedList;
 	}
@@ -212,7 +212,7 @@ public abstract class ConfigurationFile {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
-			return Integer.parseInt(value+"");
+			return Integer.parseInt(value.toString());
 		} catch (Exception e) {
 			dataMismatch(path, Integer.class, value.getClass());
 			return defaultValue;
@@ -239,7 +239,7 @@ public abstract class ConfigurationFile {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
-			return Boolean.parseBoolean(value+"");
+			return Boolean.parseBoolean(value.toString());
 		} catch (Exception e) {
 			dataMismatch(path, Boolean.class, value.getClass());
 			return defaultValue;
@@ -257,7 +257,7 @@ public abstract class ConfigurationFile {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		try{
-			return Double.parseDouble(value+"");
+			return Double.parseDouble(value.toString());
 		} catch (Exception e) {
 			dataMismatch(path, Double.class, value.getClass());
 			return defaultValue;

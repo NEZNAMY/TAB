@@ -54,6 +54,9 @@ public class BukkitPlatform implements Platform {
 	
 	//nms storage
 	private NMSStorage nms;
+	
+	//if placeholderapi is installed or not
+	private boolean placeholderAPI;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -80,6 +83,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void loadFeatures() throws Exception {
+		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
 		TAB tab = TAB.getInstance();
 		usedExpansions = new HashSet<String>();
@@ -94,7 +98,7 @@ public class BukkitPlatform implements Platform {
 		if (tab.getConfiguration().BossBarEnabled && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab));
 		if (version >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
-		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+		if (placeholderAPI) {
 			new TabExpansion(plugin);
 			new ExpansionDownloader(plugin).download(usedExpansions);
 		}
@@ -205,7 +209,7 @@ public class BukkitPlatform implements Platform {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {
-				if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) return identifier;
+				if (!placeholderAPI) return identifier;
 				try {
 					return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
 				} catch (Throwable t) {
@@ -223,7 +227,7 @@ public class BukkitPlatform implements Platform {
 	 * @return result from PlaceholderAPI
 	 */
 	public String setPlaceholders(Player player, String placeholder) {
-		if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) return placeholder;
+		if (!placeholderAPI) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Throwable t) {

@@ -13,6 +13,7 @@ public class CMIFormat extends RGBFormatter {
 	
 	@Override
 	public String reformat(String text) {
+		if (!text.contains("{#")) return text;
 		String replaced = text;
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {

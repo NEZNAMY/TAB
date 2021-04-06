@@ -59,7 +59,7 @@ public class GroupRefresher implements Feature {
 			if (playerGroups != null && playerGroups.length > 0) {
 				for (Object groupFromList : primaryGroupFindingList) {
 					for (String playerGroup : playerGroups) {
-						if (playerGroup.equalsIgnoreCase(groupFromList + "")) {
+						if (playerGroup.equalsIgnoreCase(groupFromList.toString())) {
 							return playerGroup;
 						}
 					}

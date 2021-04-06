@@ -19,6 +19,7 @@ public class CMIGradient extends GradientPattern {
 	
 	@Override
 	public String applyPattern(String text) {
+		if (!text.contains("{#")) return text;
 		String replaced = text;
 		Matcher m = patternLegacy.matcher(replaced);
 		while (m.find()) {

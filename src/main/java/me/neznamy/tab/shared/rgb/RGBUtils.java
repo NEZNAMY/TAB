@@ -5,9 +5,9 @@ import java.util.Set;
 
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.rgb.format.CMIFormat;
+import me.neznamy.tab.shared.rgb.format.HtmlFormat;
 import me.neznamy.tab.shared.rgb.format.RGBFormatter;
 import me.neznamy.tab.shared.rgb.format.UnnamedFormat1;
-import me.neznamy.tab.shared.rgb.format.UnnamedFormat2;
 import me.neznamy.tab.shared.rgb.gradient.CMIGradient;
 import me.neznamy.tab.shared.rgb.gradient.GradientPattern;
 import me.neznamy.tab.shared.rgb.gradient.HtmlGradient;
@@ -32,7 +32,7 @@ public class RGBUtils {
 		registerRGBFormatter(new BukkitFormat());
 		registerRGBFormatter(new CMIFormat());
 		registerRGBFormatter(new UnnamedFormat1());
-		registerRGBFormatter(new UnnamedFormat2());
+		registerRGBFormatter(new HtmlFormat());
 		
 		registerGradient(new CMIGradient());
 		registerGradient(new HtmlGradient());

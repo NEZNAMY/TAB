@@ -21,7 +21,7 @@ public class ScoreboardCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (scoreboard == null) {
-			sendMessage(sender, TAB.getInstance().getPlaceholderManager().color("&cScoreboard feature is not enabled, therefore toggle command cannot be used."));
+			sendMessage(sender, "&cScoreboard feature is not enabled, therefore toggle command cannot be used.");
 			return;
 		}
 		if (scoreboard.permToToggle && !hasPermission(sender, "tab.togglescoreboard")) {

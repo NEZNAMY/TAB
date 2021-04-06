@@ -62,7 +62,7 @@ public abstract class SortingType {
 		List<String> configList = TAB.getInstance().getConfiguration().config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
 		int charCount = String.valueOf(configList.size()).length(); //1 char for <10 groups, 2 chars for <100 etc
 		for (Object group : configList){
-			String sort = index+"";
+			String sort = String.valueOf(index);
 			while (sort.length() < charCount) { 
 				sort = "0" + sort;
 			}

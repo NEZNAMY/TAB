@@ -85,6 +85,7 @@ public abstract class SimpleCondition {
 			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			if (pl != null) result = pl.set(result, p);
 		}
+		if (result.contains("&")) result = result.replace('&', '\u00a7');
 		return result;
 	}
 	

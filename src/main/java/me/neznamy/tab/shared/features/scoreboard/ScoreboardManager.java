@@ -120,8 +120,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				tab.getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
 			}
-			Scoreboard sb = new Scoreboard(this, scoreboard+"", title, lines, condition, childBoard);
-			scoreboards.put(scoreboard+"", sb);
+			Scoreboard sb = new Scoreboard(this, scoreboard.toString(), title, lines, condition, childBoard);
+			scoreboards.put(scoreboard.toString(), sb);
 			tab.getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
 		}
 		checkForMisconfiguration();

@@ -519,7 +519,7 @@ public class NMSStorage {
 	 * @return class for specified name(s)
 	 * @throws ClassNotFoundException - if class does not exist
 	 */
-	private Class<?> getNMSClass(String... names) throws ClassNotFoundException {
+	public Class<?> getNMSClass(String... names) throws ClassNotFoundException {
 		for (String name : names) {
 			try {
 				return getNMSClass(name);
@@ -535,7 +535,7 @@ public class NMSStorage {
 	 * @return class from given name
 	 * @throws ClassNotFoundException - if class was not found
 	 */
-	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
+	public Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		try {
 			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
 		} catch (ClassNotFoundException e) {

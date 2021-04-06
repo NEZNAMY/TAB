@@ -80,7 +80,7 @@ public class DebugCommand extends SubCommand {
 			showProperty(sender, analyzed, "tagprefix", disabledNametags);
 			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
 			for (Object line : getExtraLines()) {
-				showProperty(sender, analyzed, line+"", disabledNametags);
+				showProperty(sender, analyzed, line.toString(), disabledNametags);
 			}
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
@@ -196,7 +196,7 @@ public class DebugCommand extends SubCommand {
 		} else {
 			Property pr = analyzed.getProperty(property);
 			String rawValue = pr.getCurrentRawValue().replace('\u00a7', '&');
-			String value = TAB.getInstance().getPlaceholderManager().color("&a" + property + ": &e\"&r%rawValue%&r&e\" &7(" + rawValue.length() + ") &9(Source: " + pr.getSource() + ")").replace("%rawValue%", rawValue);
+			String value = String.format("&a%s: &e\"&r%s&r&e\" &7(%s) &9(Source: %s)".replace('&', '\u00a7'), property, rawValue, rawValue.length(), pr.getSource());
 			sendRawMessage(sender, value);
 		}
 	}

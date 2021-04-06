@@ -32,7 +32,7 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 		for (RegisteredServer rServer : server.getAllServers()) {
 			placeholders.add(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
 				public String get() {
-					return rServer.getPlayersConnected().size()+"";
+					return String.valueOf(rServer.getPlayersConnected().size());
 				}
 			});
 		}

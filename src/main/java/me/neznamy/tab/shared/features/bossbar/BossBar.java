@@ -72,7 +72,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		hiddenByDefault = tab.getConfiguration().bossbar.getBoolean("hidden-by-default", false);
 		perWorld = tab.getConfiguration().bossbar.getConfigurationSection("per-world");
 		for (Object bar : tab.getConfiguration().bossbar.getConfigurationSection("bars").keySet()){
-			lines.put(bar+"", BossBarLine.fromConfig(bar+""));
+			lines.put(bar.toString(), BossBarLine.fromConfig(bar.toString()));
 		}
 		for (String bar : new ArrayList<String>(defaultBars)) {
 			if (lines.get(bar) == null) {

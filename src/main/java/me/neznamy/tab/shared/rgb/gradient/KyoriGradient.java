@@ -19,6 +19,7 @@ public class KyoriGradient extends GradientPattern {
 	
 	@Override
 	public String applyPattern(String text) {
+		if (!text.contains("<grad")) return text;
 		String replaced = text;
 		Matcher m = legacy.matcher(replaced);
 		while (m.find()) {

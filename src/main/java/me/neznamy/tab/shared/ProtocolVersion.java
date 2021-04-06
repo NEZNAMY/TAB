@@ -60,6 +60,12 @@ public enum ProtocolVersion {
 
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private int networkId;
+	
+	//minor versio, such as 16
+	private int minorVersion;
+	
+	//friendly name displayed in %player-version% placeholder
+	private String friendlyName;
 
 	/**
 	 * Constructs new instance with given network id
@@ -67,6 +73,13 @@ public enum ProtocolVersion {
 	 */
 	private ProtocolVersion(int networkId){
 		this.networkId = networkId;
+		if (toString().equals("UNKNOWN")) {
+			this.minorVersion = 17;
+			this.friendlyName = "Unknown";
+		} else {
+			this.minorVersion = Integer.parseInt(toString().split("_")[1]);
+			this.friendlyName = toString().substring(1).replace("_", ".");
+		}
 	}
 
 	/**
@@ -82,8 +95,7 @@ public enum ProtocolVersion {
 	 * @return
 	 */
 	public String getFriendlyName() {
-		if (this == UNKNOWN) return "Unknown";
-		return toString().substring(1).replace("_", ".");
+		return friendlyName;
 	}
 
 	/**
@@ -91,8 +103,7 @@ public enum ProtocolVersion {
 	 * @return version's minor version
 	 */
 	public int getMinorVersion() {
-		if (this == UNKNOWN) return 16;
-		return Integer.parseInt(toString().split("_")[1]);
+		return minorVersion;
 	}
 
 	/**

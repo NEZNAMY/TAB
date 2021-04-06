@@ -30,6 +30,15 @@ public class Configs {
 
 	//remove-strings option
 	public List<String> removeStrings;
+	
+	//hidden config options
+	public boolean rgbSupport;
+	public boolean unregisterBeforeRegister;
+	public String multiWorldSeparator;
+	public String essentialsNickPrefix;
+	public boolean armorStandsAlwaysVisible; //paid private addition
+	public boolean removeGhostPlayers;
+	public boolean layout;
 
 	//animations.yml file
 	public ConfigurationFile animation;
@@ -109,6 +118,13 @@ public class Configs {
 			removeStrings.add(s.replace('&', '\u00a7'));
 		}
 		tab.debugMode = (boolean) getSecretOption("debug", false);
+		rgbSupport = (boolean) getSecretOption("rgb-support", true);
+		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+		multiWorldSeparator = (String) getSecretOption("multi-world-separator", "-");
+		essentialsNickPrefix = (String) getSecretOption("essentials-nickname-prefix", "");
+		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
+		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
+		layout = (boolean) getSecretOption("layout", false);
 		
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
@@ -150,7 +166,7 @@ public class Configs {
 	 * @param defaultValue - value to return if option is not present in file
 	 * @return value with specified path or default value if not present
 	 */
-	public Object getSecretOption(String path, Object defaultValue) {
+	private Object getSecretOption(String path, Object defaultValue) {
 		if (config == null) return defaultValue;
 		Object value = config.getObject(path);
 		return value == null ? defaultValue : value;
@@ -185,7 +201,7 @@ public class Configs {
 		Map<String, Object> worlds = config.getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings");
 		if (worlds.isEmpty()) return world;
 		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split((String)getSecretOption("multi-world-separator", "-"))) {
+			for (String localWorld : worldGroup.split(multiWorldSeparator)) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
 		}

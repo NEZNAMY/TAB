@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,18 +33,22 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
-	
+
 	//plugin instance
 	private JavaPlugin plugin;
-	
+
 	//vault economy
 	private Economy economy;
-	
+
 	//vault chat
 	private Chat chat;
-	
+
 	//placeholder registry buffer
 	private List<Placeholder> placeholders;
+
+	//essentials methods
+	private Method getUser;
+	private Method getNickname;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -57,6 +62,14 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			if (rspEconomy != null) economy = rspEconomy.getProvider();
 			RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
 			if (rspChat != null) chat = rspChat.getProvider();
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			try {
+				getUser = Class.forName("com.earth2me.essentials.Essentials").getMethod("getUser", Player.class);
+				getNickname = Class.forName("com.earth2me.essentials.User").getMethod("getNickname");
+			} catch (Exception e) {
+				TAB.getInstance().getErrorManager().printError("Failed to load essentials methods", e);
+			}
 		}
 	}
 
@@ -77,12 +90,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		placeholders.add(new PlayerPlaceholder("%deaths%", 1000) {
 			public String get(TabPlayer p) {
-				return ((Player) p.getPlayer()).getStatistic(Statistic.DEATHS)+"";
+				return String.valueOf(((Player) p.getPlayer()).getStatistic(Statistic.DEATHS));
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%health%", 100) {
 			public String get(TabPlayer p) {
-				return (int) Math.ceil(((Player) p.getPlayer()).getHealth())+"";
+				return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
 			}
 		});
 		placeholders.add(new ServerPlaceholder("%tps%", 1000) {
@@ -102,7 +115,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
-				return var+"";
+				return String.valueOf(var);
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
@@ -111,7 +124,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
 					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) var++;
 				}
-				return var+"";
+				return String.valueOf(var);
 			}
 		});
 		registerAFKPlaceholder();
@@ -214,17 +227,17 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerPositionPlaceholders() {
 		placeholders.add(new PlayerPlaceholder("%xPos%", 100) {
 			public String get(TabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockX()+"";
+				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockX());
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%yPos%", 100) {
 			public String get(TabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockY()+"";
+				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockY());
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%zPos%", 100) {
 			public String get(TabPlayer p) {
-				return ((Player) p.getPlayer()).getLocation().getBlockZ()+"";
+				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockZ());
 			}
 		});
 	}
@@ -237,17 +250,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 1000) {
 				public String get(TabPlayer p) {
 					String name = null;
-					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-						try {
-							Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-							Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, p.getPlayer());
-							name = (String) user.getClass().getMethod("getNickname").invoke(user);
-						} catch (Exception e) {
-							TAB.getInstance().getErrorManager().printError("Failed to get Essentials nickname of " + p.getName(), e);
-						}
+					try {
+						name = (String) getNickname.invoke(getUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer()));
+					} catch (Exception e) {
+						TAB.getInstance().getErrorManager().printError("Failed to get Essentials nickname of " + p.getName(), e);
 					}
 					if (name == null || name.length() == 0) return p.getName();
-					return TAB.getInstance().getConfiguration().getSecretOption("essentials-nickname-prefix", "") + name;
+					return TAB.getInstance().getConfiguration().essentialsNickPrefix + name;
 				}
 			});
 		} else {

@@ -57,7 +57,7 @@ public class CpuCommand extends SubCommand {
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.1) continue;
 			String refresh = "";
-			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey()+"");
+			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey().toString());
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
 			sendMessage(sender, String.format("&8&l" + LINE_CHAR + " &7%s - %s%%", entry.getKey() + refresh, colorizePlaceholder(decimal3.format(entry.getValue()))));
 		}
@@ -123,8 +123,8 @@ public class CpuCommand extends SubCommand {
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
 				messages.add("&3" + type.getKey().toString() + " - " + colorizeFeature(decimal3.format(type.getValue())) + "%");
 			}
-			IChatBaseComponent message = new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color(core));
-			message.onHoverShowText(TAB.getInstance().getPlaceholderManager().color(String.join("\n", messages)));
+			IChatBaseComponent message = new IChatBaseComponent(core.replace('&', '\u00a7'));
+			message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
 			sender.sendMessage(message);
 		}
 	}
@@ -151,8 +151,8 @@ public class CpuCommand extends SubCommand {
 			count += entry.getValue();
 			messages.add("&3" + entry.getKey().toString() + " - " + entry.getValue());
 		}
-		IChatBaseComponent message = new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + count));
-		message.onHoverShowText(TAB.getInstance().getPlaceholderManager().color(String.join("\n", messages)));
+		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + count).replace('&', '\u00a7'));
+		message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
 		sender.sendMessage(message);
 	}
 

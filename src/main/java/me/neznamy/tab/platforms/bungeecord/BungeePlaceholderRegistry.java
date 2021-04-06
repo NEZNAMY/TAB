@@ -26,7 +26,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
 			placeholders.add(new ServerPlaceholder("%canseeonline%", 1000) {
 				public String get() {
-					return TAB.getInstance().getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size()+"";
+					return String.valueOf(TAB.getInstance().getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size());
 				}
 			});
 			placeholders.add(new ServerPlaceholder("%canseestaffonline%", 1000) {
@@ -35,7 +35,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 					for (TabPlayer all : TAB.getInstance().getPlayers()) {
 						if (!((BungeeTabPlayer)all).isVanished() && all.isStaff()) count++;
 					}
-					return count+"";
+					return String.valueOf(count);
 				}
 			});
 		}
@@ -47,7 +47,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
 			placeholders.add(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
 				public String get() {
-					return server.getValue().getPlayers().size()+"";
+					return String.valueOf(server.getValue().getPlayers().size());
 				}
 			});
 			placeholders.add(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
@@ -56,7 +56,7 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
 						if (((BungeeTabPlayer)TAB.getInstance().getPlayer(p.getUniqueId())).isVanished()) count--;
 					}
-					return count+"";
+					return String.valueOf(count);
 				}
 			});
 		}

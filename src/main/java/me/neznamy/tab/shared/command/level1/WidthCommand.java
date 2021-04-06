@@ -45,8 +45,8 @@ public class WidthCommand extends SubCommand {
 				}
 			}
 			List<IChatBaseComponent> messages = new ArrayList<IChatBaseComponent>();
-			IChatBaseComponent charMessage = new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color("&2" + c + " &d|"));
-			messages.add(new IChatBaseComponent('\u00a7' + "b[TAB] Click the line with closest width"));
+			IChatBaseComponent charMessage = new IChatBaseComponent("\u00a72" + c + " \u00a7d|");
+			messages.add(new IChatBaseComponent("\u00a7b[TAB] Click the line with closest width"));
 			messages.add(getText(1, c));
 			messages.add(charMessage);
 			messages.add(getText(2, c));
@@ -73,7 +73,7 @@ public class WidthCommand extends SubCommand {
 			TAB.getInstance().getConfiguration().premiumconfig.save();
 			sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char)c + " &2(&6" + c + "&2) to &6" + width + "&2 pixels.");
 			if (TAB.getInstance().debugMode) {
-				execute(sender, new String[] {c+1+""});
+				execute(sender, new String[] {String.valueOf(c+1)});
 			}
 		} else {
 			sendMessage(sender, "Usage: /tab width <character>");
@@ -97,6 +97,6 @@ public class WidthCommand extends SubCommand {
 			pixelsRemaining -= 2;
 			text += "i";
 		}
-		return new IChatBaseComponent(TAB.getInstance().getPlaceholderManager().color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]")).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
+		return new IChatBaseComponent(("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]").replace('&', '\u00a7')).onClickRunCommand("/tab width " + (int)c + " " + width).onHoverShowText("Click to set width to " + width + " pixels");
 	}
 }

@@ -119,7 +119,8 @@ public enum EnumChatFormat {
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
-		String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(string).toLegacyText());
+		String legacyText = IChatBaseComponent.fromColoredText(string).toLegacyText(); //translating RGB into legacy for nametags
+		String last = TAB.getInstance().getPlaceholderManager().getLastColors(legacyText);
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
 			for (EnumChatFormat e : values()) {
@@ -134,7 +135,7 @@ public enum EnumChatFormat {
 	 * @return \u00a7 followed by color's character
 	 */
 	public String getFormat() {
-		return '\u00a7' + "" + character;
+		return "\u00a7" + character;
 	}
 	
 	/**
