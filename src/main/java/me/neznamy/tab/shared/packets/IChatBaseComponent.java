@@ -738,6 +738,27 @@ public class IChatBaseComponent {
 		return builder.toString();
 	}
 	
+
+	/**
+	 * Converts the component into flat text with used colors (including rgb) and magic codes
+	 * @return converted text
+	 */
+	public String toFlatText() {
+		StringBuilder builder = new StringBuilder();
+		if (color != null) builder.append("#" + color.toHexString());
+		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
+		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
+		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
+		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
+		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+		if (text != null) builder.append(text);
+		if (extra != null)
+			for (IChatBaseComponent extra : extra) {
+				builder.append(extra.toFlatText());
+			}
+		return builder.toString();
+	}
+
 	/**
 	 * Creates a complete clone of this component and returns it
 	 * @return a clone identical to current component
