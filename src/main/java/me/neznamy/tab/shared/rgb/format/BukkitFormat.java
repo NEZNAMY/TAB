@@ -13,7 +13,7 @@ public class BukkitFormat extends RGBFormatter {
 	
 	@Override
 	public String reformat(String text) {
-		if (!text.contains("&x")) return text;
+		if (!text.contains("\u00a7x")) return text;
 		String replaced = text;
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {
