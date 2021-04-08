@@ -55,7 +55,7 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, SEPARATOR);
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.1%:");
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
-			if (entry.getValue() < 0.1) continue;
+			if (entry.getValue() < 0.05) continue;
 			String refresh = "";
 			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey().toString());
 			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
