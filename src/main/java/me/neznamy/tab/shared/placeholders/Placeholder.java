@@ -81,7 +81,7 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, value.contains("&") ? value.replace('&', '\u00a7') : value), p);
+			String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
