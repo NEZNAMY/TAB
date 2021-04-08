@@ -53,7 +53,7 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds");
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.1%:");
+		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholders using more than 0.05%:");
 		for (Entry<String, Float> entry : placeholders.entrySet()) {
 			if (entry.getValue() < 0.05) continue;
 			String refresh = "";
