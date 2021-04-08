@@ -170,7 +170,7 @@ public class DebugCommand extends SubCommand {
 	 * @return list of extra properties
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Object> getExtraLines(){
+	public List<Object> getExtraLines(){
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();
 		if (TAB.getInstance().isPremium()) {
 			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));

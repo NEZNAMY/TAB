@@ -3,6 +3,9 @@ package me.neznamy.tab.shared.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -54,6 +57,11 @@ public class TabCommand extends SubCommand {
 			registerSubCommand(new ScoreboardCommand());
 			registerSubCommand(new WidthCommand());
 		}
+		Set<String> properties = Sets.newHashSet("tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname");
+		for (Object line : ((DebugCommand)subcommands.get("debug")).getExtraLines()) {
+			properties.add(line.toString());
+		}
+		SubCommand.allProperties = properties.toArray(new String[0]);
 	}
 
 	@Override

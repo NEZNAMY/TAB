@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class SubCommand {
 
 	//all properties assignable with a command
-	protected final String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
+	public static String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
 	
 	//properties that require unlimited nametag mode
 	protected final List<String> extraProperties = Arrays.asList("abovename", "belowname", "customtagname");
