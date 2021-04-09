@@ -474,6 +474,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 */
 	public IChatBaseComponent fromNMSComponent(Object component) throws Exception {
 		if (component == null) return null;
+		long time = System.nanoTime();
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
 		Object color = nms.ChatModifier_color.get(modifier);
@@ -494,6 +495,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		for (Object extra : (List<Object>) nms.ChatBaseComponent_extra.get(component)) {
 			chat.addExtra(fromNMSComponent(extra));
 		}
+		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
 		return chat;
 	}
 	
@@ -505,6 +507,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @throws Exception if something fails
 	 */
 	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws Exception {
+		long time = System.nanoTime();
+		Object obj = toNMSComponent0(component, clientVersion);
+		TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
+		return obj;
+	}
+	
+	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
+	private Object toNMSComponent0(IChatBaseComponent component, ProtocolVersion clientVersion) throws Exception {
 		if (component == null) return null;
 		Object chat = nms.newChatComponentText.newInstance(component.getText());
 		Object modifier;
@@ -537,7 +547,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		nms.ChatBaseComponent_modifier.set(chat, modifier);
 		for (IChatBaseComponent extra : component.getExtra()) {
-			nms.ChatComponentText_addSibling.invoke(chat, toNMSComponent(extra, clientVersion));
+			nms.ChatComponentText_addSibling.invoke(chat, toNMSComponent0(extra, clientVersion));
 		}
 		return chat;
 	}

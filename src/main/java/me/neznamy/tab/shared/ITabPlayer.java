@@ -221,12 +221,15 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		sendPacket(packet.create(getVersion()));
+		Object p = packet.create(getVersion());
+		long time = System.nanoTime();
+		sendPacket(p);
+		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
 	@Override
 	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature) {
-		sendPacket(packet.create(getVersion()));
+		sendCustomPacket(packet);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}
 

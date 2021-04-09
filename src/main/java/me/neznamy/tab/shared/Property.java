@@ -142,6 +142,7 @@ public class Property {
 	 * @return if updating changed value or not
 	 */
 	public boolean update() {
+		long time = System.nanoTime();
 		String string = getCurrentRawValue();
 		for (String identifier : placeholders) {
 			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
@@ -151,8 +152,10 @@ public class Property {
 		string = applyRemoveStrings(string);
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
+			TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
 			return true;
 		}
+		TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
 		return false;
 	}
 	

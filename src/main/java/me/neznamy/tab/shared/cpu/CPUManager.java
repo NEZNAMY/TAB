@@ -27,6 +27,7 @@ public class CPUManager {
 	private Map<Object, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
+	private Map<String, Long> methodUsageCurrent = new ConcurrentHashMap<String, Long>();
 	
 	//packets sent in the current 10 seconds
 	private Map<Object, Integer> packetsCurrent = new ConcurrentHashMap<Object, Integer>();
@@ -35,6 +36,7 @@ public class CPUManager {
 	private Map<Object, Map<UsageType, Long>> featureUsagePrevious = new HashMap<Object, Map<UsageType, Long>>();
 	private Map<String, Long> placeholderUsagePrevious = new HashMap<String, Long>();
 	private Map<String, Long> bridgePlaceholderUsagePrevious = new HashMap<String, Long>();
+	private Map<String, Long> methodUsagePrevious = new HashMap<String, Long>();
 	
 	//packets sent in the previous 10 seconds
 	private Map<Object, Integer> packetsPrevious = new ConcurrentHashMap<Object, Integer>();
@@ -62,11 +64,13 @@ public class CPUManager {
 						featureUsagePrevious = featureUsageCurrent;
 						placeholderUsagePrevious = placeholderUsageCurrent;
 						bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
+						methodUsagePrevious = methodUsageCurrent;
 						packetsPrevious = packetsCurrent;
 
 						featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
 						placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
 						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
+						methodUsageCurrent = new ConcurrentHashMap<String, Long>();
 						packetsCurrent = new ConcurrentHashMap<Object, Integer>();
 					}
 				} catch (InterruptedException pluginDisabled) {
@@ -209,6 +213,14 @@ public class CPUManager {
 	 */
 	public Map<String, Float> getBridgeUsage(){
 		return getUsage(bridgePlaceholderUsagePrevious);
+	}
+	
+	/**
+	 * Returns cpu usage map of methods previous 10 seconds
+	 * @return cpu usage map of methods
+	 */
+	public Map<String, Float> getMethodUsage(){
+		return getUsage(methodUsagePrevious);
 	}
 	
 	/**
@@ -389,6 +401,20 @@ public class CPUManager {
 			bridgePlaceholderUsageCurrent.put(placeholder, nanoseconds);
 		} else {
 			bridgePlaceholderUsageCurrent.put(placeholder, current + nanoseconds);
+		}
+	}
+	
+	/**
+	 * Adds method time to defined method
+	 * @param method - method to add time to
+	 * @param nanoseconds - time to add
+	 */
+	public void addMethodTime(String method, long nanoseconds) {
+		Long current = methodUsageCurrent.get(method);
+		if (current == null) {
+			methodUsageCurrent.put(method, nanoseconds);
+		} else {
+			methodUsageCurrent.put(method, current + nanoseconds);
 		}
 	}
 	
