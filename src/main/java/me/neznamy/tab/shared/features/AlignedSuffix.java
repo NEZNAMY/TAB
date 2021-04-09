@@ -167,18 +167,18 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	private String buildSpaces(int pixelWidth) {
 		if (pixelWidth < 12) throw new IllegalArgumentException("Cannot build space lower than 12 pixels wide");
 		int pixelsLeft = pixelWidth;
-		String output = "";
+		StringBuilder output = new StringBuilder();
 		while (pixelsLeft % 5 != 0) {
 			pixelsLeft -= 4;
-			output += " ";
+			output.append(" ");
 		}
-		output += "\u00a7l";
+		output.append("\u00a7l");
 		while (pixelsLeft > 0) {
 			pixelsLeft -= 5;
-			output += " ";
+			output.append(" ");
 		}
-		output += "\u00a7r";
-		return output;
+		output.append("\u00a7r");
+		return output.toString();
 	}
 
 	@Override
