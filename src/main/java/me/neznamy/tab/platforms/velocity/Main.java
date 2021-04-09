@@ -66,6 +66,7 @@ public class Main {
 		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
 		server.getEventManager().register(this, new VelocityEventListener());
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), new VelocityTABCommand());
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), new VelocityTABCommand());
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
