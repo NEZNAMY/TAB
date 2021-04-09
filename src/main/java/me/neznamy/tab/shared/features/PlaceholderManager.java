@@ -159,26 +159,23 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 			}
 		}
-		tab.getCPUManager().runTask("refreshing", new Runnable() {
-
-			@Override
-			public void run() {
-				for (TabPlayer p : forceUpdate.keySet()) {
-					for (Refreshable r : forceUpdate.get(p)) {
-						long startTime = System.nanoTime();
-						r.refresh(p, true);
-						tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
-					}
-				}
-				for (TabPlayer p : update.keySet()) {
-					for (Refreshable r : update.get(p)) {
-						long startTime = System.nanoTime();
-						r.refresh(p, false);
-						tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
-					}
-				}
+		long startRefreshTime = System.nanoTime();
+		for (TabPlayer p : forceUpdate.keySet()) {
+			for (Refreshable r : forceUpdate.get(p)) {
+				long startTime = System.nanoTime();
+				r.refresh(p, true);
+				tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
 			}
-		});
+		}
+		for (TabPlayer p : update.keySet()) {
+			for (Refreshable r : update.get(p)) {
+				long startTime = System.nanoTime();
+				r.refresh(p, false);
+				tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
+			}
+		}
+		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
+		tab.getCPUManager().addTime(getFeatureType(), UsageType.REPEATING_TASK, startRefreshTime-System.nanoTime());
 	}
 
 	public Set<Refreshable> getPlaceholderUsage(String identifier){
