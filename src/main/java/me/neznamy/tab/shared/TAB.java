@@ -31,7 +31,7 @@ public class TAB {
 	public final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
 	
 	//the command
-	public final TabCommand command;
+	public TabCommand command;
 	
 	//command used if plugin is disabled due to a broken configuration file
 	public final DisabledCommand disabledCommand = new DisabledCommand();
@@ -68,7 +68,6 @@ public class TAB {
 	public TAB(Platform platform, PacketBuilder packetBuilder) {
 		this.platform = platform;
 		this.packetBuilder = packetBuilder;
-		this.command = new TabCommand(this);
 	}
 	
 	/**
@@ -152,6 +151,7 @@ public class TAB {
 			placeholderManager = new PlaceholderManager(this);
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
+			command = new TabCommand(this);
 			featureManager.load();
 			getPlayers().forEach(p -> p.markAsLoaded());
 			errorManager.printConsoleWarnCount();
