@@ -21,7 +21,9 @@ public class TextColor {
 	
 	//true if legacy color was forced via constructor, false if automatically
 	private boolean legacyColorForced;
-
+	
+	//true if toString should return legacy color
+	private boolean returnLegacy;
 	
 	/**
 	 * Constructs new instance based on hex code as string
@@ -145,7 +147,7 @@ public class TextColor {
 	 * @return the color converted into string acceptable by client
 	 */
 	public String toString(boolean rgbClient) {
-		if (rgbClient) {
+		if (rgbClient && !returnLegacy) {
 			EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
 			if (legacyEquivalent != null) {
 				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
@@ -179,16 +181,22 @@ public class TextColor {
 	}
 	
 	/**
+	 * Sets returnLegacy flag to given value
+	 * @param returnLegacy - true if color should return legacy
+	 */
+	public void setReturnLegacy(boolean returnLegacy) {
+		this.returnLegacy = returnLegacy;
+	}
+	
+	/**
 	 * Reads the string and turns into text color. String is either #RRGGBB or a lowercased legacy color
 	 * @param string - string from color field in chat component
 	 * @return An instance from specified string
 	 */
 	public static TextColor fromString(String string) {
 		if (string == null) return null;
-		if (string.startsWith("#")) {
-			return new TextColor(string.substring(1));
-		} else {
-			return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
-		}
+		if (string.startsWith("#")) return new TextColor(string.substring(1));
+		if (string.startsWith("\u00a7")) return new TextColor(EnumChatFormat.getByChar(string.toLowerCase().charAt(1)));
+		return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 	}
 }

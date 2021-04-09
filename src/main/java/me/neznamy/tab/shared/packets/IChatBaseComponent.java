@@ -21,7 +21,7 @@ public class IChatBaseComponent {
 
 	//empty translatable
 	private final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
-	
+
 	//empty text
 	private final String EMPTY_TEXT = "{\"text\":\"\"}";
 
@@ -30,52 +30,49 @@ public class IChatBaseComponent {
 
 	//component color
 	private TextColor color;
-	
+
 	//bold flag
 	private Boolean bold;
-	
+
 	//italic flag
 	private Boolean italic;
-	
+
 	//underlines flag
 	private Boolean underlined;
-	
+
 	//strikethrough flag
 	private Boolean strikethrough;
-	
+
 	//obfuscated flag
 	private Boolean obfuscated;
 
 	//click action
 	private ClickAction clickAction;
-	
+
 	//value on click
-	private Object clickValue;
-	
+	private String clickValue;
+
 	//hover action
 	private HoverAction hoverAction;
-	
+
 	//value on hover
 	private Object hoverValue;
 
 	//extra components
-	private List<IChatBaseComponent> extra;
-	
-	//json builder
-	private JSONObject jsonObject = new JSONObject();
+	private List<IChatBaseComponent> extra = new ArrayList<IChatBaseComponent>();
 
 	/**
 	 * Constructs a new empty component
 	 */
 	public IChatBaseComponent() {
 	}
-	
+
 	/**
 	 * Constructs new instance with given text
 	 * @param text - text to display
 	 */
 	public IChatBaseComponent(String text) {
-		setText(text);
+		this.text = text;
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class IChatBaseComponent {
 	public List<IChatBaseComponent> getExtra(){
 		return extra;
 	}
-	
+
 	/**
 	 * Sets full list of extra components to given list
 	 * @param components - components to use as extra
@@ -93,20 +90,15 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
 		this.extra = components;
-		jsonObject.put("extra", extra);
 		return this;
 	}
-	
+
 	/**
 	 * Appends provided component as extra component
 	 * @param child - component to append
 	 * @return self
 	 */
 	public IChatBaseComponent addExtra(IChatBaseComponent child) {
-		if (extra == null) {
-			extra = new ArrayList<IChatBaseComponent>();
-			jsonObject.put("extra", extra);
-		}
 		extra.add(child);
 		return this;
 	}
@@ -118,7 +110,7 @@ public class IChatBaseComponent {
 	public String getText() {
 		return text;
 	}
-	
+
 	/**
 	 * Returns color of the text or null if not set
 	 * @return color or null if not set
@@ -126,7 +118,7 @@ public class IChatBaseComponent {
 	public TextColor getColor() {
 		return color;
 	}
-	
+
 	/**
 	 * Returns true if bold is defined and set to true, false otherwise
 	 * @return true if bold is defined and set to true, false otherwise
@@ -134,7 +126,7 @@ public class IChatBaseComponent {
 	public boolean isBold(){
 		return bold == null ? false : bold;
 	}
-	
+
 	/**
 	 * Returns true if italic is defined and set to true, false otherwise
 	 * @return true if italic is defined and set to true, false otherwise
@@ -142,7 +134,7 @@ public class IChatBaseComponent {
 	public boolean isItalic(){
 		return italic == null ? false : italic;
 	}
-	
+
 	/**
 	 * Returns true if underlined is defined and set to true, false otherwise
 	 * @return true if underlined is defined and set to true, false otherwise
@@ -150,7 +142,7 @@ public class IChatBaseComponent {
 	public boolean isUnderlined(){
 		return underlined == null ? false : underlined;
 	}
-	
+
 	/**
 	 * Returns true if strikethrough is defined and set to true, false otherwise
 	 * @return true if strikethrough is defined and set to true, false otherwise
@@ -158,7 +150,7 @@ public class IChatBaseComponent {
 	public boolean isStrikethrough(){
 		return strikethrough == null ? false : strikethrough;
 	}
-	
+
 	/**
 	 * Returns true if obfuscation is defined and set to true, false otherwise
 	 * @return true if obfuscation is defined and set to true, false otherwise
@@ -174,14 +166,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setText(String text) {
 		this.text = text;
-		if (text != null) {
-			jsonObject.put("text", text);
-		} else {
-			jsonObject.remove("text");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets color of text
 	 * @param color - text color
@@ -189,14 +176,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setColor(TextColor color) {
 		this.color = color;
-		if (color != null) {
-			jsonObject.put("color", color.toString(true));
-		} else {
-			jsonObject.remove("color");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets bold status to requested value
 	 * @param bold - true if bold, false if not, null if not set
@@ -204,14 +186,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setBold(Boolean bold) {
 		this.bold = bold;
-		if (bold != null) {
-			jsonObject.put("bold", bold);
-		} else {
-			jsonObject.remove("bold");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets italic status to requested value
 	 * @param italic - true if italic, false if not, null if not set
@@ -219,14 +196,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setItalic(Boolean italic) {
 		this.italic = italic;
-		if (italic != null) {
-			jsonObject.put("italic", italic);
-		} else {
-			jsonObject.remove("italic");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets underline status to requested value
 	 * @param underlined - true if underlined, false if not, null if not set
@@ -234,14 +206,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setUnderlined(Boolean underlined) {
 		this.underlined = underlined;
-		if (underlined != null) {
-			jsonObject.put("underlined", underlined);
-		} else {
-			jsonObject.remove("underlined");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets strikethrough status to requested value
 	 * @param strikethrough - true if strikethrough, false if not, null if not set
@@ -249,14 +216,9 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setStrikethrough(Boolean strikethrough) {
 		this.strikethrough = strikethrough;
-		if (strikethrough != null) {
-			jsonObject.put("strikethrough", strikethrough);
-		} else {
-			jsonObject.remove("strikethrough");
-		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets obfuscation status to requested value
 	 * @param obfuscated - true if obfuscated, false if not, null if not set
@@ -264,11 +226,6 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent setObfuscated(Boolean obfuscated) {
 		this.obfuscated = obfuscated;
-		if (obfuscated != null) {
-			jsonObject.put("obfuscated", obfuscated);
-		} else {
-			jsonObject.remove("obfuscated");
-		}
 		return this;
 	}
 
@@ -321,7 +278,8 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onClickChangePage(int newpage) {
-		return onClick(ClickAction.CHANGE_PAGE, newpage);
+		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) throw new UnsupportedOperationException("Not supported on <1.8");
+		return onClick(ClickAction.CHANGE_PAGE, String.valueOf(newpage));
 	}
 
 	/**
@@ -330,13 +288,9 @@ public class IChatBaseComponent {
 	 * @param value - value to perform action with
 	 * @return self
 	 */
-	private IChatBaseComponent onClick(ClickAction action, Object value) {
+	public IChatBaseComponent onClick(ClickAction action, String value) {
 		clickAction = action;
 		clickValue = value;
-		JSONObject click = new JSONObject();
-		click.put("action", action.toString().toLowerCase());
-		click.put("value", value);
-		jsonObject.put("clickEvent", click);
 		return this;
 	}
 
@@ -353,6 +307,7 @@ public class IChatBaseComponent {
 	 * @return hover value
 	 */
 	public Object getHoverValue() {
+		if (hoverValue instanceof String) return "\"" + hoverValue + "\"";
 		return hoverValue;
 	}
 
@@ -362,7 +317,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onHoverShowText(String text) {
-		return onHoverShowText(text);
+		return onHoverShowText(IChatBaseComponent.fromColoredText(text));
 	}
 
 	/**
@@ -379,7 +334,7 @@ public class IChatBaseComponent {
 	 * @param item - item to show
 	 * @return self
 	 */
-/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
+	/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
 		try {
 			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			return onHover(HoverAction.SHOW_ITEM, Class.forName("net.minecraft.server." + pack + ".ItemStack")
@@ -410,12 +365,8 @@ public class IChatBaseComponent {
 	 * @param type - entity type, can be null
 	 * @return self
 	 */
-	public IChatBaseComponent onHoverShowEntity(UUID id, String customname, String type) {
-		JSONObject json = new JSONObject();
-		json.put("id", id.toString());
-		if (type != null) json.put("type", type);
-		if (customname != null) json.put("name", customname);
-		return onHover(HoverAction.SHOW_ENTITY, json.toString());
+	public IChatBaseComponent onHoverShowEntity(UUID id, String type, String customname) {
+		return onHover(HoverAction.SHOW_ENTITY, String.format("{id:%s,type:%s,name:%s}", id, type, customname));
 	}
 
 	/**
@@ -424,13 +375,9 @@ public class IChatBaseComponent {
 	 * @param value - value to perform action with
 	 * @return self
 	 */
-	private IChatBaseComponent onHover(HoverAction action, Object value) {
+	public IChatBaseComponent onHover(HoverAction action, Object value) {
 		hoverAction = action;
 		hoverValue = value;
-		JSONObject hover = new JSONObject();
-		hover.put("action", action.toString().toLowerCase());
-		hover.put("value", value);
-		jsonObject.put("hoverEvent", hover);
 		return this;
 	}
 
@@ -458,7 +405,7 @@ public class IChatBaseComponent {
 			if (jsonObject.containsKey("clickEvent")) {
 				JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
 				String action = (String) clickEvent.get("action");
-				Object value = (Object) clickEvent.get("value");
+				String value = clickEvent.get("value").toString();
 				component.onClick(ClickAction.valueOf(action.toUpperCase()), value);
 			}
 			if (jsonObject.containsKey("hoverEvent")) {
@@ -499,6 +446,32 @@ public class IChatBaseComponent {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		JSONObject json = new JSONObject();
+		if (text != null) json.put("text", text);
+		if (color != null) json.put("color", color.toString(true));
+		if (bold != null) json.put("bold", bold);
+		if (italic != null) json.put("italic", italic);
+		if (underlined != null) json.put("underlined", underlined);
+		if (strikethrough != null) json.put("strikethrough", strikethrough);
+		if (obfuscated != null) json.put("obfuscated", obfuscated);
+		if (clickAction != null) {
+			JSONObject click = new JSONObject();
+			click.put("action", clickAction.toString().toLowerCase());
+			click.put("value", clickValue);
+			json.put("clickEvent", click);
+		}
+		if (hoverAction != null) {
+			JSONObject hover = new JSONObject();
+			hover.put("action", hoverAction.toString().toLowerCase());
+			hover.put("value", hoverValue);
+			json.put("hoverEvent", hover);
+		}
+		if (!extra.isEmpty()) json.put("extra", extra);
+		return json.toString();
+	}
+
 	/**
 	 * Serializes this component with colors based on client version
 	 * @param clientVersion - client version
@@ -515,7 +488,7 @@ public class IChatBaseComponent {
 	 * @return Serialized string
 	 */
 	public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
-		if (extra == null) {
+		if (extra.isEmpty()) {
 			if (text == null) return null;
 			if (text.length() == 0) {
 				if (sendTranslatableIfEmpty) {
@@ -525,27 +498,20 @@ public class IChatBaseComponent {
 				}
 			}
 		}
-		//the core component, fixing all colors
-		if (clientVersion.getMinorVersion() < 16) convertColorsToLegacy();
+		if (clientVersion.getMinorVersion() < 16) {
+			//core component, fixing all colors
+			convertColorsToLegacy();
+		}
 		return toString();
 	}
 
-	@Override
-	public String toString() {
-		return jsonObject.toString();
-	}
-	
 	/**
 	 * Converts all RGB colors everywhere in this component and it's extras into legacy codes
 	 */
 	private void convertColorsToLegacy() {
-		if (color != null) {
-			jsonObject.put("color", color.getLegacyColor().toString().toLowerCase());
-		}
-		if (extra != null) {
-			for (IChatBaseComponent extra : extra) {
-				extra.convertColorsToLegacy();
-			}
+		if (color != null) color.setReturnLegacy(true);
+		for (IChatBaseComponent extra : extra) {
+			extra.convertColorsToLegacy();
 		}
 		if (hoverValue instanceof IChatBaseComponent) {
 			((IChatBaseComponent)hoverValue).convertColorsToLegacy();
@@ -640,7 +606,7 @@ public class IChatBaseComponent {
 		components.add(component);
 		return new IChatBaseComponent("").setExtra(components);
 	}
-	
+
 	/**
 	 * Returns true if text contains legacy color request at defined RGB index start
 	 * @param text - text to check
@@ -694,10 +660,9 @@ public class IChatBaseComponent {
 			builder.append(text);
 
 		}
-		if (extra != null)
-			for (IChatBaseComponent component : extra) {
-				formatting = component.append(builder, formatting);
-			}
+		for (IChatBaseComponent component : extra) {
+			formatting = component.append(builder, formatting);
+		}
 		return formatting;
 	}
 
@@ -730,14 +695,11 @@ public class IChatBaseComponent {
 	public String toRawText() {
 		StringBuilder builder = new StringBuilder();
 		if (text != null) builder.append(text);
-		if (extra != null) {
-			for (IChatBaseComponent extra : extra) {
-				if (extra.text != null) builder.append(extra.text);
-			}
+		for (IChatBaseComponent extra : extra) {
+			if (extra.text != null) builder.append(extra.text);
 		}
 		return builder.toString();
 	}
-	
 
 	/**
 	 * Converts the component into flat text with used colors (including rgb) and magic codes
@@ -752,10 +714,9 @@ public class IChatBaseComponent {
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 		if (text != null) builder.append(text);
-		if (extra != null)
-			for (IChatBaseComponent extra : extra) {
-				builder.append(extra.toFlatText());
-			}
+		for (IChatBaseComponent extra : extra) {
+			builder.append(extra.toFlatText());
+		}
 		return builder.toString();
 	}
 
@@ -773,10 +734,9 @@ public class IChatBaseComponent {
 		component.setUnderlined(underlined);
 		if (hoverAction != null) component.onHover(hoverAction, hoverValue);
 		if (clickAction != null) component.onClick(clickAction, clickValue);
-		if (extra != null) 
-			for (IChatBaseComponent extra : extra) {
-				component.addExtra(extra.clone());
-			}
+		for (IChatBaseComponent extra : extra) {
+			component.addExtra(extra.clone());
+		}
 		return component;
 	}
 
@@ -804,7 +764,7 @@ public class IChatBaseComponent {
 	public enum ClickAction {
 		OPEN_URL,
 		RUN_COMMAND,
-		CHANGE_PAGE,
+		CHANGE_PAGE, //since 1.8
 		SUGGEST_COMMAND,
 		COPY_TO_CLIPBOARD; //since 1.15
 	}
@@ -813,8 +773,16 @@ public class IChatBaseComponent {
 	 * Enum for all possible hover actions
 	 */
 	public enum HoverAction {
+		
 		SHOW_TEXT,
 		SHOW_ITEM,
-		SHOW_ENTITY,
+		SHOW_ENTITY;
+		
+		public static HoverAction fromString(String s) {
+			for (HoverAction action : values()) {
+				if (s.toUpperCase().contains(action.toString())) return action;
+			}
+			throw new IllegalArgumentException("HoverAction not found by name " + s);
+		}
 	}
 }

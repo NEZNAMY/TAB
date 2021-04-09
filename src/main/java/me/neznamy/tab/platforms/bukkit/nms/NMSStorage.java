@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,42 @@ public class NMSStorage {
 	public Method getProfile;
 	public Method sendPacket;
 
+	//chat
 	public Class<Enum> EnumChatFormat;
-
 	public Class<?> IChatBaseComponent;
+	public Class<?> ChatBaseComponent;
 	public Class<?> ChatSerializer;
-	public Method ChatSerializer_SERIALIZE;
+	public Class<?> EnumClickAction;
+	public Class<?> EnumHoverAction;
+	public Class<?> ChatModifier;
+	public Class<?> ChatComponentText;
+	public Class<?> ChatClickable;
+	public Class<?> ChatHoverable;
+	public Class<?> ChatHexColor;
+	public Constructor<?> newChatComponentText;
+	public Constructor<?> newChatClickable;
+	public Constructor<?> newChatHoverable;
+	public Constructor<?> newChatModifier;
+	public Field ChatBaseComponent_extra;
+	public Field ChatBaseComponent_modifier;
+	public Field ChatClickable_action;
+	public Field ChatClickable_value;
+	public Field ChatHoverable_action;
+	public Field ChatHoverable_value;
+	public Field ChatModifier_color;
+	public Field ChatModifier_bold;
+	public Field ChatModifier_italic;
+	public Field ChatModifier_underlined;
+	public Field ChatModifier_strikethrough;
+	public Field ChatModifier_obfuscated;
+	public Field ChatModifier_clickEvent;
+	public Field ChatModifier_hoverEvent;
+	public Field ChatComponentText_text;
 	public Method ChatSerializer_DESERIALIZE;
+	public Method EnumClickAction_a;
+	public Method EnumHoverAction_a;
+	public Method ChatHexColor_a;
+	public Method ChatComponentText_addSibling;
 
 	//PacketPlayOutBoss
 	public Class<?> PacketPlayOutBoss;
@@ -244,6 +275,11 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	public void initializeClasses() throws Exception {
+		ChatModifier = getNMSClass("ChatModifier");
+		ChatBaseComponent = getNMSClass("ChatBaseComponent");
+		ChatComponentText = getNMSClass("ChatComponentText");
+		ChatClickable = getNMSClass("ChatClickable");
+		ChatHoverable = getNMSClass("ChatHoverable");
 		DataWatcher = getNMSClass("DataWatcher");
 		//1.9+; v1_8_R2 & v1_8_R3; 1.7 - v1_8_R1
 		DataWatcherItem = getNMSClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
@@ -261,8 +297,10 @@ public class NMSStorage {
 		PacketPlayOutScoreboardTeam = getNMSClass("PacketPlayOutScoreboardTeam");
 		PacketPlayOutSpawnEntityLiving = getNMSClass("PacketPlayOutSpawnEntityLiving");
 		
-		//v1_8_R2+; //1.7 - 1.8.0
+		//v1_8_R2+; //v1.8.R1-
 		ChatSerializer = getNMSClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
+		EnumClickAction = getNMSClass("ChatClickable$EnumClickAction", "EnumClickAction");
+		EnumHoverAction = getNMSClass("ChatHoverable$EnumHoverAction", "EnumHoverAction");
 		if (minorVersion >= 8) {
 			GameProfile = Class.forName("com.mojang.authlib.GameProfile");
 			PropertyMap = Class.forName("com.mojang.authlib.properties.PropertyMap");
@@ -293,6 +331,9 @@ public class NMSStorage {
 		if (minorVersion >= 12) {
 			ChatMessageType = (Class<Enum>) getNMSClass("ChatMessageType");
 		}
+		if (minorVersion >= 16) {
+			ChatHexColor = getNMSClass("ChatHexColor");
+		}
 	}
 
 	/**
@@ -300,6 +341,8 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	public void initializeConstructors() throws Exception {
+		newChatComponentText = ChatComponentText.getConstructor(String.class);
+		newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
 		newDataWatcher = DataWatcher.getConstructor(getNMSClass("Entity"));
 		newDataWatcherItem = DataWatcherItem.getConstructors()[0];
 		newPacketPlayOutChat = PacketPlayOutChat.getConstructor();
@@ -332,6 +375,13 @@ public class NMSStorage {
 			newPacketPlayOutScoreboardScore0 = PacketPlayOutScoreboardScore.getConstructor();
 			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore.getConstructor(String.class);
 		}
+		if (minorVersion >= 16) {
+			newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
+			newChatModifier = getConstructor(ChatModifier, 10);
+		} else {
+			newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, IChatBaseComponent);
+			newChatModifier = ChatModifier.getConstructor();
+		}
 	}
 
 	/**
@@ -339,6 +389,34 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	public void initializeFields() throws Exception {
+		ChatBaseComponent_modifier = getFields(ChatBaseComponent, ChatModifier).get(0);
+		ChatComponentText_text = getFields(ChatComponentText, String.class).get(0);
+		ChatClickable_action = getField(ChatClickable, "a");
+		ChatClickable_value = getField(ChatClickable, "b");
+		try {
+			//1.14.4+
+			ChatBaseComponent_extra = getField(ChatBaseComponent, "siblings");
+			ChatModifier_color = getField(ChatModifier, "color");
+			ChatModifier_bold = getField(ChatModifier, "bold");
+			ChatModifier_italic = getField(ChatModifier, "italic");
+			ChatModifier_underlined = getField(ChatModifier, "underlined");
+			ChatModifier_strikethrough = getField(ChatModifier, "strikethrough");
+			ChatModifier_obfuscated = getField(ChatModifier, "obfuscated");
+			ChatModifier_clickEvent = getField(ChatModifier, "clickEvent");
+			ChatModifier_hoverEvent = getField(ChatModifier, "hoverEvent");
+		} catch (NoSuchFieldException e) {
+			//1.14.3-
+			ChatBaseComponent_extra = getField(ChatBaseComponent, "a");
+			ChatModifier_color = getField(ChatModifier, "b");
+			ChatModifier_bold = getField(ChatModifier, "c");
+			ChatModifier_italic = getField(ChatModifier, "d");
+			ChatModifier_underlined = getField(ChatModifier, "e");
+			ChatModifier_strikethrough = getField(ChatModifier, "f");
+			ChatModifier_obfuscated = getField(ChatModifier, "g");
+			ChatModifier_clickEvent = getField(ChatModifier, "h");
+			ChatModifier_hoverEvent = getField(ChatModifier, "i");
+		}
+		
 		PING = getField(getNMSClass("EntityPlayer"), "ping");
 		PLAYER_CONNECTION = getField(getNMSClass("EntityPlayer"), "playerConnection");
 		NETWORK_MANAGER = getField(PLAYER_CONNECTION.getType(), "networkManager");
@@ -468,7 +546,12 @@ public class NMSStorage {
 
 		if (minorVersion >= 16) {
 			//1.16+
+			ChatHoverable_action = getField(ChatHoverable, "b");
+			ChatHoverable_value = getField(ChatHoverable, "c");
 			PacketPlayOutChat_SENDER = getField(PacketPlayOutChat, "c");
+		} else {
+			ChatHoverable_action = getField(ChatHoverable, "a");
+			ChatHoverable_value = getField(ChatHoverable, "b");
 		}
 	}
 
@@ -477,39 +560,40 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	public void initializeMethods() throws Exception {
+		ChatComponentText_addSibling = getMethod(ChatComponentText, new String[]{"addSibling", "a", "func_150257_a"}, IChatBaseComponent); //v1.7.R4+, v1.7.R3-
+		ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, new String[]{"a", "func_150699_a"}, String.class);
+		EnumClickAction_a = getMethod(EnumClickAction, new String[]{"a", "func_150672_a"}, String.class);
+		EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a"}, String.class);
+		getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
+		sendPacket = getMethod(getNMSClass("PlayerConnection"), new String[]{"sendPacket", "func_147359_a"}, getNMSClass("Packet"));
 		if (minorVersion >= 8) {
+			getProfile = getNMSClass("EntityHuman").getMethod("getProfile");
 			for (Method m : PropertyMap.getMethods()) {
 				if (m.getName().equals("putAll") && m.getParameterCount() == 1) PropertyMap_putAll = m;
 			}
 			if (PropertyMap_putAll == null) throw new IllegalStateException("putAll method not found");
 		}
-		try {
-			ChatSerializer_SERIALIZE = ChatSerializer.getMethod("a", IChatBaseComponent);
-			ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-			sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
-		} catch (Exception e) {
-			//modded server?
-			ChatSerializer_SERIALIZE = ChatSerializer.getMethod("func_150696_a", IChatBaseComponent);
-			ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("func_150699_a", String.class);
-			sendPacket = getNMSClass("PlayerConnection").getMethod("func_147359_a", getNMSClass("Packet"));
-		}
-		getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-
-		if (minorVersion >= 8) {
-			getProfile = getNMSClass("EntityHuman").getMethod("getProfile");
-		}
-		
 		if (minorVersion >= 9) {
 			//1.9+
 			DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
 		} else {
 			//1.7.x - 1.8.x
-			try {
-				DataWatcher_REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
-			} catch (Exception e) {
-				//modded server
-				DataWatcher_REGISTER = DataWatcher.getMethod("func_75682_a", int.class, Object.class);
-			}
+			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
+		}
+		if (minorVersion >= 16) {
+			ChatHexColor_a = ChatHexColor.getMethod("a", String.class);
+		}
+	}
+	
+	/**
+	 * A helper method that prints all methods of class into console, including their return type, name and parameters
+	 * Useful for modded servers which code I can not access
+	 * @param clazz - class to show methods of
+	 */
+	public void showMethods(Class<?> clazz) {
+		System.out.println("--- " + clazz.getSimpleName() + " ---");
+		for (Method m : clazz.getMethods()) {
+			System.out.println(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")");
 		}
 	}
 
@@ -517,7 +601,7 @@ public class NMSStorage {
 	 * Returns class with given potential names in same order
 	 * @param names - possible class names
 	 * @return class for specified name(s)
-	 * @throws ClassNotFoundException - if class does not exist
+	 * @throws ClassNotFoundException if class does not exist
 	 */
 	public Class<?> getNMSClass(String... names) throws ClassNotFoundException {
 		for (String name : names) {
@@ -533,7 +617,7 @@ public class NMSStorage {
 	 * Returns class from given name
 	 * @param name - class name
 	 * @return class from given name
-	 * @throws ClassNotFoundException - if class was not found
+	 * @throws ClassNotFoundException if class was not found
 	 */
 	public Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		try {
@@ -545,6 +629,24 @@ public class NMSStorage {
 			//nested class in modded server
 			throw new ClassNotFoundException(name);
 		}
+	}
+	
+	/**
+	 * Returns method with specified possible names and parameters. Throws exception if no such method was found
+	 * @param clazz - class to get method from
+	 * @param names - possible method names
+	 * @param parameterTypes - parameter types of the method
+	 * @return method with specified name and parameters
+	 * @throws NoSuchMethodException if no such method exists
+	 */
+	public Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
+		for (String name : names) {
+			try {
+				return clazz.getMethod(name, parameterTypes);
+			} catch (Exception e) {
+			}
+		}
+		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " in class " + clazz.getName());
 	}
 
 	/**
@@ -568,7 +670,7 @@ public class NMSStorage {
 	 * @param clazz - class to get field from
 	 * @param name - field name
 	 * @return accessible field with defined name
-	 * @throws NoSuchFieldException - if field was not found
+	 * @throws NoSuchFieldException if field was not found
 	 */
 	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
 		for (Field f : clazz.getDeclaredFields()) {
@@ -581,5 +683,15 @@ public class NMSStorage {
 			return getField(clazz, thermosFieldMappings.get(name));
 		}
 		throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
+	}
+	
+	private Constructor<?> getConstructor(Class<?> clazz, int parameterCount) throws NoSuchMethodException {
+		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
+			if (c.getParameterCount() == parameterCount) {
+				c.setAccessible(true);
+				return c;
+			}
+		}
+		throw new NoSuchMethodException("No constructor found in class " + clazz.getName() + " with " + parameterCount + " parameters");
 	}
 }
