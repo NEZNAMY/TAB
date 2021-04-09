@@ -29,12 +29,15 @@ public class BukkitTabPlayer extends ITabPlayer {
 	
 	//nms player connection
 	private Object playerConnection;
+	
+	private boolean viaversion;
 
 	/**
 	 * Constructs new instance with given parameter
 	 * @param p - bukkit player
 	 */
 	public BukkitTabPlayer(Player p){
+		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		player = p;
 		world = p.getWorld().getName();
 		try {
@@ -65,7 +68,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			//some PS versions return -1 on unsupported server versions instead of throwing exception
 			if (version != -1 && version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
 		}
-		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+		if (viaversion) {
 			return getProtocolVersionVia();
 		}
 		return ProtocolVersion.SERVER_VERSION.getNetworkId();
@@ -120,7 +123,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket == null || !player.isOnline()) return;
 		try {
-			if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && nmsPacket instanceof ByteBuf) {
+			if (viaversion && nmsPacket instanceof ByteBuf) {
 				try {
 					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 				} catch (IllegalArgumentException e) {
