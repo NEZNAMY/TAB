@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 public abstract class StaticLine extends ScoreboardLine {
 
@@ -23,7 +23,7 @@ public abstract class StaticLine extends ScoreboardLine {
 	public StaticLine(Scoreboard parent, int lineNumber, String text, String forcedNameStart) {
 		super(parent, lineNumber);
 		this.text = TAB.getInstance().getPlaceholderManager().color(text);
-		String legacy = IChatBaseComponent.fromColoredText(text).toLegacyText(); //colorizing + translating RGB codes into legacy
+		String legacy = RGBUtils.getInstance().convertRGBtoLegacy(text);
 		//1.8+
 		String[] v1_8 = splitText(forcedNameStart, legacy, 40);
 		prefix = v1_8[0];

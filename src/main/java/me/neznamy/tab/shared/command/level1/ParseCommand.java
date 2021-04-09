@@ -24,7 +24,7 @@ public class ParseCommand extends SubCommand{
 			String message = ("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace('&', '\u00a7').replace("%placeholder%", replaced);
 			sendRawMessage(sender, message);
 			replaced = TAB.getInstance().getPlatform().replaceAllPlaceholders(replaced, sender);
-			IChatBaseComponent colored = IChatBaseComponent.fromColoredText("With colors: " + replaced);
+			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendMessage(colored);
 			} else {

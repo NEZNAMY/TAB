@@ -317,7 +317,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onHoverShowText(String text) {
-		return onHoverShowText(IChatBaseComponent.fromColoredText(text));
+		return onHoverShowText(IChatBaseComponent.optimizedComponent(text));
 	}
 
 	/**

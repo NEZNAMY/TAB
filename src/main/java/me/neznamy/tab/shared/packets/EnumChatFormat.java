@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * A class representing the n.m.s.EnumChatFormat class to make work with it much easier
@@ -30,6 +31,7 @@ public enum EnumChatFormat {
 	ITALIC(20, 'o'),
 	RESET(21, 'r');
 
+	private static EnumChatFormat[] values = values();
 	//network id of the color
 	private int networkId;
 	
@@ -106,7 +108,7 @@ public enum EnumChatFormat {
 	 * @return instance from the character
 	 */
 	public static EnumChatFormat getByChar(char c) {
-		for (EnumChatFormat format : values()) {
+		for (EnumChatFormat format : values) {
 			if (format.character == c) return format;
 		}
 		return null;
@@ -119,11 +121,11 @@ public enum EnumChatFormat {
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
-		String legacyText = IChatBaseComponent.fromColoredText(string).toLegacyText(); //translating RGB into legacy for nametags
+		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string); //translating RGB into legacy for nametags
 		String last = TAB.getInstance().getPlaceholderManager().getLastColors(legacyText);
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
-			for (EnumChatFormat e : values()) {
+			for (EnumChatFormat e : values) {
 				if (e.character == c) return e;
 			}
 		}
@@ -154,7 +156,7 @@ public enum EnumChatFormat {
 	 * @return enum value or null if no such combination exists
 	 */
 	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
-		for (EnumChatFormat format : values()) {
+		for (EnumChatFormat format : values) {
 			if (format.red == red && format.green == green && format.blue == blue) return format;
 		}
 		return null;

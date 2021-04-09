@@ -74,7 +74,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (message == null || message.length() == 0) return;
 		IChatBaseComponent component;
 		if (translateColors) {
-			component = IChatBaseComponent.fromColoredText(message);
+			component = IChatBaseComponent.optimizedComponent(TAB.getInstance().getPlaceholderManager().color(message));
 		} else {
 			component = new IChatBaseComponent(message);
 		}

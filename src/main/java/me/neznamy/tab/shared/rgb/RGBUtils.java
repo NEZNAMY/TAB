@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.rgb;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.rgb.format.CMIFormat;
 import me.neznamy.tab.shared.rgb.format.HtmlFormat;
@@ -78,5 +80,13 @@ public class RGBUtils {
 	 */
 	public void registerGradient(GradientPattern pattern) {
 		gradients.add(pattern);
+	}
+	
+	public String convertRGBtoLegacy(String text) {
+		if (text == null) return null;
+		if (text.contains("#")) {
+			return IChatBaseComponent.fromColoredText(text).toLegacyText();
+		}
+		return TAB.getInstance().getPlaceholderManager().color(text);
 	}
 }

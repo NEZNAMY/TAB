@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
  */
 public class TextColor {
 
+	private static EnumChatFormat[] legacyColors = EnumChatFormat.values();
 	//red value
 	private int red;
 	
@@ -94,16 +95,21 @@ public class TextColor {
 	 * Loads closest legacy color based on current rgb values
 	 */
 	private void loadClosestColor() {
-		double minDist = 9999;
-		double dist;
+		double minMaxDist = 9999;
+		double maxDist;
 		legacyColor = EnumChatFormat.WHITE;
-		for (EnumChatFormat color : EnumChatFormat.values()) {
-			int rDiff = (int) Math.pow(color.getRed() - red, 2);
-			int gDiff = (int) Math.pow(color.getGreen() - green, 2);
-			int bDiff = (int) Math.pow(color.getBlue() - blue, 2);
-			dist = Math.sqrt(rDiff + gDiff + bDiff);
-			if (dist < minDist) {
-				minDist = dist;
+		for (EnumChatFormat color : legacyColors) {
+			int rDiff = color.getRed() - red;
+			int gDiff = color.getGreen() - green;
+			int bDiff =color.getBlue() - blue;
+			if (rDiff < 0) rDiff = -rDiff;
+			if (gDiff < 0) gDiff = -gDiff;
+			if (bDiff < 0) bDiff = -bDiff;
+			maxDist = rDiff;
+			if (gDiff > maxDist) maxDist = gDiff;
+			if (bDiff > maxDist) maxDist = bDiff;
+			if (maxDist < minMaxDist) {
+				minMaxDist = maxDist;
 				legacyColor = color;
 			}
 		}

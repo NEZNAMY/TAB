@@ -9,8 +9,8 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * Line of text with placeholder support
@@ -76,7 +76,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (!scoreproperty.update() && !force) return null;
 		String replaced = scoreproperty.get();
 		if (p.getVersion().getMinorVersion() < 16) {
-			replaced = IChatBaseComponent.fromColoredText(replaced).toLegacyText(); //converting RGB to legacy here to avoid splitting in the middle of RGB code
+			replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
 		}
 		String[] split = split(p, replaced);
 		String prefix = split[0];
@@ -122,7 +122,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 				prefix = prefix.substring(0, charLimit-1);
 				suffix = '\u00a7' + suffix;
 			}
-			String last = TAB.getInstance().getPlaceholderManager().getLastColors(IChatBaseComponent.fromColoredText(prefix).toLegacyText());
+			String last = TAB.getInstance().getPlaceholderManager().getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefix));
 			suffix = last + suffix;
 		} else {
 			prefix = text;

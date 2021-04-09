@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * An interface represending a platform-specific packet builder
@@ -96,7 +97,7 @@ public interface PacketBuilder {
 	 */
 	public default String cutTo(String string, int length) {
 		if (string == null) return "";
-		String legacyText = IChatBaseComponent.fromColoredText(string).toLegacyText();
+		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
 		if (legacyText.length() <= length) return legacyText;
 		if (legacyText.charAt(length-1) == '\u00a7') {
 			return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
