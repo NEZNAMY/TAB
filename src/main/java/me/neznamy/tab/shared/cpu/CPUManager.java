@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 
 import me.neznamy.tab.shared.ErrorManager;
 
@@ -24,19 +25,19 @@ public class CPUManager {
 	private final int bufferSizeMillis = 10000;
 
 	//nanoseconds worked in the current 10 seconds
-	private Map<Object, Map<UsageType, Long>> featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
-	private Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
-	private Map<String, Long> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
-	private Map<String, Long> methodUsageCurrent = new ConcurrentHashMap<String, Long>();
+	private Map<Object, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, AtomicLong>>();
+	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
+	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
+	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
 	
 	//packets sent in the current 10 seconds
 	private Map<Object, Integer> packetsCurrent = new ConcurrentHashMap<Object, Integer>();
 
 	//nanoseconds worked in the previous 10 seconds
-	private Map<Object, Map<UsageType, Long>> featureUsagePrevious = new HashMap<Object, Map<UsageType, Long>>();
-	private Map<String, Long> placeholderUsagePrevious = new HashMap<String, Long>();
-	private Map<String, Long> bridgePlaceholderUsagePrevious = new HashMap<String, Long>();
-	private Map<String, Long> methodUsagePrevious = new HashMap<String, Long>();
+	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<Object, Map<UsageType, AtomicLong>>();
+	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<String, AtomicLong>();
+	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<String, AtomicLong>();
+	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<String, AtomicLong>();
 	
 	//packets sent in the previous 10 seconds
 	private Map<Object, Integer> packetsPrevious = new ConcurrentHashMap<Object, Integer>();
@@ -67,10 +68,10 @@ public class CPUManager {
 						methodUsagePrevious = methodUsageCurrent;
 						packetsPrevious = packetsCurrent;
 
-						featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, Long>>();
-						placeholderUsageCurrent = new ConcurrentHashMap<String, Long>();
-						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, Long>();
-						methodUsageCurrent = new ConcurrentHashMap<String, Long>();
+						featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, AtomicLong>>();
+						placeholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
+						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
+						methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
 						packetsCurrent = new ConcurrentHashMap<Object, Integer>();
 					}
 				} catch (InterruptedException pluginDisabled) {
@@ -236,13 +237,13 @@ public class CPUManager {
 	 * @param map - map to converted
 	 * @return converted and sorted map
 	 */
-	private Map<String, Float> getUsage(Map<String, Long> map){
+	private Map<String, Float> getUsage(Map<String, AtomicLong> map){
 		Map<String, Long> nanoMap = new HashMap<String, Long>();
 		String key;
-		for (Entry<String, Long> nanos : map.entrySet()) {
+		for (Entry<String, AtomicLong> nanos : map.entrySet()) {
 			key = nanos.getKey();
 			if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
-			nanoMap.put(key, nanoMap.get(key)+nanos.getValue());
+			nanoMap.put(key, nanoMap.get(key)+nanos.getValue().get());
 		}
 		Map<String, Float> percentMap = new HashMap<String, Float>();
 		for (Entry<String, Long> entry : nanoMap.entrySet()) {
@@ -257,17 +258,17 @@ public class CPUManager {
 	 */
 	public Map<Object, Map<UsageType, Float>> getFeatureUsage(){
 		Map<Object, Map<UsageType, Long>> total = new HashMap<Object, Map<UsageType, Long>>();
-		for (Entry<Object, Map<UsageType, Long>> nanos : featureUsagePrevious.entrySet()) {
+		for (Entry<Object, Map<UsageType, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
 			Object key = nanos.getKey();
 			if (!total.containsKey(key)) {
 				total.put(key, new HashMap<UsageType, Long>());
 			}
 			Map<UsageType, Long> usage = total.get(key);
-			for (Entry<UsageType, Long> entry : nanos.getValue().entrySet()) {
+			for (Entry<UsageType, AtomicLong> entry : nanos.getValue().entrySet()) {
 				if (!usage.containsKey(entry.getKey())) {
 					usage.put(entry.getKey(), 0L);
 				}
-				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue());
+				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
 			}
 		}
 		Map<Object, Map<UsageType, Float>> sorted = new LinkedHashMap<Object, Map<UsageType, Float>>();
@@ -353,14 +354,14 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addTime(Object feature, UsageType type, long nanoseconds) {
-		Map<UsageType, Long> usage = featureUsageCurrent.get(feature);
+		Map<UsageType, AtomicLong> usage = featureUsageCurrent.get(feature);
 		if (usage == null) {
-			usage = new ConcurrentHashMap<UsageType, Long>();
+			usage = new ConcurrentHashMap<UsageType, AtomicLong>();
 			featureUsageCurrent.put(feature, usage);
 		}
 		try {
 			if (!usage.containsKey(type)) {
-				usage.put(type, 0L);
+				usage.put(type, new AtomicLong());
 			}
 		} catch (NullPointerException e) {
 			//java.lang.NullPointerException: null
@@ -368,11 +369,11 @@ public class CPUManager {
 			//at java.base/java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
 			return;
 		}
-		Long current = usage.get(type);
+		AtomicLong current = usage.get(type);
 		if (current == null) {
-			usage.put(type, nanoseconds);
+			usage.put(type, new AtomicLong(nanoseconds));
 		} else {
-			usage.put(type, current + nanoseconds);
+			current.addAndGet(nanoseconds);
 		}
 	}
 
@@ -382,12 +383,7 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addPlaceholderTime(String placeholder, long nanoseconds) {
-		Long current = placeholderUsageCurrent.get(placeholder);
-		if (current == null) {
-			placeholderUsageCurrent.put(placeholder, nanoseconds);
-		} else {
-			placeholderUsageCurrent.put(placeholder, current + nanoseconds);
-		}
+		addTime(placeholderUsageCurrent, placeholder, nanoseconds);
 	}
 
 	/**
@@ -396,12 +392,7 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addBridgePlaceholderTime(String placeholder, long nanoseconds) {
-		Long current = bridgePlaceholderUsageCurrent.get(placeholder);
-		if (current == null) {
-			bridgePlaceholderUsageCurrent.put(placeholder, nanoseconds);
-		} else {
-			bridgePlaceholderUsageCurrent.put(placeholder, current + nanoseconds);
-		}
+		addTime(bridgePlaceholderUsageCurrent, placeholder, nanoseconds);
 	}
 	
 	/**
@@ -410,11 +401,21 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addMethodTime(String method, long nanoseconds) {
-		Long current = methodUsageCurrent.get(method);
+		addTime(methodUsageCurrent, method, nanoseconds);
+	}
+	
+	/**
+	 * Adds used time to specified key into specified map
+	 * @param map - map to add usage to
+	 * @param key - usage key
+	 * @param time - nanoseconds the task took
+	 */
+	private void addTime(Map<String, AtomicLong> map, String key, long time) {
+		AtomicLong current = map.get(key);
 		if (current == null) {
-			methodUsageCurrent.put(method, nanoseconds);
+			map.put(key, new AtomicLong(time));
 		} else {
-			methodUsageCurrent.put(method, current + nanoseconds);
+			current.addAndGet(time);
 		}
 	}
 	
