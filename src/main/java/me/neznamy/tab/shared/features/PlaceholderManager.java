@@ -44,11 +44,14 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	
 	//all placeholders used in all configuration files + API, including invalid ones
 	public Set<String> allUsedPlaceholderIdentifiers = new HashSet<String>();
-
+	
 	//plugin internals + PAPI + API
 	public Map<String, Placeholder> registeredPlaceholders = new HashMap<String, Placeholder>();
 
 	private List<PlaceholderRegistry> registry = new ArrayList<>();
+	
+	//map of String-Set of features using placeholder
+	private Map<String, Set<Refreshable>> placeholderUsage;
 
 	public PlaceholderManager(TAB tab){
 		this.tab = tab;
@@ -63,6 +66,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			@Override
 			public void run() {
 				int loopTime = atomic.addAndGet(50);
+				if (placeholderUsage == null) return; //plugin still starting up
 				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
 				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 				boolean somethingChanged = false;
@@ -87,12 +91,12 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<Refreshable>());
-					forceUpdate.get(p2).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+					forceUpdate.get(p2).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 				if (placeholder.update(p2, p1)) {
 					if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<Refreshable>());
-					forceUpdate.get(p1).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+					forceUpdate.get(p1).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 			}
@@ -108,7 +112,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
 				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
-				update.get(all).addAll(getPlaceholderUsage(placeholder.getIdentifier()));
+				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
 		}
@@ -120,7 +124,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		if (placeholder.update()) {
-			Set<Refreshable> usage = getPlaceholderUsage(placeholder.getIdentifier());
+			Set<Refreshable> usage = placeholderUsage.get(placeholder.getIdentifier());
 			somethingChanged = true;
 			for (TabPlayer all : tab.getPlayers()) {
 				if (!all.isLoaded()) continue;
@@ -178,18 +182,21 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		tab.getCPUManager().addTime(getFeatureType(), UsageType.REPEATING_TASK, startRefreshTime-System.nanoTime());
 	}
 
-	public Set<Refreshable> getPlaceholderUsage(String identifier){
-		if (tab.isDisabled()) return new HashSet<>(); //avoiding concurrent modification on /tab reload
-		Set<Refreshable> set = new HashSet<Refreshable>();
-		for (Feature r : new ArrayList<>(tab.getFeatureManager().getAllFeatures())) {
-			if (!(r instanceof Refreshable)) continue;
-			if (((Refreshable)r).getUsedPlaceholders().contains(identifier)) set.add((Refreshable) r);
+	public void refreshPlaceholderUsage() {
+		placeholderUsage = new HashMap<>();
+		for (String placeholder : allUsedPlaceholderIdentifiers) {
+			Set<Refreshable> set = new HashSet<Refreshable>();
+			for (Feature r : tab.getFeatureManager().getAllFeatures()) {
+				if (!(r instanceof Refreshable)) continue;
+				if (((Refreshable)r).getUsedPlaceholders().contains(placeholder)) set.add((Refreshable) r);
+			}
+			placeholderUsage.put(placeholder, set);
 		}
-		return set;
 	}
 
 	@Override
 	public void load() {
+		refreshPlaceholderUsage();
 		for (TabPlayer p : tab.getPlayers()) {
 			onJoin(p);
 		}
@@ -331,6 +338,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			}
 		}
 		tab.getFeatureManager().refreshUsedPlaceholders();
+		refreshPlaceholderUsage();
 	}
 	
 	//code taken from bukkit, so it can work on bungee too
