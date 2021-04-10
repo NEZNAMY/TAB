@@ -106,18 +106,18 @@ public class Sorting {
 	 * @return unique up to 16 character long sequence that sorts the player
 	 */
 	public String getTeamName(TabPlayer p) {
-		String teamName = "";
+		StringBuilder sb = new StringBuilder();
 		for (SortingType type : sorting) {
-			teamName += type.getChars(p);
+			sb.append(type.getChars(p));
 		}
-		if (teamName.length() > 12) {
-			teamName = teamName.substring(0, 12);
+		if (sb.length() > 12) {
+			sb.setLength(12);
 		}
-		teamName += p.getName();
-		if (teamName.length() > 15) {
-			teamName = teamName.substring(0, 15);
+		sb.append(p.getName());
+		if (sb.length() > 15) {
+			sb.setLength(15);
 		}
-		return checkTeamName(p, teamName, 65);
+		return checkTeamName(p, sb.toString(), 65);
 	}
 	
 	/**
