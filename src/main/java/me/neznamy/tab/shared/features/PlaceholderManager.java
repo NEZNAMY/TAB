@@ -124,12 +124,11 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		if (placeholder.update()) {
-			Set<Refreshable> usage = placeholderUsage.get(placeholder.getIdentifier());
 			somethingChanged = true;
 			for (TabPlayer all : tab.getPlayers()) {
 				if (!all.isLoaded()) continue;
 				if (!update.containsKey(all)) update.put(all, new HashSet<Refreshable>());
-				update.get(all).addAll(usage);
+				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}
 		tab.getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
