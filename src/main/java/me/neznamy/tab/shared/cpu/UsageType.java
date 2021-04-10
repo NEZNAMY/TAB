@@ -28,7 +28,6 @@ public enum UsageType {
 	PACKET_LOGIN("PacketLogin"),
 	PACKET_DISPLAY_OBJECTIVE("PacketPlayOutScoreboardDisplayObjective"),
 	PACKET_OBJECTIVE("PacketPlayOutScoreboardObjective"),
-	PACKET_HEADER_FOOTER("PacketPlayOutPlayerListHeaderFooter"),
 	
 	//nametags
 	REFRESHING_COLLISION("Refreshing collision rule"),

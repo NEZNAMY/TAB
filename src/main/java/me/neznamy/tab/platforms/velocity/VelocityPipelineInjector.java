@@ -98,10 +98,6 @@ public class VelocityPipelineInjector extends PipelineInjector {
 				case "ScoreboardObjective":
 					if (antiOverrideObjectives) tab.getFeatureManager().onObjective(player, packet);
 					break;
-				case "HeaderAndFooter":
-					//TODO add deserialization
-					if (antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) return;
-					break;
 				default:
 					break;
 				}

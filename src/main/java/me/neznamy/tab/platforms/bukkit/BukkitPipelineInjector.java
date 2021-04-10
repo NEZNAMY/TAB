@@ -129,9 +129,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				if (antiOverrideObjectives && nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
 					tab.getFeatureManager().onObjective(player, packet);
 				}
-				if (nms.PacketPlayOutPlayerListHeaderFooter.isInstance(packet) && antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
-					return;
-				}
 				tab.getFeatureManager().onPacketSend(player, packet);
 			} catch (Throwable e){
 				tab.getErrorManager().printError("An error occurred when reading packets", e);

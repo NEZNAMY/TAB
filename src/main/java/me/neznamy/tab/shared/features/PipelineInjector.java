@@ -30,7 +30,6 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	//anti-override rules
 	protected boolean antiOverrideTeams;
 	protected boolean antiOverrideObjectives;
-	protected boolean antiOverrideHeaderFooter;
 	
 	/**
 	 * Constructs new instance
@@ -40,7 +39,6 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 		this.tab = tab;
 		antiOverrideTeams = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-teams", true);
 		antiOverrideObjectives = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-objectives", true);
-		antiOverrideHeaderFooter = tab.getConfiguration().config.getBoolean("anti-override.header-footer", true);
 	}
 	
 	/**

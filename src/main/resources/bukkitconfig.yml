@@ -243,7 +243,6 @@ anti-override:
   scoreboard-teams: true
   scoreboard-objectives: true
   tablist-names: true
-  header-footer: false
   usernames: true
   
 #permanently invisible nametags

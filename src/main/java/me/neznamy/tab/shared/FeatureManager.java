@@ -23,13 +23,11 @@ import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
 import me.neznamy.tab.shared.features.types.event.SneakEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
-import me.neznamy.tab.shared.features.types.packet.HeaderFooterPacketListener;
 import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
 import me.neznamy.tab.shared.features.types.packet.ObjectivePacketListener;
 import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
@@ -362,27 +360,6 @@ public class FeatureManager {
 			((ObjectivePacketListener)f).onPacketSend(packetReceiver, display);
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
-	}
-	
-	/**
-	 * Calls onPacketSend on all featurs that implement HeaderFooterPacketListener and measures how long it took them to process
-	 * @param packetReceiver - player who received the packet
-	 * @param packet - the packet
-	 * @return true if packet should be cancelled, false if not
-	 * @throws Exception - if something fails
-	 */
-	public boolean onHeaderFooter(TabPlayer packetReceiver, Object packet) throws Exception {
-		long time = System.nanoTime();
-		PacketPlayOutPlayerListHeaderFooter display = tab.getPacketBuilder().readHeaderFooter(packet, packetReceiver.getVersion());
-		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_HEADER_FOOTER, System.nanoTime()-time);
-		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof HeaderFooterPacketListener)) continue;
-			time = System.nanoTime();
-			boolean cancel = ((HeaderFooterPacketListener)f).onPacketSend(packetReceiver, display);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-			if (cancel) return true;
-		}
-		return false;
 	}
 	
 	/**

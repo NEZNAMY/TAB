@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.Login;
-import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
@@ -131,10 +130,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 				if (packet instanceof ScoreboardObjective && antiOverrideObjectives) {
 					//TODO add support for serialized packets as above with teams
 					tab.getFeatureManager().onObjective(player, packet);
-				}
-				if (packet instanceof PlayerListHeaderFooter && antiOverrideHeaderFooter && tab.getFeatureManager().onHeaderFooter(player, packet)) {
-					//TODO add support for serialized packets as above with teams
-					return;
 				}
 				//client reset packet
 				if (packet instanceof Login) {
