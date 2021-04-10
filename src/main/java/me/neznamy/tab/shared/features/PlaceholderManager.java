@@ -67,12 +67,16 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			public void run() {
 				int loopTime = atomic.addAndGet(50);
 				if (placeholderUsage == null) return; //plugin still starting up
-				Map<TabPlayer, Set<Refreshable>> update = new HashMap<TabPlayer, Set<Refreshable>>();
-				Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
+				Map<TabPlayer, Set<Refreshable>> update = null; //not initializing if not needed
+				Map<TabPlayer, Set<Refreshable>> forceUpdate = null;
 				boolean somethingChanged = false;
 				for (String identifier : allUsedPlaceholderIdentifiers) {
 					Placeholder placeholder = getPlaceholder(identifier);
 					if (placeholder == null || loopTime % placeholder.getRefresh() != 0) continue;
+					if (update == null) {
+						update = new HashMap<TabPlayer, Set<Refreshable>>();
+						forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
+					}
 					if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
 					if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
 					if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
