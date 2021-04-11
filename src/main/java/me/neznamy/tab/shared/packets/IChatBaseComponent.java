@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public class IChatBaseComponent {
 	private Object hoverValue;
 
 	//extra components
-	private List<IChatBaseComponent> extra = new ArrayList<IChatBaseComponent>();
+	private List<IChatBaseComponent> extra;
 
 	/**
 	 * Constructs a new empty component
@@ -80,6 +81,7 @@ public class IChatBaseComponent {
 	 * @return list of extras
 	 */
 	public List<IChatBaseComponent> getExtra(){
+		if (extra == null) return Collections.EMPTY_LIST;
 		return extra;
 	}
 
@@ -99,6 +101,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent addExtra(IChatBaseComponent child) {
+		if (extra == null) extra = new ArrayList<IChatBaseComponent>();
 		extra.add(child);
 		return this;
 	}
