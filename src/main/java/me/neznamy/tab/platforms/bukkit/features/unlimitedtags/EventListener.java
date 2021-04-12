@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -114,29 +115,31 @@ public class EventListener implements Listener {
 	 * @param newLocation - location player moved/teleported to
 	 */
 	private void checkForTrackingRange(TabPlayer player) {
+		Set<TabPlayer> nearbyPlayer = player.getArmorStandManager().getNearbyPlayers();
 		for (TabPlayer other : TAB.getInstance().getPlayers()) {
+			Set<TabPlayer> nearbyOther = other.getArmorStandManager().getNearbyPlayers();
 			if (other == player || !other.getWorldName().equals(player.getWorldName()) || !other.isLoaded() || 
 					((Player)player.getPlayer()).isDead() || ((Player)other.getPlayer()).isDead()) continue;
 			if (inRange(((Player)other.getPlayer()).getLocation(), ((Player)player.getPlayer()).getLocation())) {
 				//in range
-				if (!player.getArmorStandManager().getNearbyPlayers().contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
+				if (!nearbyPlayer.contains(other) && ((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().spawn(other);
 				}
-				if (!other.getArmorStandManager().getNearbyPlayers().contains(player) && ((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
+				if (!nearbyOther.contains(player) && ((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
 					other.getArmorStandManager().spawn(player);
 				}
-				if (player.getArmorStandManager().getNearbyPlayers().contains(other) && !((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
+				if (nearbyPlayer.contains(other) && !((Player)other.getPlayer()).canSee((Player)player.getPlayer())) {
 					player.getArmorStandManager().destroy(other);
 				}
-				if (other.getArmorStandManager().getNearbyPlayers().contains(player) && !((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
+				if (nearbyOther.contains(player) && !((Player)player.getPlayer()).canSee((Player)other.getPlayer())) {
 					other.getArmorStandManager().destroy(player);
 				}
 			} else {
 				//out of range
-				if (player.getArmorStandManager().getNearbyPlayers().contains(other)) {
+				if (nearbyPlayer.contains(other)) {
 					player.getArmorStandManager().destroy(other);
 				}
-				if (other.getArmorStandManager().getNearbyPlayers().contains(player)) {
+				if (nearbyOther.contains(player)) {
 					other.getArmorStandManager().destroy(player);
 				}
 			}
