@@ -117,7 +117,7 @@ public class Sorting {
 		if (sb.length() > 15) {
 			sb.setLength(15);
 		}
-		return checkTeamName(p, sb.toString(), 65);
+		return checkTeamName(p, sb, 65);
 	}
 	
 	/**
@@ -127,8 +127,8 @@ public class Sorting {
 	 * @param id - current character to check as 16th character
 	 * @return first available full team name
 	 */
-	private String checkTeamName(TabPlayer p, String currentName, int id) {
-		String potentialTeamName = currentName;
+	private String checkTeamName(TabPlayer p, StringBuilder currentName, int id) {
+		String potentialTeamName = currentName.toString();
 		if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 		potentialTeamName += (char)id;
 		for (TabPlayer all : tab.getPlayers()) {
