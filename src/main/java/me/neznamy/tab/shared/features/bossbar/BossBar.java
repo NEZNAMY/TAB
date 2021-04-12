@@ -98,7 +98,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 
 			@Override
 			public String get() {
-				return "" + (announceEndTime - System.currentTimeMillis()) / 1000;
+				return String.valueOf((announceEndTime - System.currentTimeMillis()) / 1000);
 			}
 		});
 	}
