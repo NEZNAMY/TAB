@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.rgb.format.CMIFormat;
 import me.neznamy.tab.shared.rgb.format.HtmlFormat;
@@ -82,11 +82,46 @@ public class RGBUtils {
 		gradients.add(pattern);
 	}
 	
+	/**
+	 * Converts all hex codes in given string to legacy codes
+	 * @param text - text to translate
+	 * @return - translated text
+	 */
 	public String convertRGBtoLegacy(String text) {
 		if (text == null) return null;
-		if (text.contains("#")) {
-			return IChatBaseComponent.fromColoredText(text).toLegacyText();
+		if (!text.contains("#")) return TAB.getInstance().getPlaceholderManager().color(text);
+		String applied = applyFormats(text, false);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < applied.length(); i++){
+			char c = applied.charAt(i);
+			if (c == '#') {
+				try {
+					if (containsLegacyCode(text, i)) {
+						sb.append(new TextColor(applied.substring(i, i+7), EnumChatFormat.getByChar(applied.charAt(i+8))).getLegacyColor().getFormat());
+						i += 8;
+					} else {
+						sb.append(new TextColor(applied.substring(i, i+7)).getLegacyColor().getFormat());
+						i += 6;
+					}
+				} catch (Exception e) {
+					//not a valid RGB code
+					sb.append(c);
+				}
+			} else {
+				sb.append(c);
+			}
 		}
-		return TAB.getInstance().getPlaceholderManager().color(text);
+		return sb.toString();
+	}
+	
+	/**
+	 * Returns true if text contains legacy color request at defined RGB index start
+	 * @param text - text to check
+	 * @param i - current index start
+	 * @return true if legacy color is defined, false if not
+	 */
+	private static boolean containsLegacyCode(String text, int i) {
+		if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
+		return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
 	}
 }
