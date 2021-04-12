@@ -55,13 +55,13 @@ public class RGBUtils {
 	 * @param text - original text
 	 * @return text where everything is converted to #RRGGBB
 	 */
-	public String applyFormats(String text) {
+	public String applyFormats(String text, boolean ignorePlaceholders) {
 		String replaced = text;
 		for (RGBFormatter formatter : formats) {
 			replaced = formatter.reformat(replaced);
 		}
 		for (GradientPattern pattern : gradients) {
-			replaced = pattern.applyPattern(replaced);
+			replaced = pattern.applyPattern(replaced, ignorePlaceholders);
 		}
 		return replaced;
 	}

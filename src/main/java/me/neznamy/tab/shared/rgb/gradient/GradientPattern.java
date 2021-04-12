@@ -13,7 +13,7 @@ public abstract class GradientPattern {
 	 * @param text - text to be reformatted
 	 * @return reformatted text
 	 */
-	public abstract String applyPattern(String text);
+	public abstract String applyPattern(String text, boolean ignorePlaceholders);
 	
 	/**
 	 * Returns gradient text based on start color, text and end color
@@ -21,7 +21,7 @@ public abstract class GradientPattern {
 	 * @param text - text to be reformatted
 	 * @param end - end color
 	 * @return reformatted text
-	 */
+	 */	
 	protected String asGradient(TextColor start, String text, TextColor end) {
 		//lazy support for magic codes in gradients
 		String magicCodes = TAB.getInstance().getPlaceholderManager().getLastColors(text);

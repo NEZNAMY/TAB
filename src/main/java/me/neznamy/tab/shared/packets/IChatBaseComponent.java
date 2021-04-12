@@ -529,7 +529,7 @@ public class IChatBaseComponent {
 	public static IChatBaseComponent fromColoredText(String originalText){
 		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
 		if (TAB.getInstance().getConfiguration().rgbSupport) {
-			text = RGBUtils.getInstance().applyFormats(text);
+			text = RGBUtils.getInstance().applyFormats(text, false);
 		}
 		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
 		StringBuilder builder = new StringBuilder();

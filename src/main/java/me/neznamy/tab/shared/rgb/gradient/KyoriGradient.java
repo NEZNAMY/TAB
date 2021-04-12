@@ -18,12 +18,13 @@ public class KyoriGradient extends GradientPattern {
 	private final Pattern legacy = Pattern.compile("<gradient:#[0-9a-fA-F]{6}\\|.:#[0-9a-fA-F]{6}>[^<]*</gradient>");
 	
 	@Override
-	public String applyPattern(String text) {
+	public String applyPattern(String text, boolean ignorePlaceholders) {
 		if (!text.contains("<grad")) return text;
 		String replaced = text;
 		Matcher m = legacy.matcher(replaced);
 		while (m.find()) {
 			String format = m.group();
+			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(18));
 			if (legacyColor == null) continue;
 			TextColor start = new TextColor(format.substring(11, 17), legacyColor);
@@ -35,6 +36,7 @@ public class KyoriGradient extends GradientPattern {
 		m = pattern.matcher(replaced);
 		while (m.find()) {
 			String format = m.group();
+			if (ignorePlaceholders && format.contains("%")) continue;
 			TextColor start = new TextColor(format.substring(11, 17));
 			String message = format.substring(26, format.length()-11);
 			TextColor end = new TextColor(format.substring(19, 25));

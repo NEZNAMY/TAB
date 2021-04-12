@@ -6,6 +6,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * A string with placeholders
@@ -40,11 +41,11 @@ public class Property {
 	public Property(TabPlayer owner, String rawValue, String source) {
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = (rawValue == null ? "" : rawValue);
+		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
 		analyze(this.rawValue);
 		update();
 	}
-	
+
 	/**
 	 * Finds all placeholders used in the value
 	 * @param value - raw value to be checked
@@ -66,7 +67,7 @@ public class Property {
 	 * @param temporaryValue - temporary value to be assigned
 	 */
 	public void setTemporaryValue(String temporaryValue) {
-		this.temporaryValue = temporaryValue;
+		this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
 		if (temporaryValue != null) {
 			analyze(temporaryValue);
 		} else {
@@ -81,7 +82,7 @@ public class Property {
 	 */
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = newValue;
+		rawValue = RGBUtils.getInstance().applyFormats(newValue, true);
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();
