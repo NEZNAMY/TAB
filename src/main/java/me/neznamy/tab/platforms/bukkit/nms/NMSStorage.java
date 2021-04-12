@@ -62,6 +62,8 @@ public class NMSStorage {
 	public Field ChatBaseComponent_modifier;
 	public Field ChatClickable_action;
 	public Field ChatClickable_value;
+	public Field ChatHexColor_name;
+	public Field ChatHexColor_rgb;
 	public Field ChatHoverable_action;
 	public Field ChatHoverable_value;
 	public Field ChatModifier_color;
@@ -547,6 +549,8 @@ public class NMSStorage {
 
 		if (minorVersion >= 16) {
 			//1.16+
+			ChatHexColor_name = getField(ChatHexColor, "name");
+			ChatHexColor_rgb = getField(ChatHexColor, "rgb");
 			ChatHoverable_action = getField(ChatHoverable, "b");
 			ChatHoverable_value = getField(ChatHoverable, "c");
 			PacketPlayOutChat_SENDER = getField(PacketPlayOutChat, "c");

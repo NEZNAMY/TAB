@@ -67,6 +67,14 @@ public class TextColor {
 	}
 	
 	/**
+	 * Constructs new instance with given rgb mask
+	 * @param rgb - RGB mask
+	 */
+	public TextColor(int rgb) {
+		set((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, getClosestColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF), false, String.format("#%06X", rgb));
+	}
+	
+	/**
 	 * Sets all parameters to given values
 	 * @param red - color's red value
 	 * @param green - color's green value
@@ -151,11 +159,10 @@ public class TextColor {
 	
 	/**
 	 * Converts the color into a valid color value used in color field in chat component
-	 * @param rgbClient - if client accepts RGB or not
 	 * @return the color converted into string acceptable by client
 	 */
-	public String toString(boolean rgbClient) {
-		if (rgbClient && !returnLegacy) {
+	public String toString() {
+		if (!returnLegacy) {
 			EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
 			if (legacyEquivalent != null) {
 				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
@@ -191,7 +198,6 @@ public class TextColor {
 	public static TextColor fromString(String string) {
 		if (string == null) return null;
 		if (string.startsWith("#")) return new TextColor(string);
-		if (string.startsWith("\u00a7")) return new TextColor(EnumChatFormat.getByChar(string.toLowerCase().charAt(1)));
 		return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 	}
 }

@@ -478,7 +478,15 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
 		Object color = nms.ChatModifier_color.get(modifier);
-		if (color != null) chat.setColor(TextColor.fromString(color.toString()));
+		if (color != null) {
+			String name = (String) nms.ChatHexColor_name.get(color);
+			if (name != null) {
+				//legacy code
+				chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+			} else {
+				chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+			}
+		}
 		chat.setBold((Boolean) nms.ChatModifier_bold.get(modifier));
 		chat.setItalic((Boolean) nms.ChatModifier_italic.get(modifier));
 		chat.setObfuscated((Boolean) nms.ChatModifier_obfuscated.get(modifier));

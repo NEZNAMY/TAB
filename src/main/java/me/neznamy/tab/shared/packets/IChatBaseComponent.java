@@ -453,7 +453,7 @@ public class IChatBaseComponent {
 	public String toString() {
 		JSONObject json = new JSONObject();
 		if (text != null) json.put("text", text);
-		if (color != null) json.put("color", color.toString(true));
+		if (color != null) json.put("color", color);
 		if (bold != null) json.put("bold", bold);
 		if (italic != null) json.put("italic", italic);
 		if (underlined != null) json.put("underlined", underlined);
