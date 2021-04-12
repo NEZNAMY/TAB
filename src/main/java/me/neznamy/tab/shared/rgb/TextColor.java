@@ -35,8 +35,7 @@ public class TextColor {
 	 */
 	public TextColor(String hexCode) {
 		int hexColor = Integer.parseInt(hexCode.substring(1), 16);
-		EnumChatFormat legacyColor = getClosestColor((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF);
-		set((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF, legacyColor, false, hexCode);
+		set((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF, getClosestColor((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF), false, hexCode);
 	}
 	
 	/**
@@ -64,9 +63,7 @@ public class TextColor {
 	 * @param blue - blue value
 	 */
 	public TextColor(int red, int green, int blue) {
-		String hexCode = Integer.toHexString((red << 16) + (green << 8) + blue);
-		while (hexCode.length() < 6) hexCode = "0" + hexCode;
-		set(red, green, blue, getClosestColor(red, green, blue), false, "#" + hexCode);
+		set(red, green, blue, getClosestColor(red, green, blue), false, String.format("#%06X", (red << 16) + (green << 8) + blue));
 	}
 	
 	/**
