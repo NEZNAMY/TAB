@@ -519,8 +519,16 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		Object chat = nms.newChatComponentText.newInstance(component.getText());
 		Object modifier;
 		if (nms.minorVersion >= 16) {
+			Object color = null;
+			if (component.getColor() != null) {
+				if (clientVersion.getMinorVersion() >= 16) {
+					color = nms.ChatHexColor_ofInt.invoke(null, (component.getColor().getRed() << 16) + (component.getColor().getGreen() << 8) + component.getColor().getBlue());
+				} else {
+					color = nms.ChatHexColor_ofString.invoke(null, component.getColor().getLegacyColor().toString().toLowerCase());
+				}
+			}
 			modifier = nms.newChatModifier.newInstance(
-					component.getColor() == null ? null : nms.ChatHexColor_a.invoke(null, component.getColor().toString(clientVersion.getMinorVersion() >= 16)),
+					color,
 					component.isBold() ? true : null,
 					component.isItalic() ? true : null,
 					component.isUnderlined() ? true : null,

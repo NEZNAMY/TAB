@@ -76,7 +76,8 @@ public class NMSStorage {
 	public Method ChatSerializer_DESERIALIZE;
 	public Method EnumClickAction_a;
 	public Method EnumHoverAction_a;
-	public Method ChatHexColor_a;
+	public Method ChatHexColor_ofInt;
+	public Method ChatHexColor_ofString;
 	public Method ChatComponentText_addSibling;
 
 	//PacketPlayOutBoss
@@ -581,7 +582,8 @@ public class NMSStorage {
 			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
 		}
 		if (minorVersion >= 16) {
-			ChatHexColor_a = ChatHexColor.getMethod("a", String.class);
+			ChatHexColor_ofInt = ChatHexColor.getMethod("a", int.class);
+			ChatHexColor_ofString = ChatHexColor.getMethod("a", String.class);
 		}
 	}
 	
