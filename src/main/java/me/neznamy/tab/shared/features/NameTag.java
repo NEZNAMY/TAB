@@ -81,15 +81,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 						invisiblePlayers.remove(p.getName());
 						updateTeamData(p);
 					}
-				}
-				
-				//collision rule
-				if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
 					//cannot control collision rule on <1.9 servers in any way
-					for (TabPlayer p : tab.getPlayers()) {
-						if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
-						updateCollision(p);
-					}
+					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) updateCollision(p);
 				}
 			}
 		});
