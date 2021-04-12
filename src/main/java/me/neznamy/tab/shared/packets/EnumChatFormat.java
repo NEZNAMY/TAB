@@ -49,6 +49,9 @@ public enum EnumChatFormat {
 	
 	//hex code as string prefixed with #
 	private String hexCode;
+	
+	//\u00a7 followed by color's character
+	private String chatFormat;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -73,6 +76,7 @@ public enum EnumChatFormat {
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;
+		this.chatFormat = "\u00a7" + character;
 	}
 	
 	/**
@@ -142,7 +146,7 @@ public enum EnumChatFormat {
 	 * @return \u00a7 followed by color's character
 	 */
 	public String getFormat() {
-		return "\u00a7" + character;
+		return chatFormat;
 	}
 	
 	/**
