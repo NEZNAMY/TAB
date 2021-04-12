@@ -27,9 +27,9 @@ public class IridescentGradient extends GradientPattern {
 			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(10));
 			if (legacyColor == null) continue;
-			TextColor start = new TextColor(format.substring(3, 9), legacyColor);
+			TextColor start = new TextColor(format.substring(2, 9), legacyColor);
 			String message = format.substring(12, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-1));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
@@ -37,9 +37,9 @@ public class IridescentGradient extends GradientPattern {
 		while (m.find()) {
 			String format = m.group();
 			if (ignorePlaceholders && format.contains("%")) continue;
-			TextColor start = new TextColor(format.substring(3, 9));
+			TextColor start = new TextColor(format.substring(2, 9));
 			String message = format.substring(10, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-7, format.length()-1));
+			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-1));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}

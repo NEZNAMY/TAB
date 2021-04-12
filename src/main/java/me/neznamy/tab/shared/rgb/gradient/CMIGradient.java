@@ -27,9 +27,9 @@ public class CMIGradient extends GradientPattern {
 			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(9));
 			if (legacyColor == null) continue;
-			TextColor start = new TextColor(format.substring(2, 8), legacyColor);
+			TextColor start = new TextColor(format.substring(1, 8), legacyColor);
 			String message = format.substring(12, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
+			TextColor end = new TextColor(format.substring(format.length()-9, format.length()-2));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
@@ -37,9 +37,9 @@ public class CMIGradient extends GradientPattern {
 		while (m.find()) {
 			String format = m.group();
 			if (ignorePlaceholders && format.contains("%")) continue;
-			TextColor start = new TextColor(format.substring(2, 8));
+			TextColor start = new TextColor(format.substring(1, 8));
 			String message = format.substring(10, format.length()-10);
-			TextColor end = new TextColor(format.substring(format.length()-8, format.length()-2));
+			TextColor end = new TextColor(format.substring(format.length()-9, format.length()-2));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}

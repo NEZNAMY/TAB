@@ -27,9 +27,9 @@ public class KyoriGradient extends GradientPattern {
 			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(18));
 			if (legacyColor == null) continue;
-			TextColor start = new TextColor(format.substring(11, 17), legacyColor);
+			TextColor start = new TextColor(format.substring(10, 17), legacyColor);
 			String message = format.substring(28, format.length()-11);
-			TextColor end = new TextColor(format.substring(21, 27));
+			TextColor end = new TextColor(format.substring(20, 27));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
@@ -37,9 +37,9 @@ public class KyoriGradient extends GradientPattern {
 		while (m.find()) {
 			String format = m.group();
 			if (ignorePlaceholders && format.contains("%")) continue;
-			TextColor start = new TextColor(format.substring(11, 17));
+			TextColor start = new TextColor(format.substring(10, 17));
 			String message = format.substring(26, format.length()-11);
-			TextColor end = new TextColor(format.substring(19, 25));
+			TextColor end = new TextColor(format.substring(18, 25));
 			String applied = asGradient(start, message, end);
 			replaced = replaced.replace(format, applied);
 		}
