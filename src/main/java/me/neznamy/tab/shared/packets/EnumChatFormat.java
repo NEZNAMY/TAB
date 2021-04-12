@@ -8,22 +8,22 @@ import me.neznamy.tab.shared.rgb.RGBUtils;
  */
 public enum EnumChatFormat {
 
-	BLACK(0, '0', 0x000000),
-	DARK_BLUE(1, '1', 0x0000AA),
-	DARK_GREEN(2, '2', 0x00AA00),
-	DARK_AQUA(3, '3', 0x00AAAA),
-	DARK_RED(4, '4', 0xAA0000),
-	DARK_PURPLE(5, '5', 0xAA00AA),
-	GOLD(6, '6', 0xFFAA00),
-	GRAY(7, '7', 0xAAAAAA),
-	DARK_GRAY(8, '8', 0x555555),
-	BLUE(9, '9', 0x5555FF),
-	GREEN(10, 'a', 0x55FF55),
-	AQUA(11, 'b', 0x55FFFF),
-	RED(12, 'c', 0xFF5555),
-	LIGHT_PURPLE(13, 'd', 0xFF55FF),
-	YELLOW(14, 'e', 0xFFFF55),
-	WHITE(15, 'f', 0xFFFFFF),
+	BLACK(0, '0', "#000000"),
+	DARK_BLUE(1, '1', "#0000AA"),
+	DARK_GREEN(2, '2', "#00AA00"),
+	DARK_AQUA(3, '3', "#00AAAA"),
+	DARK_RED(4, '4', "#AA0000"),
+	DARK_PURPLE(5, '5', "#AA00AA"),
+	GOLD(6, '6', "#FFAA00"),
+	GRAY(7, '7', "#AAAAAA"),
+	DARK_GRAY(8, '8', "#555555"),
+	BLUE(9, '9', "#5555FF"),
+	GREEN(10, 'a', "#55FF55"),
+	AQUA(11, 'b', "#55FFFF"),
+	RED(12, 'c', "#FF5555"),
+	LIGHT_PURPLE(13, 'd', "#FF55FF"),
+	YELLOW(14, 'e', "#FFFF55"),
+	WHITE(15, 'f', "#FFFFFF"),
 	OBFUSCATED(16, 'k'),
 	BOLD(17, 'l'),
 	STRIKETHROUGH(18, 'm'),
@@ -46,6 +46,9 @@ public enum EnumChatFormat {
 	
 	//blue value of this color
 	private int blue;
+	
+	//hex code as string prefixed with #
+	private String hexCode;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -53,8 +56,10 @@ public enum EnumChatFormat {
 	 * @param character - character representing the color
 	 * @param hexColor - hex code of the color
 	 */
-	private EnumChatFormat(int networkId, char character, int hexColor) {
+	private EnumChatFormat(int networkId, char character, String hexCode) {
 		this(networkId, character);
+		this.hexCode = hexCode;
+		int hexColor = Integer.parseInt(hexCode.substring(1), 16);
 		red = (hexColor >> 16) & 0xFF;
 		green = (hexColor >> 8) & 0xFF;
 		blue = hexColor & 0xFF;
@@ -146,6 +151,14 @@ public enum EnumChatFormat {
 	 */
 	public char getCharacter() {
 		return character;
+	}
+	
+	/**
+	 * Returns hex code of this format prefixed with #, null if this is a magic code
+	 * @return hex code of this format prefixed with #
+	 */
+	public String getHexCode() {
+		return hexCode;
 	}
 	
 	/**

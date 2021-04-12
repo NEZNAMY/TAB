@@ -581,7 +581,7 @@ public class IChatBaseComponent {
 				}
 			} else if (TAB.getInstance().getConfiguration().rgbSupport && c == '#'){
 				try {
-					String hex = text.substring(i+1, i+7);
+					String hex = text.substring(i, i+7);
 					TextColor color;
 					if (containsLegacyCode(text, i)) {
 						color = new TextColor(hex, EnumChatFormat.getByChar(text.charAt(i+8)));
@@ -710,7 +710,7 @@ public class IChatBaseComponent {
 	 */
 	public String toFlatText() {
 		StringBuilder builder = new StringBuilder();
-		if (color != null) builder.append("#" + color.toHexString());
+		if (color != null) builder.append(color.getHexCode());
 		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
 		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
 		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
