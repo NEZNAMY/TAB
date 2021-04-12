@@ -18,8 +18,8 @@ public class BukkitFormat extends RGBFormatter {
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {
 			String hexcode = m.group();
-			String fixed = new String(new char[] {hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});
-			replaced = replaced.replace(hexcode, "#" + fixed);
+			String fixed = new String(new char[] {'#', hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});
+			replaced = replaced.replace(hexcode, fixed);
 		}
 		return replaced;
 	}
