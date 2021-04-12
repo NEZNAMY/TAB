@@ -73,11 +73,13 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 				for (String identifier : allUsedPlaceholderIdentifiers) {
 					Placeholder placeholder = getPlaceholder(identifier);
 					if (placeholder == null || loopTime % placeholder.getRefresh() != 0) continue;
+					if (placeholder instanceof RelationalPlaceholder) {
+						if (forceUpdate == null) forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
+						if (updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
+					}
 					if (update == null) {
 						update = new HashMap<TabPlayer, Set<Refreshable>>();
-						forceUpdate = new HashMap<TabPlayer, Set<Refreshable>>();
 					}
-					if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
 					if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
 					if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
 				}
@@ -161,19 +163,21 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	}
 	
 	private void refresh(Map<TabPlayer, Set<Refreshable>> forceUpdate, Map<TabPlayer, Set<Refreshable>> update) {
-		for (Entry<TabPlayer, Set<Refreshable>> entry : update.entrySet()) {
-			if (forceUpdate.containsKey(entry.getKey())) {
-				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
+		if (forceUpdate != null) 
+			for (Entry<TabPlayer, Set<Refreshable>> entry : update.entrySet()) {
+				if (forceUpdate.containsKey(entry.getKey())) {
+					entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
+				}
 			}
-		}
 		long startRefreshTime = System.nanoTime();
-		for (TabPlayer p : forceUpdate.keySet()) {
-			for (Refreshable r : forceUpdate.get(p)) {
-				long startTime = System.nanoTime();
-				r.refresh(p, true);
-				tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
+		if (forceUpdate != null) 
+			for (TabPlayer p : forceUpdate.keySet()) {
+				for (Refreshable r : forceUpdate.get(p)) {
+					long startTime = System.nanoTime();
+					r.refresh(p, true);
+					tab.getCPUManager().addTime(r.getFeatureType(), UsageType.REFRESHING, System.nanoTime()-startTime);
+				}
 			}
-		}
 		for (TabPlayer p : update.keySet()) {
 			for (Refreshable r : update.get(p)) {
 				long startTime = System.nanoTime();
