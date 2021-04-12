@@ -55,8 +55,11 @@ public class BukkitPlatform implements Platform {
 	//nms storage
 	private NMSStorage nms;
 	
-	//if placeholderapi is installed or not
-	private boolean placeholderAPI;
+	//booleans to check plugin presence
+	public boolean placeholderAPI;
+	public boolean viaversion;
+	public boolean idisguise;
+	public boolean libsdisguises;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -84,6 +87,9 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public void loadFeatures() throws Exception {
 		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
+		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
 		TAB tab = TAB.getInstance();
 		usedExpansions = new HashSet<String>();

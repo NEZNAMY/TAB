@@ -29,15 +29,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 	
 	//nms player connection
 	private Object playerConnection;
-	
-	private boolean viaversion;
 
 	/**
 	 * Constructs new instance with given parameter
 	 * @param p - bukkit player
 	 */
 	public BukkitTabPlayer(Player p){
-		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		player = p;
 		world = p.getWorld().getName();
 		try {
@@ -68,7 +65,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			//some PS versions return -1 on unsupported server versions instead of throwing exception
 			if (version != -1 && version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
 		}
-		if (viaversion) {
+		if (((BukkitPlatform)TAB.getInstance().getPlatform()).viaversion) {
 			return getProtocolVersionVia();
 		}
 		return ProtocolVersion.SERVER_VERSION.getNetworkId();
@@ -123,7 +120,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket == null || !player.isOnline()) return;
 		try {
-			if (viaversion && nmsPacket instanceof ByteBuf) {
+			if (((BukkitPlatform)TAB.getInstance().getPlatform()).viaversion && nmsPacket instanceof ByteBuf) {
 				try {
 					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 				} catch (IllegalArgumentException e) {
@@ -154,7 +151,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private boolean isDisguisedLD() {
 		try {
-			if (!Bukkit.getPluginManager().isPluginEnabled("LibsDisguises")) return false;
+			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).libsdisguises) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
 		} catch (Throwable e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
@@ -167,7 +164,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private boolean isDisguisediDis() {
 		try {
-			if (!Bukkit.getPluginManager().isPluginEnabled("iDisguise")) return false;
+			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).idisguise) return false;
 			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
 			Object iDisguise = provider.getProvider();
 			Method m = iDisguise.getClass().getMethod("isDisguised", Player.class);
