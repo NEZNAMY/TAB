@@ -471,7 +471,7 @@ public class IChatBaseComponent {
 			hover.put("value", hoverValue);
 			json.put("hoverEvent", hover);
 		}
-		if (!extra.isEmpty()) json.put("extra", extra);
+		if (extra != null) json.put("extra", extra);
 		return json.toString();
 	}
 
@@ -491,7 +491,7 @@ public class IChatBaseComponent {
 	 * @return Serialized string
 	 */
 	public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
-		if (extra.isEmpty()) {
+		if (extra == null) {
 			if (text == null) return null;
 			if (text.length() == 0) {
 				if (sendTranslatableIfEmpty) {
@@ -513,7 +513,7 @@ public class IChatBaseComponent {
 	 */
 	private void convertColorsToLegacy() {
 		if (color != null) color.setReturnLegacy(true);
-		for (IChatBaseComponent extra : extra) {
+		for (IChatBaseComponent extra : getExtra()) {
 			extra.convertColorsToLegacy();
 		}
 		if (hoverValue instanceof IChatBaseComponent) {
@@ -663,7 +663,7 @@ public class IChatBaseComponent {
 			builder.append(text);
 
 		}
-		for (IChatBaseComponent component : extra) {
+		for (IChatBaseComponent component : getExtra()) {
 			formatting = component.append(builder, formatting);
 		}
 		return formatting;
@@ -698,7 +698,7 @@ public class IChatBaseComponent {
 	public String toRawText() {
 		StringBuilder builder = new StringBuilder();
 		if (text != null) builder.append(text);
-		for (IChatBaseComponent extra : extra) {
+		for (IChatBaseComponent extra : getExtra()) {
 			if (extra.text != null) builder.append(extra.text);
 		}
 		return builder.toString();
@@ -717,7 +717,7 @@ public class IChatBaseComponent {
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 		if (text != null) builder.append(text);
-		for (IChatBaseComponent extra : extra) {
+		for (IChatBaseComponent extra : getExtra()) {
 			builder.append(extra.toFlatText());
 		}
 		return builder.toString();
@@ -737,7 +737,7 @@ public class IChatBaseComponent {
 		component.setUnderlined(underlined);
 		if (hoverAction != null) component.onHover(hoverAction, hoverValue);
 		if (clickAction != null) component.onClick(clickAction, clickValue);
-		for (IChatBaseComponent extra : extra) {
+		for (IChatBaseComponent extra : getExtra()) {
 			component.addExtra(extra.clone());
 		}
 		return component;
