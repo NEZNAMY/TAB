@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import me.neznamy.tab.shared.ErrorManager;
@@ -31,7 +32,7 @@ public class CPUManager {
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
 	
 	//packets sent in the current 10 seconds
-	private Map<Object, Integer> packetsCurrent = new ConcurrentHashMap<Object, Integer>();
+	private Map<Object, AtomicInteger> packetsCurrent = new ConcurrentHashMap<Object, AtomicInteger>();
 
 	//nanoseconds worked in the previous 10 seconds
 	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<Object, Map<UsageType, AtomicLong>>();
@@ -40,7 +41,7 @@ public class CPUManager {
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<String, AtomicLong>();
 	
 	//packets sent in the previous 10 seconds
-	private Map<Object, Integer> packetsPrevious = new ConcurrentHashMap<Object, Integer>();
+	private Map<Object, AtomicInteger> packetsPrevious = new ConcurrentHashMap<Object, AtomicInteger>();
 
 	//thread pool
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -72,7 +73,7 @@ public class CPUManager {
 						placeholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
 						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
 						methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-						packetsCurrent = new ConcurrentHashMap<Object, Integer>();
+						packetsCurrent = new ConcurrentHashMap<Object, AtomicInteger>();
 					}
 				} catch (InterruptedException pluginDisabled) {
 
@@ -228,8 +229,8 @@ public class CPUManager {
 	 * Returns map of sent packets per feature in previous 10 seconds
 	 * @return map of sent packets per feature
 	 */
-	public Map<Object, Integer> getSentPackets(){
-		return sortByValue(packetsPrevious);
+	public Map<Object, AtomicInteger> getSentPackets(){
+		return sortByValue1(packetsPrevious);
 	}
 
 	/**
@@ -310,6 +311,26 @@ public class CPUManager {
 			}
 		};
 		Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+		sortedByValues.putAll(map);
+		return sortedByValues;
+	}
+	
+	/**
+	 * Sorts map by value from higest to lowest
+	 * @param <K> - map key
+	 * @param <V> - map value
+	 * @param map - map to sort
+	 * @return sorted map
+	 */
+	private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
+		Comparator<K> valueComparator =  new Comparator<K>() {
+			public int compare(K k1, K k2) {
+				int compare = ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
+				if (compare == 0) return 1;
+				else return compare;
+			}
+		};
+		Map<K, AtomicInteger> sortedByValues = new TreeMap<K, AtomicInteger>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
 	}
@@ -424,11 +445,11 @@ public class CPUManager {
 	 * @param feature - feature to increment packet counter of
 	 */
 	public void packetSent(Object feature) {
-		Integer current = packetsCurrent.get(feature);
+		AtomicInteger current = packetsCurrent.get(feature);
 		if (current == null) {
-			packetsCurrent.put(feature, 1);
+			packetsCurrent.put(feature, new AtomicInteger(1));
 		} else {
-			packetsCurrent.put(feature, current + 1);
+			current.addAndGet(1);
 		}
 	}
 }

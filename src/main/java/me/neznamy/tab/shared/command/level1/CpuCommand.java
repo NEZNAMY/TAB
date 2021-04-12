@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -136,11 +137,11 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToConsole() {
-		Map<Object, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<Object, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<String>();
-		for (Entry<Object, Integer> entry : packets.entrySet()) {
-			count += entry.getValue();
+		for (Entry<Object, AtomicInteger> entry : packets.entrySet()) {
+			count += entry.getValue().get();
 			messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey().toString() + " - " + entry.getValue());
 		}
 		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + count, true);
@@ -150,11 +151,11 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToPlayer(TabPlayer sender) {
-		Map<Object, Integer> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<Object, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<String>();
-		for (Entry<Object, Integer> entry : packets.entrySet()) {
-			count += entry.getValue();
+		for (Entry<Object, AtomicInteger> entry : packets.entrySet()) {
+			count += entry.getValue().get();
 			messages.add("&3" + entry.getKey().toString() + " - " + entry.getValue());
 		}
 		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + count).replace('&', '\u00a7'));
