@@ -190,7 +190,7 @@ public class TextColor {
 	 */
 	public static TextColor fromString(String string) {
 		if (string == null) return null;
-		if (string.startsWith("#")) return new TextColor(string.substring(1));
+		if (string.startsWith("#")) return new TextColor(string);
 		if (string.startsWith("\u00a7")) return new TextColor(EnumChatFormat.getByChar(string.toLowerCase().charAt(1)));
 		return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 	}
