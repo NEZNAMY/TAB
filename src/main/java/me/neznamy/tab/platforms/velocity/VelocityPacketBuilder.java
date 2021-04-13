@@ -36,24 +36,13 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 public class VelocityPacketBuilder implements PacketBuilder {
 
 	@Override
-	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
-		if (clientVersion.getMinorVersion() < 9) return null;
-		Object velocityPacket = Class.forName("com.velocitypowered.proxy.protocol.packet.BossBar").getConstructor().newInstance();
-		velocityPacket.getClass().getMethod("setUuid", UUID.class).invoke(velocityPacket, packet.id);
-		velocityPacket.getClass().getMethod("setAction", int.class).invoke(velocityPacket, packet.operation.ordinal());
-		velocityPacket.getClass().getMethod("setPercent", float.class).invoke(velocityPacket, packet.pct);
-		velocityPacket.getClass().getMethod("setName", String.class).invoke(velocityPacket, packet.name == null ? null : IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
-		velocityPacket.getClass().getMethod("setColor", int.class).invoke(velocityPacket, packet.color == null ? 0 : packet.color.ordinal());
-		velocityPacket.getClass().getMethod("setOverlay", int.class).invoke(velocityPacket, packet.overlay == null ? 0 : packet.overlay.ordinal());
-		velocityPacket.getClass().getMethod("setFlags", short.class).invoke(velocityPacket, packet.getFlags());
-		return velocityPacket;
+	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
+		return packet;
 	}
 
 	@Override
-	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws Exception {
-		return Class.forName("com.velocitypowered.proxy.protocol.packet.Chat")
-				.getConstructor(String.class, byte.class, UUID.class)
-				.newInstance(packet.message.toString(clientVersion), (byte) packet.type.ordinal(), UUID.randomUUID());
+	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
+		return packet;
 	}
 
 	@Override
@@ -61,7 +50,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		List<Object> items = new ArrayList<Object>();
 		for (PlayerInfoData data : packet.entries) {
 			Object item = Class.forName("com.velocitypowered.proxy.protocol.packet.PlayerListItem$Item").getConstructor(UUID.class).newInstance(data.uniqueId);
-			item.getClass().getMethod("setDisplayName", Component.class).invoke(item, data.displayName == null ? null : GsonComponentSerializer.gson().deserialize(data.displayName.toString(clientVersion)));
+			item.getClass().getMethod("setDisplayName", Component.class).invoke(item, data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(clientVersion)));
 			if (data.gameMode != null) {
 				item.getClass().getMethod("setGameMode", int.class).invoke(item, data.gameMode.ordinal()-1);
 			}
@@ -74,10 +63,8 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws Exception {
-		return Class.forName("com.velocitypowered.proxy.protocol.packet.HeaderAndFooter")
-				.getConstructor(String.class, String.class)
-				.newInstance(packet.header.toString(clientVersion, true), packet.footer.toString(clientVersion, true));
+	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
+		return packet;
 	}
 
 	@Override

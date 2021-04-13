@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 /**
  * Main class for Velocity platform
@@ -95,6 +96,11 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyShutdownEvent event) {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
+	}
+	
+	public static Component stringToComponent(String string) {
+		if (string == null) return null;
+		return GsonComponentSerializer.gson().deserialize(string);
 	}
 	
 	public static class VelocityTABCommand implements Command {

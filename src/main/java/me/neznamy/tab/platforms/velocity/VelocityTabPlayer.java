@@ -1,6 +1,10 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
@@ -9,6 +13,18 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBar.Color;
+import net.kyori.adventure.bossbar.BossBar.Flag;
+import net.kyori.adventure.bossbar.BossBar.Overlay;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 
 /**
  * TabPlayer for Velocity
@@ -20,6 +36,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 	
 	//offline uuid used in tablist
 	private UUID offlineId;
+	
+	//player's visible boss bars
+	private Map<UUID, BossBar> bossbars = new HashMap<UUID, BossBar>();
 
 	/**
 	 * Constructs new instance for given player
@@ -54,8 +73,67 @@ public class VelocityTabPlayer extends ITabPlayer{
 	}
 	
 	@Override
-	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket != null && player.isActive()) channel.writeAndFlush(nmsPacket, channel.voidPromise());
+	public void sendPacket(Object packet) {
+		if (packet == null || !player.isActive()) return;
+		if (packet instanceof UniversalPacketPlayOut){
+			handleCustomPacket((UniversalPacketPlayOut) packet);
+			return;
+		}
+		channel.writeAndFlush(packet, channel.voidPromise());
+	}
+	
+	private void handleCustomPacket(UniversalPacketPlayOut packet) {
+		if (packet instanceof PacketPlayOutChat){
+			player.sendMessage(Identity.nil(), Main.stringToComponent(((PacketPlayOutChat)packet).message.toString(getVersion())), MessageType.valueOf(((PacketPlayOutChat)packet).type.name()));
+		}
+		if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+			player.getTabList().setHeaderAndFooter(Main.stringToComponent(((PacketPlayOutPlayerListHeaderFooter) packet).header.toString(getVersion())), Main.stringToComponent(((PacketPlayOutPlayerListHeaderFooter) packet).footer.toString(getVersion())));
+		}
+		if (packet instanceof PacketPlayOutBoss) {
+			PacketPlayOutBoss boss = (PacketPlayOutBoss) packet;
+			Set<Flag> flags;
+			BossBar bar;
+			switch (boss.operation) {
+			case ADD:
+				flags = new HashSet<Flag>();
+				if (boss.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
+				if (boss.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
+				if (boss.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
+				bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion())), boss.pct, Color.valueOf(boss.color.toString()), Overlay.valueOf(boss.overlay.toString()), flags);
+				bossbars.put(boss.id, bar);
+				player.showBossBar(bar);
+				break;
+			case REMOVE:
+				bar = bossbars.get(boss.id);
+				bossbars.remove(boss.id);
+				player.hideBossBar(bar);
+				break;
+			case UPDATE_PCT:
+				bossbars.get(boss.id).percent(boss.pct);
+				break;
+			case UPDATE_NAME:
+				Component component = Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion()));
+				bossbars.get(boss.id).name(component);
+				break;
+			case UPDATE_STYLE:
+				bossbars.get(boss.id).overlay(Overlay.valueOf(boss.overlay.toString()));
+				//Velocity API bug at https://github.com/VelocityPowered/Velocity/blob/dev/1.1.0/proxy/src/main/java/com/velocitypowered/proxy/util/bossbar/AdventureBossBarManager.java#L237
+				//setting action to UPDATE_NAME for color update instead of UPDATE_STYLE, throwing IllegalStateException at
+				//https://github.com/VelocityPowered/Velocity/blob/dev/1.1.0/proxy/src/main/java/com/velocitypowered/proxy/protocol/packet/BossBar.java#L173
+				//not going to report the bug since TAB already got called brain-damaged for expposing an adventure bug in the past, not risking it again
+				//bossbars.get(boss.id).color(Color.valueOf(boss.color.toString()));
+				break;
+			case UPDATE_PROPERTIES:
+				flags = new HashSet<Flag>();
+				if (boss.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
+				if (boss.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
+				if (boss.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
+				bossbars.get(boss.id).flags(flags);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	@Override
