@@ -147,14 +147,4 @@ public interface PacketBuilder {
 	 * @throws Exception - if something fails
 	 */
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws Exception;
-	
-	/**
-	 * Converts platform-specific instance of header/footer packet into custom class object
-	 * @param packet - platform-specific header/footer packet
-	 * @param clientVersion - client version
-	 * @return The converted packet
-	 * @throws Exception - if something fails
-	 */
-	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception;
-	
 }

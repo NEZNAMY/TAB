@@ -157,13 +157,4 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).position, ((ScoreboardDisplay) bungeePacket).name);
 	}
-	
-
-	@Override
-	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception {
-		return new PacketPlayOutPlayerListHeaderFooter(
-				IChatBaseComponent.fromString((String) packet.getClass().getMethod("getHeader").invoke(packet)),
-				IChatBaseComponent.fromString((String) packet.getClass().getMethod("getFooter").invoke(packet))
-		);
-	}
 }

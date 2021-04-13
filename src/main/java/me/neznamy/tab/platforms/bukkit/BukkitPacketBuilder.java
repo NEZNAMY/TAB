@@ -436,14 +436,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
 		);
 	}
-
-	@Override
-	public PacketPlayOutPlayerListHeaderFooter readHeaderFooter(Object packet, ProtocolVersion clientVersion) throws Exception {
-		return new PacketPlayOutPlayerListHeaderFooter(
-			fromNMSComponent(nms.PacketPlayOutPlayerListHeaderFooter_HEADER.get(packet)),
-			fromNMSComponent(nms.PacketPlayOutPlayerListHeaderFooter_FOOTER.get(packet))
-		);
-	}
 	
 	/**
 	 * A method yoinked from minecraft code used to convert double to int
