@@ -138,7 +138,6 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setBossbarVisible(!bossbar_off_players.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
-		detectBossBarsAndSend(connectedPlayer);
 	}
 	
 	@Override
