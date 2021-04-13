@@ -469,29 +469,31 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		long time = System.nanoTime();
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
-		Object color = nms.ChatModifier_color.get(modifier);
-		if (color != null) {
-			String name = (String) nms.ChatHexColor_name.get(color);
-			if (name != null) {
-				//legacy code
-				chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
-			} else {
-				chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+		if (modifier != null) {
+			Object color = nms.ChatModifier_color.get(modifier);
+			if (color != null) {
+				String name = (String) nms.ChatHexColor_name.get(color);
+				if (name != null) {
+					//legacy code
+					chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+				} else {
+					chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+				}
 			}
+			chat.setBold((Boolean) nms.ChatModifier_bold.get(modifier));
+			chat.setItalic((Boolean) nms.ChatModifier_italic.get(modifier));
+			chat.setObfuscated((Boolean) nms.ChatModifier_obfuscated.get(modifier));
+			chat.setStrikethrough((Boolean) nms.ChatModifier_strikethrough.get(modifier));
+			chat.setUnderlined((Boolean) nms.ChatModifier_underlined.get(modifier));
+			Object clickEvent = nms.ChatModifier_clickEvent.get(modifier);
+			if (clickEvent != null) {
+				chat.onClick(ClickAction.valueOf(nms.ChatClickable_action.get(clickEvent).toString().toUpperCase()), (String) nms.ChatClickable_value.get(clickEvent));
+			}
+	/*		Object hoverEvent = nms.ChatModifier_hoverEvent.get(modifier);
+			if (hoverEvent != null) {
+				chat.onHover(HoverAction.fromString(nms.ChatHoverable_action.get(hoverEvent).toString()), fromNMSComponent(nms.ChatHoverable_value.get(hoverEvent)));
+			}*/
 		}
-		chat.setBold((Boolean) nms.ChatModifier_bold.get(modifier));
-		chat.setItalic((Boolean) nms.ChatModifier_italic.get(modifier));
-		chat.setObfuscated((Boolean) nms.ChatModifier_obfuscated.get(modifier));
-		chat.setStrikethrough((Boolean) nms.ChatModifier_strikethrough.get(modifier));
-		chat.setUnderlined((Boolean) nms.ChatModifier_underlined.get(modifier));
-		Object clickEvent = nms.ChatModifier_clickEvent.get(modifier);
-		if (clickEvent != null) {
-			chat.onClick(ClickAction.valueOf(nms.ChatClickable_action.get(clickEvent).toString().toUpperCase()), (String) nms.ChatClickable_value.get(clickEvent));
-		}
-/*		Object hoverEvent = nms.ChatModifier_hoverEvent.get(modifier);
-		if (hoverEvent != null) {
-			chat.onHover(HoverAction.fromString(nms.ChatHoverable_action.get(hoverEvent).toString()), fromNMSComponent(nms.ChatHoverable_value.get(hoverEvent)));
-		}*/
 		for (Object extra : (List<Object>) nms.ChatBaseComponent_extra.get(component)) {
 			chat.addExtra(fromNMSComponent(extra));
 		}
