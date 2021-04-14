@@ -25,7 +25,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  * Will be reworked to use packets in the future
  */
 @SuppressWarnings("deprecation")
-public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener{
+public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldChangeListener, PlayerInfoPacketListener {
 
 	//tab instance
 	private TAB tab;
@@ -53,6 +53,12 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 		allowBypass = tab.getConfiguration().config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
 		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
 		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+		for (String group : sharedWorlds.keySet()) {
+			if (sharedWorlds.get(group).size() == 1) {
+				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist only contain a single world (\"" + sharedWorlds.get(group).get(0) +
+						"\"), which has no effect and only makes config less readable. Delete the group entirely for a cleaner config.");
+			}
+		}
 	}
 	
 	@Override
