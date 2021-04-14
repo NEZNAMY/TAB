@@ -25,7 +25,7 @@ public class Groups extends SortingType {
 		String group = p.getGroup();
 		String chars = sortedGroups.get(group.toLowerCase());
 		if (chars == null) {
-			chars = "9";
+			chars = String.valueOf(sortedGroups.size()+1);
 			if (!group.equals("<null>")) {
 				TAB.getInstance().getErrorManager().oneTimeConsoleError(String.format("Group \"&e%s&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e%s&c\" into &egroup-sorting-priority-list in config.yml&c. Your current list: %s", group, group, sortedGroups.keySet()));
 			}
