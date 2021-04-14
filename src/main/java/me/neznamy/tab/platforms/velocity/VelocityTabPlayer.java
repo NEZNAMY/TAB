@@ -24,7 +24,6 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 
 /**
  * TabPlayer for Velocity
@@ -104,16 +103,14 @@ public class VelocityTabPlayer extends ITabPlayer{
 				player.showBossBar(bar);
 				break;
 			case REMOVE:
-				bar = bossbars.get(boss.id);
 				bossbars.remove(boss.id);
-				player.hideBossBar(bar);
+				player.hideBossBar(bossbars.get(boss.id));
 				break;
 			case UPDATE_PCT:
 				bossbars.get(boss.id).percent(boss.pct);
 				break;
 			case UPDATE_NAME:
-				Component component = Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion()));
-				bossbars.get(boss.id).name(component);
+				bossbars.get(boss.id).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion())));
 				break;
 			case UPDATE_STYLE:
 				bossbars.get(boss.id).overlay(Overlay.valueOf(boss.overlay.toString()));
