@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
+import me.neznamy.tab.shared.features.sorting.types.Placeholder;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderAtoZ;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderHighToLow;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
@@ -50,6 +51,7 @@ public class Sorting {
 		if (tab.getConfiguration().premiumconfig != null) {
 			sortingPlaceholder = tab.getConfiguration().premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
 			caseSensitiveSorting = tab.getConfiguration().premiumconfig.getBoolean("case-sentitive-sorting", true);
+			types.put("PLACEHOLDER", new Placeholder(sortingPlaceholder));
 			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(sortingPlaceholder));
 			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(sortingPlaceholder));
 			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(sortingPlaceholder));
