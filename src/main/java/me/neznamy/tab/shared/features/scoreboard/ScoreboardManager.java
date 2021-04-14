@@ -286,6 +286,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
+			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.objectiveName + ", hiding TAB one.");
 			receiver.setOtherPluginScoreboard(packet.objectiveName);
 			if (receiver.getActiveScoreboard() != null) {
 				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
@@ -297,6 +298,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
 		if (packet.method == 1 && receiver.getOtherPluginScoreboard() != null && receiver.getOtherPluginScoreboard().equals(packet.objectiveName)) {
+			tab.debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			receiver.setOtherPluginScoreboard(null);
 			tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
