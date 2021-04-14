@@ -44,11 +44,11 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String line;
-			int i=0;
+			//int i=0;
 			while ((line = br.readLine()) != null) {
-				i++;
+				//i++;
 				if (line.isEmpty()) {
-					tab.debug("Skipping missing character " + i);
+					//tab.debug("Skipping missing character " + i);
 					continue;
 				}
 				String[] arr = line.split(":");
