@@ -31,12 +31,11 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-		User user;
-		try {
-			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-		} catch (IllegalStateException e) {
-			return e.getMessage();
+		net.luckperms.api.LuckPerms api = getAPI();
+		if (api == null) {
+			return "<null>";
 		}
+		User user = api.getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
 			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrimaryGroup");
 			return "<null>";
@@ -47,12 +46,11 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
 		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
-		User user;
-		try {
-			user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-		} catch (IllegalStateException e) {
-			return new String[] {e.getMessage()};
+		net.luckperms.api.LuckPerms api = getAPI();
+		if (api == null) {
+			return new String[]{"<null>"};
 		}
+		User user = api.getUserManager().getUser(p.getUniqueId());
 		if (user == null) {
 			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getAllGroups");
 			return new String[] {"<null>"};
@@ -64,12 +62,11 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	public String getPrefix(TabPlayer p) {
 		try {
 			if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-			User user;
-			try {
-				user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-			} catch (IllegalStateException e) {
-				return e.getMessage();
+			net.luckperms.api.LuckPerms api = getAPI();
+			if (api == null) {
+				return "";
 			}
+			User user = api.getUserManager().getUser(p.getUniqueId());
 			if (user == null) {
 				TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrefix");
 				return "";
@@ -79,7 +76,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			String prefix = user.getCachedData().getMetaData(options.get()).getPrefix();
 			return prefix == null ? "" : prefix;
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("Luckperms v" + version + " threw an exception when retrieving player prefix of " + p.getName(), e);
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player prefix of " + p.getName(), e);
 			return "";
 		}
 	}
@@ -88,12 +85,11 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	public String getSuffix(TabPlayer p) {
 		try {
 			if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
-			User user;
-			try {
-				user = LuckPermsProvider.get().getUserManager().getUser(p.getUniqueId());
-			} catch (IllegalStateException e) {
-				return e.getMessage();
+			net.luckperms.api.LuckPerms api = getAPI();
+			if (api == null) {
+				return "";
 			}
+			User user = api.getUserManager().getUser(p.getUniqueId());
 			if (user == null) {
 				TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getSuffix");
 				return "";
@@ -103,8 +99,18 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			String suffix = user.getCachedData().getMetaData(options.get()).getSuffix();
 			return suffix == null ? "" : suffix;
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("Luckperms v" + version + " threw an exception when retrieving player suffix of " + p.getName(), e);
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player suffix of " + p.getName(), e);
 			return "";
+		}
+	}
+	
+	private net.luckperms.api.LuckPerms getAPI() {
+		try {
+			return LuckPermsProvider.get();
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving API instance: " + e.getMessage());
+			TAB.getInstance().getErrorManager().printError("Just a side note: LuckPerms is installed, otherwise server would not say it is. Luckperms is declared as softdependecy (https://github.com/NEZNAMY/TAB/blob/master/src/main/resources/plugin.yml#L6) and all code runs at onEnable or later, constructor is unused (https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/platforms/bukkit/Main.java#L20).");
+			return null;
 		}
 	}
 
