@@ -1,7 +1,7 @@
 ## Introduction  
 Here it is. After countless requests to go opensource, I did it to make those people quiet. It worked.  
 It's already been a year and I still can't see any positives of it. This way I just made it easier for everyone to make a plugin as good, so people can stop using it and switch to something better.  
-If you have a great argument why was making this open-source worth not only for those looking for premium features for free, please take your time and explain it to: [Lionel#5648](https://support-system.xyz/redirect?link=https://cdn.discordapp.com/attachments/690574378454483034/832678362916585502/ticket-832665414634045501.html) (more names coming soon).  
+If you have a great argument why was making this open-source worth not only for those looking for premium features for free, please take your time and explain it to: Lionel#5648 (more names coming soon).  
   
   
 ## Compiling
