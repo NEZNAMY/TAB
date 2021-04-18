@@ -368,7 +368,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
-			if ((section == '\u00a7') && (index < length - 1)){
+			if ((section == '\u00a7' || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
 					result = "\u00a7" + c + result;
