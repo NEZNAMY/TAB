@@ -1,8 +1,7 @@
 # Compiled class file
 *.class
-/bin/
-/target/
-/src/test/
+bin/
+target/
 
 # Log file
 *.log
@@ -31,7 +30,7 @@ hs_err_pid*
 .project
 
 # intellij
-/.idea/
+.idea/
 
 # other
 .gitattributes

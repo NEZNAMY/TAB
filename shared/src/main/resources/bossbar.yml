@@ -1,0 +1,45 @@
+#styles (SERVER 1.9+)
+#NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20, PROGRESS
+
+#colors (SERVER 1.9+)
+#BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW
+
+#IF YOU ARE USING SERVER 1.8.X
+#the entity will be slightly visible when progress is less than ~50% (client-sided bug)
+#only 1 line can be displayed at a time
+
+#you can also announce a message using /tab announce bar <bar name> <duration in seconds>
+
+bossbar-enabled: false
+bossbar-toggle-command: /bossbar
+
+#tab.togglebar
+permission-required-to-toggle: false
+
+#saving toggle decision into playerdata.yml to keep it saved after reloads/restarts
+remember-toggle-choice: false
+
+#initially hidden until players run toggle command
+hidden-by-default: false
+
+#to have no default bars, set it to 
+#default-bars: []
+default-bars:
+  - ServerInfo
+per-world:
+  testworld: 
+    - "test"
+
+bars:
+  ServerInfo:
+    #all 4 settings support placeholders including animations, you can use it to achieve changing text
+    style: "PROGRESS"
+    color: "%animation:barcolors%"
+    progress: "100" # in %
+    text: "&fWebsite: &bwww.domain.com"
+  test:
+    display-condition: "permission:tab.bossbar.test"
+    style: PROGRESS
+    color: WHITE
+    progress: "100"
+    text: "test"
