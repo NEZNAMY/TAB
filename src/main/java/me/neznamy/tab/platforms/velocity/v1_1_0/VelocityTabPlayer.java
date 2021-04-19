@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity;
+package me.neznamy.tab.platforms.velocity.v1_1_0;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

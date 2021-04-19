@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity;
+package me.neznamy.tab.platforms.velocity.v1_1_0;
 
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.Subscribe;
