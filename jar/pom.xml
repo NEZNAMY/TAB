@@ -38,6 +38,7 @@
 							<include>org.bstats:bstats-base</include>
 							<include>org.bstats:bstats-bungeecord</include>
 							<include>org.bstats:bstats-velocity</include>
+                                                        <include>me.neznamy:*</include>
 						</includes>
 					</artifactSet>
 					<relocations>
