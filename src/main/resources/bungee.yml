@@ -1,4 +1,0 @@
-name: ${project.name}
-main: me.neznamy.tab.platforms.bungeecord.Main
-version: ${project.version}
-author: NEZNAMY
