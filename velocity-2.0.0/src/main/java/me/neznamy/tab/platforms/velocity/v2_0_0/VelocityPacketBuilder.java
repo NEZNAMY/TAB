@@ -2,7 +2,11 @@ package me.neznamy.tab.platforms.velocity.v2_0_0;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import com.velocitypowered.api.util.GameProfile.Property;
+import com.velocitypowered.proxy.network.packet.clientbound.ClientboundPlayerListItemPacket;
+import com.velocitypowered.proxy.network.packet.clientbound.ClientboundPlayerListItemPacket.Item;
+import com.velocitypowered.proxy.network.packet.clientbound.ClientboundTitlePacket;
 
 import me.neznamy.tab.platforms.velocity.v2_0_0.packet.ScoreboardDisplay;
 import me.neznamy.tab.platforms.velocity.v2_0_0.packet.ScoreboardObjective;
@@ -26,6 +30,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreb
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
+import me.neznamy.tab.shared.packets.PacketPlayOutTitle.EnumTitleAction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
@@ -44,21 +49,20 @@ public class VelocityPacketBuilder implements PacketBuilder {
 		return packet;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
-		List<Object> items = new ArrayList<Object>();
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
+		List<Item> items = new ArrayList<Item>();
 		for (PlayerInfoData data : packet.entries) {
-			Object item = Class.forName("com.velocitypowered.proxy.network.packet.clientbound.ClientboundPlayerListItemPacket$Item").getConstructor(UUID.class).newInstance(data.uniqueId);
-			item.getClass().getMethod("setDisplayName", Component.class).invoke(item, data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(clientVersion)));
-			if (data.gameMode != null) {
-				item.getClass().getMethod("setGameMode", int.class).invoke(item, data.gameMode.ordinal()-1);
-			}
-			item.getClass().getMethod("setLatency", int.class).invoke(item, data.latency);
-			item.getClass().getMethod("setProperties", List.class).invoke(item, data.skin);
-			item.getClass().getMethod("setName", String.class).invoke(item, data.name);
+			Item item = new Item(data.uniqueId);
+			if (data.displayName != null) item.setDisplayName(Main.stringToComponent(data.displayName.toString(clientVersion)));
+			if (data.gameMode != null) item.setGameMode(data.gameMode.ordinal()-1);
+			item.setLatency(data.latency);
+			item.setProperties((List<Property>) data.skin);
+			item.setName(data.name);
 			items.add(item);
 		}
-		return Class.forName("com.velocitypowered.proxy.network.packet.clientbound.ClientboundPlayerListItemPacket").getConstructor(int.class, List.class).newInstance(packet.action.ordinal(), items);
+		return new ClientboundPlayerListItemPacket(packet.action.ordinal(), items);
 	}
 
 	@Override
@@ -92,43 +96,33 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
-		Object velocityPacket = Class.forName("com.velocitypowered.proxy.network.packet.clientbound.ClientboundTitlePacket").getConstructor().newInstance();
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) {
 		int actionId = packet.action.ordinal();
 		if (clientVersion.getNetworkId() <= ProtocolVersion.v1_10_2.getNetworkId() && actionId >= 2) {
 			actionId--;
 		}
-		velocityPacket.getClass().getMethod("setAction", int.class).invoke(velocityPacket, actionId);
-		if (packet.text != null) velocityPacket.getClass().getMethod("setComponent", String.class).invoke(velocityPacket, IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
-		velocityPacket.getClass().getMethod("setFadeIn", int.class).invoke(velocityPacket, packet.fadeIn);
-		velocityPacket.getClass().getMethod("setStay", int.class).invoke(velocityPacket, packet.stay);
-		velocityPacket.getClass().getMethod("setFadeOut", int.class).invoke(velocityPacket, packet.fadeOut);
-		return velocityPacket;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws Exception{
-		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
-		for (Object item : (List<Object>) packet.getClass().getMethod("getItems").invoke(packet)) {
-			Component displayNameComponent = (Component) item.getClass().getMethod("getDisplayName").invoke(item);
-			String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
-			listData.add(new PlayerInfoData(
-					(String) item.getClass().getMethod("getName").invoke(item), 
-					(UUID) item.getClass().getMethod("getUuid").invoke(item), 
-					item.getClass().getMethod("getProperties").invoke(item), 
-					(int) item.getClass().getMethod("getLatency").invoke(item), 
-					EnumGamemode.values()[(int)item.getClass().getMethod("getGameMode").invoke(item)+1], 
-					displayName == null ? null : IChatBaseComponent.fromString(displayName)
-				)
-			);
+		if (packet.action == EnumTitleAction.TIMES) {
+			return new ClientboundTitlePacket(actionId, packet.fadeIn, packet.stay, packet.fadeOut);
+		} else {
+			return new ClientboundTitlePacket(actionId, packet.text == null ? null : IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
 		}
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(int) (packet.getClass().getMethod("getAction").invoke(packet))], listData);
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
-		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) {
+		ClientboundPlayerListItemPacket velocityPacket = (ClientboundPlayerListItemPacket) packet;
+		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
+		for (Item item : velocityPacket.getItems()) {
+			Component displayNameComponent = item.getDisplayName();
+			String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
+			listData.add(new PlayerInfoData(item.getName(), item.getUuid(), item.getProperties(), item.getLatency(), EnumGamemode.values()[item.getGameMode()+1], displayName == null ? null : IChatBaseComponent.fromString(displayName)));
+		}
+		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[velocityPacket.getAction()], listData);
+	}
+
+	@Override
+	public PacketPlayOutScoreboardObjective readObjective(Object velocityPacket, ProtocolVersion clientVersion) {
+		ScoreboardObjective packet = (ScoreboardObjective) velocityPacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
 			title = packet.value == null ? null : IChatBaseComponent.fromString(packet.value).toLegacyText();
@@ -140,7 +134,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
-		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).position, ((ScoreboardDisplay) bungeePacket).name);
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) {
+		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) packet).position, ((ScoreboardDisplay) packet).name);
 	}
 }
