@@ -1,10 +1,10 @@
-name: ${project.name}
-version: ${project.version}
+name: ${project.parent.name}
+version: ${project.parent.version}
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, Vault, UltraPermissions, LuckPerms, Essentials, LibsDisguises]
 website: "https://www.spigotmc.org/resources/57806/"
-description: ${project.description}
+description: ${project.parent.description}
 commands:
   tab:

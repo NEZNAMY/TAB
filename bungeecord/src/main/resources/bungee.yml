@@ -1,4 +1,4 @@
-name: ${project.name}
+name: ${project.parent.name}
 main: me.neznamy.tab.platforms.bungeecord.Main
-version: ${project.version}
+version: ${project.parent.version}
 author: NEZNAMY

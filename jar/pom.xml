@@ -9,19 +9,12 @@
 	</parent>
 	<artifactId>jar</artifactId>
 	<build>
+		<finalName>TAB-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.2.0</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<!--suppress MavenModelInspection -->
-							<Implementation-Version>${describe}</Implementation-Version>
-						</manifestEntries>
-					</archive>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -38,7 +31,7 @@
 							<include>org.bstats:bstats-base</include>
 							<include>org.bstats:bstats-bungeecord</include>
 							<include>org.bstats:bstats-velocity</include>
-                                                        <include>me.neznamy:*</include>
+							<include>me.neznamy:*</include>
 						</includes>
 					</artifactSet>
 					<relocations>
