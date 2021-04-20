@@ -114,11 +114,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 				break;
 			case UPDATE_STYLE:
 				bar = bossbars.get(boss.id);
-				//Velocity API bug at https://github.com/VelocityPowered/Velocity/blob/dev/1.1.0/proxy/src/main/java/com/velocitypowered/proxy/util/bossbar/AdventureBossBarManager.java#L237
-				//setting action to UPDATE_NAME for color update instead of UPDATE_STYLE, throwing IllegalStateException at
-				//https://github.com/VelocityPowered/Velocity/blob/dev/1.1.0/proxy/src/main/java/com/velocitypowered/proxy/protocol/packet/BossBar.java#L173
-				//bypassing it by hiding bossbar then showing it again, making player not receive the broken packet
-				//not going to report the bug since TAB already got called brain-damaged for exposing an adventure bug in the past, not risking it again
+				//compensating for an already fixed bug for those who did not update Velocity
 				player.hideBossBar(bar);
 				bar.overlay(Overlay.valueOf(boss.overlay.toString()));
 				bar.color(Color.valueOf(boss.color.toString()));
