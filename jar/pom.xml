@@ -13,16 +13,10 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.2.2</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<minimizeJar>false</minimizeJar>
 					<artifactSet>
 						<includes>
 							<include>com.googlecode.json-simple:json-simple</include>
@@ -57,31 +51,26 @@
 			<groupId>me.neznamy</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>latest</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>bungeecord</artifactId>
 			<version>latest</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>shared</artifactId>
 			<version>latest</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>velocity-1.1.0</artifactId>
 			<version>latest</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>velocity-2.0.0</artifactId>
 			<version>latest</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -10,8 +10,6 @@
 	<groupId>me.neznamy</groupId>
 	<artifactId>bungeecord</artifactId>
 	<version>latest</version>
-	<name>TAB-BungeeCord</name>
-
 	<build>
 		<plugins>
 			<plugin>

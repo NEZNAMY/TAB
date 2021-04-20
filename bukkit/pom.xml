@@ -10,7 +10,6 @@
 	<groupId>me.neznamy</groupId>
 	<artifactId>bukkit</artifactId>
 	<version>latest</version>
-	<name>TAB-Bukkit</name>
 	<build>
 		<plugins>
 			<plugin>

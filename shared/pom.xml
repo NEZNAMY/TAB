@@ -10,8 +10,6 @@
 	<groupId>me.neznamy</groupId>
 	<artifactId>shared</artifactId>
 	<version>latest</version>
-	<name>TAB-Shared</name>
-
 	<build>
 		<resources>
 			<resource>

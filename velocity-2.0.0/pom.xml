@@ -10,8 +10,6 @@
 	<groupId>me.neznamy</groupId>
 	<artifactId>velocity-2.0.0</artifactId>
 	<version>latest</version>
-	<name>TAB-Velocity-2.0.0</name>
-
 	<build>
 		<resources>
 			<resource>
