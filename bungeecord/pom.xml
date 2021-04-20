@@ -8,7 +8,6 @@
 		<version>2.8.11-pre13</version>
 	</parent>
 	<artifactId>bungeecord</artifactId>
-	<version>latest</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -44,7 +43,7 @@
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>shared</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

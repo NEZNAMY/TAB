@@ -8,7 +8,6 @@
 		<version>2.8.11-pre13</version>
 	</parent>
 	<artifactId>velocity-1.1.0</artifactId>
-	<version>latest</version>
 	<build>
 		<resources>
 			<resource>
@@ -55,7 +54,7 @@
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>shared</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

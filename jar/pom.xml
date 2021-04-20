@@ -50,27 +50,27 @@
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>bungeecord</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>shared</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>velocity-1.1.0</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>velocity-2.0.0</artifactId>
-			<version>latest</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

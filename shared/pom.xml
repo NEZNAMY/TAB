@@ -8,7 +8,6 @@
 		<version>2.8.11-pre13</version>
 	</parent>
 	<artifactId>shared</artifactId>
-	<version>latest</version>
 	<build>
 		<resources>
 			<resource>
