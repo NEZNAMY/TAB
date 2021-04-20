@@ -109,7 +109,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			return LuckPermsProvider.get();
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving API instance: " + e.getMessage());
-			TAB.getInstance().getErrorManager().printError("Just a side note: LuckPerms is installed, otherwise server would not say it is. Luckperms is declared as softdependecy (https://github.com/NEZNAMY/TAB/blob/master/src/main/resources/plugin.yml#L6) and all code runs at onEnable or later, constructor is unused (https://github.com/NEZNAMY/TAB/blob/master/src/main/java/me/neznamy/tab/platforms/bukkit/Main.java#L20).");
+			TAB.getInstance().getErrorManager().printError("Just a side note: LuckPerms is installed, otherwise server would not say it is. LuckPerms is declared as softdependecy and all code runs at onEnable or later, constructor is unused.");
 			return null;
 		}
 	}
