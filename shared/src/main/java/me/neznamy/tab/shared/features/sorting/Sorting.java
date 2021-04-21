@@ -108,6 +108,7 @@ public class Sorting {
 	 * @return unique up to 16 character long sequence that sorts the player
 	 */
 	public String getTeamName(TabPlayer p) {
+		p.setTeamNameNote("");
 		StringBuilder sb = new StringBuilder();
 		for (SortingType type : sorting) {
 			sb.append(type.getChars(p));

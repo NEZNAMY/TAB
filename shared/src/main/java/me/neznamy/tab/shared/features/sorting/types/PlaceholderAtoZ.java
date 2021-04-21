@@ -17,7 +17,9 @@ public class PlaceholderAtoZ extends SortingType {
 
 	@Override
 	public String getChars(TabPlayer p) {
-		return setPlaceholders(p);
+		String output = setPlaceholders(p);
+		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". ");
+		return output;
 	}
 	
 	@Override

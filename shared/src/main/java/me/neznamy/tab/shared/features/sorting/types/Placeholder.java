@@ -38,11 +38,13 @@ public class Placeholder extends SortingType {
 	@Override
 	public String getChars(TabPlayer p) {
 		String output = setPlaceholders(p);
+		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". ");
 		if (output.contains("&")) output = output.replace('&', '\u00a7');
 		String sortingValue = sortingMap.get(output);
 		if (sortingValue == null) {
 			sortingValue = String.valueOf(sortingMap.size()+1);
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by predefined placeholder values is enabled, but output \"" + output + "\" is not listed.");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's placeholder output is not in list. ");
 		}
 		return sortingValue;
 	}

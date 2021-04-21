@@ -28,7 +28,7 @@ public class GroupPermission extends SortingType {
 				chars = sortedGroups.get(localgroup.toLowerCase());
 				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)");
 				if (p.hasPermission("random.permission")) {
-					p.setTeamNameNote(p.getTeamNameNote() + ". &cThis user appears to have all permissions. Is he OP?");
+					p.setTeamNameNote(p.getTeamNameNote() + "&cThis user appears to have all permissions. Is he OP? &r");
 				}
 				break;
 			}
@@ -36,7 +36,7 @@ public class GroupPermission extends SortingType {
 		if (chars == null) {
 			chars = "9";
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			p.setTeamNameNote("&cPlayer does not have sorting permission for any group in sorting list");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have sorting permission for any group in sorting list. ");
 		}
 		return chars;
 	}

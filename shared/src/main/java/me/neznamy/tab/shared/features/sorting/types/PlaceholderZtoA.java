@@ -18,6 +18,7 @@ public class PlaceholderZtoA extends SortingType {
 	@Override
 	public String getChars(TabPlayer p) {
 		char[] chars = setPlaceholders(p).toCharArray();
+		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + new String(chars) + "\". ");
 		for (int i=0; i<chars.length; i++) {
 			char c = chars[i];
 			if (c >= 65 && c <= 90) {

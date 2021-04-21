@@ -29,9 +29,9 @@ public class Groups extends SortingType {
 			if (!group.equals("<null>")) {
 				TAB.getInstance().getErrorManager().oneTimeConsoleError(String.format("Group \"&e%s&c\" is not defined in sorting list! This will result in players in that group not being sorted correctly. To fix this, add group \"&e%s&c\" into &egroup-sorting-priority-list in config.yml&c. Your current list: %s", group, group, sortedGroups.keySet()));
 			}
-			p.setTeamNameNote("&cPlayer's primary group is not in sorting list");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's primary group is not in sorting list. &r");
 		} else {
-			p.setTeamNameNote(String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)));
+			p.setTeamNameNote(p.getTeamNameNote() + String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)) + ". ");
 		}
 		return chars;
 	}
