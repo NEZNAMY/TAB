@@ -464,6 +464,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @return converted component
 	 * @throws Exception if something fails
 	 */
+	@SuppressWarnings("rawtypes")
 	public IChatBaseComponent fromNMSComponent(Object component) throws Exception {
 		if (component == null) return null;
 		long time = System.nanoTime();
@@ -472,12 +473,16 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (modifier != null) {
 			Object color = nms.ChatModifier_color.get(modifier);
 			if (color != null) {
-				String name = (String) nms.ChatHexColor_name.get(color);
-				if (name != null) {
-					//legacy code
-					chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+				if (nms.minorVersion >= 16) {
+					String name = (String) nms.ChatHexColor_name.get(color);
+					if (name != null) {
+						//legacy code
+						chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+					} else {
+						chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+					}
 				} else {
-					chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+					chat.setColor(new TextColor(EnumChatFormat.valueOf(((Enum)color).name())));
 				}
 			}
 			chat.setBold((Boolean) nms.ChatModifier_bold.get(modifier));
