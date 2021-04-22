@@ -27,18 +27,16 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
-import me.neznamy.tab.shared.features.types.event.SneakEventListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements RespawnEventListener, SneakEventListener {
+public class NameTagX extends NameTag implements RespawnEventListener {
 
 	//config options
 	public boolean markerFor18x;
 	public boolean disableOnBoats;
 	private double spaceBetweenLines;
-	public double entityTrackingRange;
 	
 	//list of defined dynamic lines
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
@@ -63,6 +61,11 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 	
 	//list of worlds with unlimited nametag mode disabled
 	protected List<String> disabledUnlimitedWorlds;
+	
+	//list of players currently in a vehicle
+	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<TabPlayer, Entity>();
+	
+	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<TabPlayer, Location>();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -75,7 +78,6 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
 		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
 		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
-		entityTrackingRange = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.tracking-range", 48);
 		disabledUnlimitedWorlds = tab.getConfiguration().config.getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
 		if (tab.getConfiguration().premiumconfig != null) {
 			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
@@ -123,6 +125,60 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 				}
 			}
 		});
+		tab.getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", TabFeature.NAMETAGX, UsageType.TICKING_VEHICLES, () -> {
+			
+			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+				if (!p.isLoaded()) continue;
+				if (isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) {
+					playersInVehicle.remove(p);
+					playerLocations.remove(p);
+					continue;
+				}
+				processVehicles(p);
+				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
+					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
+					processPassengers((Entity) p.getPlayer());
+					if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
+						p.getArmorStandManager().teleport(p);
+					}
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Checks for vehicle changes of player and sends packets if needed
+	 * @param p - player to check
+	 */
+	private void processVehicles(TabPlayer p) {
+		Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+		if (playersInVehicle.containsKey(p) && vehicle == null) {
+			//vehicle exit
+			vehicles.remove(playersInVehicle.get(p).getEntityId());
+			p.getArmorStandManager().teleport();
+			playersInVehicle.remove(p);
+		}
+		if (!playersInVehicle.containsKey(p) && vehicle != null) {
+			//vehicle enter
+			vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+			p.getArmorStandManager().teleport();
+			playersInVehicle.put(p, vehicle);
+		}
+	}
+	
+	/**
+	 * Teleports armor stands of all passengers on specified vehicle
+	 * @param vehicle - entity to check passengers of
+	 */
+	private void processPassengers(Entity vehicle) {
+		for (Entity passenger : getPassengers(vehicle)) {
+			if (passenger instanceof Player) {
+				TabPlayer pl = TAB.getInstance().getPlayer(passenger.getUniqueId());
+				pl.getArmorStandManager().teleport();
+			} else {
+				processPassengers(passenger);
+			}
+		}
 	}
 
 	@Override
@@ -176,8 +232,8 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
-		eventListener.onQuit(disconnectedPlayer);
-
+		playersInVehicle.remove(disconnectedPlayer);
+		playerLocations.remove(disconnectedPlayer);
 		tab.getCPUManager().runTaskLater(100, "processing onQuit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
@@ -188,8 +244,8 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 		loadArmorStands(p);
 		loadPassengers(p);
 		for (TabPlayer viewer : tab.getPlayers()) {
-			spawnArmorStands(p, viewer, true);
 			viewer.getArmorStandManager().destroy(p);
+			spawnArmorStands(p, viewer, true);
 		}
 	}
 	
@@ -202,7 +258,8 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 	private void spawnArmorStands(TabPlayer owner, TabPlayer viewer, boolean sendMutually) {
 		if (owner == viewer) return; //not displaying own armorstands
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
-		if (getDistance(viewer, owner) <= entityTrackingRange) {
+		if (isDisabledWorld(owner.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, owner.getWorldName())) return;
+		if (getDistance(viewer, owner) <= 48) {
 			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
 			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
 		}
@@ -323,19 +380,13 @@ public class NameTagX extends NameTag implements RespawnEventListener, SneakEven
 
 	@Override
 	public void onRespawn(TabPlayer respawned) {
-		if (isDisabledWorld(respawned.getWorldName())) return;
+		if (isDisabledWorld(respawned.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, respawned.getWorldName())) return;
 		respawned.getArmorStandManager().teleport();
 	}
 
 	@Override
-	public void onSneak(TabPlayer player, boolean isSneaking) {
-		if (isDisabledWorld(player.getWorldName())) return;
-		player.getArmorStandManager().sneak(isSneaking);
-	}
-
-	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug)
-		return playersOnBoats.contains(p) && !invisiblePlayers.contains(p.getName());
+		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug) or feature is disabled
+		return (playersOnBoats.contains(p) && !invisiblePlayers.contains(p.getName())) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName());
 	}
 }

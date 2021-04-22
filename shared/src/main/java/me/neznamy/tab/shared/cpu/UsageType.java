@@ -28,6 +28,8 @@ public enum UsageType {
 	PACKET_LOGIN("PacketLogin"),
 	PACKET_DISPLAY_OBJECTIVE("PacketPlayOutScoreboardDisplayObjective"),
 	PACKET_OBJECTIVE("PacketPlayOutScoreboardObjective"),
+	PACKET_NAMED_ENTITY_SPAWN("PacketPlayOutNamedEntitySpawn"),
+	PACKET_ENTITY_DESTROY("PacketPlayOutEntityDestroy"),
 	
 	//nametags
 	REFRESHING_COLLISION("Refreshing collision rule"),
@@ -40,7 +42,7 @@ public enum UsageType {
 	//other
 	REFRESHING("Refreshing"),
 	REPEATING_TASK("Repeating task"),
-	TICKING_UNLIMITED_NAMETAGS("Ticking unlimited nametag mode"),
+	TICKING_VEHICLES("Ticking vehicles"),
 	v1_8_0_BUG_COMPENSATION("Compensating for 1.8.0 bugs");
 	
 	//user-friendly name to be used in /tab cpu

@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.shared.TAB;
 
@@ -76,15 +75,5 @@ public class BukkitEventListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
 		TAB.getInstance().getCPUManager().runTask("processing PlayerRespawnEvent", () -> TAB.getInstance().getFeatureManager().onRespawn(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
-	}
-	
-	/**
-	 * Listener to PlayerToggleSneakEvent to forward the event to features
-	 * @param e sneak event
-	 */
-	@EventHandler
-	public void onSneak(PlayerToggleSneakEvent e) {
-		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerToggleSneakEvent", () -> TAB.getInstance().getFeatureManager().onSneak(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.isSneaking()));
 	}
 }

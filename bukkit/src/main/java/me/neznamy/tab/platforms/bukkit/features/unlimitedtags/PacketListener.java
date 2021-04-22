@@ -68,8 +68,18 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
+		if (receiver.getVersion().getMinorVersion() < 8) return;
+		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
+		String world = ((Player)receiver.getPlayer()).getWorld().getName();
+		if (!receiver.isLoaded() || nameTagX.isDisabledWorld(world) || nameTagX.isDisabledWorld(nameTagX.disabledUnlimitedWorlds, world)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !packet.getClass().getSimpleName().equals("PacketPlayOutEntityLook")) {
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
+		}
+		if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
+			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
+		}
+		if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
+			onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
 		}
 	}
 
@@ -83,16 +93,30 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 		List<Entity> vehicleList;
 		if (pl != null) {
 			//player moved
-			if (!pl.isLoaded() || nameTagX.isDisabledWorld(pl.getWorldName())) return;
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Entity entity : vehicleList) {
 				TabPlayer passenger = nameTagX.entityIdMap.get(entity.getEntityId());
-				if (passenger != null && passenger.getArmorStandManager() != null && !nameTagX.isDisabledWorld(passenger.getWorldName())) {
+				if (passenger != null && passenger.getArmorStandManager() != null) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
+		}
+	}
+	
+	public void onEntitySpawn(TabPlayer receiver, int entityId) {
+		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
+		if (spawnedPlayer != null && spawnedPlayer.isLoaded()) {
+			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
+		}
+	}
+
+	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
+		for (int id : entities) {
+			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(id);
+			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
+				tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 		}
 	}
 

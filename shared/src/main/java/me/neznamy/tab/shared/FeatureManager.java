@@ -20,7 +20,6 @@ import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
-import me.neznamy.tab.shared.features.types.event.SneakEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
@@ -378,20 +377,6 @@ public class FeatureManager {
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_CHAT_EVENT, System.nanoTime()-time);
 		}
 		return cancel;
-	}
-	
-	/**
-	 * Calls onSneak on all featurs that implement SneakEventListener and measures how long it took them to process
-	 * @param player - player who sneaked
-	 * @param isSneaking - new sneak status
-	 */
-	public void onSneak(TabPlayer player, boolean isSneaking) {
-		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof SneakEventListener)) continue;
-			long time = System.nanoTime();
-			((SneakEventListener)f).onSneak(player, isSneaking);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_TOGGLE_SNEAK_EVENT, System.nanoTime()-time);
-		}
 	}
 	
 	/**
