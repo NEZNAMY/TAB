@@ -193,6 +193,7 @@ public class NMSStorage {
 	public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 	
 	public Class<?> PacketPlayOutEntity;
+	public Class<?> PacketPlayOutEntityLook;
 	public Field PacketPlayOutEntity_ENTITYID;
 
 	public Class<?> PacketPlayOutEntityTeleport;
@@ -295,6 +296,8 @@ public class NMSStorage {
 		PacketPlayInUseEntity = getNMSClass("PacketPlayInUseEntity");
 		PacketPlayOutChat = getNMSClass("PacketPlayOutChat");
 		PacketPlayOutEntity = getNMSClass("PacketPlayOutEntity");
+		//v1_8_R2+; v1_7_R1 - v1_8_R1
+		PacketPlayOutEntityLook = getNMSClass("PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook");
 		PacketPlayOutEntityDestroy = getNMSClass("PacketPlayOutEntityDestroy");
 		PacketPlayOutEntityMetadata = getNMSClass("PacketPlayOutEntityMetadata");
 		PacketPlayOutEntityTeleport = getNMSClass("PacketPlayOutEntityTeleport");
