@@ -8,14 +8,15 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 public class TextColor {
 
 	private static EnumChatFormat[] legacyColors = EnumChatFormat.values();
+	
 	//red value
-	private int red;
+	private Integer red;
 	
 	//green value
-	private int green;
+	private Integer green;
 	
 	//blue value
-	private int blue;
+	private Integer blue;
 	
 	//closest legacy color
 	private EnumChatFormat legacyColor;
@@ -34,8 +35,7 @@ public class TextColor {
 	 * @param hexCode - a 6-digit combination of hex numbers
 	 */
 	public TextColor(String hexCode) {
-		int hexColor = Integer.parseInt(hexCode.substring(1), 16);
-		set((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF, getClosestColor((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF), false, hexCode);
+		this.hexCode = hexCode;
 	}
 	
 	/**
@@ -44,8 +44,9 @@ public class TextColor {
 	 * @param legacyColor color to use for legacy clients
 	 */
 	public TextColor(String hexCode, EnumChatFormat legacyColor) {
-		int hexColor = Integer.parseInt(hexCode.substring(1), 16);
-		set((hexColor >> 16) & 0xFF, (hexColor >> 8) & 0xFF, hexColor & 0xFF, legacyColor, true, hexCode);
+		this.hexCode = hexCode;
+		this.legacyColorForced = true;
+		this.legacyColor = legacyColor;
 	}
 	
 	/**
@@ -53,7 +54,10 @@ public class TextColor {
 	 * @param legacyColor - legacy color
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
-		set(legacyColor.getRed(), legacyColor.getGreen(), legacyColor.getBlue(), legacyColor, false, legacyColor.getHexCode());
+		this.red = legacyColor.getRed();
+		this.green = legacyColor.getGreen();
+		this.blue = legacyColor.getBlue();
+		this.hexCode = legacyColor.getHexCode();
 	}
 	
 	/**
@@ -63,33 +67,9 @@ public class TextColor {
 	 * @param blue - blue value
 	 */
 	public TextColor(int red, int green, int blue) {
-		set(red, green, blue, getClosestColor(red, green, blue), false, String.format("#%06X", (red << 16) + (green << 8) + blue));
-	}
-	
-	/**
-	 * Constructs new instance with given rgb mask
-	 * @param rgb - RGB mask
-	 */
-	public TextColor(int rgb) {
-		set((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, getClosestColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF), false, String.format("#%06X", rgb));
-	}
-	
-	/**
-	 * Sets all parameters to given values
-	 * @param red - color's red value
-	 * @param green - color's green value
-	 * @param blue - color's blue value
-	 * @param legacyColor - closest legacy color
-	 * @param legacyColorForced - if legacy color was forced
-	 * @param hexCode - color's hex code
-	 */
-	public void set(int red, int green, int blue, EnumChatFormat legacyColor, boolean legacyColorForced, String hexCode) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
-		this.legacyColor = legacyColor;
-		this.legacyColorForced = legacyColorForced;
-		this.hexCode = hexCode;
 	}
 	
 	/**
@@ -122,6 +102,12 @@ public class TextColor {
 	 * @return amount of red
 	 */
 	public int getRed() {
+		if (red == null) {
+			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+			red = (hexColor >> 16) & 0xFF;
+			green = (hexColor >> 8) & 0xFF;
+			blue = hexColor & 0xFF;
+		}
 		return red;
 	}
 	
@@ -130,6 +116,12 @@ public class TextColor {
 	 * @return amount of green
 	 */
 	public int getGreen() {
+		if (green == null) {
+			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+			red = (hexColor >> 16) & 0xFF;
+			green = (hexColor >> 8) & 0xFF;
+			blue = hexColor & 0xFF;
+		}
 		return green;
 	}
 	
@@ -138,6 +130,12 @@ public class TextColor {
 	 * @return amount of blue
 	 */
 	public int getBlue() {
+		if (blue == null) {
+			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+			red = (hexColor >> 16) & 0xFF;
+			green = (hexColor >> 8) & 0xFF;
+			blue = hexColor & 0xFF;
+		}
 		return blue;
 	}
 	
@@ -146,6 +144,9 @@ public class TextColor {
 	 * @return defined legacy color
 	 */
 	public EnumChatFormat getLegacyColor() {
+		if (legacyColor == null) {
+			legacyColor = getClosestColor(getRed(), getGreen(), getBlue());
+		}
 		return legacyColor;
 	}
 	
@@ -154,6 +155,9 @@ public class TextColor {
 	 * @return hex code of this color
 	 */
 	public String getHexCode() {
+		if (hexCode == null) {
+			hexCode = String.format("#%06X", (red << 16) + (green << 8) + blue);
+		}
 		return hexCode;
 	}
 	
@@ -163,14 +167,14 @@ public class TextColor {
 	 */
 	public String toString() {
 		if (!returnLegacy) {
-			EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(red, green, blue);
+			EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
 			if (legacyEquivalent != null) {
 				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
 				return legacyEquivalent.toString().toLowerCase();
 			}
-			return hexCode;
+			return getHexCode();
 		} else {
-			return legacyColor.toString().toLowerCase();
+			return getLegacyColor().toString().toLowerCase();
 		}
 	}
 	

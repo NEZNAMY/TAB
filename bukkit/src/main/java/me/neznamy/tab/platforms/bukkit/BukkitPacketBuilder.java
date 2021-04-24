@@ -479,7 +479,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 						//legacy code
 						chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
 					} else {
-						chat.setColor(new TextColor((int) nms.ChatHexColor_rgb.get(color)));
+						int rgb = (int) nms.ChatHexColor_rgb.get(color);
+						chat.setColor(new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
 					}
 				} else {
 					chat.setColor(new TextColor(EnumChatFormat.valueOf(((Enum)color).name())));
