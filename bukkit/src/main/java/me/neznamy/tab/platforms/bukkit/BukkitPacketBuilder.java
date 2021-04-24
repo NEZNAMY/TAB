@@ -464,10 +464,17 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @return converted component
 	 * @throws Exception if something fails
 	 */
-	@SuppressWarnings("rawtypes")
 	public IChatBaseComponent fromNMSComponent(Object component) throws Exception {
-		if (component == null) return null;
 		long time = System.nanoTime();
+		IChatBaseComponent obj = fromNMSComponent0(component);
+		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
+		return obj;
+	}
+	
+	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
+	@SuppressWarnings("rawtypes")
+	public IChatBaseComponent fromNMSComponent0(Object component) throws Exception {
+		if (component == null) return null;
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
 		if (modifier != null) {
@@ -501,9 +508,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}*/
 		}
 		for (Object extra : (List<Object>) nms.ChatBaseComponent_extra.get(component)) {
-			chat.addExtra(fromNMSComponent(extra));
+			chat.addExtra(fromNMSComponent0(extra));
 		}
-		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
 		return chat;
 	}
 	
