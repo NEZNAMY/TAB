@@ -60,13 +60,13 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (player == null) return "";
 		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
 		if (identifier.equals("scoreboard_visible")) {
-			return p.isScoreboardVisible() ? "Enabled" : "Disabled";
+			return translate(p.isScoreboardVisible());
 		}
 		if (identifier.equals("bossbar_visible")) {
-			return p.hasBossbarVisible() ? "Enabled" : "Disabled";
+			return translate(p.hasBossbarVisible());
 		}
 		if (identifier.equals("ntpreview")) {
-			return p.isPreviewingNametag() ? "Enabled" : "Disabled";
+			return translate(p.isPreviewingNametag());
 		}
 		if (identifier.startsWith("replace_")) {
 			return findReplacement("%" + identifier.substring(8) + "%", player);
@@ -76,6 +76,10 @@ public class TabExpansion extends PlaceholderExpansion {
 			return new Property(p, "%" + identifier.substring(12) + "%").get();
 		}
 		return getProperty(identifier, p);
+	}
+	
+	private String translate(boolean b) {
+		return b ? "Enabled" : "Disabled";
 	}
 	
 	/**
