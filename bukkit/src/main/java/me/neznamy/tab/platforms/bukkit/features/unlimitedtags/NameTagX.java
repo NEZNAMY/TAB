@@ -104,6 +104,11 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 				spawnArmorStands(all, viewer, false);
 			}
 		}
+		startVisibilityRefreshTask();
+		startVehicleTickingTask();
+	}
+	
+	private void startVisibilityRefreshTask() {
 		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
@@ -125,6 +130,9 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 				}
 			}
 		});
+	}
+	
+	private void startVehicleTickingTask() {
 		tab.getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", TabFeature.NAMETAGX, UsageType.TICKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
