@@ -48,14 +48,19 @@ public class ScoreboardCommand extends SubCommand {
 		if (p.getOtherPluginScoreboard() != null) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
 		if (args.length >= 1) {
-			if (args[0].equalsIgnoreCase("on"))
+			switch(args[0]) {
+			case "on":
 				p.setScoreboardVisible(true, !silent);
-
-			if (args[0].equalsIgnoreCase("off"))
+				break;
+			case "off":
 				p.setScoreboardVisible(false, !silent);
-
-			if (args[0].equalsIgnoreCase("toggle"))
+				break;
+			case "toggle":
 				p.toggleScoreboard(!silent);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
