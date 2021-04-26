@@ -87,8 +87,10 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 			if (items == null) return;
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
-				DataWatcherItem i = DataWatcherItem.fromNMS(item);
-				if (i.type.position == PET_OWNER_POSITION && (i.value instanceof java.util.Optional || i.value instanceof com.google.common.base.Optional)) continue;
+				if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == PET_OWNER_POSITION) {
+					Object value = nms.DataWatcherItem_VALUE.get(item);
+					if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) continue;
+				}
 				newList.add(item);
 			}
 			nms.PacketPlayOutEntityMetadata_LIST.set(packet, newList);
