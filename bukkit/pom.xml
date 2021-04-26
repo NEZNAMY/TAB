@@ -73,10 +73,6 @@
 					<artifactId>commons-lang</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>net.md-5</groupId>
 					<artifactId>bungeecord-chat</artifactId>
 				</exclusion>
@@ -115,10 +111,6 @@
 				<exclusion>
 					<groupId>commons-lang</groupId>
 					<artifactId>commons-lang</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
