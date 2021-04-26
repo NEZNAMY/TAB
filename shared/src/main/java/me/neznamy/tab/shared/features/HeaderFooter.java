@@ -71,9 +71,9 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			p.setProperty("footer", getValue(p, "footer") + footerAppend);
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
-		IChatBaseComponent header = IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet());
-		if (header.getText() != null) header.setText("\u00a70\u00a71\u00a72\u00a7r" + header.getText());
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(header, IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(
+				IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
+				IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
 	}
 	
 	@Override
