@@ -1,19 +1,18 @@
 package me.neznamy.tab.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * A helper class for easy management of armor stands of a player
  */
 public class ArmorStandManager {
 
-	//list of registered armor stands
-	private Map<String, ArmorStand> armorStands = new LinkedHashMap<String, ArmorStand>();
+	//map of registered armor stands
+	private ConcurrentMap<String, ArmorStand> armorStands = new ConcurrentHashMap<String, ArmorStand>();
 
 	/**
 	 * Adds armor stand into list
@@ -38,7 +37,7 @@ public class ArmorStandManager {
 	 */
 	public void spawn(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() < 8) return;
-		getArmorStands().forEach(a -> a.spawn(viewer));
+		armorStands.values().forEach(a -> a.spawn(viewer));
 	}
 
 	/**
@@ -46,14 +45,14 @@ public class ArmorStandManager {
 	 * @param sneaking - new sneaking status
 	 */
 	public void sneak(boolean sneaking) {
-		getArmorStands().forEach(a -> a.sneak(sneaking));
+		armorStands.values().forEach(a -> a.sneak(sneaking));
 	}
 
 	/**
 	 * Teleports armor stands to player's current location for all nearby players
 	 */
 	public void teleport() {
-		getArmorStands().forEach(a -> a.teleport());
+		armorStands.values().forEach(a -> a.teleport());
 	}
 
 	/**
@@ -61,14 +60,14 @@ public class ArmorStandManager {
 	 * @param viewer - player to teleport armor stands for
 	 */
 	public void teleport(TabPlayer viewer) {
-		getArmorStands().forEach(a -> a.teleport(viewer));
+		armorStands.values().forEach(a -> a.teleport(viewer));
 	}
 
 	/**
 	 * Refreshes name of all armor stands for all nearby players
 	 */
 	public void refresh() {
-		getArmorStands().forEach(a -> a.refresh());
+		armorStands.values().forEach(a -> a.refresh());
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class ArmorStandManager {
 	 * @param force - true if packets should be sent despite seemingly not needed
 	 */
 	public void updateVisibility(boolean force) {
-		getArmorStands().forEach(a -> a.updateVisibility(force));
+		armorStands.values().forEach(a -> a.updateVisibility(force));
 	}
 
 	/**
@@ -84,14 +83,14 @@ public class ArmorStandManager {
 	 * @param viewer - player to remove
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
-		getArmorStands().forEach(a -> a.removeFromRegistered(viewer));
+		armorStands.values().forEach(a -> a.removeFromRegistered(viewer));
 	}
 
 	/**
 	 * Sends destroy packet of all armor stands to everyone and clears nearby players list
 	 */
 	public void destroy() {
-		getArmorStands().forEach(a -> a.destroy());
+		armorStands.values().forEach(a -> a.destroy());
 	}
 
 	/**
@@ -99,7 +98,7 @@ public class ArmorStandManager {
 	 * @param viewer - player to destroy armor stands for
 	 */
 	public void destroy(TabPlayer viewer) {
-		getArmorStands().forEach(a -> a.destroy(viewer));
+		armorStands.values().forEach(a -> a.destroy(viewer));
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class ArmorStandManager {
 	 * @return true if armor stand with specified entity id exists, false if not
 	 */
 	public boolean hasArmorStandWithID(int entityId) {
-		for (ArmorStand as : getArmorStands()) {
+		for (ArmorStand as : armorStands.values()) {
 			if (as.getEntityId() == entityId) {
 				return true;
 			}
@@ -121,7 +120,7 @@ public class ArmorStandManager {
 	 * @return copy of armor stands
 	 */
 	public Collection<ArmorStand> getArmorStands(){
-		return new ArrayList<>(armorStands.values());
+		return armorStands.values();
 	}
 	
 	/**
