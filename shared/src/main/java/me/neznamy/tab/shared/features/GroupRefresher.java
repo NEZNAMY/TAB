@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,10 @@ public class GroupRefresher implements Feature {
 		this.tab = tab;
 		usePrimaryGroup = tab.getConfiguration().config.getBoolean("use-primary-group", true);
 		groupsByPermissions = tab.getConfiguration().config.getBoolean("assign-groups-by-permissions", false);
-		primaryGroupFindingList = tab.getConfiguration().config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+		primaryGroupFindingList = new ArrayList<String>();
+		for (Object group : tab.getConfiguration().config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
+			primaryGroupFindingList.add(group.toString());
+		}
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
 
 			@Override
@@ -57,9 +61,9 @@ public class GroupRefresher implements Feature {
 		try {
 			String[] playerGroups = tab.getPermissionPlugin().getAllGroups(p);
 			if (playerGroups != null && playerGroups.length > 0) {
-				for (Object groupFromList : primaryGroupFindingList) {
+				for (String groupFromList : primaryGroupFindingList) {
 					for (String playerGroup : playerGroups) {
-						if (playerGroup.equalsIgnoreCase(groupFromList.toString())) {
+						if (playerGroup.equalsIgnoreCase(groupFromList)) {
 							return playerGroup;
 						}
 					}
