@@ -55,7 +55,26 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
 			if (!isDisabledWorld(disabledWorlds, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), getFeatureType());
 		} else {
-			refresh(p, true);
+			boolean refresh = false;
+			String headerAppend = getValue(p, "headerappend");
+			if (headerAppend.length() > 0) headerAppend = "\n\u00a7r" + headerAppend;
+			String header = getValue(p, "header") + headerAppend;
+			if (!p.getProperty("header").getOriginalRawValue().equals(header)) {
+				p.setProperty("header", header);
+				refresh = true;
+			}
+			
+			String footerAppend = getValue(p, "footerappend");
+			if (footerAppend.length() > 0) footerAppend = "\n\u00a7r" + footerAppend;
+			String footer = getValue(p, "footer") + footerAppend;
+			if (!p.getProperty("footer").getOriginalRawValue().equals(footer)) {
+				p.setProperty("footer", footer);
+				refresh = true;
+			}
+			if (refresh) {
+				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
+						IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
+			}
 		}
 	}
 	
@@ -71,8 +90,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			p.setProperty("footer", getValue(p, "footer") + footerAppend);
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(
-				IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
 				IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
 	}
 	
