@@ -51,8 +51,8 @@ public class Property {
 	 * @param value - raw value to be checked
 	 */
 	private void analyze(String value) {
-		placeholders = new ArrayList<String>();
-		relPlaceholders = new ArrayList<String>();
+		List<String> placeholders = new ArrayList<String>();
+		List<String> relPlaceholders = new ArrayList<String>();
 		for (String identifier : TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(value)) {
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders.add(identifier);
@@ -60,6 +60,9 @@ public class Property {
 				placeholders.add(identifier);
 			}
 		}
+		//avoiding rare concurrent modification in #update
+		this.placeholders = placeholders;
+		this.relPlaceholders = relPlaceholders;
 	}
 	
 	/**
