@@ -190,7 +190,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	}
 
 	public void refreshPlaceholderUsage() {
-		placeholderUsage = new HashMap<>();
+		Map<String, Set<Refreshable>> placeholderUsage = new HashMap<>();
 		for (String placeholder : allUsedPlaceholderIdentifiers) {
 			Set<Refreshable> set = new HashSet<Refreshable>();
 			for (Feature r : tab.getFeatureManager().getAllFeatures()) {
@@ -199,6 +199,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			}
 			placeholderUsage.put(placeholder, set);
 		}
+		this.placeholderUsage = placeholderUsage;
 	}
 
 	@Override
