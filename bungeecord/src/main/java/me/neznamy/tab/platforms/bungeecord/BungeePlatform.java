@@ -57,7 +57,7 @@ public class BungeePlatform implements Platform {
 		tab.getPlaceholderManager().addRegistry(new BungeePlaceholderRegistry());
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
-		tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
+		if (tab.getConfiguration().pipelineInjection) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));
 		loadUniversalFeatures();
 		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));

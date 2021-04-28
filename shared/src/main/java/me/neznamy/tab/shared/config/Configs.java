@@ -39,6 +39,7 @@ public class Configs {
 	public boolean armorStandsAlwaysVisible; //paid private addition
 	public boolean removeGhostPlayers;
 	public boolean layout;
+	public boolean pipelineInjection;
 
 	//animations.yml file
 	public ConfigurationFile animation;
@@ -125,6 +126,7 @@ public class Configs {
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		layout = (boolean) getSecretOption("layout", false);
+		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true);
 		
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();

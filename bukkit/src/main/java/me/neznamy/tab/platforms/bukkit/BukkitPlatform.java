@@ -96,7 +96,7 @@ public class BukkitPlatform implements Platform {
 		tab.getPlaceholderManager().addRegistry(new BukkitPlaceholderRegistry(plugin));
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
-		if (version >= 8) {
+		if (version >= 8 && tab.getConfiguration().pipelineInjection) {
 			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(tab, nms));
 		}
 		loadNametagFeature(tab);
