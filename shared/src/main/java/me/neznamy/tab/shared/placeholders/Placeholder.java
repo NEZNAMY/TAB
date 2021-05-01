@@ -39,7 +39,16 @@ public abstract class Placeholder {
 		if (TAB.getInstance().getConfiguration().premiumconfig != null) {
 			Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
 			for (Entry<Object, Object> entry : original.entrySet()) {
-				replacements.put(entry.getKey().toString().replace('&', '\u00a7'), entry.getValue().toString());
+				String key = entry.getKey().toString();
+				String value = entry.getValue().toString();
+				replacements.put(key.replace('&', '\u00a7'), value);
+				//snakeyaml converts yes & no to booleans, making them not work when used without "
+				if (key.equals("true")) {
+					replacements.put("yes", value);
+				}
+				if (key.equals("false")) {
+					replacements.put("no", value);
+				}
 				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
