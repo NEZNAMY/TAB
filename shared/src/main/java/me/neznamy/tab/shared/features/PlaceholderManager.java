@@ -217,8 +217,8 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		for (Placeholder pl : getAllPlaceholders()) {
-			if (!allUsedPlaceholderIdentifiers.contains(pl.getIdentifier())) continue;
+		for (String identifier : allUsedPlaceholderIdentifiers) {
+			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : tab.getPlayers()) {
 					((RelationalPlaceholder)pl).update(connectedPlayer, all);
@@ -233,7 +233,8 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (Placeholder pl : getAllPlaceholders()) {
+		for (String identifier : allUsedPlaceholderIdentifiers) {
+			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : tab.getPlayers()) {
 					((RelationalPlaceholder)pl).lastValue.remove(all.getName() + "-" + disconnectedPlayer.getName());
