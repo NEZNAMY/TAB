@@ -20,6 +20,7 @@ public class GhostPlayerFix implements QuitEventListener {
 
 			@Override
 			public void run() {
+				if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (all == disconnectedPlayer) continue;
 					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), getFeatureType());
