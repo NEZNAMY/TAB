@@ -34,7 +34,8 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true);
 		refreshUsedPlaceholders();
-		if (tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true)) {
+		boolean antiOverride = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
+		if (antiOverride) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
 
 				@Override
@@ -63,6 +64,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				
 			});
 		}
+		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverride=%s", disabledWorlds, antiOverride));
 	}
 
 	@Override

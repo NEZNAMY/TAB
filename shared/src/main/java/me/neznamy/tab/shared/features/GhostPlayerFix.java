@@ -14,6 +14,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  */
 public class GhostPlayerFix implements QuitEventListener {
 
+	public GhostPlayerFix() {
+		TAB.getInstance().debug("Loaded GhostPlayerFix feature");
+	}
+	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, new Runnable() {

@@ -42,6 +42,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		rawText = tab.getConfiguration().config.getString("classic-vanilla-belowname.text", "Health");
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
+		tab.debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s", rawNumber, rawText, disabledWorlds));
 		tab.getFeatureManager().registerFeature("belowname-text", new Refreshable() {
 
 			private List<String> usedPlaceholders;

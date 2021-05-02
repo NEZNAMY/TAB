@@ -46,6 +46,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		} else {
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
+		tab.debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, displayType=%s", rawValue, disabledWorlds, displayType));
 	}
 
 	@Override

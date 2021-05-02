@@ -38,6 +38,9 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 	public boolean disableOnBoats;
 	private double spaceBetweenLines;
 	
+	//list of worlds with unlimited nametag mode disabled
+	protected List<String> disabledUnlimitedWorlds;
+	
 	//list of defined dynamic lines
 	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	
@@ -58,9 +61,6 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 	
 	//list of players currently on boats
 	public List<TabPlayer> playersOnBoats = new ArrayList<TabPlayer>();
-	
-	//list of worlds with unlimited nametag mode disabled
-	protected List<String> disabledUnlimitedWorlds;
 	
 	//list of players currently in a vehicle
 	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<TabPlayer, Entity>();
@@ -90,6 +90,8 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 		eventListener = new EventListener(this);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
+		tab.debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
+				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
 
 	@Override

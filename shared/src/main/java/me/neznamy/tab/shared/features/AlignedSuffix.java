@@ -30,10 +30,9 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 	public AlignedSuffix(Playerlist playerlist, TAB tab) {
 		this.tab = tab;
 		this.playerlist = playerlist;
-		tab.debug("Loading widths from file");
 		loadWidthsFromFile();
 		loadExtraWidths();
-		tab.debug("Loaded " + widths.size() + " character widths.");
+		tab.debug("Loaded AlignedSuffix feature with " + widths.size() + " character widths.");
 	}
 	
 	/**

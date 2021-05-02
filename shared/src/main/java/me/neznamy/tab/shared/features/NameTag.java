@@ -43,6 +43,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		invisibleNametags = tab.getConfiguration().config.getBoolean("invisible-nametags", false);
 		sorting = new Sorting(tab, this);
 		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+		tab.debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, revertedCollision=%s, disabledWorlds=%s, invisibleNametags=%s",
+				collisionRule, revertedCollision, disabledWorlds, invisibleNametags));
 	}
 	
 	@Override

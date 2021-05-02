@@ -101,6 +101,8 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 				return String.valueOf((announceEndTime - System.currentTimeMillis()) / 1000);
 			}
 		});
+		tab.debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, permToToggle=%s, hiddenByDefault=%s, perWorld=%s, remember_toggle_choice=%s",
+				disabledWorlds, toggleCommand, defaultBars, permToToggle, hiddenByDefault, perWorld, remember_toggle_choice));
 	}
 	
 	@Override

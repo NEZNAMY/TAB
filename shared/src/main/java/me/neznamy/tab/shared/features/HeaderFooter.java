@@ -27,6 +27,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
+		tab.debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s", disabledWorlds));
 	}
 	
 	@Override

@@ -59,6 +59,7 @@ public class PerWorldPlayerlist implements Loadable, JoinEventListener, WorldCha
 						"\"), which has no effect and only makes config less readable. Delete the group entirely for a cleaner config.");
 			}
 		}
+		tab.debug(String.format("Loaded PerWorldPlayerlist feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
 	}
 	
 	@Override

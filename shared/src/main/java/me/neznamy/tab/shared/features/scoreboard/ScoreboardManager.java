@@ -125,6 +125,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			tab.getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
 		}
 		checkForMisconfiguration();
+		tab.debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, permToToggle=%s, disabledWorlds=%s"
+				+ ", defaultScoreboard=%s, perWorld=%s, remember_toggle_choice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
+				toggleCommand, useNumbers, permToToggle, disabledWorlds, defaultScoreboard, perWorld, remember_toggle_choice, hiddenByDefault, scoreboard_on, scoreboard_off, staticNumber, joinDelay));
 	}
 
 	/**

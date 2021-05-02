@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
@@ -36,6 +37,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 */
 	public PetFix(NMSStorage nms) {
 		this.nms = nms;
+		TAB.getInstance().debug("Loaded PetFix feature");
 	}
 	
 	/**

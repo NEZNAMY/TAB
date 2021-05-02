@@ -27,6 +27,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 
 	private TAB tab;
 	public final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";
+	
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
@@ -50,6 +51,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), getFeatureType());
 			}
 		}
+		tab.debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
+				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
 	}
 	
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {

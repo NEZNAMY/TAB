@@ -24,6 +24,7 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 	 */
 	public SpectatorFix() {
 		allowBypass = TAB.getInstance().getConfiguration().config.getBoolean("allow-spectator-bypass-permission", false);
+		TAB.getInstance().debug(String.format("Loaded SpectatorFix feature with parameters allowBypass=%s", allowBypass));
 	}
 	
 	@Override
