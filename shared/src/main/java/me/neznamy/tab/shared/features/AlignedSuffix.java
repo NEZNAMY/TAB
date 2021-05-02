@@ -10,8 +10,6 @@ import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -19,7 +17,7 @@ import me.neznamy.tab.shared.packets.IChatBaseComponent;
 /**
  * Additional code for Playerlist class to secure alignment
  */
-public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener {
+public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 
 	private TAB tab;
 	private int maxWidth;
@@ -122,7 +120,7 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		if (component.getText() != null) {
 			for (Character c : component.getText().toCharArray()) {
 				if (widths.containsKey(c)) {
-					int localWidth = widths.get(c);
+					int localWidth = widths.get(c) + 1;
 					if (component.isBold()) {
 						width += localWidth+1;
 					} else {
@@ -132,15 +130,9 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 					tab.getErrorManager().oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
 				}
 			}
-			//there is 1 pixel space between characters, but not after last one
-			width += component.getText().length()-1;
 		}
 		for (IChatBaseComponent extra : component.getExtra()) {
-			int extraWidth = getTextWidth(extra);
-			//ignoring empty components
-			if (extraWidth > 0) {
-				width += extraWidth + 1; //1 pixel space between characters
-			}
+			width += getTextWidth(extra);
 		}
 		return width;
 	}
@@ -178,26 +170,6 @@ public class AlignedSuffix implements Loadable, JoinEventListener, QuitEventList
 		}
 		output.append("\u00a7r");
 		return output.toString();
-	}
-
-	@Override
-	public void load() {
-		recalculateMaxWidth(null);
-	}
-	
-	@Override
-	public void unload() {
-		//nothing to do here, Playerlist feature handles unloading
-	}
-	
-	@Override
-	public void onJoin(TabPlayer p) {
-		int width = getPlayerNameWidth(p);
-		if (width > maxWidth) {
-			maxWidth = width;
-			maxPlayer = p;
-			updateAllNames(null);
-		}
 	}
 	
 	@Override
