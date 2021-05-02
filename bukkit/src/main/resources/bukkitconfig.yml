@@ -104,9 +104,6 @@ unlimited-nametag-prefix-suffix-mode:
   #enabling the feature
   enabled: false
   
-  #enabling will result in NPCs ignoring nametag prefix/suffix/visibility to prevent NPCs with names of online players from being invisible
-  modify-npc-names: false
-  
   #using a feature introduced in 1.8.1 to make hitbox zero so you can't cry it affects pvp despite hit redirection
   #1.8.0 clients will see wild things
   #automatically enabled for 1.9+

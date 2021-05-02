@@ -10,17 +10,13 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
  * Bukkit events are too unreliable and delayed/ahead which causes desync
  */
-public class PacketListener implements RawPacketListener, PlayerInfoPacketListener {
+public class PacketListener implements RawPacketListener {
 
 	//main feature
 	private NameTagX nameTagX;
@@ -30,9 +26,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 	
 	//tab instance
 	private TAB tab;
-	
-	//if modifying npc names or not
-	private boolean modifyNPCnames;
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -44,7 +37,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 		this.nameTagX = nameTagX;
 		this.nms = nms;
 		this.tab = tab;
-		modifyNPCnames = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.modify-npc-names", false);
 	}
 
 	@Override
@@ -117,20 +109,6 @@ public class PacketListener implements RawPacketListener, PlayerInfoPacketListen
 			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(id);
 			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
 				tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
-		}
-	}
-
-	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (!modifyNPCnames || info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
-		for (PlayerInfoData playerInfoData : info.entries) {
-			if (tab.getPlayerByTablistUUID(playerInfoData.uniqueId) == null && playerInfoData.name.length() <= 15) {
-				if (playerInfoData.name.length() <= 14) {
-					playerInfoData.name += "\u00a7r";
-				} else {
-					playerInfoData.name += " ";
-				}
-			}
 		}
 	}
 

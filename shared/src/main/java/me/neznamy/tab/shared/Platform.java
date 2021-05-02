@@ -193,6 +193,7 @@ public interface Platform {
 			removeOld(file, "tablist-refresh-interval-milliseconds");
 			removeOld(file, "header-footer-refresh-interval-milliseconds");
 			removeOld(file, "classic-vanilla-belowname.refresh-interval-milliseconds");
+			removeOld(file, "unlimited-nametag-prefix-suffix-mode.modify-npc-names");
 			rename(file, "belowname", "classic-vanilla-belowname");
 			rename(file, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
 			rename(file, "safe-team-register", "unregister-before-register");
