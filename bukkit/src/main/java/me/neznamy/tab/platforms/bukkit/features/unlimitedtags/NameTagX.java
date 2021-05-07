@@ -26,12 +26,11 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
 
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag implements RespawnEventListener {
+public class NameTagX extends NameTag {
 
 	//config options
 	public boolean markerFor18x;
@@ -386,12 +385,6 @@ public class NameTagX extends NameTag implements RespawnEventListener {
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGX;
-	}
-
-	@Override
-	public void onRespawn(TabPlayer respawned) {
-		if (isDisabledWorld(respawned.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, respawned.getWorldName())) return;
-		respawned.getArmorStandManager().teleport();
 	}
 
 	@Override

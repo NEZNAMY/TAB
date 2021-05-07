@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.features.types.event.ChatEventListener;
 import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
-import me.neznamy.tab.shared.features.types.event.RespawnEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
@@ -294,20 +293,6 @@ public class FeatureManager {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
-		}
-	}
-	
-	/**
-	 * Calls onRespawn on all featurs that implement RespawnEventListener and measures how long it took them to process
-	 * @param respawned - player who respawned
-	 */
-	public void onRespawn(TabPlayer respawned) {
-		if (respawned == null) return;
-		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof RespawnEventListener)) continue;
-			long time = System.nanoTime();
-			((RespawnEventListener)f).onRespawn(respawned);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, System.nanoTime()-time);
 		}
 	}
 	

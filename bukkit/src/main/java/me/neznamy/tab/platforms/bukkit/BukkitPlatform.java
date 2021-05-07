@@ -101,7 +101,7 @@ public class BukkitPlatform implements Platform {
 		}
 		loadNametagFeature(tab);
 		loadUniversalFeatures();
-		if (tab.getConfiguration().BossBarEnabled && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab));
+		if (tab.getConfiguration().BossBarEnabled && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab, plugin));
 		if (version >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (placeholderAPI) {

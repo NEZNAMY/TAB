@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -25,7 +26,6 @@ public class EventListener implements Listener {
 	 */
 	public EventListener(NameTagX feature) {
 		this.feature = feature;
-
 	}
 	
 	/**
@@ -51,6 +51,19 @@ public class EventListener implements Listener {
 		if (p == null || !p.isLoaded() || feature.isDisabledWorld(p.getWorldName()) || feature.isDisabledWorld(feature.disabledUnlimitedWorlds, p.getWorldName())) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
+		});
+	}
+	
+	/**
+	 * Respawning armor stands as respawn screen destroys all entities in client
+	 * @param e - respawn event
+	 */
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e) {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, () -> {
+			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+			if (feature.isDisabledWorld(respawned.getWorldName()) || feature.isDisabledWorld(feature.disabledUnlimitedWorlds, respawned.getWorldName())) return;
+			respawned.getArmorStandManager().teleport();
 		});
 	}
 }

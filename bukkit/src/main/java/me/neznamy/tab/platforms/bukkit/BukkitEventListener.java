@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.neznamy.tab.shared.TAB;
 
@@ -65,15 +64,5 @@ public class BukkitEventListener implements Listener {
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage(), e.isCancelled())) e.setCancelled(true);
-	}
-
-	/**
-	 * Listener to PlayerRespawnEvent to forward the event to features
-	 * @param e respawn event
-	 */
-	@EventHandler
-	public void onRespawn(PlayerRespawnEvent e) {
-		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerRespawnEvent", () -> TAB.getInstance().getFeatureManager().onRespawn(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 }
