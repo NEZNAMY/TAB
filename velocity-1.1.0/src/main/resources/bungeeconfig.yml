@@ -205,3 +205,8 @@ anti-override:
 
 #permanently invisible nametags
 invisible-nametags: false
+
+#faking ping of players
+ping-spoof:
+  enabled: false
+  value: 0

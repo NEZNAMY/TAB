@@ -28,6 +28,7 @@ public enum TabFeature {
 	PACKET_SERIALIZING("Packet serializing"),
 	TABLIST_LAYOUT("Tablist layout"),
 	PLUGIN_MESSAGE_HANDLING("Plugin message handling"),
+	PING_SPOOF("Ping spoof"),
 	OTHER("Other");
 
 	//user-friendly name to be used in /tab cpu

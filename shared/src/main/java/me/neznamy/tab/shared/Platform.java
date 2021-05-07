@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
@@ -255,5 +256,6 @@ public interface Platform {
 		new UpdateChecker(tab);
 		if (tab.getConfiguration().layout) tab.getFeatureManager().registerFeature("layout", new Layout(tab));
 		if (tab.getConfiguration().BossBarEnabled) tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
+		if (tab.getConfiguration().config.getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
 	}
 }
