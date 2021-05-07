@@ -410,7 +410,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		String displayName;
 		if (nms.minorVersion >= 13) {
 			Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
-			displayName = component == null ? null : fromNMSComponent(component).toLegacyText();
+			IChatBaseComponent c = component == null ? null : fromNMSComponent(component);
+			displayName = c == null ? null : c.toLegacyText();
 		} else {
 			displayName = (String) nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
 		}
@@ -474,7 +475,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
 	@SuppressWarnings("rawtypes")
 	public IChatBaseComponent fromNMSComponent0(Object component) throws Exception {
-		if (component == null) return null;
+		if (!nms.ChatComponentText.isInstance(component)) return null; //paper
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
 		if (modifier != null) {
