@@ -12,7 +12,6 @@
 		<module>bungeecord</module>
 		<module>shared</module>
 		<module>velocity-1.1.0</module>
-		<module>velocity-2.0.0</module>
 		<module>jar</module>
 	</modules>
 	<properties>

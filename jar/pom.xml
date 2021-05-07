@@ -91,10 +91,5 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>me.neznamy</groupId>
-			<artifactId>velocity-2.0.0</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>
