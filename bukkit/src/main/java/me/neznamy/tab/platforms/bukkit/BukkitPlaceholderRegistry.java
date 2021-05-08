@@ -171,6 +171,14 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				} catch (Throwable t) {
 					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), t);
 				}
+				if (!afk) {
+					try {
+						//purpur AFK API
+						afk = (boolean) p.getPlayer().getClass().getMethod("isAfk").invoke(p.getPlayer());
+					} catch (Throwable t) {
+						//not purpur
+					}
+				}
 				return afk ? yesAfk : noAfk;
 			}
 			@Override
