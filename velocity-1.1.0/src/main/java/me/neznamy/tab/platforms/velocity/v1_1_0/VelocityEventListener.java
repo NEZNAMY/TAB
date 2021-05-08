@@ -4,8 +4,6 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 
@@ -42,16 +40,6 @@ public class VelocityEventListener {
 		} catch (Throwable ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
 		}
-	}
-	
-	/**
-	 * Listener to chat messages to forward the event to all features
-	 * @param e
-	 */
-	@Subscribe
-	public void onChat(PlayerChatEvent e) {
-		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage(), e.getResult() == PlayerChatEvent.ChatResult.denied())) e.setResult(ChatResult.denied());
 	}
 	
 	/**

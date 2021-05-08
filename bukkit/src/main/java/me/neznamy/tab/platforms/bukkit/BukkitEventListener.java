@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -54,15 +53,5 @@ public class BukkitEventListener implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
-	}
-	
-	/**
-	 * Listener to AsyncPlayerChatEvent to forward the event to features
-	 * @param e chat event
-	 */
-	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e) {
-		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getFeatureManager().onChat(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage(), e.isCancelled())) e.setCancelled(true);
 	}
 }
