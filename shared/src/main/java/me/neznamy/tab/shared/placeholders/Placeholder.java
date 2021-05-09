@@ -124,7 +124,7 @@ public abstract class Placeholder {
 					float high = Float.parseFloat(key.split("-")[1]);
 					float actualValue = Float.parseFloat(originalOutput.replace(",", ""));
 					if (low <= actualValue && actualValue <= high) return entry.getValue().toString();
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
 					//nope
 				}
 			}
