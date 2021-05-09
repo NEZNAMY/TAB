@@ -1,10 +1,6 @@
 package me.neznamy.tab.platforms.velocity.v1_1_0;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -13,7 +9,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.VelocityTABLoadEvent;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -87,24 +82,6 @@ public class VelocityPlatform implements Platform {
 				}
 			});
 			return;
-		}
-	}
-	
-	@Override
-	public void convertConfig(ConfigurationFile config) {
-		convertUniversalOptions(config);
-		if (config.getName().equals("config.yml")) {
-			if (config.getObject("global-playerlist") instanceof Boolean) {
-				rename(config, "global-playerlist", "global-playerlist.enabled");
-				config.set("global-playerlist.spy-servers", Arrays.asList("spyserver1", "spyserver2"));
-				Map<String, List<String>> serverGroups = new HashMap<String, List<String>>();
-				serverGroups.put("lobbies", Arrays.asList("lobby1", "lobby2"));
-				serverGroups.put("group2", Arrays.asList("server1", "server2"));
-				config.set("global-playerlist.server-groups", serverGroups);
-				config.set("global-playerlist.display-others-as-spectators", false);
-				TAB.getInstance().print('2', "Converted old global-playerlist section to new one in config.yml.");
-			}
-			rename(config, "tablist-objective-value", "yellow-number-in-tablist");
 		}
 	}
 	

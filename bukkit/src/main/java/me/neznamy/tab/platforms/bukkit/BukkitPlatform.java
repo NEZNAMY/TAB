@@ -1,12 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -27,7 +23,6 @@ import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.permission.LuckPerms;
@@ -101,7 +96,7 @@ public class BukkitPlatform implements Platform {
 		}
 		loadNametagFeature(tab);
 		loadUniversalFeatures();
-		if (tab.getConfiguration().BossBarEnabled && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab, plugin));
+		if (tab.getConfiguration().bossbar.getBoolean("bossbar-enabled", false) && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab, plugin));
 		if (version >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (placeholderAPI) {
@@ -240,57 +235,6 @@ public class BukkitPlatform implements Platform {
 			String playername = (player == null ? "<null>" : player.getName());
 			TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, TAB.getInstance().getErrorManager().papiErrorLog);
 			return "ERROR";
-		}
-	}
-
-	@Override
-	public void convertConfig(ConfigurationFile config) {
-		convertUniversalOptions(config);
-		if (config.getName().equals("config.yml")) {
-			removeOld(config, "nametag-refresh-interval-ticks");
-			removeOld(config, "tablist-refresh-interval-ticks");
-			removeOld(config, "header-footer-refresh-interval-ticks");
-			removeOld(config, "belowname.refresh-interval-ticks");
-			removeOld(config, "placeholders.deluxetag-yes");
-			removeOld(config, "placeholders.deluxetag-no");
-			removeOld(config, "placeholders.faction-yes");
-			removeOld(config, "placeholders.faction-no");
-			removeOld(config, "staff-groups");
-			removeOld(config, "use-essentials-nickname");
-			removeOld(config, "deluxetag-empty-value");
-			removeOld(config, "factions-faction");
-			removeOld(config, "factions-nofaction");
-			removeOld(config, "date-format");
-			removeOld(config, "time-format");
-			removeOld(config, "relational-placeholders-refresh");
-			removeOld(config, "bukkit-bridge-mode");
-			if (config.hasConfigOption("tablist-objective")) {
-				String type = config.getString("tablist-objective");
-				String value;
-				if (type.equals("NONE")) {
-					value = "";
-				} else if (type.equals("PING")){
-					value = "%ping%";
-				} else if (type.equals("HEARTS")) {
-					value = "%health%";
-				} else {
-					value = config.getString("tablist-objective-custom-value");
-				}
-				config.set("tablist-objective", null);
-				config.set("tablist-objective-custom-value", null);
-				config.set("yellow-number-in-tablist", value);
-				TAB.getInstance().print('2', "Converted old tablist-objective config option to new yellow-number-in-tablist");
-			}
-			if (config.getObject("per-world-playerlist") instanceof Boolean) {
-				rename(config, "per-world-playerlist", "per-world-playerlist.enabled");
-				rename(config, "allow-pwp-bypass-permission", "per-world-playerlist.allow-bypass-permission");
-				rename(config, "ignore-pwp-in-worlds", "per-world-playerlist.ignore-effect-in-worlds");
-				Map<String, List<String>> sharedWorlds = new HashMap<String, List<String>>();
-				sharedWorlds.put("lobby", Arrays.asList("lobby1", "lobby2"));
-				sharedWorlds.put("minigames", Arrays.asList("paintball", "bedwars"));
-				config.set("per-world-playerlist.shared-playerlist-world-groups", sharedWorlds);
-				TAB.getInstance().print('2', "Converted old per-world-playerlist section to new one in advancedconfig.yml.");
-			}
 		}
 	}
 

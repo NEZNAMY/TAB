@@ -46,9 +46,6 @@ public class Configs {
 
 	//bossbar.yml file
 	public ConfigurationFile bossbar;
-	
-	//used for check & warn in case of old bossbar file format
-	public boolean BossBarEnabled;
 
 	//translation.yml file
 	public ConfigurationFile translation;
@@ -79,14 +76,16 @@ public class Configs {
 		removeAdvancedConfig();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
-		tab.getPlatform().convertConfig(animation);
-		loadBossbar();
+		Map<String, Object> values = animation.getValues();
+		if (values.size() == 1 && values.containsKey("animations")) {
+			animation.setValues(animation.getConfigurationSection("animations"));
+			animation.save();
+			TAB.getInstance().print('2', "Converted animations.yml to new format.");
+		}
+		bossbar = new YamlConfigurationFile(loader.getResourceAsStream("bossbar.yml"), new File(tab.getPlatform().getDataFolder(), "bossbar.yml"));
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
 		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
-		if (tab.isPremium()) {
-			premiumconfig = new YamlConfigurationFile(loader.getResourceAsStream("premiumconfig.yml"), new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml"));
-			tab.getPlatform().convertConfig(premiumconfig);
-		}
+		if (tab.isPremium()) premiumconfig = new YamlConfigurationFile(loader.getResourceAsStream("premiumconfig.yml"), new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml"));
 	}
 
 	/**
@@ -113,7 +112,6 @@ public class Configs {
 	public void loadConfig() throws Exception {
 		String source = tab.getPlatform().getSeparatorType().equals("world") ? "bukkitconfig.yml" : "bungeeconfig.yml";
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(source), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
-		tab.getPlatform().convertConfig(config);
 		removeStrings = new ArrayList<>();
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			removeStrings.add(s.replace('&', '\u00a7'));
@@ -145,21 +143,6 @@ public class Configs {
 		for (Object property : sharedProperties.keySet()) {
 			tab.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
 		}
-	}
-
-	/**
-	 * Loads bossbar.yml and sends a warn if file is old
-	 * @throws Exception - if file has broken syntax or I/O file operation fails
-	 */
-	public void loadBossbar() throws Exception {
-		bossbar = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bossbar.yml"), new File(tab.getPlatform().getDataFolder(), "bossbar.yml"));
-		tab.getPlatform().convertConfig(bossbar);
-		if (bossbar.hasConfigOption("enabled")) {
-			tab.getErrorManager().startupWarn("You are using old bossbar config, please make a backup of the file and delete it to get new file.");
-			BossBarEnabled = false;
-			return;
-		}
-		BossBarEnabled = bossbar.getBoolean("bossbar-enabled", false);
 	}
 
 	/**

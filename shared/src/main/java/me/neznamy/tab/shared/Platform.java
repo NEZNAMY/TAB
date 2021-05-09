@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -55,12 +53,6 @@ public interface Platform {
 	 * @param identifier - placeholder's identifier
 	 */
 	public void registerUnknownPlaceholder(String identifier);
-	
-	/**
-	 * Converts configuration file into the latest version by removing old options, adding new ones or renaming
-	 * @param config - the configuration file to be converted
-	 */
-	public void convertConfig(ConfigurationFile config);
 	
 	/**
 	 * Returns server's version
@@ -143,88 +135,10 @@ public interface Platform {
 	}
 	
 	/**
-	 * Converts premiumconfig variables to latest version
-	 * @param config - the file
-	 */
-	public default void convertPremiumConfig(ConfigurationFile config) {
-		removeOld(config, "scoreboard.refresh-interval-ticks");
-		if (!config.hasConfigOption("placeholder-output-replacements")) {
-			Map<String, Map<String, String>> replacements = new HashMap<String, Map<String, String>>();
-			Map<String, String> essVanished = new HashMap<String, String>();
-			essVanished.put("Yes", "&7| Vanished");
-			essVanished.put("No", "");
-			replacements.put("%essentials_vanished%", essVanished);
-			Map<String, String> tps = new HashMap<String, String>();
-			tps.put("20", "&aPerfect");
-			replacements.put("%tps%", tps);
-			config.set("placeholder-output-replacements", replacements);
-			TAB.getInstance().print('2', "Added new missing \"placeholder-output-replacements\" premiumconfig.yml section.");
-		}
-		boolean scoreboardsConverted = false;
-		for (Object scoreboard : config.getConfigurationSection("scoreboards").keySet()) {
-			Boolean permReq = config.getBoolean("scoreboards." + scoreboard + ".permission-required");
-			if (permReq != null) {
-				if (permReq) {
-					config.set("scoreboards." + scoreboard + ".display-condition", "permission:tab.scoreboard." + scoreboard);
-				}
-				config.set("scoreboards." + scoreboard + ".permission-required", null);
-				scoreboardsConverted = true;
-			}
-			String childBoard = config.getString("scoreboards." + scoreboard + ".if-permission-missing");
-			if (childBoard != null) {
-				config.set("scoreboards." + scoreboard + ".if-permission-missing", null);
-				config.set("scoreboards." + scoreboard + ".if-condition-not-met", childBoard);
-				scoreboardsConverted = true;
-			}
-		}
-		if (scoreboardsConverted) {
-			TAB.getInstance().print('2', "Converted old premiumconfig.yml scoreboard display condition system to new one.");
-		}
-		removeOld(config, "scoreboard.refresh-interval-milliseconds");
-		rename(config, "allign-tabsuffix-on-the-right", "align-tabsuffix-on-the-right");
-	}
-	
-	/**
 	 * Converts configuration options same on all platforms
 	 * @param file - file to convert
 	 */
 	public default void convertUniversalOptions(ConfigurationFile file) {
-		if (file.getName().equals("config.yml")) {
-			removeOld(file, "nametag-refresh-interval-milliseconds");
-			removeOld(file, "tablist-refresh-interval-milliseconds");
-			removeOld(file, "header-footer-refresh-interval-milliseconds");
-			removeOld(file, "classic-vanilla-belowname.refresh-interval-milliseconds");
-			removeOld(file, "unlimited-nametag-prefix-suffix-mode.modify-npc-names");
-			rename(file, "belowname", "classic-vanilla-belowname");
-			rename(file, "papi-placeholder-cooldowns", "placeholderapi-refresh-intervals");
-			rename(file, "safe-team-register", "unregister-before-register");
-			rename(file, "disable-features-in-worlds.tablist-objective", "disable-features-in-worlds.yellow-number");
-			rename(file, "ntx-space", "unlimited-nametag-prefix-suffix-mode.space-between-lines");
-			if (!file.hasConfigOption("placeholderapi-refresh-intervals")) {
-				Map<String, Object> map = new LinkedHashMap<String, Object>();
-				map.put("default-refresh-interval", 100);
-				Map<String, Integer> server = new HashMap<String, Integer>();
-				server.put("%server_uptime%", 1000);
-				server.put("%server_tps_1_colored%", 1000);
-				map.put("server", server);
-				Map<String, Integer> player = new HashMap<String, Integer>();
-				player.put("%player_health%", 200);
-				player.put("%player_ping%", 1000);
-				player.put("%vault_prefix%", 1000);
-				map.put("player", player);
-				Map<String, Integer> relational = new HashMap<String, Integer>();
-				relational.put("%rel_factionsuuid_relation_color%", 500);
-				map.put("relational", relational);
-				file.set("placeholderapi-refresh-intervals", map);
-				TAB.getInstance().print('2', "Added new missing \"placeholderapi-refresh-intervals\" config.yml section.");
-			}
-		}
-		if (file.getName().equals("premiumconfig.yml")) {
-			convertPremiumConfig(file);
-		}
-		if (file.getName().equals("bossbar.yml")) {
-			removeOld(file, "refresh-interval-milliseconds");
-		}
 		if (file.getName().equals("animations.yml")) {
 			Map<String, Object> values = file.getValues();
 			if (values.size() == 1 && values.containsKey("animations")) {
@@ -255,7 +169,7 @@ public interface Platform {
 		tab.getFeatureManager().registerFeature("info", new PluginInfo());
 		new UpdateChecker(tab);
 		if (tab.getConfiguration().layout) tab.getFeatureManager().registerFeature("layout", new Layout(tab));
-		if (tab.getConfiguration().BossBarEnabled) tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
+		if (tab.getConfiguration().bossbar.getBoolean("bossbar-enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
 		if (tab.getConfiguration().config.getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
 	}
 }
