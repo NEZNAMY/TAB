@@ -49,6 +49,9 @@ public abstract class Placeholder {
 				if (key.equals("false")) {
 					replacements.put("no", value);
 				}
+				if (key.equals("else") && value.equals("%value%")) {
+					TAB.getInstance().print('9', "Hint: Placeholder " + identifier + " has configured \"else\" replacement to %value%, which is default behavior already. You can remove it for cleaner configuration.");
+				}
 				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
 					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 				}
