@@ -153,6 +153,7 @@ public class FeatureManager {
 	 * @throws Exception 
 	 */
 	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
+		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		List<PlayerInfoPacketListener> listeners = new ArrayList<PlayerInfoPacketListener>();
 		for (Feature f : getAllFeatures()) {
 			if (f instanceof PlayerInfoPacketListener) listeners.add((PlayerInfoPacketListener) f);
