@@ -164,7 +164,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
 		for (TabPlayer all : tab.getPlayers()) {
-			if (all == connectedPlayer) continue; //already sent on L161
+			if (all == connectedPlayer) continue; //already sent 4 lines above
 			list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
 		}
 		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
