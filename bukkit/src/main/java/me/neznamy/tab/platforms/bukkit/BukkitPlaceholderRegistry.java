@@ -307,7 +307,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 								TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
 							}
 						});
-						return getLastValue(p);
+						return lastValue.get(p.getName());
 					}
 				});
 			}
