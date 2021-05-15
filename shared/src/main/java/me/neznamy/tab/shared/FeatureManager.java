@@ -166,7 +166,7 @@ public class FeatureManager {
 		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (PlayerInfoPacketListener f : listeners) {
 			time = System.nanoTime();
-			((PlayerInfoPacketListener)f).onPacketSend(receiver, info);
+			f.onPacketSend(receiver, info);
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
