@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -29,8 +28,6 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		this.tab = tab;
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		loadExtraWidths();
-		tab.debug("Loaded AlignedSuffix feature with " + widths.size() + " character widths.");
 	}
 	
 	/**
@@ -41,13 +38,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String line;
-			//int i=0;
 			while ((line = br.readLine()) != null) {
-				//i++;
-				if (line.isEmpty()) {
-					//tab.debug("Skipping missing character " + i);
-					continue;
-				}
 				String[] arr = line.split(":");
 				widths.put((char)Integer.parseInt(arr[0]), (byte)Float.parseFloat(arr[1]));
 			}
@@ -55,26 +46,6 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		} catch (Exception ex) {
 			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
-	}
-	
-	/**
-	 * Loads extra widths defined in premiumconfig and deletes redundant ones already listed in widths.txt
-	 */
-	private void loadExtraWidths() {
-		boolean save = false;
-		Map<Integer, Number> extraWidths = tab.getConfiguration().premiumconfig.getConfigurationSection("extra-character-widths");
-		for (Integer entry : new HashSet<>(extraWidths.keySet())) {
-			char c = (char)(int)entry;
-			int width = (int)extraWidths.get(entry);
-			if (widths.containsKey(c)) {
-				extraWidths.remove((int)c);
-				tab.print('2', "Deleting character width of " + (int)c + " from extra-character-widths because it already exists inside the plugin.");
-				save = true;
-			} else {
-				widths.put(c, (byte)width);
-			}
-		}
-		if (save) tab.getConfiguration().premiumconfig.save();
 	}
 	
 	public String formatNameAndUpdateLeader(TabPlayer player, String prefixAndName, String suffix) {

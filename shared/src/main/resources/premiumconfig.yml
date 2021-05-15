@@ -93,7 +93,6 @@ placeholder-output-replacements:
     "20": "&aPerfect"
     
 align-tabsuffix-on-the-right: false
-extra-character-widths: {}
   
 conditions:
   health:

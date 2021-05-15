@@ -23,7 +23,6 @@ import me.neznamy.tab.shared.command.level1.ReloadCommand;
 import me.neznamy.tab.shared.command.level1.ScoreboardCommand;
 import me.neznamy.tab.shared.command.level1.SendCommand;
 import me.neznamy.tab.shared.command.level1.SetCollisionCommand;
-import me.neznamy.tab.shared.command.level1.WidthCommand;
 
 /**
  * The core command handler
@@ -55,7 +54,6 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new SetCollisionCommand());
 		if (tab.isPremium()) {
 			registerSubCommand(new ScoreboardCommand());
-			registerSubCommand(new WidthCommand());
 		}
 		Set<String> properties = Sets.newHashSet("tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname");
 		for (Object line : ((DebugCommand)subcommands.get("debug")).getExtraLines()) {
