@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -249,12 +250,13 @@ public class NameTagX extends NameTag {
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);
+		Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
 		p.getArmorStandManager().destroy();
 		loadArmorStands(p);
 		loadPassengers(p);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			viewer.getArmorStandManager().destroy(p);
-			spawnArmorStands(p, viewer, true);
+			if (nearby.contains(viewer) && to.equals(viewer.getWorldName())) spawnArmorStands(p, viewer, true);
 		}
 	}
 	
@@ -269,10 +271,18 @@ public class NameTagX extends NameTag {
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
 		if (isDisabledWorld(owner.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, owner.getWorldName())) return;
 		if (getDistance(viewer, owner) <= 48) {
-			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
-			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
+			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer()) && !isVanished((Player) owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
+			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer()) 
+					&& !isVanished((Player) viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
 		}
 	}
+	
+	private boolean isVanished(Player player) {
+        if (player.hasMetadata("vanished") && !player.getMetadata("vanished").isEmpty()) {
+            return player.getMetadata("vanished").get(0).asBoolean();
+        }
+        return false;
+    }
 
 	/**
 	 * Restarts and loads armor stands from config
