@@ -241,4 +241,24 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		}
 		return new BossBarLine(bar, condition, color, style, text, progress);
 	}
+
+	@Override
+	public String getTitle() {
+		return title;
+	}
+
+	@Override
+	public String getProgress() {
+		return progress;
+	}
+
+	@Override
+	public String getColor() {
+		return color;
+	}
+
+	@Override
+	public String getStyle() {
+		return style;
+	}
 }

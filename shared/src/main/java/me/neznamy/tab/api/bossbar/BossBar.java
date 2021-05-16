@@ -57,4 +57,31 @@ public interface BossBar {
 	 * @param style - new style
 	 */
 	public void setStyle(BarStyle style);
+	
+	/**
+	 * Returns title of the bossbar
+	 * @return title of the bossbar
+	 */
+	public String getTitle();
+	
+	/**
+	 * Returns progress of the bossbar as string, which is either entered string 
+	 * containing placeholders or entered number converted to string
+	 * @return entered progress as string
+	 */
+	public String getProgress();
+	
+	/**
+	 * Returns color of the bossbar as string, which is either entered string 
+	 * containing placeholders or entered enum value converted to string
+	 * @return entered color as string
+	 */
+	public String getColor();
+	
+	/**
+	 * Returns style of the bossbar as string, which is either entered string 
+	 * containing placeholders or entered enum value converted to string
+	 * @return entered style as string
+	 */
+	public String getStyle();
 }
