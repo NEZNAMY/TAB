@@ -67,6 +67,9 @@ public class PacketListener implements RawPacketListener {
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		}
+		if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
+			onEntityMove(receiver, nms.PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
+		}
 		if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
 		}

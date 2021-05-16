@@ -12,7 +12,6 @@ public enum UsageType {
 	WORLD_SWITCH_EVENT("PlayerChangedWorldEvent"),
 	PLAYER_TOGGLE_SNEAK_EVENT("PlayerToggleSneakEvent"),
 	PLAYER_MOVE_EVENT("PlayerMoveEvent"),
-	PLAYER_TELEPORT_EVENT("PlayerTeleportEvent"),
 	PLAYER_RESPAWN_EVENT("PlayerRespawnEvent"),
 	COMMAND_PREPROCESS("PlayerCommandPreprocessEvent"),
 	PLUGIN_MESSAGE_EVENT("PluginMessageEvent"),
