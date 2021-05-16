@@ -38,9 +38,9 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String line;
+			int characterId = 1;
 			while ((line = br.readLine()) != null) {
-				String[] arr = line.split(":");
-				widths.put((char)Integer.parseInt(arr[0]), (byte)Float.parseFloat(arr[1]));
+				widths.put((char)characterId++, (byte)Float.parseFloat(line));
 			}
 			br.close();
 		} catch (Exception ex) {
