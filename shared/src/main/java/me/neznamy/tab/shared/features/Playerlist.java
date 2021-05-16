@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
@@ -27,6 +28,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	private List<String> usedPlaceholders;
 	public List<String> disabledWorlds;
 	private boolean antiOverrideNames;
+	private boolean antiOverrideTablist;
 	private boolean disabling = false;
 
 	public Playerlist(TAB tab) {
@@ -34,8 +36,8 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true);
 		refreshUsedPlaceholders();
-		boolean antiOverride = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
-		if (antiOverride) {
+		antiOverrideTablist = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
+		if (antiOverrideTablist) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
 
 				@Override
@@ -64,7 +66,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				
 			});
 		}
-		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverride=%s", disabledWorlds, antiOverride));
+		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", disabledWorlds, antiOverrideTablist));
 	}
 
 	@Override
@@ -160,14 +162,19 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) updateProperties(connectedPlayer);
-		refresh(connectedPlayer, true);
-		if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
-		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
-		for (TabPlayer all : tab.getPlayers()) {
-			if (all == connectedPlayer) continue; //already sent 4 lines above
-			list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
-		}
-		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
+		Runnable r = () -> {
+			refresh(connectedPlayer, true);
+			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
+			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+			for (TabPlayer all : tab.getPlayers()) {
+				if (all == connectedPlayer) continue; //already sent 4 lines above
+				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
+			}
+			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
+		};
+		r.run();
+		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
+		if (!antiOverrideTablist) tab.getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
 	}
 
 	@Override
