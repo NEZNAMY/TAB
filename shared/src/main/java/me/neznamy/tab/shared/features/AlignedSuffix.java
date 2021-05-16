@@ -90,15 +90,10 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		int width = 0;
 		if (component.getText() != null) {
 			for (Character c : component.getText().toCharArray()) {
-				if (widths.containsKey(c)) {
-					int localWidth = widths.get(c) + 1;
-					if (component.isBold()) {
-						width += localWidth+1;
-					} else {
-						width += localWidth;
-					}
+				if (component.isBold()) {
+					width += widths.get(c)+2;
 				} else {
-					tab.getErrorManager().oneTimeConsoleError("Unknown character " + c + " (" + ((int)c) + ") found when aligning tabsuffix. Configure it using /tab width <character|ID>.");
+					width += widths.get(c)+1;
 				}
 			}
 		}
