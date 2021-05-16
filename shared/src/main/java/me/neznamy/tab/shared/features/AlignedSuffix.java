@@ -140,14 +140,14 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	
 	@Override
 	public void onQuit(TabPlayer p) {
-		if (maxPlayer == p && recalculateMaxWidth(p)) {
+		if (recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
 	}
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (maxPlayer == p && recalculateMaxWidth(null)) {
+		if (recalculateMaxWidth(null)) {
 			updateAllNames(null);
 		}
 	}
