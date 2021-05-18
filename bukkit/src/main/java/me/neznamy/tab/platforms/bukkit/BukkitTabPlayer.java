@@ -23,10 +23,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	//bukkit player
 	private Player player;
-	
+
 	//nms handle
 	private Object handle;
-	
+
 	//nms player connection
 	private Object playerConnection;
 
@@ -192,5 +192,23 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isOnline() {
 		return player.isOnline();
+	}
+
+	@Override
+	public boolean isVanished() {
+		try {
+			if (((BukkitPlatform)TAB.getInstance().getPlatform()).essentials) {
+				Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
+				Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, player);
+				boolean vanished = (boolean) user.getClass().getMethod("isVanished").invoke(user);
+				if (vanished) return true;
+			}
+			if (player.hasMetadata("vanished") && !player.getMetadata("vanished").isEmpty()) {
+				return player.getMetadata("vanished").get(0).asBoolean();
+			}
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("Failed to check vanish status of " + player.getName(), e);
+		}
+		return false;
 	}
 }

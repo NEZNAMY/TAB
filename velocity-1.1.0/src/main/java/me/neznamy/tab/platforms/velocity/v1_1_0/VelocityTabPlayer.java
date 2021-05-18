@@ -149,6 +149,13 @@ public class VelocityTabPlayer extends ITabPlayer{
 	}
 
 	@Override
+	public boolean isVanished() {
+		Main.plm.requestAttribute(this, "vanished");
+		if (!attributes.containsKey("vanished")) return false;
+		return Boolean.parseBoolean(attributes.get("vanished"));
+	}
+	
+	@Override
 	public boolean isDisguised() {
 		Main.plm.requestAttribute(this, "disguised");
 		if (!attributes.containsKey("disguised")) return false;
@@ -161,7 +168,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 		if (!attributes.containsKey("invisible")) return false;
 		return Boolean.parseBoolean(attributes.get("invisible"));
 	}
-
+	
 	@Override
 	public boolean isOnline() {
 		return player.isActive();

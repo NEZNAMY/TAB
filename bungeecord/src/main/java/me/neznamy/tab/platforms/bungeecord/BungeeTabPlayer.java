@@ -117,7 +117,10 @@ public class BungeeTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean isVanished() {
-		return ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player);
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player)) return true;
+		Main.plm.requestAttribute(this, "vanished");
+		if (!attributes.containsKey("vanished")) return false;
+		return Boolean.parseBoolean(attributes.get("vanished"));
 	}
 	
 	@Override

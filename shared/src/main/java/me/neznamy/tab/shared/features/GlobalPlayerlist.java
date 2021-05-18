@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +27,14 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, PlayerInfoPacketListener{
 
 	private TAB tab;
-	public final String PREMIUMVANISH_SEE_VANISHED_PERMISSION = "pv.see";
 	
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
 	public boolean vanishedAsSpectators;
 	private boolean isolateUnlistedServers;
+	
+	private List<TabPlayer> vanishedPlayers = new ArrayList<TabPlayer>();
 
 	public GlobalPlayerlist(TAB tab) {
 		this.tab = tab;
@@ -53,11 +55,34 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 		tab.debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
 				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+			
+			for (TabPlayer p : tab.getPlayers()) {
+				if (vanishedPlayers.contains(p) && !p.isVanished()) {
+					vanishedPlayers.remove(p);
+					for (TabPlayer viewer : tab.getPlayers()) {
+						if (viewer == p) continue;
+						if (shouldSee(viewer, p)) {
+							viewer.sendCustomPacket(getAddPacket(p, viewer), getFeatureType());
+						}
+					}
+				}
+				if (!vanishedPlayers.contains(p) && p.isVanished()) {
+					vanishedPlayers.add(p);
+					for (TabPlayer all : tab.getPlayers()) {
+						if (all == p) continue;
+						if (!shouldSee(all, p)) {
+							all.sendCustomPacket(getRemovePacket(p), getFeatureType());
+						}
+					}
+				}
+			}
+		});
 	}
 	
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished() && !viewer.hasPermission(PREMIUMVANISH_SEE_VANISHED_PERMISSION)) return false;
+		if (displayed.isVanished() && !viewer.hasPermission("tab.seevanished")) return false;
 		if (spyServers.contains(viewer.getWorldName())) return true;
 		return getServerGroup(viewer.getWorldName()).equals(getServerGroup(displayed.getWorldName()));
 	}

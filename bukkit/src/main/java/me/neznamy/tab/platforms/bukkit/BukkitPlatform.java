@@ -55,6 +55,7 @@ public class BukkitPlatform implements Platform {
 	public boolean viaversion;
 	public boolean idisguise;
 	public boolean libsdisguises;
+	public boolean essentials;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -85,6 +86,7 @@ public class BukkitPlatform implements Platform {
 		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
+		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
 		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
 		TAB tab = TAB.getInstance();
 		usedExpansions = new HashSet<String>();

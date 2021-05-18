@@ -478,11 +478,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public boolean isVanished() {
-		return false;
-	}
-
-	@Override
 	public void showBossBar(BossBar bossbar) {
 		BossBarLine line = (BossBarLine) bossbar;
 		line.create(this);
