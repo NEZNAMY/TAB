@@ -148,6 +148,7 @@ public class NameTagX extends NameTag {
 				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
 					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
 					processPassengers((Entity) p.getPlayer());
+					//also updating position if player is previewing since we're here as the code would be same if we want to avoid listening to move event
 					if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
 						p.getArmorStandManager().teleport(p);
 					}
