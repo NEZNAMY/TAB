@@ -272,18 +272,11 @@ public class NameTagX extends NameTag {
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
 		if (isDisabledWorld(owner.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, owner.getWorldName())) return;
 		if (getDistance(viewer, owner) <= 48) {
-			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer()) && !isVanished((Player) owner.getPlayer())) owner.getArmorStandManager().spawn(viewer);
+			if (((Player)viewer.getPlayer()).canSee((Player)owner.getPlayer()) && !owner.isVanished()) owner.getArmorStandManager().spawn(viewer);
 			if (sendMutually && viewer.getArmorStandManager() != null && ((Player)owner.getPlayer()).canSee((Player)viewer.getPlayer()) 
-					&& !isVanished((Player) viewer.getPlayer())) viewer.getArmorStandManager().spawn(owner);
+					&& !viewer.isVanished()) viewer.getArmorStandManager().spawn(owner);
 		}
 	}
-	
-	private boolean isVanished(Player player) {
-        if (player.hasMetadata("vanished") && !player.getMetadata("vanished").isEmpty()) {
-            return player.getMetadata("vanished").get(0).asBoolean();
-        }
-        return false;
-    }
 
 	/**
 	 * Restarts and loads armor stands from config
