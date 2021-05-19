@@ -36,10 +36,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			return "<null>";
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrimaryGroup");
-			return "<null>";
-		}
+		if (user == null) return "<null>";
 		return user.getPrimaryGroup();
 	}
 
@@ -51,10 +48,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			return new String[]{"<null>"};
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getAllGroups");
-			return new String[] {"<null>"};
-		}
+		if (user == null) return new String[] {"<null>"};
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 	}
 
@@ -67,10 +61,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 				return "";
 			}
 			User user = api.getUserManager().getUser(p.getUniqueId());
-			if (user == null) {
-				TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getPrefix");
-				return "";
-			}
+			if (user == null) return "";
 			Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
 			if (!options.isPresent()) return "";
 			String prefix = user.getCachedData().getMetaData(options.get()).getPrefix();
@@ -90,10 +81,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 				return "";
 			}
 			User user = api.getUserManager().getUser(p.getUniqueId());
-			if (user == null) {
-				TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " returned null user for " + p.getName() + ", uuid=" + p.getUniqueId() + ", online=" + p.isOnline() + ", func=getSuffix");
-				return "";
-			}
+			if (user == null) return "";
 			Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
 			if (!options.isPresent()) return "";
 			String suffix = user.getCachedData().getMetaData(options.get()).getSuffix();
