@@ -36,24 +36,18 @@ public class BossBar_legacy implements Listener, Loadable {
 		this.mainFeature = (BossBar) tab.getFeatureManager().getFeature("bossbar");
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, new Runnable() {
-			public void run() {
-				for (TabPlayer all : tab.getPlayers()) {
-					if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-					for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
-						try {
-							all.sendPacket(((BukkitPacketBuilder)tab.getPacketBuilder()).buildEntityTeleportPacket(Math.abs(l.getUniqueId().hashCode()), getWitherLocation(all)), TabFeature.BOSSBAR);
-						} catch (Exception e) {
-							tab.getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
-						}
-					}
-				}
-			}
-		});
+		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, () -> teleport());
 	}
 	
 	@Override
 	public void load() {
+		teleport();
+	}
+	
+	/**
+	 * Updates wither location for all players
+	 */
+	private void teleport() {
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 			for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
