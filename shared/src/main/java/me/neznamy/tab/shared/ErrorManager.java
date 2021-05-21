@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -410,7 +411,7 @@ public class ErrorManager {
 	 */
 	public SimpleDateFormat createDateFormat(String value, String defaultValue) {
 		try {
-			return new SimpleDateFormat(value);
+			return new SimpleDateFormat(value, Locale.ENGLISH);
 		} catch (Exception e) {
 			startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
 			return new SimpleDateFormat(defaultValue);
