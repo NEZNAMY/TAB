@@ -84,18 +84,10 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 	private void checkPlayer(Player p) {
 		for (Player all : Bukkit.getOnlinePlayers()){
 			if (all == p) continue;
-			if (!shouldSee(p, all) && p.canSee(all)) {
-				p.hidePlayer(all);
-			}
-			if (shouldSee(p, all) && !p.canSee(all)) {
-				p.showPlayer(all);
-			}
-			if (!shouldSee(all, p) && all.canSee(p)) {
-				all.hidePlayer(p);
-			}
-			if (shouldSee(all, p) && !all.canSee(p)) {
-				all.showPlayer(p);
-			}
+			if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
+			if (shouldSee(p, all) && !p.canSee(all)) p.showPlayer(all);
+			if (!shouldSee(all, p) && all.canSee(p)) all.hidePlayer(p);
+			if (shouldSee(all, p) && !all.canSee(p)) all.showPlayer(p);
 		}
 	}
 	
