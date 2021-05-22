@@ -54,13 +54,7 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 	
 	@Override
 	public void load(){
-		Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				Bukkit.getOnlinePlayers().forEach(p -> checkPlayer(p));
-			}
-		});
+		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getOnlinePlayers().forEach(p -> checkPlayer(p)));
 	}
 	
 	@Override
