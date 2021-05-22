@@ -55,7 +55,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 				item.getClass().getMethod("setGameMode", int.class).invoke(item, data.gameMode.ordinal()-1);
 			}
 			item.getClass().getMethod("setLatency", int.class).invoke(item, data.latency);
-			item.getClass().getMethod("setProperties", List.class).invoke(item, data.skin);
+			if (data.skin != null) item.getClass().getMethod("setProperties", List.class).invoke(item, data.skin);
 			item.getClass().getMethod("setName", String.class).invoke(item, data.name);
 			items.add(item);
 		}
