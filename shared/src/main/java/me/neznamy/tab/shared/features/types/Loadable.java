@@ -14,4 +14,12 @@ public interface Loadable extends Feature {
 	 * Unloads all players and sends clear packets
 	 */
 	public void unload();
+	
+	/**
+	 * Default override to the method in Feature interface to not need to define it in 
+	 * classes implementing only this interface as load/unload methods alone do not use this
+	 */
+	public default Object getFeatureType() {
+		return null;
+	}
 }

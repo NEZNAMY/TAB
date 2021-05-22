@@ -70,7 +70,7 @@ public class BossBar_legacy implements Listener, Loadable {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, () -> mainFeature.detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", TabFeature.BOSSBAR, UsageType.PLAYER_RESPAWN_EVENT, () -> mainFeature.detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**
@@ -83,10 +83,5 @@ public class BossBar_legacy implements Listener, Loadable {
 		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
-	}
-
-	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.BOSSBAR;
 	}
 }

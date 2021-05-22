@@ -118,9 +118,4 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 		}
 		return viewerWorldGroup.equals(targetWorldGroup);
 	}
-
-	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.PER_WORLD_PLAYERLIST;
-	}
 }
