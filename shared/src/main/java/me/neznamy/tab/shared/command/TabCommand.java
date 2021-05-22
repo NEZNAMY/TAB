@@ -112,7 +112,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!sender.hasPermission("tab.tabcomplete")) return new ArrayList<String>();
+		if (!hasPermission(sender, "tab.tabcomplete")) return new ArrayList<String>();
 		return super.complete(sender, arguments);
 	}
 }

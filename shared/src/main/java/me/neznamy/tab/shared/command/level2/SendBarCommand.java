@@ -48,7 +48,7 @@ public class SendBarCommand extends SubCommand{
 		}
 		BossBarLine bar = feature.lines.get(barname);
 		if (bar == null) {
-			sender.sendMessage("Bar not found", false);
+			sendMessage(sender, "No bar found with name \"" + bar + "\"");
 			return;
 		}
 		new Thread(() -> {

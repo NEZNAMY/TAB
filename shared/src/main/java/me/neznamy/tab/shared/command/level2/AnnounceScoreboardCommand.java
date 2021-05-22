@@ -40,12 +40,12 @@ public class AnnounceScoreboardCommand extends SubCommand{
 		try {
 			duration = Integer.parseInt(args[1]);
 		} catch (Exception e) {
-			sender.sendMessage(args[1] + " is not a number!", false);
+			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
 		Scoreboard sb = feature.getScoreboards().get(scoreboard);
 		if (sb == null) {
-			sender.sendMessage("Scoreboard not found", false);
+			sendMessage(sender, "Scoreboard not found");
 			return;
 		}
 		announce(feature, sb, duration);

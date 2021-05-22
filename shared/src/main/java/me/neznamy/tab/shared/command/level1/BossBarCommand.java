@@ -21,7 +21,7 @@ public class BossBarCommand extends SubCommand{
 	public void execute(TabPlayer sender, String[] args) {
 		BossBar bossbar = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (bossbar == null) {
-			sender.sendMessage("&cBossbar feature is not enabled, therefore toggle command cannot be used.", true);
+			sendMessage(sender, "&cBossbar feature is not enabled, therefore toggle command cannot be used.");
 			return;
 		}
 		if (sender == null) {

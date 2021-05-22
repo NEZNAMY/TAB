@@ -38,12 +38,12 @@ public class AnnounceBarCommand extends SubCommand{
 		try {
 			duration = Integer.parseInt(args[1]);
 		} catch (Exception e) {
-			sender.sendMessage(args[1] + " is not a number!", false);
+			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
 		BossBarLine bar = feature.lines.get(barname);
 		if (bar == null) {
-			sender.sendMessage("Bar not found", false);
+			sendMessage(sender, "Bar not found");
 			return;
 		}
 		new Thread(() -> {
