@@ -55,6 +55,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		}
 		tab.debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
 				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
+		startTask();
+	}
+	
+	private void startTask() {
 		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 			
 			for (TabPlayer p : tab.getPlayers()) {
