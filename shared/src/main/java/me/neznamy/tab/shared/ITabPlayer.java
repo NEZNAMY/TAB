@@ -104,20 +104,19 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void setValueTemporarily(EnumProperty type, String value) {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " temporarily to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		Property pr = getProperty(type.toString());
 		if (pr == null) throw new IllegalStateException("Feature handling this property is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		forceRefresh();
 	}
 
 	@Override
 	public void setValuePermanently(EnumProperty type, String value) {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " permanently to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		((PlayerCommand)TAB.getInstance().command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag", getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
@@ -125,6 +124,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		Property pr = getProperty(type.toString());
 		if (pr == null) return;
 		pr.changeRawValue(value);
+		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		forceRefresh();
 	}
 

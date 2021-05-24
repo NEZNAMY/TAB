@@ -2,7 +2,9 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
@@ -25,7 +27,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 public class Playerlist implements JoinEventListener, Loadable, WorldChangeListener, Refreshable {
 
 	private TAB tab;
-	private List<String> usedPlaceholders;
+	private Set<String> usedPlaceholders;
 	public List<String> disabledWorlds;
 	private boolean antiOverrideNames;
 	private boolean antiOverrideTablist;
@@ -156,7 +158,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public List<String> getUsedPlaceholders() {
-		return usedPlaceholders;
+		return new ArrayList<>(usedPlaceholders);
 	}
 
 	@Override
@@ -179,7 +181,11 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix");
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix"));
+		for (TabPlayer p : tab.getPlayers()) {
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tabprefix").getCurrentRawValue(),
+					p.getProperty("customtabname").getCurrentRawValue(), p.getProperty("tabsuffix").getCurrentRawValue()));
+		}
 	}
 
 	@Override

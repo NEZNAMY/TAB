@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 public class NameTag implements Loadable, Refreshable, LoginPacketListener, QuitEventListener, WorldChangeListener, JoinEventListener {
 
 	protected TAB tab;
-	protected List<String> usedPlaceholders;
+	protected Set<String> usedPlaceholders;
 	protected List<String> disabledWorlds;
 	private boolean collisionRule;
 	private List<String> revertedCollision;
@@ -42,7 +43,11 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		revertedCollision = tab.getConfiguration().config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
 		invisibleNametags = tab.getConfiguration().config.getBoolean("invisible-nametags", false);
 		sorting = new Sorting(tab, this);
-		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		for (TabPlayer p : tab.getPlayers()) {
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
+					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
+		}
 		tab.debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, revertedCollision=%s, disabledWorlds=%s, invisibleNametags=%s",
 				collisionRule, revertedCollision, disabledWorlds, invisibleNametags));
 	}
@@ -100,7 +105,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public List<String> getUsedPlaceholders() {
-		return usedPlaceholders;
+		return new ArrayList<>(usedPlaceholders);
 	}
 	
 	public void unregisterTeam(TabPlayer p) {
@@ -252,7 +257,11 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix");
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		for (TabPlayer p : tab.getPlayers()) {
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
+					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
+		}
 	}
 
 	public void updateProperties(TabPlayer p) {

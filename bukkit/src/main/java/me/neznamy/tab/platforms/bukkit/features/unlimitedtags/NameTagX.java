@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -377,12 +378,17 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix");
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix"));
 		for (String line : dynamicLines) {
 			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (String line : staticLines.keySet()) {
 			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
+		}
+		for (TabPlayer p : tab.getPlayers()) {
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tagprefix").getCurrentRawValue(), 
+					p.getProperty("customtagname").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue(),
+					p.getProperty("abovename").getCurrentRawValue(), p.getProperty("belowname").getCurrentRawValue()));
 		}
 	}
 
