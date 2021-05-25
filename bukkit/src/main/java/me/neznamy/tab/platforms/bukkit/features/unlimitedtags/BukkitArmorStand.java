@@ -305,19 +305,19 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return correct player's Y
 	 */
 	private double getY() {
-		//1.14+ bukkit api bug
+		//1.14+ server sided bug
 		Entity vehicle = player.getVehicle();
 		if (vehicle != null) {
-			if (vehicle.getType() == EntityType.HORSE) {
+			if (vehicle.getType().toString().contains("HORSE")) { //covering all 3 horse types
 				return vehicle.getLocation().getY() + 0.85;
 			}
-			if (vehicle.getType().toString().equals("DONKEY")) {
+			if (vehicle.getType() == EntityType.DONKEY) {
 				return vehicle.getLocation().getY() + 0.525;
 			}
 			if (vehicle.getType() == EntityType.PIG) {
 				return vehicle.getLocation().getY() + 0.325;
 			}
-			if (vehicle.getType().toString().equals("STRIDER")) { //preventing errors on <1.16
+			if (vehicle.getType().toString().equals("STRIDER")) { //added in 1.16
 				return vehicle.getLocation().getY() + 1.15;
 			}
 		}
