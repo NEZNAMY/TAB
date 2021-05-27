@@ -217,6 +217,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws Exception {
+		if (nms.PacketPlayOutPlayerListHeaderFooter == null) return null;
 		Object nmsPacket = nms.newPacketPlayOutPlayerListHeaderFooter.newInstance();
 		nms.PacketPlayOutPlayerListHeaderFooter_HEADER.set(nmsPacket, toNMSComponent(packet.header, clientVersion));
 		nms.PacketPlayOutPlayerListHeaderFooter_FOOTER.set(nmsPacket, toNMSComponent(packet.footer, clientVersion));
