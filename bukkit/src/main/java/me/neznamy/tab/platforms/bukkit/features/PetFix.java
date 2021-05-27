@@ -9,7 +9,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
@@ -45,13 +44,13 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 * @return position of pet owner field based on server version
 	 */
 	private int getPetOwnerPosition() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+		if (nms.minorVersion >= 15) {
 			//1.15.x, 1.16.x
 			return 17;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
+		} else if (nms.minorVersion >= 14) {
 			//1.14.x
 			return 16;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
+		} else if (nms.minorVersion >= 10) {
 			//1.10.x - 1.13.x
 			return 14;
 		} else {
