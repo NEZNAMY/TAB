@@ -281,7 +281,6 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent onClickChangePage(int newpage) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() < 8) throw new UnsupportedOperationException("Not supported on <1.8");
 		return onClick(ClickAction.CHANGE_PAGE, String.valueOf(newpage));
 	}
 
