@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 
 /**
  * A class representing the n.m.s.DataWatcherRegistry class to make work with it much easier
@@ -23,14 +23,14 @@ public class DataWatcherRegistry {
 	/**
 	 * Initializes required NMS classes and fields
 	 */
-	public DataWatcherRegistry(Class<?> registry) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+	public DataWatcherRegistry(NMSStorage nms, Class<?> registry) {
+		if (nms.minorVersion >= 9) {
 			Map<String, Object> fields = getStaticFields(registry);
 			Byte = fields.get("a");
 			Integer = fields.get("b");
 			Float = fields.get("c");
 			String = fields.get("d");
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+			if (nms.minorVersion >= 13) {
 				Optional_IChatBaseComponent = fields.get("f");
 				Boolean = fields.get("i");
 			} else {

@@ -21,7 +21,6 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManager;
@@ -87,19 +86,18 @@ public class BukkitPlatform implements Platform {
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
-		int version = ProtocolVersion.SERVER_VERSION.getMinorVersion();
 		TAB tab = TAB.getInstance();
 		usedExpansions = new HashSet<String>();
 		tab.getPlaceholderManager().addRegistry(new BukkitPlaceholderRegistry(plugin));
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
-		if (version >= 8 && tab.getConfiguration().pipelineInjection) {
+		if (nms.minorVersion >= 8 && tab.getConfiguration().pipelineInjection) {
 			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(tab, nms));
 		}
 		loadNametagFeature(tab);
 		loadUniversalFeatures();
-		if (tab.getConfiguration().bossbar.getBoolean("bossbar-enabled", false) && version < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab, plugin));
-		if (version >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
+		if (tab.getConfiguration().bossbar.getBoolean("bossbar-enabled", false) && nms.minorVersion < 9) tab.getFeatureManager().registerFeature("bossbar1.8", new BossBar_legacy(tab, plugin));
+		if (nms.minorVersion >= 9 && tab.getConfiguration().config.getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
@@ -117,7 +115,7 @@ public class BukkitPlatform implements Platform {
 	 */
 	private void loadNametagFeature(TAB tab) {
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) {
-			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8) {
+			if (tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && nms.minorVersion >= 8) {
 				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms, tab));
 			} else {
 				tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));

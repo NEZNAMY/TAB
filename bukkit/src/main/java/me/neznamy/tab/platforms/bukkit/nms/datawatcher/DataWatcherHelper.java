@@ -36,13 +36,13 @@ public class DataWatcherHelper {
 	 * @return armor stand flags position based on server version
 	 */
 	private int getArmorStandFlagsPosition() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+		if (NMSStorage.getInstance().minorVersion >= 15) {
 			//1.15.x, 1.16.x
 			return 14;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14) {
+		} else if (NMSStorage.getInstance().minorVersion >= 14) {
 			//1.14.x
 			return 13;
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 10) {
+		} else if (NMSStorage.getInstance().minorVersion >= 10) {
 			//1.10.x - 1.13.x
 			return 11;
 		} else {
@@ -65,13 +65,13 @@ public class DataWatcherHelper {
 	 * @param clientVersion - client version
 	 */
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (NMSStorage.getInstance().minorVersion >= 13) {
 			try {
 				data.setValue(new DataWatcherObject(2, registry.Optional_IChatBaseComponent), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to create component", e);
 			}
-		} else if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
+		} else if (NMSStorage.getInstance().minorVersion >= 8){
 			data.setValue(new DataWatcherObject(2, registry.String), customName);
 		} else {
 			String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
@@ -85,7 +85,7 @@ public class DataWatcherHelper {
 	 * @param visible - if visible or not
 	 */
 	public void setCustomNameVisible(boolean visible) {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (NMSStorage.getInstance().minorVersion >= 9) {
 			data.setValue(new DataWatcherObject(3, registry.Boolean), visible);
 		} else {
 			data.setValue(new DataWatcherObject(3, registry.Byte), (byte)(visible?1:0));

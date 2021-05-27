@@ -53,12 +53,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 */
 	public BukkitPacketBuilder(NMSStorage nms) {
 		this.nms = nms;
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13) {
+		if (nms.minorVersion >= 13) {
 			entityIds.put(EntityType.ARMOR_STAND, 1);
 			entityIds.put(EntityType.WITHER, 83);
 		} else {
 			entityIds.put(EntityType.WITHER, 64);
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8){
+			if (nms.minorVersion >= 8){
 				entityIds.put(EntityType.ARMOR_STAND, 30);
 			}
 		}
@@ -351,7 +351,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
 			nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.set(nmsPacket, dataWatcher.toNMS());
 		}
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (nms.minorVersion >= 9) {
 			nms.PacketPlayOutSpawnEntityLiving_UUID.set(nmsPacket, uuid);
 			nms.PacketPlayOutSpawnEntityLiving_X.set(nmsPacket, loc.getX());
 			nms.PacketPlayOutSpawnEntityLiving_Y.set(nmsPacket, loc.getY());
@@ -374,7 +374,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	public Object buildEntityTeleportPacket(int entityId, Location location) throws Exception {
 		Object nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance();
 		nms.PacketPlayOutEntityTeleport_ENTITYID.set(nmsPacket, entityId);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (nms.minorVersion >= 9) {
 			nms.PacketPlayOutEntityTeleport_X.set(nmsPacket, location.getX());
 			nms.PacketPlayOutEntityTeleport_Y.set(nmsPacket, location.getY());
 			nms.PacketPlayOutEntityTeleport_Z.set(nmsPacket, location.getZ());

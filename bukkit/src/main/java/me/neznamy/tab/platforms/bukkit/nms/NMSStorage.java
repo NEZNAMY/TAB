@@ -250,7 +250,7 @@ public class NMSStorage {
 		initializeConstructors();
 		initializeFields();
 		initializeMethods();
-		dataWatcherRegistry = new DataWatcherRegistry(DataWatcherRegistry);
+		dataWatcherRegistry = new DataWatcherRegistry(this, DataWatcherRegistry);
 	}
 	
 	/**

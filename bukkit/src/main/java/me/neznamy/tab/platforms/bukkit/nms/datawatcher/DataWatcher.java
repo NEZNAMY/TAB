@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 
 /**
  * A class representing the n.m.s.DataWatcher class to make work with it much easier
@@ -62,7 +61,7 @@ public class DataWatcher {
 		Object nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
 		for (DataWatcherItem item : dataValues.values()) {
 			Object position;
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			if (nms.minorVersion >= 9) {
 				position = nms.newDataWatcherObject.newInstance(item.type.position, item.type.classType);
 			} else {
 				position = item.type.position;

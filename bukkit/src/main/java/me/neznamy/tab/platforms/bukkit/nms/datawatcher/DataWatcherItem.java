@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 
 public class DataWatcherItem {
 	
@@ -29,7 +28,7 @@ public class DataWatcherItem {
 	 */
 	public static DataWatcherItem fromNMS(Object nmsItem) throws Exception {
 		NMSStorage nms = NMSStorage.getInstance();
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+		if (NMSStorage.getInstance().minorVersion >= 9) {
 			Object nmsObject = nms.DataWatcherItem_TYPE.get(nmsItem);
 			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherObject_SLOT.getInt(nmsObject), nms.DataWatcherObject_SERIALIZER.get(nmsObject)), nms.DataWatcherItem_VALUE.get(nmsItem));
 		} else {

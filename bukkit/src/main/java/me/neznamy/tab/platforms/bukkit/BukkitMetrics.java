@@ -16,7 +16,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Metrics;
 
@@ -97,7 +97,7 @@ public class BukkitMetrics extends Metrics {
 		}));
 		addCustomChart(new SimplePie("server_version", new Callable<String>() {
 			public String call() {
-				return "1." + ProtocolVersion.SERVER_VERSION.getMinorVersion() + ".x";
+				return "1." + NMSStorage.getInstance().minorVersion + ".x";
 			}
 		}));
 	}
