@@ -23,7 +23,7 @@ public abstract class StaticLine extends ScoreboardLine {
 	public StaticLine(Scoreboard parent, int lineNumber, String text, String forcedNameStart) {
 		super(parent, lineNumber);
 		this.text = TAB.getInstance().getPlaceholderManager().color(text);
-		String legacy = RGBUtils.getInstance().convertRGBtoLegacy(text);
+		String legacy = RGBUtils.getInstance().convertRGBtoLegacy(this.text);
 		//1.8+
 		String[] v1_8 = splitText(forcedNameStart, legacy, 40);
 		prefix = v1_8[0];
