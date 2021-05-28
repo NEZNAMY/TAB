@@ -61,7 +61,7 @@ public enum ProtocolVersion {
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private int networkId;
 	
-	//minor versio, such as 16
+	//minor version, such as 16
 	private int minorVersion;
 	
 	//friendly name displayed in %player-version% placeholder
