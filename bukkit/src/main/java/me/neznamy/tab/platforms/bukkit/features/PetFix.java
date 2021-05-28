@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 public class PetFix implements RawPacketListener, QuitEventListener {
 
 	//datawatcher position of pet owner field
-	private int PET_OWNER_POSITION = getPetOwnerPosition();
+	private int PET_OWNER_POSITION;
 
 	//logger of last interacts to prevent feature not working on 1.16
 	private Map<String, Long> lastInteractFix = new HashMap<String, Long>();
@@ -36,6 +36,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 */
 	public PetFix(NMSStorage nms) {
 		this.nms = nms;
+		PET_OWNER_POSITION = getPetOwnerPosition();
 		TAB.getInstance().debug("Loaded PetFix feature");
 	}
 	
