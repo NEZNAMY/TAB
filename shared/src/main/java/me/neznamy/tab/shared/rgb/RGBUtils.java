@@ -96,7 +96,7 @@ public class RGBUtils {
 			char c = applied.charAt(i);
 			if (c == '#') {
 				try {
-					if (containsLegacyCode(text, i)) {
+					if (containsLegacyCode(applied, i)) {
 						sb.append(new TextColor(applied.substring(i, i+7), EnumChatFormat.getByChar(applied.charAt(i+8))).getLegacyColor().getFormat());
 						i += 8;
 					} else {
