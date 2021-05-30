@@ -78,6 +78,7 @@ public class TABAPI {
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.refreshPlaceholderUsage();
 	}
 
 	/**
@@ -91,6 +92,7 @@ public class TABAPI {
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.refreshPlaceholderUsage();
 	}
 
 	/**
@@ -102,6 +104,7 @@ public class TABAPI {
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
 		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.refreshPlaceholderUsage();
 	}
 
 	/**
