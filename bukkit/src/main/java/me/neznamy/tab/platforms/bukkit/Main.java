@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -35,11 +37,23 @@ public class Main extends JavaPlugin {
 					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
-				TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+				TabPlayer p = null;
+				if (sender instanceof Player) {
+					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+					if (p == null) return false; //player not loaded correctly
+				}
+				TAB.getInstance().command.execute(p, args);
 			}
 			return false;
 		});
-		Bukkit.getPluginCommand("tab").setTabCompleter((sender, c, cmd, args) -> TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args));
+		Bukkit.getPluginCommand("tab").setTabCompleter((sender, c, cmd, args) -> {
+			TabPlayer p = null;
+			if (sender instanceof Player) {
+				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+			}
+			return TAB.getInstance().command.complete(p, args);
+		});
 		TAB.getInstance().load();
 		new BukkitMetrics(this);
 	}

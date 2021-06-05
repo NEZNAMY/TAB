@@ -17,6 +17,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.injector.VelocityPacketRegistry;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -112,14 +113,23 @@ public class Main {
 					sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
 				}
 			} else {
-				TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+				TabPlayer p = null;
+				if (sender instanceof Player) {
+					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+					if (p == null) return; //player not loaded correctly
+				}
+				TAB.getInstance().command.execute(p, args);
 			}
 		}
 
 		@Override
 		public List<String> suggest(CommandSource sender, String[] args) {
-			if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
-			return TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+			TabPlayer p = null;
+			if (sender instanceof Player) {
+				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+			}
+			return TAB.getInstance().command.complete(p, args);
 		}
 	}
 }
