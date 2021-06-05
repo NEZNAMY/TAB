@@ -76,6 +76,11 @@ public class DataWatcherHelper {
 		} else {
 			String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
 			data.setValue(new DataWatcherObject(10, registry.String), cutName);
+			if (NMSStorage.getInstance().minorVersion >= 6){
+				data.setValue(new DataWatcherObject(10, registry.String), cutName);
+			} else {
+				data.setValue(new DataWatcherObject(5, registry.String), cutName);
+			}
 		}
 			
 	}
@@ -97,7 +102,11 @@ public class DataWatcherHelper {
 	 * @param health - health of entity
 	 */
 	public void setHealth(float health) {
-		data.setValue(new DataWatcherObject(6, registry.Float), health);
+		if (NMSStorage.getInstance().minorVersion >= 6) {
+			data.setValue(new DataWatcherObject(6, registry.Float), health);
+		} else {
+			data.setValue(new DataWatcherObject(16, registry.Integer), (int)health);
+		}
 	}
 	
 	/**
