@@ -211,4 +211,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 		return false;
 	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public int getGamemode() {
+		return player.getGameMode().getValue();
+	}
 }

@@ -173,4 +173,9 @@ public class VelocityTabPlayer extends ITabPlayer{
 	public boolean isOnline() {
 		return player.isActive();
 	}
+
+	@Override
+	public int getGamemode() {
+		return 0; //shrug
+	}
 }

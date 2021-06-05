@@ -490,4 +490,10 @@ public interface TabPlayer {
 	 * @return forced team name or null if not forced
 	 */
 	public String getForcedTeamName();
+	
+	/**
+	 * Returns gamemode of the player (0 for survival, 1 creative, 2 adventure, 3 spectator)
+	 * @return gamemode of the player
+	 */
+	public int getGamemode();
 }
