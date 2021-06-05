@@ -6,8 +6,11 @@ import java.util.List;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
@@ -36,6 +39,24 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
+		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
+			public String get(TabPlayer p) {
+				int var = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (!all.isVanished() || p.hasPermission("tab.seevanished")) var++;
+				}
+				return String.valueOf(var);
+			}
+		});
+		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
+			public String get(TabPlayer p) {
+				int var = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (all.isStaff() && (!all.isVanished() || p.hasPermission("tab.seevanished"))) var++;
+				}
+				return String.valueOf(var);
+			}
+		});
 		return placeholders;
 	}
 }

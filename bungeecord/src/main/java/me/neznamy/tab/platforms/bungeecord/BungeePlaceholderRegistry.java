@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -23,22 +22,24 @@ public class BungeePlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public List<Placeholder> registerPlaceholders() {
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null) {
-			placeholders.add(new ServerPlaceholder("%canseeonline%", 1000) {
-				public String get() {
-					return String.valueOf(TAB.getInstance().getPlayers().size() - BungeeVanishAPI.getInvisiblePlayers().size());
+		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
+			public String get(TabPlayer p) {
+				int var = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (!all.isVanished() || p.hasPermission("tab.seevanished")) var++;
 				}
-			});
-			placeholders.add(new ServerPlaceholder("%canseestaffonline%", 1000) {
-				public String get() {
-					int count = 0;
-					for (TabPlayer all : TAB.getInstance().getPlayers()) {
-						if (!((BungeeTabPlayer)all).isVanished() && all.isStaff()) count++;
-					}
-					return String.valueOf(count);
+				return String.valueOf(var);
+			}
+		});
+		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
+			public String get(TabPlayer p) {
+				int var = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (all.isStaff() && (!all.isVanished() || p.hasPermission("tab.seevanished"))) var++;
 				}
-			});
-		}
+				return String.valueOf(var);
+			}
+		});
 		placeholders.add(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(TabPlayer p) {
 				return ((ProxiedPlayer) p.getPlayer()).getDisplayName();
