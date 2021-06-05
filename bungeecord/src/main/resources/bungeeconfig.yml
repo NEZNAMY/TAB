@@ -43,7 +43,6 @@ footer:
 #supports any numeric placeholder, set to "" to disable the feature
 yellow-number-in-tablist: "%ping%"
 
-#literally what it says
 group-sorting-priority-list:
   - owner
   - admin
