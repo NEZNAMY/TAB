@@ -74,7 +74,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 					continue;
 				}
-				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
+				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) || p.hasTeamHandlingPaused()) {
 					newList.add(entry);
 				} else {
 					logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);

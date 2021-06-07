@@ -496,4 +496,22 @@ public interface TabPlayer {
 	 * @return gamemode of the player
 	 */
 	public int getGamemode();
+	
+	/**
+	 * Unregisters player's team and no longer handles it, as well as disables anti-override for teams.
+	 * This can be resumed using resumeTeamHandling(). If team handling was paused already, nothing happens.
+	 */
+	public void pauseTeamHandling();
+	
+	/**
+	 * Resumes team handling if it was before paused using pauseTeamHandling(), if not, nothing happens
+	 */
+	public void resumeTeamHandling();
+	
+	/**
+	 * Returns true if team handling is paused for this player using pauseTeamHandling(), false if not or 
+	 * it was resumed already using resumeTeamHandling
+	 * @return true if paused, false if not
+	 */
+	public boolean hasTeamHandlingPaused();
 }

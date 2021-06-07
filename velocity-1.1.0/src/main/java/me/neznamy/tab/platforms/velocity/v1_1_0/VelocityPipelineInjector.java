@@ -51,7 +51,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 		if (packet.getFriendlyFire() != 69) {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : tab.getPlayers()) {
-				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName())) {
+				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && !p.hasTeamHandlingPaused()) {
 					logTeamOverride(packet.name, p.getName());
 					col.remove(p.getName());
 				}
