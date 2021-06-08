@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
-import javafx.util.Pair;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.util.Pair;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.cpu.TabFeature;

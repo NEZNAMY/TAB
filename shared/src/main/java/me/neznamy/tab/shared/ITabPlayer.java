@@ -3,12 +3,12 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import io.netty.channel.Channel;
-import javafx.util.Pair;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.util.Pair;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GroupRefresher;
