@@ -16,7 +16,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import me.neznamy.injector.VelocityPacketRegistry;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -54,10 +53,6 @@ public class Main {
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!isVersionSupported()) {
 			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads");
-			return;
-		}
-		if (!new VelocityPacketRegistry().registerPackets()) {
-			System.out.println("\u00a7c[TAB] Your velocity version is way too new for this plugin version. Update the plugin or downgrade Velocity.");
 			return;
 		}
 		if (server.getConfiguration().isOnlineMode()) {

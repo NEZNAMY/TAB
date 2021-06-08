@@ -110,8 +110,7 @@ public class Configs {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws Exception {
-		String source = tab.getPlatform().getSeparatorType().equals("world") ? "bukkitconfig.yml" : "bungeeconfig.yml";
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(source), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		removeStrings = new ArrayList<>();
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			removeStrings.add(s.replace('&', '\u00a7'));
