@@ -121,7 +121,20 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 						}
 					}
 					showBossBars(p, defaultBars);
-					showBossBars(p, perWorld.get(p.getWorldByGroup(TAB.getInstance().getWorldsByGroup(new ArrayList<>(perWorld.keySet()))).getKey()));
+
+					List<String> bars = null;
+
+					for (String bar : perWorld.keySet()) {
+						if (!bar.endsWith("*")) continue;
+						if (p.getWorldName().startsWith(bar.substring(0, bar.length() - 1))) {
+							bars = perWorld.get(bar);
+						}
+					}
+					if (bars == null) {
+						bars = perWorld.get(p.getWorldName());
+					}
+
+					showBossBars(p, bars);
 				}
 			}
 		});
@@ -168,7 +181,19 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements);
-		showBossBars(p, perWorld.get(p.getWorldByGroup(TAB.getInstance().getWorldsByGroup(new ArrayList<>(perWorld.keySet()))).getKey()));
+		List<String> bars = null;
+
+		for (String bar : perWorld.keySet()) {
+			if (!bar.endsWith("*")) continue;
+			if (p.getWorldName().startsWith(bar.substring(0, bar.length() - 1))) {
+				bars = perWorld.get(bar);
+			}
+		}
+		if (bars == null) {
+			bars = perWorld.get(p.getWorldName());
+		}
+
+		showBossBars(p, bars);
 	}
 	
 	/**
