@@ -1,9 +1,11 @@
 package me.neznamy.tab.api;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
+import javafx.util.Pair;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -130,6 +132,11 @@ public interface TabPlayer {
 	 */
 	public void removeCustomScoreboard();
 
+	/**
+	 * Returns Whether the player is in the group, if so, it is the world the player is currently in, otherwise it is null.
+	 * @return originWorldName, worldName
+	 */
+	public Pair<String, String> getWorldByGroup(List<String> worldNames);
 
 	/**
 	 * Returns player's name

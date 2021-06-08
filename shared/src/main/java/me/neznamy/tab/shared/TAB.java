@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
@@ -117,6 +115,33 @@ public class TAB {
 			if (p.getTablistUUID().equals(tablistId)) return p;
 		}
 		return null;
+	}
+
+	public List<String> getWorldsByGroup(List<String> worlds) {
+		List<String> list = new ArrayList<>();
+
+		for (String rawWorld : worlds) {
+			list.addAll(getWorldsByGroup(rawWorld));
+		}
+
+		return list;
+	}
+
+	public List<String> getWorldsByGroup(String worldName) {
+		if (!worldName.endsWith("*")) {
+			return Collections.singletonList(worldName);
+		}
+
+		worldName = worldName.substring(0, worldName.length() - 1);
+		List<String> list = new ArrayList<>();
+
+		for (String w : platform.getWorldNames()) {
+			if (w.startsWith(worldName)) {
+				list.add(w);
+			}
+		}
+
+		return list;
 	}
 	
 	/**

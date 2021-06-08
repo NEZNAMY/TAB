@@ -1,12 +1,9 @@
 package me.neznamy.tab.shared;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import io.netty.channel.Channel;
+import javafx.util.Pair;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Scoreboard;
@@ -311,6 +308,15 @@ public abstract class ITabPlayer implements TabPlayer {
 				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
 			}
 		}
+	}
+	@Override
+	public Pair<String, String> getWorldByGroup(List<String> worldNames) {
+		for (String worldName : worldNames) {
+			for (String rawWorldName : TAB.getInstance().getWorldsByGroup(worldName)) {
+				if (rawWorldName.equals(world)) return new Pair<>(worldName, rawWorldName);
+			}
+		}
+		return null;
 	}
 
 	@Override

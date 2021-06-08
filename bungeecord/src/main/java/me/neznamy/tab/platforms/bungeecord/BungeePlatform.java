@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BungeeTABLoadEvent;
@@ -96,6 +98,11 @@ public class BungeePlatform implements Platform {
 	@Override
 	public String getSeparatorType() {
 		return "server";
+	}
+
+	@Override
+	public List<String> getWorldNames() {
+		return new ArrayList<>(ProxyServer.getInstance().getServers().keySet());
 	}
 
 	@Override

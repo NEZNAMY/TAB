@@ -1,10 +1,13 @@
 package me.neznamy.tab.platforms.velocity.v1_1_0;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.VelocityTABLoadEvent;
 import me.neznamy.tab.shared.Platform;
@@ -84,7 +87,18 @@ public class VelocityPlatform implements Platform {
 			return;
 		}
 	}
-	
+
+	@Override
+	public List<String> getWorldNames() {
+		List<String> list = new ArrayList<>();
+
+		for (RegisteredServer registeredServer : server.getAllServers()) {
+			list.add(registeredServer.getServerInfo().getName());
+		}
+
+		return list;
+	}
+
 	@Override
 	public String getServerVersion() {
 		return server.getVersion().getName() + " v" + server.getVersion().getVersion();

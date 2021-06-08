@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
+import me.neznamy.tab.shared.TAB;
+
 import java.util.List;
 
 /**
@@ -23,12 +25,16 @@ public interface Feature {
 		if (disabledWorlds == null) return false;
 		if (disabledWorlds.contains("WHITELIST")) {
 			for (String enabled : disabledWorlds) {
-				if (enabled != null && enabled.equalsIgnoreCase(world)) return false;
+				for (String groupWorld : TAB.getInstance().getWorldsByGroup(enabled)) {
+					if (groupWorld != null && enabled.equalsIgnoreCase(world)) return false;
+				}
 			}
 			return true;
 		} else {
 			for (String disabled : disabledWorlds) {
-				if (disabled != null && disabled.equalsIgnoreCase(world)) return true;
+				for (String groupWorld : TAB.getInstance().getWorldsByGroup(disabled)) {
+					if (groupWorld != null && disabled.equalsIgnoreCase(world)) return false;
+				}
 			}
 			return false;
 		}

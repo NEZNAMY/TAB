@@ -121,7 +121,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 						}
 					}
 					showBossBars(p, defaultBars);
-					showBossBars(p, perWorld.get(p.getWorldName()));
+					showBossBars(p, perWorld.get(p.getWorldByGroup(TAB.getInstance().getWorldsByGroup(new ArrayList<>(perWorld.keySet()))).getKey()));
 				}
 			}
 		});
@@ -168,7 +168,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements);
-		showBossBars(p, perWorld.get(p.getWorldName()));
+		showBossBars(p, perWorld.get(p.getWorldByGroup(TAB.getInstance().getWorldsByGroup(new ArrayList<>(perWorld.keySet()))).getKey()));
 	}
 	
 	/**

@@ -246,7 +246,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	 * @return highest scoreboard player should see
 	 */
 	public String detectHighestScoreboard(TabPlayer p) {
-		String scoreboard = perWorld.get(p.getWorldName());
+		String scoreboard = perWorld.get(p.getWorldByGroup(TAB.getInstance().getWorldsByGroup(new ArrayList<>(perWorld.keySet()))).getKey());
+
 		if (scoreboard == null) {
 			if (defaultScoreboard.equalsIgnoreCase("NONE")) {
 				return "null";

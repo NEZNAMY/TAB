@@ -1,11 +1,10 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -246,6 +245,17 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public String getSeparatorType() {
 		return "world";
+	}
+
+	@Override
+	public List<String> getWorldNames() {
+		List<String> list = new ArrayList<>();
+
+		for (World world : Bukkit.getWorlds()) {
+			list.add(world.getName());
+		}
+
+		return list;
 	}
 
 	@Override

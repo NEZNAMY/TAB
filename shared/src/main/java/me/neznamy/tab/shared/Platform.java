@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -65,6 +66,12 @@ public interface Platform {
 	 * @return "world" on bukkit, "server" on proxies
 	 */
 	public String getSeparatorType();
+
+	/**
+	 * Used to use'' to get a list of matched world or server.
+	 * @return "worlds" on bukkit, "servers" on proxies
+	 */
+	public List<String> getWorldNames();
 	
 	/**
 	 * Returns plugin's data folder

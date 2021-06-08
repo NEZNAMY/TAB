@@ -189,6 +189,9 @@ public class Configs {
 			for (String localWorld : worldGroup.split(multiWorldSeparator)) {
 				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
 			}
+			for (String localWorld : TAB.getInstance().getWorldsByGroup(new ArrayList<>(worlds.keySet()))) {
+				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
+			}
 		}
 		return world;
 	}
