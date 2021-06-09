@@ -104,7 +104,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	}
 	
 	/**
-	 * Returns packet ID for this packet of provided packet class
+	 * Returns packet ID for this player of provided packet class
 	 * @param clazz - packet class
 	 * @return - packet ID
 	 */
