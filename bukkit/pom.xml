@@ -47,16 +47,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>com.github.NEZNAMY</groupId>
 					<artifactId>YamlAssist</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.yaml</groupId>
-					<artifactId>snakeyaml</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -83,6 +75,10 @@
 				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -127,7 +123,7 @@
 		<dependency>
 			<groupId>us.myles</groupId>
 			<artifactId>viaversion</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.1</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
