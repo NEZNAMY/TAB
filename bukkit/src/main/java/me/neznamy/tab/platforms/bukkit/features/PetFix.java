@@ -91,7 +91,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 			for (Object item : items) {
 				if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == PET_OWNER_POSITION) {
 					Object value = nms.DataWatcherItem_VALUE.get(item);
-					if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) continue;
+					if (value.getClass().getSimpleName().equals("Optional")) continue;
 				}
 				newList.add(item);
 			}
@@ -101,7 +101,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 		if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
 			DataWatcherItem petOwner = watcher.getItem(PET_OWNER_POSITION);
-			if (petOwner != null && (petOwner.value instanceof java.util.Optional || petOwner.value instanceof com.google.common.base.Optional)) {
+			if (petOwner != null && petOwner.value.getClass().getSimpleName().equals("Optional")) {
 				watcher.removeValue(PET_OWNER_POSITION);
 				nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.set(packet, watcher.toNMS());
 			}
