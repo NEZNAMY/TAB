@@ -36,9 +36,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	public Playerlist(TAB tab) {
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true);
+		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true) && tab.getFeatureManager().isFeatureEnabled("injection");
 		refreshUsedPlaceholders();
-		antiOverrideTablist = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true);
+		antiOverrideTablist = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true) && tab.getFeatureManager().isFeatureEnabled("injection");
 		if (antiOverrideTablist) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
 
