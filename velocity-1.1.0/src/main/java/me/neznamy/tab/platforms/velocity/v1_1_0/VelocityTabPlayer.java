@@ -66,6 +66,12 @@ public class VelocityTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean hasPermission(String permission) {
+		if (TAB.getInstance().isSupportBukkitPermission()) {
+			String merge = "hasPermission:" + permission;
+			Main.plm.requestAttribute(this, merge);
+			if (!attributes.containsKey(merge)) return false;
+			return Boolean.parseBoolean(attributes.get(merge));
+		}
 		return player.hasPermission(permission);
 	}
 	

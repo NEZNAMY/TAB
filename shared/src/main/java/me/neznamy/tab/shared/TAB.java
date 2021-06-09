@@ -32,6 +32,9 @@ public class TAB {
 	
 	//the command
 	public TabCommand command;
+
+	// Used to use bukkit permission management in the case of Bungee or Velocity.
+	private boolean supportBukkitPermission;
 	
 	//command used if plugin is disabled due to a broken configuration file
 	public final DisabledCommand disabledCommand = new DisabledCommand();
@@ -239,7 +242,15 @@ public class TAB {
 	public boolean isDisabled() {
 		return disabled;
 	}
-	
+
+	public void setSupportBukkitPermission(boolean support) {
+		supportBukkitPermission = support;
+	}
+
+	public boolean isSupportBukkitPermission() {
+		return supportBukkitPermission;
+	}
+
 	public PlaceholderManager getPlaceholderManager() {
 		return placeholderManager;
 	}
