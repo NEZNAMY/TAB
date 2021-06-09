@@ -96,9 +96,9 @@ classic-vanilla-belowname:
 #controlling the collision rule
 enable-collision: true
 
-#using the opposite of the setting above for worlds
-revert-collision-rule-in-worlds:
-  - revertedworld
+#using the opposite of the setting above for servers
+revert-collision-rule-in-servers:
+  - revertedserver
   
 #preventing players with spectator gamemode from being moved to the bottom of tablist with transparent name
 do-not-move-spectators: false
