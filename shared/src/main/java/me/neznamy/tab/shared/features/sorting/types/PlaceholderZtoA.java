@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 
 /**
  * Sorting by a placeholder from Z to A
@@ -16,7 +16,7 @@ public class PlaceholderZtoA extends SortingType {
 	}
 	
 	@Override
-	public String getChars(TabPlayer p) {
+	public String getChars(ITabPlayer p) {
 		char[] chars = setPlaceholders(p).toCharArray();
 		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + new String(chars) + "\". ");
 		for (int i=0; i<chars.length; i++) {

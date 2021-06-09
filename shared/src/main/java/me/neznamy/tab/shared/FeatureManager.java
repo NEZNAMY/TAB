@@ -209,7 +209,7 @@ public class FeatureManager {
 			((JoinEventListener)f).onJoin(connectedPlayer);
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
-		connectedPlayer.markAsLoaded();
+		((ITabPlayer)connectedPlayer).markAsLoaded();
 		tab.debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
 	
@@ -227,7 +227,7 @@ public class FeatureManager {
 			return;
 		}
 		String from = changed.getWorldName();
-		changed.setWorldName(to);
+		((ITabPlayer)changed).setWorldName(to);
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();

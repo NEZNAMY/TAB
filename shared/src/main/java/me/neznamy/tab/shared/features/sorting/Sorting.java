@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -75,7 +76,7 @@ public class Sorting {
 					String newName = getTeamName(p);
 					if (!p.getTeamName().equals(newName)) {
 						nametags.unregisterTeam(p);
-						p.setTeamName(newName);
+						((ITabPlayer) p).setTeamName(newName);
 						nametags.registerTeam(p);
 					}
 				}
@@ -108,10 +109,10 @@ public class Sorting {
 	 * @return unique up to 16 character long sequence that sorts the player
 	 */
 	public String getTeamName(TabPlayer p) {
-		p.setTeamNameNote("");
+		((ITabPlayer) p).setTeamNameNote("");
 		StringBuilder sb = new StringBuilder();
 		for (SortingType type : sorting) {
-			sb.append(type.getChars(p));
+			sb.append(type.getChars((ITabPlayer) p));
 		}
 		if (sb.length() > 12) {
 			sb.setLength(12);

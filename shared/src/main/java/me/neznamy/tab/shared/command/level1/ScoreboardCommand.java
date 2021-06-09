@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
@@ -45,7 +46,7 @@ public class ScoreboardCommand extends SubCommand {
 				return;
 			}
 		}
-		if (p.getOtherPluginScoreboard() != null) return; //not overriding other plugins
+		if (((ITabPlayer)p).getOtherPluginScoreboard() != null) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
 		if (args.length >= 1) {
 			switch(args[0]) {

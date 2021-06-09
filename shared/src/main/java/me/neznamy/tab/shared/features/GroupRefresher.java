@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -33,7 +34,7 @@ public class GroupRefresher implements Feature {
 			@Override
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
-					p.setGroup(detectPermissionGroup(p), true); 
+					((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
 				}
 			}
 		});

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
@@ -79,5 +80,5 @@ public abstract class SortingType {
 	 * @param p - player to get chars for
 	 * @return an as-short-as-possible character sequence for unique sorting
 	 */
-	public abstract String getChars(TabPlayer p);
+	public abstract String getChars(ITabPlayer p);
 }

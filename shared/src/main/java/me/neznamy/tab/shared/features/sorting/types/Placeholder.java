@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -36,7 +36,7 @@ public class Placeholder extends SortingType {
 	}
 
 	@Override
-	public String getChars(TabPlayer p) {
+	public String getChars(ITabPlayer p) {
 		String output = setPlaceholders(p);
 		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". ");
 		if (output.contains("&")) output = output.replace('&', '\u00a7');

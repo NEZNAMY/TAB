@@ -147,7 +147,7 @@ public interface TabPlayer {
 	/**
 	 * Returns player's uuid used in tablist. This may only be different than real uuid if
 	 * TAB is installed on velocity with some specific velocity setup
-	 * @return
+	 * @return player's uuid in tablist
 	 */
 	public UUID getTablistUUID();
 
@@ -271,11 +271,6 @@ public interface TabPlayer {
 	 * @return true if player is fully loaded, false otherwise
 	 */
 	public boolean isLoaded();
-
-	/**
-	 * Marks the player as loaded and makes isLoaded() return true
-	 */
-	public void markAsLoaded();
 
 	/**
 	 * Returns true if player has bossbar visible, false if player hid bossbar(s) using bossbar
@@ -427,56 +422,12 @@ public interface TabPlayer {
 	 * @param armorStandManager - new instance
 	 */
 	public void setArmorStandManager(ArmorStandManager armorStandManager);
-	
-	/**
-	 * Internal method to set world name
-	 * @param name - name of new world
-	 */
-	public void setWorldName(String name);
-
-	/**
-	 * Internal method to set team name
-	 * @param name - name of team
-	 */
-	public void setTeamName(String name);
-	
-	/**
-	 * Internal method to set team name note
-	 * @param note - team name note
-	 */
-	public void setTeamNameNote(String note);
-
-	/**
-	 * Internal method to track currently active scoreboard
-	 * @param board - new active scoreboard
-	 */
-	public void setActiveScoreboard(Scoreboard board);
 
 	/**
 	 * Internal method that returns player's active scoreboard
 	 * @return player's active scoreboard
 	 */
 	public Scoreboard getActiveScoreboard();
-	
-	/**
-	 * Internal method that sets player's group
-	 * @param group - new group
-	 * @param refreshIfChanged - whether to refresh properties if value changed or not
-	 */
-	public void setGroup(String group, boolean refreshIfChanged);
-
-	/**
-	 * Internal method to track scoreboards from other plugins
-	 * @param objectiveName - objective name of scoreboard from other plugins
-	 */
-	public void setOtherPluginScoreboard(String objectiveName);
-
-	/**
-	 * Internal method that returns scoreboard objective name of scoreboard from other plugin or null
-	 * if not scoreboard from other plugin is set
-	 * @return name of scoreboard objective from other plugin
-	 */
-	public String getOtherPluginScoreboard();
 	
 	/**
 	 * Forces new team name for the player until this method is called again with null argument and 

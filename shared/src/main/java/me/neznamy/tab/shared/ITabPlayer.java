@@ -217,7 +217,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return world;
 	}
 
-	@Override
 	public void setWorldName(String name) {
 		world = name;
 	}
@@ -279,7 +278,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return onJoinFinished;
 	}
 
-	@Override
 	public void markAsLoaded() {
 		onJoinFinished = true;
 	}
@@ -379,7 +377,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		this.armorStandManager = armorStandManager;
 	}
 
-	@Override
 	public void setTeamName(String name) {
 		teamName = name;
 	}
@@ -390,7 +387,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return teamName;
 	}
 
-	@Override
 	public void setTeamNameNote(String note) {
 		teamNameNote = note;
 	}
@@ -451,7 +447,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return scoreboardVisible;
 	}
 
-	@Override
 	public void setActiveScoreboard(Scoreboard board) {
 		activeScoreboard = board;
 	}
@@ -461,7 +456,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return activeScoreboard;
 	}
 
-	@Override
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
 		if (this.permissionGroup.equals(permissionGroup)) return;
 		if (permissionGroup != null) {
@@ -522,12 +516,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		attributes.put(attribute, value);
 	}
 
-	@Override
 	public void setOtherPluginScoreboard(String objectiveName) {
 		this.otherPluginScoreboard = objectiveName;
 	}
 
-	@Override
 	public String getOtherPluginScoreboard() {
 		return otherPluginScoreboard;
 	}

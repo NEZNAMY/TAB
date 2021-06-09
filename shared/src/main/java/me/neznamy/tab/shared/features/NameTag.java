@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -55,7 +56,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	@Override
 	public void load(){
 		for (TabPlayer all : tab.getPlayers()) {
-			all.setTeamName(sorting.getTeamName(all));
+			((ITabPlayer) all).setTeamName(sorting.getTeamName(all));
 			updateProperties(all);
 			collision.put(all, true);
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
@@ -148,7 +149,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			updateTeamData(p);
 		} else {
 			unregisterTeam(p);
-			p.setTeamName(newName);
+			((ITabPlayer) p).setTeamName(newName);
 			registerTeam(p);
 		}
 	}
@@ -224,7 +225,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setTeamName(sorting.getTeamName(connectedPlayer));
+		((ITabPlayer) connectedPlayer).setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		collision.put(connectedPlayer, true);
 		for (TabPlayer all : tab.getPlayers()) {

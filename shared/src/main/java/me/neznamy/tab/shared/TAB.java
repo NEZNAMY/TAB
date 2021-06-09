@@ -156,7 +156,7 @@ public class TAB {
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
-			getPlayers().forEach(p -> p.markAsLoaded());
+			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();

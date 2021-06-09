@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
@@ -68,7 +69,7 @@ public interface PluginMessageHandler {
 		}
 		if (subChannel.equals("Group")) {
 			String group = in.readUTF();
-			player.setGroup(group, true);
+			((ITabPlayer) player).setGroup(group, true);
 		}
 	}
 	

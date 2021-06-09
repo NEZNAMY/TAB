@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -159,7 +160,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			public void run() {
 				for (TabPlayer p : tab.getPlayers()) {
 					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || 
-						announcement != null || p.getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
+						announcement != null || ((ITabPlayer)p).getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
 					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 					String current = board == null ? "null" : board.getName();
 					String highest = detectHighestScoreboard(p);
@@ -178,7 +179,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			board.unregister();
 		}
 		for (TabPlayer p : tab.getPlayers()) {
-			p.setActiveScoreboard(null);
+			((ITabPlayer)p).setActiveScoreboard(null);
 		}
 		scoreboards.clear();
 	}
@@ -189,7 +190,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			joinDelayed.add(p);
 			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
-				if (p.getOtherPluginScoreboard() == null) p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
 				joinDelayed.remove(p);
 			});
 		} else {
@@ -207,7 +208,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
 			if (board != null) {
-				p.setActiveScoreboard(board);
+				((ITabPlayer)p).setActiveScoreboard(board);
 				board.register(p);
 			}
 		}
@@ -230,7 +231,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			} else {
 				p.getActiveScoreboard().getRegisteredUsers().remove(p);
 			}
-			p.setActiveScoreboard(null);
+			((ITabPlayer)p).setActiveScoreboard(null);
 		}
 	}
 
@@ -290,7 +291,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
 			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.objectiveName + ", hiding TAB one.");
-			receiver.setOtherPluginScoreboard(packet.objectiveName);
+			((ITabPlayer)receiver).setOtherPluginScoreboard(packet.objectiveName);
 			if (receiver.getActiveScoreboard() != null) {
 				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
 			}
@@ -300,9 +301,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
-		if (packet.method == 1 && receiver.getOtherPluginScoreboard() != null && receiver.getOtherPluginScoreboard().equals(packet.objectiveName)) {
+		if (packet.method == 1 && ((ITabPlayer)receiver).getOtherPluginScoreboard() != null && ((ITabPlayer)receiver).getOtherPluginScoreboard().equals(packet.objectiveName)) {
 			tab.debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
-			receiver.setOtherPluginScoreboard(null);
+			((ITabPlayer)receiver).setOtherPluginScoreboard(null);
 			tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
 	}

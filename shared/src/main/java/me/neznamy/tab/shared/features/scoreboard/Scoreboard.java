@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
@@ -153,7 +154,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			s.register(p);
 		}
 		players.add(p);
-		p.setActiveScoreboard(this);
+		((ITabPlayer)p).setActiveScoreboard(this);
 	}
 
 	/**
@@ -175,7 +176,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 			s.unregister(p);
 		}
 		players.remove(p);
-		p.setActiveScoreboard(null);
+		((ITabPlayer)p).setActiveScoreboard(null);
 	}
 
 	@Override

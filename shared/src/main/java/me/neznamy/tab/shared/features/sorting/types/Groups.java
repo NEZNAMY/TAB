@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import java.util.LinkedHashMap;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -21,7 +21,7 @@ public class Groups extends SortingType {
 	}
 
 	@Override
-	public String getChars(TabPlayer p) {
+	public String getChars(ITabPlayer p) {
 		String group = p.getGroup();
 		String chars = sortedGroups.get(group.toLowerCase());
 		if (chars == null) {
