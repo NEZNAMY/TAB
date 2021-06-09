@@ -3,9 +3,6 @@
 # Used to use bukkit permission management in the case of Bungee or Velocity.
 use-bukkit-permissions-manager: false
 
-#changing nametags, affecting sorting, collision rule
-change-nametag-prefix-suffix: true
-
 #prefix/suffix in tablist
 change-tablist-prefix-suffix: true
 

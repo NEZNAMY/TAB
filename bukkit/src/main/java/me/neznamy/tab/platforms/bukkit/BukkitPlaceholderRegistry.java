@@ -17,6 +17,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -93,11 +94,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return String.valueOf(((Player) p.getPlayer()).getStatistic(Statistic.DEATHS));
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%health%", 100) {
-			public String get(TabPlayer p) {
-				return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
-			}
-		});
+		if (NMSStorage.getInstance().minorVersion >= 6) {
+			placeholders.add(new PlayerPlaceholder("%health%", 100) {
+				public String get(TabPlayer p) {
+					return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+				}
+			});
+		}
 		placeholders.add(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
 				try {

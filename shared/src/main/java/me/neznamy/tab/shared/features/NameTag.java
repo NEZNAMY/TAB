@@ -109,6 +109,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 	
 	public void unregisterTeam(TabPlayer p) {
+		if (p.hasTeamHandlingPaused()) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : tab.getPlayers()) {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()).setTeamOptions(69), TabFeature.NAMETAGS);
@@ -116,10 +117,12 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
+		if (p.hasTeamHandlingPaused()) return;
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()).setTeamOptions(69), TabFeature.NAMETAGS);
 	}
 
 	public void registerTeam(TabPlayer p) {
+		if (p.hasTeamHandlingPaused()) return;
 		Property tagprefix = p.getProperty("tagprefix");
 		Property tagsuffix = p.getProperty("tagsuffix");
 		for (TabPlayer viewer : tab.getPlayers()) {
@@ -130,6 +133,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 
 	public void registerTeam(TabPlayer p, TabPlayer viewer) {
+		if (p.hasTeamHandlingPaused()) return;
 		Property tagprefix = p.getProperty("tagprefix");
 		Property tagsuffix = p.getProperty("tagsuffix");
 		String replacedPrefix = tagprefix.getFormat(viewer);

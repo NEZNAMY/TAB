@@ -6,19 +6,14 @@ import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.features.AlignedSuffix;
-import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
-import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.TabObjective;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.bossbar.BossBar;
 import me.neznamy.tab.shared.features.layout.Layout;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -83,6 +78,12 @@ public interface Platform {
 	 * @return max player count
 	 */
 	public int getMaxPlayers();
+	
+	/**
+	 * Returns name of config file in the jar file on specific platform
+	 * @return name of config file of the platform
+	 */
+	public String getConfigName();
 	
 	/**
 	 * Removes an old config option that is not present anymore
@@ -156,11 +157,7 @@ public interface Platform {
 		TAB tab = TAB.getInstance();
 		TAB.getInstance().setSupportBukkitPermission(tab.getConfiguration().config.getBoolean("use-bukkit-permissions-manager", false));
 		if (tab.getConfiguration().config.getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter(tab));
-		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
-		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
 		if (tab.getConfiguration().removeGhostPlayers) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
-		if (tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && tab.getConfiguration().config.getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist(tab);
 			tab.getFeatureManager().registerFeature("playerlist", playerlist);
@@ -171,6 +168,5 @@ public interface Platform {
 		new UpdateChecker(tab);
 		if (tab.getConfiguration().layout) tab.getFeatureManager().registerFeature("layout", new Layout(tab));
 		if (tab.getConfiguration().bossbar.getBoolean("bossbar-enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBar(tab));
-		if (tab.getConfiguration().config.getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
 	}
 }

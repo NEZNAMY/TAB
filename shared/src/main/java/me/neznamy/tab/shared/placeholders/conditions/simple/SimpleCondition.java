@@ -33,13 +33,13 @@ public abstract class SimpleCondition {
 	 */
 	static {
 		conditionTypes.put("permission:", PermissionCondition.class);
-		conditionTypes.put("!=", NotEqualsCondition.class);
-		conditionTypes.put("=", EqualsCondition.class);
 		conditionTypes.put("<-", ContainsCondition.class);
 		conditionTypes.put(">=", MoreThanOrEqualsCondition.class);
 		conditionTypes.put(">", MoreThanCondition.class);
 		conditionTypes.put("<=", LessThanOrEqualsCondition.class);
 		conditionTypes.put("<", LessThanCondition.class);
+		conditionTypes.put("!=", NotEqualsCondition.class);
+		conditionTypes.put("=", EqualsCondition.class);
 	}
 
 	/**

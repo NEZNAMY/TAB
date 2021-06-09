@@ -3,19 +3,24 @@ package me.neznamy.tab.platforms.velocity.v1_1_0;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.player.TabListEntry;
+import com.velocitypowered.api.util.GameProfile;
+import com.velocitypowered.api.util.GameProfile.Property;
 
-import io.netty.channel.Channel;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.adventure.audience.MessageType;
@@ -28,13 +33,13 @@ import net.kyori.adventure.identity.Identity;
 /**
  * TabPlayer for Velocity
  */
-public class VelocityTabPlayer extends ITabPlayer{
+public class VelocityTabPlayer extends ITabPlayer {
 
 	//the velocity player
 	private Player player;
 	
-	//offline uuid used in tablist
-	private UUID offlineId;
+	// uuid used in tablist
+	private UUID tablistId;
 	
 	//player's visible boss bars
 	private Map<UUID, BossBar> bossbars = new HashMap<UUID, BossBar>();
@@ -42,9 +47,8 @@ public class VelocityTabPlayer extends ITabPlayer{
 	/**
 	 * Constructs new instance for given player
 	 * @param p - velocity player
-	 * @throws Exception - when reflection fails
 	 */
-	public VelocityTabPlayer(Player p) throws Exception {
+	public VelocityTabPlayer(Player p) {
 		player = p;
 		if (p.getCurrentServer().isPresent()) {
 			world = p.getCurrentServer().get().getServerInfo().getName();
@@ -52,11 +56,10 @@ public class VelocityTabPlayer extends ITabPlayer{
 			//tab reload while a player is connecting, how unfortunate
 			world = "<null>";
 		}
-		Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
-		channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
 		name = p.getUsername();
 		uniqueId = p.getUniqueId();
-		offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+		tablistId = TAB.getInstance().getConfiguration().config.getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
 		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
 		init();
 	}
@@ -87,6 +90,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 		channel.writeAndFlush(packet, channel.voidPromise());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void handleCustomPacket(UniversalPacketPlayOut packet) {
 		if (packet instanceof PacketPlayOutChat){
 			player.sendMessage(Identity.nil(), Main.stringToComponent(((PacketPlayOutChat)packet).message.toString(getVersion())), MessageType.valueOf(((PacketPlayOutChat)packet).type.name()));
@@ -137,6 +141,39 @@ public class VelocityTabPlayer extends ITabPlayer{
 				break;
 			}
 		}
+		if (packet instanceof PacketPlayOutPlayerInfo) {
+			for (PlayerInfoData data : ((PacketPlayOutPlayerInfo)packet).entries) {
+				switch (((PacketPlayOutPlayerInfo) packet).action) {
+				case ADD_PLAYER:
+					player.getTabList().addEntry(TabListEntry.builder()
+							.tabList(player.getTabList())
+							.displayName(Main.stringToComponent(data.displayName.toString(getVersion())))
+							.gameMode(data.gameMode.ordinal()-1)
+							.profile(new GameProfile(data.uniqueId, data.name, (List<Property>) data.skin))
+							.latency(data.latency)
+							.build());
+					break;
+				case REMOVE_PLAYER:
+					player.getTabList().removeEntry(data.uniqueId);
+					break;
+				case UPDATE_DISPLAY_NAME:
+					for (TabListEntry entry : player.getTabList().getEntries()) {
+						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(Main.stringToComponent(data.displayName.toString(getVersion())));
+					}
+					break;
+				case UPDATE_LATENCY:
+					for (TabListEntry entry : player.getTabList().getEntries()) {
+						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setLatency(data.latency);
+					}
+					break;
+				case UPDATE_GAME_MODE:
+					for (TabListEntry entry : player.getTabList().getEntries()) {
+						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setGameMode(data.gameMode.ordinal()-1);
+					}
+					break;
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -151,7 +188,7 @@ public class VelocityTabPlayer extends ITabPlayer{
 	
 	@Override
 	public UUID getTablistUUID() {
-		return TAB.getInstance().getConfiguration().config.getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
+		return tablistId;
 	}
 
 	@Override
@@ -178,5 +215,10 @@ public class VelocityTabPlayer extends ITabPlayer{
 	@Override
 	public boolean isOnline() {
 		return player.isActive();
+	}
+
+	@Override
+	public int getGamemode() {
+		return 0; //shrug
 	}
 }

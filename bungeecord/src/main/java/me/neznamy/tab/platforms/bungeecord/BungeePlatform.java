@@ -6,9 +6,14 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BungeeTABLoadEvent;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag;
+import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.SpectatorFix;
+import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
@@ -55,6 +60,11 @@ public class BungeePlatform implements Platform {
 		if (tab.getConfiguration().pipelineInjection) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
 		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));
 		loadUniversalFeatures();
+		if (tab.getConfiguration().config.getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
+		if (tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
+		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
+		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
+		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
 		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p));
@@ -111,5 +121,10 @@ public class BungeePlatform implements Platform {
 	@Override
 	public int getMaxPlayers() {
 		return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
+	}
+	
+	@Override
+	public String getConfigName() {
+		return "bungeeconfig.yml";
 	}
 }

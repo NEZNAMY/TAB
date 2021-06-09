@@ -52,6 +52,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean scoreboardVisible;
 	private Scoreboard forcedScoreboard;
 	private String otherPluginScoreboard;
+	private boolean teamHandlingPaused;
 
 	protected Map<String, String> attributes = new HashMap<String, String>();
 
@@ -105,7 +106,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setValueTemporarily(EnumProperty type, String value) {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " temporarily to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
 		Property pr = getProperty(type.toString());
-		if (pr == null) throw new IllegalStateException("Feature handling this property is not enabled");
+		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
@@ -552,5 +553,30 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public String getForcedTeamName() {
 		return forcedTeamName;
+	}
+	
+	@Override
+	public void pauseTeamHandling() {
+		if (teamHandlingPaused) return;
+		NameTag f = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		if (f != null && !f.isDisabledWorld(getWorldName())) {
+			f.unregisterTeam(this);
+		}
+		teamHandlingPaused = true; //setting to true after, so unregisterTeam method runs
+	}
+
+	@Override
+	public void resumeTeamHandling() {
+		if (!teamHandlingPaused) return;
+		teamHandlingPaused = false; //setting to false before, so registerTeam method runs
+		NameTag f = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		if (f != null && !f.isDisabledWorld(getWorldName())) {
+			f.registerTeam(this);
+		}
+	}
+	
+	@Override
+	public boolean hasTeamHandlingPaused() {
+		return teamHandlingPaused;
 	}
 }

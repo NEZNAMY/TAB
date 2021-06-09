@@ -27,7 +27,6 @@ footer:
 #supports any numeric placeholder, set to "" to disable the feature
 yellow-number-in-tablist: "%ping%"
 
-#literally what it says
 group-sorting-priority-list:
   - owner
   - admin
@@ -97,8 +96,7 @@ do-not-move-spectators: false
 #allows players with tab.spectatorbypass permission to see spectators moved despite the option above enabled
 allow-spectator-bypass-permission: false
 
-#using armor stands for nametags, bypassing all limits
-#THEY ARE CLIENT SIDED AND DO NOT EXIST ON SERVER SO STOP SAYING YOUR SERVER IS LAGGING FROM THIS
+#using armor stands for nametags, bypassing all limits (they are not on server sided & asynchronous - no TPS loss)
 unlimited-nametag-prefix-suffix-mode:
 
   #enabling the feature
@@ -218,7 +216,6 @@ per-world-playerlist:
 sort-players-by-permissions: false
 
 #making tamed animals no longer copy nametag properties from their owner (prefix/suffix/visibility)
-#do not enable this if you're on paper, you'll feed the trolls even more
 fix-pet-names: false
 
 #taking primary group from permission plugin

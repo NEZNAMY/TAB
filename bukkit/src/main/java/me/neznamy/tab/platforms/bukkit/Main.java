@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -35,11 +37,23 @@ public class Main extends JavaPlugin {
 					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
-				TAB.getInstance().command.execute(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args);
+				TabPlayer p = null;
+				if (sender instanceof Player) {
+					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+					if (p == null) return false; //player not loaded correctly
+				}
+				TAB.getInstance().command.execute(p, args);
 			}
 			return false;
 		});
-		Bukkit.getPluginCommand("tab").setTabCompleter((sender, c, cmd, args) -> TAB.getInstance().command.complete(sender instanceof Player ? TAB.getInstance().getPlayer(((Player)sender).getUniqueId()) : null, args));
+		Bukkit.getPluginCommand("tab").setTabCompleter((sender, c, cmd, args) -> {
+			TabPlayer p = null;
+			if (sender instanceof Player) {
+				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+			}
+			return TAB.getInstance().command.complete(p, args);
+		});
 		TAB.getInstance().load();
 		new BukkitMetrics(this);
 	}
@@ -56,6 +70,7 @@ public class Main extends JavaPlugin {
 	 */
 	private boolean isVersionSupported(){
 		List<String> SUPPORTED_VERSIONS = Arrays.asList(
+				"v1_5_R1", "v1_5_R2", "v1_5_R3", "v1_6_R1", "v1_6_R2", "v1_6_R3",
 				"v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "v1_8_R2", "v1_8_R3",
 				"v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1", "v1_12_R1", "v1_13_R1", "v1_13_R2",
 				"v1_14_R1", "v1_15_R1", "v1_16_R1", "v1_16_R2", "v1_16_R3");

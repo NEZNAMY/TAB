@@ -58,7 +58,12 @@ public class DataWatcher {
 	 */
 	public Object toNMS() throws Exception {
 		NMSStorage nms = NMSStorage.getInstance();
-		Object nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
+		Object nmsWatcher;
+		if (nms.newDataWatcher.getParameterCount() == 1) {
+			nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
+		} else {
+			nmsWatcher = nms.newDataWatcher.newInstance();
+		}
 		for (DataWatcherItem item : dataValues.values()) {
 			Object position;
 			if (nms.minorVersion >= 9) {

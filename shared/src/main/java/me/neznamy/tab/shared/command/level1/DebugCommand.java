@@ -51,14 +51,15 @@ public class DebugCommand extends SubCommand {
 		TAB tab = TAB.getInstance();
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, "&7&m>-------------------------------<");
-		sendMessage(sender, "&6Server version: &a" + tab.getPlatform().getServerVersion());
-		sendMessage(sender, "&6Plugin version: &a" + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
+		String c2 = tab.isPremium() ? "&b" : "&a";
+		sendMessage(sender, "&6Server version: " + c2 + tab.getPlatform().getServerVersion());
+		sendMessage(sender, "&6Plugin version: " + c2 + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
 		if (tab.getErrorManager().errorLog.exists()) {
 			sendMessage(sender, "&6" + tab.getErrorManager().errorLog.getPath() + " size: &c" + tab.getErrorManager().errorLog.length()/1024 + "KB");
 		}
-		sendMessage(sender, "&6Permission plugin: &a" + tab.getPermissionPlugin().getName());
-		sendMessage(sender, getGroupChoiceLogic());
-		sendMessage(sender, "&6Sorting system: &a" + getSortingType());
+		sendMessage(sender, "&6Permission plugin: " + c2 + tab.getPermissionPlugin().getName());
+		sendMessage(sender, "&6Permission group choice logic: " + c2 + getGroupChoiceLogic());
+		sendMessage(sender, "&6Sorting system: " + c2 + getSortingType());
 		sendMessage(sender, "&7&m>-------------------------------<");
 		if (analyzed == null) return;
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
@@ -96,11 +97,11 @@ public class DebugCommand extends SubCommand {
 	private String getGroupChoiceLogic() {
 		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
 		if (group.groupsByPermissions) {
-			return "&6Permission group choice logic: &8&mPrimary group&8 / &r&8&mChoose from list&8 / &aPermissions";
+			return "Permissions";
 		} else if (group.usePrimaryGroup) {
-			return "&6Permission group choice logic: &aPrimary group&8 / &r&8&mChoose from list&8 / &r&8&mPermissions";
+			return "Primary group";
 		} else {
-			return "&6Permission group choice logic: &8&mPrimary group&r&8 / &aChoose from list&8 / &r&8&mPermissions";
+			return "Choose from list";
 		}
 	}
 	
@@ -196,7 +197,8 @@ public class DebugCommand extends SubCommand {
 		} else {
 			Property pr = analyzed.getProperty(property);
 			String rawValue = pr.getCurrentRawValue().replace('\u00a7', '&');
-			String value = String.format("&a%s: &e\"&r%s&r&e\" &7(%s) &9(Source: %s)".replace('&', '\u00a7'), property, rawValue, rawValue.length(), pr.getSource());
+			String c = TAB.getInstance().isPremium() ? "&7" : "&9";
+			String value = String.format(("&a%s: &e\"&r%s&r&e\" &7(%s) " + c + "(Source: %s)").replace('&', '\u00a7'), property, rawValue, rawValue.length(), pr.getSource());
 			sendRawMessage(sender, value);
 		}
 	}

@@ -1,8 +1,12 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -14,7 +18,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  * the bottom of tablist with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
-public class SpectatorFix implements PlayerInfoPacketListener {
+public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
 
 	//if bypass permission should be enabled
 	private boolean allowBypass;
@@ -42,5 +46,27 @@ public class SpectatorFix implements PlayerInfoPacketListener {
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.SPECTATOR_FIX;
+	}
+	
+	@Override
+	public void load() {
+		updateAll(false);
+	}
+
+	@Override
+	public void unload() {
+		updateAll(true);
+	}
+	
+	private void updateAll(boolean realGamemode) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			if (allowBypass && p.hasPermission("tab.spectatorbypass")) continue;
+			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+			for (TabPlayer target : TAB.getInstance().getPlayers()) {
+				if (p == target) continue;
+				list.add(new PlayerInfoData(p.getUniqueId(), realGamemode ? EnumGamemode.values()[p.getGamemode()+1] : EnumGamemode.CREATIVE));
+			}
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), getFeatureType());
+		}
 	}
 }

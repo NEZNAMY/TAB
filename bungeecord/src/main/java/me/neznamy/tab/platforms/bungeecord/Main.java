@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -81,14 +82,23 @@ public class Main extends Plugin {
 					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
-				TAB.getInstance().command.execute(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+				TabPlayer p = null;
+				if (sender instanceof ProxiedPlayer) {
+					p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
+					if (p == null) return; //player not loaded correctly
+				}
+				TAB.getInstance().command.execute(p, args);
 			}
 		}
 
 		@Override
 		public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-			if (TAB.getInstance().isDisabled()) return new ArrayList<String>();
-			return TAB.getInstance().command.complete(sender instanceof ProxiedPlayer ? TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId()) : null, args);
+			TabPlayer p = null;
+			if (sender instanceof ProxiedPlayer) {
+				p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
+				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+			}
+			return TAB.getInstance().command.complete(p, args);
 		}
 	}
 }
