@@ -107,8 +107,8 @@ public class VelocityTabPlayer extends ITabPlayer {
 				player.showBossBar(bar);
 				break;
 			case REMOVE:
-				bossbars.remove(boss.id);
 				player.hideBossBar(bossbars.get(boss.id));
+				bossbars.remove(boss.id);
 				break;
 			case UPDATE_PCT:
 				bossbars.get(boss.id).percent(boss.pct);
