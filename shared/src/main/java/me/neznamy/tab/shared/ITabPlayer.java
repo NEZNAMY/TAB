@@ -106,7 +106,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setValueTemporarily(EnumProperty type, String value) {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " temporarily to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
 		Property pr = getProperty(type.toString());
-		if (pr == null) throw new IllegalStateException("Feature handling this property is not enabled");
+		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
