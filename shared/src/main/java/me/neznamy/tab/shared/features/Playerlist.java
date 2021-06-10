@@ -93,10 +93,12 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (isDisabledWorld(disabledWorlds, to) && !isDisabledWorld(disabledWorlds, from)) {
-			for (TabPlayer viewer : tab.getPlayers()) {
-				if (viewer.getVersion().getMinorVersion() < 8) continue;
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID(), getTabFormat(p, viewer))));
+		if (isDisabledWorld(disabledWorlds, to)) {
+			if (!isDisabledWorld(disabledWorlds, from)) {
+				for (TabPlayer viewer : tab.getPlayers()) {
+					if (viewer.getVersion().getMinorVersion() < 8) continue;
+					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())));
+				}
 			}
 		} else {
 			refresh(p, true);
