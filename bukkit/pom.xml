@@ -121,40 +121,10 @@
 
 		<!-- ViaVersion -->
 		<dependency>
-			<groupId>us.myles</groupId>
-			<artifactId>viaversion</artifactId>
-			<version>3.2.1</version>
+			<groupId>com.viaversion</groupId>
+			<artifactId>viaversion-api</artifactId>
+			<version>4.0.0</version>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-bungee</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-fabric</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-sponge</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>us.myles</groupId>
-					<artifactId>viaversion-velocity</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

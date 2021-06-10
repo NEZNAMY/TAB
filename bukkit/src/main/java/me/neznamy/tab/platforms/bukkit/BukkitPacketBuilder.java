@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -35,8 +37,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import me.neznamy.tab.shared.packets.IChatBaseComponent.ClickAction;
 import me.neznamy.tab.shared.rgb.TextColor;
-import us.myles.ViaVersion.api.type.Type;
-import us.myles.viaversion.libs.gson.JsonParser;
 
 @SuppressWarnings("unchecked")
 public class BukkitPacketBuilder implements PacketBuilder {
