@@ -84,7 +84,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getUniqueId()));
+			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
 		}
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureType());
