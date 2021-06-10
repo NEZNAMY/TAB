@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -35,8 +37,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import me.neznamy.tab.shared.packets.IChatBaseComponent.ClickAction;
 import me.neznamy.tab.shared.rgb.TextColor;
-import us.myles.ViaVersion.api.type.Type;
-import us.myles.viaversion.libs.gson.JsonParser;
 
 @SuppressWarnings("unchecked")
 public class BukkitPacketBuilder implements PacketBuilder {
@@ -112,7 +112,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
 		try {
 			ByteBuf buf = Unpooled.buffer();
-			Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 ? 0x0D : 0x0C);
+			Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 || clientVersion.getMinorVersion() >= 17 ? 0x0D : 0x0C);
 			Type.UUID.write(buf, packet.id);
 			Type.VAR_INT.writePrimitive(buf, packet.operation.ordinal());
 			switch (packet.operation) {

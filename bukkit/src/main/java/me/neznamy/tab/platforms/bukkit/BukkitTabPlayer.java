@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Method;
 
+import com.viaversion.viaversion.api.Via;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import us.myles.ViaVersion.api.Via;
 
 /**
  * TabPlayer for Bukkit
