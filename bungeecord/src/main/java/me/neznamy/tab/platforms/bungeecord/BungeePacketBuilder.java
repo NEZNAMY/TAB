@@ -22,14 +22,17 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.Chat;
+import net.md_5.bungee.protocol.packet.ClearTitles;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
+import net.md_5.bungee.protocol.packet.Subtitle;
 import net.md_5.bungee.protocol.packet.Team;
 import net.md_5.bungee.protocol.packet.Title;
+import net.md_5.bungee.protocol.packet.TitleTimes;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 /**
@@ -117,13 +120,42 @@ public class BungeePacketBuilder implements PacketBuilder {
 	
 	@Override
 	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
-		Title bungeePacket = new Title();
-		bungeePacket.setAction(Title.Action.valueOf(packet.action.toString()));
-		if (packet.text != null) bungeePacket.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
-		bungeePacket.setFadeIn(packet.fadeIn);
-		bungeePacket.setStay(packet.stay);
-		bungeePacket.setFadeOut(packet.fadeOut);
-		return bungeePacket;
+		if (clientVersion.getMinorVersion() >= 17) {
+			switch (packet.action) {
+			case TITLE:
+				Title title = new Title();
+				title.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+				return title;
+			case SUBTITLE:
+				Subtitle subtitle = new Subtitle();
+				subtitle.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+				return subtitle;
+			case ACTIONBAR:
+				return new Chat(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion), (byte) 2);
+			case TIMES:
+				TitleTimes times = new TitleTimes();
+				times.setFadeIn(packet.fadeIn);
+				times.setStay(packet.stay);
+				times.setFadeOut(packet.fadeOut);
+				return times;
+			case CLEAR:
+				return new ClearTitles();
+			case RESET:
+				ClearTitles reset = new ClearTitles();
+				reset.setReset(true);
+				return reset;
+			default:
+				throw new IllegalStateException("Action is null");
+			}
+		} else {
+			Title bungeePacket = new Title();
+			bungeePacket.setAction(Title.Action.valueOf(packet.action.toString()));
+			if (packet.text != null) bungeePacket.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
+			bungeePacket.setFadeIn(packet.fadeIn);
+			bungeePacket.setStay(packet.stay);
+			bungeePacket.setFadeOut(packet.fadeOut);
+			return bungeePacket;
+		}
 	}
 	
 	@Override
