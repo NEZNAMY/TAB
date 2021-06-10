@@ -119,7 +119,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 	}
 	
 	@Override
-	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() >= 17) {
 			switch (packet.action) {
 			case TITLE:
@@ -159,7 +159,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion){
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Item i : item.getItems()) {
@@ -169,7 +169,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
@@ -182,7 +182,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion){
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
 	}
 }

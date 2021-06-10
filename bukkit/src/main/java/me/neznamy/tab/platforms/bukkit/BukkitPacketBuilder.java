@@ -108,7 +108,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @return bytebuf with 1.9 bossbar packet content
 	 * @throws Exception - if something fails
 	 */
-	private ByteBuf buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
+	private ByteBuf buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
 		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
 		try {
 			ByteBuf buf = Unpooled.buffer();

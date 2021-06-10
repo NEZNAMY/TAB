@@ -56,7 +56,6 @@ public class TABAPI {
 
 	/**
 	 * Enables unlimited nametag mode permanently in config
-	 * @throws IllegalStateException if called from a proxy
 	 * @see isUnlimitedNameTagModeEnabled
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {

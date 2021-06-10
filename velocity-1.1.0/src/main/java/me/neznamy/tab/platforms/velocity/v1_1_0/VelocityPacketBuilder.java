@@ -28,7 +28,7 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws Exception {
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
 		return packet;
 	}
 
@@ -58,22 +58,22 @@ public class VelocityPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
+	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) {
 		return null;
 	}
 
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws Exception{
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) {
 		return null;
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) {
 		return null;
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion) throws Exception {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) {
 		return null;
 	}
 }

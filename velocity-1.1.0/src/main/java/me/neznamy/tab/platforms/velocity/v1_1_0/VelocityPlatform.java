@@ -45,7 +45,7 @@ public class VelocityPlatform implements Platform {
 	}
 	
 	@Override
-	public void loadFeatures() throws Exception{
+	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
 		tab.getPlaceholderManager().addRegistry(new VelocityPlaceholderRegistry(server));
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());

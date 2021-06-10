@@ -232,7 +232,6 @@ public interface TabPlayer {
 
 	/**
 	 * Toggles armor stands preview mode for the player
-	 * @throws IllegalStateException - if unlimited nametag mode is not enabled
 	 */
 	public void toggleNametagPreview();
 
