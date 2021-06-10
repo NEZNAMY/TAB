@@ -22,7 +22,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -83,95 +82,108 @@ public class VelocityTabPlayer extends ITabPlayer {
 	@Override
 	public void sendPacket(Object packet) {
 		if (packet == null || !player.isActive()) return;
-		if (packet instanceof UniversalPacketPlayOut){
-			handleCustomPacket((UniversalPacketPlayOut) packet);
-			return;
+		if (packet instanceof PacketPlayOutChat){
+			handle((PacketPlayOutChat) packet);
 		}
-		channel.writeAndFlush(packet, channel.voidPromise());
+		if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+			handle((PacketPlayOutPlayerListHeaderFooter) packet);
+		}
+		if (packet instanceof PacketPlayOutBoss) {
+			handle((PacketPlayOutBoss) packet);
+		}
+		if (packet instanceof PacketPlayOutPlayerInfo) {
+			handle((PacketPlayOutPlayerInfo) packet);
+		}
+	}
+
+	private void handle(PacketPlayOutChat packet) {
+		player.sendMessage(Identity.nil(), Main.stringToComponent(packet.message.toString(getVersion())), MessageType.valueOf(packet.type.name()));
+	}
+	
+	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
+		player.getTabList().setHeaderAndFooter(Main.stringToComponent(packet.header.toString(getVersion())), Main.stringToComponent(packet.footer.toString(getVersion())));
+	}
+	
+	private void handle(PacketPlayOutBoss packet) {
+		Set<Flag> flags;
+		BossBar bar;
+		switch (packet.operation) {
+		case ADD:
+			flags = new HashSet<Flag>();
+			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
+			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
+			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
+			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(getVersion())), 
+					packet.pct, 
+					Color.valueOf(packet.color.toString()), 
+					Overlay.valueOf(packet.overlay.toString()), 
+					flags);
+			bossbars.put(packet.id, bar);
+			player.showBossBar(bar);
+			break;
+		case REMOVE:
+			player.hideBossBar(bossbars.get(packet.id));
+			bossbars.remove(packet.id);
+			break;
+		case UPDATE_PCT:
+			bossbars.get(packet.id).percent(packet.pct);
+			break;
+		case UPDATE_NAME:
+			bossbars.get(packet.id).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(getVersion())));
+			break;
+		case UPDATE_STYLE:
+			bar = bossbars.get(packet.id);
+			//compensating for an already fixed bug for those who did not update Velocity
+			player.hideBossBar(bar);
+			bar.overlay(Overlay.valueOf(packet.overlay.toString()));
+			bar.color(Color.valueOf(packet.color.toString()));
+			player.showBossBar(bar);
+			break;
+		case UPDATE_PROPERTIES:
+			flags = new HashSet<Flag>();
+			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
+			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
+			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
+			bossbars.get(packet.id).flags(flags);
+			break;
+		default:
+			break;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void handleCustomPacket(UniversalPacketPlayOut packet) {
-		if (packet instanceof PacketPlayOutChat){
-			player.sendMessage(Identity.nil(), Main.stringToComponent(((PacketPlayOutChat)packet).message.toString(getVersion())), MessageType.valueOf(((PacketPlayOutChat)packet).type.name()));
-		}
-		if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
-			player.getTabList().setHeaderAndFooter(Main.stringToComponent(((PacketPlayOutPlayerListHeaderFooter) packet).header.toString(getVersion())), Main.stringToComponent(((PacketPlayOutPlayerListHeaderFooter) packet).footer.toString(getVersion())));
-		}
-		if (packet instanceof PacketPlayOutBoss) {
-			PacketPlayOutBoss boss = (PacketPlayOutBoss) packet;
-			Set<Flag> flags;
-			BossBar bar;
-			switch (boss.operation) {
-			case ADD:
-				flags = new HashSet<Flag>();
-				if (boss.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
-				if (boss.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
-				if (boss.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
-				bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion())), boss.pct, Color.valueOf(boss.color.toString()), Overlay.valueOf(boss.overlay.toString()), flags);
-				bossbars.put(boss.id, bar);
-				player.showBossBar(bar);
+	private void handle(PacketPlayOutPlayerInfo packet) {
+		for (PlayerInfoData data : packet.entries) {
+			switch (packet.action) {
+			case ADD_PLAYER:
+				player.getTabList().addEntry(TabListEntry.builder()
+						.tabList(player.getTabList())
+						.displayName(Main.stringToComponent(data.displayName.toString(getVersion())))
+						.gameMode(data.gameMode.ordinal()-1)
+						.profile(new GameProfile(data.uniqueId, data.name, (List<Property>) data.skin))
+						.latency(data.latency)
+						.build());
 				break;
-			case REMOVE:
-				player.hideBossBar(bossbars.get(boss.id));
-				bossbars.remove(boss.id);
+			case REMOVE_PLAYER:
+				player.getTabList().removeEntry(data.uniqueId);
 				break;
-			case UPDATE_PCT:
-				bossbars.get(boss.id).percent(boss.pct);
+			case UPDATE_DISPLAY_NAME:
+				for (TabListEntry entry : player.getTabList().getEntries()) {
+					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(Main.stringToComponent(data.displayName.toString(getVersion())));
+				}
 				break;
-			case UPDATE_NAME:
-				bossbars.get(boss.id).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(boss.name).toString(getVersion())));
+			case UPDATE_LATENCY:
+				for (TabListEntry entry : player.getTabList().getEntries()) {
+					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setLatency(data.latency);
+				}
 				break;
-			case UPDATE_STYLE:
-				bar = bossbars.get(boss.id);
-				//compensating for an already fixed bug for those who did not update Velocity
-				player.hideBossBar(bar);
-				bar.overlay(Overlay.valueOf(boss.overlay.toString()));
-				bar.color(Color.valueOf(boss.color.toString()));
-				player.showBossBar(bar);
-				break;
-			case UPDATE_PROPERTIES:
-				flags = new HashSet<Flag>();
-				if (boss.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
-				if (boss.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
-				if (boss.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
-				bossbars.get(boss.id).flags(flags);
+			case UPDATE_GAME_MODE:
+				for (TabListEntry entry : player.getTabList().getEntries()) {
+					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setGameMode(data.gameMode.ordinal()-1);
+				}
 				break;
 			default:
 				break;
-			}
-		}
-		if (packet instanceof PacketPlayOutPlayerInfo) {
-			for (PlayerInfoData data : ((PacketPlayOutPlayerInfo)packet).entries) {
-				switch (((PacketPlayOutPlayerInfo) packet).action) {
-				case ADD_PLAYER:
-					player.getTabList().addEntry(TabListEntry.builder()
-							.tabList(player.getTabList())
-							.displayName(Main.stringToComponent(data.displayName.toString(getVersion())))
-							.gameMode(data.gameMode.ordinal()-1)
-							.profile(new GameProfile(data.uniqueId, data.name, (List<Property>) data.skin))
-							.latency(data.latency)
-							.build());
-					break;
-				case REMOVE_PLAYER:
-					player.getTabList().removeEntry(data.uniqueId);
-					break;
-				case UPDATE_DISPLAY_NAME:
-					for (TabListEntry entry : player.getTabList().getEntries()) {
-						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(Main.stringToComponent(data.displayName.toString(getVersion())));
-					}
-					break;
-				case UPDATE_LATENCY:
-					for (TabListEntry entry : player.getTabList().getEntries()) {
-						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setLatency(data.latency);
-					}
-					break;
-				case UPDATE_GAME_MODE:
-					for (TabListEntry entry : player.getTabList().getEntries()) {
-						if (entry.getProfile().getId().equals(data.uniqueId)) entry.setGameMode(data.gameMode.ordinal()-1);
-					}
-					break;
-				}
 			}
 		}
 	}
