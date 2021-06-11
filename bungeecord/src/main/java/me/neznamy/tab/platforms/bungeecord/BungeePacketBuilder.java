@@ -131,6 +131,7 @@ public class BungeePacketBuilder implements PacketBuilder {
 				subtitle.setText(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion));
 				return subtitle;
 			case ACTIONBAR:
+				//md_5 forgot actionbar packet
 				return new Chat(IChatBaseComponent.optimizedComponent(packet.text).toString(clientVersion), (byte) 2);
 			case TIMES:
 				TitleTimes times = new TitleTimes();
