@@ -36,7 +36,10 @@ public class DataWatcherHelper {
 	 * @return armor stand flags position based on server version
 	 */
 	private int getArmorStandFlagsPosition() {
-		if (NMSStorage.getInstance().minorVersion >= 15) {
+		if (NMSStorage.getInstance().minorVersion >= 17) {
+			//1.17.x
+			return 15;
+		} else if (NMSStorage.getInstance().minorVersion >= 15) {
 			//1.15.x, 1.16.x
 			return 14;
 		} else if (NMSStorage.getInstance().minorVersion >= 14) {

@@ -74,7 +74,13 @@ public class PacketListener implements RawPacketListener {
 			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
 		}
 		if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
+			if (nms.minorVersion >= 17) {
+				onEntityDestroy(receiver, nms.PacketPlayOutEntityDestroy_ENTITIES.getInt(packet));
+			} else {
+				for (int entity : (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet)) {
+					onEntityDestroy(receiver, entity);
+				}
+			}
 		}
 	}
 
@@ -107,12 +113,10 @@ public class PacketListener implements RawPacketListener {
 		}
 	}
 
-	public void onEntityDestroy(TabPlayer receiver, int[] entities) {
-		for (int id : entities) {
-			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(id);
-			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
-				tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
-		}
+	public void onEntityDestroy(TabPlayer receiver, int entity) {
+		TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(entity);
+		if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
+			tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 	}
 
 	@Override

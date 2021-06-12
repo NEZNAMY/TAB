@@ -58,16 +58,15 @@ public class BungeePipelineInjector extends PipelineInjector {
 	private void modifyPlayers(Team packet){
 		long time = System.nanoTime();
 		if (packet.getPlayers() == null) return;
-		if (packet.getFriendlyFire() != 69) {
-			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (TabPlayer p : tab.getPlayers()) {
-				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && !p.hasTeamHandlingPaused()) {
-					logTeamOverride(packet.getName(), p.getName());
-					col.remove(p.getName());
-				}
+		Collection<String> col = Lists.newArrayList(packet.getPlayers());
+		for (TabPlayer p : tab.getPlayers()) {
+			if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && 
+					!p.hasTeamHandlingPaused() && !p.getTeamName().equals(packet.getName())) {
+				logTeamOverride(packet.getName(), p.getName());
+				col.remove(p.getName());
 			}
-			packet.setPlayers(col.toArray(new String[0]));
 		}
+		packet.setPlayers(col.toArray(new String[0]));
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 	

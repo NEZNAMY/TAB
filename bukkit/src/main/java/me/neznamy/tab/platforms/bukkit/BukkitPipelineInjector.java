@@ -64,24 +64,23 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	@SuppressWarnings("unchecked")
 	private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		long time = System.nanoTime();
-		if (nms.PacketPlayOutScoreboardTeam_SIGNATURE.getInt(packetPlayOutScoreboardTeam) != 69) {
-			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
-			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
-			Collection<String> newList = new ArrayList<String>();
-			for (String entry : players) {
-				TabPlayer p = tab.getPlayer(entry);
-				if (p == null) {
-					newList.add(entry);
-					continue;
-				}
-				if (tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) || p.hasTeamHandlingPaused()) {
-					newList.add(entry);
-				} else {
-					logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);
-				}
+		Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+		//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
+		Collection<String> newList = new ArrayList<String>();
+		for (String entry : players) {
+			TabPlayer p = tab.getPlayer(entry);
+			if (p == null) {
+				newList.add(entry);
+				continue;
 			}
-			nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+			if (!tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && !p.hasTeamHandlingPaused() && 
+					!p.getTeamName().equals(nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam))) {
+				logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);
+			} else {
+				newList.add(entry);
+			}
 		}
+		nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
 		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 	

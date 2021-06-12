@@ -45,7 +45,10 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 * @return position of pet owner field based on server version
 	 */
 	private int getPetOwnerPosition() {
-		if (nms.minorVersion >= 15) {
+		if (nms.minorVersion >= 17) {
+			//1.17.x
+			return 18;
+		} else if (nms.minorVersion >= 15) {
 			//1.15.x, 1.16.x
 			return 17;
 		} else if (nms.minorVersion >= 14) {
