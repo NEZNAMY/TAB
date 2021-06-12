@@ -46,8 +46,8 @@ public class ExpansionDownloader {
 					@Override
 					public void run() {
 						try {
-							//initial delay to give PlaceholderAPI time to load
-							Thread.sleep(5000);
+							//initial delay to give PlaceholderAPI & plugins with expansions time to load
+							Thread.sleep(10000);
 							TAB.getInstance().debug("Used expansions: " + expansions.toString());
 							TAB.getInstance().debug("Registered expansions in PlaceholderAPI: " + PlaceholderAPI.getRegisteredIdentifiers());
 							expansions.removeAll(PlaceholderAPI.getRegisteredIdentifiers());
