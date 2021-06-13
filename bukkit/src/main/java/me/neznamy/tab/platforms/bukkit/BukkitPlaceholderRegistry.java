@@ -260,6 +260,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 1000) {
 				public String get(TabPlayer p) {
+					if (getNickname == null) return "<Internal plugin error>";
 					String name = null;
 					try {
 						name = (String) getNickname.invoke(getUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer()));
