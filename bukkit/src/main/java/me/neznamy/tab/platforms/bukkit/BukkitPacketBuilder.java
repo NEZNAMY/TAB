@@ -72,8 +72,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
 		if (nms.minorVersion >= 9) {
-			//1.9+ server
-			return buildBossPacket19(packet, clientVersion);
+			//1.9+ server, handled using bukkit api
+			return packet;
 		}
 		if (clientVersion.getMinorVersion() >= 9 && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			//1.9+ client on 1.8 server
@@ -83,44 +83,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 		//<1.9 client and server
 		return buildBossPacketEntity(packet, clientVersion);
-	}
-
-	/**
-	 * Build 1.9 boss packet
-	 * @param packet - packet to build
-	 * @param clientVersion - client version
-	 * @return 1.9 bossbar packet
-	 * @throws Exception - if something fails
-	 */
-	private Object buildBossPacket19(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws Exception {
-		Object server = nms.newBossBattleServer.newInstance(
-				packet.name == null ? null : toNMSComponent(IChatBaseComponent.optimizedComponent(packet.name), clientVersion),
-				packet.color == null ? null : ((Object[])nms.BarColor.getMethod("values").invoke(null))[packet.color.ordinal()],
-				packet.overlay == null ? null : ((Object[])nms.BarStyle.getMethod("values").invoke(null))[packet.overlay.ordinal()]);
-		nms.BossBattleServer_setProgress.invoke(server, packet.pct);
-		nms.BossBattleServer_setCreateFog.invoke(server, packet.createWorldFog);
-		nms.BossBattleServer_setDarkenSky.invoke(server, packet.darkenScreen);
-		nms.BossBattleServer_setPlayMusic.invoke(server, packet.playMusic);
-		nms.BossBattle_UUID.set(server, packet.id);
-		if (nms.minorVersion >= 17) {
-			switch (packet.operation) {
-			case ADD:
-				return nms.PacketPlayOutBoss_createAddPacket.invoke(null, server);
-			case REMOVE:
-				return nms.PacketPlayOutBoss_createRemovePacket.invoke(null, packet.id);
-			case UPDATE_PCT:
-				return nms.PacketPlayOutBoss_createUpdateProgressPacket.invoke(null, server);
-			case UPDATE_NAME:
-				return nms.PacketPlayOutBoss_createUpdateNamePacket.invoke(null, server);
-			case UPDATE_STYLE:
-				return nms.PacketPlayOutBoss_createUpdateStylePacket.invoke(null, server);
-			case UPDATE_PROPERTIES:
-				return nms.PacketPlayOutBoss_createUpdatePropertiesPacket.invoke(null, server);
-			default:
-				throw new IllegalStateException("Action is null");
-			}
-		}
-		return nms.newPacketPlayOutBoss.newInstance(Enum.valueOf(nms.PacketPlayOutBoss_Action, packet.operation.toString()), server);
 	}
 
 	/**

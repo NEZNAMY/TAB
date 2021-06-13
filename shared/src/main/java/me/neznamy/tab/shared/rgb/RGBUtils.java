@@ -2,9 +2,12 @@ package me.neznamy.tab.shared.rgb;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
+import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.rgb.format.CMIFormat;
 import me.neznamy.tab.shared.rgb.format.HtmlFormat;
@@ -29,6 +32,10 @@ public class RGBUtils {
 	
 	//list of gradient patterns
 	private Set<GradientPattern> gradients = new HashSet<GradientPattern>();
+	
+	//TAB's RGB format
+	private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");
+	private final Pattern tabPatternLegacy = Pattern.compile("#[0-9a-fA-F]{6}\\|.");
 
 	public RGBUtils() {
 		registerRGBFormatter(new BukkitFormat());
@@ -64,6 +71,28 @@ public class RGBUtils {
 			replaced = pattern.applyPattern(replaced, ignorePlaceholders);
 		}
 		return replaced;
+	}
+	
+	public String convertToBukkitFormat(String text, boolean rgbClient) {
+		if (rgbClient) {
+			//converting random formats to TAB one
+			String replaced = applyFormats(text, false);
+			Matcher m = tabPatternLegacy.matcher(replaced);
+			while (m.find()) {
+				String hexcode = m.group();
+				String fixed = "&x&" + hexcode.charAt(1) + "&" + hexcode.charAt(2) + "&" + hexcode.charAt(3) + "&" + hexcode.charAt(4) + "&" + hexcode.charAt(5) + "&" + hexcode.charAt(6);
+				replaced = replaced.replace(hexcode, fixed.replace('&', '\u00a7'));
+			}
+			m = tabPattern.matcher(replaced);
+			while (m.find()) {
+				String hexcode = m.group();
+				String fixed = "&x&" + hexcode.charAt(1) + "&" + hexcode.charAt(2) + "&" + hexcode.charAt(3) + "&" + hexcode.charAt(4) + "&" + hexcode.charAt(5) + "&" + hexcode.charAt(6);
+				replaced = replaced.replace(hexcode, fixed.replace('&', '\u00a7'));
+			}
+			return replaced;
+		} else {
+			return IChatBaseComponent.fromColoredText(text).toLegacyText();
+		}
 	}
 	
 	/**

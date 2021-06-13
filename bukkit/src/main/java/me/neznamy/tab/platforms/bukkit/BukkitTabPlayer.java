@@ -1,9 +1,18 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import com.viaversion.viaversion.api.Via;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -15,6 +24,8 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * TabPlayer for Bukkit
@@ -29,6 +40,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	//nms player connection
 	private Object playerConnection;
+	
+	//player's visible boss bars
+	private Map<UUID, BossBar> bossbars = new HashMap<UUID, BossBar>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -129,9 +143,65 @@ public class BukkitTabPlayer extends ITabPlayer {
 				}
 				return;
 			}
+			if (nmsPacket instanceof PacketPlayOutBoss) {
+				handle((PacketPlayOutBoss) nmsPacket);
+				return;
+			}
 			NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 		} catch (Throwable e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
+		}
+	}
+	
+	private void handle(PacketPlayOutBoss packet) {
+		Set<BarFlag> flags = new HashSet<BarFlag>();
+		BossBar bar;
+		switch (packet.operation) {
+		case ADD:
+			if (packet.createWorldFog) flags.add(BarFlag.CREATE_FOG);
+			if (packet.darkenScreen) flags.add(BarFlag.DARKEN_SKY);
+			if (packet.playMusic) flags.add(BarFlag.PLAY_BOSS_MUSIC);
+			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16), 
+					BarColor.valueOf(packet.color.name()), 
+					BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
+					flags.toArray(new BarFlag[0]));
+			bossbars.put(packet.id, bar);
+			bar.addPlayer(player);
+			break;
+		case REMOVE:
+			bossbars.get(packet.id).removePlayer(player);
+			bossbars.remove(packet.id);
+			break;
+		case UPDATE_PCT:
+			bossbars.get(packet.id).setProgress(packet.pct);
+			break;
+		case UPDATE_NAME:
+			bossbars.get(packet.id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16));
+			break;
+		case UPDATE_STYLE:
+			bossbars.get(packet.id).setColor(BarColor.valueOf(packet.color.name()));
+			bossbars.get(packet.id).setStyle(BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
+			break;
+		case UPDATE_PROPERTIES:
+			bar = bossbars.get(packet.id);
+			processFlag(bar, packet.createWorldFog, BarFlag.CREATE_FOG);
+			processFlag(bar, packet.darkenScreen, BarFlag.DARKEN_SKY);
+			processFlag(bar, packet.playMusic, BarFlag.PLAY_BOSS_MUSIC);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private void processFlag(BossBar bar, boolean targetValue, BarFlag flag) {
+		if (targetValue) {
+			if (!bar.hasFlag(flag)) {
+				bar.addFlag(flag);
+			}
+		} else {
+			if (bar.hasFlag(flag)) {
+				bar.removeFlag(flag);
+			}
 		}
 	}
 

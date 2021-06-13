@@ -87,28 +87,6 @@ public class NMSStorage {
 	public Method ChatHexColor_ofString;
 	public Method ChatComponentText_addSibling;
 
-	//PacketPlayOutBoss
-	private Class<?> PacketPlayOutBoss;
-	private Class<?> BossBattle;
-	private Class<?> BossBattleServer;
-	public Constructor<?> newBossBattleServer;
-	public Class<Enum> BarColor;
-	public Class<Enum> BarStyle;
-	public Class<Enum> PacketPlayOutBoss_Action;
-	public Constructor<?> newPacketPlayOutBoss;
-	public Field BossBattle_UUID;
-	public Method BossBattleServer_setProgress;
-	public Method BossBattleServer_setCreateFog;
-	public Method BossBattleServer_setDarkenSky;
-	public Method BossBattleServer_setPlayMusic;
-	//1.17
-	public Method PacketPlayOutBoss_createAddPacket;
-	public Method PacketPlayOutBoss_createRemovePacket;
-	public Method PacketPlayOutBoss_createUpdateProgressPacket;
-	public Method PacketPlayOutBoss_createUpdateNamePacket;
-	public Method PacketPlayOutBoss_createUpdateStylePacket;
-	public Method PacketPlayOutBoss_createUpdatePropertiesPacket;
-
 	//PacketPlayOutChat
 	private Class<?> PacketPlayOutChat;
 	public Class<Enum> ChatMessageType;
@@ -349,14 +327,9 @@ public class NMSStorage {
 			EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
 		}
 		if (minorVersion >= 9) {
-			BossBattle = getNMSClass("net.minecraft.world.BossBattle", "BossBattle");
-			BossBattleServer = getNMSClass("net.minecraft.server.level.BossBattleServer", "BossBattleServer");
-			BarColor = (Class<Enum>) getNMSClass("net.minecraft.world.BossBattle$BarColor", "BossBattle$BarColor");
-			BarStyle = (Class<Enum>) getNMSClass("net.minecraft.world.BossBattle$BarStyle", "BossBattle$BarStyle");
 			DataWatcherObject = getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
 			DataWatcherRegistry = getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
 			DataWatcherSerializer = getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
-			PacketPlayOutBoss = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutBoss", "PacketPlayOutBoss");
 			EnumTeamPush = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
 			
 		}
@@ -377,9 +350,6 @@ public class NMSStorage {
 			if (minorVersion >= 8) {
 				PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
 				EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction", "EnumTitleAction");
-			}
-			if (minorVersion >= 9) {
-				PacketPlayOutBoss_Action = (Class<Enum>) getNMSClass("PacketPlayOutBoss$Action");
 			}
 		}
 	}
@@ -411,7 +381,6 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 9) {
 			newDataWatcherObject = DataWatcherObject.getConstructors()[0];
-			newBossBattleServer = BossBattleServer.getConstructor(IChatBaseComponent, BarColor, BarStyle);
 		}
 		if (minorVersion >= 13) {
 			newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor(ScoreboardObjective, int.class);
@@ -448,9 +417,6 @@ public class NMSStorage {
 		} else {
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
 			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
-			if (minorVersion >= 9) {
-				newPacketPlayOutBoss = PacketPlayOutBoss.getConstructor(PacketPlayOutBoss_Action, BossBattle);
-			}
 		}
 	}
 
@@ -520,7 +486,6 @@ public class NMSStorage {
 		}
 		
 		if (minorVersion >= 9) {
-			BossBattle_UUID = getFields(BossBattle, UUID.class).get(0);
 			DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
 			DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
 			DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
@@ -599,10 +564,6 @@ public class NMSStorage {
 		if (minorVersion >= 9) {
 			ScoreboardTeam_setCollisionRule = ScoreboardTeam.getMethod("setCollisionRule", EnumTeamPush);
 			DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
-			BossBattleServer_setProgress = BossBattleServer.getMethod("setProgress", float.class);
-			BossBattleServer_setCreateFog = BossBattleServer.getMethod("setCreateFog", boolean.class);
-			BossBattleServer_setDarkenSky = BossBattleServer.getMethod("setDarkenSky", boolean.class);
-			BossBattleServer_setPlayMusic = BossBattleServer.getMethod("setPlayMusic", boolean.class);
 		} else {
 			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
 		}
@@ -619,12 +580,6 @@ public class NMSStorage {
 			ChatHexColor_ofString = ChatHexColor.getMethod("a", String.class);
 		}
 		if (minorVersion >= 17) {
-			PacketPlayOutBoss_createAddPacket = PacketPlayOutBoss.getMethod("createAddPacket", BossBattle);
-			PacketPlayOutBoss_createRemovePacket = PacketPlayOutBoss.getMethod("createRemovePacket", UUID.class);
-			PacketPlayOutBoss_createUpdateProgressPacket = PacketPlayOutBoss.getMethod("createUpdateProgressPacket", BossBattle);
-			PacketPlayOutBoss_createUpdateNamePacket = PacketPlayOutBoss.getMethod("createUpdateNamePacket", BossBattle);
-			PacketPlayOutBoss_createUpdateStylePacket = PacketPlayOutBoss.getMethod("createUpdateStylePacket", BossBattle);
-			PacketPlayOutBoss_createUpdatePropertiesPacket = PacketPlayOutBoss.getMethod("createUpdatePropertiesPacket", BossBattle);
 			PacketPlayOutScoreboardTeam_of = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam);
 			PacketPlayOutScoreboardTeam_ofBoolean = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam, boolean.class);
 			PacketPlayOutScoreboardTeam_ofString = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam, String.class, PacketPlayOutScoreboardTeam_a);
