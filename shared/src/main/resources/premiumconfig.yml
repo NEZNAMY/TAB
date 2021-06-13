@@ -1,12 +1,12 @@
 #sorting type, having premium version automatically overrides sorting options from advancedconfig (if set)
 #GROUPS                  = groups from config.yml, in that order
 #GROUP_PERMISSIONS       = ^, but players need tab.sort.<group> permission to be considered in that group
-#TABPREFIX_A_TO_Z        = alphabetically by tabprefix property
 #PLACEHOLDER_LOW_TO_HIGH = insert a numeric placeholder below, sorting from lowest value to highest
 #PLACEHOLDER_HIGH_TO_LOW = ^, highest to lowest, can be used for some kind of levelling system
 #PLACEHOLDER_A_TO_Z      = alphabetically by the placeholder
 #GROUPS_THEN_PLACEHOLDER_HIGH_TO_LOW = primary sorting by groups, secondary by numeric placeholder (high to low)
 #GROUPS_THEN_PLACEHOLDER_LOW_TO_HIGH = primary sorting by groups, secondary by numeric placeholder (low to high)
+#... and more 
 sorting-type: GROUPS
 sorting-placeholder: "%some_level_maybe?%"
 
