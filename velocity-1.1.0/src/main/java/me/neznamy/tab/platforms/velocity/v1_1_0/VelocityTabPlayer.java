@@ -105,11 +105,10 @@ public class VelocityTabPlayer extends ITabPlayer {
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		Set<Flag> flags;
+		Set<Flag> flags = new HashSet<Flag>();
 		BossBar bar;
 		switch (packet.operation) {
 		case ADD:
-			flags = new HashSet<Flag>();
 			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
 			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
 			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
@@ -140,7 +139,6 @@ public class VelocityTabPlayer extends ITabPlayer {
 			player.showBossBar(bar);
 			break;
 		case UPDATE_PROPERTIES:
-			flags = new HashSet<Flag>();
 			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
 			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
 			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
