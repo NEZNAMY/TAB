@@ -65,6 +65,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		long time = System.nanoTime();
 		Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+		if (players == null) return;
 		//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 		Collection<String> newList = new ArrayList<String>();
 		for (String entry : players) {
