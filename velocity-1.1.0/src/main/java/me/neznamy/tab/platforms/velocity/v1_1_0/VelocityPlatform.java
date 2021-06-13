@@ -37,7 +37,7 @@ public class VelocityPlatform implements Platform {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (TAB.getInstance().isSupportBukkitPermission()) {
+		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
 			return new VaultBridge(Main.plm);
 		} else if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
@@ -49,7 +49,6 @@ public class VelocityPlatform implements Platform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		tab.setSupportBukkitPermission(tab.getConfiguration().config.getBoolean("use-bukkit-permissions-manager", false));
 		tab.getPlaceholderManager().addRegistry(new VelocityPlaceholderRegistry(server));
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();

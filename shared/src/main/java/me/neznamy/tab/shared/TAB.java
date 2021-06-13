@@ -33,9 +33,6 @@ public class TAB {
 	//the command
 	public TabCommand command;
 
-	// Used to use bukkit permission management in the case of Bungee or Velocity.
-	private boolean supportBukkitPermission;
-	
 	//command used if plugin is disabled due to a broken configuration file
 	public final DisabledCommand disabledCommand = new DisabledCommand();
 	
@@ -150,10 +147,10 @@ public class TAB {
 			featureManager = new FeatureManager(this);
 			configuration = new Configs(this);
 			configuration.loadFiles();
+			setPermissionPlugin(platform.detectPermissionPlugin());
 			placeholderManager = new PlaceholderManager(this);
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
-			setPermissionPlugin(platform.detectPermissionPlugin());
 			command = new TabCommand(this);
 			featureManager.load();
 			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
@@ -242,15 +239,7 @@ public class TAB {
 	public boolean isDisabled() {
 		return disabled;
 	}
-
-	public void setSupportBukkitPermission(boolean support) {
-		supportBukkitPermission = support;
-	}
-
-	public boolean isSupportBukkitPermission() {
-		return supportBukkitPermission;
-	}
-
+	
 	public PlaceholderManager getPlaceholderManager() {
 		return placeholderManager;
 	}

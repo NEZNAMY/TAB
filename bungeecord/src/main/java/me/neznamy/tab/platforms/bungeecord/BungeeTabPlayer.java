@@ -65,7 +65,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean hasPermission(String permission) {
-		if (TAB.getInstance().isSupportBukkitPermission()) {
+		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
 			String merge = "hasPermission:" + permission;
 			Main.plm.requestAttribute(this, merge);
 			if (!attributes.containsKey(merge)) return false;

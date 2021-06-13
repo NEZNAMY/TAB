@@ -40,6 +40,7 @@ public class Configs {
 	public boolean removeGhostPlayers;
 	public boolean layout;
 	public boolean pipelineInjection;
+	public boolean bukkitPermissions;
 
 	//animations.yml file
 	public ConfigurationFile animation;
@@ -124,6 +125,9 @@ public class Configs {
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		layout = (boolean) getSecretOption("layout", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true);
+		if (tab.getPlatform().getSeparatorType().equals("server")) {
+			bukkitPermissions = config.getBoolean("use-bukkit-permissions-manager", false);
+		}
 		
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
