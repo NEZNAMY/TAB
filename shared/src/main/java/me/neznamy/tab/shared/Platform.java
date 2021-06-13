@@ -155,7 +155,6 @@ public interface Platform {
 	 */
 	public default void loadUniversalFeatures() {
 		TAB tab = TAB.getInstance();
-		TAB.getInstance().setSupportBukkitPermission(tab.getConfiguration().config.getBoolean("use-bukkit-permissions-manager", false));
 		if (tab.getConfiguration().config.getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter(tab));
 		if (tab.getConfiguration().removeGhostPlayers) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 8 && tab.getConfiguration().config.getBoolean("change-tablist-prefix-suffix", true)) {

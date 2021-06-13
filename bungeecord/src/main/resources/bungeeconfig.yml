@@ -1,6 +1,6 @@
 # Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
 
-# Used to use bukkit permission management in the case of Bungee or Velocity.
+#taking permission nodes and groups from backend servers
 use-bukkit-permissions-manager: false
 
 #changing nametags, affecting sorting, collision rule

@@ -150,10 +150,10 @@ public class TAB {
 			featureManager = new FeatureManager(this);
 			configuration = new Configs(this);
 			configuration.loadFiles();
-			setPermissionPlugin(platform.detectPermissionPlugin());
 			placeholderManager = new PlaceholderManager(this);
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
+			setPermissionPlugin(platform.detectPermissionPlugin());
 			command = new TabCommand(this);
 			featureManager.load();
 			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());

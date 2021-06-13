@@ -42,7 +42,9 @@ public class BungeePlatform implements Platform {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
+		if (TAB.getInstance().isSupportBukkitPermission()) {
+			return new VaultBridge(Main.plm);
+		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
@@ -54,6 +56,7 @@ public class BungeePlatform implements Platform {
 	@Override
 	public void loadFeatures() throws Exception{
 		TAB tab = TAB.getInstance();
+		tab.setSupportBukkitPermission(tab.getConfiguration().config.getBoolean("use-bukkit-permissions-manager", false));
 		tab.getPlaceholderManager().addRegistry(new BungeePlaceholderRegistry());
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
