@@ -161,7 +161,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (packet.createWorldFog) flags.add(BarFlag.CREATE_FOG);
 			if (packet.darkenScreen) flags.add(BarFlag.DARKEN_SKY);
 			if (packet.playMusic) flags.add(BarFlag.PLAY_BOSS_MUSIC);
-			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16), 
+			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().minorVersion >= 16), 
 					BarColor.valueOf(packet.color.name()), 
 					BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
 					flags.toArray(new BarFlag[0]));
@@ -176,7 +176,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			bossbars.get(packet.id).setProgress(packet.pct);
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16));
+			bossbars.get(packet.id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().minorVersion >= 16));
 			break;
 		case UPDATE_STYLE:
 			bossbars.get(packet.id).setColor(BarColor.valueOf(packet.color.name()));
