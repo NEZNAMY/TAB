@@ -110,7 +110,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + getName());
 			return version;
 		} catch (Throwable e) {
-			return TAB.getInstance().getErrorManager().printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion", e);
+			return TAB.getInstance().getErrorManager().printError(ProtocolVersion.SERVER_VERSION.getNetworkId(), "Failed to get protocol version of " + getName() + " using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", e);
 		}
 	}
 
