@@ -70,10 +70,11 @@ public class Property {
 	 * @param temporaryValue - temporary value to be assigned
 	 */
 	public void setTemporaryValue(String temporaryValue) {
-		this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
 		if (temporaryValue != null) {
-			analyze(temporaryValue);
+			this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
+			analyze(this.temporaryValue);
 		} else {
+			this.temporaryValue = null;
 			analyze(rawValue);
 		}
 		update();
