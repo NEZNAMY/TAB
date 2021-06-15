@@ -93,47 +93,45 @@ public class BungeePipelineInjector extends PipelineInjector {
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
+				Object modifiedPacket = packet;
+				long time = System.nanoTime();
+				if (packet instanceof ByteBuf) {
+					modifiedPacket = deserialize((ByteBuf) packet);
+				}
+				tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 				if (tab.getFeatureManager().isFeatureEnabled("nametag16") && antiOverrideTeams) {
-					if (packet instanceof Team) {
-						//team packet coming from a bungeecord plugin
-						modifyPlayers((Team) packet);
-						super.write(context, packet, channelPromise);
+					time = System.nanoTime();
+					if (modifiedPacket instanceof Team) {
+						modifyPlayers((Team) modifiedPacket);
+						tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+						super.write(context, modifiedPacket, channelPromise);
 						return;
 					}
-					if (packet instanceof ByteBuf) {
-						long time = System.nanoTime();
-						ByteBuf buf = ((ByteBuf) packet);
+					//for now protocolsupport will break the plugin
+/*					if (modifiedPacket instanceof ByteBuf) {
+						ByteBuf buf = ((ByteBuf) modifiedPacket);
 						int marker = buf.readerIndex();
 						int packetId = buf.readByte();
-						if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
-							//team packet sent by backend server, proxy does not deserialize those for whatever reason
-							Team team = new Team();
-							team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+						if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
+							//compressed team packet when using protocolsupport, proper decompression will be needed
 							buf.release();
 							tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-							modifyPlayers(team);
-							super.write(context, team, channelPromise);
-							return;
-						} else if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
-							//compressed team packet when using protocolsupport, just kill it as it does not come from tab anyway
-							buf.release();
 							return;
 						}
 						buf.readerIndex(marker);
-					}
+					}*/
+					tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 				}
-				if (packet instanceof ScoreboardDisplay && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
-					//TODO add support for serialized packets as above with teams
+				if (modifiedPacket instanceof ScoreboardDisplay && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
 					return;
 				}
-				if (packet instanceof ScoreboardObjective && antiOverrideObjectives) {
-					//TODO add support for serialized packets as above with teams
-					tab.getFeatureManager().onObjective(player, packet);
+				if (modifiedPacket instanceof ScoreboardObjective && antiOverrideObjectives) {
+					tab.getFeatureManager().onObjective(player, modifiedPacket);
 				}
 				//client reset packet
-				if (packet instanceof Login) {
+				if (modifiedPacket instanceof Login) {
 					//making sure to not send own packets before login packet is actually sent
-					super.write(context, packet, channelPromise);
+					super.write(context, modifiedPacket, channelPromise);
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
 				}
@@ -141,6 +139,37 @@ public class BungeePipelineInjector extends PipelineInjector {
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
 			super.write(context, packet, channelPromise);
+		}
+		
+		/**
+		 * Deserializes bytebuf in case it is one of the tracked packets coming from backend server and returns it.
+		 * If the packet is not one of them, returns input
+		 * @param buf - bytebuf to deserialize
+		 * @return deserialized packet or input bytebuf if packet is not tracked
+		 */
+		private Object deserialize(ByteBuf buf) {
+			int marker = buf.readerIndex();
+			int packetId = buf.readByte();
+			if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
+				Team team = new Team();
+				team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+				buf.release();
+				return team;
+			}
+			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardDisplay.class)) {
+				ScoreboardDisplay display = new ScoreboardDisplay();
+				display.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+				buf.release();
+				return display;
+			}
+			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardObjective.class)) {
+				ScoreboardObjective objective = new ScoreboardObjective();
+				objective.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+				buf.release();
+				return objective;
+			}
+			buf.readerIndex(marker);
+			return buf;
 		}
 	}
 }
