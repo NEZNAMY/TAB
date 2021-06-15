@@ -179,8 +179,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 			bossbars.get(packet.id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().minorVersion >= 16));
 			break;
 		case UPDATE_STYLE:
-			bossbars.get(packet.id).setColor(BarColor.valueOf(packet.color.name()));
-			bossbars.get(packet.id).setStyle(BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
+			bar = bossbars.get(packet.id);
+			//yet another platform with yet another buggy bossbar API, how lovely it is regressing back to APIs instead of internals
+			bar.removePlayer(player);
+			bar.setColor(BarColor.valueOf(packet.color.name()));
+			bar.setStyle(BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
+			bar.addPlayer(player);
 			break;
 		case UPDATE_PROPERTIES:
 			bar = bossbars.get(packet.id);
