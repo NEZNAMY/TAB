@@ -408,11 +408,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.PacketPlayOutScoreboardObjective_RENDERTYPE != null) {
 			Object nmsRender = nms.PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
 			if (nmsRender != null) {
-				if (nms.minorVersion >= 8) {
-					renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
-				} else {
-					renderType = EnumScoreboardHealthDisplay.values()[(int)nmsRender];
-				}
+				renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
 			}
 		}
 		int method = nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
