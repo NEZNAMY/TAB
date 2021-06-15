@@ -108,12 +108,12 @@ public class ErrorManager {
 			if (file.length() > 1000000) return; //not going over 1 MB
 			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
 			if (message != null) {
-				write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] " + message, intoConsoleToo);
+				write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
 			}
 			if (error != null) {
-				write(buf, "&c" + error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
+				write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
 				for (StackTraceElement ste : error.getStackTrace()) {
-					write(buf, "&c       at " + ste.toString(), intoConsoleToo);
+					write(buf, "&c       at ", ste.toString(), intoConsoleToo);
 				}
 			}
 			buf.close();
@@ -149,9 +149,9 @@ public class ErrorManager {
 	 * @param forceConsole - send into console even without debug mode
 	 * @throws IOException - if IO writer operation fails
 	 */
-	private void write(BufferedWriter buf, String message, boolean forceConsole) throws IOException {
-		buf.write(getCurrentTime() + removeColors(message) + System.getProperty("line.separator"));
-		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(message, true);
+	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
+		buf.write(getCurrentTime() + removeColors(prefix) + message + System.getProperty("line.separator"));
+		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
 	}
 	
 	/**
