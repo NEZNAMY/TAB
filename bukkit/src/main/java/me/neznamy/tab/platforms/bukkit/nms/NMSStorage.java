@@ -162,22 +162,6 @@ public class NMSStorage {
     public Method PlayerInfoData_getGamemode;
     public Method PlayerInfoData_getDisplayName;
 
-	//PacketPlayOutTitle
-	private Class<?> PacketPlayOutTitle;
-	public Constructor<?> newPacketPlayOutTitle;
-	public Class<Enum> EnumTitleAction;
-	//1.17
-	private Class<?> ClientboundSetTitleTextPacket;
-	private Class<?> ClientboundSetSubtitleTextPacket;
-	private Class<?> ClientboundSetActionBarTextPacket;
-	private Class<?> ClientboundSetTitlesAnimationPacket;
-	private Class<?> ClientboundClearTitlesPacket;
-	public Constructor<?> newClientboundSetTitleTextPacket;
-	public Constructor<?> newClientboundSetSubtitleTextPacket;
-	public Constructor<?> newClientboundSetActionBarTextPacket;
-	public Constructor<?> newClientboundSetTitlesAnimationPacket;
-	public Constructor<?> newClientboundClearTitlesPacket;
-
 	public Class<?> PacketPlayOutEntityDestroy;
 	public Constructor<?> newPacketPlayOutEntityDestroy;
 	public Field PacketPlayOutEntityDestroy_ENTITIES;
@@ -336,17 +320,7 @@ public class NMSStorage {
 			ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
 		}
 		if (minorVersion >= 17) {
-			ClientboundClearTitlesPacket = Class.forName("net.minecraft.network.protocol.game.ClientboundClearTitlesPacket");
-			ClientboundSetActionBarTextPacket = Class.forName("net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket");
-			ClientboundSetSubtitleTextPacket = Class.forName("net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket");
-			ClientboundSetTitleTextPacket = Class.forName("net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket");
-			ClientboundSetTitlesAnimationPacket = Class.forName("net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket");
 			PacketPlayOutScoreboardTeam_a = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a");
-		} else {
-			if (minorVersion >= 8) {
-				PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
-				EnumTitleAction = (Class<Enum>) getNMSClass("PacketPlayOutTitle$EnumTitleAction", "EnumTitleAction");
-			}
 		}
 	}
 
@@ -371,7 +345,6 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 8) {
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructors()[0];
-			if (PacketPlayOutTitle != null) newPacketPlayOutTitle = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, int.class, int.class, int.class);
 			newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
 			newPlayerInfoData = PlayerInfoData.getConstructors()[0];
 		}
@@ -405,11 +378,6 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 17) {
 			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int.class);
-			newClientboundSetTitleTextPacket = ClientboundSetTitleTextPacket.getConstructor(IChatBaseComponent);
-			newClientboundSetSubtitleTextPacket = ClientboundSetSubtitleTextPacket.getConstructor(IChatBaseComponent);
-			newClientboundSetActionBarTextPacket = ClientboundSetActionBarTextPacket.getConstructor(IChatBaseComponent);
-			newClientboundSetTitlesAnimationPacket = ClientboundSetTitlesAnimationPacket.getConstructor(int.class, int.class, int.class);
-			newClientboundClearTitlesPacket = ClientboundClearTitlesPacket.getConstructor(boolean.class);
 		} else {
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
 			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
