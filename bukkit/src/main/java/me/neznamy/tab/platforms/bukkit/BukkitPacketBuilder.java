@@ -383,12 +383,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
 		for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
-			Object nmsGamemode = nms.PlayerInfoData_GAMEMODE.get(nmsData);
-			EnumGamemode gamemode = nmsGamemode == null ? null : EnumGamemode.valueOf(nmsGamemode.toString());
-			GameProfile profile = (GameProfile) nms.PlayerInfoData_PROFILE.get(nmsData);
-			Object nmsComponent = nms.PlayerInfoData_LISTNAME.get(nmsData);
-			IChatBaseComponent listName = fromNMSComponent(nmsComponent);
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), nms.PlayerInfoData_PING.getInt(nmsData), gamemode, listName));
+			Object nmsGamemode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
+			EnumGamemode gamemode = (nmsGamemode == null) ? null : EnumGamemode.valueOf(nmsGamemode.toString());
+			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
+			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
+			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int)nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}

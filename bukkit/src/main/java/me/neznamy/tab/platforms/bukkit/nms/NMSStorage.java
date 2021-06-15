@@ -12,8 +12,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
-import com.mojang.authlib.GameProfile;
-
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
@@ -157,14 +155,12 @@ public class NMSStorage {
 	private Class<?> PlayerInfoData;
 	public Constructor<?> newPacketPlayOutPlayerInfo;
 	public Constructor<?> newPlayerInfoData;
-
 	public Field PacketPlayOutPlayerInfo_ACTION;
 	public Field PacketPlayOutPlayerInfo_PLAYERS;
-
-	public Field PlayerInfoData_PING;
-	public Field PlayerInfoData_GAMEMODE;
-	public Field PlayerInfoData_PROFILE;
-	public Field PlayerInfoData_LISTNAME;
+    public Method PlayerInfoData_getProfile;
+    public Method PlayerInfoData_getLatency;
+    public Method PlayerInfoData_getGamemode;
+    public Method PlayerInfoData_getDisplayName;
 
 	//PacketPlayOutTitle
 	private Class<?> PacketPlayOutTitle;
@@ -474,10 +470,6 @@ public class NMSStorage {
 
 		if (minorVersion >= 8) {
 			CHANNEL = getFields(NetworkManager, Channel.class).get(0);
-			PlayerInfoData_PING = getFields(PlayerInfoData, int.class).get(0);
-			PlayerInfoData_GAMEMODE = getFields(PlayerInfoData, EnumGamemode).get(0);
-			PlayerInfoData_PROFILE = getFields(PlayerInfoData, GameProfile.class).get(0);
-			PlayerInfoData_LISTNAME = getFields(PlayerInfoData, IChatBaseComponent).get(0);
 			PacketPlayOutPlayerInfo_ACTION = getFields(PacketPlayOutPlayerInfo, EnumPlayerInfoAction).get(0);
 			PacketPlayOutPlayerInfo_PLAYERS = getFields(PacketPlayOutPlayerInfo, List.class).get(0);
 			PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
@@ -558,6 +550,10 @@ public class NMSStorage {
 			EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a"}, String.class);
 		}
 		if (minorVersion >= 8) {
+	        PlayerInfoData_getProfile = this.PlayerInfoData.getMethod("a");
+	        PlayerInfoData_getLatency = this.PlayerInfoData.getMethod("b");
+	        PlayerInfoData_getGamemode = this.PlayerInfoData.getMethod("c");
+	        PlayerInfoData_getDisplayName = this.PlayerInfoData.getMethod("d");
 			ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, EnumNameTagVisibility);
 			getProfile = EntityPlayer.getMethod("getProfile");
 		}
