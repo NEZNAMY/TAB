@@ -529,11 +529,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 			modifier = nms.newChatModifier.newInstance(
 				color,
-				component.isBold() ? true : null,
-				component.isItalic() ? true : null,
-				component.isUnderlined() ? true : null,
-				component.isStrikethrough() ? true : null,
-				component.isObfuscated() ? true : null,
+				component.getBold(),
+				component.getItalic(),
+				component.getUnderlined(),
+				component.getStrikethrough(),
+				component.getObfuscated(),
 				component.getClickAction() == null ? null : nms.newChatClickable.newInstance(nms.EnumClickAction_a.invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()), 
 				null, //component.getHoverAction() == null ? null : nms.newChatHoverable.newInstance(nms.EnumHoverAction_a.invoke(null, component.getHoverAction().toString().toLowerCase()), stringToComponent(component.getHoverValue().toString())), 
 				null, null

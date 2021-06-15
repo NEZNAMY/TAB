@@ -161,6 +161,46 @@ public class IChatBaseComponent {
 	public boolean isObfuscated(){
 		return obfuscated == null ? false : obfuscated;
 	}
+	
+	/**
+	 * Returns value of bold
+	 * @return value of bold
+	 */
+	public Boolean getBold(){
+		return bold;
+	}
+
+	/**
+	 * Returns value of italic
+	 * @return value of italic
+	 */
+	public Boolean getItalic(){
+		return italic;
+	}
+
+	/**
+	 * Returns value of underlined
+	 * @return value of underlined
+	 */
+	public Boolean getUnderlined(){
+		return underlined;
+	}
+	
+	/**
+	 * Returns value of strikethrough
+	 * @return value of strikethrough
+	 */
+	public Boolean getStrikethrough(){
+		return strikethrough;
+	}
+
+	/**
+	 * Returns value of obfuscation
+	 * @return value of obfuscation
+	 */
+	public Boolean getObfuscated(){
+		return obfuscated;
+	}
 
 	/**
 	 * Sets text of this component
