@@ -36,25 +36,27 @@ public abstract class Placeholder {
 		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
 		this.identifier = identifier;
 		this.refresh = refresh;
-		if (TAB.getInstance().getConfiguration().premiumconfig != null) {
-			Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
-			for (Entry<Object, Object> entry : original.entrySet()) {
-				String key = entry.getKey().toString();
-				String value = entry.getValue().toString();
-				replacements.put(key.replace('&', '\u00a7'), value);
-				//snakeyaml converts yes & no to booleans, making them not work when used without "
-				if (key.equals("true")) {
-					replacements.put("yes", value);
-				}
-				if (key.equals("false")) {
-					replacements.put("no", value);
-				}
-				if (key.equals("else") && value.equals("%value%")) {
-					TAB.getInstance().print('9', "Hint: Placeholder " + identifier + " has configured \"else\" replacement to %value%, which is default behavior already. You can remove it for cleaner configuration.");
-				}
-				for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
-					if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
-				}
+		if (TAB.getInstance().isPremium()) loadReplacements();
+	}
+
+	private void loadReplacements() {
+		Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+		for (Entry<Object, Object> entry : original.entrySet()) {
+			String key = entry.getKey().toString();
+			String value = entry.getValue().toString();
+			replacements.put(key.replace('&', '\u00a7'), value);
+			//snakeyaml converts yes & no to booleans, making them not work when used without "
+			if (key.equals("true")) {
+				replacements.put("yes", value);
+			}
+			if (key.equals("false")) {
+				replacements.put("no", value);
+			}
+			if (key.equals("else") && value.equals("%value%")) {
+				TAB.getInstance().print('9', "Hint: Placeholder " + identifier + " has configured \"else\" replacement to %value%, which is default behavior already. You can remove it for cleaner configuration.");
+			}
+			for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
+				if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 			}
 		}
 	}
