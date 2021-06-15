@@ -335,6 +335,7 @@ public class NMSStorage {
 		newScoreboard = Scoreboard.getConstructor();
 		newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
 		newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);
+		newPacketPlayOutEntityDestroy = getConstructor(PacketPlayOutEntityDestroy, 1);
 		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
 		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor(int.class, ScoreboardObjective);
@@ -376,11 +377,8 @@ public class NMSStorage {
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent);
 			}
 		}
-		if (minorVersion >= 17) {
-			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int.class);
-		} else {
+		if (minorVersion < 17) {
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
-			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
 		}
 	}
 
