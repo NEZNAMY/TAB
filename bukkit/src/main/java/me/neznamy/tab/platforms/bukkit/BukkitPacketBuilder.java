@@ -40,7 +40,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 import me.neznamy.tab.shared.rgb.TextColor;
 
 @SuppressWarnings("unchecked")
@@ -296,31 +295,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		}
 		
 		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.method);
-	}
-
-	@Override
-	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) throws Exception {
-		if (nms.minorVersion < 8) return null;
-		if (nms.minorVersion >= 17) {
-			switch (packet.action) {
-			case TITLE:
-				return nms.newClientboundSetTitleTextPacket.newInstance(toNMSComponent(IChatBaseComponent.optimizedComponent(packet.text), clientVersion));
-			case SUBTITLE:
-				return nms.newClientboundSetSubtitleTextPacket.newInstance(toNMSComponent(IChatBaseComponent.optimizedComponent(packet.text), clientVersion));
-			case ACTIONBAR:
-				return nms.newClientboundSetActionBarTextPacket.newInstance(toNMSComponent(IChatBaseComponent.optimizedComponent(packet.text), clientVersion));
-			case TIMES:
-				return nms.newClientboundSetTitlesAnimationPacket.newInstance(packet.fadeIn, packet.stay, packet.fadeOut);
-			case CLEAR:
-				return nms.newClientboundClearTitlesPacket.newInstance(false);
-			case RESET:
-				return nms.newClientboundClearTitlesPacket.newInstance(true);
-			default:
-				throw new IllegalStateException("Action is null");
-			}
-		}
-		return nms.newPacketPlayOutTitle.newInstance(Enum.valueOf(nms.EnumTitleAction, packet.action.toString()), 
-				packet.text == null ? null : toNMSComponent(IChatBaseComponent.optimizedComponent(packet.text), clientVersion), packet.fadeIn, packet.stay, packet.fadeOut);
 	}
 
 	/**

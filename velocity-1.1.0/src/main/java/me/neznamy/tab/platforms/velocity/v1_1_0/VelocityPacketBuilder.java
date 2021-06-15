@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.packets.PacketPlayOutTitle;
 
 /**
  * Packet builder for Velocity platform
@@ -54,11 +53,6 @@ public class VelocityPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-		return null;
-	}
-
-	@Override
-	public Object build(PacketPlayOutTitle packet, ProtocolVersion clientVersion) {
 		return null;
 	}
 
