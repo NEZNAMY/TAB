@@ -36,11 +36,6 @@ public class DataWatcherRegistry {
 			} else {
 				Boolean = fields.get("h");
 			}
-		} else {
-			Byte = 0;
-			Integer = 2;
-			Float = 3;
-			String = 4;
 		}
 	}
 
