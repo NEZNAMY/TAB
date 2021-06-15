@@ -65,6 +65,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws Exception {
 		long time = System.nanoTime();
 		Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+		String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
 		if (players == null) return;
 		//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 		Collection<String> newList = new ArrayList<String>();
@@ -75,8 +76,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				continue;
 			}
 			if (!tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && !p.hasTeamHandlingPaused() && 
-					!p.getTeamName().equals(nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam))) {
-				logTeamOverride((String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam), entry);
+					!p.getTeamName().equals(teamName)) {
+				logTeamOverride(teamName, entry);
 			} else {
 				newList.add(entry);
 			}
