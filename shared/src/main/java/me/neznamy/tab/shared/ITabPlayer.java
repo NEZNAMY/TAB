@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -418,9 +419,13 @@ public abstract class ITabPlayer implements TabPlayer {
 				sendMessage(scoreboardManager.scoreboard_on, true);
 			}
 			if (scoreboardManager.remember_toggle_choice) {
-				scoreboardManager.sb_off_players.remove(getName());
+				if (scoreboardManager.hiddenByDefault) {
+					scoreboardManager.sb_off_players.add(getName());
+				} else {
+					scoreboardManager.sb_off_players.remove(getName());
+				}
 				synchronized (scoreboardManager.sb_off_players){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.sb_off_players));
 				}
 			}
 		} else {
@@ -429,9 +434,13 @@ public abstract class ITabPlayer implements TabPlayer {
 				sendMessage(scoreboardManager.scoreboard_off, true);
 			}
 			if (scoreboardManager.remember_toggle_choice) {
-				scoreboardManager.sb_off_players.add(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);synchronized (scoreboardManager.sb_off_players){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", scoreboardManager.sb_off_players);
+				if (scoreboardManager.hiddenByDefault) {
+					scoreboardManager.sb_off_players.remove(getName());
+				} else {
+					scoreboardManager.sb_off_players.add(getName());
+				}
+				synchronized (scoreboardManager.sb_off_players){
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.sb_off_players));
 				}
 			}
 		}

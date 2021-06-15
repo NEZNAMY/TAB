@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -59,7 +61,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean remember_toggle_choice;
 	
 	//list of players with disabled scoreboard
-	public List<String> sb_off_players = Collections.synchronizedList(new ArrayList<String>());
+	public Set<String> sb_off_players = new HashSet<String>();
 	
 	//scoreboards registered via API
 	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
@@ -71,7 +73,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public int staticNumber;
 	
 	//hidden by default, toggle command must be ran to show it
-	private boolean hiddenByDefault;
+	public boolean hiddenByDefault;
 
 	//scoreboard toggle on message
 	public String scoreboard_on;
@@ -103,7 +105,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		scoreboard_on = tab.getConfiguration().premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboard_off = tab.getConfiguration().premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
 		if (remember_toggle_choice) {
-			sb_off_players = Collections.synchronizedList(new ArrayList<String>(tab.getConfiguration().getPlayerData("scoreboard-off")));
+			sb_off_players = Collections.synchronizedSet(new HashSet<String>(tab.getConfiguration().getPlayerData("scoreboard-off")));
 		}
 		staticNumber = tab.getConfiguration().premiumconfig.getInt("scoreboard.static-number", 0);
 		joinDelay = tab.getConfiguration().premiumconfig.getInt("scoreboard.delay-on-join-milliseconds", 0);
@@ -154,7 +156,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void load() {
 		for (TabPlayer p : tab.getPlayers()) {
-			p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+			p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
 		}
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
 			public void run() {
@@ -190,11 +192,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			joinDelayed.add(p);
 			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
-				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
 				joinDelayed.remove(p);
 			});
 		} else {
-			p.setScoreboardVisible(!sb_off_players.contains(p.getName()) && !hiddenByDefault, false);
+			p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
 		}
 	}
 
