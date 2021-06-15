@@ -189,11 +189,10 @@ public class Property {
 	 * @return format for the viewer
 	 */
 	public String getFormat(TabPlayer viewer) {
-		if (viewer == null) return lastReplacedValue;
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
 			RelationalPlaceholder pl = (RelationalPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-			if (pl != null) format = format.replace(pl.getIdentifier(), pl.getLastValue(viewer, owner));
+			if (pl != null) format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
 		}
 		return format;
 	}

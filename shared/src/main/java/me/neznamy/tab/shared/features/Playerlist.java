@@ -144,7 +144,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				String format;
 				AlignedSuffix alignedSuffix = (AlignedSuffix) tab.getFeatureManager().getFeature("alignedsuffix");
 				if (alignedSuffix != null) {
-					format = alignedSuffix.formatNameAndUpdateLeader(refreshed, prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
+					format = alignedSuffix.formatNameAndUpdateLeader(refreshed, viewer);
 				} else {
 					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 				}
