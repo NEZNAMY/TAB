@@ -123,7 +123,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	}
 
 	private int getValue(TabPlayer p) {
-		return tab.getErrorManager().parseInteger(p.getProperty(numberPropertyName).updateAndGet(), 0, "belowname");
+		return tab.getErrorManager().parseInteger(p.getProperty(numberPropertyName).updateAndGet(), 0, "belowname number");
 	}
 
 	@Override
