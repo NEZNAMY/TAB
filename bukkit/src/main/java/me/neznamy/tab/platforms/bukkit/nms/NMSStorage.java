@@ -516,10 +516,10 @@ public class NMSStorage {
 			EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a"}, String.class);
 		}
 		if (minorVersion >= 8) {
-	        PlayerInfoData_getProfile = this.PlayerInfoData.getMethod("a");
-	        PlayerInfoData_getLatency = this.PlayerInfoData.getMethod("b");
-	        PlayerInfoData_getGamemode = this.PlayerInfoData.getMethod("c");
-	        PlayerInfoData_getDisplayName = this.PlayerInfoData.getMethod("d");
+	        PlayerInfoData_getProfile = PlayerInfoData.getMethod("a");
+	        PlayerInfoData_getLatency = PlayerInfoData.getMethod("b");
+	        PlayerInfoData_getGamemode = PlayerInfoData.getMethod("c");
+	        PlayerInfoData_getDisplayName = PlayerInfoData.getMethod("d");
 			ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, EnumNameTagVisibility);
 			getProfile = EntityPlayer.getMethod("getProfile");
 		}
