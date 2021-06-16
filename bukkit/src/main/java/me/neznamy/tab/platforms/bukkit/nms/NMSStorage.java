@@ -389,6 +389,7 @@ public class NMSStorage {
 	 * @throws Exception - if something fails
 	 */
 	private void initializeFields() throws Exception {
+		PING = getField(EntityPlayer, "ping", "latency", "e");
 		PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
 
 		PacketPlayOutScoreboardDisplayObjective_POSITION = getFields(PacketPlayOutScoreboardDisplayObjective, int.class).get(0);
@@ -489,16 +490,6 @@ public class NMSStorage {
 		} else if (minorVersion >= 7) {
 			ChatHoverable_value = getFields(ChatHoverable, IChatBaseComponent).get(0);
 			ChatModifier_color = getFields(ChatModifier, EnumChatFormat).get(0);
-		}
-		if (minorVersion >= 17) {
-			try {
-				PING = getField(EntityPlayer, "e");
-			} catch (NoSuchFieldException e) {
-				//deobfuscated spigot jat
-				PING = getField(EntityPlayer, "latency");
-			}
-		} else {
-			PING = getField(EntityPlayer, "ping");
 		}
 	}
 
@@ -662,5 +653,14 @@ public class NMSStorage {
 			}
 		}
 		throw new NoSuchMethodException("No constructor found in class " + clazz.getName() + " with " + parameterCount + " parameters");
+	}
+	
+	private Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
+		for (String name : potentialNames) {
+			try {
+				return getField(clazz, name);
+			} catch (Exception e) {}
+		}
+		throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
 	}
 }
