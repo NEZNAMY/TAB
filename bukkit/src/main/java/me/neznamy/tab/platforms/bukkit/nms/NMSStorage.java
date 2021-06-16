@@ -157,10 +157,10 @@ public class NMSStorage {
 	public Constructor<?> newPlayerInfoData;
 	public Field PacketPlayOutPlayerInfo_ACTION;
 	public Field PacketPlayOutPlayerInfo_PLAYERS;
-    public Method PlayerInfoData_getProfile;
-    public Method PlayerInfoData_getLatency;
-    public Method PlayerInfoData_getGamemode;
-    public Method PlayerInfoData_getDisplayName;
+	public Method PlayerInfoData_getProfile;
+	public Method PlayerInfoData_getLatency;
+	public Method PlayerInfoData_getGamemode;
+	public Method PlayerInfoData_getDisplayName;
 
 	public Class<?> PacketPlayOutEntityDestroy;
 	public Constructor<?> newPacketPlayOutEntityDestroy;
