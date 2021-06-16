@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.TAB;
 public class UpdateChecker {
 
 	//separate field to prevent false flag on pre releases
-	private final String currentRelease = "2.8.10";
+	private final String currentRelease = "2.9.0";
 	
 	public UpdateChecker(TAB tab) {
 		new Thread(new Runnable() {
