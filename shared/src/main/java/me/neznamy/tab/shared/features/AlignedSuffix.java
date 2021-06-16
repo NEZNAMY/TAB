@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -28,6 +29,11 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		this.tab = tab;
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
+		Map<Integer, Integer> widthOverrides = tab.getConfiguration().premiumconfig.getConfigurationSection("character-width-overrides");
+		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
+			widths.put((char)(int)entry.getKey(), (byte)(int)entry.getValue());
+		}
+		tab.debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
 	}
 	
 	/**
@@ -47,7 +53,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
 	}
-	
+
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty("tabprefix").getFormat(null) + player.getProperty("customtabname").getFormat(null) + player.getProperty("tabsuffix").getFormat(null)));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
