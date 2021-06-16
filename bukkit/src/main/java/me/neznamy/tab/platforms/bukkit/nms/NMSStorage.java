@@ -345,7 +345,6 @@ public class NMSStorage {
 			newChatHoverable = ChatHoverable.getConstructors()[0];
 		}
 		if (minorVersion >= 8) {
-			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructors()[0];
 			newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
 			newPlayerInfoData = PlayerInfoData.getConstructors()[0];
 		}
@@ -377,7 +376,10 @@ public class NMSStorage {
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent);
 			}
 		}
-		if (minorVersion < 17) {
+		if (minorVersion >= 17) {
+			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor(IChatBaseComponent, IChatBaseComponent);
+		} else  {
+			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
 		}
 	}
