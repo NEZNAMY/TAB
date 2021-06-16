@@ -19,13 +19,8 @@ Premium version
 Bukkit bridge https://www.spigotmc.org/resources/83966/  
 Wiki https://github.com/NEZNAMY/TAB/wiki  
 Discord invite link: https://discord.gg/EaSvdk6  
-  
-  
-## Downloads
-Official release: https://www.spigotmc.org/resources/57806/  
-Pre-releases: https://github.com/NEZNAMY/TAB/releases  
-  
-  
+
+
 ## Maven Repository
 ```
 <repositories>
