@@ -135,11 +135,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
 				}
-				super.write(context, modifiedPacket, channelPromise);
 			} catch (Throwable e){
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-				super.write(context, packet, channelPromise);
 			}
+			super.write(context, packet, channelPromise);
 		}
 		
 		/**
@@ -154,19 +153,19 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
 				Team team = new Team();
 				team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.release();
+				buf.readerIndex(marker);
 				return team;
 			}
 			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardDisplay.class)) {
 				ScoreboardDisplay display = new ScoreboardDisplay();
 				display.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.release();
+				buf.readerIndex(marker);
 				return display;
 			}
 			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardObjective.class)) {
 				ScoreboardObjective objective = new ScoreboardObjective();
 				objective.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.release();
+				buf.readerIndex(marker);
 				return objective;
 			}
 			buf.readerIndex(marker);
