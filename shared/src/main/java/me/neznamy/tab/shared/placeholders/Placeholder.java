@@ -21,7 +21,7 @@ public abstract class Placeholder {
 	protected String identifier;
 	
 	//premium replacements
-	private Map<Object, String> replacements = new HashMap<Object, String>();
+	protected Map<Object, String> replacements = new HashMap<Object, String>();
 	
 	//placeholders used in outputs of replacements
 	private List<String> outputPlaceholders = new ArrayList<String>();
@@ -144,7 +144,7 @@ public abstract class Placeholder {
 	 * @param p - player to replace for
 	 * @return text with replaced placeholders in output
 	 */
-	private String setPlaceholders(String text, TabPlayer p) {
+	protected String setPlaceholders(String text, TabPlayer p) {
 		String replaced = text;
 		for (String s : outputPlaceholders) {
 			if (s.equals("%value%")) continue;

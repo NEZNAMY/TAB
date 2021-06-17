@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A relational placeholder (output different for every pair of players)
@@ -47,7 +48,12 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 */
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!lastValue.containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
-		return lastValue.get(viewer.getName() + "-" + target.getName());
+		String value = lastValue.get(viewer.getName() + "-" + target.getName());
+		String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), target);
+		if (newValue.contains("%value%")) {
+			newValue = newValue.replace("%value%", value);
+		}
+		return newValue;
 	}
 	
 	@Override

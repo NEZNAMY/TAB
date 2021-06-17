@@ -186,11 +186,12 @@ public class BukkitPlatform implements Platform {
 	 * @param refresh - refresh interval in milliseconds
 	 */
 	private void registerServerPlaceholder(String identifier, int refresh) {
+		BukkitPlatform pl = this;
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 			
 			@Override
 			public String get() {
-				return setPlaceholders(null, identifier);
+				return pl.setPlaceholders(null, identifier);
 			}
 		});
 	}
@@ -201,11 +202,12 @@ public class BukkitPlatform implements Platform {
 	 * @param refresh - refresh interval in milliseconds
 	 */
 	private void registerPlayerPlaceholder(String identifier, int refresh) {
+		BukkitPlatform pl = this;
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer p) {
-				return setPlaceholders((Player) p.getPlayer(), identifier);
+				return pl.setPlaceholders((Player) p.getPlayer(), identifier);
 			}
 		});
 	}
