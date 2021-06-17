@@ -153,7 +153,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
 				Team team = new Team();
 				team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.readerIndex(marker);
+				buf.release(); //team packets are forwarded deserialized, I really need a better system
 				return team;
 			}
 			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardDisplay.class)) {
