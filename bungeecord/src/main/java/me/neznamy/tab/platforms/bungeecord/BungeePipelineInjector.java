@@ -1,7 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 
@@ -15,6 +19,7 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Login;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
@@ -25,6 +30,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 
 	//handler to inject before
 	private final String INJECT_POSITION = "inbound-boss";
+	
+	//packets that must be deserialized and bungeecord does not do it automatically
+	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -32,6 +40,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 	 */
 	public BungeePipelineInjector(TAB tab) {
 		super(tab);
+		extraPackets.put(Team.class, Team::new);
+		extraPackets.put(ScoreboardDisplay.class, ScoreboardDisplay::new);
+		extraPackets.put(ScoreboardObjective.class, ScoreboardObjective::new);
 	}
 
 	@Override
@@ -88,25 +99,20 @@ public class BungeePipelineInjector extends PipelineInjector {
 
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+			long time = System.nanoTime();
+			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
+			tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 			try {
-				if (packet instanceof PlayerListItem) {
-					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+				if (modifiedPacket instanceof PlayerListItem) {
+					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, modifiedPacket), channelPromise);
 					return;
 				}
-				Object modifiedPacket = packet;
-				long time = System.nanoTime();
-				if (packet instanceof ByteBuf) {
-					modifiedPacket = deserialize((ByteBuf) packet);
-				}
-				tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 				if (tab.getFeatureManager().isFeatureEnabled("nametag16") && antiOverrideTeams) {
 					time = System.nanoTime();
 					if (modifiedPacket instanceof Team) {
 						modifyPlayers((Team) modifiedPacket);
-						tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-						super.write(context, modifiedPacket, channelPromise);
-						return;
 					}
+					tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					//for now protocolsupport will break the plugin
 /*					if (modifiedPacket instanceof ByteBuf) {
 						ByteBuf buf = ((ByteBuf) modifiedPacket);
@@ -120,7 +126,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 						}
 						buf.readerIndex(marker);
 					}*/
-					tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 				}
 				if (modifiedPacket instanceof ScoreboardDisplay && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
 					return;
@@ -138,7 +143,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			} catch (Throwable e){
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
-			super.write(context, packet, channelPromise);
+			super.write(context, modifiedPacket, channelPromise);
 		}
 		
 		/**
@@ -150,23 +155,13 @@ public class BungeePipelineInjector extends PipelineInjector {
 		private Object deserialize(ByteBuf buf) {
 			int marker = buf.readerIndex();
 			int packetId = buf.readByte();
-			if (packetId == ((BungeeTabPlayer)player).getPacketId(Team.class)) {
-				Team team = new Team();
-				team.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.release(); //team packets are forwarded deserialized, I really need a better system
-				return team;
-			}
-			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardDisplay.class)) {
-				ScoreboardDisplay display = new ScoreboardDisplay();
-				display.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.readerIndex(marker);
-				return display;
-			}
-			if (packetId == ((BungeeTabPlayer)player).getPacketId(ScoreboardObjective.class)) {
-				ScoreboardObjective objective = new ScoreboardObjective();
-				objective.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-				buf.readerIndex(marker);
-				return objective;
+			for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
+				if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
+					DefinedPacket packet = e.getValue().get();
+					packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+					buf.release();
+					return packet;
+				}
 			}
 			buf.readerIndex(marker);
 			return buf;
