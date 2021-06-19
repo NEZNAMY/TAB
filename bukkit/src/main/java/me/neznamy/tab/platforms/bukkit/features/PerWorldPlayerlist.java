@@ -43,7 +43,9 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
 		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group).size() == 1) {
+			if (sharedWorlds.get(group) == null) {
+				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist does not contain any worlds. You can just remove the group.");
+			} else if (sharedWorlds.get(group).size() == 1) {
 				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist only contain a single world (\"" + sharedWorlds.get(group).get(0) +
 						"\"), which has no effect and only makes config less readable. Delete the group entirely for a cleaner config.");
 			}
