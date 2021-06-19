@@ -175,7 +175,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 	
 	private void updateCollision(TabPlayer p) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null || !p.isOnline()) return;
 		if (p.getCollisionRule() != null) {
 			if (getCollision(p) != p.getCollisionRule()) {
 				collision.put(p, p.getCollisionRule());
