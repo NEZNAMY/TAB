@@ -156,7 +156,7 @@ public class VelocityTabPlayer extends ITabPlayer {
 			case ADD_PLAYER:
 				player.getTabList().addEntry(TabListEntry.builder()
 						.tabList(player.getTabList())
-						.displayName(Main.stringToComponent(data.displayName.toString(getVersion())))
+						.displayName(data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(getVersion())))
 						.gameMode(data.gameMode.ordinal()-1)
 						.profile(new GameProfile(data.uniqueId, data.name, (List<Property>) data.skin))
 						.latency(data.latency)
@@ -167,7 +167,7 @@ public class VelocityTabPlayer extends ITabPlayer {
 				break;
 			case UPDATE_DISPLAY_NAME:
 				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(Main.stringToComponent(data.displayName.toString(getVersion())));
+					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(getVersion())));
 				}
 				break;
 			case UPDATE_LATENCY:
