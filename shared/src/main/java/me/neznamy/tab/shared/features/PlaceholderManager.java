@@ -251,10 +251,10 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	public void registerPlaceholders() {
 		for (PlaceholderRegistry r : registry) {
 			for (Placeholder p : r.registerPlaceholders()) {
-				registeredPlaceholders.put(p.getIdentifier(), p);
+				registerPlaceholder(p);
 			}
 		}
-		registeredPlaceholders.putAll(TABAPI.getAPIPlaceholders());
+		TABAPI.getAPIPlaceholders().values().forEach(p -> registerPlaceholder(p));
 		for (String placeholder : allUsedPlaceholderIdentifiers) {
 			categorizeUsedPlaceholder(placeholder);
 		}
@@ -333,6 +333,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	}
 	
 	public void registerPlaceholder(Placeholder placeholder) {
+		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
 

@@ -73,6 +73,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
+		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
@@ -87,6 +88,7 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
+		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
@@ -99,6 +101,7 @@ public class TABAPI {
 	 * @param placeholder - Placeholder handler
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
+		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
 		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
