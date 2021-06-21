@@ -65,6 +65,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
 		sendMessage(sender, getGroup(analyzed));
 		sendMessage(sender, getTeamName(analyzed));
+		sendMessage(sender, getTeamNameNote(analyzed));
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.disabledWorlds, analyzed.getWorldName());
@@ -158,11 +159,23 @@ public class DebugCommand extends SubCommand {
 			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
 				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
 			} else {
-				String s = "&eTeam name: &a" + analyzed.getTeamName();
-				if (analyzed.getTeamNameNote() != null) s += "\n&eTeam name note: &a" + analyzed.getTeamNameNote();
-				return s;
+				return "&eTeam name: &a" + analyzed.getTeamName();
 			}
 		}
+		return "";
+	}
+	
+
+	/**
+	 * Returns team name note of specified player
+	 * @param analyzed - player to get team name note of
+	 * @return team name note of specified player
+	 */
+	private String getTeamNameNote(TabPlayer analyzed) {
+		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null && 
+			!TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName()) && 
+			analyzed.getTeamNameNote() != null)
+				return "&eTeam name note: &a" + analyzed.getTeamNameNote();
 		return "";
 	}
 	
