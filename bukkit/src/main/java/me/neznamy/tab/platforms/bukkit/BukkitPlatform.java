@@ -115,7 +115,7 @@ public class BukkitPlatform implements Platform {
 		}
 
 		for (Player p : getOnlinePlayers()) {
-			tab.addPlayer(new BukkitTabPlayer(p));
+			tab.addPlayer(new BukkitTabPlayer(p, Main.getProtocolVersion(p)));
 		}
 	}
 	

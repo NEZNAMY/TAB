@@ -32,7 +32,20 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer())));
+		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> {
+			try {
+				int i = 0;
+				int version;
+				while ((version = Main.getProtocolVersion(e.getPlayer())) == -1 && ++i < 50) {
+					Thread.sleep(1);
+				}
+				if (!e.getPlayer().isOnline()) return;
+				if (i == 50) {
+					TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + e.getPlayer().getName() + " after 50 retries");
+				}
+				TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), version));
+			} catch (InterruptedException e1) {}
+		});
 	}
 
 	/**

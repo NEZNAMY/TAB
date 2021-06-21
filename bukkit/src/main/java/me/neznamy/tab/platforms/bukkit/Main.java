@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.viaversion.viaversion.api.Via;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
@@ -91,5 +93,52 @@ public class Main extends JavaPlugin {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Gets protocol version and returns it
+	 * @return protocol version of this player
+	 */
+	public static int getProtocolVersion(Player player) {
+		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
+			int version = getProtocolVersionPS(player);
+			//some PS versions return -1 on unsupported server versions instead of throwing exception
+			if (version != -1 && version < ProtocolVersion.SERVER_VERSION.getNetworkId()) return version;
+		}
+		if (((BukkitPlatform)TAB.getInstance().getPlatform()).viaversion) {
+			return getProtocolVersionVia(player);
+		}
+		return ProtocolVersion.SERVER_VERSION.getNetworkId();
+	}
+
+	/**
+	 * Returns protocol version of this player using ProtocolSupport
+	 * @return protocol version of this player using ProtocolSupport
+	 */
+	private static int getProtocolVersionPS(Player player){
+		try {
+			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
+			int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
+			TAB.getInstance().debug("ProtocolSupport returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
+			return version;
+		} catch (Throwable e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ProtocolSupport", e);
+			return ProtocolVersion.SERVER_VERSION.getNetworkId();
+		}
+	}
+
+	/**
+	 * Returns protocol version of this player using ViaVersion
+	 * @return protocol version of this player using ViaVersion
+	 */
+	private static int getProtocolVersionVia(Player player){
+		try {
+			int version = Via.getAPI().getPlayerVersion(player.getUniqueId());
+			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
+			return version;
+		} catch (Throwable e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion(), e);
+			return ProtocolVersion.SERVER_VERSION.getNetworkId();
+		}
 	}
 }
