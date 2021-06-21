@@ -35,7 +35,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	private boolean invisibleNametags;
 	protected Set<String> invisiblePlayers = new HashSet<String>();
 	public Sorting sorting;
-	protected Map<TabPlayer, Boolean> collision = new HashMap<TabPlayer, Boolean>();
+	protected Map<String, Boolean> collision = new HashMap<String, Boolean>();
 
 	public NameTag(TAB tab) {
 		this.tab = tab;
@@ -58,7 +58,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		for (TabPlayer all : tab.getPlayers()) {
 			((ITabPlayer) all).setTeamName(sorting.getTeamName(all));
 			updateProperties(all);
-			collision.put(all, true);
+			collision.put(all.getName(), true);
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
 			if (isDisabledWorld(all.getWorldName())) continue;
 			registerTeam(all);
@@ -178,13 +178,13 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null || !p.isOnline()) return;
 		if (p.getCollisionRule() != null) {
 			if (getCollision(p) != p.getCollisionRule()) {
-				collision.put(p, p.getCollisionRule());
+				collision.put(p.getName(), p.getCollisionRule());
 				updateTeamData(p);
 			}
 		} else {
 			boolean collision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
-			if (this.collision.get(p) == null || this.getCollision(p) != collision) {
-				this.collision.put(p, collision);
+			if (this.collision.get(p.getName()) == null || this.getCollision(p) != collision) {
+				this.collision.put(p.getName(), collision);
 				updateTeamData(p);
 			}
 		}
@@ -193,10 +193,10 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	protected boolean getCollision(TabPlayer p) {
 		if (!p.isOnline()) return false;
 		if (p.getCollisionRule() != null) return p.getCollisionRule();
-		if (!collision.containsKey(p)) {
-			collision.put(p, revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule);
+		if (!collision.containsKey(p.getName())) {
+			collision.put(p.getName(), revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule);
 		}
-		return collision.get(p);
+		return collision.get(p.getName());
 	}
 	
 
@@ -228,7 +228,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	public void onJoin(TabPlayer connectedPlayer) {
 		((ITabPlayer) connectedPlayer).setTeamName(sorting.getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		collision.put(connectedPlayer, true);
+		collision.put(connectedPlayer.getName(), true);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
 			if (all == connectedPlayer) continue; //already registered 3 lines above
@@ -242,7 +242,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
-		collision.remove(disconnectedPlayer);
+		collision.remove(disconnectedPlayer.getName());
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
