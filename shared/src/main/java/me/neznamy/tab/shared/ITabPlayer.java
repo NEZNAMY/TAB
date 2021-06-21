@@ -132,7 +132,8 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public String getTemporaryValue(EnumProperty type) {
-		return getProperty(type.toString()).getTemporaryValue();
+		Property pr = getProperty(type.toString());
+		return pr == null ? null : pr.getTemporaryValue();
 	}
 
 	@Override
