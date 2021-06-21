@@ -59,7 +59,7 @@ public class CustomLine extends ScoreboardLine {
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
-						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 69), TabFeature.SCOREBOARD);
+						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 0), TabFeature.SCOREBOARD);
 			}
 		}
 	}

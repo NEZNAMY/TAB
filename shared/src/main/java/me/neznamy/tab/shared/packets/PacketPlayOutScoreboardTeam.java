@@ -110,16 +110,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	}
 
 	/**
-	 * Sets team options to given value
-	 * @param options - options to set to
-	 * @return self
-	 */
-	public PacketPlayOutScoreboardTeam setTeamOptions(int options) {
-		this.options = options;
-		return this;
-	}
-
-	/**
 	 * Sets team color to given value
 	 * @param color - color to use
 	 * @return self

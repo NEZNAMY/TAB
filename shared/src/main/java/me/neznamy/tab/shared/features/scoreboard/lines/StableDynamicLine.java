@@ -44,7 +44,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
 		List<String> prefixsuffix = replaceText(refreshed, force, false);
 		if (prefixsuffix == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 69), TabFeature.SCOREBOARD);
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 0), TabFeature.SCOREBOARD);
 	}
 
 	@Override

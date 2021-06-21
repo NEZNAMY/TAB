@@ -123,6 +123,6 @@ public abstract class ScoreboardLine implements Refreshable {
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManager.ObjectiveName, fakeplayer, 0), TabFeature.SCOREBOARD);
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName).setTeamOptions(69), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabFeature.SCOREBOARD);
 	}
 }

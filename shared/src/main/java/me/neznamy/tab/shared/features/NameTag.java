@@ -113,13 +113,13 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		if (p.hasTeamHandlingPaused()) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : tab.getPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()).setTeamOptions(69), TabFeature.NAMETAGS);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabFeature.NAMETAGS);
 		}
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
 		if (p.hasTeamHandlingPaused()) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()).setTeamOptions(69), TabFeature.NAMETAGS);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabFeature.NAMETAGS);
 	}
 
 	public void registerTeam(TabPlayer p) {
@@ -161,7 +161,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 69), TabFeature.NAMETAGS);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 0), TabFeature.NAMETAGS);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 69), TabFeature.NAMETAGS);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 0), TabFeature.NAMETAGS);
 	}
 	
 	private void updateCollision(TabPlayer p) {
