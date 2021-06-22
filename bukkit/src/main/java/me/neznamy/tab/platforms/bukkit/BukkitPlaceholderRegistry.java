@@ -146,43 +146,40 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		String yesAfk = TAB.getInstance().getConfiguration().config.getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		placeholders.add(new PlayerPlaceholder("%afk%", 500) {
 			public String get(TabPlayer p) {
-				boolean afk = false;
 				try {
 					if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 						Object user = Bukkit.getPluginManager().getPlugin("Essentials").getClass().getMethod("getUser", Player.class).invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
-						afk = (boolean) user.getClass().getMethod("isAfk").invoke(user);
+						if ((boolean) user.getClass().getMethod("isAfk").invoke(user)) return yesAfk;
 					}
 					if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
 						Object AFKPlus = Bukkit.getPluginManager().getPlugin("AFKPlus");
 						Object AFKPlusPlayer = AFKPlus.getClass().getMethod("getPlayer", UUID.class).invoke(AFKPlus, p.getUniqueId());
-						afk = (boolean) AFKPlusPlayer.getClass().getMethod("isAFK").invoke(AFKPlusPlayer);
+						if ((boolean) AFKPlusPlayer.getClass().getMethod("isAFK").invoke(AFKPlusPlayer)) return yesAfk;
 					}
 					if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-						afk = (boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer());
+						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return yesAfk;
 					}
 					if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK")) {
-						afk = (boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getPlayer());
+						if ((boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getPlayer())) return yesAfk;
 					}
 					if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
 						Object plugin = Bukkit.getPluginManager().getPlugin("AutoAFK");
 						Field f = plugin.getClass().getDeclaredField("afkList");
 						f.setAccessible(true);
 						HashMap<?, ?> map = (HashMap<?, ?>) f.get(plugin);
-						afk = map.containsKey(p.getPlayer());
+						if (map.containsKey(p.getPlayer())) return yesAfk;
 					}
 				} catch (Throwable t) {
 					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), t);
 				}
-				if (!afk) {
-					try {
-						//purpur AFK API
-						afk = (boolean) p.getPlayer().getClass().getMethod("isAfk").invoke(p.getPlayer());
-					} catch (Throwable t) {
-						//not purpur
-					}
+				try {
+					//purpur AFK API
+					if ((boolean) p.getPlayer().getClass().getMethod("isAfk").invoke(p.getPlayer())) return yesAfk;
+				} catch (Throwable t) {
+					//not purpur
 				}
-				return afk ? yesAfk : noAfk;
+				return noAfk;
 			}
 			@Override
 			public String[] getNestedStrings(){
