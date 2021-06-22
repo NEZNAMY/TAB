@@ -77,8 +77,8 @@ public class DataWatcherHelper {
 		} else if (NMSStorage.getInstance().minorVersion >= 8){
 			data.setValue(new DataWatcherObject(2, registry.String), customName);
 		} else {
+			//name length is limited to 64 characters on <1.8
 			String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
-			data.setValue(new DataWatcherObject(10, registry.String), cutName);
 			if (NMSStorage.getInstance().minorVersion >= 6){
 				data.setValue(new DataWatcherObject(10, registry.String), cutName);
 			} else {
