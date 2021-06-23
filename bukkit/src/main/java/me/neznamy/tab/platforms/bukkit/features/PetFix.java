@@ -73,12 +73,20 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
 				return null;
 			}
-			if (nms.PacketPlayInUseEntity_ACTION.get(packet).toString().equals("INTERACT")) {
+			if (isInteract(nms.PacketPlayInUseEntity_ACTION.get(packet))) {
 				//this is the first packet, saving player so the next packet can be cancelled
 				lastInteractFix.put(sender.getName(), System.currentTimeMillis());
 			}
 		}
 		return packet;
+	}
+	
+	private boolean isInteract(Object action) {
+		if (nms.minorVersion >= 17) {
+			return action.getClass().getSimpleName().equals("d");
+		} else {
+			return action.toString().equals("INTERACT");
+		}
 	}
 	
 	/**
