@@ -101,7 +101,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 
 	private String getValue(TabPlayer p, String property) {
-		String worldGroup = tab.getConfiguration().getWorldGroupOf(p.getWorldName());
+		String worldGroup = tab.getConfiguration().getWorldGroupOf(tab.getConfiguration().config.getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings").keySet(), p.getWorldName());
 		String[] priorities = {
 				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + property,
 				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + property,

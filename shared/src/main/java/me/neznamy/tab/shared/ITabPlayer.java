@@ -332,7 +332,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void loadPropertyFromConfig(String property, String ifNotSet) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
-		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(getWorldName());
+		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().config.getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
 		String value;
 		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
 			setProperty(property, value, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);

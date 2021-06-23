@@ -180,17 +180,20 @@ public class Configs {
 	}
 	
 	/**
-	 * Returns name of world group of specified world in per-server-settings that may consist of multiple
-	 * world separated with "-" or something else defined in config
+	 * Returns name of world group in specified set that may consist of multiple
+	 * worlds separated with "-" or something else defined in config
 	 * @param world - name of world to find group of
 	 * @return name of world group
 	 */
-	public String getWorldGroupOf(String world) {
-		Map<String, Object> worlds = config.getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings");
-		if (worlds.isEmpty()) return world;
-		for (String worldGroup : worlds.keySet()) {
-			for (String localWorld : worldGroup.split(multiWorldSeparator)) {
-				if (localWorld.equalsIgnoreCase(world)) return worldGroup;
+	public String getWorldGroupOf(Set<?> groups, String world) {
+		if (groups.isEmpty()) return world;
+		for (Object worldGroup : groups) {
+			for (String definedWorld : worldGroup.toString().split(multiWorldSeparator)) {
+				if (definedWorld.endsWith("*")) {
+					if (world.toLowerCase().startsWith(definedWorld.substring(0, definedWorld.length()-1).toLowerCase())) return worldGroup.toString();
+				} else {
+					if (world.equalsIgnoreCase(definedWorld)) return worldGroup.toString();
+				}
 			}
 		}
 		return world;

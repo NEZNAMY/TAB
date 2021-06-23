@@ -21,16 +21,20 @@ public interface Feature {
 	 */
 	public default boolean isDisabledWorld(List<String> disabledWorlds, String world) {
 		if (disabledWorlds == null) return false;
-		if (disabledWorlds.contains("WHITELIST")) {
-			for (String enabled : disabledWorlds) {
-				if (enabled != null && enabled.equalsIgnoreCase(world)) return false;
+		boolean contains = contains(disabledWorlds, world);
+		if (disabledWorlds.contains("WHITELIST")) contains = !contains;
+		return contains;
+	}
+	
+	default boolean contains(List<String> list, String element) {
+		if (element == null) return false;
+		for (String s : list) {
+			if (s.endsWith("*")) {
+				if (element.toLowerCase().startsWith(s.substring(0, s.length()-1).toLowerCase())) return true;
+			} else {
+				if (element.equalsIgnoreCase(s)) return true;
 			}
-			return true;
-		} else {
-			for (String disabled : disabledWorlds) {
-				if (disabled != null && disabled.equalsIgnoreCase(world)) return true;
-			}
-			return false;
 		}
+		return false;
 	}
 }
