@@ -7,8 +7,8 @@ import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -100,12 +100,13 @@ public class Main {
 		return GsonComponentSerializer.gson().deserialize(string);
 	}
 	
-	public static class VelocityTABCommand implements Command {
-		
+	public static class VelocityTABCommand implements SimpleCommand {
+
 		@Override
-		public void execute(CommandSource sender, String[] args) {
+		public void execute(Invocation invocation) {
+			CommandSource sender = invocation.source();
 			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				for (String message : TAB.getInstance().disabledCommand.execute(invocation.arguments(), sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 					sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
 				}
 			} else {
@@ -114,18 +115,18 @@ public class Main {
 					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
 					if (p == null) return; //player not loaded correctly
 				}
-				TAB.getInstance().command.execute(p, args);
+				TAB.getInstance().command.execute(p, invocation.arguments());
 			}
 		}
 
 		@Override
-		public List<String> suggest(CommandSource sender, String[] args) {
+		public List<String> suggest(Invocation invocation) {
 			TabPlayer p = null;
-			if (sender instanceof Player) {
-				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+			if (invocation.source() instanceof Player) {
+				p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
 				if (p == null) return new ArrayList<String>(); //player not loaded correctly
 			}
-			return TAB.getInstance().command.complete(p, args);
+			return TAB.getInstance().command.complete(p, invocation.arguments());
 		}
 	}
 }
