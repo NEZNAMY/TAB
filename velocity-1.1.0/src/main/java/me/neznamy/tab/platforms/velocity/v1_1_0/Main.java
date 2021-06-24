@@ -62,8 +62,9 @@ public class Main {
 		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
 		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
 		server.getEventManager().register(this, new VelocityEventListener());
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), new VelocityTABCommand());
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), new VelocityTABCommand());
+		VelocityTABCommand cmd = new VelocityTABCommand();
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
