@@ -116,7 +116,7 @@ public class Configs {
 		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			removeStrings.add(s.replace('&', '\u00a7'));
 		}
-		tab.debugMode = (boolean) getSecretOption("debug", false);
+		tab.debugMode = config.getBoolean("debug", false);
 		rgbSupport = (boolean) getSecretOption("rgb-support", true);
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		multiWorldSeparator = (String) getSecretOption("multi-world-separator", "-");
