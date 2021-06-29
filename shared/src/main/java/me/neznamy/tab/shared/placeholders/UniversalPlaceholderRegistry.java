@@ -252,7 +252,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				@Override
 				public String[] getNestedStrings(){
 					List<String> list = new ArrayList<>(Arrays.asList(super.getNestedStrings()));
-					list.addAll(Arrays.asList(new String[] {c.getYes(), c.getNo()}));
+					list.addAll(Arrays.asList(c.getYes(), c.getNo()));
 					return list.toArray(new String[0]);
 				}
 

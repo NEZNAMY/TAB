@@ -272,7 +272,7 @@ public class FeatureManager {
 			long time = System.nanoTime();
 			try {
 				if (newPacket != null) newPacket = ((RawPacketListener)f).onPacketReceive(receiver, newPacket);
-			} catch (Throwable e) {
+			} catch (IllegalAccessException e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_IN, System.nanoTime()-time);
@@ -292,7 +292,7 @@ public class FeatureManager {
 			long time = System.nanoTime();
 			try {
 				((RawPacketListener)f).onPacketSend(receiver, packet);
-			} catch (Throwable e) {
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | InstantiationException e) {
 				tab.getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
 			}
 			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);

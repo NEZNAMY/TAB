@@ -36,9 +36,9 @@ public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
 		if (allowBypass && receiver.hasPermission("tab.spectatorbypass")) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
-			if (playerInfoData.gameMode == EnumGamemode.SPECTATOR) {
-				TabPlayer changed = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.uniqueId);
-				if (changed != receiver) playerInfoData.gameMode = EnumGamemode.CREATIVE;
+			if (playerInfoData.getGameMode() == EnumGamemode.SPECTATOR) {
+				TabPlayer changed = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+				if (changed != receiver) playerInfoData.setGameMode(EnumGamemode.CREATIVE);
 			}
 		}
 	}

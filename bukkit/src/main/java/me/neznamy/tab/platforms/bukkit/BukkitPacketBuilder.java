@@ -142,7 +142,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
 
-		int entityId = Math.abs(packet.getId().hashCode());
+		int entityId = packet.getId().hashCode();
 		if (packet.getOperation() == Action.REMOVE) {
 			return buildEntityDestroyPacket(entityId);
 		}
@@ -187,18 +187,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(((Object[])nms.EnumPlayerInfoAction.getMethod("values").invoke(null))[packet.getAction().ordinal()], Array.newInstance(nms.EntityPlayer, 0));
 		List<Object> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
-			GameProfile profile = new GameProfile(data.uniqueId, data.name);
+			GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
 			
-			if (data.skin != null) profile.getProperties().putAll((PropertyMap) data.skin);
+			if (data.getSkin() != null) profile.getProperties().putAll((PropertyMap) data.getSkin());
 			List<Object> parameters = new ArrayList<>();
 			if (nms.newPlayerInfoData.getParameterCount() == 5) {
 				parameters.add(nmsPacket);
 			}
 			parameters.add(profile);
-			parameters.add(data.latency);
+			parameters.add(data.getLatency());
 			Object[] values = (Object[]) nms.EnumGamemode.getMethod("values").invoke(null);
-			parameters.add(data.gameMode == null ? null : values[values.length-EnumGamemode.values().length+data.gameMode.ordinal()]); //not_set was removed in 1.17
-			parameters.add(data.displayName == null ? null : toNMSComponent(data.displayName, clientVersion));
+			parameters.add(data.getGameMode() == null ? null : values[values.length-EnumGamemode.values().length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
+			parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
 			items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
 		}
 		nms.PacketPlayOutPlayerInfo_PLAYERS.set(nmsPacket, items);
@@ -332,7 +332,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.getMinorVersion() >= 17) {
 			return nms.newPacketPlayOutEntityDestroy.newInstance(id);
 		}
-		return nms.newPacketPlayOutEntityDestroy.newInstance((int[]) new int[] {id});
+		return nms.newPacketPlayOutEntityDestroy.newInstance(new int[] {id});
 	}
 
 	/**

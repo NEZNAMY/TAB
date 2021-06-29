@@ -1,10 +1,13 @@
 package me.neznamy.tab.platforms.velocity.v1_1_0;
 
+import java.util.Optional;
+
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -52,12 +55,7 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
 		Player sender = (Player) player.getPlayer();
-		if (sender.getCurrentServer().isPresent())
-			try {
-				sender.getCurrentServer().get().sendPluginMessage(mc, message);
-			} catch (IllegalStateException e) {
-				// java.lang.IllegalStateException: Not connected to server!
-				// this is not the best way to deal with this problem, but i could not find a better one
-			}
+		Optional<ServerConnection> server = sender.getCurrentServer();
+		if (server.isPresent()) server.get().sendPluginMessage(mc, message);
 	}
 }

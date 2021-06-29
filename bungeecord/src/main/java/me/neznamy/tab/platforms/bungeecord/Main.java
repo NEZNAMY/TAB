@@ -21,8 +21,10 @@ import net.md_5.bungee.api.plugin.TabExecutor;
  */
 public class Main extends Plugin {
 
+	public static Main instance;
+	
 	//plugin message handler
-	public static PluginMessageHandler plm;
+	private PluginMessageHandler plm;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -44,6 +46,10 @@ public class Main extends Plugin {
 		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 	
+	public static Main getInstance() {
+		return instance;
+	}
+	
 	/**
 	 * Checks for compatibility and returns true if version is supported, false if not
 	 * @return true if version is compatible, false if not
@@ -62,6 +68,10 @@ public class Main extends Plugin {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 	
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
+	}
+
 	/**
 	 * TAB command for bungeecord
 	 */

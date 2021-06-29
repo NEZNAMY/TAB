@@ -38,7 +38,7 @@ public class Sorting {
 	private boolean caseSensitiveSorting = true;
 	
 	//active sorting types
-	private List<SortingType> sorting;
+	private List<SortingType> usedSortingTypes;
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
@@ -57,9 +57,9 @@ public class Sorting {
 			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(getSortingPlaceholder()));
-			sorting = compile(tab.getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
+			usedSortingTypes = compile(tab.getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
 		} else {
-			sorting = new ArrayList<>();
+			usedSortingTypes = new ArrayList<>();
 			if (tab.getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
 				getSorting().add(types.get("GROUP_PERMISSIONS"));
 			} else {
@@ -67,18 +67,15 @@ public class Sorting {
 			}
 		}
 		
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.SORTING, UsageType.REFRESHING_TEAM_NAME, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.SORTING, UsageType.REFRESHING_TEAM_NAME, () -> {
 
-			@Override
-			public void run() {
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || p.getForcedTeamName() != null || p.hasTeamHandlingPaused()) continue;
-					String newName = getTeamName(p);
-					if (!p.getTeamName().equals(newName)) {
-						nametags.unregisterTeam(p);
-						((ITabPlayer) p).setTeamName(newName);
-						nametags.registerTeam(p);
-					}
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.isLoaded() || p.getForcedTeamName() != null || p.hasTeamHandlingPaused()) continue;
+				String newName = getTeamName(p);
+				if (!p.getTeamName().equals(newName)) {
+					nametags.unregisterTeam(p);
+					((ITabPlayer) p).setTeamName(newName);
+					nametags.registerTeam(p);
 				}
 			}
 		});
@@ -161,6 +158,6 @@ public class Sorting {
 	}
 
 	public List<SortingType> getSorting() {
-		return sorting;
+		return usedSortingTypes;
 	}
 }

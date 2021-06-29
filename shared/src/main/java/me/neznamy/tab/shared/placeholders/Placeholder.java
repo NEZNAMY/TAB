@@ -105,7 +105,7 @@ public abstract class Placeholder {
 			} else {
 				return s.replace(identifier, newValue);
 			}
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			return TAB.getInstance().getErrorManager().printError(s, "An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 		}
 	}

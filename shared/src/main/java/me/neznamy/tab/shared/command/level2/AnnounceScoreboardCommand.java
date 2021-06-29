@@ -60,7 +60,7 @@ public class AnnounceScoreboardCommand extends SubCommand{
 	private void announce(ScoreboardManager feature, Scoreboard sb, int duration) {
 		new Thread(() -> {
 			try {
-				feature.announcement = sb;
+				feature.setAnnouncement(sb);
 				Map<TabPlayer, Scoreboard> previous = new HashMap<>();
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (!all.isScoreboardVisible()) continue;
@@ -68,15 +68,15 @@ public class AnnounceScoreboardCommand extends SubCommand{
 					if (all.getActiveScoreboard() != null) all.getActiveScoreboard().unregister(all);
 					sb.register(all);
 				}
-				Thread.sleep(duration*1000);
+				Thread.sleep(duration*1000L);
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (!all.hasBossbarVisible()) continue;
 					sb.unregister(all);
 					if (previous.get(all) != null) previous.get(all).register(all);
 				}
-				feature.announcement = null;
-			} catch (InterruptedException e) {
-				//plugin disabled
+				feature.setAnnouncement(null);
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
 			}
 		}).start();
 	}

@@ -49,7 +49,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private Map<String, String> perWorld;
 	
 	//defined scoreboards
-	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
+	private Map<String, Scoreboard> scoreboards = new HashMap<>();
 	
 	//using 1-15
 	private boolean useNumbers;
@@ -58,7 +58,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private boolean rememberToggleChoice;
 	
 	//list of players with disabled scoreboard
-	private Set<String> sbOffPlayers = new HashSet<String>();
+	private Set<String> sbOffPlayers = new HashSet<>();
 	
 	//scoreboards registered via API
 	private List<me.neznamy.tab.api.Scoreboard> apiScoreboards = new ArrayList<>();
@@ -79,11 +79,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private String scoreboardOff;
 	
 	//currently active scoreboard announcement
-	public me.neznamy.tab.api.Scoreboard announcement;
+	private me.neznamy.tab.api.Scoreboard announcement;
 	
 	//config option someone requested
 	private int joinDelay;
-	private List<TabPlayer> joinDelayed = new ArrayList<TabPlayer>();
+	private List<TabPlayer> joinDelayed = new ArrayList<>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -159,7 +159,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 			for (TabPlayer p : tab.getPlayers()) {
 				if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || 
-					announcement != null || ((ITabPlayer)p).getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
+					getAnnouncement() != null || ((ITabPlayer)p).getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
 				me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
 				String current = board == null ? "null" : board.getName();
 				String highest = detectHighestScoreboard(p);
@@ -340,5 +340,13 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	public List<me.neznamy.tab.api.Scoreboard> getApiScoreboards() {
 		return apiScoreboards;
+	}
+
+	public me.neznamy.tab.api.Scoreboard getAnnouncement() {
+		return announcement;
+	}
+
+	public void setAnnouncement(me.neznamy.tab.api.Scoreboard announcement) {
+		this.announcement = announcement;
 	}
 }

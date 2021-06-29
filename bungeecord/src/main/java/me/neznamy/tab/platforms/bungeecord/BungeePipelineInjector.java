@@ -29,7 +29,7 @@ import net.md_5.bungee.protocol.packet.Team;
 public class BungeePipelineInjector extends PipelineInjector {
 
 	//handler to inject before
-	private static final String injectPosition = "inbound-boss";
+	private static final String INJECT_POSITION = "inbound-boss";
 	
 	//packets that must be deserialized and bungeecord does not do it automatically
 	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
@@ -50,7 +50,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, new BungeeChannelDuplexHandler(player));
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BungeeChannelDuplexHandler(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}
@@ -94,19 +94,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 						modifyPlayers((Team) modifiedPacket);
 					}
 					tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-					//for now protocolsupport will break the plugin
-/*					if (modifiedPacket instanceof ByteBuf) {
-						ByteBuf buf = ((ByteBuf) modifiedPacket);
-						int marker = buf.readerIndex();
-						int packetId = buf.readByte();
-						if (packetId + 128 == ((BungeeTabPlayer)player).getPacketId(Team.class)){
-							//compressed team packet when using protocolsupport, proper decompression will be needed
-							buf.release();
-							tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-							return;
-						}
-						buf.readerIndex(marker);
-					}*/
 				}
 				if (modifiedPacket instanceof ScoreboardDisplay && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
 					return;

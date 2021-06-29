@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.command.level1;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,8 +51,9 @@ public class DebugCommand extends SubCommand {
 	 */
 	private void debug(TabPlayer sender, TabPlayer analyzed) {
 		TAB tab = TAB.getInstance();
+		String separator = "&7&m>-------------------------------<";
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
-		sendMessage(sender, "&7&m>-------------------------------<");
+		sendMessage(sender, separator);
 		String c2 = tab.isPremium() ? "&b" : "&a";
 		sendMessage(sender, "&6Server version: " + c2 + tab.getPlatform().getServerVersion());
 		sendMessage(sender, "&6Plugin version: " + c2 + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
@@ -61,7 +63,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&6Permission plugin: " + c2 + tab.getPermissionPlugin().getName());
 		sendMessage(sender, "&6Permission group choice logic: " + c2 + getGroupChoiceLogic());
 		sendMessage(sender, "&6Sorting system: " + c2 + getSortingType());
-		sendMessage(sender, "&7&m>-------------------------------<");
+		sendMessage(sender, separator);
 		if (analyzed == null) return;
 		sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
 		sendMessage(sender, getGroup(analyzed));
@@ -89,7 +91,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atagprefix: &cDisabled");
 			sendMessage(sender, "&atagsuffix: &cDisabled");
 		}
-		sendMessage(sender, "&7&m>-------------------------------<");
+		sendMessage(sender, separator);
 	}
 	
 	/**
@@ -144,7 +146,7 @@ public class DebugCommand extends SubCommand {
 		} else {
 			try {
 				return "&eFull permission group list: &a" + Arrays.toString(TAB.getInstance().getPermissionPlugin().getAllGroups(analyzed)) + "\n&eChosen group: &a" + analyzed.getGroup();
-			} catch (Throwable e) {
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
 				return "&eFull permission group list: &a[]\n&eChosen group: &a" + analyzed.getGroup();
 			}
 		}

@@ -47,11 +47,11 @@ public class CustomLine extends ScoreboardLine {
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
 		String oldName = refreshed.getProperty(teamName + "-name").get();
-		boolean prefix = refreshed.getProperty(teamName + "-prefix").update();
-		boolean name = refreshed.getProperty(teamName + "-name").update();
-		boolean suffix = refreshed.getProperty(teamName + "-suffix").update();
-		if (prefix || name || suffix) {
-			if (name) {
+		boolean prefixUpdate = refreshed.getProperty(teamName + "-prefix").update();
+		boolean nameUpdate = refreshed.getProperty(teamName + "-name").update();
+		boolean suffixUpdate = refreshed.getProperty(teamName + "-suffix").update();
+		if (prefixUpdate || nameUpdate || suffixUpdate) {
+			if (nameUpdate) {
 				//name changed as well
 				removeLine(refreshed, oldName, teamName);
 				addLine(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 

@@ -139,7 +139,7 @@ public class Layout implements Loadable, JoinEventListener {
 			if (compare == 0) return 1;
 			else return -compare;
 		};
-		Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+		Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
 	}

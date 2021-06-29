@@ -44,8 +44,8 @@ public class BukkitEventListener implements Listener {
 					TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + e.getPlayer().getName() + " after 50 retries");
 				}
 				TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), version));
-			} catch (InterruptedException e1) {
-				//plugin disabled meanwhile
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
 			}
 		});
 	}

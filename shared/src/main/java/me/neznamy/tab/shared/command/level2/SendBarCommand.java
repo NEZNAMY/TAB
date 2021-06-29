@@ -57,13 +57,13 @@ public class SendBarCommand extends SubCommand{
 					bar.create(target);
 					target.getActiveBossBars().add(bar);
 				}
-				Thread.sleep(duration*1000);
+				Thread.sleep(duration*1000L);
 				if (target.hasBossbarVisible()) {
 					bar.remove(target);
 					target.getActiveBossBars().remove(bar);
 				}
-			} catch (InterruptedException e) {
-				//plugin disabled
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
 			}
 		}).start();
 	}

@@ -69,7 +69,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	public boolean hasPermission(String permission) {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
-			Main.plm.requestAttribute(this, merge);
+			Main.getInstance().getPluginMessageHandler().requestAttribute(this, merge);
 			if (!attributes.containsKey(merge)) return false;
 			return Boolean.parseBoolean(attributes.get(merge));
 		}
@@ -127,23 +127,23 @@ public class BungeeTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isVanished() {
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player)) return true;
-		Main.plm.requestAttribute(this, "vanished");
-		if (!attributes.containsKey("vanished")) return false;
-		return Boolean.parseBoolean(attributes.get("vanished"));
+		return getAttribute("vanished");
 	}
 	
 	@Override
 	public boolean isDisguised() {
-		Main.plm.requestAttribute(this, "disguised");
-		if (!attributes.containsKey("disguised")) return false;
-		return Boolean.parseBoolean(attributes.get("disguised"));
+		return getAttribute("disguised");
 	}
 
 	@Override
 	public boolean hasInvisibilityPotion() {
-		Main.plm.requestAttribute(this, "invisible");
-		if (!attributes.containsKey("invisible")) return false;
-		return Boolean.parseBoolean(attributes.get("invisible"));
+		return getAttribute("invisible");
+	}
+	
+	private boolean getAttribute(String name) {
+		Main.getInstance().getPluginMessageHandler().requestAttribute(this, name);
+		if (!attributes.containsKey(name)) return false;
+		return Boolean.parseBoolean(attributes.get(name));
 	}
 
 	@Override

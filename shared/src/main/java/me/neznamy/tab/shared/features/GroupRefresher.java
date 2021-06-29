@@ -50,7 +50,7 @@ public class GroupRefresher implements Feature {
 	public String getByPrimary(TabPlayer p) {
 		try {
 			return tab.getPermissionPlugin().getPrimaryGroup(p);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return tab.getErrorManager().printError("<null>", "Failed to get permission group of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
 		}
 	}
@@ -70,7 +70,7 @@ public class GroupRefresher implements Feature {
 			} else {
 				return "<null>";
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return tab.getErrorManager().printError("<null>", "Failed to get permission groups of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
 		}
 	}

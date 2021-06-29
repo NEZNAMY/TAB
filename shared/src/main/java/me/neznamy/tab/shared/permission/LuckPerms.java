@@ -17,6 +17,7 @@ import net.luckperms.api.query.QueryOptions;
  */
 public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
+	private static final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
 	//luckperms version
 	private String version;
 
@@ -30,7 +31,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
+		if (version.startsWith("4")) return UPDATE_MESSAGE;
 		net.luckperms.api.LuckPerms api = getAPI();
 		if (api == null) {
 			return "<null>";
@@ -42,7 +43,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	@Override
 	public String[] getAllGroups(TabPlayer p) {
-		if (version.startsWith("4")) return new String[]{"Upgrade to LuckPerms 5"};
+		if (version.startsWith("4")) return new String[]{UPDATE_MESSAGE};
 		net.luckperms.api.LuckPerms api = getAPI();
 		if (api == null) {
 			return new String[]{"<null>"};
@@ -55,7 +56,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getPrefix(TabPlayer p) {
 		try {
-			if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
+			if (version.startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = getAPI();
 			if (api == null) {
 				return "";
@@ -75,7 +76,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	@Override
 	public String getSuffix(TabPlayer p) {
 		try {
-			if (version.startsWith("4")) return "Upgrade to LuckPerms 5";
+			if (version.startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = getAPI();
 			if (api == null) {
 				return "";

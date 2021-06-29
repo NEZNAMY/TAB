@@ -77,22 +77,22 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 	public static class PlayerInfoData {
 
 		//ping
-		public int latency;
+		private int latency;
 
 		//gamemode
-		public EnumGamemode gameMode = EnumGamemode.SURVIVAL; //protocollib causes NPE even when action does not use gamemode
+		private EnumGamemode gameMode = EnumGamemode.SURVIVAL; //protocollib causes NPE even when action does not use gamemode
 
 		//tablist name
-		public IChatBaseComponent displayName;
+		private IChatBaseComponent displayName;
 
 		//username
-		public String name;
+		private String name;
 
 		//uuid
-		public UUID uniqueId;
+		private UUID uniqueId;
 
 		//platform-specific skin data
-		public Object skin;
+		private Object skin;
 
 		/**
 		 * Constructor perfect for ADD_PLAYER action
@@ -104,12 +104,12 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 * @param displayName - player's tablist name
 		 */
 		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
-			this.name = name;
-			this.uniqueId = uniqueId;
-			this.skin = skin;
-			this.latency = latency;
-			this.gameMode = gameMode;
-			this.displayName = displayName;
+			this.setName(name);
+			this.setUniqueId(uniqueId);
+			this.setSkin(skin);
+			this.setLatency(latency);
+			this.setGameMode(gameMode);
+			this.setDisplayName(displayName);
 		}
 		
 		/**
@@ -118,8 +118,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 * @param gameMode - player's gamemode
 		 */
 		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
-			this.uniqueId = uniqueId;
-			this.gameMode = gameMode;
+			this.setUniqueId(uniqueId);
+			this.setGameMode(gameMode);
 		}
 		
 		/**
@@ -128,8 +128,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 * @param latency - player's ping
 		 */
 		public PlayerInfoData(UUID uniqueId, int latency) {
-			this.uniqueId = uniqueId;
-			this.latency = latency;
+			this.setUniqueId(uniqueId);
+			this.setLatency(latency);
 		}
 		
 		/**
@@ -138,8 +138,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 * @param displayName - player's tablist name
 		 */
 		public PlayerInfoData(UUID uniqueId, IChatBaseComponent displayName) {
-			this.uniqueId = uniqueId;
-			this.displayName = displayName;
+			this.setUniqueId(uniqueId);
+			this.setDisplayName(displayName);
 		}
 		
 		/**
@@ -147,14 +147,14 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		 * @param uniqueId - player's uuid
 		 */
 		public PlayerInfoData(UUID uniqueId) {
-			this.uniqueId = uniqueId;
+			this.setUniqueId(uniqueId);
 		}
 
 		/**
 		 * Creates and returns a clone of this instance
 		 */
 		public PlayerInfoData clone() {
-			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
+			return new PlayerInfoData(getName(), getUniqueId(), getSkin(), getLatency(), getGameMode(), getDisplayName());
 		}
 
 		/**
@@ -163,7 +163,55 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 		@Override
 		public String toString() {
 			return String.format("PlayerInfoData{latency=%s,gameMode=%s,displayName=%s,name=%s,uniqueId=%s,skin=%s}",
-					latency, gameMode, displayName, name, uniqueId, skin);
+					getLatency(), getGameMode(), getDisplayName(), getName(), getUniqueId(), getSkin());
+		}
+
+		public int getLatency() {
+			return latency;
+		}
+
+		public void setLatency(int latency) {
+			this.latency = latency;
+		}
+
+		public IChatBaseComponent getDisplayName() {
+			return displayName;
+		}
+
+		public void setDisplayName(IChatBaseComponent displayName) {
+			this.displayName = displayName;
+		}
+
+		public UUID getUniqueId() {
+			return uniqueId;
+		}
+
+		public void setUniqueId(UUID uniqueId) {
+			this.uniqueId = uniqueId;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public EnumGamemode getGameMode() {
+			return gameMode;
+		}
+
+		public void setGameMode(EnumGamemode gameMode) {
+			this.gameMode = gameMode;
+		}
+
+		public Object getSkin() {
+			return skin;
+		}
+
+		public void setSkin(Object skin) {
+			this.skin = skin;
 		}
 	}
 

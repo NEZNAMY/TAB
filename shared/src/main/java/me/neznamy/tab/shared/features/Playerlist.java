@@ -52,13 +52,13 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 					if (disabling) return;
 					if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 					for (PlayerInfoData playerInfoData : info.getEntries()) {
-						TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
+						TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.getUniqueId());
 						if (packetPlayer != null && !isDisabledWorld(getDisabledWorlds(), packetPlayer.getWorldName())) {
-							playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
+							playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
 							//preventing plugins from changing player name as nametag feature would not work correctly
-							if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName()) && antiOverrideNames) {
-								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().getAntiOverrideLog());
-								playerInfoData.name = packetPlayer.getName();
+							if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.getName().equals(packetPlayer.getName()) && antiOverrideNames) {
+								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.getName() + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().getAntiOverrideLog());
+								playerInfoData.setName(packetPlayer.getName());
 							}
 						}
 					}

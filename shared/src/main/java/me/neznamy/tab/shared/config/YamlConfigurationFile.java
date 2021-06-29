@@ -63,7 +63,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			input.close();
 			if (!hasHeader()) fixHeader();
 		} catch (YAMLException e) {
-			input.close();
+			if (input != null) input.close();
 			TAB tab = TAB.getInstance();
 			tab.getErrorManager().startupWarn("File " + destination + " has broken syntax.");
 			tab.setBrokenFile(file.getPath());

@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.velocity.v1_1_0;
 
 import java.io.File;
+import java.util.Optional;
 
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
@@ -37,10 +39,11 @@ public class VelocityPlatform implements Platform {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
+		Optional<PluginContainer> luckperms = server.getPluginManager().getPlugin("luckperms");
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
-		} else if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
-			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
+		} else if (luckperms.isPresent()) {
+			return new LuckPerms(luckperms.get().getDescription().getVersion().get());
 		} else {
 			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
 		}

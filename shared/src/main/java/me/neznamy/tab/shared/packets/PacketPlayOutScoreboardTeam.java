@@ -15,9 +15,6 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	//team name, limited to 16 characters, used for sorting in tablist alphabetically
 	private String name;
 	
-	//team's display name - appears to be unused
-//	private String displayName;
-	
 	//prefix of players in team
 	private String playerPrefix;
 	

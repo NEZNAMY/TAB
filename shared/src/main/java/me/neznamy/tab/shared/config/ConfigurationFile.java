@@ -103,7 +103,7 @@ public abstract class ConfigurationFile {
 				return defaultValue;
 			}
 			return value;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			if (defaultValue != null) set(path, defaultValue);
 			return defaultValue;
 		}

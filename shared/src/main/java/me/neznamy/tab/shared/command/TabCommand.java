@@ -89,22 +89,23 @@ public class TabCommand extends SubCommand {
 		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + tab.getPluginVersion(), true);
 		if ((sender == null || sender.hasPermission("tab.admin"))) {
 			String command = tab.getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
+			String prefix = " &8>> &3&l";
 			sendMessage(sender, "&m                                                                                ");
-			sendMessage(sender, " &8>> &3&l" + command + " reload");
+			sendMessage(sender, prefix + command + " reload");
 			sendMessage(sender, "      - &7Reloads plugin and config");
-			sendMessage(sender, " &8>> &3&l" + command + " &9group&3/&9player &3<name> &9<property> &3<value...>");
+			sendMessage(sender, prefix + command + " &9group&3/&9player &3<name> &9<property> &3<value...>");
 			sendMessage(sender, "      - &7Do &8/tab group/player &7to show properties");
-			sendMessage(sender, " &8>> &3&l" + command + " ntpreview");
+			sendMessage(sender, prefix + command + " ntpreview");
 			sendMessage(sender, "      - &7Shows your nametag for yourself, for testing purposes");
-			sendMessage(sender, " &8>> &3&l" + command + " announce bar &3<name> &9<seconds>");
+			sendMessage(sender, prefix + command + " announce bar &3<name> &9<seconds>");
 			sendMessage(sender, "      - &7Temporarily displays bossbar to all players");
-			sendMessage(sender, " &8>> &3&l" + command + " parse <placeholder> ");
+			sendMessage(sender, prefix + command + " parse <placeholder> ");
 			sendMessage(sender, "      - &7Test if a placeholder works");
-			sendMessage(sender, " &8>> &3&l" + command + " debug [player]");
+			sendMessage(sender, prefix + command + " debug [player]");
 			sendMessage(sender, "      - &7displays debug information about player");
-			sendMessage(sender, " &8>> &3&l" + command + " cpu");
+			sendMessage(sender, prefix + command + " cpu");
 			sendMessage(sender, "      - &7shows CPU usage of the plugin");
-			sendMessage(sender, " &8>> &4&l" + command + " group/player <name> remove");
+			sendMessage(sender, prefix + command + " group/player <name> remove");
 			sendMessage(sender, "      - &7Clears all data about player/group");
 			sendMessage(sender, "&m                                                                                ");
 		}

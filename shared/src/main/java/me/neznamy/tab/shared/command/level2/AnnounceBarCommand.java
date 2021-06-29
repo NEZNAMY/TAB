@@ -55,15 +55,15 @@ public class AnnounceBarCommand extends SubCommand{
 					bar.create(all);
 					all.getActiveBossBars().add(bar);
 				}
-				Thread.sleep(duration*1000);
+				Thread.sleep(duration*1000L);
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (!all.hasBossbarVisible()) continue;
 					bar.remove(all);
 					all.getActiveBossBars().remove(bar);
 				}
 				feature.getAnnouncements().remove(barname);
-			} catch (InterruptedException e) {
-				//plugin disabled
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
 			}
 		}).start();
 	}

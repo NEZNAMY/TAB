@@ -57,24 +57,24 @@ public class BungeePacketBuilder implements PacketBuilder {
 		List<Item> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
 			Item item = new Item();
-			if (data.displayName != null) {
+			if (data.getDisplayName() != null) {
 				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
-					item.setDisplayName(data.displayName.toString(clientVersion));
+					item.setDisplayName(data.getDisplayName().toString(clientVersion));
 				} else {
-					item.setDisplayName(data.displayName.toLegacyText());
+					item.setDisplayName(data.getDisplayName().toLegacyText());
 				}
 			} else if (clientVersion.getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) {
-				item.setDisplayName(data.name); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
+				item.setDisplayName(data.getName()); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
 			}
-			if (data.gameMode != null) item.setGamemode(data.gameMode.ordinal()-1);
-			item.setPing(data.latency);
-			if (data.skin != null) {
-				item.setProperties((String[][]) data.skin);
+			if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
+			item.setPing(data.getLatency());
+			if (data.getSkin() != null) {
+				item.setProperties((String[][]) data.getSkin());
 			} else {
 				item.setProperties(new String[0][0]);
 			}
-			item.setUsername(data.name);
-			item.setUuid(data.uniqueId);
+			item.setUsername(data.getName());
+			item.setUuid(data.getUniqueId());
 			items.add(item);
 		}
 		PlayerListItem bungeePacket = new PlayerListItem();

@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.ErrorManager;
 public class CPUManager {
 
 	//data reset interval in milliseconds
-	private static final int BufferSizeMillis = 10000;
+	private static final int BUFFER_SIZE_MILLIS = 10000;
 
 	//nanoseconds worked in the current 10 seconds
 	private Map<Object, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
@@ -60,7 +60,7 @@ public class CPUManager {
 
 			try {
 				while (true) {
-					Thread.sleep(BufferSizeMillis);
+					Thread.sleep(BUFFER_SIZE_MILLIS);
 
 					featureUsagePrevious = featureUsageCurrent;
 					placeholderUsagePrevious = placeholderUsageCurrent;
@@ -75,7 +75,7 @@ public class CPUManager {
 					packetsCurrent = new ConcurrentHashMap<>();
 				}
 			} catch (InterruptedException pluginDisabled) {
-				//plugin disabled
+				Thread.currentThread().interrupt();
 			}
 		});
 	}
@@ -156,6 +156,7 @@ public class CPUManager {
 					task.run();
 					addTime(feature, type, System.nanoTime()-time);
 				} catch (InterruptedException pluginDisabled) {
+					Thread.currentThread().interrupt();
 					break;
 				} catch (Throwable t) {
 					errorManager.printError("An error occurred when " + errorDescription, t);
@@ -180,7 +181,7 @@ public class CPUManager {
 				task.run();
 				addTime(feature, type, System.nanoTime()-time);
 			} catch (InterruptedException pluginDisabled) {
-				//plugin disabled
+				Thread.currentThread().interrupt();
 			} catch (Throwable t) {
 				errorManager.printError("An error occurred when " + errorDescription, t);
 			}
@@ -277,7 +278,7 @@ public class CPUManager {
 	 * @return usage in % (0-100)
 	 */
 	private float nanosToPercent(long nanos) {
-		float percent = (float) nanos / BufferSizeMillis / 1000000; //relative usage (0-1)
+		float percent = (float) nanos / BUFFER_SIZE_MILLIS / 1000000; //relative usage (0-1)
 		percent *= 100; //relative into %
 		return percent;
 	}

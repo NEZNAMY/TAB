@@ -551,8 +551,8 @@ public class IChatBaseComponent {
 	 */
 	private void convertColorsToLegacy() {
 		if (color != null) color.setReturnLegacy(true);
-		for (IChatBaseComponent extra : getExtra()) {
-			extra.convertColorsToLegacy();
+		for (IChatBaseComponent child : getExtra()) {
+			child.convertColorsToLegacy();
 		}
 		if (hoverValue instanceof IChatBaseComponent) {
 			((IChatBaseComponent)hoverValue).convertColorsToLegacy();

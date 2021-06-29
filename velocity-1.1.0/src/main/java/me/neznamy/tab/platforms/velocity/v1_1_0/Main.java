@@ -27,7 +27,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = TAB.PluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = TAB.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
 	private static Main instance;

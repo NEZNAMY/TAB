@@ -117,7 +117,7 @@ public class ErrorManager {
 				}
 			}
 			buf.close();
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
 			ex.printStackTrace();
 			tab.getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
@@ -221,7 +221,7 @@ public class ErrorManager {
 		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
 			return (int) Math.round(Double.parseDouble(string));
-		} catch (Throwable e) {
+		} catch (NumberFormatException e) {
 			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
@@ -236,7 +236,7 @@ public class ErrorManager {
 	public float parseFloat(String string, float defaultValue, String place) {
 		try {
 			return Float.parseFloat(string);
-		} catch (Throwable e) {
+		} catch (NumberFormatException e) {
 			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
@@ -252,7 +252,7 @@ public class ErrorManager {
 		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
 			return Double.parseDouble(string);
-		} catch (Throwable e) {
+		} catch (NumberFormatException e) {
 			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
@@ -271,7 +271,7 @@ public class ErrorManager {
 	public BarColor parseColor(String string, BarColor defaultValue, String place) {
 		try {
 			return BarColor.valueOf(string);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return oneTimeConsoleError(defaultValue, String.format("%s only accepts one of the defined colors! (Attempted to use \"%s\")", place, string));
 		}
 	}
@@ -286,7 +286,7 @@ public class ErrorManager {
 	public BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
 		try {
 			return BarStyle.valueOf(string);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return oneTimeConsoleError(defaultValue, String.format("%s only accepts one of the defined styles! (Attempted to use \"%s\")", place, string));
 		}
 	}

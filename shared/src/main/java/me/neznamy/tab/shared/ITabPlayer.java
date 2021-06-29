@@ -300,7 +300,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on"), true);
 			if (feature.isRememberToggleChoice()) {
 				feature.getBossbarOffPlayers().remove(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.getBossbarOffPlayers());
+				TAB.getInstance().getConfiguration().getPlayerdata().set("bossbar-off", feature.getBossbarOffPlayers());
 			}
 		} else {
 			for (BossBar line : getActiveBossBars().toArray(new BossBar[0])) {
@@ -310,7 +310,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off"), true);
 			if (feature.isRememberToggleChoice() && !feature.getBossbarOffPlayers().contains(getName())) {
 				feature.getBossbarOffPlayers().add(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.getBossbarOffPlayers());
+				TAB.getInstance().getConfiguration().getPlayerdata().set("bossbar-off", feature.getBossbarOffPlayers());
 			}
 		}
 	}
@@ -427,7 +427,7 @@ public abstract class ITabPlayer implements TabPlayer {
 					scoreboardManager.getSbOffPlayers().remove(getName());
 				}
 				synchronized (scoreboardManager.getSbOffPlayers()){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
+					TAB.getInstance().getConfiguration().getPlayerdata().set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
 				}
 			}
 		} else {
@@ -442,7 +442,7 @@ public abstract class ITabPlayer implements TabPlayer {
 					scoreboardManager.getSbOffPlayers().add(getName());
 				}
 				synchronized (scoreboardManager.getSbOffPlayers()){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
+					TAB.getInstance().getConfiguration().getPlayerdata().set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
 				}
 			}
 		}

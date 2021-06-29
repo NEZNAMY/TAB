@@ -155,7 +155,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
 		PlayerInfoData data = new PlayerInfoData(p.getTablistUUID());
-		data.name = p.getName();
+		data.setName(p.getName());
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
 	}
 	
@@ -174,19 +174,19 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
 					//not preventing NPC removals
-				if (tab.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0)) {
+				if (tab.getPlayerByTablistUUID(playerInfoData.getUniqueId()) != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0)) {
 					//remove packet not coming from tab
 					//changing to random non-existing player, the easiest way to cancel the removal
-					playerInfoData.uniqueId = UUID.randomUUID();
+					playerInfoData.setUniqueId(UUID.randomUUID());
 				}
 			}
 		}
 		if (!displayAsSpectators) return;
 		if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER || info.getAction() == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
-				TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
+				TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.getUniqueId());
 				if (packetPlayer != null && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
-					playerInfoData.gameMode = EnumGamemode.SPECTATOR;
+					playerInfoData.setGameMode(EnumGamemode.SPECTATOR);
 				}
 			}
 		}

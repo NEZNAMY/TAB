@@ -26,8 +26,8 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
 	public static final int DISPLAY_SLOT = 0;
-	private static final String propertyName = "tablist-objective";
-	private static final String title = "ms";
+	private static final String PROPERTY_NAME = "tablist-objective";
+	private static final String TITLE = "ms";
 
 	private TAB tab;
 	private String rawValue;
@@ -51,9 +51,9 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void load() {
 		for (TabPlayer loaded : tab.getPlayers()){
-			loaded.setProperty(propertyName, rawValue);
+			loaded.setProperty(PROPERTY_NAME, rawValue);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
-			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
+			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		}
 		for (TabPlayer viewer : tab.getPlayers()){
 			for (TabPlayer target : tab.getPlayers()){
@@ -72,9 +72,9 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(propertyName, rawValue);
+		connectedPlayer.setProperty(PROPERTY_NAME, rawValue);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
+		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()){
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), value), getFeatureType());
@@ -93,7 +93,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	}
 
 	private int getValue(TabPlayer p) {
-		return tab.getErrorManager().parseInteger(p.getProperty(propertyName).updateAndGet(), 0, "yellow number");
+		return tab.getErrorManager().parseInteger(p.getProperty(PROPERTY_NAME).updateAndGet(), 0, "yellow number");
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
+		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		for (TabPlayer all : tab.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
 		}

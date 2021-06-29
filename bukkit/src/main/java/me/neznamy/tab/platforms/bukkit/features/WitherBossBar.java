@@ -23,7 +23,7 @@ import me.neznamy.tab.shared.features.types.Loadable;
 public class WitherBossBar implements Listener, Loadable {
 
 	//distance of wither in blocks
-	private static final int witherDistance = 75;
+	private static final int WITHER_DISTANCE = 75;
 	
 	//main bossbar feature
 	private BossBar mainFeature;
@@ -52,7 +52,7 @@ public class WitherBossBar implements Listener, Loadable {
 			if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 			for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
 				try {
-					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(Math.abs(l.getUniqueId().hashCode()), getWitherLocation(all)), TabFeature.BOSSBAR);
+					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(l.getUniqueId().hashCode(), getWitherLocation(all)), TabFeature.BOSSBAR);
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
 				}
@@ -80,7 +80,7 @@ public class WitherBossBar implements Listener, Loadable {
 	 */
 	public Location getWitherLocation(TabPlayer p) {
 		Player pl = (Player) p.getPlayer();
-		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(witherDistance));
+		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
 	}

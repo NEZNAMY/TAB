@@ -150,7 +150,7 @@ public class Main extends JavaPlugin {
 			TabPlayer p = null;
 			if (sender instanceof Player) {
 				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
-				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+				if (p == null) return new ArrayList<>(); //player not loaded correctly
 			}
 			return TAB.getInstance().getCommand().complete(p, args);
 		}

@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
@@ -49,8 +51,9 @@ public class VelocityTabPlayer extends ITabPlayer {
 	 */
 	public VelocityTabPlayer(Player p) {
 		player = p;
-		if (p.getCurrentServer().isPresent()) {
-			world = p.getCurrentServer().get().getServerInfo().getName();
+		Optional<ServerConnection> server = p.getCurrentServer();
+		if (server.isPresent()) {
+			world = server.get().getServerInfo().getName();
 		} else {
 			//tab reload while a player is connecting, how unfortunate
 			world = "<null>";
@@ -156,28 +159,28 @@ public class VelocityTabPlayer extends ITabPlayer {
 			case ADD_PLAYER:
 				player.getTabList().addEntry(TabListEntry.builder()
 						.tabList(player.getTabList())
-						.displayName(data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(getVersion())))
-						.gameMode(data.gameMode.ordinal()-1)
-						.profile(new GameProfile(data.uniqueId, data.name, (List<Property>) data.skin))
-						.latency(data.latency)
+						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
+						.gameMode(data.getGameMode().ordinal()-1)
+						.profile(new GameProfile(data.getUniqueId(), data.getName(), (List<Property>) data.getSkin()))
+						.latency(data.getLatency())
 						.build());
 				break;
 			case REMOVE_PLAYER:
-				player.getTabList().removeEntry(data.uniqueId);
+				player.getTabList().removeEntry(data.getUniqueId());
 				break;
 			case UPDATE_DISPLAY_NAME:
 				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setDisplayName(data.displayName == null ? null : Main.stringToComponent(data.displayName.toString(getVersion())));
+					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
 				}
 				break;
 			case UPDATE_LATENCY:
 				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setLatency(data.latency);
+					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setLatency(data.getLatency());
 				}
 				break;
 			case UPDATE_GAME_MODE:
 				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.uniqueId)) entry.setGameMode(data.gameMode.ordinal()-1);
+					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setGameMode(data.getGameMode().ordinal()-1);
 				}
 				break;
 			default:
@@ -203,23 +206,23 @@ public class VelocityTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean isVanished() {
-		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "vanished");
-		if (!attributes.containsKey("vanished")) return false;
-		return Boolean.parseBoolean(attributes.get("vanished"));
+		return getAttribute("vanished");
 	}
 	
 	@Override
 	public boolean isDisguised() {
-		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "disguised");
-		if (!attributes.containsKey("disguised")) return false;
-		return Boolean.parseBoolean(attributes.get("disguised"));
+		return getAttribute("disguised");
 	}
-	
+
 	@Override
 	public boolean hasInvisibilityPotion() {
-		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "invisible");
-		if (!attributes.containsKey("invisible")) return false;
-		return Boolean.parseBoolean(attributes.get("invisible"));
+		return getAttribute("invisible");
+	}
+	
+	private boolean getAttribute(String name) {
+		Main.getInstance().getPluginMessageHandler().requestAttribute(this, name);
+		if (!attributes.containsKey(name)) return false;
+		return Boolean.parseBoolean(attributes.get(name));
 	}
 	
 	@Override

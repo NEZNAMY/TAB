@@ -59,8 +59,8 @@ public class Configs {
 	//premiumconfig.yml
 	private ConfigurationFile premiumconfig;
 
-	//private.yml, used for bossbar & scoreboard toggle saving
-	public ConfigurationFile playerdata; 
+	//playerdata.yml, used for bossbar & scoreboard toggle saving
+	private ConfigurationFile playerdata; 
 
 	/**
 	 * Constructs new instance with given parameter
@@ -153,7 +153,7 @@ public class Configs {
 	 * @return list of players logged in this data key
 	 */
 	public List<String> getPlayerData(String key) {
-		if (playerdata == null) {
+		if (getPlayerdata() == null) {
 			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
 			try {
 				if (!file.exists()) file.createNewFile();
@@ -163,7 +163,7 @@ public class Configs {
 				return new ArrayList<>();
 			}
 		}
-		return playerdata.getStringList(key, new ArrayList<>());
+		return getPlayerdata().getStringList(key, new ArrayList<>());
 	}
 	
 	/**
@@ -278,5 +278,9 @@ public class Configs {
 
 	public String getReloadFailedMessage() {
 		return reloadFailed;
+	}
+
+	public ConfigurationFile getPlayerdata() {
+		return playerdata;
 	}
 }

@@ -43,13 +43,13 @@ public class BungeePlatform implements Platform {
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(Main.plm);
+			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else {
-			return new VaultBridge(Main.plm);
+			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
 		}
 	}
 
@@ -92,7 +92,7 @@ public class BungeePlatform implements Platform {
 			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
 			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 				public String get(TabPlayer p) {
-					Main.plm.requestPlaceholder(p, identifier);
+					Main.getInstance().getPluginMessageHandler().requestPlaceholder(p, identifier);
 					return getLastValues().get(p.getName());
 				}
 			});

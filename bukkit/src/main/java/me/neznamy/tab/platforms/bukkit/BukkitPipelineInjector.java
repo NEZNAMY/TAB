@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 public class BukkitPipelineInjector extends PipelineInjector {
 
 	//handler to inject before
-	private static final String injectPosition = "packet_handler";
+	private static final String INJECT_POSITION = "packet_handler";
 	
 	//nms storage
 	private NMSStorage nms;
@@ -34,13 +34,13 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	
 	@Override
 	public void inject(TabPlayer player) {
-		if (!player.getChannel().pipeline().names().contains(injectPosition)) {
+		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
 			//fake player or waterfall bug
 			return;
 		}
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, new BukkitChannelDuplexHandler(player));
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BukkitChannelDuplexHandler(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}

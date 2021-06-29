@@ -32,7 +32,7 @@ public class PingSpoof implements PlayerInfoPacketListener, Loadable {
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_LATENCY && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
-			playerInfoData.latency = value;
+			playerInfoData.setLatency(value);
 		}
 	}
 
