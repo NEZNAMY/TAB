@@ -41,7 +41,7 @@ public enum EnumChatFormat {
 	//red value of this color
 	private int red;
 	
-	//green value of this color;
+	//green value of this color
 	private int green;
 	
 	//blue value of this color

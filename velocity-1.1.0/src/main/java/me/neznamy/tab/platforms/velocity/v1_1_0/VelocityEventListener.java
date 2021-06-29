@@ -32,12 +32,12 @@ public class VelocityEventListener {
 	public void onConnect(ServerPostConnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
 		try {
-			if (!TAB.getInstance().data.containsKey(e.getPlayer().getUniqueId())) {
+			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
 				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
 			} else {
 				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer().get().getServerInfo().getName());
 			}
-		} catch (Throwable ex){
+		} catch (Exception ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}

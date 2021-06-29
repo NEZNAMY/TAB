@@ -55,8 +55,8 @@ public interface PluginMessageHandler {
 			long cpu = in.readLong();
 			PlayerPlaceholder pl = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			if (pl != null) {
-				pl.lastValue.put(player.getName(), output);
-				pl.forceUpdate.add(player.getName());
+				pl.getLastValues().put(player.getName(), output);
+				pl.getForceUpdate().add(player.getName());
 				TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 			} else {
 				TAB.getInstance().debug("Received output for unknown placeholder " + placeholder);

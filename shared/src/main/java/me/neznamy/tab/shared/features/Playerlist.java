@@ -28,17 +28,17 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	private TAB tab;
 	private Set<String> usedPlaceholders;
-	public List<String> disabledWorlds;
+	private List<String> disabledWorlds;
 	private boolean antiOverrideNames;
 	private boolean antiOverrideTablist;
 	private boolean disabling = false;
 
 	public Playerlist(TAB tab) {
 		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		antiOverrideNames = tab.getConfiguration().config.getBoolean("anti-override.usernames", true) && tab.getFeatureManager().isFeatureEnabled("injection");
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		antiOverrideNames = tab.getConfiguration().getConfig().getBoolean("anti-override.usernames", true) && tab.getFeatureManager().isFeatureEnabled("injection");
 		refreshUsedPlaceholders();
-		antiOverrideTablist = tab.getConfiguration().config.getBoolean("anti-override.tablist-names", true) && tab.getFeatureManager().isFeatureEnabled("injection");
+		antiOverrideTablist = tab.getConfiguration().getConfig().getBoolean("anti-override.tablist-names", true) && tab.getFeatureManager().isFeatureEnabled("injection");
 		if (antiOverrideTablist) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
 
@@ -50,16 +50,14 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				@Override
 				public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 					if (disabling) return;
-					boolean UPDATE_NAME = info.action == EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
-					boolean ADD = info.action == EnumPlayerInfoAction.ADD_PLAYER;
-					if (!UPDATE_NAME && !ADD) return;
-					for (PlayerInfoData playerInfoData : info.entries) {
+					if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+					for (PlayerInfoData playerInfoData : info.getEntries()) {
 						TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
-						if (packetPlayer != null && !isDisabledWorld(disabledWorlds, packetPlayer.getWorldName())) {
+						if (packetPlayer != null && !isDisabledWorld(getDisabledWorlds(), packetPlayer.getWorldName())) {
 							playerInfoData.displayName = getTabFormat(packetPlayer, receiver);
 							//preventing plugins from changing player name as nametag feature would not work correctly
-							if (ADD && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName()) && antiOverrideNames) {
-								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().antiOverrideLog);
+							if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.name.equals(packetPlayer.getName()) && antiOverrideNames) {
+								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.name + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().getAntiOverrideLog());
 								playerInfoData.name = packetPlayer.getName();
 							}
 						}
@@ -68,13 +66,13 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 				
 			});
 		}
-		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", disabledWorlds, antiOverrideTablist));
+		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", getDisabledWorlds(), antiOverrideTablist));
 	}
 
 	@Override
 	public void load(){
 		for (TabPlayer all : tab.getPlayers()) {
-			if (isDisabledWorld(disabledWorlds, all.getWorldName())) updateProperties(all);
+			if (isDisabledWorld(getDisabledWorlds(), all.getWorldName())) updateProperties(all);
 			refresh(all, true);
 		}
 	}
@@ -82,9 +80,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public void unload(){
 		disabling = true;
-		List<PlayerInfoData> updatedPlayers = new ArrayList<PlayerInfoData>();
+		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(disabledWorlds, p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
+			if (!isDisabledWorld(getDisabledWorlds(), p.getWorldName())) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
 		}
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureType());
@@ -93,8 +91,8 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (isDisabledWorld(disabledWorlds, to)) {
-			if (!isDisabledWorld(disabledWorlds, from)) {
+		if (isDisabledWorld(getDisabledWorlds(), to)) {
+			if (!isDisabledWorld(getDisabledWorlds(), from)) {
 				for (TabPlayer viewer : tab.getPlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())));
@@ -110,7 +108,6 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 		Property name = p.getProperty("customtabname");
 		Property suffix = p.getProperty("tabsuffix");
 		if (prefix == null || name == null || suffix == null) {
-//			tab.errorManager.printError("TabFormat not initialized for " + p.getName());
 			return null;
 		}
 		String format;
@@ -124,7 +121,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	}
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
+		if (isDisabledWorld(getDisabledWorlds(), refreshed.getWorldName())) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -165,11 +162,11 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) updateProperties(connectedPlayer);
+		if (isDisabledWorld(getDisabledWorlds(), connectedPlayer.getWorldName())) updateProperties(connectedPlayer);
 		Runnable r = () -> {
 			refresh(connectedPlayer, true);
 			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
-			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer all : tab.getPlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
 				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
@@ -183,7 +180,7 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix"));
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tabprefix").getCurrentRawValue(),
 					p.getProperty("customtabname").getCurrentRawValue(), p.getProperty("tabsuffix").getCurrentRawValue()));
@@ -193,5 +190,9 @@ public class Playerlist implements JoinEventListener, Loadable, WorldChangeListe
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.TABLIST_NAMES;
+	}
+
+	public List<String> getDisabledWorlds() {
+		return disabledWorlds;
 	}
 }

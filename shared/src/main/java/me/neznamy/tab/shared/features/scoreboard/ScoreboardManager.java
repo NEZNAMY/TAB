@@ -30,14 +30,11 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
  */
 public class ScoreboardManager implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener, ObjectivePacketListener, DisplayObjectivePacketListener{
 
-	//objective name
-	public static final String ObjectiveName = "TAB-Scoreboard";
-	
-	//display slot
-	public static final int DisplaySlot = 1;
+	public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
+	public static final int DISPLAY_SLOT = 1;
 	
 	//tab instance
-	public TAB tab;
+	private TAB tab;
 	
 	//toggle command
 	private String toggleCommand;
@@ -55,31 +52,31 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	
 	//using 1-15
-	public boolean useNumbers;
+	private boolean useNumbers;
 	
 	//saving toggle choice into file
-	public boolean remember_toggle_choice;
+	private boolean rememberToggleChoice;
 	
 	//list of players with disabled scoreboard
-	public Set<String> sb_off_players = new HashSet<String>();
+	private Set<String> sbOffPlayers = new HashSet<String>();
 	
 	//scoreboards registered via API
-	public List<me.neznamy.tab.api.Scoreboard> APIscoreboards = new ArrayList<>();
+	private List<me.neznamy.tab.api.Scoreboard> apiScoreboards = new ArrayList<>();
 	
 	//permission required to toggle
-	public boolean permToToggle;
+	private boolean permToToggle;
 	
 	//if use-numbers is false, displaying this number in all lines
-	public int staticNumber;
+	private int staticNumber;
 	
 	//hidden by default, toggle command must be ran to show it
-	public boolean hiddenByDefault;
+	private boolean hiddenByDefault;
 
 	//scoreboard toggle on message
-	public String scoreboard_on;
+	private String scoreboardOn;
 	
 	//scoreboard toggle off message
-	public String scoreboard_off;
+	private String scoreboardOff;
 	
 	//currently active scoreboard announcement
 	public me.neznamy.tab.api.Scoreboard announcement;
@@ -94,31 +91,31 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	 */
 	public ScoreboardManager(TAB tab) {
 		this.tab = tab;
-		toggleCommand = tab.getConfiguration().premiumconfig.getString("scoreboard.toggle-command", "/sb");
-		useNumbers = tab.getConfiguration().premiumconfig.getBoolean("scoreboard.use-numbers", false);
-		permToToggle = tab.getConfiguration().premiumconfig.getBoolean("scoreboard.permission-required-to-toggle", false);
-		disabledWorlds = tab.getConfiguration().premiumconfig.getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
-		defaultScoreboard = tab.getConfiguration().premiumconfig.getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		perWorld = tab.getConfiguration().premiumconfig.getConfigurationSection("scoreboard.per-world");
-		remember_toggle_choice = tab.getConfiguration().premiumconfig.getBoolean("scoreboard.remember-toggle-choice", false);
-		hiddenByDefault = tab.getConfiguration().premiumconfig.getBoolean("scoreboard.hidden-by-default", false);
-		scoreboard_on = tab.getConfiguration().premiumconfig.getString("scoreboard-on", "&2Scorebord enabled");
-		scoreboard_off = tab.getConfiguration().premiumconfig.getString("scoreboard-off", "&7Scoreboard disabled");
-		if (remember_toggle_choice) {
-			sb_off_players = Collections.synchronizedSet(new HashSet<String>(tab.getConfiguration().getPlayerData("scoreboard-off")));
+		toggleCommand = tab.getConfiguration().getPremiumConfig().getString("scoreboard.toggle-command", "/sb");
+		useNumbers = tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.use-numbers", false);
+		permToToggle = tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.permission-required-to-toggle", false);
+		disabledWorlds = tab.getConfiguration().getPremiumConfig().getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
+		defaultScoreboard = tab.getConfiguration().getPremiumConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
+		perWorld = tab.getConfiguration().getPremiumConfig().getConfigurationSection("scoreboard.per-world");
+		rememberToggleChoice = tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.remember-toggle-choice", false);
+		hiddenByDefault = tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.hidden-by-default", false);
+		scoreboardOn = tab.getConfiguration().getPremiumConfig().getString("scoreboard-on", "&2Scorebord enabled");
+		scoreboardOff = tab.getConfiguration().getPremiumConfig().getString("scoreboard-off", "&7Scoreboard disabled");
+		if (isRememberToggleChoice()) {
+			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(tab.getConfiguration().getPlayerData("scoreboard-off")));
 		}
-		staticNumber = tab.getConfiguration().premiumconfig.getInt("scoreboard.static-number", 0);
-		joinDelay = tab.getConfiguration().premiumconfig.getInt("scoreboard.delay-on-join-milliseconds", 0);
+		staticNumber = tab.getConfiguration().getPremiumConfig().getInt("scoreboard.static-number", 0);
+		joinDelay = tab.getConfiguration().getPremiumConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
-		for (Object scoreboard : tab.getConfiguration().premiumconfig.getConfigurationSection("scoreboards").keySet()) {
-			String condition = tab.getConfiguration().premiumconfig.getString("scoreboards." + scoreboard + ".display-condition");
-			String childBoard = tab.getConfiguration().premiumconfig.getString("scoreboards." + scoreboard + ".if-condition-not-met");
-			String title = tab.getConfiguration().premiumconfig.getString("scoreboards." + scoreboard + ".title");
+		for (Object scoreboard : tab.getConfiguration().getPremiumConfig().getConfigurationSection("scoreboards").keySet()) {
+			String condition = tab.getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".display-condition");
+			String childBoard = tab.getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".if-condition-not-met");
+			String title = tab.getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".title");
 			if (title == null) {
 				title = "<Title not defined>";
 				tab.getErrorManager().missingAttribute("Scoreboard", scoreboard, "title");
 			}
-			List<String> lines = tab.getConfiguration().premiumconfig.getStringList("scoreboards." + scoreboard + ".lines");
+			List<String> lines = tab.getConfiguration().getPremiumConfig().getStringList("scoreboards." + scoreboard + ".lines");
 			if (lines == null) {
 				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				tab.getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
@@ -129,8 +126,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		}
 		checkForMisconfiguration();
 		tab.debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, permToToggle=%s, disabledWorlds=%s"
-				+ ", defaultScoreboard=%s, perWorld=%s, remember_toggle_choice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
-				toggleCommand, useNumbers, permToToggle, disabledWorlds, defaultScoreboard, perWorld, remember_toggle_choice, hiddenByDefault, scoreboard_on, scoreboard_off, staticNumber, joinDelay));
+				+ ", defaultScoreboard=%s, perWorld=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
+				toggleCommand, isUseNumbers(), isPermToToggle(), disabledWorlds, defaultScoreboard, perWorld, isRememberToggleChoice(), isHiddenByDefault(), getScoreboardOn(), getScoreboardOff(), getStaticNumber(), joinDelay));
 	}
 
 	/**
@@ -156,20 +153,19 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void load() {
 		for (TabPlayer p : tab.getPlayers()) {
-			p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
+			p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
 		}
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, new Runnable() {
-			public void run() {
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || 
-						announcement != null || ((ITabPlayer)p).getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
-					me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
-					String current = board == null ? "null" : board.getName();
-					String highest = detectHighestScoreboard(p);
-					if (!current.equals(highest)) {
-						if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
-						sendHighestScoreboard(p);
-					}
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, () -> {
+
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.isLoaded() || p.hasForcedScoreboard() || !p.isScoreboardVisible() || 
+					announcement != null || ((ITabPlayer)p).getOtherPluginScoreboard() != null || joinDelayed.contains(p)) continue;
+				me.neznamy.tab.api.Scoreboard board = p.getActiveScoreboard();
+				String current = board == null ? "null" : board.getName();
+				String highest = detectHighestScoreboard(p);
+				if (!current.equals(highest)) {
+					if (p.getActiveScoreboard() != null) p.getActiveScoreboard().unregister(p);
+					sendHighestScoreboard(p);
 				}
 			}
 		});
@@ -192,11 +188,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 			joinDelayed.add(p);
 			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
-				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
+				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
 				joinDelayed.remove(p);
 			});
 		} else {
-			p.setScoreboardVisible(hiddenByDefault == sb_off_players.contains(p.getName()), false);
+			p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
 		}
 	}
 
@@ -270,7 +266,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (isDisabledWorld(disabledWorlds, sender.getWorldName())) return false;
 		if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
-			tab.command.execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
+			tab.getCommand().execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
 			return true;
 		}
 		return false;
@@ -291,9 +287,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
-			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.objectiveName + ", hiding TAB one.");
-			((ITabPlayer)receiver).setOtherPluginScoreboard(packet.objectiveName);
+		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
+			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
+			((ITabPlayer)receiver).setOtherPluginScoreboard(packet.getObjectiveName());
 			if (receiver.getActiveScoreboard() != null) {
 				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
 			}
@@ -303,10 +299,46 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
-		if (packet.method == 1 && ((ITabPlayer)receiver).getOtherPluginScoreboard() != null && ((ITabPlayer)receiver).getOtherPluginScoreboard().equals(packet.objectiveName)) {
+		if (packet.getMethod() == 1 && ((ITabPlayer)receiver).getOtherPluginScoreboard() != null && ((ITabPlayer)receiver).getOtherPluginScoreboard().equals(packet.getObjectiveName())) {
 			tab.debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			((ITabPlayer)receiver).setOtherPluginScoreboard(null);
 			tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
+	}
+
+	public boolean isRememberToggleChoice() {
+		return rememberToggleChoice;
+	}
+
+	public boolean isHiddenByDefault() {
+		return hiddenByDefault;
+	}
+
+	public Set<String> getSbOffPlayers() {
+		return sbOffPlayers;
+	}
+
+	public String getScoreboardOn() {
+		return scoreboardOn;
+	}
+
+	public String getScoreboardOff() {
+		return scoreboardOff;
+	}
+
+	public boolean isUseNumbers() {
+		return useNumbers;
+	}
+
+	public int getStaticNumber() {
+		return staticNumber;
+	}
+
+	public boolean isPermToToggle() {
+		return permToToggle;
+	}
+
+	public List<me.neznamy.tab.api.Scoreboard> getApiScoreboards() {
+		return apiScoreboards;
 	}
 }

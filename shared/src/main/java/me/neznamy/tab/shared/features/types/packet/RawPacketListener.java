@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features.types.packet;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.types.Feature;
 
@@ -13,15 +15,21 @@ public interface RawPacketListener extends Feature {
 	 * @param sender - packet sender
 	 * @param packet - packet received
 	 * @return modified packet or null if packet should be cancelled
-	 * @throws Throwable - if reflection fails
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable;
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException;
 	
 	/**
 	 * Processes raw packet sent to client
 	 * @param receiver - packet receiver
 	 * @param packet - the packet
-	 * @throws Throwable - if reflection fails
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws InstantiationException 
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable;
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException;
 }

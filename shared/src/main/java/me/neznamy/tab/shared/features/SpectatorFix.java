@@ -27,15 +27,15 @@ public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
 	 * Constructs new instance and loads config options
 	 */
 	public SpectatorFix() {
-		allowBypass = TAB.getInstance().getConfiguration().config.getBoolean("allow-spectator-bypass-permission", false);
+		allowBypass = TAB.getInstance().getConfiguration().getConfig().getBoolean("allow-spectator-bypass-permission", false);
 		TAB.getInstance().debug(String.format("Loaded SpectatorFix feature with parameters allowBypass=%s", allowBypass));
 	}
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (allowBypass && receiver.hasPermission("tab.spectatorbypass")) return;
-		if (info.action != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
-		for (PlayerInfoData playerInfoData : info.entries) {
+		if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			if (playerInfoData.gameMode == EnumGamemode.SPECTATOR) {
 				TabPlayer changed = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (changed != receiver) playerInfoData.gameMode = EnumGamemode.CREATIVE;
@@ -61,7 +61,7 @@ public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
 	private void updateAll(boolean realGamemode) {
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (allowBypass && p.hasPermission("tab.spectatorbypass")) continue;
-			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer target : TAB.getInstance().getPlayers()) {
 				if (p == target) continue;
 				list.add(new PlayerInfoData(p.getUniqueId(), realGamemode ? EnumGamemode.values()[p.getGamemode()+1] : EnumGamemode.CREATIVE));

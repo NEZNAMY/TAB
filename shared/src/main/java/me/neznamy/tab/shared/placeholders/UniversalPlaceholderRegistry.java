@@ -31,8 +31,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public List<Placeholder> registerPlaceholders() {
-		placeholders = new ArrayList<Placeholder>();
-		Map<String, Object> serverAliases = TAB.getInstance().getConfiguration().config.getConfigurationSection("server-aliases");
+		placeholders = new ArrayList<>();
+		Map<String, Object> serverAliases = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("server-aliases");
 		placeholders.add(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"%", 1000) {
 			public String get(TabPlayer p) {
 				if (serverAliases.containsKey(p.getWorldName())) return serverAliases.get(p.getWorldName()).toString(); //bungee only
@@ -41,11 +41,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		placeholders.add(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"online%", 1000) {
 			public String get(TabPlayer p) {
-				int var = 0;
+				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (p.getWorldName().equals(all.getWorldName())) var++;
+					if (p.getWorldName().equals(all.getWorldName())) count++;
 				}
-				return String.valueOf(var);
+				return String.valueOf(count);
 			}
 		});
 
@@ -59,14 +59,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return p.getName();
 			}
 		});
-		double timeOffset = TAB.getInstance().getConfiguration().config.getDouble("placeholders.time-offset", 0);
-		SimpleDateFormat timeFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().config.getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
+		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
+		SimpleDateFormat timeFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		placeholders.add(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
 		});
-		SimpleDateFormat dateFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().config.getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
+		SimpleDateFormat dateFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		placeholders.add(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
 				return dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
@@ -161,20 +161,20 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerStaffPlaceholders() {
 		placeholders.add(new ServerPlaceholder("%staffonline%", 2000) {
 			public String get() {
-				int var = 0;
+				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (all.isStaff()) var++;
+					if (all.isStaff()) count++;
 				}
-				return String.valueOf(var);
+				return String.valueOf(count);
 			}
 		});
 		placeholders.add(new ServerPlaceholder("%nonstaffonline%", 2000) {
 			public String get() {
-				int var = TAB.getInstance().getPlayers().size();
+				int count = TAB.getInstance().getPlayers().size();
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (all.isStaff()) var--;
+					if (all.isStaff()) count--;
 				}
-				return String.valueOf(var);
+				return String.valueOf(count);
 			}
 		});
 	}
@@ -183,7 +183,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers %rank% placeholder
 	 */
 	private void registerRankPlaceholder() {
-		Map<Object, Object> rankAliases = TAB.getInstance().getConfiguration().config.getConfigurationSection("rank-aliases");
+		Map<Object, Object> rankAliases = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("rank-aliases");
 		placeholders.add(new PlayerPlaceholder("%rank%", 1000) {
 			public String get(TabPlayer p) {
 				for (Entry<Object, Object> entry : rankAliases.entrySet()) {
@@ -199,7 +199,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 			@Override
 			public String[] getNestedStrings(){
-				Set<String> list = new HashSet<String>();
+				Set<String> list = new HashSet<>();
 				for (Object value : rankAliases.values()) {
 					list.add(String.valueOf(value).replace("%rank%", "")); //preventing stack overflow when someone uses %rank% as value
 				}
@@ -212,8 +212,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers animations
 	 */
 	private void registerAnimationPlaceholders() {
-		for (Object s : TAB.getInstance().getConfiguration().animation.getValues().keySet()) {
-			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().animation.getStringList(s + ".texts"), TAB.getInstance().getConfiguration().animation.getInt(s + ".change-interval", 0));
+		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
+			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"), TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
 			placeholders.add(new ServerPlaceholder("%animation:" + a.getName() + "%", 50) {
 
 				public String get() {
@@ -233,16 +233,16 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers conditions
 	 */
 	private void registerConditionPlaceholders() {
-		Condition.conditions = new HashMap<String, Condition>();
-		for (Object condition : TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("conditions").keySet()) {
-			List<String> list = TAB.getInstance().getConfiguration().premiumconfig.getStringList("conditions." + condition + ".conditions"); //lol
-			String type = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".type");
-			String yes = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".true");
-			String no = TAB.getInstance().getConfiguration().premiumconfig.getString("conditions." + condition + ".false");
+		Condition.setConditions(new HashMap<>());
+		for (Object condition : TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("conditions").keySet()) {
+			List<String> list = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("conditions." + condition + ".conditions"); //lol
+			String type = TAB.getInstance().getConfiguration().getPremiumConfig().getString("conditions." + condition + ".type");
+			String yes = TAB.getInstance().getConfiguration().getPremiumConfig().getString("conditions." + condition + ".true");
+			String no = TAB.getInstance().getConfiguration().getPremiumConfig().getString("conditions." + condition + ".false");
 			Condition c = Condition.compile(condition.toString(), list, type, yes, no);
-			Condition.conditions.put(condition.toString(), c);
-			TAB.getInstance().getPlaceholderManager().allUsedPlaceholderIdentifiers.add("%condition:" + condition + "%");
-			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", TAB.getInstance().getConfiguration().config.getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100)) {
+			Condition.getConditions().put(condition.toString(), c);
+			TAB.getInstance().getPlaceholderManager().getAllUsedPlaceholderIdentifiers().add("%condition:" + condition + "%");
+			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100)) {
 
 				@Override
 				public String get(TabPlayer p) {
@@ -251,8 +251,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 				@Override
 				public String[] getNestedStrings(){
-					List<String> list = new ArrayList<String>(Arrays.asList(super.getNestedStrings()));
-					list.addAll(Arrays.asList(new String[] {c.yes, c.no}));
+					List<String> list = new ArrayList<>(Arrays.asList(super.getNestedStrings()));
+					list.addAll(Arrays.asList(new String[] {c.getYes(), c.getNo()}));
 					return list.toArray(new String[0]);
 				}
 

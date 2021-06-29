@@ -32,9 +32,9 @@ public class ColorAndStyleRefresher implements Refreshable {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!refreshed.getActiveBossBars().contains(line)) return;
-		Property color = refreshed.getProperty("bossbar-color-" + line.name);
-		Property style = refreshed.getProperty("bossbar-style-" + line.name);
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.uuid, line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())), TabFeature.BOSSBAR);
+		Property color = refreshed.getProperty("bossbar-color-" + line.getName());
+		Property style = refreshed.getProperty("bossbar-style-" + line.getName());
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUuid(), line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())), TabFeature.BOSSBAR);
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class ColorAndStyleRefresher implements Refreshable {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.color);
-		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.style));
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getColor());
+		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getStyle()));
 	}
 
 	@Override

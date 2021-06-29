@@ -13,17 +13,17 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class PlayerPlaceholder extends Placeholder {
 
 	//last known values
-	public Map<String, String> lastValue = new HashMap<String, String>();
+	private Map<String, String> lastValues = new HashMap<>();
 	
 	//list of players with force update
-	public Set<String> forceUpdate = new HashSet<String>();
+	private Set<String> forceUpdate = new HashSet<>();
 
 	/**
 	 * Constructs new instance with given parameters
 	 * @param identifier - placeholder's identifier
 	 * @param refresh - refresh interval in milliseconds
 	 */
-	public PlayerPlaceholder(String identifier, int refresh) {
+	protected PlayerPlaceholder(String identifier, int refresh) {
 		super(identifier, refresh);
 	}
 	
@@ -37,16 +37,16 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		if (newValue == null) newValue = "";
 		
 		//make invalid placeholders return identifier instead of nothing
-		if (newValue.equals(identifier) && !lastValue.containsKey(p.getName())) {
-			lastValue.put(p.getName(), identifier);
+		if (newValue.equals(identifier) && !getLastValues().containsKey(p.getName())) {
+			getLastValues().put(p.getName(), identifier);
 		}
 		//using String.valueOf to remove one check and fix rare NPE caused by multi thread access
-		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && !String.valueOf(lastValue.get(p.getName())).equals(newValue)) {
-			lastValue.put(p.getName(), newValue);
+		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && !String.valueOf(getLastValues().get(p.getName())).equals(newValue)) {
+			getLastValues().put(p.getName(), newValue);
 			return true;
 		}
-		if (forceUpdate.contains(p.getName())) {
-			forceUpdate.remove(p.getName());
+		if (getForceUpdate().contains(p.getName())) {
+			getForceUpdate().remove(p.getName());
 			return true;
 		}
 		return false;
@@ -55,10 +55,10 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	@Override
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
-		if (!lastValue.containsKey(p.getName())) {
+		if (!lastValues.containsKey(p.getName())) {
 			update(p);
 		}
-		return lastValue.get(p.getName());
+		return lastValues.get(p.getName());
 	}
 	
 	/**
@@ -67,4 +67,12 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @return value placeholder returned
 	 */
 	public abstract String get(TabPlayer p);
+
+	public Map<String, String> getLastValues() {
+		return lastValues;
+	}
+
+	public Set<String> getForceUpdate() {
+		return forceUpdate;
+	}
 }

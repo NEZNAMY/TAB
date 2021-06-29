@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
@@ -9,16 +11,16 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 
 	//objective name
-	public String objectiveName;
+	private String objectiveName;
 	
 	//title
-	public String displayName;
+	private String displayName;
 	
 	//display type
-	public EnumScoreboardHealthDisplay renderType;
+	private EnumScoreboardHealthDisplay renderType;
 	
 	//action
-	public int method;
+	private int method;
 
 	/**
 	 * Constructs new packet based on given parameters
@@ -48,9 +50,15 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
@@ -60,9 +68,25 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardObjective{objectiveName=%s,displayName=%s,renderType=%s,method=%s}",
-				objectiveName, displayName, renderType, method);
+				getObjectiveName(), getDisplayName(), getRenderType(), getMethod());
 	}
 	
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public String getObjectiveName() {
+		return objectiveName;
+	}
+
+	public EnumScoreboardHealthDisplay getRenderType() {
+		return renderType;
+	}
+
+	public int getMethod() {
+		return method;
+	}
+
 	/**
 	 * An enum representing display types
 	 */

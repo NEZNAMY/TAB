@@ -24,11 +24,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
  */
 public class BelowName implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
 
-	public static final String ObjectiveName = "TAB-BelowName";
-	public static final int DisplaySlot = 2;
-	
-	private final String numberPropertyName = "belowname-number";
-	private final String textPropertyName = "belowname-text";
+	public static final String OBJECTIVE_NAME = "TAB-BelowName";
+	public static final int DISPLAY_SLOT = 2;
+	private static final String numberPropertyName = "belowname-number";
+	private static final String textPropertyName = "belowname-text";
 
 	private TAB tab;
 	private String rawNumber;
@@ -38,9 +37,9 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 
 	public BelowName(TAB tab) {
 		this.tab = tab;
-		rawNumber = tab.getConfiguration().config.getString("classic-vanilla-belowname.number", "%health%");
-		rawText = tab.getConfiguration().config.getString("classic-vanilla-belowname.text", "Health");
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		rawNumber = tab.getConfiguration().getConfig().getString("classic-vanilla-belowname.number", "%health%");
+		rawText = tab.getConfiguration().getConfig().getString("classic-vanilla-belowname.text", "Health");
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 		tab.debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s", rawNumber, rawText, disabledWorlds));
 		tab.getFeatureManager().registerFeature("belowname-text", new Refreshable() {
@@ -54,7 +53,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			@Override
 			public void refresh(TabPlayer refreshed, boolean force) {
 				if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
-				refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ObjectiveName, refreshed.getProperty(textPropertyName).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.BELOWNAME_TEXT);
+				refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(textPropertyName).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.BELOWNAME_TEXT);
 			}
 
 			@Override
@@ -80,11 +79,11 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			loaded.setProperty(numberPropertyName, rawNumber);
 			loaded.setProperty(textPropertyName, rawText);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
-			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, loaded.getProperty(textPropertyName).updateAndGet(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
+			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, loaded.getProperty(textPropertyName).updateAndGet(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
 		}
 		for (TabPlayer viewer : tab.getPlayers()){
 			for (TabPlayer target : tab.getPlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)), TabFeature.BELOWNAME_NUMBER);
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), TabFeature.BELOWNAME_NUMBER);
 			}
 		}
 	}
@@ -93,7 +92,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), TabFeature.BELOWNAME_TEXT);
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), TabFeature.BELOWNAME_TEXT);
 		}
 	}
 
@@ -102,23 +101,21 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		connectedPlayer.setProperty(numberPropertyName, rawNumber);
 		connectedPlayer.setProperty(textPropertyName, rawText);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, connectedPlayer.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
+		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, connectedPlayer.getProperty(textPropertyName).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), number), TabFeature.BELOWNAME_NUMBER);
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), TabFeature.BELOWNAME_NUMBER);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), number), TabFeature.BELOWNAME_NUMBER);
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), TabFeature.BELOWNAME_NUMBER);
 		}
 	}
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), TabFeature.BELOWNAME_TEXT);
-			return;
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), TabFeature.BELOWNAME_TEXT);
 		}
 		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
 			onJoin(p);
-			return;
 		}
 	}
 
@@ -131,7 +128,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int number = getValue(refreshed);
 		for (TabPlayer all : tab.getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), number), TabFeature.BELOWNAME_NUMBER);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), number), TabFeature.BELOWNAME_NUMBER);
 		}
 	}
 
@@ -153,17 +150,17 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, packetReceiver.getProperty(textPropertyName).get(), DisplaySlot, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
+		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, packetReceiver.getProperty(textPropertyName).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TabFeature.BELOWNAME_TEXT);
 		for (TabPlayer all : tab.getPlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), TabFeature.BELOWNAME_NUMBER);
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), TabFeature.BELOWNAME_NUMBER);
 		}
 	}
 	
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (isDisabledWorld(disabledWorlds, receiver.getWorldName())) return false;
-		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
-			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.objectiveName + "\" in position " + packet.slot + " (belowname)", null, false, tab.getErrorManager().antiOverrideLog);
+		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
+			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (belowname)", null, false, tab.getErrorManager().getAntiOverrideLog());
 			return true;
 		}
 		return false;

@@ -24,19 +24,19 @@ public class All0StaticLine extends StaticLine {
 	@Override
 	public void register(TabPlayer p) {
 		if (p.getVersion().getMinorVersion() >= 13) {
-			addLine(p, teamName, playerName, text, "", parent.manager.staticNumber);
+			addLine(p, teamName, playerName, text, "", parent.getManager().getStaticNumber());
 		} else if (p.getVersion().getMinorVersion() >= 8) {
-			addLine(p, teamName, name, prefix, suffix, parent.manager.staticNumber);
+			addLine(p, teamName, name, prefix, suffix, parent.getManager().getStaticNumber());
 		} else {
 			//<1.8 does not support sorting by name which we abuse here
-			addLine(p, teamName, name1_7, prefix1_7, suffix1_7, parent.lines.size() + 1 - lineNumber);
+			addLine(p, teamName, name17, prefix17, suffix17, parent.getLines().size() + 1 - lineNumber);
 		}
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
 		if (text.length() > 0) {
-			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? playerName : p.getVersion().getMinorVersion() >= 8 ? name : name1_7, teamName);
+			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? playerName : p.getVersion().getMinorVersion() >= 8 ? name : name17, teamName);
 		}
 	}
 }

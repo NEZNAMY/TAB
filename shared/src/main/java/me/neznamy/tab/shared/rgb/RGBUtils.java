@@ -28,10 +28,10 @@ public class RGBUtils {
 	private static RGBUtils instance = new RGBUtils();
 	
 	//list of rgb formatters
-	private Set<RGBFormatter> formats = new HashSet<RGBFormatter>();
+	private Set<RGBFormatter> formats = new HashSet<>();
 	
 	//list of gradient patterns
-	private Set<GradientPattern> gradients = new HashSet<GradientPattern>();
+	private Set<GradientPattern> gradients = new HashSet<>();
 	
 	//TAB's RGB format
 	private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");

@@ -26,7 +26,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected Scoreboard parent;
 	
 	//list of used placeholders
-	protected List<String> usedPlaceholders = new ArrayList<String>();
+	protected List<String> usedPlaceholders = new ArrayList<>();
 	
 	//scoreboard team name of player in this line
 	protected String teamName;
@@ -39,7 +39,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param parent - scoreboard this line belongs to
 	 * @param lineNumber - ID of this line
 	 */
-	public ScoreboardLine(Scoreboard parent, int lineNumber) {
+	protected ScoreboardLine(Scoreboard parent, int lineNumber) {
 		this.parent = parent;
 		this.lineNumber = lineNumber;
 		teamName = "TAB-SB-TM-" + lineNumber;
@@ -111,7 +111,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param value - number
 	 */
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManager.ObjectiveName, fakeplayer, value), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManager.OBJECTIVE_NAME, fakeplayer, value), TabFeature.SCOREBOARD);
 		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, TabFeature.SCOREBOARD);
 	}
 	
@@ -122,7 +122,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param teamName - team name
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManager.ObjectiveName, fakeplayer, 0), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManager.OBJECTIVE_NAME, fakeplayer, 0), TabFeature.SCOREBOARD);
 		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabFeature.SCOREBOARD);
 	}
 }

@@ -21,9 +21,9 @@ public class Placeholder extends SortingType {
 	 */
 	public Placeholder(String sortingPlaceholder) {
 		super(sortingPlaceholder);
-		sortingMap = new LinkedHashMap<String, String>();
+		sortingMap = new LinkedHashMap<>();
 		int index = 1;
-		List<String> values = TAB.getInstance().getConfiguration().premiumconfig.getStringList("placeholder-order", Arrays.asList("value1", "value2"));
+		List<String> values = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("placeholder-order", Arrays.asList("value1", "value2"));
 		int charCount = String.valueOf(values.size()).length(); //1 char for <10 values, 2 chars for <100 etc
 		for (Object value : values){
 			String sort = String.valueOf(index);

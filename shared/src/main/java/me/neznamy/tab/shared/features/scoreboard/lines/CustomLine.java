@@ -45,7 +45,7 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
+		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
 		String oldName = refreshed.getProperty(teamName + "-name").get();
 		boolean prefix = refreshed.getProperty(teamName + "-prefix").update();
 		boolean name = refreshed.getProperty(teamName + "-name").update();
@@ -80,7 +80,7 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void unregister(TabPlayer p) {
-		if (parent.players.contains(p)) {
+		if (parent.getPlayers().contains(p)) {
 			removeLine(p, p.getProperty(teamName + "-name").get(), teamName);
 		}
 	}

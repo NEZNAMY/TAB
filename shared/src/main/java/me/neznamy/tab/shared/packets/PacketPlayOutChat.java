@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
@@ -9,39 +11,11 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutChat extends UniversalPacketPlayOut {
 
 	//the message to be sent
-	public IChatBaseComponent message;
+	private IChatBaseComponent message;
 	
 	//position of the message
-	public ChatMessageType type;
+	private ChatMessageType type;
 
-	/**
-	 * Constructs new instance of the class with given message
-	 * @param message - message to be sent
-	 */
-	public PacketPlayOutChat(String message) {
-		this.message = IChatBaseComponent.optimizedComponent(message);
-		this.type = ChatMessageType.CHAT;
-	}
-
-	/**
-	 * Constructs new instance of the class with given message and position
-	 * @param message - message to be sent
-	 * @param type - message position
-	 */
-	public PacketPlayOutChat(String message, ChatMessageType type) {
-		this.message = IChatBaseComponent.optimizedComponent(message);
-		this.type = type;
-	}
-
-	/**
-	 * Constructs new instance of the class with given message
-	 * @param message - message to be sent
-	 */
-	public PacketPlayOutChat(IChatBaseComponent message) {
-		this.message = message;
-		this.type = ChatMessageType.CHAT;
-	}
-	
 	/**
 	 * Constructs new instance of the class with given message and position
 	 * @param message - message to be sent
@@ -54,9 +28,15 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut {
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InstantiationException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
@@ -65,7 +45,15 @@ public class PacketPlayOutChat extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);
+		return String.format("PacketPlayOutChat{message=%s,type=%s}", getMessage(), getType());
+	}
+
+	public IChatBaseComponent getMessage() {
+		return message;
+	}
+
+	public ChatMessageType getType() {
+		return type;
 	}
 
 	/**

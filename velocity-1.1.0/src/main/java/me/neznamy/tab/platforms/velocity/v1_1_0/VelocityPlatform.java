@@ -37,12 +37,12 @@ public class VelocityPlatform implements Platform {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
-			return new VaultBridge(Main.plm);
+		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
 		} else if (server.getPluginManager().getPlugin("luckperms").isPresent()) {
 			return new LuckPerms(server.getPluginManager().getPlugin("luckperms").get().getDescription().getVersion().get());
 		} else {
-			return new VaultBridge(Main.plm);
+			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
 		}
 	}
 	
@@ -53,7 +53,7 @@ public class VelocityPlatform implements Platform {
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
 		loadUniversalFeatures();
-		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
+		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (Player p : server.getAllPlayers()) {
 			tab.addPlayer(new VelocityTabPlayer(p));
 		}
@@ -71,16 +71,15 @@ public class VelocityPlatform implements Platform {
 			if (plugin.equals("some")) return;
 			TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
-			int refresh = pl.defaultRefresh;
-			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.playerPlaceholderRefreshIntervals.get(identifier);
-			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			int refresh = pl.getDefaultRefresh();
+			if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
+			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
 			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 				public String get(TabPlayer p) {
-					Main.plm.requestPlaceholder(p, identifier);
-					return lastValue.get(p.getName());
+					Main.getInstance().getPluginMessageHandler().requestPlaceholder(p, identifier);
+					return getLastValues().get(p.getName());
 				}
 			});
-			return;
 		}
 	}
 	

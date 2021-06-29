@@ -42,9 +42,9 @@ public class ChildGroup {
 	 */
 	public List<TabPlayer> selectPlayers(List<TabPlayer> players){
 		if (condition == null) return players;
-		List<TabPlayer> selected = new ArrayList<TabPlayer>();
+		List<TabPlayer> selected = new ArrayList<>();
 		for (TabPlayer player : players) {
-			if (condition == null || condition.isMet(player)) {
+			if (condition.isMet(player)) {
 				selected.add(player);
 			}
 		}

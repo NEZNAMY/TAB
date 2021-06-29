@@ -22,14 +22,14 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	private TAB tab;
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private Map<Character, Byte> widths = new HashMap<Character, Byte>();
+	private Map<Character, Byte> widths = new HashMap<>();
 	private Playerlist playerlist;
 
 	public AlignedSuffix(Playerlist playerlist, TAB tab) {
 		this.tab = tab;
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		Map<Integer, Integer> widthOverrides = tab.getConfiguration().premiumconfig.getConfigurationSection("character-width-overrides");
+		Map<Integer, Integer> widthOverrides = tab.getConfiguration().getPremiumConfig().getConfigurationSection("character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths.put((char)(int)entry.getKey(), (byte)(int)entry.getValue());
 		}

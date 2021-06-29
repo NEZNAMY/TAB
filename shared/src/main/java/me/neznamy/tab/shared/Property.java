@@ -23,16 +23,16 @@ public class Property {
 	private String temporaryValue;
 	
 	//last known output after placeholder replacement
-	public String lastReplacedValue;
+	private String lastReplacedValue;
 	
 	//source of property's raw value
 	private String source;
 
 	//used placeholders in current raw value
-	public List<String> placeholders;
+	private List<String> placeholders;
 	
 	//used relational placeholders in current raw value
-	public List<String> relPlaceholders;
+	private List<String> relPlaceholders;
 
 	public Property(TabPlayer owner, String rawValue) {
 		this(owner, rawValue, null);
@@ -51,18 +51,18 @@ public class Property {
 	 * @param value - raw value to be checked
 	 */
 	private void analyze(String value) {
-		List<String> placeholders = new ArrayList<String>();
-		List<String> relPlaceholders = new ArrayList<String>();
+		List<String> placeholders0 = new ArrayList<>();
+		List<String> relPlaceholders0 = new ArrayList<>();
 		for (String identifier : TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(value)) {
 			if (identifier.startsWith("%rel_")) {
-				relPlaceholders.add(identifier);
+				relPlaceholders0.add(identifier);
 			} else {
-				placeholders.add(identifier);
+				placeholders0.add(identifier);
 			}
 		}
 		//avoiding rare concurrent modification in #update
-		this.placeholders = placeholders;
-		this.relPlaceholders = relPlaceholders;
+		placeholders = placeholders0;
+		relPlaceholders = relPlaceholders0;
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class Property {
 	
 	private String applyRemoveStrings(String text) {
 		String reformatted = text;
-		for (String removed : TAB.getInstance().getConfiguration().removeStrings) {
+		for (String removed : TAB.getInstance().getConfiguration().getRemoveStrings()) {
 			if (removed.startsWith("CONTAINS:") && reformatted.contains(removed.substring(9))) return "";
 			if (removed.startsWith("STARTS:") && reformatted.startsWith(removed.substring(7))) return "";
 			if (removed.startsWith("ENDS:") && reformatted.endsWith(removed.substring(5))) return "";

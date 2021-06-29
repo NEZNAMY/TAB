@@ -35,38 +35,38 @@ import me.neznamy.tab.shared.features.NameTag;
 public class NameTagX extends NameTag {
 
 	//config options
-	public boolean markerFor18x;
-	public boolean disableOnBoats;
+	private boolean markerFor18x;
+	private boolean disableOnBoats;
 	private double spaceBetweenLines;
 	
 	//list of worlds with unlimited nametag mode disabled
 	protected List<String> disabledUnlimitedWorlds;
 	
 	//list of defined dynamic lines
-	public List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
+	private List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
 	
 	//map of defined static lines
-	public Map<String, Object> staticLines = new ConcurrentHashMap<String, Object>();
+	private Map<String, Object> staticLines = new ConcurrentHashMap<>();
 
 	//entity id counter to pick unique entity IDs
 	private int idCounter = 2000000000;
 
 	//player data by entityId, used for better performance
-	public Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<Integer, TabPlayer>();
+	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
 	
 	//map of vehicles carrying players
-	public Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<Integer, List<Entity>>();
+	private Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
 	
 	//bukkit event listener
 	private EventListener eventListener;
 	
 	//list of players currently on boats
-	public List<TabPlayer> playersOnBoats = new ArrayList<TabPlayer>();
+	private List<TabPlayer> playersOnBoats = new ArrayList<>();
 	
 	//list of players currently in a vehicle
-	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<TabPlayer, Entity>();
+	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<>();
 	
-	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<TabPlayer, Location>();
+	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<>();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -76,16 +76,16 @@ public class NameTagX extends NameTag {
 	 */
 	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
 		super(tab);
-		markerFor18x = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
-		disableOnBoats = tab.getConfiguration().config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = tab.getConfiguration().config.getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
-		disabledUnlimitedWorlds = tab.getConfiguration().config.getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
-		if (tab.getConfiguration().premiumconfig != null) {
-			List<String> realList = tab.getConfiguration().premiumconfig.getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
-			dynamicLines = new ArrayList<String>();
+		markerFor18x = tab.getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
+		disableOnBoats = tab.getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
+		spaceBetweenLines = tab.getConfiguration().getConfig().getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
+		disabledUnlimitedWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
+		if (tab.getConfiguration().getPremiumConfig() != null) {
+			List<String> realList = tab.getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
+			dynamicLines = new ArrayList<>();
 			dynamicLines.addAll(realList);
 			Collections.reverse(dynamicLines);
-			staticLines = tab.getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines");
+			staticLines = tab.getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);
@@ -99,7 +99,7 @@ public class NameTagX extends NameTag {
 	public void load() {
 		super.load();
 		for (TabPlayer all : tab.getPlayers()) {
-			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
+			getEntityIdMap().put(((Player) all.getPlayer()).getEntityId(), all);
 			loadArmorStands(all);
 			if (isDisabledWorld(all.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, all.getWorldName())) continue;
 			loadPassengers(all);
@@ -112,23 +112,22 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
-			public void run() {
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) continue;
-					p.getArmorStandManager().updateVisibility(false);
-					if (!disableOnBoats) continue;
-					boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
-					if (onBoat) {
-						if (!playersOnBoats.contains(p)) {
-							playersOnBoats.add(p);
-							updateTeamData(p);
-						}
-					} else {
-						if (playersOnBoats.contains(p)) {
-							playersOnBoats.remove(p);
-							updateTeamData(p);
-						}
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+			
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.isLoaded() || isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) continue;
+				p.getArmorStandManager().updateVisibility(false);
+				if (!disableOnBoats) continue;
+				boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
+				if (onBoat) {
+					if (!getPlayersOnBoats().contains(p)) {
+						getPlayersOnBoats().add(p);
+						updateTeamData(p);
+					}
+				} else {
+					if (getPlayersOnBoats().contains(p)) {
+						getPlayersOnBoats().remove(p);
+						updateTeamData(p);
 					}
 				}
 			}
@@ -166,13 +165,13 @@ public class NameTagX extends NameTag {
 		Entity vehicle = ((Player)p.getPlayer()).getVehicle();
 		if (playersInVehicle.containsKey(p) && vehicle == null) {
 			//vehicle exit
-			vehicles.remove(playersInVehicle.get(p).getEntityId());
+			getVehicles().remove(playersInVehicle.get(p).getEntityId());
 			p.getArmorStandManager().teleport();
 			playersInVehicle.remove(p);
 		}
 		if (!playersInVehicle.containsKey(p) && vehicle != null) {
 			//vehicle enter
-			vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+			getVehicles().put(vehicle.getEntityId(), getPassengers(vehicle));
 			p.getArmorStandManager().teleport();
 			playersInVehicle.put(p, vehicle);
 		}
@@ -200,13 +199,13 @@ public class NameTagX extends NameTag {
 		for (TabPlayer p : tab.getPlayers()) {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().destroy();
 		}
-		entityIdMap.clear();
+		getEntityIdMap().clear();
 	}
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		super.onJoin(connectedPlayer);
-		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
+		getEntityIdMap().put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		loadArmorStands(connectedPlayer);
 		if (isDisabledWorld(connectedPlayer.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, connectedPlayer.getWorldName())) return;
 		loadPassengers(connectedPlayer);
@@ -234,7 +233,7 @@ public class NameTagX extends NameTag {
 	private void loadPassengers(TabPlayer p) {
 		if (((Entity) p.getPlayer()).getVehicle() == null) return;
 		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
-		vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+		getVehicles().put(vehicle.getEntityId(), getPassengers(vehicle));
 	}
 
 	@Override
@@ -243,7 +242,7 @@ public class NameTagX extends NameTag {
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
-		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
+		getEntityIdMap().remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		tab.getCPUManager().runTaskLater(100, "processing onQuit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
@@ -290,12 +289,12 @@ public class NameTagX extends NameTag {
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height+=spaceBetweenLines, false));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height+=spaceBetweenLines, false, markerFor18x));
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true, markerFor18x));
 		}
 		fixArmorStandHeights(pl);
 	}
@@ -346,6 +345,7 @@ public class NameTagX extends NameTag {
 	 * Updates raw values of properties for specified player
 	 * @param p - player to update
 	 */
+	@Override
 	public void updateProperties(TabPlayer p) {
 		super.updateProperties(p);
 		p.loadPropertyFromConfig("customtagname", p.getName());
@@ -365,25 +365,25 @@ public class NameTagX extends NameTag {
 	 */
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 11) {
+		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 11) {
 			return vehicle.getPassengers();
 		} else {
 			if (vehicle.getPassenger() != null) {
 				return Arrays.asList(vehicle.getPassenger());
 			} else {
-				return new ArrayList<Entity>();
+				return new ArrayList<>();
 			}
 		}
 	}
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix"));
 		for (String line : dynamicLines) {
-			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (String line : staticLines.keySet()) {
-			usedPlaceholders.addAll(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tagprefix").getCurrentRawValue(), 
@@ -400,6 +400,18 @@ public class NameTagX extends NameTag {
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
 		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug) or feature is disabled
-		return (playersOnBoats.contains(p) && !invisiblePlayers.contains(p.getName())) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName());
+		return (getPlayersOnBoats().contains(p) && !invisiblePlayers.contains(p.getName())) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName());
+	}
+
+	public Map<Integer, TabPlayer> getEntityIdMap() {
+		return entityIdMap;
+	}
+
+	public Map<Integer, List<Entity>> getVehicles() {
+		return vehicles;
+	}
+
+	public List<TabPlayer> getPlayersOnBoats() {
+		return playersOnBoats;
 	}
 }

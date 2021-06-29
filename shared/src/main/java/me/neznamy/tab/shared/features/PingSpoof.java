@@ -24,14 +24,14 @@ public class PingSpoof implements PlayerInfoPacketListener, Loadable {
 	 * Constructs new instance and loads config options
 	 */
 	public PingSpoof() {
-		value = TAB.getInstance().getConfiguration().config.getInt("ping-spoof.value", 0);
+		value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
 		TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
 	}
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (info.action != EnumPlayerInfoAction.UPDATE_LATENCY && info.action != EnumPlayerInfoAction.ADD_PLAYER) return;
-		for (PlayerInfoData playerInfoData : info.entries) {
+		if (info.getAction() != EnumPlayerInfoAction.UPDATE_LATENCY && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			playerInfoData.latency = value;
 		}
 	}
@@ -52,7 +52,7 @@ public class PingSpoof implements PlayerInfoPacketListener, Loadable {
 	}
 	
 	private void updateAll(boolean realPing) {
-		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+		List<PlayerInfoData> list = new ArrayList<>();
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			list.add(new PlayerInfoData(p.getUniqueId(), realPing ? (int) p.getPing() : 0));
 		}

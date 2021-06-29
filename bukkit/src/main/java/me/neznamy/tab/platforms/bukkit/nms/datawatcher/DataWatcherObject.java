@@ -6,10 +6,10 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 public class DataWatcherObject {
 
 	//position in datawatcher
-	public int position;
+	private int position;
 	
 	//value class type used since 1.9
-	public Object classType;
+	private Object classType;
 
 	/**
 	 * Constructs a new instance of this class with given parameters
@@ -19,5 +19,13 @@ public class DataWatcherObject {
 	public DataWatcherObject(int position, Object classType){
 		this.position = position;
 		this.classType = classType;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public Object getClassType() {
+		return classType;
 	}
 }

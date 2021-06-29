@@ -22,6 +22,6 @@ public class NumberedStableDynamicLine extends StableDynamicLine {
 
 	@Override
 	public int getScoreFor(TabPlayer p) {
-		return parent.lines.size() + 1 - lineNumber;
+		return parent.getLines().size() + 1 - lineNumber;
 	}
 }

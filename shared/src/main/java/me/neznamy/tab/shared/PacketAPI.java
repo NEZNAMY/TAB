@@ -15,6 +15,9 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
  */
 public class PacketAPI {
 	
+	private PacketAPI() {
+	}
+	
 	/**
 	 * Registers scoreboard team with given properties but sends unregister packet first unless disabled to avoid bungeecord kick
 	 * @param to - player to send the packet to
@@ -27,7 +30,7 @@ public class PacketAPI {
 	 * @param color - color field (1.13+)
 	 */
 	public static synchronized void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color, TabFeature feature) {
-		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().unregisterBeforeRegister && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister() && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
 			to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), feature);
 		}
 		to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, enumNameTagVisibility?"always":"never", enumTeamPush?"always":"never", players, 0).setColor(color), feature);
@@ -42,7 +45,7 @@ public class PacketAPI {
 	 * @param displayType - display type of the value (only supported in Playerlist)
 	 */
 	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, TabFeature feature) {
-		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().unregisterBeforeRegister && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
+		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister() && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
 			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName), feature);
 		}
 		to.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, objectiveName, title, displayType), feature);

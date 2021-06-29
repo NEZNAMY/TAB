@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -12,35 +13,35 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 
 	//team name, limited to 16 characters, used for sorting in tablist alphabetically
-	public String name;
+	private String name;
 	
 	//team's display name - appears to be unused
-//	public String displayName;
+//	private String displayName;
 	
 	//prefix of players in team
-	public String playerPrefix;
+	private String playerPrefix;
 	
 	//suffix of players in team
-	public String playerSuffix;
+	private String playerSuffix;
 	
 	//nametag visibility rule, possible options are: always, hideForOtherTeams, hideForOwnTeam, never
-	public String nametagVisibility;
+	private String nametagVisibility;
 	
 	//collision rule, possible options are: always, pushOtherTeams, pushOwnTeam, never
-	public String collisionRule;
+	private String collisionRule;
 	
 	//name and glow color, start color of prefix if not set
-	public EnumChatFormat color;
+	private EnumChatFormat color;
 	
 	//affected entities
 	//for players their name, for other entities their UUID
-	public Collection<String> players = Collections.emptyList();
+	private Collection<String> players = Collections.emptyList();
 	
 	//packet action, 0 = create, 1 = remove, 2 = update team info, 3 = add entries, 4 = remove entries
-	public int method;
+	private int method;
 	
 	//Bit mask. 0x01: Allow friendly fire, 0x02: can see invisible players on same team.
-	public int options;
+	private int options;
 
 	/*
 	 * Constructs new instance with given parameters
@@ -121,9 +122,15 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InstantiationException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
@@ -134,6 +141,42 @@ public class PacketPlayOutScoreboardTeam extends UniversalPacketPlayOut {
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardTeam{name=%s,playerPrefix=%s,playerSuffix=%s,nametagVisibility=%s,"
 				+ "collisionRule=%s,color=%s,players=%s,method=%s,options=%s}",
-				name, playerPrefix, playerSuffix, nametagVisibility, collisionRule, color, players, method, options);
+				getName(), getPlayerPrefix(), getPlayerSuffix(), getNametagVisibility(), getCollisionRule(), getColor(), getPlayers(), getMethod(), getOptions());
+	}
+
+	public EnumChatFormat getColor() {
+		return color;
+	}
+
+	public String getPlayerPrefix() {
+		return playerPrefix;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getMethod() {
+		return method;
+	}
+
+	public String getNametagVisibility() {
+		return nametagVisibility;
+	}
+
+	public int getOptions() {
+		return options;
+	}
+
+	public Collection<String> getPlayers() {
+		return players;
+	}
+
+	public String getCollisionRule() {
+		return collisionRule;
+	}
+
+	public String getPlayerSuffix() {
+		return playerSuffix;
 	}
 }

@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
+import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
 
 /**
  * The core class for player
@@ -36,18 +37,18 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String teamNameNote;
 	private String forcedTeamName;
 
-	private Map<String, Property> properties = new HashMap<String, Property>();
+	private Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
-	protected ProtocolVersion version = ProtocolVersion.SERVER_VERSION;
+	protected ProtocolVersion version = ProtocolVersion.getServerVersion();
 	protected Channel channel;
 	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
-	private Set<BossBar> activeBossBars = new HashSet<BossBar>();
+	private Set<BossBar> activeBossBars = new HashSet<>();
 	private Boolean forcedCollision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
-	private Set<UUID> hiddenNametagFor = new HashSet<UUID>();
+	private Set<UUID> hiddenNametagFor = new HashSet<>();
 
 	private Scoreboard activeScoreboard;
 	private boolean scoreboardVisible;
@@ -55,7 +56,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String otherPluginScoreboard;
 	private boolean teamHandlingPaused;
 
-	protected Map<String, String> attributes = new HashMap<String, String>();
+	protected Map<String, String> attributes = new HashMap<>();
 
 	protected void init() {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
@@ -80,12 +81,12 @@ public abstract class ITabPlayer implements TabPlayer {
 		} else {
 			component = new IChatBaseComponent(message);
 		}
-		sendCustomPacket(new PacketPlayOutChat(component));
+		sendCustomPacket(new PacketPlayOutChat(component, ChatMessageType.CHAT));
 	}
 
 	@Override
 	public void sendMessage(IChatBaseComponent message) {
-		sendCustomPacket(new PacketPlayOutChat(message));
+		sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.CHAT));
 	}
 
 	@Override
@@ -119,7 +120,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void setValuePermanently(EnumProperty type, String value) {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " permanently to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		((PlayerCommand)TAB.getInstance().command.subcommands.get("player")).savePlayer(null, getName(), type.toString(), value);
+		((PlayerCommand)TAB.getInstance().getCommand().getSubcommands().get("player")).savePlayer(null, getName(), type.toString(), value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty("nametag", getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
 		}
@@ -184,8 +185,8 @@ public abstract class ITabPlayer implements TabPlayer {
 			activeScoreboard.unregister(this);
 			activeScoreboard = null;
 		}
-		forcedScoreboard = (Scoreboard) scoreboard;
-		((Scoreboard)scoreboard).register(this);
+		forcedScoreboard = scoreboard;
+		scoreboard.register(this);
 	}
 
 	@Override
@@ -252,10 +253,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		if (previewingNametag) {
 			armorStandManager.destroy(this);
-			sendMessage(TAB.getInstance().getConfiguration().translation.getString("preview-off"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-off"), true);
 		} else {
 			armorStandManager.spawn(this);
-			sendMessage(TAB.getInstance().getConfiguration().translation.getString("preview-on"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-on"), true);
 		}
 		previewingNametag = !previewingNametag;
 	}
@@ -296,20 +297,20 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (feature == null) return;
 		if (hasBossbarVisible()) {
 			feature.detectBossBarsAndSend(this);
-			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().translation.getString("bossbar-toggle-on"), true);
-			if (feature.remember_toggle_choice) {
-				feature.bossbar_off_players.remove(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
+			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on"), true);
+			if (feature.isRememberToggleChoice()) {
+				feature.getBossbarOffPlayers().remove(getName());
+				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.getBossbarOffPlayers());
 			}
 		} else {
 			for (BossBar line : getActiveBossBars().toArray(new BossBar[0])) {
 				removeBossBar(line);
 			}
 			getActiveBossBars().clear();
-			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().translation.getString("bossbar-toggle-off"), true);
-			if (feature.remember_toggle_choice && !feature.bossbar_off_players.contains(getName())) {
-				feature.bossbar_off_players.add(getName());
-				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.bossbar_off_players);
+			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off"), true);
+			if (feature.isRememberToggleChoice() && !feature.getBossbarOffPlayers().contains(getName())) {
+				feature.getBossbarOffPlayers().add(getName());
+				TAB.getInstance().getConfiguration().playerdata.set("bossbar-off", feature.getBossbarOffPlayers());
 			}
 		}
 	}
@@ -332,37 +333,37 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void loadPropertyFromConfig(String property, String ifNotSet) {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
-		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().config.getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
+		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
 		String value;
-		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
 			setProperty(property, value, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
 			setProperty(property, value, "PlayerUUID: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("Users." + getName() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Users." + getName() + "." + property)) != null) {
 			setProperty(property, value, "Player: " + getName());
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("Users." + getUniqueId().toString() + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Users." + getUniqueId().toString() + "." + property)) != null) {
 			setProperty(property, value, "PlayerUUID: " + getName());
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
 			setProperty(property, value, "Group: " + permissionGroup + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
 			setProperty(property, value, "Group: _OTHER_," + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
 			setProperty(property, value, "Group: " + permissionGroup);
 			return;
 		}
-		if ((value = TAB.getInstance().getConfiguration().config.getString("Groups._OTHER_." + property)) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Groups._OTHER_." + property)) != null) {
 			setProperty(property, value, "Group: _OTHER_");
 			return;
 		}
@@ -417,31 +418,31 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (visible) {
 			scoreboardManager.sendHighestScoreboard(this);
 			if (sendToggleMessage) {
-				sendMessage(scoreboardManager.scoreboard_on, true);
+				sendMessage(scoreboardManager.getScoreboardOn(), true);
 			}
-			if (scoreboardManager.remember_toggle_choice) {
-				if (scoreboardManager.hiddenByDefault) {
-					scoreboardManager.sb_off_players.add(getName());
+			if (scoreboardManager.isRememberToggleChoice()) {
+				if (scoreboardManager.isHiddenByDefault()) {
+					scoreboardManager.getSbOffPlayers().add(getName());
 				} else {
-					scoreboardManager.sb_off_players.remove(getName());
+					scoreboardManager.getSbOffPlayers().remove(getName());
 				}
-				synchronized (scoreboardManager.sb_off_players){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.sb_off_players));
+				synchronized (scoreboardManager.getSbOffPlayers()){
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
 				}
 			}
 		} else {
 			scoreboardManager.unregisterScoreboard(this, true);
 			if (sendToggleMessage) {
-				sendMessage(scoreboardManager.scoreboard_off, true);
+				sendMessage(scoreboardManager.getScoreboardOff(), true);
 			}
-			if (scoreboardManager.remember_toggle_choice) {
-				if (scoreboardManager.hiddenByDefault) {
-					scoreboardManager.sb_off_players.remove(getName());
+			if (scoreboardManager.isRememberToggleChoice()) {
+				if (scoreboardManager.isHiddenByDefault()) {
+					scoreboardManager.getSbOffPlayers().remove(getName());
 				} else {
-					scoreboardManager.sb_off_players.add(getName());
+					scoreboardManager.getSbOffPlayers().add(getName());
 				}
-				synchronized (scoreboardManager.sb_off_players){
-					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.sb_off_players));
+				synchronized (scoreboardManager.getSbOffPlayers()){
+					TAB.getInstance().getConfiguration().playerdata.set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
 				}
 			}
 		}

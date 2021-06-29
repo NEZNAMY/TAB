@@ -61,7 +61,7 @@ public class AnnounceScoreboardCommand extends SubCommand{
 		new Thread(() -> {
 			try {
 				feature.announcement = sb;
-				Map<TabPlayer, Scoreboard> previous = new HashMap<TabPlayer, Scoreboard>();
+				Map<TabPlayer, Scoreboard> previous = new HashMap<>();
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (!all.isScoreboardVisible()) continue;
 					previous.put(all, all.getActiveScoreboard());
@@ -75,8 +75,8 @@ public class AnnounceScoreboardCommand extends SubCommand{
 					if (previous.get(all) != null) previous.get(all).register(all);
 				}
 				feature.announcement = null;
-			} catch (Exception e) {
-
+			} catch (InterruptedException e) {
+				//plugin disabled
 			}
 		}).start();
 	}
@@ -84,8 +84,8 @@ public class AnnounceScoreboardCommand extends SubCommand{
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		ScoreboardManager s = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
-		if (s == null) return new ArrayList<String>();
-		List<String> suggestions = new ArrayList<String>();
+		if (s == null) return new ArrayList<>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {
 			for (String bar : s.getScoreboards().keySet()) {
 				if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);

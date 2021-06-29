@@ -13,28 +13,28 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 public class DataWatcherRegistry {
 
 	//used registry types
-	public Object Byte;
-	public Object Integer;
-	public Object Float;
-	public Object String;
-	public Object Optional_IChatBaseComponent;
-	public Object Boolean;
+	private Object registryByte;
+	private Object registryInteger;
+	private Object registryFloat;
+	private Object registryString;
+	private Object registryOptionalComponent;
+	private Object registryBoolean;
 
 	/**
 	 * Initializes required NMS classes and fields
 	 */
 	public DataWatcherRegistry(NMSStorage nms, Class<?> registry) {
-		if (nms.minorVersion >= 9) {
+		if (nms.getMinorVersion() >= 9) {
 			Map<String, Object> fields = getStaticFields(registry);
-			Byte = fields.get("a");
-			Integer = fields.get("b");
-			Float = fields.get("c");
-			String = fields.get("d");
-			if (nms.minorVersion >= 13) {
-				Optional_IChatBaseComponent = fields.get("f");
-				Boolean = fields.get("i");
+			registryByte = fields.get("a");
+			registryInteger = fields.get("b");
+			registryFloat = fields.get("c");
+			registryString = fields.get("d");
+			if (nms.getMinorVersion() >= 13) {
+				registryOptionalComponent = fields.get("f");
+				registryBoolean = fields.get("i");
 			} else {
-				Boolean = fields.get("h");
+				registryBoolean = fields.get("h");
 			}
 		}
 	}
@@ -45,18 +45,42 @@ public class DataWatcherRegistry {
 	 * @return map of values
 	 */
 	private Map<String, Object> getStaticFields(Class<?> clazz){
-		Map<String, Object> fields = new HashMap<String, Object>();
+		Map<String, Object> fields = new HashMap<>();
 		if (clazz == null) return fields;
 		for (Field field : clazz.getDeclaredFields()) {
-			field.setAccessible(true);
 			if (Modifier.isStatic(field.getModifiers())) {
 				try {
+					field.setAccessible(true);
 					fields.put(field.getName(), field.get(null));
 				} catch (Exception e) {
-					e.printStackTrace();
+					//this will never happen
 				}
 			}
 		}
 		return fields;
+	}
+
+	public Object getBoolean() {
+		return registryBoolean;
+	}
+
+	public Object getByte() {
+		return registryByte;
+	}
+
+	public Object getFloat() {
+		return registryFloat;
+	}
+
+	public Object getInteger() {
+		return registryInteger;
+	}
+
+	public Object getString() {
+		return registryString;
+	}
+
+	public Object getOptionalComponent() {
+		return registryOptionalComponent;
 	}
 }

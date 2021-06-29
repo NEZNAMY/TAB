@@ -21,17 +21,17 @@ public abstract class Placeholder {
 	protected String identifier;
 	
 	//premium replacements
-	protected Map<Object, String> replacements = new HashMap<Object, String>();
+	protected Map<Object, String> replacements = new HashMap<>();
 	
 	//placeholders used in outputs of replacements
-	private List<String> outputPlaceholders = new ArrayList<String>();
+	private List<String> outputPlaceholders = new ArrayList<>();
 	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval in millieconds
 	 */
-	public Placeholder(String identifier, int refresh) {
+	protected Placeholder(String identifier, int refresh) {
 		if (refresh % 50 != 0) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
 		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
 		this.identifier = identifier;
@@ -40,7 +40,7 @@ public abstract class Placeholder {
 	}
 
 	private void loadReplacements() {
-		Map<Object, Object> original = TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("placeholder-output-replacements." + identifier);
+		Map<Object, Object> original = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
@@ -119,7 +119,7 @@ public abstract class Placeholder {
 	public static String findReplacement(Map<Object, String> replacements, String originalOutput) {
 		if (replacements.isEmpty()) return originalOutput;
 		if (replacements.containsKey(originalOutput)) {
-			return replacements.get(originalOutput).toString();
+			return replacements.get(originalOutput);
 		}
 		for (Entry<Object, String> entry : replacements.entrySet()) {
 			String key = entry.getKey().toString();
@@ -128,13 +128,13 @@ public abstract class Placeholder {
 					float low = Float.parseFloat(key.split("-")[0]);
 					float high = Float.parseFloat(key.split("-")[1]);
 					float actualValue = Float.parseFloat(originalOutput.replace(",", ""));
-					if (low <= actualValue && actualValue <= high) return entry.getValue().toString();
+					if (low <= actualValue && actualValue <= high) return entry.getValue();
 				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
 					//nope
 				}
 			}
 		}
-		if (replacements.containsKey("else")) return replacements.get("else").toString();
+		if (replacements.containsKey("else")) return replacements.get("else");
 		return originalOutput;
 	}
 	

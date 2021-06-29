@@ -12,14 +12,14 @@ import me.neznamy.tab.shared.TAB;
 public abstract class RelationalPlaceholder extends Placeholder {
 	
 	//last known values with key formatted as "viewer-target" to avoid extra dimension
-	public Map<String, String> lastValue = new HashMap<String, String>();
+	private Map<String, String> lastValue = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameters
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval
 	 */
-	public RelationalPlaceholder(String identifier, int refresh) {
+	protected RelationalPlaceholder(String identifier, int refresh) {
 		super(identifier, refresh);
 		if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
 	}
@@ -33,8 +33,8 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
 		String mapKey = viewer.getName() + "-" + target.getName();
 		String newValue = get(viewer, target);
-		if (!lastValue.containsKey(mapKey) || !lastValue.get(mapKey).equals(newValue)) {
-			lastValue.put(mapKey, newValue);
+		if (!getLastValues().containsKey(mapKey) || !getLastValues().get(mapKey).equals(newValue)) {
+			getLastValues().put(mapKey, newValue);
 			return true;
 		}
 		return false;
@@ -47,8 +47,8 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * @return last known value
 	 */
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
-		if (!lastValue.containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
-		String value = lastValue.get(viewer.getName() + "-" + target.getName());
+		if (!getLastValues().containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
+		String value = getLastValues().get(viewer.getName() + "-" + target.getName());
 		String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), target);
 		if (newValue.contains("%value%")) {
 			newValue = newValue.replace("%value%", value);
@@ -66,4 +66,8 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * @return new value
 	 */
 	public abstract String get(TabPlayer viewer, TabPlayer target);
+
+	public Map<String, String> getLastValues() {
+		return lastValue;
+	}
 }

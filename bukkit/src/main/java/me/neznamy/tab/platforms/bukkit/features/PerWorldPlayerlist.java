@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -39,14 +40,14 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 	 */
 	public PerWorldPlayerlist(JavaPlugin plugin, TAB tab) {
 		this.plugin = plugin;
-		allowBypass = tab.getConfiguration().config.getBoolean("per-world-playerlist.allow-bypass-permission", false);
-		ignoredWorlds = tab.getConfiguration().config.getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = tab.getConfiguration().config.getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
-		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group) == null) {
+		allowBypass = tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+		ignoredWorlds = tab.getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+		sharedWorlds = tab.getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+		for (Entry<String, List<String>> group : sharedWorlds.entrySet()) {
+			if (group.getValue() == null) {
 				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist does not contain any worlds. You can just remove the group.");
-			} else if (sharedWorlds.get(group).size() == 1) {
-				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist only contain a single world (\"" + sharedWorlds.get(group).get(0) +
+			} else if (group.getValue().size() == 1) {
+				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist only contain a single world (\"" + group.getValue().get(0) +
 						"\"), which has no effect and only makes config less readable. Delete the group entirely for a cleaner config.");
 			}
 		}
@@ -56,7 +57,7 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 	
 	@Override
 	public void load(){
-		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getOnlinePlayers().forEach(p -> checkPlayer(p)));
+		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getOnlinePlayers().forEach(this::checkPlayer));
 	}
 	
 	@Override
@@ -98,10 +99,10 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorld().getName())) return true;
 		String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
 		String targetWorldGroup = target.getWorld().getName() + "-default";
-		for (String group : sharedWorlds.keySet()) {
-			if (sharedWorlds.get(group) != null) {
-				if (sharedWorlds.get(group).contains(viewer.getWorld().getName())) viewerWorldGroup = group;
-				if (sharedWorlds.get(group).contains(target.getWorld().getName())) targetWorldGroup = group;
+		for (Entry<String, List<String>> group : sharedWorlds.entrySet()) {
+			if (group.getValue() != null) {
+				if (group.getValue().contains(viewer.getWorld().getName())) viewerWorldGroup = group.getKey();
+				if (group.getValue().contains(target.getWorld().getName())) targetWorldGroup = group.getKey();
 			}
 		}
 		return viewerWorldGroup.equals(targetWorldGroup);

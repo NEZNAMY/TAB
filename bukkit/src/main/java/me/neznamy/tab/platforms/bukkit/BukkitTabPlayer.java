@@ -42,7 +42,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private Object playerConnection;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<UUID, BossBar>();
+	private Map<UUID, BossBar> bossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -89,13 +89,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket == null || !player.isOnline()) return;
 		try {
-			if (((BukkitPlatform)TAB.getInstance().getPlatform()).viaversion && nmsPacket instanceof ByteBuf) {
-				try {
-					Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
-				} catch (IllegalArgumentException e) {
-					//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
-					//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
-				}
+			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled() && nmsPacket instanceof ByteBuf) {
+				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 				return;
 			}
 			if (nmsPacket instanceof PacketPlayOutBoss) {
@@ -103,46 +98,49 @@ public class BukkitTabPlayer extends ITabPlayer {
 				return;
 			}
 			NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
-		} catch (Throwable e) {
+		} catch (IllegalArgumentException e) {
+			//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
+			//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
+		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		Set<BarFlag> flags = new HashSet<BarFlag>();
+		Set<BarFlag> flags = new HashSet<>();
 		BossBar bar;
-		switch (packet.operation) {
+		switch (packet.getOperation()) {
 		case ADD:
-			if (packet.createWorldFog) flags.add(BarFlag.CREATE_FOG);
-			if (packet.darkenScreen) flags.add(BarFlag.DARKEN_SKY);
-			if (packet.playMusic) flags.add(BarFlag.PLAY_BOSS_MUSIC);
-			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().minorVersion >= 16), 
-					BarColor.valueOf(packet.color.name()), 
-					BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
+			if (packet.isCreateWorldFog()) flags.add(BarFlag.CREATE_FOG);
+			if (packet.isDarkenScreen()) flags.add(BarFlag.DARKEN_SKY);
+			if (packet.isPlayMusic()) flags.add(BarFlag.PLAY_BOSS_MUSIC);
+			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
+					BarColor.valueOf(packet.getColor().name()), 
+					BarStyle.valueOf(packet.getOverlay().name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
 					flags.toArray(new BarFlag[0]));
-			bar.setProgress(packet.pct);
-			bossbars.put(packet.id, bar);
+			bar.setProgress(packet.getPct());
+			bossbars.put(packet.getId(), bar);
 			bar.addPlayer(player);
 			break;
 		case REMOVE:
-			bossbars.get(packet.id).removePlayer(player);
-			bossbars.remove(packet.id);
+			bossbars.get(packet.getId()).removePlayer(player);
+			bossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossbars.get(packet.id).setProgress(packet.pct);
+			bossbars.get(packet.getId()).setProgress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.name, getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().minorVersion >= 16));
+			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
-			bossbars.get(packet.id).setColor(BarColor.valueOf(packet.color.name()));
-			bossbars.get(packet.id).setStyle(BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
+			bossbars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
+			bossbars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
 			break;
 		case UPDATE_PROPERTIES:
-			bar = bossbars.get(packet.id);
-			processFlag(bar, packet.createWorldFog, BarFlag.CREATE_FOG);
-			processFlag(bar, packet.darkenScreen, BarFlag.DARKEN_SKY);
-			processFlag(bar, packet.playMusic, BarFlag.PLAY_BOSS_MUSIC);
+			bar = bossbars.get(packet.getId());
+			processFlag(bar, packet.isCreateWorldFog(), BarFlag.CREATE_FOG);
+			processFlag(bar, packet.isDarkenScreen(), BarFlag.DARKEN_SKY);
+			processFlag(bar, packet.isPlayMusic(), BarFlag.PLAY_BOSS_MUSIC);
 			break;
 		default:
 			break;
@@ -177,9 +175,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private boolean isDisguisedLD() {
 		try {
-			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).libsdisguises) return false;
+			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
 		}
 	}
@@ -190,13 +188,13 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private boolean isDisguisediDis() {
 		try {
-			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).idisguise) return false;
+			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isIdisguiseEnabled()) return false;
 			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
 			Object iDisguise = provider.getProvider();
 			Method m = iDisguise.getClass().getMethod("isDisguised", Player.class);
 			m.setAccessible(true);
 			return (boolean) m.invoke(iDisguise, player);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using iDisguise", e);
 		}
 	}
@@ -205,7 +203,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Object getSkin() {
 		try {
 			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getProfile.invoke(handle));
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}
 	}
@@ -223,7 +221,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isVanished() {
 		try {
-			if (((BukkitPlatform)TAB.getInstance().getPlatform()).essentials) {
+			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isEssentialsEnabled()) {
 				Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 				Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, player);
 				boolean vanished = (boolean) user.getClass().getMethod("isVanished").invoke(user);

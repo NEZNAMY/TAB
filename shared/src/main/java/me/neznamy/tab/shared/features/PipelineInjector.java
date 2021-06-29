@@ -19,7 +19,7 @@ import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 public abstract class PipelineInjector implements JoinEventListener, Loadable {
 
 	//name of the pipeline decoder injected in netty
-	public final String DECODER_NAME = "TAB";
+	public static final String DECODER_NAME = "TAB";
 	
 	//tab instance
 	protected TAB tab;
@@ -35,10 +35,10 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	 * Constructs new instance
 	 * @param tab
 	 */
-	public PipelineInjector(TAB tab) {
+	protected PipelineInjector(TAB tab) {
 		this.tab = tab;
-		antiOverrideTeams = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-teams", true);
-		antiOverrideObjectives = tab.getConfiguration().config.getBoolean("anti-override.scoreboard-objectives", true);
+		antiOverrideTeams = tab.getConfiguration().getConfig().getBoolean("anti-override.scoreboard-teams", true);
+		antiOverrideObjectives = tab.getConfiguration().getConfig().getBoolean("anti-override.scoreboard-objectives", true);
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 		//not logging the same message for every online player who received the packet
 		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
 			lastTeamOverrideMessage = message;
-			tab.getErrorManager().printError(message, null, false, tab.getErrorManager().antiOverrideLog);
+			tab.getErrorManager().printError(message, null, false, tab.getErrorManager().getAntiOverrideLog());
 		}
 	}
 }

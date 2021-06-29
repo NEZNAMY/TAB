@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
@@ -9,10 +11,10 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlayOut {
 
 	//display slot (0 = playerlist, 1 = sidebar, 2 = belowname)
-	public int slot;
+	private int slot;
 	
 	//name of the objective
-	public String objectiveName;
+	private String objectiveName;
 
 	/**
 	 * Constructs a new instance with given parameters
@@ -26,9 +28,13 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
@@ -37,6 +43,14 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	 */
 	@Override
 	public String toString() {
-		return String.format("PacketPlayOutScoreboardDisplayObjective{slot=%s,objectiveName=%s}", slot, objectiveName);
+		return String.format("PacketPlayOutScoreboardDisplayObjective{slot=%s,objectiveName=%s}", getSlot(), getObjectiveName());
+	}
+
+	public String getObjectiveName() {
+		return objectiveName;
+	}
+
+	public int getSlot() {
+		return slot;
 	}
 }

@@ -41,7 +41,7 @@ public class VelocityTabPlayer extends ITabPlayer {
 	private UUID tablistId;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<UUID, BossBar>();
+	private Map<UUID, BossBar> bossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance for given player
@@ -58,16 +58,16 @@ public class VelocityTabPlayer extends ITabPlayer {
 		name = p.getUsername();
 		uniqueId = p.getUniqueId();
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-		tablistId = TAB.getInstance().getConfiguration().config.getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
+		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
 		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
 		init();
 	}
 	
 	@Override
 	public boolean hasPermission(String permission) {
-		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
+		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
-			Main.plm.requestAttribute(this, merge);
+			Main.getInstance().getPluginMessageHandler().requestAttribute(this, merge);
 			if (!attributes.containsKey(merge)) return false;
 			return Boolean.parseBoolean(attributes.get(merge));
 		}
@@ -97,52 +97,52 @@ public class VelocityTabPlayer extends ITabPlayer {
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		player.sendMessage(Identity.nil(), Main.stringToComponent(packet.message.toString(getVersion())), MessageType.valueOf(packet.type.name()));
+		player.sendMessage(Identity.nil(), Main.stringToComponent(packet.getMessage().toString(getVersion())), MessageType.valueOf(packet.getType().name()));
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-		player.getTabList().setHeaderAndFooter(Main.stringToComponent(packet.header.toString(getVersion())), Main.stringToComponent(packet.footer.toString(getVersion())));
+		player.getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		Set<Flag> flags = new HashSet<Flag>();
+		Set<Flag> flags = new HashSet<>();
 		BossBar bar;
-		switch (packet.operation) {
+		switch (packet.getOperation()) {
 		case ADD:
-			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
-			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
-			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
-			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(getVersion())), 
-					packet.pct, 
-					Color.valueOf(packet.color.toString()), 
-					Overlay.valueOf(packet.overlay.toString()), 
+			if (packet.isCreateWorldFog()) flags.add(Flag.CREATE_WORLD_FOG);
+			if (packet.isDarkenScreen()) flags.add(Flag.DARKEN_SCREEN);
+			if (packet.isPlayMusic()) flags.add(Flag.PLAY_BOSS_MUSIC);
+			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
+					packet.getPct(), 
+					Color.valueOf(packet.getColor().toString()), 
+					Overlay.valueOf(packet.getOverlay().toString()), 
 					flags);
-			bossbars.put(packet.id, bar);
+			bossbars.put(packet.getId(), bar);
 			player.showBossBar(bar);
 			break;
 		case REMOVE:
-			player.hideBossBar(bossbars.get(packet.id));
-			bossbars.remove(packet.id);
+			player.hideBossBar(bossbars.get(packet.getId()));
+			bossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossbars.get(packet.id).percent(packet.pct);
+			bossbars.get(packet.getId()).percent(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.id).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.name).toString(getVersion())));
+			bossbars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));
 			break;
 		case UPDATE_STYLE:
-			bar = bossbars.get(packet.id);
+			bar = bossbars.get(packet.getId());
 			//compensating for an already fixed bug for those who did not update Velocity
 			player.hideBossBar(bar);
-			bar.overlay(Overlay.valueOf(packet.overlay.toString()));
-			bar.color(Color.valueOf(packet.color.toString()));
+			bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
+			bar.color(Color.valueOf(packet.getColor().toString()));
 			player.showBossBar(bar);
 			break;
 		case UPDATE_PROPERTIES:
-			if (packet.createWorldFog) flags.add(Flag.CREATE_WORLD_FOG);
-			if (packet.darkenScreen) flags.add(Flag.DARKEN_SCREEN);
-			if (packet.playMusic) flags.add(Flag.PLAY_BOSS_MUSIC);
-			bossbars.get(packet.id).flags(flags);
+			if (packet.isCreateWorldFog()) flags.add(Flag.CREATE_WORLD_FOG);
+			if (packet.isDarkenScreen()) flags.add(Flag.DARKEN_SCREEN);
+			if (packet.isPlayMusic()) flags.add(Flag.PLAY_BOSS_MUSIC);
+			bossbars.get(packet.getId()).flags(flags);
 			break;
 		default:
 			break;
@@ -151,8 +151,8 @@ public class VelocityTabPlayer extends ITabPlayer {
 	
 	@SuppressWarnings("unchecked")
 	private void handle(PacketPlayOutPlayerInfo packet) {
-		for (PlayerInfoData data : packet.entries) {
-			switch (packet.action) {
+		for (PlayerInfoData data : packet.getEntries()) {
+			switch (packet.getAction()) {
 			case ADD_PLAYER:
 				player.getTabList().addEntry(TabListEntry.builder()
 						.tabList(player.getTabList())
@@ -203,21 +203,21 @@ public class VelocityTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean isVanished() {
-		Main.plm.requestAttribute(this, "vanished");
+		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "vanished");
 		if (!attributes.containsKey("vanished")) return false;
 		return Boolean.parseBoolean(attributes.get("vanished"));
 	}
 	
 	@Override
 	public boolean isDisguised() {
-		Main.plm.requestAttribute(this, "disguised");
+		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "disguised");
 		if (!attributes.containsKey("disguised")) return false;
 		return Boolean.parseBoolean(attributes.get("disguised"));
 	}
 	
 	@Override
 	public boolean hasInvisibilityPotion() {
-		Main.plm.requestAttribute(this, "invisible");
+		Main.getInstance().getPluginMessageHandler().requestAttribute(this, "invisible");
 		if (!attributes.containsKey("invisible")) return false;
 		return Boolean.parseBoolean(attributes.get("invisible"));
 	}

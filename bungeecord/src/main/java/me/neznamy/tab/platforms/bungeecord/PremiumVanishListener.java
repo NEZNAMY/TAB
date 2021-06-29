@@ -30,7 +30,7 @@ public class PremiumVanishListener implements Listener {
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			boolean perm = all.hasPermission("tab.seevanished");
 			if (all == vanished || perm) {
-				if (perm && list.vanishedAsSpectators) {
+				if (perm && list.isVanishedAsSpectators()) {
 					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, new PlayerInfoData(vanished.getUniqueId(), EnumGamemode.SPECTATOR)), TabFeature.GLOBAL_PLAYERLIST);
 				}
 			} else {

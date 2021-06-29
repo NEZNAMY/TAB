@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -80,26 +79,10 @@ public class BukkitMetrics extends Metrics {
 				startSubmitting();
 			}
 		}
-		addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", new Callable<String>() {
-			public String call() {
-				return TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No";
-			}
-		}));
-		addCustomChart(new SimplePie("placeholderapi", new Callable<String>() {
-			public String call() {
-				return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No";
-			}
-		}));
-		addCustomChart(new SimplePie("permission_system", new Callable<String>() {
-			public String call() {
-				return TAB.getInstance().getPermissionPlugin().getName();
-			}
-		}));
-		addCustomChart(new SimplePie("server_version", new Callable<String>() {
-			public String call() {
-				return "1." + NMSStorage.getInstance().minorVersion + ".x";
-			}
-		}));
+		addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No"));
+		addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
+		addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));
+		addCustomChart(new SimplePie("server_version", () -> "1." + NMSStorage.getInstance().getMinorVersion() + ".x"));
 	}
 
 	private void startSubmitting() {

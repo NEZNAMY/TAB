@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.placeholders.Placeholder;
 public abstract class SortingType {
 
 	//number to add to / subtract from to prevent incorrect sorting with negative values
-	protected final int DEFAULT_NUMBER = 500000000;
+	protected static final int DEFAULT_NUMBER = 500000000;
 	
 	//placeholder to sort by, if sorting type uses it
 	protected String sortingPlaceholder;
@@ -23,14 +23,14 @@ public abstract class SortingType {
 	/**
 	 * Constructs new instance
 	 */
-	public SortingType() {
+	protected SortingType() {
 	}
 	
 	/**
 	 * Constructs new instance with given parameter
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
-	public SortingType(String sortingPlaceholder){
+	protected SortingType(String sortingPlaceholder){
 		this.sortingPlaceholder = sortingPlaceholder;
 		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(sortingPlaceholder);
 	}
@@ -58,9 +58,9 @@ public abstract class SortingType {
 	 * @return map of lowercased groups with their sorting characters
 	 */
 	protected LinkedHashMap<String, String> loadSortingList() {
-		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<>();
 		int index = 1;
-		List<String> configList = TAB.getInstance().getConfiguration().config.getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
+		List<String> configList = TAB.getInstance().getConfiguration().getConfig().getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
 		int charCount = String.valueOf(configList.size()).length(); //1 char for <10 groups, 2 chars for <100 etc
 		for (Object group : configList){
 			String sort = String.valueOf(index);

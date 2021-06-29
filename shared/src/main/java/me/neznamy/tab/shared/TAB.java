@@ -25,16 +25,16 @@ public class TAB {
 	private static TAB instance;
 	
 	//version of plugin
-	public static final String pluginVersion = "2.9.2-pre1";
+	public static final String PluginVersion = "2.9.2-pre1";
 
 	//player data
-	public final Map<UUID, TabPlayer> data = new ConcurrentHashMap<UUID, TabPlayer>();
+	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
 	
 	//the command
-	public TabCommand command;
+	private TabCommand command;
 
 	//command used if plugin is disabled due to a broken configuration file
-	public final DisabledCommand disabledCommand = new DisabledCommand();
+	private final DisabledCommand disabledCommand = new DisabledCommand();
 	
 	//platform interface
 	private Platform platform;
@@ -52,14 +52,14 @@ public class TAB {
 	private FeatureManager featureManager;
 	
 	//name of broken configuration file filled on load and used in disabledCommand
-	public String brokenFile = "-";
+	private String brokenFile = "-";
 	
 	//platform-specific packet builder
 	private PacketBuilder packetBuilder;
 	
 	private Configs configuration;
 	
-	public boolean debugMode;
+	private boolean debugMode;
 	
 	private boolean disabled;
 	
@@ -133,7 +133,7 @@ public class TAB {
 	 * @param message - message to be sent into console
 	 */
 	public void debug(String message) {
-		if (debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
+		if (isDebugMode()) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
 	
 	/**
@@ -151,7 +151,7 @@ public class TAB {
 			placeholderManager = new PlaceholderManager(this);
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
-			command = new TabCommand(this);
+			setCommand(new TabCommand(this));
 			featureManager.load();
 			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
 			errorManager.printConsoleWarnCount();
@@ -161,7 +161,7 @@ public class TAB {
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
 		}
@@ -179,7 +179,7 @@ public class TAB {
 			featureManager.unload();
 			data.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			errorManager.criticalError("Failed to disable", e);
 		}
 	}
@@ -229,7 +229,7 @@ public class TAB {
 	}
 
 	public String getPluginVersion() {
-		return pluginVersion;
+		return PluginVersion;
 	}
 	
 	public Configs getConfiguration() {
@@ -242,5 +242,33 @@ public class TAB {
 	
 	public PlaceholderManager getPlaceholderManager() {
 		return placeholderManager;
+	}
+
+	public TabCommand getCommand() {
+		return command;
+	}
+
+	public void setCommand(TabCommand command) {
+		this.command = command;
+	}
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+
+	public String getBrokenFile() {
+		return brokenFile;
+	}
+
+	public void setBrokenFile(String brokenFile) {
+		this.brokenFile = brokenFile;
+	}
+
+	public DisabledCommand getDisabledCommand() {
+		return disabledCommand;
 	}
 }

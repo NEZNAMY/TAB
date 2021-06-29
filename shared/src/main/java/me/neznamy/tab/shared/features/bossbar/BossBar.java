@@ -27,34 +27,34 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	private TAB tab;
 	
 	//default bossbars
-	public List<String> defaultBars;
+	private List<String> defaultBars;
 	
 	//per-world / per-server bossbars
-	public Map<String, List<String>> perWorld;
+	private Map<String, List<String>> perWorld;
 	
 	//registered bossbars
-	public Map<String, BossBarLine> lines = new HashMap<String, BossBarLine>();
+	private Map<String, BossBarLine> lines = new HashMap<>();
 	
 	//toggle command
 	private String toggleCommand;
 	
 	//list of currently running bossbar announcements
-	public List<String> announcements = new ArrayList<String>();
+	private List<String> announcements = new ArrayList<>();
 	
 	//saving toggle choice into file
-	public boolean remember_toggle_choice;
+	private boolean rememberToggleChoice;
 	
 	//players with toggled bossbar
-	public List<String> bossbar_off_players = new ArrayList<String>();
+	private List<String> bossbarOffPlayers = new ArrayList<>();
 	
 	//if permission is required to toggle
-	public boolean permToToggle;
+	private boolean permToToggle;
 	
 	//list of worlds / servers where bossbar feature is disabled entirely
 	private List<String> disabledWorlds;
 	
 	//time when bossbar announce ends, used for placeholder
-	public long announceEndTime;
+	private long announceEndTime;
 	
 	//if bossbar is hidden by default until toggle command is used
 	private boolean hiddenByDefault;
@@ -65,44 +65,44 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	 */
 	public BossBar(TAB tab) {
 		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		toggleCommand = tab.getConfiguration().bossbar.getString("bossbar-toggle-command", "/bossbar");
-		defaultBars = tab.getConfiguration().bossbar.getStringList("default-bars", new ArrayList<String>());
-		permToToggle = tab.getConfiguration().bossbar.getBoolean("permission-required-to-toggle", false);
-		hiddenByDefault = tab.getConfiguration().bossbar.getBoolean("hidden-by-default", false);
-		perWorld = tab.getConfiguration().bossbar.getConfigurationSection("per-world");
-		for (Object bar : tab.getConfiguration().bossbar.getConfigurationSection("bars").keySet()){
-			lines.put(bar.toString(), BossBarLine.fromConfig(bar.toString()));
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.bossbar", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		toggleCommand = tab.getConfiguration().getBossbarConfig().getString("bossbar-toggle-command", "/bossbar");
+		defaultBars = tab.getConfiguration().getBossbarConfig().getStringList("default-bars", new ArrayList<>());
+		permToToggle = tab.getConfiguration().getBossbarConfig().getBoolean("permission-required-to-toggle", false);
+		hiddenByDefault = tab.getConfiguration().getBossbarConfig().getBoolean("hidden-by-default", false);
+		perWorld = tab.getConfiguration().getBossbarConfig().getConfigurationSection("per-world");
+		for (Object bar : tab.getConfiguration().getBossbarConfig().getConfigurationSection("bars").keySet()){
+			getLines().put(bar.toString(), BossBarLine.fromConfig(bar.toString()));
 		}
-		for (String bar : new ArrayList<String>(defaultBars)) {
-			if (lines.get(bar) == null) {
+		for (String bar : new ArrayList<>(defaultBars)) {
+			if (getLines().get(bar) == null) {
 				tab.getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
 				defaultBars.remove(bar);
 			}
 		}
 		for (Entry<String, List<String>> entry : perWorld.entrySet()) {
 			List<String> bars = entry.getValue();
-			for (String bar : new ArrayList<String>(bars)) {
-				if (lines.get(bar) == null) {
+			for (String bar : new ArrayList<>(bars)) {
+				if (getLines().get(bar) == null) {
 					tab.getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
 					bars.remove(bar);
 				}
 			}
 		}
-		remember_toggle_choice = tab.getConfiguration().bossbar.getBoolean("remember-toggle-choice", false);
-		if (remember_toggle_choice) {
-			bossbar_off_players = tab.getConfiguration().getPlayerData("bossbar-off");
+		rememberToggleChoice = tab.getConfiguration().getBossbarConfig().getBoolean("remember-toggle-choice", false);
+		if (isRememberToggleChoice()) {
+			bossbarOffPlayers = tab.getConfiguration().getPlayerData("bossbar-off");
 		}
-		TAB.getInstance().getPlaceholderManager().allUsedPlaceholderIdentifiers.add("%countdown%");
+		TAB.getInstance().getPlaceholderManager().getAllUsedPlaceholderIdentifiers().add("%countdown%");
 		TAB.getInstance().getPlaceholderManager().registerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
 			public String get() {
-				return String.valueOf((announceEndTime - System.currentTimeMillis()) / 1000);
+				return String.valueOf((getAnnounceEndTime() - System.currentTimeMillis()) / 1000);
 			}
 		});
 		tab.debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, permToToggle=%s, hiddenByDefault=%s, perWorld=%s, remember_toggle_choice=%s",
-				disabledWorlds, toggleCommand, defaultBars, permToToggle, hiddenByDefault, perWorld, remember_toggle_choice));
+				disabledWorlds, toggleCommand, defaultBars, isPermToToggle(), hiddenByDefault, perWorld, isRememberToggleChoice()));
 	}
 	
 	@Override
@@ -110,19 +110,18 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		for (TabPlayer p : tab.getPlayers()) {
 			onJoin(p);
 		}
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
-			public void run() {
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
-					for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
-						if (!bar.isConditionMet(p)) {
-							bar.remove(p);
-							p.getActiveBossBars().remove(bar);
-						}
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
+				for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
+					if (!bar.isConditionMet(p)) {
+						bar.remove(p);
+						p.getActiveBossBars().remove(bar);
 					}
-					showBossBars(p, defaultBars);
-					showBossBars(p, perWorld.get(tab.getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
 				}
+				showBossBars(p, defaultBars);
+				showBossBars(p, perWorld.get(tab.getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
 			}
 		});
 	}
@@ -134,12 +133,12 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 				p.removeBossBar(line);
 			}
 		}
-		lines.clear();
+		getLines().clear();
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setBossbarVisible(!bossbar_off_players.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
+		connectedPlayer.setBossbarVisible(!getBossbarOffPlayers().contains(connectedPlayer.getName()) && !hiddenByDefault, false);
 	}
 	
 	@Override
@@ -153,7 +152,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (message.equalsIgnoreCase(toggleCommand)) {
-			tab.command.execute(sender, new String[] {"bossbar"});
+			tab.getCommand().execute(sender, new String[] {"bossbar"});
 			return true;
 		}
 		return false;
@@ -167,7 +166,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		p.getActiveBossBars().clear();
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
 		showBossBars(p, defaultBars);
-		showBossBars(p, announcements);
+		showBossBars(p, getAnnouncements());
 		showBossBars(p, perWorld.get(tab.getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
 	}
 	
@@ -179,7 +178,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	private void showBossBars(TabPlayer p, List<String> bars) {
 		if (bars == null) return;
 		for (String defaultBar : bars) {
-			BossBarLine bar = lines.get(defaultBar);
+			BossBarLine bar = getLines().get(defaultBar);
 			if (bar.isConditionMet(p) && !p.getActiveBossBars().contains(bar)) {
 				bar.create(p);
 				p.getActiveBossBars().add(bar);
@@ -198,9 +197,37 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	 * @return bossbar with specified uuid
 	 */
 	public BossBarLine getLine(UUID id) {
-		for (BossBarLine line : lines.values()) {
-			if (line.uuid == id) return line;
+		for (BossBarLine line : getLines().values()) {
+			if (line.getUuid() == id) return line;
 		}
 		return null;
+	}
+
+	public List<String> getBossbarOffPlayers() {
+		return bossbarOffPlayers;
+	}
+
+	public boolean isRememberToggleChoice() {
+		return rememberToggleChoice;
+	}
+
+	public Map<String, BossBarLine> getLines() {
+		return lines;
+	}
+
+	public List<String> getAnnouncements() {
+		return announcements;
+	}
+
+	public long getAnnounceEndTime() {
+		return announceEndTime;
+	}
+
+	public void setAnnounceEndTime(long announceEndTime) {
+		this.announceEndTime = announceEndTime;
+	}
+
+	public boolean isPermToToggle() {
+		return permToToggle;
 	}
 }

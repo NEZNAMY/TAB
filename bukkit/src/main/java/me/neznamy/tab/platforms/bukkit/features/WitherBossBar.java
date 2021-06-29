@@ -20,10 +20,10 @@ import me.neznamy.tab.shared.features.types.Loadable;
 /**
  * An additional class with additional code for <1.9 servers due to an entity being required
  */
-public class BossBar_legacy implements Listener, Loadable {
+public class WitherBossBar implements Listener, Loadable {
 
 	//distance of wither in blocks
-	private final int WITHER_DISTANCE = 75;
+	private static final int witherDistance = 75;
 	
 	//main bossbar feature
 	private BossBar mainFeature;
@@ -32,7 +32,7 @@ public class BossBar_legacy implements Listener, Loadable {
 	 * Constructs a new instance of the class
 	 * @param mainFeature - main bossbar feature
 	 */
-	public BossBar_legacy(TAB tab, JavaPlugin plugin) {
+	public WitherBossBar(TAB tab, JavaPlugin plugin) {
 		this.mainFeature = (BossBar) tab.getFeatureManager().getFeature("bossbar");
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
@@ -80,7 +80,7 @@ public class BossBar_legacy implements Listener, Loadable {
 	 */
 	public Location getWitherLocation(TabPlayer p) {
 		Player pl = (Player) p.getPlayer();
-		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(witherDistance));
 		if (loc.getY() < 1) loc.setY(1);
 		return loc;
 	}

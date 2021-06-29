@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.cpu;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,25 +24,25 @@ import me.neznamy.tab.shared.ErrorManager;
 public class CPUManager {
 
 	//data reset interval in milliseconds
-	private final int bufferSizeMillis = 10000;
+	private static final int BufferSizeMillis = 10000;
 
 	//nanoseconds worked in the current 10 seconds
-	private Map<Object, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, AtomicLong>>();
-	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
+	private Map<Object, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
+	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
+	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
+	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
 	
 	//packets sent in the current 10 seconds
-	private Map<Object, AtomicInteger> packetsCurrent = new ConcurrentHashMap<Object, AtomicInteger>();
+	private Map<Object, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
 
 	//nanoseconds worked in the previous 10 seconds
-	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<Object, Map<UsageType, AtomicLong>>();
-	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<String, AtomicLong>();
-	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<String, AtomicLong>();
-	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<String, AtomicLong>();
+	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<>();
+	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
+	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<>();
+	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
 	
 	//packets sent in the previous 10 seconds
-	private Map<Object, AtomicInteger> packetsPrevious = new ConcurrentHashMap<Object, AtomicInteger>();
+	private Map<Object, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
 	//thread pool
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -55,29 +56,26 @@ public class CPUManager {
 	 */
 	public CPUManager(ErrorManager errorManager) {
 		this.errorManager = errorManager;
-		exe.submit(new Runnable() {
+		exe.submit(() -> {
 
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						Thread.sleep(bufferSizeMillis);
+			try {
+				while (true) {
+					Thread.sleep(BufferSizeMillis);
 
-						featureUsagePrevious = featureUsageCurrent;
-						placeholderUsagePrevious = placeholderUsageCurrent;
-						bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
-						methodUsagePrevious = methodUsageCurrent;
-						packetsPrevious = packetsCurrent;
+					featureUsagePrevious = featureUsageCurrent;
+					placeholderUsagePrevious = placeholderUsageCurrent;
+					bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
+					methodUsagePrevious = methodUsageCurrent;
+					packetsPrevious = packetsCurrent;
 
-						featureUsageCurrent = new ConcurrentHashMap<Object, Map<UsageType, AtomicLong>>();
-						placeholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-						bridgePlaceholderUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-						methodUsageCurrent = new ConcurrentHashMap<String, AtomicLong>();
-						packetsCurrent = new ConcurrentHashMap<Object, AtomicInteger>();
-					}
-				} catch (InterruptedException pluginDisabled) {
-
+					featureUsageCurrent = new ConcurrentHashMap<>();
+					placeholderUsageCurrent = new ConcurrentHashMap<>();
+					bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
+					methodUsageCurrent = new ConcurrentHashMap<>();
+					packetsCurrent = new ConcurrentHashMap<>();
 				}
+			} catch (InterruptedException pluginDisabled) {
+				//plugin disabled
 			}
 		});
 	}
@@ -108,16 +106,13 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runMeasuredTask(String errorDescription, Object feature, UsageType type, Runnable task) {
-		exe.submit(new Runnable() {
-
-			public void run() {
-				try {
-					long time = System.nanoTime();
-					task.run();
-					addTime(feature, type, System.nanoTime()-time);
-				} catch (Throwable t) {
-					errorManager.printError("An error occurred when " + errorDescription, t);
-				}
+		exe.submit(() -> {
+			try {
+				long time = System.nanoTime();
+				task.run();
+				addTime(feature, type, System.nanoTime()-time);
+			} catch (Throwable t) {
+				errorManager.printError("An error occurred when " + errorDescription, t);
 			}
 		});
 	}
@@ -128,14 +123,11 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTask(String errorDescription, Runnable task) {
-		exe.submit(new Runnable() {
-
-			public void run() {
-				try {
-					task.run();
-				} catch (Throwable t) {
-					errorManager.printError("An error occurred when " + errorDescription, t);
-				}
+		exe.submit(() -> {
+			try {
+				task.run();
+			} catch (Throwable t) {
+				errorManager.printError("An error occurred when " + errorDescription, t);
 			}
 		});
 	}
@@ -150,26 +142,23 @@ public class CPUManager {
 	 */
 	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
-		exe.submit(new Runnable() {
-
-			public void run() {
-				long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
-				while (true) {
-					try {
-						long sleep = intervalMilliseconds - (System.currentTimeMillis()-lastLoop);
-						if (sleep < 0) {
-							sleep = 0;
-						}
-						Thread.sleep(sleep);
-						lastLoop = System.currentTimeMillis();
-						long time = System.nanoTime();
-						task.run();
-						addTime(feature, type, System.nanoTime()-time);
-					} catch (InterruptedException pluginDisabled) {
-						break;
-					} catch (Throwable t) {
-						errorManager.printError("An error occurred when " + errorDescription, t);
+		exe.submit(() -> {
+			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
+			while (true) {
+				try {
+					long sleep = intervalMilliseconds - (System.currentTimeMillis()-lastLoop);
+					if (sleep < 0) {
+						sleep = 0;
 					}
+					Thread.sleep(sleep);
+					lastLoop = System.currentTimeMillis();
+					long time = System.nanoTime();
+					task.run();
+					addTime(feature, type, System.nanoTime()-time);
+				} catch (InterruptedException pluginDisabled) {
+					break;
+				} catch (Throwable t) {
+					errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});
@@ -184,18 +173,16 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTaskLater(int delayMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
-		exe.submit(new Runnable() {
-
-			public void run() {
-				try {
-					Thread.sleep(delayMilliseconds);
-					long time = System.nanoTime();
-					task.run();
-					addTime(feature, type, System.nanoTime()-time);
-				} catch (InterruptedException pluginDisabled) {
-				} catch (Throwable t) {
-					errorManager.printError("An error occurred when " + errorDescription, t);
-				}
+		exe.submit(() -> {
+			try {
+				Thread.sleep(delayMilliseconds);
+				long time = System.nanoTime();
+				task.run();
+				addTime(feature, type, System.nanoTime()-time);
+			} catch (InterruptedException pluginDisabled) {
+				//plugin disabled
+			} catch (Throwable t) {
+				errorManager.printError("An error occurred when " + errorDescription, t);
 			}
 		});
 	}
@@ -239,14 +226,14 @@ public class CPUManager {
 	 * @return converted and sorted map
 	 */
 	private Map<String, Float> getUsage(Map<String, AtomicLong> map){
-		Map<String, Long> nanoMap = new HashMap<String, Long>();
+		Map<String, Long> nanoMap = new HashMap<>();
 		String key;
 		for (Entry<String, AtomicLong> nanos : map.entrySet()) {
 			key = nanos.getKey();
 			if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
 			nanoMap.put(key, nanoMap.get(key)+nanos.getValue().get());
 		}
-		Map<String, Float> percentMap = new HashMap<String, Float>();
+		Map<String, Float> percentMap = new HashMap<>();
 		for (Entry<String, Long> entry : nanoMap.entrySet()) {
 			percentMap.put(entry.getKey(), nanosToPercent(entry.getValue()));
 		}
@@ -258,11 +245,11 @@ public class CPUManager {
 	 * @return map of CPU usage per feature per type
 	 */
 	public Map<Object, Map<UsageType, Float>> getFeatureUsage(){
-		Map<Object, Map<UsageType, Long>> total = new HashMap<Object, Map<UsageType, Long>>();
+		Map<Object, EnumMap<UsageType, Long>> total = new HashMap<>();
 		for (Entry<Object, Map<UsageType, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
 			Object key = nanos.getKey();
 			if (!total.containsKey(key)) {
-				total.put(key, new HashMap<UsageType, Long>());
+				total.put(key, new EnumMap<>(UsageType.class));
 			}
 			Map<UsageType, Long> usage = total.get(key);
 			for (Entry<UsageType, AtomicLong> entry : nanos.getValue().entrySet()) {
@@ -272,10 +259,10 @@ public class CPUManager {
 				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
 			}
 		}
-		Map<Object, Map<UsageType, Float>> sorted = new LinkedHashMap<Object, Map<UsageType, Float>>();
+		Map<Object, Map<UsageType, Float>> sorted = new LinkedHashMap<>();
 		for (Object key : sortKeys(total)) {
 			Map<UsageType, Long> local = sortByValue(total.get(key));
-			Map<UsageType, Float> percent = new LinkedHashMap<UsageType, Float>();
+			Map<UsageType, Float> percent = new LinkedHashMap<>();
 			for (Entry<UsageType, Long> entry : local.entrySet()) {
 				percent.put(entry.getKey(), nanosToPercent(entry.getValue()));
 			}
@@ -290,7 +277,7 @@ public class CPUManager {
 	 * @return usage in % (0-100)
 	 */
 	private float nanosToPercent(long nanos) {
-		float percent = (float) nanos / bufferSizeMillis / 1000000; //relative usage (0-1)
+		float percent = (float) nanos / BufferSizeMillis / 1000000; //relative usage (0-1)
 		percent *= 100; //relative into %
 		return percent;
 	}
@@ -303,14 +290,12 @@ public class CPUManager {
 	 * @return sorted map
 	 */
 	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-		Comparator<K> valueComparator =  new Comparator<K>() {
-			public int compare(K k1, K k2) {
-				int compare = map.get(k2).compareTo(map.get(k1));
-				if (compare == 0) return 1;
-				else return compare;
-			}
+		Comparator<K> valueComparator = (k1, k2) -> {
+			int compare = map.get(k2).compareTo(map.get(k1));
+			if (compare == 0) return 1;
+			else return compare;
 		};
-		Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+		Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
 	}
@@ -323,14 +308,12 @@ public class CPUManager {
 	 * @return sorted map
 	 */
 	private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
-		Comparator<K> valueComparator =  new Comparator<K>() {
-			public int compare(K k1, K k2) {
-				int compare = ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
-				if (compare == 0) return 1;
-				else return compare;
-			}
+		Comparator<K> valueComparator = (k1, k2) -> {
+			int compare = ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
+			if (compare == 0) return 1;
+			else return compare;
 		};
-		Map<K, AtomicInteger> sortedByValues = new TreeMap<K, AtomicInteger>(valueComparator);
+		Map<K, AtomicInteger> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
 	}
@@ -342,13 +325,13 @@ public class CPUManager {
 	 * @param map - map to sort
 	 * @return list of keys sorted from highest usage to lowest
 	 */
-	private <K, L> List<K> sortKeys(Map<K, Map<L, Long>> map){
-		Map<K, Long> simplified = new LinkedHashMap<K, Long>();
-		for (Entry<K, Map<L, Long>> entry : map.entrySet()) {
+	private <K> List<K> sortKeys(Map<K, EnumMap<UsageType, Long>> map){
+		Map<K, Long> simplified = new LinkedHashMap<>();
+		for (Entry<K, EnumMap<UsageType, Long>> entry : map.entrySet()) {
 			simplified.put(entry.getKey(), sumValues(entry.getValue()));
 		}
 		simplified = sortByValue(simplified);
-		List<K> sortedKeys = new ArrayList<K>();
+		List<K> sortedKeys = new ArrayList<>();
 		for (K key : simplified.keySet()) {
 			sortedKeys.add(key);
 		}
@@ -377,7 +360,7 @@ public class CPUManager {
 	public void addTime(Object feature, UsageType type, long nanoseconds) {
 		Map<UsageType, AtomicLong> usage = featureUsageCurrent.get(feature);
 		if (usage == null) {
-			usage = new ConcurrentHashMap<UsageType, AtomicLong>();
+			usage = new ConcurrentHashMap<>();
 			featureUsageCurrent.put(feature, usage);
 		}
 		try {

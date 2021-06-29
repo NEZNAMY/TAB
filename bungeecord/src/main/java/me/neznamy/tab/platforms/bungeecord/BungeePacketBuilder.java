@@ -38,24 +38,24 @@ public class BungeePacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
-		BossBar bungeePacket = new BossBar(packet.id, packet.operation.ordinal());
-		bungeePacket.setHealth(packet.pct);
-		bungeePacket.setTitle(packet.name == null ? null : IChatBaseComponent.optimizedComponent(packet.name).toString(clientVersion));
-		bungeePacket.setColor(packet.color == null ? 0 : packet.color.ordinal());
-		bungeePacket.setDivision(packet.overlay == null ? 0: packet.overlay.ordinal());
+		BossBar bungeePacket = new BossBar(packet.getId(), packet.getOperation().ordinal());
+		bungeePacket.setHealth(packet.getPct());
+		bungeePacket.setTitle(packet.getName() == null ? null : IChatBaseComponent.optimizedComponent(packet.getName()).toString(clientVersion));
+		bungeePacket.setColor(packet.getColor() == null ? 0 : packet.getColor().ordinal());
+		bungeePacket.setDivision(packet.getOverlay() == null ? 0: packet.getOverlay().ordinal());
 		bungeePacket.setFlags(packet.getFlags());
 		return bungeePacket;
 	}
 
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-		return new Chat(packet.message.toString(clientVersion), (byte) packet.type.ordinal());
+		return new Chat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
 	}
 
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
-		List<Item> items = new ArrayList<Item>();
-		for (PlayerInfoData data : packet.entries) {
+		List<Item> items = new ArrayList<>();
+		for (PlayerInfoData data : packet.getEntries()) {
 			Item item = new Item();
 			if (data.displayName != null) {
 				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
@@ -78,45 +78,45 @@ public class BungeePacketBuilder implements PacketBuilder {
 			items.add(item);
 		}
 		PlayerListItem bungeePacket = new PlayerListItem();
-		bungeePacket.setAction(PlayerListItem.Action.valueOf(packet.action.toString().replace("GAME_MODE", "GAMEMODE")));
+		bungeePacket.setAction(PlayerListItem.Action.valueOf(packet.getAction().toString().replace("GAME_MODE", "GAMEMODE")));
 		bungeePacket.setItems(items.toArray(new Item[0]));
 		return bungeePacket;
 	}
 
 	@Override
 	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
-		return new PlayerListHeaderFooter(packet.header.toString(clientVersion, true), packet.footer.toString(clientVersion, true));
+		return new PlayerListHeaderFooter(packet.getHeader().toString(clientVersion, true), packet.getFooter().toString(clientVersion, true));
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-		return new ScoreboardDisplay((byte)packet.slot, packet.objectiveName);
+		return new ScoreboardDisplay((byte)packet.getSlot(), packet.getObjectiveName());
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-		return new ScoreboardObjective(packet.objectiveName, jsonOrCut(packet.displayName, clientVersion, 32), packet.renderType == null ? null : HealthDisplay.valueOf(packet.renderType.toString()), (byte)packet.method);
+		return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getMethod());
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
-		return new ScoreboardScore(packet.player, (byte) packet.action.ordinal(), packet.objectiveName, packet.score);
+		return new ScoreboardScore(packet.getPlayer(), (byte) packet.getAction().ordinal(), packet.getObjectiveName(), packet.getScore());
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
 		int color = 0;
 		if (clientVersion.getMinorVersion() >= 13) {
-			color = (packet.color != null ? packet.color : EnumChatFormat.lastColorsOf(packet.playerPrefix)).getNetworkId();
+			color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).getNetworkId();
 		}
-		return new Team(packet.name, (byte)packet.method, jsonOrCut(packet.name, clientVersion, 16), jsonOrCut(packet.playerPrefix, clientVersion, 16), jsonOrCut(packet.playerSuffix, clientVersion, 16), 
-				packet.nametagVisibility, packet.collisionRule, color, (byte)packet.options, packet.players.toArray(new String[0]));
+		return new Team(packet.getName(), (byte)packet.getMethod(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16), 
+				packet.getNametagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers().toArray(new String[0]));
 	}
 	
 	@Override
 	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
 		PlayerListItem item = (PlayerListItem) bungeePacket;
-		List<PlayerInfoData> listData = new ArrayList<PlayerInfoData>();
+		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Item i : item.getItems()) {
 			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.fromString(i.getDisplayName())));
 		}

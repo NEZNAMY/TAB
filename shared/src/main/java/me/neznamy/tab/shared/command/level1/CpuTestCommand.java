@@ -19,15 +19,12 @@ public class CpuTestCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		new Thread(new Runnable() {
+		new Thread(() -> {
 
-			@Override
-			public void run() {
-				sendMessage(sender, "&9Performing CPU test");
-				long time = System.currentTimeMillis();
-				test();
-				sendMessage(sender, "&9Task took &6" + (System.currentTimeMillis()-time) + "ms &9to process");
-			}
+			sendMessage(sender, "&9Performing CPU test");
+			long time = System.currentTimeMillis();
+			test();
+			sendMessage(sender, "&9Task took &6" + (System.currentTimeMillis()-time) + "ms &9to process");
 		}).start();
 	}
 	

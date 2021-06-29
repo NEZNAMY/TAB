@@ -31,7 +31,7 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 	
 	@Override
 	public List<Placeholder> registerPlaceholders() {
-		List<Placeholder> placeholders = new ArrayList<Placeholder>();
+		List<Placeholder> placeholders = new ArrayList<>();
 		for (RegisteredServer rServer : server.getAllServers()) {
 			placeholders.add(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
 				public String get() {
@@ -41,20 +41,20 @@ public class VelocityPlaceholderRegistry implements PlaceholderRegistry {
 		}
 		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(TabPlayer p) {
-				int var = 0;
+				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (!all.isVanished() || p.hasPermission("tab.seevanished")) var++;
+					if (!all.isVanished() || p.hasPermission("tab.seevanished")) count++;
 				}
-				return String.valueOf(var);
+				return String.valueOf(count);
 			}
 		});
 		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
 			public String get(TabPlayer p) {
-				int var = 0;
+				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (all.isStaff() && (!all.isVanished() || p.hasPermission("tab.seevanished"))) var++;
+					if (all.isStaff() && (!all.isVanished() || p.hasPermission("tab.seevanished"))) count++;
 				}
-				return String.valueOf(var);
+				return String.valueOf(count);
 			}
 		});
 		return placeholders;

@@ -28,7 +28,7 @@ public class BossBarCommand extends SubCommand{
 			sendMessage(sender, "&cThis command must be ran from the game");
 			return;
 		}
-		if (!bossbar.permToToggle || sender.hasPermission("tab.togglebar")) {
+		if (!bossbar.isPermToToggle() || sender.hasPermission("tab.togglebar")) {
 			sender.setBossbarVisible(!sender.hasBossbarVisible(), true);
 		} else {
 			sender.sendMessage(getTranslation("no_permission"), true);

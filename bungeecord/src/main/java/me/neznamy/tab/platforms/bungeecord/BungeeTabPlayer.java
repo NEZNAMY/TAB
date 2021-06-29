@@ -36,7 +36,8 @@ public class BungeeTabPlayer extends ITabPlayer {
 			directionData = f.get(Protocol.GAME);
 			getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class);
 			getId.setAccessible(true);
-			(wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
+			wrapperField = InitialHandler.class.getDeclaredField("ch");
+			wrapperField.setAccessible(true);
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to initialize fields for packet analysis", e);
 		}
@@ -48,9 +49,10 @@ public class BungeeTabPlayer extends ITabPlayer {
 	/**
 	 * Constructs new instance for given player
 	 * @param p - velocity player
-	 * @throws Exception - if reflection fails
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public BungeeTabPlayer(ProxiedPlayer p) throws Exception {
+	public BungeeTabPlayer(ProxiedPlayer p) throws IllegalArgumentException, IllegalAccessException {
 		player = p;
 		if (p.getServer() != null) {
 			world = p.getServer().getInfo().getName();
@@ -65,7 +67,7 @@ public class BungeeTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean hasPermission(String permission) {
-		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
+		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
 			Main.plm.requestAttribute(this, merge);
 			if (!attributes.containsKey(merge)) return false;

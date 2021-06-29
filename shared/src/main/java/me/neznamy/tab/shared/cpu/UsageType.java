@@ -42,7 +42,7 @@ public enum UsageType {
 	REFRESHING("Refreshing"),
 	REPEATING_TASK("Repeating task"),
 	TICKING_VEHICLES("Ticking vehicles"),
-	v1_8_0_BUG_COMPENSATION("Compensating for 1.8.0 bugs");
+	V1_8_0_BUG_COMPENSATION("Compensating for 1.8.0 bugs");
 	
 	//user-friendly name to be used in /tab cpu
 	private String friendlyName;

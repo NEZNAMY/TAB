@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -34,7 +35,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 public class FeatureManager {
 
 	//list of registered features
-	private Map<String, Feature> features = new LinkedHashMap<String, Feature>();
+	private Map<String, Feature> features = new LinkedHashMap<>();
 	
 	//tab instance
 	private TAB tab;
@@ -150,11 +151,13 @@ public class FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
-	 * @throws Exception 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
-	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws Exception {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
-		List<PlayerInfoPacketListener> listeners = new ArrayList<PlayerInfoPacketListener>();
+		List<PlayerInfoPacketListener> listeners = new ArrayList<>();
 		for (Feature f : getAllFeatures()) {
 			if (f instanceof PlayerInfoPacketListener) listeners.add((PlayerInfoPacketListener) f);
 		}
@@ -314,9 +317,10 @@ public class FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 * @param packet - the packet
 	 * @return true if packet should be cancelled, false if not
-	 * @throws Exception - if something fails
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws Exception {
+	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalArgumentException, IllegalAccessException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = tab.getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
@@ -333,8 +337,10 @@ public class FeatureManager {
 	/**
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws Exception {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalArgumentException, IllegalAccessException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = tab.getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);

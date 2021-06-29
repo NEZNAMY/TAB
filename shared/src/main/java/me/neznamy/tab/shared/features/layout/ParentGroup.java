@@ -25,7 +25,7 @@ public class ParentGroup {
 	}
 	
 	public Map<Integer, IChatBaseComponent> createLayout(TabPlayer viewer, List<TabPlayer> playersMeetingCondition){
-		List<IChatBaseComponent> texts = new ArrayList<IChatBaseComponent>();
+		List<IChatBaseComponent> texts = new ArrayList<>();
 		for (ChildGroup child : childGroups) {
 			List<TabPlayer> selected = child.selectPlayers(playersMeetingCondition);
 			if (child.getTitle() != null) {
@@ -40,11 +40,7 @@ public class ParentGroup {
 			playersMeetingCondition.removeAll(selected);
 		}
 		
-		//will not be separated properly
-/*		for (TabPlayer player : playersMeetingCondition) {
-			texts.add(((Playerlist)Shared.featureManager.getFeature("playerlist")).getTabFormat(player, viewer));
-		}*/
-		Map<Integer, IChatBaseComponent> map = new HashMap<Integer, IChatBaseComponent>();
+		Map<Integer, IChatBaseComponent> map = new HashMap<>();
 		int index = 0;
 		for (Integer slot : slots) {
 			if (texts.size() > index) {

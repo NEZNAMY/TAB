@@ -17,8 +17,8 @@ public class AnnounceCommand extends SubCommand {
 	 */
 	public AnnounceCommand() {
 		super("announce", null);
-		subcommands.put("bar", new AnnounceBarCommand());
-		subcommands.put("scoreboard", new AnnounceScoreboardCommand());
+		getSubcommands().put("bar", new AnnounceBarCommand());
+		getSubcommands().put("scoreboard", new AnnounceScoreboardCommand());
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class AnnounceCommand extends SubCommand {
 			return;
 		}
 		String arg0 = args[0].toLowerCase();
-		SubCommand command = subcommands.get(arg0);
+		SubCommand command = getSubcommands().get(arg0);
 		if (command != null) {
 			if (command.hasPermission(sender)) {
 				command.execute(sender, Arrays.copyOfRange(args, 1, args.length));

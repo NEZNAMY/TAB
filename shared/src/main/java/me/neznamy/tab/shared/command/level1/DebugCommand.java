@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -54,8 +55,8 @@ public class DebugCommand extends SubCommand {
 		String c2 = tab.isPremium() ? "&b" : "&a";
 		sendMessage(sender, "&6Server version: " + c2 + tab.getPlatform().getServerVersion());
 		sendMessage(sender, "&6Plugin version: " + c2 + tab.getPluginVersion() + (tab.isPremium() ? " Premium" : ""));
-		if (tab.getErrorManager().errorLog.exists()) {
-			sendMessage(sender, "&6" + tab.getErrorManager().errorLog.getPath() + " size: &c" + tab.getErrorManager().errorLog.length()/1024 + "KB");
+		if (tab.getErrorManager().getErrorLog().exists()) {
+			sendMessage(sender, "&6" + tab.getErrorManager().getErrorLog().getPath() + " size: &c" + tab.getErrorManager().getErrorLog().length()/1024 + "KB");
 		}
 		sendMessage(sender, "&6Permission plugin: " + c2 + tab.getPermissionPlugin().getName());
 		sendMessage(sender, "&6Permission group choice logic: " + c2 + getGroupChoiceLogic());
@@ -68,7 +69,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, getTeamNameNote(analyzed));
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
-			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.disabledWorlds, analyzed.getWorldName());
+			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.getDisabledWorlds(), analyzed.getWorldName());
 			showProperty(sender, analyzed, "tabprefix", disabledPlayerlist);
 			showProperty(sender, analyzed, "tabsuffix", disabledPlayerlist);
 			showProperty(sender, analyzed, "customtabname", disabledPlayerlist);
@@ -97,9 +98,9 @@ public class DebugCommand extends SubCommand {
 	 */
 	private String getGroupChoiceLogic() {
 		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
-		if (group.groupsByPermissions) {
+		if (group.isGroupsByPermissions()) {
 			return "Permissions";
-		} else if (group.usePrimaryGroup) {
+		} else if (group.isUsePrimaryGroup()) {
 			return "Primary group";
 		} else {
 			return "Choose from list";
@@ -114,12 +115,12 @@ public class DebugCommand extends SubCommand {
 		NameTag nametag = TAB.getInstance().getFeatureManager().getNameTagFeature();
 		if (nametag != null) {
 			if (TAB.getInstance().isPremium()) {
-				String sortingType = nametag.sorting.typesToString();
+				String sortingType = nametag.getSorting().typesToString();
 				if (sortingType.contains("PLACEHOLDER")) {
-					sortingType += " - " + nametag.sorting.sortingPlaceholder;
+					sortingType += " - " + nametag.getSorting().getSortingPlaceholder();
 				}
 				return sortingType;
-			} else if (nametag.sorting.sorting.get(0).getClass().getSimpleName().equals("GroupPermission")) {
+			} else if (nametag.getSorting().getSorting().get(0) instanceof GroupPermission) {
 				return "Permissions &c(this option was enabled by user, it is disabled by default!)";
 			} else {
 				return "Groups";
@@ -136,9 +137,9 @@ public class DebugCommand extends SubCommand {
 	 */
 	private String getGroup(TabPlayer analyzed) {
 		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
-		if (group.groupsByPermissions) {
+		if (group.isGroupsByPermissions()) {
 			return "&eHighest permission for group: &a" + analyzed.getGroup();
-		} else if (group.usePrimaryGroup) {
+		} else if (group.isUsePrimaryGroup()) {
 			return "&ePrimary permission group: &a" + analyzed.getGroup();
 		} else {
 			try {
@@ -185,10 +186,10 @@ public class DebugCommand extends SubCommand {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Object> getExtraLines(){
-		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<Object>();
+		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<>();
 		if (TAB.getInstance().isPremium()) {
-			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().premiumconfig.getObject("unlimited-nametag-mode-dynamic-lines"));
-			lines.addAll(TAB.getInstance().getConfiguration().premiumconfig.getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
+			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().getPremiumConfig().getObject("unlimited-nametag-mode-dynamic-lines"));
+			lines.addAll(TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
 			lines.remove("nametag");
 			lines.add("customtagname");
 			return lines;
@@ -218,6 +219,6 @@ public class DebugCommand extends SubCommand {
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<String>();
+		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<>();
 	}
 }

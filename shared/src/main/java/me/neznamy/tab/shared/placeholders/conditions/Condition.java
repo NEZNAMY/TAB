@@ -17,19 +17,19 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 public abstract class Condition {
 	
 	//map of all defined conditions in premiumconfig
-	public static Map<String, Condition> conditions = new HashMap<String, Condition>();
+	private static Map<String, Condition> conditions = new HashMap<>();
 	
 	//name of this condition
 	private String name;
 	
 	//list of subconditions
-	protected List<SimpleCondition> subconditions = new ArrayList<SimpleCondition>();
+	protected List<SimpleCondition> subconditions = new ArrayList<>();
 	
 	//value to return if condition is met
-	public String yes;
+	private String yes;
 	
 	//value to return if condition is not met
-	public String no;
+	private String no;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -38,7 +38,7 @@ public abstract class Condition {
 	 * @param yes - value to return if condition is met
 	 * @param no - value to return if condition is not met
 	 */
-	public Condition(String name, List<String> conditions, String yes, String no) {
+	protected Condition(String name, List<String> conditions, String yes, String no) {
 		this.name = name;
 		this.yes = yes;
 		this.no = no;
@@ -69,7 +69,7 @@ public abstract class Condition {
 	 * @return yes or no value depending on if condition is met or not
 	 */
 	public String getText(TabPlayer p) {
-		return isMet(p) ? yes : no;
+		return isMet(p) ? getYes() : getNo();
 	}
 
 	/**
@@ -114,10 +114,26 @@ public abstract class Condition {
 	 */
 	public static Condition getCondition(String string) {
 		if (string == null) return null;
-		if (conditions.containsKey(string)) {
-			return conditions.get(string);
+		if (getConditions().containsKey(string)) {
+			return getConditions().get(string);
 		} else {
 			return Condition.compile(null, Lists.newArrayList(string.split(";")), "AND", null, null);
 		}
+	}
+
+	public static Map<String, Condition> getConditions() {
+		return conditions;
+	}
+
+	public static void setConditions(Map<String, Condition> conditions) {
+		Condition.conditions = conditions;
+	}
+
+	public String getYes() {
+		return yes;
+	}
+
+	public String getNo() {
+		return no;
 	}
 }

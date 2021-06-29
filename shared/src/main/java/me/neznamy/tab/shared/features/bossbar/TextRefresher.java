@@ -31,7 +31,7 @@ public class TextRefresher implements Refreshable {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!refreshed.getActiveBossBars().contains(line)) return;
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.uuid, refreshed.getProperty("bossbar-title-" + line.name).updateAndGet()), TabFeature.BOSSBAR);
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUuid(), refreshed.getProperty("bossbar-title-" + line.getName()).updateAndGet()), TabFeature.BOSSBAR);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class TextRefresher implements Refreshable {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.title);
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getTitle());
 	}
 
 	@Override

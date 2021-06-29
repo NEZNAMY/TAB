@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
+import me.neznamy.tab.shared.TAB;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NMSStorage {
@@ -29,7 +30,7 @@ public class NMSStorage {
 	private String serverPackage;
 
 	//server minor version such as "16"
-	public int minorVersion;
+	private int minorVersion;
 
 	public Class<?> Entity;
 	public Class<?> EntityLiving;
@@ -222,9 +223,12 @@ public class NMSStorage {
 
 	/**
 	 * Creates new instance, initializes required NMS classes and fields
-	 * @throws Exception - if something fails
+	 * @throws NoSuchFieldException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws ClassNotFoundException 
 	 */
-	public NMSStorage() throws Exception {
+	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 		initializeClasses();
@@ -252,9 +256,9 @@ public class NMSStorage {
 
 	/**
 	 * Initializes required NMS classes
-	 * @throws Exception - if something fails
+	 * @throws ClassNotFoundException 
 	 */
-	private void initializeClasses() throws Exception {
+	private void initializeClasses() throws ClassNotFoundException {
 		DataWatcher = getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher");
 		DataWatcherItem = getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
 		EntityPlayer = getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer");
@@ -283,7 +287,7 @@ public class NMSStorage {
 		ScoreboardScore = getNMSClass("net.minecraft.world.scores.ScoreboardScore", "ScoreboardScore");
 		IScoreboardCriteria = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria");
 
-		if (minorVersion >= 7) {
+		if (getMinorVersion() >= 7) {
 			ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
 			ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
 			ChatComponentText = getNMSClass("net.minecraft.network.chat.ChatComponentText", "ChatComponentText");
@@ -296,7 +300,7 @@ public class NMSStorage {
 			EnumEntityUseAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction");
 		}
 
-		if (minorVersion >= 8) {
+		if (getMinorVersion() >= 8) {
 			PacketPlayOutPlayerInfo = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
 			PacketPlayOutPlayerListHeaderFooter = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
 			EnumPlayerInfoAction = (Class<Enum>) getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
@@ -306,29 +310,30 @@ public class NMSStorage {
 			EnumScoreboardAction = (Class<Enum>) getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
 			EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
 		}
-		if (minorVersion >= 9) {
+		if (getMinorVersion() >= 9) {
 			DataWatcherObject = getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
 			DataWatcherRegistry = getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
 			DataWatcherSerializer = getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
 			EnumTeamPush = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
 			
 		}
-		if (minorVersion >= 12) {
+		if (getMinorVersion() >= 12) {
 			ChatMessageType = (Class<Enum>) getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
 		}
-		if (minorVersion >= 16) {
+		if (getMinorVersion() >= 16) {
 			ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
 		}
-		if (minorVersion >= 17) {
+		if (getMinorVersion() >= 17) {
 			PacketPlayOutScoreboardTeam_a = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a");
 		}
 	}
 
 	/**
 	 * Initializes required NMS constructors
-	 * @throws Exception - if something fails
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
 	 */
-	private void initializeConstructors() throws Exception {
+	private void initializeConstructors() throws NoSuchMethodException, SecurityException {
 		newDataWatcher = DataWatcher.getConstructors()[0];
 		newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class);
 		newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
@@ -339,56 +344,58 @@ public class NMSStorage {
 		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
 		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
 		newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor(int.class, ScoreboardObjective);
-		if (minorVersion >= 7) {
+		if (getMinorVersion() >= 7) {
 			newChatComponentText = ChatComponentText.getConstructor(String.class);
 			newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
 			newChatHoverable = ChatHoverable.getConstructors()[0];
 		}
-		if (minorVersion >= 8) {
+		if (getMinorVersion() >= 8) {
 			newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
 			newPlayerInfoData = PlayerInfoData.getConstructors()[0];
 		}
-		if (minorVersion >= 9) {
+		if (getMinorVersion() >= 9) {
 			newDataWatcherObject = DataWatcherObject.getConstructors()[0];
 		}
-		if (minorVersion >= 13) {
+		if (getMinorVersion() >= 13) {
 			newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor(ScoreboardObjective, int.class);
 			newPacketPlayOutScoreboardScore_1_13 = PacketPlayOutScoreboardScore.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
 		} else {
 			newPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective.getConstructor();
 			newPacketPlayOutScoreboardScore_String = PacketPlayOutScoreboardScore.getConstructor(String.class);
-			if (minorVersion >= 8) {
+			if (getMinorVersion() >= 8) {
 				newPacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore.getConstructor(ScoreboardScore);
 			} else {
 				newPacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore.getConstructor(ScoreboardScore, int.class);
 			}
 		}
-		if (minorVersion >= 16) {
+		if (getMinorVersion() >= 16) {
 			newChatModifier = getConstructor(ChatModifier, 10);
 			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
-		} else if (minorVersion >= 7) {
+		} else if (getMinorVersion() >= 7) {
 			newChatModifier = ChatModifier.getConstructor();
-			if (minorVersion >= 12) {
+			if (getMinorVersion() >= 12) {
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType);
-			} else if (minorVersion >= 8) {
+			} else if (getMinorVersion() >= 8) {
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, byte.class);
 			} else {
 				newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent);
 			}
 		}
-		if (minorVersion >= 17) {
+		if (getMinorVersion() >= 17) {
 			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor(IChatBaseComponent, IChatBaseComponent);
 		} else  {
-			newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
+			if (getMinorVersion() >= 8) {
+				newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
+			}
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
 		}
 	}
 
 	/**
 	 * Initializes required NMS fields
-	 * @throws Exception - if something fails
+	 * @throws NoSuchFieldException 
 	 */
-	private void initializeFields() throws Exception {
+	private void initializeFields() throws NoSuchFieldException {
 		PING = getField(EntityPlayer, "ping", "latency", "e");
 		PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
 
@@ -414,10 +421,11 @@ public class NMSStorage {
 		PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
 		PacketPlayOutSpawnEntityLiving_PITCH = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
 
-		(PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOutEntityDestroy.getDeclaredFields()[0]).setAccessible(true);
+		PacketPlayOutEntityDestroy_ENTITIES = PacketPlayOutEntityDestroy.getDeclaredFields()[0];
+		PacketPlayOutEntityDestroy_ENTITIES.setAccessible(true);
 		PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
 
-		if (minorVersion >= 7) {
+		if (getMinorVersion() >= 7) {
 			NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
 			ChatBaseComponent_extra = getFields(ChatBaseComponent, List.class).get(0);
 			ChatBaseComponent_modifier = getFields(ChatBaseComponent, ChatModifier).get(0);
@@ -437,7 +445,7 @@ public class NMSStorage {
 			PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
 		}
 
-		if (minorVersion >= 8) {
+		if (getMinorVersion() >= 8) {
 			CHANNEL = getFields(NetworkManager, Channel.class).get(0);
 			PacketPlayOutPlayerInfo_ACTION = getFields(PacketPlayOutPlayerInfo, EnumPlayerInfoAction).get(0);
 			PacketPlayOutPlayerInfo_PLAYERS = getFields(PacketPlayOutPlayerInfo, List.class).get(0);
@@ -446,7 +454,7 @@ public class NMSStorage {
 			PacketPlayOutScoreboardObjective_RENDERTYPE = getFields(PacketPlayOutScoreboardObjective, EnumScoreboardHealthDisplay).get(0);
 		}
 		
-		if (minorVersion >= 9) {
+		if (getMinorVersion() >= 9) {
 			DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
 			DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
 			DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
@@ -470,24 +478,24 @@ public class NMSStorage {
 			PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(4);
 		}
 		
-		if (minorVersion >= 13) {
+		if (getMinorVersion() >= 13) {
 			PacketPlayOutScoreboardObjective_DISPLAYNAME = getFields(PacketPlayOutScoreboardObjective, IChatBaseComponent).get(0);
 		} else {
 			PacketPlayOutScoreboardObjective_DISPLAYNAME = getFields(PacketPlayOutScoreboardObjective, String.class).get(1);
 		}
 		
-		if (minorVersion <= 14) {
+		if (getMinorVersion() <= 14) {
 			PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
 		}
 
-		if (minorVersion >= 16) {
+		if (getMinorVersion() >= 16) {
 			//1.16+
 			fields = getFields(ChatHexColor, String.class);
 			ChatHexColor_name = fields.get(fields.size()-1);
 			ChatHexColor_rgb = getFields(ChatHexColor, int.class).get(0);
 			ChatHoverable_value = getFields(ChatHoverable, Object.class).get(0);
 			ChatModifier_color = getFields(ChatModifier, ChatHexColor).get(0);
-		} else if (minorVersion >= 7) {
+		} else if (getMinorVersion() >= 7) {
 			ChatHoverable_value = getFields(ChatHoverable, IChatBaseComponent).get(0);
 			ChatModifier_color = getFields(ChatModifier, EnumChatFormat).get(0);
 		}
@@ -495,20 +503,22 @@ public class NMSStorage {
 
 	/**
 	 * Initializes required NMS methods
-	 * @throws Exception - if something fails
+	 * @throws NoSuchMethodException 
+	 * @throws ClassNotFoundException 
+	 * @throws SecurityException 
 	 */
-	private void initializeMethods() throws Exception {
+	private void initializeMethods() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
 		getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
 		sendPacket = getMethod(PlayerConnection, new String[]{"sendPacket", "func_147359_a"}, Packet);
 		ScoreboardTeam_getPlayerNameSet = getMethod(ScoreboardTeam, new String[]{"getPlayerNameSet", "func_96670_d"});
 		ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c"}, int.class);
-		if (minorVersion >= 7) {
+		if (getMinorVersion() >= 7) {
 			ChatComponentText_addSibling = getMethod(ChatComponentText, new String[]{"addSibling", "a", "func_150257_a"}, IChatBaseComponent); //v1.7.R4+, v1.7.R3-
 			ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, new String[]{"a", "func_150699_a"}, String.class);
 			EnumClickAction_a = getMethod(EnumClickAction, new String[]{"a", "func_150672_a"}, String.class);
 			EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a"}, String.class);
 		}
-		if (minorVersion >= 8) {
+		if (getMinorVersion() >= 8) {
 	        PlayerInfoData_getProfile = PlayerInfoData.getMethod("a");
 	        PlayerInfoData_getLatency = PlayerInfoData.getMethod("b");
 	        PlayerInfoData_getGamemode = PlayerInfoData.getMethod("c");
@@ -516,13 +526,13 @@ public class NMSStorage {
 			ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, EnumNameTagVisibility);
 			getProfile = EntityPlayer.getMethod("getProfile");
 		}
-		if (minorVersion >= 9) {
+		if (getMinorVersion() >= 9) {
 			ScoreboardTeam_setCollisionRule = ScoreboardTeam.getMethod("setCollisionRule", EnumTeamPush);
 			DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
 		} else {
 			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
 		}
-		if (minorVersion >= 13) {
+		if (getMinorVersion() >= 13) {
 			ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
 			ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
 			ScoreboardTeam_setColor = ScoreboardTeam.getMethod("setColor", EnumChatFormat);
@@ -530,11 +540,11 @@ public class NMSStorage {
 			ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "func_96666_b"}, String.class);
 			ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "func_96662_c"}, String.class);
 		}
-		if (minorVersion >= 16) {
+		if (getMinorVersion() >= 16) {
 			ChatHexColor_ofInt = ChatHexColor.getMethod("a", int.class);
 			ChatHexColor_ofString = ChatHexColor.getMethod("a", String.class);
 		}
-		if (minorVersion >= 17) {
+		if (getMinorVersion() >= 17) {
 			PacketPlayOutScoreboardTeam_of = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam);
 			PacketPlayOutScoreboardTeam_ofBoolean = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam, boolean.class);
 			PacketPlayOutScoreboardTeam_ofString = PacketPlayOutScoreboardTeam.getMethod("a", ScoreboardTeam, String.class, PacketPlayOutScoreboardTeam_a);
@@ -547,9 +557,9 @@ public class NMSStorage {
 	 * @param clazz - class to show methods of
 	 */
 	public void showMethods(Class<?> clazz) {
-		System.out.println("--- " + clazz.getSimpleName() + " ---");
+		TAB.getInstance().getPlatform().sendConsoleMessage("--- " + clazz.getSimpleName() + " ---", false);
 		for (Method m : clazz.getMethods()) {
-			System.out.println(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")");
+			TAB.getInstance().getPlatform().sendConsoleMessage(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")", false);
 		}
 	}
 
@@ -564,6 +574,7 @@ public class NMSStorage {
 			try {
 				return getNMSClass(name);
 			} catch (ClassNotFoundException e) {
+				//not the first class name in array
 			}
 		}
 		throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
@@ -576,7 +587,7 @@ public class NMSStorage {
 	 * @throws ClassNotFoundException if class was not found
 	 */
 	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		if (minorVersion >= 17) {
+		if (getMinorVersion() >= 17) {
 			return Class.forName(name);
 		} else {
 			try {
@@ -604,6 +615,7 @@ public class NMSStorage {
 			try {
 				return clazz.getMethod(name, parameterTypes);
 			} catch (Exception e) {
+				//not the first method in array
 			}
 		}
 		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " in class " + clazz.getName());
@@ -617,10 +629,12 @@ public class NMSStorage {
 	 */
 	public List<Field> getFields(Class<?> clazz, Class<?> type){
 		if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
-		List<Field> list = new ArrayList<Field>();
+		List<Field> list = new ArrayList<>();
 		for (Field field : clazz.getDeclaredFields()) {
-			field.setAccessible(true);
-			if (field.getType() == type) list.add(field);
+			if (field.getType() == type) {
+				field.setAccessible(true);
+				list.add(field);
+			}
 		}
 		return list;
 	}
@@ -659,8 +673,14 @@ public class NMSStorage {
 		for (String name : potentialNames) {
 			try {
 				return getField(clazz, name);
-			} catch (Exception e) {}
+			} catch (NoSuchFieldException e) {
+				//not the first field name from array
+			}
 		}
 		throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
+	}
+
+	public int getMinorVersion() {
+		return minorVersion;
 	}
 }

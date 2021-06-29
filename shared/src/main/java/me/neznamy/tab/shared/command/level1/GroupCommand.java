@@ -29,7 +29,7 @@ public class GroupCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().config.set("Groups." + group, null);
+					TAB.getInstance().getConfiguration().getConfig().set("Groups." + group, null);
 					for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.forceRefresh();
@@ -39,7 +39,7 @@ public class GroupCommand extends SubCommand {
 				}
 				return;
 			}
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						saveGroup(sender, group, type, value);
@@ -73,8 +73,8 @@ public class GroupCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().config.getObject("Groups." + group.replace(".", "@#@") + "." + type)))) return;
-		TAB.getInstance().getConfiguration().config.set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Groups." + group.replace(".", "@#@") + "." + type)))) return;
+		TAB.getInstance().getConfiguration().getConfig().set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
@@ -85,9 +85,9 @@ public class GroupCommand extends SubCommand {
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		List<String> suggestions = new ArrayList<String>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 2) {
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 		}

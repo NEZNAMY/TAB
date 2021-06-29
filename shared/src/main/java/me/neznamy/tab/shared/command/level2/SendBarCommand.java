@@ -46,7 +46,7 @@ public class SendBarCommand extends SubCommand{
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
-		BossBarLine bar = feature.lines.get(barname);
+		BossBarLine bar = feature.getLines().get(barname);
 		if (bar == null) {
 			sendMessage(sender, "No bar found with name \"" + bar + "\"");
 			return;
@@ -62,8 +62,8 @@ public class SendBarCommand extends SubCommand{
 					bar.remove(target);
 					target.getActiveBossBars().remove(bar);
 				}
-			} catch (Exception e) {
-
+			} catch (InterruptedException e) {
+				//plugin disabled
 			}
 		}).start();
 	}
@@ -71,15 +71,15 @@ public class SendBarCommand extends SubCommand{
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		BossBar b = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
-		if (b == null) return new ArrayList<String>();
-		List<String> suggestions = new ArrayList<String>();
+		if (b == null) return new ArrayList<>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {
 			return getPlayers(arguments[0]);
 		} else if (arguments.length == 2) {
-			for (String bar : b.lines.keySet()) {
+			for (String bar : b.getLines().keySet()) {
 				if (bar.toLowerCase().startsWith(arguments[1].toLowerCase())) suggestions.add(bar);
 			}
-		} else if (arguments.length == 3 && b.lines.get(arguments[1]) != null){
+		} else if (arguments.length == 3 && b.getLines().get(arguments[1]) != null){
 			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
 				if (time.startsWith(arguments[2])) suggestions.add(time);
 			}

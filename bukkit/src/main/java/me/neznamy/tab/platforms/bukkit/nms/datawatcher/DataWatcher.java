@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 public class DataWatcher {
 
 	//datawatcher data
-	private Map<Integer, DataWatcherItem> dataValues = new HashMap<Integer, DataWatcherItem>();
+	private Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 	
 	//a helper for easier data write
 	private DataWatcherHelper helper = new DataWatcherHelper(this);
@@ -23,7 +24,7 @@ public class DataWatcher {
 	 * @param value - value
 	 */
 	public void setValue(DataWatcherObject type, Object value){
-		dataValues.put(type.position, new DataWatcherItem(type, value));
+		dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
 	}
 
 	/**
@@ -54,9 +55,12 @@ public class DataWatcher {
 	/**
 	 * Converts the class into an instance of NMS.DataWatcher
 	 * @return an instance of NMS.DataWatcher with same data
-	 * @throws Exception - if something fails
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public Object toNMS() throws Exception {
+	public Object toNMS() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
 		if (nms.newDataWatcher.getParameterCount() == 1) {
@@ -66,12 +70,12 @@ public class DataWatcher {
 		}
 		for (DataWatcherItem item : dataValues.values()) {
 			Object position;
-			if (nms.minorVersion >= 9) {
-				position = nms.newDataWatcherObject.newInstance(item.type.position, item.type.classType);
+			if (nms.getMinorVersion() >= 9) {
+				position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getClassType());
 			} else {
-				position = item.type.position;
+				position = item.getType().getPosition();
 			}
-			nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.value);
+			nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.getValue());
 		}
 		return nmsWatcher;
 	}
@@ -80,16 +84,20 @@ public class DataWatcher {
 	 * Reads NMS data watcher and returns and instance of this class with same data
 	 * @param nmsWatcher - NMS datawatcher to read
 	 * @return an instance of this class with same values
-	 * @throws Exception - if something fails
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static DataWatcher fromNMS(Object nmsWatcher) throws Exception{
+	public static DataWatcher fromNMS(Object nmsWatcher) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
 		DataWatcher watcher = new DataWatcher();
 		List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
 		if (items != null) {
 			for (Object watchableObject : items) {
 				DataWatcherItem w = DataWatcherItem.fromNMS(watchableObject);
-				watcher.setValue(w.type, w.value);
+				watcher.setValue(w.getType(), w.getValue());
 			}
 		}
 		return watcher;

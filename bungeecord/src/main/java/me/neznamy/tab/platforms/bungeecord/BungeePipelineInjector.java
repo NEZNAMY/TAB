@@ -29,7 +29,7 @@ import net.md_5.bungee.protocol.packet.Team;
 public class BungeePipelineInjector extends PipelineInjector {
 
 	//handler to inject before
-	private final String INJECT_POSITION = "inbound-boss";
+	private static final String injectPosition = "inbound-boss";
 	
 	//packets that must be deserialized and bungeecord does not do it automatically
 	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
@@ -50,7 +50,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BungeeChannelDuplexHandler(player));
+			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, new BungeeChannelDuplexHandler(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}
@@ -60,25 +60,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 	public void uninject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8) return;
 		if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
-	}
-
-	/**
-	 * Removes all real players from packet if the packet doesn't come from TAB
-	 * @param packet - packet to modify
-	 */
-	private void modifyPlayers(Team packet){
-		long time = System.nanoTime();
-		if (packet.getPlayers() == null) return;
-		Collection<String> col = Lists.newArrayList(packet.getPlayers());
-		for (TabPlayer p : tab.getPlayers()) {
-			if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && 
-					!p.hasTeamHandlingPaused() && !packet.getName().equals(p.getTeamName())) {
-				logTeamOverride(packet.getName(), p.getName());
-				col.remove(p.getName());
-			}
-		}
-		packet.setPlayers(col.toArray(new String[0]));
-		tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 	}
 	
 	/**
@@ -98,7 +79,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		}
 
 		@Override
-		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
 			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
 			tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
@@ -140,10 +121,33 @@ public class BungeePipelineInjector extends PipelineInjector {
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
 				}
-			} catch (Throwable e){
+			} catch (Exception e){
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
-			super.write(context, modifiedPacket, channelPromise);
+			try {
+				super.write(context, modifiedPacket, channelPromise);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Removes all real players from packet if the packet doesn't come from TAB
+		 * @param packet - packet to modify
+		 */
+		private void modifyPlayers(Team packet){
+			long time = System.nanoTime();
+			if (packet.getPlayers() == null) return;
+			Collection<String> col = Lists.newArrayList(packet.getPlayers());
+			for (TabPlayer p : tab.getPlayers()) {
+				if (col.contains(p.getName()) && !tab.getFeatureManager().getNameTagFeature().isDisabledWorld(p.getWorldName()) && 
+						!p.hasTeamHandlingPaused() && !packet.getName().equals(p.getTeamName())) {
+					logTeamOverride(packet.getName(), p.getName());
+					col.remove(p.getName());
+				}
+			}
+			packet.setPlayers(col.toArray(new String[0]));
+			tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 		
 		/**

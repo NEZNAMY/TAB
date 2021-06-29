@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Preconditions;
+
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
@@ -23,9 +25,12 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  * The primary API class to get instances of other API classes
  */
 public class TABAPI {
+	
+	private TABAPI() {
+	}
 
 	//placeholders registered via API
-	public static Map<String, Placeholder> APIPlaceholders = new HashMap<String, Placeholder>();
+	private static final Map<String, Placeholder> apiPlaceholders = new HashMap<>();
 
 	/**
 	 * Returns player object from given UUID
@@ -60,8 +65,8 @@ public class TABAPI {
 	 */
 	public static void enableUnlimitedNameTagModePermanently() {
 		if (isUnlimitedNameTagModeEnabled()) return;
-		TAB.getInstance().getConfiguration().config.set("change-nametag-prefix-suffix", true);
-		TAB.getInstance().getConfiguration().config.set("unlimited-nametag-prefix-suffix-mode.enabled", true);
+		TAB.getInstance().getConfiguration().getConfig().set("change-nametag-prefix-suffix", true);
+		TAB.getInstance().getConfiguration().getConfig().set("unlimited-nametag-prefix-suffix-mode.enabled", true);
 		TAB.getInstance().unload();
 		TAB.getInstance().load();
 	}
@@ -73,11 +78,11 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
-		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
+		Preconditions.checkNotNull(placeholder, "placeholder");
+		apiPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
-		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
 		pl.refreshPlaceholderUsage();
 	}
 
@@ -88,11 +93,11 @@ public class TABAPI {
 	 * @see registerServerConstant
 	 */
 	public static void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
-		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
+		Preconditions.checkNotNull(placeholder, "placeholder");
+		apiPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
-		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
 		pl.refreshPlaceholderUsage();
 	}
 
@@ -101,11 +106,11 @@ public class TABAPI {
 	 * @param placeholder - Placeholder handler
 	 */
 	public static void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
-		if (placeholder == null) throw new IllegalArgumentException("placeholder cannot be null");
-		APIPlaceholders.put(placeholder.getIdentifier(), placeholder);
+		Preconditions.checkNotNull(placeholder, "placeholder");
+		apiPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
 		pl.registerPlaceholder(placeholder);
-		pl.allUsedPlaceholderIdentifiers.add(placeholder.getIdentifier());
+		pl.getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
 		pl.refreshPlaceholderUsage();
 	}
 
@@ -123,7 +128,7 @@ public class TABAPI {
 		ScoreboardManager sbm = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = new me.neznamy.tab.shared.features.scoreboard.Scoreboard(sbm, name, title, lines);
-		sbm.APIscoreboards.add(sb);
+		sbm.getApiScoreboards().add(sb);
 		return sb;
 	}
 
@@ -161,7 +166,7 @@ public class TABAPI {
 		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (feature == null) throw new IllegalStateException("Bossbar feature is not enabled");
 		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
-		feature.lines.put(bar.getName(), (BossBarLine) bar);
+		feature.getLines().put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}
 
@@ -170,7 +175,7 @@ public class TABAPI {
 	 * @return placeholders registered via API
 	 */
 	public static Map<String, Placeholder> getAPIPlaceholders(){
-		return APIPlaceholders;
+		return apiPlaceholders;
 	}
 
 	/**
@@ -181,6 +186,6 @@ public class TABAPI {
 	 * @return true if it was registered, false if it already was registered before
 	 */
 	public static boolean registerSubCondition(String identifier, Class<? extends SimpleCondition> clazz) {
-		return SimpleCondition.conditionTypes.put(identifier, clazz) == null;
+		return SimpleCondition.getConditionTypes().put(identifier, clazz) == null;
 	}
 }

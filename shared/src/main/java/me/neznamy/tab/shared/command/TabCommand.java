@@ -56,17 +56,17 @@ public class TabCommand extends SubCommand {
 			registerSubCommand(new ScoreboardCommand());
 		}
 		Set<String> properties = Sets.newHashSet("tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname");
-		for (Object line : ((DebugCommand)subcommands.get("debug")).getExtraLines()) {
+		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
 		}
-		SubCommand.allProperties = properties.toArray(new String[0]);
+		SubCommand.setAllProperties(properties.toArray(new String[0]));
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String arg0 = args[0];
-			SubCommand command = subcommands.get(arg0.toLowerCase());
+			SubCommand command = getSubcommands().get(arg0.toLowerCase());
 			if (command != null) {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
@@ -112,7 +112,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!hasPermission(sender, "tab.tabcomplete")) return new ArrayList<String>();
+		if (!hasPermission(sender, "tab.tabcomplete")) return new ArrayList<>();
 		return super.complete(sender, arguments);
 	}
 }

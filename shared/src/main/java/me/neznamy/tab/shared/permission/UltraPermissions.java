@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class UltraPermissions implements PermissionPlugin {
 	}
 	
 	@Override
-	public String getPrimaryGroup(TabPlayer p) throws Exception {
+	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return "<null>";
 		return groups[0];
@@ -32,7 +33,7 @@ public class UltraPermissions implements PermissionPlugin {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String[] getAllGroups(TabPlayer p) throws Exception {
+	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Object api = null;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) { //meh solution but whatever
 			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);
@@ -49,7 +50,7 @@ public class UltraPermissions implements PermissionPlugin {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"<null>"};
 		}
-		List<String> groups = new ArrayList<String>();
+		List<String> groups = new ArrayList<>();
 		Object user = optUser.get();
 		Object activeGroups = user.getClass().getMethod("getActiveGroups").invoke(user);
 		Iterable<Object> bestToWorst = (Iterable<Object>) activeGroups.getClass().getMethod("bestToWorst").invoke(activeGroups);

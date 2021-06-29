@@ -29,7 +29,7 @@ public class PlayerCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().config.set("Users." + player, null);
+					TAB.getInstance().getConfiguration().getConfig().set("Users." + player, null);
 					TabPlayer pl = TAB.getInstance().getPlayer(player);
 					if (pl != null) {
 						pl.forceRefresh();
@@ -38,7 +38,7 @@ public class PlayerCommand extends SubCommand {
 				}
 				return;
 			}
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, player, type, value);
@@ -72,8 +72,8 @@ public class PlayerCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().config.getObject("Users." + player + "." + type)))) return;
-		TAB.getInstance().getConfiguration().config.set("Users." + player + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player + "." + type)))) return;
+		TAB.getInstance().getConfiguration().getConfig().set("Users." + player + "." + type, value.length() == 0 ? null : value);
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		TabPlayer pl = TAB.getInstance().getPlayer(player);
 		if (pl != null) {
@@ -84,9 +84,9 @@ public class PlayerCommand extends SubCommand {
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (arguments.length == 1) return getPlayers(arguments[0]);
-		List<String> suggestions = new ArrayList<String>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 2) {
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 		}

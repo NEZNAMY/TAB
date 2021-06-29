@@ -25,15 +25,15 @@ public class ErrorManager {
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	//one time messages already sent into console so they are not sent again
-	private Set<String> oneTimeMessages = new HashSet<String>();
+	private Set<String> oneTimeMessages = new HashSet<>();
 
 	//amount of logged startup warns
 	private int startupWarns = 0;
 
 	//error logs
-	public File errorLog;
-	public File papiErrorLog;
-	public File antiOverrideLog;
+	private File errorLog;
+	private File papiErrorLog;
+	private File antiOverrideLog;
 	
 	//plugin instance
 	private TAB tab;
@@ -47,8 +47,8 @@ public class ErrorManager {
 		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
 		papiErrorLog = new File(tab.getPlatform().getDataFolder(), "PlaceholderAPI.errors.log");
 		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
-		if (errorLog.exists() && errorLog.length() > 10) {
-			startupWarn("File &e" + errorLog.getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
+		if (getErrorLog().exists() && getErrorLog().length() > 10) {
+			startupWarn("File &e" + getErrorLog().getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
 	}
 
@@ -88,7 +88,7 @@ public class ErrorManager {
 	 * @param intoConsoleToo - if the message should be printed into console as well
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
-		printError(message, t, intoConsoleToo, errorLog);
+		printError(message, t, intoConsoleToo, getErrorLog());
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class ErrorManager {
 	 */
 	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
 		buf.write(getCurrentTime() + removeColors(prefix) + message + System.getProperty("line.separator"));
-		if (tab.debugMode || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
+		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
 	}
 	
 	/**
@@ -222,11 +222,7 @@ public class ErrorManager {
 		try {
 			return (int) Math.round(Double.parseDouble(string));
 		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return oneTimeConsoleError(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
-			}
+			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
 
@@ -241,11 +237,7 @@ public class ErrorManager {
 		try {
 			return Float.parseFloat(string);
 		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return oneTimeConsoleError(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
-			}
+			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
 
@@ -261,12 +253,12 @@ public class ErrorManager {
 		try {
 			return Double.parseDouble(string);
 		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return oneTimeConsoleError(defaultValue, place + " only accepts numeric values! (Attempted to use \"" + string + "\")");
-			}
+			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
+	}
+	
+	private String formatNumberError(String place, String value) {
+		return String.format("%s only accepts numeric values! (Attempted to use \"%s\")", place, value);
 	}
 
 	/**
@@ -280,11 +272,7 @@ public class ErrorManager {
 		try {
 			return BarColor.valueOf(string);
 		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return oneTimeConsoleError(defaultValue, place + " only accepts one of the defined colors! (Attempted to use \"" + string + "\")");
-			}
+			return oneTimeConsoleError(defaultValue, String.format("%s only accepts one of the defined colors! (Attempted to use \"%s\")", place, string));
 		}
 	}
 
@@ -299,11 +287,7 @@ public class ErrorManager {
 		try {
 			return BarStyle.valueOf(string);
 		} catch (Throwable e) {
-			if (string.contains("%")) {
-				return oneTimeConsoleError(defaultValue, "Value \"" + string + "\" used in " + place + " still has unparsed placeholders! Did you forget to download an expansion ?");
-			} else {
-				return oneTimeConsoleError(defaultValue, place + " only accepts one of the defined styles! (Attempted to use \"" + string + "\")");
-			}
+			return oneTimeConsoleError(defaultValue, String.format("%s only accepts one of the defined styles! (Attempted to use \"%s\")", place, string));
 		}
 	}
 
@@ -416,5 +400,17 @@ public class ErrorManager {
 			startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
 			return new SimpleDateFormat(defaultValue);
 		}
+	}
+
+	public File getAntiOverrideLog() {
+		return antiOverrideLog;
+	}
+
+	public File getErrorLog() {
+		return errorLog;
+	}
+
+	public File getPapiErrorLog() {
+		return papiErrorLog;
 	}
 }

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,10 +20,10 @@ import me.neznamy.tab.shared.rgb.TextColor;
 public class IChatBaseComponent {
 
 	//empty translatable
-	private final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
+	private static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
 
 	//empty text
-	private final String EMPTY_TEXT = "{\"text\":\"\"}";
+	private static final String EMPTY_TEXT = "{\"text\":\"\"}";
 
 	//component text
 	private String text;
@@ -81,7 +80,7 @@ public class IChatBaseComponent {
 	 * @return list of extras
 	 */
 	public List<IChatBaseComponent> getExtra(){
-		if (extra == null) return Collections.EMPTY_LIST;
+		if (extra == null) return new ArrayList<>();
 		return extra;
 	}
 
@@ -101,7 +100,7 @@ public class IChatBaseComponent {
 	 * @return self
 	 */
 	public IChatBaseComponent addExtra(IChatBaseComponent child) {
-		if (extra == null) extra = new ArrayList<IChatBaseComponent>();
+		if (extra == null) extra = new ArrayList<>();
 		extra.add(child);
 		return this;
 	}
@@ -567,10 +566,10 @@ public class IChatBaseComponent {
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
 		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
-		if (TAB.getInstance().getConfiguration().rgbSupport) {
+		if (TAB.getInstance().getConfiguration().isRgbSupport()) {
 			text = RGBUtils.getInstance().applyFormats(text, false);
 		}
-		List<IChatBaseComponent> components = new ArrayList<IChatBaseComponent>();
+		List<IChatBaseComponent> components = new ArrayList<>();
 		StringBuilder builder = new StringBuilder();
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
@@ -618,7 +617,7 @@ public class IChatBaseComponent {
 						break;
 					}
 				}
-			} else if (TAB.getInstance().getConfiguration().rgbSupport && c == '#'){
+			} else if (TAB.getInstance().getConfiguration().isRgbSupport() && c == '#'){
 				try {
 					String hex = text.substring(i, i+7);
 					Integer.parseInt(hex.substring(1), 16); //validating code, skipping otherwise
@@ -738,8 +737,8 @@ public class IChatBaseComponent {
 	public String toRawText() {
 		StringBuilder builder = new StringBuilder();
 		if (text != null) builder.append(text);
-		for (IChatBaseComponent extra : getExtra()) {
-			if (extra.text != null) builder.append(extra.text);
+		for (IChatBaseComponent child : getExtra()) {
+			if (child.text != null) builder.append(child.text);
 		}
 		return builder.toString();
 	}
@@ -757,8 +756,8 @@ public class IChatBaseComponent {
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 		if (text != null) builder.append(text);
-		for (IChatBaseComponent extra : getExtra()) {
-			builder.append(extra.toFlatText());
+		for (IChatBaseComponent child : getExtra()) {
+			builder.append(child.toFlatText());
 		}
 		return builder.toString();
 	}
@@ -777,8 +776,8 @@ public class IChatBaseComponent {
 		component.setUnderlined(underlined);
 		if (hoverAction != null) component.onHover(hoverAction, hoverValue);
 		if (clickAction != null) component.onClick(clickAction, clickValue);
-		for (IChatBaseComponent extra : getExtra()) {
-			component.addExtra(extra.clone());
+		for (IChatBaseComponent child : getExtra()) {
+			component.addExtra(child.clone());
 		}
 		return component;
 	}

@@ -66,7 +66,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			input.close();
 			TAB tab = TAB.getInstance();
 			tab.getErrorManager().startupWarn("File " + destination + " has broken syntax.");
-			tab.brokenFile = file.getPath();
+			tab.setBrokenFile(file.getPath());
 			tab.getPlatform().sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
 			List<String> suggestions = YamlAssist.getSuggestions(file);
 			if (!suggestions.isEmpty()) {
@@ -86,7 +86,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			yaml.dump(values, writer);
 			writer.close();
 			if (!hasHeader()) fixHeader();
-		} catch (Throwable e) {
+		} catch (IOException e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to save yaml file " + file.getPath() + " with content " + values.toString(), e);
 		}
 	}

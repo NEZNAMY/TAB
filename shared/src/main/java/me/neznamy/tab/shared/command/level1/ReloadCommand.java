@@ -22,7 +22,7 @@ public class ReloadCommand extends SubCommand {
 		TAB.getInstance().load();
 		if (TAB.getInstance().isDisabled()) {
 			if (sender != null) {
-				sendMessage(sender, TAB.getInstance().getConfiguration().reloadFailed.replace("%file%", TAB.getInstance().brokenFile));
+				sendMessage(sender, TAB.getInstance().getConfiguration().getReloadFailedMessage().replace("%file%", TAB.getInstance().getBrokenFile()));
 			}
 		} else {
 			sendMessage(sender, getTranslation("reloaded"));

@@ -44,7 +44,7 @@ public abstract class ConfigurationFile {
 	 * @throws IllegalStateException - if file does not exist and source is null
 	 * @throws IOException - if I/O file operation fails
 	 */
-	public ConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, IOException {
+	protected ConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, IOException {
 		this.header = header;
 		this.file = destination;
 		if (file.getParentFile() != null) file.getParentFile().mkdirs();
@@ -125,8 +125,8 @@ public abstract class ConfigurationFile {
 	 * @return value from map
 	 */
 	private Object getIgnoreCase(Map<Object, Object> map, String key) {
-		for (Object mapkey : map.keySet()) {
-			if (mapkey.toString().equalsIgnoreCase(key)) return map.get(mapkey);
+		for (Entry<Object, Object> entry : map.entrySet()) {
+			if (entry.getKey().toString().equalsIgnoreCase(key)) return entry.getValue();
 		}
 		return map.get(key);
 	}
@@ -174,9 +174,9 @@ public abstract class ConfigurationFile {
 		if (value == null) return defaultValue;
 		if (!(value instanceof List)) {
 			dataMismatch(path, ArrayList.class, value.getClass());
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
-		List<String> fixedList = new ArrayList<String>();
+		List<String> fixedList = new ArrayList<>();
 		for (Object key : (List<Object>)value) {
 			fixedList.add(key.toString());
 		}
@@ -225,7 +225,14 @@ public abstract class ConfigurationFile {
 	 * @return value from file or null if not present
 	 */
 	public Boolean getBoolean(String path) {
-		return getBoolean(path, null);
+		Object value = getObject(path, null);
+		if (value == null) return null;
+		try {
+			return Boolean.parseBoolean(value.toString());
+		} catch (Exception e) {
+			dataMismatch(path, Boolean.class, value.getClass());
+			return null;
+		}
 	}
 	
 	/**
@@ -235,10 +242,10 @@ public abstract class ConfigurationFile {
 	 * @param defaultValue - value to be inserted and returned if option is not present
 	 * @return value from config
 	 */
-	public Boolean getBoolean(String path, Boolean defaultValue) {
+	public boolean getBoolean(String path, boolean defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
-		try{
+		try {
 			return Boolean.parseBoolean(value.toString());
 		} catch (Exception e) {
 			dataMismatch(path, Boolean.class, value.getClass());
@@ -312,7 +319,7 @@ public abstract class ConfigurationFile {
 		if (path.contains(".")) {
 			String keyWord = getRealKey(map, path.split("\\.")[0]);
 			Object submap = map.get(keyWord);
-			if (submap == null || !(submap instanceof Map)) {
+			if (!(submap instanceof Map)) {
 				submap = new HashMap<String, Object>();
 			}
 			map.put(keyWord.replace("@#@", "."), set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
@@ -357,7 +364,7 @@ public abstract class ConfigurationFile {
 	public void fixHeader() {
 		if (header == null) return;
 		try {
-			List<String> content = new ArrayList<String>(header);
+			List<String> content = new ArrayList<>(header);
 			content.addAll(readAllLines(file));
 			file.delete();
 			file.createNewFile();
@@ -376,7 +383,7 @@ public abstract class ConfigurationFile {
 	 * @return list of lines in file
 	 */
 	private List<String> readAllLines(File file) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 			String line;
@@ -406,22 +413,22 @@ public abstract class ConfigurationFile {
 	 * @return Set of used identifiers
 	 */
 	private Set<String> getUsedPlaceholders(Map<String, Object> map, String... simpleKeys){
-		Set<String> values = new HashSet<String>();
+		Set<String> placeholders = new HashSet<>();
 		for (Entry<String, Object> entry : map.entrySet()) {
 			for (String simpleKey : simpleKeys) {
-				if (String.valueOf(entry.getKey()).equals(simpleKey)) values.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
+				if (String.valueOf(entry.getKey()).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
 			}
 			if (entry.getValue() instanceof Map) {
-				values.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
+				placeholders.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
 			}
 			if (entry.getValue() instanceof List) {
 				for (Object obj : (List<Object>)entry.getValue()) {
 					for (String simpleKey : simpleKeys) {
-						if (String.valueOf(obj).equals(simpleKey)) values.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
+						if (String.valueOf(obj).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
 					}
 				}
 			}
 		}
-		return values;
+		return placeholders;
 	}
 }

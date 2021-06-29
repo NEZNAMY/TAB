@@ -19,13 +19,14 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
  */
 public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
 
+	private static final String LINE_SEPARATOR = "\n\u00a7r";
 	private TAB tab;
 	private List<String> usedPlaceholders;
-	public List<String> disabledWorlds;
+	private List<String> disabledWorlds;
 	
 	public HeaderFooter(TAB tab) {
 		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 		tab.debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s", disabledWorlds));
 	}
@@ -58,7 +59,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		} else {
 			boolean refresh = false;
 			String headerAppend = getValue(p, "headerappend");
-			if (headerAppend.length() > 0) headerAppend = "\n\u00a7r" + headerAppend;
+			if (headerAppend.length() > 0) headerAppend = LINE_SEPARATOR + headerAppend;
 			String header = getValue(p, "header") + headerAppend;
 			if (!p.getProperty("header").getOriginalRawValue().equals(header)) {
 				p.setProperty("header", header);
@@ -66,7 +67,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			}
 			
 			String footerAppend = getValue(p, "footerappend");
-			if (footerAppend.length() > 0) footerAppend = "\n\u00a7r" + footerAppend;
+			if (footerAppend.length() > 0) footerAppend = LINE_SEPARATOR + footerAppend;
 			String footer = getValue(p, "footer") + footerAppend;
 			if (!p.getProperty("footer").getOriginalRawValue().equals(footer)) {
 				p.setProperty("footer", footer);
@@ -83,11 +84,11 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	public void refresh(TabPlayer p, boolean force) {
 		if (force) {
 			String headerAppend = getValue(p, "headerappend");
-			if (headerAppend.length() > 0) headerAppend = "\n\u00a7r" + headerAppend;
+			if (headerAppend.length() > 0) headerAppend = LINE_SEPARATOR + headerAppend;
 			p.setProperty("header", getValue(p, "header") + headerAppend);
 			
 			String footerAppend = getValue(p, "footerappend");
-			if (footerAppend.length() > 0) footerAppend = "\n\u00a7r" + footerAppend;
+			if (footerAppend.length() > 0) footerAppend = LINE_SEPARATOR + footerAppend;
 			p.setProperty("footer", getValue(p, "footer") + footerAppend);
 		}
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
@@ -101,7 +102,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	}
 
 	private String getValue(TabPlayer p, String property) {
-		String worldGroup = tab.getConfiguration().getWorldGroupOf(tab.getConfiguration().config.getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings").keySet(), p.getWorldName());
+		String worldGroup = tab.getConfiguration().getWorldGroupOf(tab.getConfiguration().getConfig().getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings").keySet(), p.getWorldName());
 		String[] priorities = {
 				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + property,
 				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + property,
@@ -114,16 +115,16 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 		};
 		List<String> lines = null;
 		for (String path : priorities) {
-			lines = tab.getConfiguration().config.getStringList(path);
+			lines = tab.getConfiguration().getConfig().getStringList(path);
 			if (lines != null) break;
 		}
-		if (lines == null) lines = new ArrayList<String>();
-		return String.join("\n\u00a7r", lines);
+		if (lines == null) lines = new ArrayList<>();
+		return String.join(LINE_SEPARATOR, lines);
 	}
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("header", "footer");
+		usedPlaceholders = tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("header", "footer");
 	}
 
 	@Override

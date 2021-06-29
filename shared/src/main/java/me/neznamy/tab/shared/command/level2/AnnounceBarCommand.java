@@ -41,15 +41,15 @@ public class AnnounceBarCommand extends SubCommand{
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
-		BossBarLine bar = feature.lines.get(barname);
+		BossBarLine bar = feature.getLines().get(barname);
 		if (bar == null) {
 			sendMessage(sender, "Bar not found");
 			return;
 		}
 		new Thread(() -> {
 			try {
-				feature.announcements.add(barname);
-				feature.announceEndTime = System.currentTimeMillis() + duration*1000;
+				feature.getAnnouncements().add(barname);
+				feature.setAnnounceEndTime(System.currentTimeMillis() + duration*1000);
 				for (TabPlayer all : TAB.getInstance().getPlayers()) {
 					if (!all.hasBossbarVisible()) continue;
 					bar.create(all);
@@ -61,9 +61,9 @@ public class AnnounceBarCommand extends SubCommand{
 					bar.remove(all);
 					all.getActiveBossBars().remove(bar);
 				}
-				feature.announcements.remove(barname);
-			} catch (Exception e) {
-
+				feature.getAnnouncements().remove(barname);
+			} catch (InterruptedException e) {
+				//plugin disabled
 			}
 		}).start();
 	}
@@ -71,13 +71,13 @@ public class AnnounceBarCommand extends SubCommand{
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		BossBar b = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
-		if (b == null) return new ArrayList<String>();
-		List<String> suggestions = new ArrayList<String>();
+		if (b == null) return new ArrayList<>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {
-			for (String bar : b.lines.keySet()) {
+			for (String bar : b.getLines().keySet()) {
 				if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);
 			}
-		} else if (arguments.length == 2 && b.lines.get(arguments[0]) != null){
+		} else if (arguments.length == 2 && b.getLines().get(arguments[0]) != null){
 			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
 				if (time.startsWith(arguments[1])) suggestions.add(time);
 			}

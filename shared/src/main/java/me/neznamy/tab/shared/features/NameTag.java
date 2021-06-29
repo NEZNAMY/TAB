@@ -33,18 +33,18 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	private boolean collisionRule;
 	private List<String> revertedCollision;
 	private boolean invisibleNametags;
-	protected Set<String> invisiblePlayers = new HashSet<String>();
-	public Sorting sorting;
-	protected Map<String, Boolean> collision = new HashMap<String, Boolean>();
+	protected Set<String> invisiblePlayers = new HashSet<>();
+	private Sorting sorting;
+	protected Map<String, Boolean> collision = new HashMap<>();
 
 	public NameTag(TAB tab) {
 		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.nametag", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		collisionRule = tab.getConfiguration().config.getBoolean("enable-collision", true);
-		revertedCollision = tab.getConfiguration().config.getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
-		invisibleNametags = tab.getConfiguration().config.getBoolean("invisible-nametags", false);
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.nametag", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		collisionRule = tab.getConfiguration().getConfig().getBoolean("enable-collision", true);
+		revertedCollision = tab.getConfiguration().getConfig().getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
+		invisibleNametags = tab.getConfiguration().getConfig().getBoolean("invisible-nametags", false);
 		sorting = new Sorting(tab, this);
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
 					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
@@ -56,7 +56,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	@Override
 	public void load(){
 		for (TabPlayer all : tab.getPlayers()) {
-			((ITabPlayer) all).setTeamName(sorting.getTeamName(all));
+			((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
 			updateProperties(all);
 			collision.put(all.getName(), true);
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
@@ -75,23 +75,22 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	
 	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, new Runnable() {
-			public void run() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
 				//nametag visibility
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
-					boolean invisible = p.hasInvisibilityPotion();
-					if (invisible && !invisiblePlayers.contains(p.getName())) {
-						invisiblePlayers.add(p.getName());
-						updateTeamData(p);
-					}
-					if (!invisible && invisiblePlayers.contains(p.getName())) {
-						invisiblePlayers.remove(p.getName());
-						updateTeamData(p);
-					}
-					//cannot control collision rule on <1.9 servers in any way
-					if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) updateCollision(p);
+				boolean invisible = p.hasInvisibilityPotion();
+				if (invisible && !invisiblePlayers.contains(p.getName())) {
+					invisiblePlayers.add(p.getName());
+					updateTeamData(p);
 				}
+				if (!invisible && invisiblePlayers.contains(p.getName())) {
+					invisiblePlayers.remove(p.getName());
+					updateTeamData(p);
+				}
+				//cannot control collision rule on <1.9 servers in any way
+				if (ProtocolVersion.getServerVersion().getMinorVersion() >= 9) updateCollision(p);
 			}
 		});
 	}
@@ -144,7 +143,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	public void updateTeam(TabPlayer p) {
 		if (p.getTeamName() == null) return; //player not loaded yet
-		String newName = sorting.getTeamName(p);
+		String newName = getSorting().getTeamName(p);
 		if (p.getTeamName().equals(newName)) {
 			updateTeamData(p);
 		} else {
@@ -182,9 +181,9 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 				updateTeamData(p);
 			}
 		} else {
-			boolean collision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
-			if (this.collision.get(p.getName()) == null || this.getCollision(p) != collision) {
-				this.collision.put(p.getName(), collision);
+			boolean newCollision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
+			if (collision.get(p.getName()) == null || getCollision(p) != newCollision) {
+				collision.put(p.getName(), newCollision);
 				updateTeamData(p);
 			}
 		}
@@ -226,12 +225,11 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		((ITabPlayer) connectedPlayer).setTeamName(sorting.getTeamName(connectedPlayer));
+		((ITabPlayer) connectedPlayer).setTeamName(getSorting().getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		collision.put(connectedPlayer.getName(), true);
 		for (TabPlayer all : tab.getPlayers()) {
-			if (!all.isLoaded()) continue; //avoiding NPE when 2 players join at once
-			if (all == connectedPlayer) continue; //already registered 3 lines above
+			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
 			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
 		}
 		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
@@ -263,7 +261,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().config.getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
 					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
@@ -283,5 +281,9 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.NAMETAGS;
+	}
+
+	public Sorting getSorting() {
+		return sorting;
 	}
 }

@@ -16,14 +16,14 @@ public class SendCommand extends SubCommand {
 	 */
 	public SendCommand() {
 		super("send", null);
-		subcommands.put("bar", new SendBarCommand());
+		getSubcommands().put("bar", new SendBarCommand());
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length > 0) {
 			String arg0 = args[0].toLowerCase();
-			SubCommand command = subcommands.get(arg0);
+			SubCommand command = getSubcommands().get(arg0);
 			if (command != null) {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));

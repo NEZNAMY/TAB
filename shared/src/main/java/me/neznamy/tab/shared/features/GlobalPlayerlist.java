@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -31,10 +32,10 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	private List<String> spyServers;
 	private Map<String, List<String>> sharedServers;
 	private boolean displayAsSpectators;
-	public boolean vanishedAsSpectators;
+	private boolean vanishedAsSpectators;
 	private boolean isolateUnlistedServers;
 	
-	private List<TabPlayer> vanishedPlayers = new ArrayList<TabPlayer>();
+	private List<TabPlayer> vanishedPlayers = new ArrayList<>();
 
 	public GlobalPlayerlist(TAB tab) {
 		this.tab = tab;
@@ -42,11 +43,11 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	
 	@Override
 	public void load() {
-		spyServers = tab.getConfiguration().config.getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
-		sharedServers = tab.getConfiguration().config.getConfigurationSection("global-playerlist.server-groups");
-		displayAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-others-as-spectators", false);
-		vanishedAsSpectators = tab.getConfiguration().config.getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
-		isolateUnlistedServers = tab.getConfiguration().config.getBoolean("global-playerlist.isolate-unlisted-servers", false);
+		spyServers = tab.getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Arrays.asList("spaserver1"));
+		sharedServers = tab.getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
+		displayAsSpectators = tab.getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
+		setVanishedAsSpectators(tab.getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true));
+		isolateUnlistedServers = tab.getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
 		for (TabPlayer displayed : tab.getPlayers()) {
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer.getWorldName().equals(displayed.getWorldName())) continue;
@@ -54,7 +55,7 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 		tab.debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
-				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
+				spyServers, sharedServers, displayAsSpectators, isVanishedAsSpectators(), isolateUnlistedServers));
 		startTask();
 	}
 	
@@ -92,8 +93,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	}
 	
 	private String getServerGroup(String serverName) {
-		for (String group : sharedServers.keySet()) {
-			if (sharedServers.get(group).contains(serverName)) return group;
+		for (Entry<String, List<String>> group : sharedServers.entrySet()) {
+			if (group.getValue().contains(serverName)) return group.getKey();
 		}
 		return isolateUnlistedServers ? "isolated:" + serverName : "DEFAULT";
 	}
@@ -165,13 +166,13 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			format = playerlist.getTabFormat(p, viewer);
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
-				(int)p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
+				(int)p.getPing(), isVanishedAsSpectators() && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
 	}
 	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (info.action == EnumPlayerInfoAction.REMOVE_PLAYER) {
-			for (PlayerInfoData playerInfoData : info.entries) {
+		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
+			for (PlayerInfoData playerInfoData : info.getEntries()) {
 					//not preventing NPC removals
 				if (tab.getPlayerByTablistUUID(playerInfoData.uniqueId) != null && (playerInfoData.name == null || playerInfoData.name.length() == 0)) {
 					//remove packet not coming from tab
@@ -181,8 +182,8 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 			}
 		}
 		if (!displayAsSpectators) return;
-		if (info.action == EnumPlayerInfoAction.ADD_PLAYER || info.action == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
-			for (PlayerInfoData playerInfoData : info.entries) {
+		if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER || info.getAction() == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
+			for (PlayerInfoData playerInfoData : info.getEntries()) {
 				TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.uniqueId);
 				if (packetPlayer != null && !receiver.getWorldName().equals(packetPlayer.getWorldName())) {
 					playerInfoData.gameMode = EnumGamemode.SPECTATOR;
@@ -194,5 +195,13 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.GLOBAL_PLAYERLIST;
+	}
+
+	public boolean isVanishedAsSpectators() {
+		return vanishedAsSpectators;
+	}
+
+	public void setVanishedAsSpectators(boolean vanishedAsSpectators) {
+		this.vanishedAsSpectators = vanishedAsSpectators;
 	}
 }

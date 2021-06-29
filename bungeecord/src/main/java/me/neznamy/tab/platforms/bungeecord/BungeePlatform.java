@@ -42,7 +42,7 @@ public class BungeePlatform implements Platform {
 	
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
-		if (TAB.getInstance().getConfiguration().bukkitPermissions) {
+		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			return new VaultBridge(Main.plm);
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
@@ -54,20 +54,20 @@ public class BungeePlatform implements Platform {
 	}
 
 	@Override
-	public void loadFeatures() throws Exception{
+	public void loadFeatures() throws IllegalArgumentException, IllegalAccessException {
 		TAB tab = TAB.getInstance();
 		tab.getPlaceholderManager().addRegistry(new BungeePlaceholderRegistry());
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
-		if (tab.getConfiguration().pipelineInjection) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
-		if (tab.getConfiguration().config.getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));
+		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector(tab));
+		if (tab.getConfiguration().getConfig().getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag(tab));
 		loadUniversalFeatures();
-		if (tab.getConfiguration().config.getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
-		if (tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
-		if (tab.getConfiguration().config.getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().config.getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
-		if (tab.getConfiguration().premiumconfig != null && tab.getConfiguration().premiumconfig.getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
-		if (tab.getConfiguration().config.getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
+		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
+		if (tab.getConfiguration().getConfig().getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective(tab));
+		if (tab.getConfiguration().getConfig().getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
+		if (tab.getConfiguration().getConfig().getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName(tab));
+		if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
+		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p));
 		}
@@ -83,20 +83,19 @@ public class BungeePlatform implements Platform {
 	public void registerUnknownPlaceholder(String identifier) {
 		if (identifier.startsWith("%rel_")) return;
 		if (identifier.contains("_")) {
-			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
-			if (plugin.equals("some")) return;
+			String expansion = identifier.split("_")[0].replace("%", "").toLowerCase();
+			if (expansion.equals("some")) return;
 			TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
-			int refresh = pl.defaultRefresh;
-			if (pl.playerPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.playerPlaceholderRefreshIntervals.get(identifier);
-			if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) refresh = pl.serverPlaceholderRefreshIntervals.get(identifier);
+			int refresh = pl.getDefaultRefresh();
+			if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
+			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
 			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 				public String get(TabPlayer p) {
 					Main.plm.requestPlaceholder(p, identifier);
-					return lastValue.get(p.getName());
+					return getLastValues().get(p.getName());
 				}
 			});
-			return;
 		}
 	}
 	

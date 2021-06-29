@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -13,31 +14,31 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 
 	//bossbar's uuid
-	public UUID id;
+	private UUID id;
 	
 	//packet action
-	public Action operation;
+	private Action operation;
 	
 	//bossbar title
-	public String name;
+	private String name;
 	
 	//bossbar progress
-	public float pct;
+	private float pct;
 	
 	//bossbar color
-	public BarColor color;
+	private BarColor color;
 	
 	//bossbar style
-	public BarStyle overlay;
+	private BarStyle overlay;
 	
 	//darker screen if bossbar is displayed
-	public boolean darkenScreen;
+	private boolean darkenScreen;
 	
 	//play boss music when bossbar is displayed
-	public boolean playMusic;
+	private boolean playMusic;
 	
 	//create fog if bossbar is displayed
-	public boolean createWorldFog;
+	private boolean createWorldFog;
 
 	/**
 	 * Constructs new packet based on given parameters with ADD action
@@ -144,17 +145,21 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	 */
 	public byte getFlags(){
 		byte value = 0;
-		if (darkenScreen) value += 1;
-		if (playMusic) value += 2;
-		if (createWorldFog) value += 4;
+		if (isDarkenScreen()) value += 1;
+		if (isPlayMusic()) value += 2;
+		if (isCreateWorldFog()) value += 4;
 		return value;
 	}
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	
@@ -164,7 +169,43 @@ public class PacketPlayOutBoss extends UniversalPacketPlayOut {
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutBoss{id=%s,operation=%s,name=%s,pct=%s,color=%s,overlay=%s,darkenScreen=%s,playMusic=%s,createWorldFog=%s}", 
-				id, operation, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
+				getId(), getOperation(), getName(), getPct(), getColor(), getOverlay(), isDarkenScreen(), isPlayMusic(), isCreateWorldFog());
+	}
+
+	public BarColor getColor() {
+		return color;
+	}
+
+	public BarStyle getOverlay() {
+		return overlay;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public float getPct() {
+		return pct;
+	}
+
+	public Action getOperation() {
+		return operation;
+	}
+
+	public boolean isDarkenScreen() {
+		return darkenScreen;
+	}
+
+	public boolean isCreateWorldFog() {
+		return createWorldFog;
+	}
+
+	public boolean isPlayMusic() {
+		return playMusic;
 	}
 
 	/**

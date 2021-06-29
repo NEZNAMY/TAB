@@ -31,23 +31,17 @@ public class Layout implements Loadable, JoinEventListener {
 
 	private TAB tab;
 	private LayoutDirection direction;
-	private Map<Integer, FixedSlot> fixedSlots = new HashMap<Integer, FixedSlot>();
-	private List<ParentGroup> parentGroups = new ArrayList<ParentGroup>();
-	private Map<String, ChildGroup> childGroups = new HashMap<String, ChildGroup>();
-	private Map<Integer, UUID> uuids = new HashMap<Integer, UUID>();
+	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
+	private List<ParentGroup> parentGroups = new ArrayList<>();
+	private Map<String, ChildGroup> childGroups = new HashMap<>();
+	private Map<Integer, UUID> uuids = new HashMap<>();
 
 	public Layout(TAB tab) {
 		this.tab = tab;
 		try {
 			new File(tab.getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
 			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(tab.getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
-			String type = file.getString("direction", "COLUMNS");
-			try {
-				direction = LayoutDirection.valueOf(type);
-			} catch (Throwable e) {
-				tab.getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
-				direction = LayoutDirection.COLUMNS;
-			}
+			direction = parseDirection(file.getString("direction", "COLUMNS"));
 			for (int i=1; i<=80; i++) {
 				fixedSlots.put(i, new FixedSlot(i, "", null));
 				uuids.put(i, UUID.randomUUID());
@@ -68,6 +62,15 @@ public class Layout implements Loadable, JoinEventListener {
 		}
 	}
 	
+	private LayoutDirection parseDirection(String value) {
+		try {
+			return LayoutDirection.valueOf(value);
+		} catch (Exception e) {
+			tab.getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
+			return LayoutDirection.COLUMNS;
+		}
+	}
+	
 	private void loadGroups(ConfigurationFile file) {
 		for (Object obj : file.getConfigurationSection("child-groups").keySet()){
 			String title = file.getString("child-groups." + obj + ".title");
@@ -76,7 +79,7 @@ public class Layout implements Loadable, JoinEventListener {
 		}
 		for (Object obj : file.getConfigurationSection("parent-groups").keySet()){
 			Condition condition = Condition.getCondition(file.getString("parent-groups." + obj + ".condition"));
-			List<Integer> positions = new ArrayList<Integer>();
+			List<Integer> positions = new ArrayList<>();
 			for (String line : file.getStringList("parent-groups." + obj + ".slots")) {
 				String[] arr = line.split("-");
 				int from = Integer.parseInt(arr[0]);
@@ -85,7 +88,7 @@ public class Layout implements Loadable, JoinEventListener {
 					positions.add(i);
 				}
 			}
-			List<ChildGroup> childs = new ArrayList<ChildGroup>();
+			List<ChildGroup> childs = new ArrayList<>();
 			if (file.hasConfigOption("parent-groups." + obj + ".child-groups")) {
 				for (String child : file.getStringList("parent-groups." + obj + ".child-groups")) {
 					if (childGroups.containsKey(child)) {
@@ -98,7 +101,7 @@ public class Layout implements Loadable, JoinEventListener {
 	}
 
 	private Map<Integer, IChatBaseComponent> doTick(TabPlayer viewer, List<TabPlayer> players) {
-		Map<Integer, IChatBaseComponent> result = new HashMap<Integer, IChatBaseComponent>();
+		Map<Integer, IChatBaseComponent> result = new HashMap<>();
 
 		for (int i=1; i<=80; i++) {
 			result.put(i, new IChatBaseComponent(""));
@@ -109,7 +112,7 @@ public class Layout implements Loadable, JoinEventListener {
 		}
 
 		for (ParentGroup parent : parentGroups) {
-			List<TabPlayer> meetingCondition = new ArrayList<TabPlayer>();
+			List<TabPlayer> meetingCondition = new ArrayList<>();
 			for (TabPlayer target : players) {
 				if (parent.getCondition() == null || parent.getCondition().isMet(target)) {
 					meetingCondition.add(target);
@@ -122,21 +125,19 @@ public class Layout implements Loadable, JoinEventListener {
 	}
 
 	private List<TabPlayer> sortPlayers(Collection<TabPlayer> players){
-		Map<TabPlayer, String> teamMap = new HashMap<TabPlayer, String>();
+		Map<TabPlayer, String> teamMap = new HashMap<>();
 		for (TabPlayer p : players) {
 			teamMap.put(p, p.getTeamName());
 		}
 		teamMap = sortByValue(teamMap);
-		return new ArrayList<TabPlayer>(teamMap.keySet());
+		return new ArrayList<>(teamMap.keySet());
 	}
 
 	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-		Comparator<K> valueComparator =  new Comparator<K>() {
-			public int compare(K k1, K k2) {
-				int compare = map.get(k2).compareTo(map.get(k1));
-				if (compare == 0) return 1;
-				else return -compare;
-			}
+		Comparator<K> valueComparator =  (k1, k2) -> {
+			int compare = map.get(k2).compareTo(map.get(k1));
+			if (compare == 0) return 1;
+			else return -compare;
 		};
 		Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
 		sortedByValues.putAll(map);
@@ -150,7 +151,7 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+		List<PlayerInfoData> list = new ArrayList<>();
 		for (FixedSlot s : fixedSlots.values()) {
 			s.onJoin(connectedPlayer);
 		}
@@ -171,29 +172,26 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void load() {
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
-			@Override
-			public void run() {
-				List<TabPlayer> players = sortPlayers(tab.getPlayers());
-				for (TabPlayer p : tab.getPlayers()) {
-					if (!p.isLoaded()) continue;
-					List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
-					for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<TabPlayer>(players)).entrySet()) {
-						int slot = translateSlot(entry.getKey());
-						list.add(new PlayerInfoData(uuids.get(slot), entry.getValue()));
-					}
-					p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
+			List<TabPlayer> players = sortPlayers(tab.getPlayers());
+			for (TabPlayer p : tab.getPlayers()) {
+				if (!p.isLoaded()) continue;
+				List<PlayerInfoData> list = new ArrayList<>();
+				for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
+					int slot = translateSlot(entry.getKey());
+					list.add(new PlayerInfoData(uuids.get(slot), entry.getValue()));
 				}
+				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
 			}
 		});
 		List<TabPlayer> players = sortPlayers(tab.getPlayers());
 		for (TabPlayer p : tab.getPlayers()) {
-			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
+			List<PlayerInfoData> list = new ArrayList<>();
 			for (FixedSlot s : fixedSlots.values()) {
 				s.onJoin(p);
 			}
-			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<TabPlayer>(players)).entrySet()) {
+			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 			}
@@ -205,8 +203,8 @@ public class Layout implements Loadable, JoinEventListener {
 	public void unload() {
 		List<TabPlayer> players = sortPlayers(tab.getPlayers());
 		for (TabPlayer p : tab.getPlayers()) {
-			List<PlayerInfoData> list = new ArrayList<PlayerInfoData>();
-			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<TabPlayer>(players)).entrySet()) {
+			List<PlayerInfoData> list = new ArrayList<>();
+			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData(uuids.get(slot)));
 			}

@@ -27,22 +27,28 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = TAB.pluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = TAB.PluginVersion, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
+	private static Main instance;
+	
 	//instance of proxyserver
-	public ProxyServer server;
+	private ProxyServer server;
 	
 	//metrics factory I guess
 	private Metrics.Factory metricsFactory;
 
 	//plugin message handler
-	public static PluginMessageHandler plm;
+	private PluginMessageHandler plm;
 
 	@Inject
 	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
 		this.server = server;
 		this.metricsFactory = metricsFactory;
+	}
+	
+	public static Main getInstance() {
+		return instance;
 	}
 
 	/**
@@ -52,19 +58,19 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!isVersionSupported()) {
-			System.out.println("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads");
+			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
 			return;
 		}
-		if (server.getConfiguration().isOnlineMode()) {
-			System.out.println("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).");
+		if (getServer().getConfiguration().isOnlineMode()) {
+			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
-		TAB.setInstance(new TAB(new VelocityPlatform(server), new VelocityPacketBuilder()));
-		server.getEventManager().register(this, new VelocityEventListener());
+		ProtocolVersion.setServerVersion(ProtocolVersion.values()[1]);
+		TAB.setInstance(new TAB(new VelocityPlatform(getServer()), new VelocityPacketBuilder()));
+		getServer().getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
+		getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("btab").build(), cmd);
+		getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("vtab").build(), cmd);
 		plm = new VelocityPluginMessageHandler(this);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
@@ -100,13 +106,21 @@ public class Main {
 		return GsonComponentSerializer.gson().deserialize(string);
 	}
 	
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
+	}
+
+	public ProxyServer getServer() {
+		return server;
+	}
+
 	public static class VelocityTABCommand implements SimpleCommand {
 
 		@Override
 		public void execute(Invocation invocation) {
 			CommandSource sender = invocation.source();
 			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().disabledCommand.execute(invocation.arguments(), sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 					sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
 				}
 			} else {
@@ -115,7 +129,7 @@ public class Main {
 					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
 					if (p == null) return; //player not loaded correctly
 				}
-				TAB.getInstance().command.execute(p, invocation.arguments());
+				TAB.getInstance().getCommand().execute(p, invocation.arguments());
 			}
 		}
 
@@ -124,9 +138,9 @@ public class Main {
 			TabPlayer p = null;
 			if (invocation.source() instanceof Player) {
 				p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
-				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+				if (p == null) return new ArrayList<>(); //player not loaded correctly
 			}
-			return TAB.getInstance().command.complete(p, invocation.arguments());
+			return TAB.getInstance().getCommand().complete(p, invocation.arguments());
 		}
 	}
 }

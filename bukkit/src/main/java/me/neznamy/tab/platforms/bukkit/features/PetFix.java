@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +23,10 @@ import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
 public class PetFix implements RawPacketListener, QuitEventListener {
 
 	//datawatcher position of pet owner field
-	private int PET_OWNER_POSITION;
+	private int petOwnerPosition;
 
 	//logger of last interacts to prevent feature not working on 1.16
-	private Map<String, Long> lastInteractFix = new HashMap<String, Long>();
+	private Map<String, Long> lastInteractFix = new HashMap<>();
 	
 	//nms storage
 	private NMSStorage nms;
@@ -36,7 +37,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 */
 	public PetFix(NMSStorage nms) {
 		this.nms = nms;
-		PET_OWNER_POSITION = getPetOwnerPosition();
+		petOwnerPosition = getPetOwnerPosition();
 		TAB.getInstance().debug("Loaded PetFix feature");
 	}
 	
@@ -45,16 +46,16 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 * @return position of pet owner field based on server version
 	 */
 	private int getPetOwnerPosition() {
-		if (nms.minorVersion >= 17) {
+		if (nms.getMinorVersion() >= 17) {
 			//1.17.x
 			return 18;
-		} else if (nms.minorVersion >= 15) {
+		} else if (nms.getMinorVersion() >= 15) {
 			//1.15.x, 1.16.x
 			return 17;
-		} else if (nms.minorVersion >= 14) {
+		} else if (nms.getMinorVersion() >= 14) {
 			//1.14.x
 			return 16;
-		} else if (nms.minorVersion >= 10) {
+		} else if (nms.getMinorVersion() >= 10) {
 			//1.10.x - 1.13.x
 			return 14;
 		} else {
@@ -65,9 +66,11 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException {
 		if (nms.PacketPlayInUseEntity.isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
@@ -82,7 +85,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	}
 	
 	private boolean isInteract(Object action) {
-		if (nms.minorVersion >= 17) {
+		if (nms.getMinorVersion() >= 17) {
 			return action.getClass().getSimpleName().equals("d");
 		} else {
 			return action.toString().equals("INTERACT");
@@ -91,16 +94,22 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	
 	/**
 	 * Removes pet owner field from datawatcher
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws InstantiationException 
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
 		if (nms.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			List<Object> items = (List<Object>) nms.PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return;
 			List<Object> newList = new ArrayList<Object>();
 			for (Object item : items) {
-				if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == PET_OWNER_POSITION) {
+				if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == petOwnerPosition) {
 					Object value = nms.DataWatcherItem_VALUE.get(item);
 					if (value.getClass().getSimpleName().equals("Optional")) continue;
 				}
@@ -111,9 +120,9 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 		//<1.15
 		if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
 			DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
-			DataWatcherItem petOwner = watcher.getItem(PET_OWNER_POSITION);
-			if (petOwner != null && petOwner.value.getClass().getSimpleName().equals("Optional")) {
-				watcher.removeValue(PET_OWNER_POSITION);
+			DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
+			if (petOwner != null && petOwner.getValue().getClass().getSimpleName().equals("Optional")) {
+				watcher.removeValue(petOwnerPosition);
 				nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.set(packet, watcher.toNMS());
 			}
 		}

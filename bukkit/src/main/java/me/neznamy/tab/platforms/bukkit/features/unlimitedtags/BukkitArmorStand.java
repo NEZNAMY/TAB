@@ -70,14 +70,14 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param yOffset - offset in blocks
 	 * @param staticOffset - if offset is static or not
 	 */
-	public BukkitArmorStand(int entityId, TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
+	public BukkitArmorStand(int entityId, TabPlayer owner, Property property, double yOffset, boolean staticOffset, boolean markerFor18x) {
 		this.entityId = entityId;
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
 		this.yOffset = yOffset;
 		this.property = property;
-		markerFor18x = ((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).markerFor18x;
+		this.markerFor18x = markerFor18x;
 		visible = getVisibility();
 	}
 
@@ -121,7 +121,7 @@ public class BukkitArmorStand implements ArmorStand {
 		visible = getVisibility();
 		nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 15) {
+		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 15) {
 			return new Object[] {
 					getSpawnPacket(getArmorStandLocationFor(viewer), null),
 					getMetadataPacket(dataWatcher)
@@ -145,7 +145,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to get location for
 	 * @return location of armor stand
 	 */
-	private Location getArmorStandLocationFor(TabPlayer viewer) {
+	protected Location getArmorStandLocationFor(TabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
@@ -172,7 +172,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().armorStandsAlwaysVisible) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
 					viewer.sendPacket(getDestroyPacket(), TabFeature.NAMETAGX);
@@ -185,7 +185,7 @@ public class BukkitArmorStand implements ArmorStand {
 				Runnable spawn = () -> spawn(viewer);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.v1_8_0_BUG_COMPENSATION, spawn);
+					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", TabFeature.NAMETAGX, UsageType.V1_8_0_BUG_COMPENSATION, spawn);
 				} else {
 					spawn.run();
 				}
@@ -201,9 +201,9 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void updateVisibility(boolean force) {
-		boolean visible = getVisibility();
-		if (this.visible != visible || force) {
-			this.visible = visible;
+		boolean visibility = getVisibility();
+		if (visible != visibility || force) {
+			visible = visibility;
 			updateMetadata();
 		}
 	}
@@ -214,7 +214,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to get location for
 	 * @return teleport packet
 	 */
-	private Object getTeleportPacket(TabPlayer viewer) {
+	protected Object getTeleportPacket(TabPlayer viewer) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(entityId, getArmorStandLocationFor(viewer));
 		} catch (Exception e) {
@@ -226,7 +226,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns destroy packet
 	 * @return destroy packet
 	 */
-	private Object getDestroyPacket() {
+	protected Object getDestroyPacket() {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityDestroyPacket(entityId);
 		} catch (Exception e) {
@@ -239,7 +239,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param dataWatcher - datawatcher
 	 * @return metadata packet
 	 */
-	private Object getMetadataPacket(DataWatcher dataWatcher) {
+	protected Object getMetadataPacket(DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
 		} catch (Exception e) {
@@ -253,7 +253,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param dataWatcher - datawatcher
 	 * @return spawn packet
 	 */
-	private Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
+	protected Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);
 		} catch (Exception e) {
@@ -264,7 +264,7 @@ public class BukkitArmorStand implements ArmorStand {
 	/**
 	 * Updates armor stand's metadata
 	 */
-	private void updateMetadata() {
+	protected void updateMetadata() {
 		for (TabPlayer viewer : getNearbyPlayers()) {
 			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), TabFeature.NAMETAGX);
 		}
@@ -274,9 +274,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns general visibility rule for everyone with limited info
 	 * @return true if should be visible, false if not
 	 */
-	private boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || (((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).playersOnBoats.contains(owner))) return false;
-		if (TAB.getInstance().getConfiguration().armorStandsAlwaysVisible) return true;
+	protected boolean getVisibility() {
+		if (((BukkitTabPlayer)owner).isDisguised() || (((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).getPlayersOnBoats().contains(owner))) return false;
+		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
 	}
 
@@ -284,14 +284,14 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns general location where armor stand should be at time of calling
 	 * @return Location where armor stand should be for everyone
 	 */
-	private Location getLocation() {
+	protected Location getLocation() {
 		double x = player.getLocation().getX();
 		double y = getY() + yOffset + 2;
 		double z = player.getLocation().getZ();
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
-			if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9) {
+			if (ProtocolVersion.getServerVersion().getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);
 			} else {
 				y -= (sneaking ? 0.30 : 0.18);
@@ -304,7 +304,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns Y where player is based on player's vehicle due to bukkit API bug
 	 * @return correct player's Y
 	 */
-	private double getY() {
+	protected double getY() {
 		//1.14+ server sided bug
 		Entity vehicle = player.getVehicle();
 		if (vehicle != null) {
@@ -322,15 +322,15 @@ public class BukkitArmorStand implements ArmorStand {
 			}
 		}
         //1.13+ swimming or 1.9+ flying with elytra
-        if (isSwimming() || (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 9 && player.isGliding())) {
+        if (isSwimming() || (ProtocolVersion.getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
             return player.getLocation().getY()-1.22;
         }
 		return player.getLocation().getY();
 	}
 	
 	private boolean isSwimming() {
-		if (ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-		return ProtocolVersion.SERVER_VERSION.getMinorVersion() == 13 && player.isSwimming();
+		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+		return ProtocolVersion.getServerVersion().getMinorVersion() == 13 && player.isSwimming();
 	}
 
 	@Override
@@ -349,7 +349,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to apply checks against
 	 * @return datawatcher for viewer
 	 */
-	private DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
+	protected DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
 		byte flag = 32; //invisible
@@ -357,13 +357,13 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setEntityFlags(flag);
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
-		boolean visible;
+		boolean visibility;
 		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || owner.hasHiddenNametag(viewer.getUniqueId())) {
-			visible = false;
+			visibility = false;
 		} else {
-			visible = this.visible;
+			visibility = visible;
 		}
-		datawatcher.helper().setCustomNameVisible(visible);
+		datawatcher.helper().setCustomNameVisible(visibility);
 
 		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);
 		return datawatcher;
@@ -372,7 +372,7 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public Set<TabPlayer> getNearbyPlayers(){
 		synchronized (nearbyPlayers) {
-			return new HashSet<TabPlayer>(nearbyPlayers);
+			return new HashSet<>(nearbyPlayers);
 		}
 	}
 

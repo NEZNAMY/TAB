@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class SubCommand {
 
 	//all properties assignable with a command
-	public static String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
+	private static String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
 	
 	//properties that require unlimited nametag mode
 	protected final List<String> extraProperties = Arrays.asList("abovename", "belowname", "customtagname");
@@ -25,14 +25,14 @@ public abstract class SubCommand {
 	private String permission;
 	
 	//subcommands of this command
-	public Map<String, SubCommand> subcommands = new HashMap<String, SubCommand>();
+	private Map<String, SubCommand> subcommands = new HashMap<>();
 	
 	/**
 	 * Constructs new instance with given parameters
 	 * @param name - command name
 	 * @param permission - permission requirement
 	 */
-	public SubCommand(String name, String permission) {
+	protected SubCommand(String name, String permission) {
 		this.name = name;
 		this.permission = permission;
 	}
@@ -42,7 +42,7 @@ public abstract class SubCommand {
 	 * @param subcommand - subcommand to register
 	 */
 	public void registerSubCommand(SubCommand subcommand) {
-		subcommands.put(subcommand.getName(), subcommand);
+		getSubcommands().put(subcommand.getName(), subcommand);
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public abstract class SubCommand {
 	 * @return List of compatible players
 	 */
 	public List<String> getPlayers(String nameStart){
-		List<String> suggestions = new ArrayList<String>();
+		List<String> suggestions = new ArrayList<>();
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
 		}
@@ -130,17 +130,17 @@ public abstract class SubCommand {
 			argument = arguments[0].toLowerCase();
 		}
 		if (arguments.length < 2) {
-			List<String> suggestions = new ArrayList<String>();
-			for (String subcommand : subcommands.keySet()) {
+			List<String> suggestions = new ArrayList<>();
+			for (String subcommand : getSubcommands().keySet()) {
 				if (subcommand.startsWith(argument)) suggestions.add(subcommand);
 			}
 			return suggestions;
 		}
-		SubCommand subcommand = subcommands.get(argument);
+		SubCommand subcommand = getSubcommands().get(argument);
 		if (subcommand != null) {
 			return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 	
 	/**
@@ -162,7 +162,7 @@ public abstract class SubCommand {
 	 * @return translation from file
 	 */
 	public String getTranslation(String key) {
-		return TAB.getInstance().getConfiguration().translation.getString(key);
+		return TAB.getInstance().getConfiguration().getTranslation().getString(key);
 	}
 	
 	/**
@@ -171,4 +171,20 @@ public abstract class SubCommand {
 	 * @param args - arguments of the command
 	 */
 	public abstract void execute(TabPlayer sender, String[] args);
+
+	public static String[] getAllProperties() {
+		return allProperties;
+	}
+
+	public static void setAllProperties(String[] allProperties) {
+		SubCommand.allProperties = allProperties;
+	}
+
+	public Map<String, SubCommand> getSubcommands() {
+		return subcommands;
+	}
+
+	public void setSubcommands(Map<String, SubCommand> subcommands) {
+		this.subcommands = subcommands;
+	}
 }

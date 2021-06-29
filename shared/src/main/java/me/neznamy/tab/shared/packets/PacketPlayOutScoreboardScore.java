@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
@@ -9,16 +11,16 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut {
 
 	//packet action
-	public Action action;
+	private Action action;
 
 	//objective name
-	public String objectiveName;
+	private String objectiveName;
 
 	//affected player
-	public String player;
+	private String player;
 
 	//player's score
-	public int score;
+	private int score;
 
 	/**
 	 * Constructs a new instance with given parameters
@@ -36,9 +38,15 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut {
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 
@@ -48,7 +56,23 @@ public class PacketPlayOutScoreboardScore extends UniversalPacketPlayOut {
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardScore{action=%s,objectiveName=%s,player=%s,score=%s}", 
-				action, objectiveName, player, score);
+				getAction(), getObjectiveName(), getPlayer(), getScore());
+	}
+
+	public String getPlayer() {
+		return player;
+	}
+
+	public Action getAction() {
+		return action;
+	}
+
+	public String getObjectiveName() {
+		return objectiveName;
+	}
+
+	public int getScore() {
+		return score;
 	}
 
 	/**

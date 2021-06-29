@@ -27,8 +27,8 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 	 */
 	public VelocityPluginMessageHandler(Main plugin) {
 		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
-		plugin.server.getChannelRegistrar().register(mc);
-		plugin.server.getEventManager().register(plugin, this);
+		plugin.getServer().getChannelRegistrar().register(mc);
+		plugin.getServer().getEventManager().register(plugin, this);
 
 	}
 

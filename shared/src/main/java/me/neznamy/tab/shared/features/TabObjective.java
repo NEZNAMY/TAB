@@ -24,11 +24,10 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
  */
 public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
 
-	public static final String ObjectiveName = "TAB-YellowNumber";
-	public static final int DisplaySlot = 0;
-	
-	private final String propertyName = "tablist-objective";
-	private final String title = "ms";
+	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
+	public static final int DISPLAY_SLOT = 0;
+	private static final String propertyName = "tablist-objective";
+	private static final String title = "ms";
 
 	private TAB tab;
 	private String rawValue;
@@ -38,8 +37,8 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	public TabObjective(TAB tab) {
 		this.tab = tab;
-		rawValue = tab.getConfiguration().config.getString("yellow-number-in-tablist", "%ping%");
-		disabledWorlds = tab.getConfiguration().config.getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.yellow-number", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+		rawValue = tab.getConfiguration().getConfig().getString("yellow-number-in-tablist", "%ping%");
+		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.yellow-number", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
@@ -54,11 +53,11 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		for (TabPlayer loaded : tab.getPlayers()){
 			loaded.setProperty(propertyName, rawValue);
 			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
-			PacketAPI.registerScoreboardObjective(loaded, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
+			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
 		}
 		for (TabPlayer viewer : tab.getPlayers()){
 			for (TabPlayer target : tab.getPlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, target.getName(), getValue(target)), getFeatureType());
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), getFeatureType());
 			}
 		}
 	}
@@ -67,7 +66,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()){
 			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureType());
 		}
 	}
 
@@ -75,23 +74,21 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(propertyName, rawValue);
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(connectedPlayer, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
+		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, connectedPlayer.getName(), value), getFeatureType());
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), getFeatureType());
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), value), getFeatureType());
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
 		}
 	}
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ObjectiveName), getFeatureType());
-			return;
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureType());
 		}
 		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
 			onJoin(p);
-			return;
 		}
 	}
 
@@ -104,7 +101,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : tab.getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, refreshed.getName(), value), getFeatureType());
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), getFeatureType());
 		}
 	}
 
@@ -126,17 +123,17 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, ObjectiveName, title, DisplaySlot, displayType, getFeatureType());
+		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, title, DISPLAY_SLOT, displayType, getFeatureType());
 		for (TabPlayer all : tab.getPlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ObjectiveName, all.getName(), getValue(all)), getFeatureType());
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
 		}
 	}
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (isDisabledWorld(disabledWorlds, receiver.getWorldName())) return false;
-		if (packet.slot == DisplaySlot && !packet.objectiveName.equals(ObjectiveName)) {
-			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.objectiveName + "\" in position " + packet.slot + " (playerlist)", null, false, tab.getErrorManager().antiOverrideLog);
+		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
+			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (playerlist)", null, false, tab.getErrorManager().getAntiOverrideLog());
 			return true;
 		}
 		return false;

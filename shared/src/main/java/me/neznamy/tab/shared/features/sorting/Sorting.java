@@ -29,16 +29,16 @@ public class Sorting {
 	private TAB tab;
 
 	//map of all registered sorting types
-	private Map<String, SortingType> types = new HashMap<String, SortingType>();
+	private Map<String, SortingType> types = new HashMap<>();
 	
 	//placeholder to sort by, if sorting type uses it
-	public String sortingPlaceholder;
+	private String sortingPlaceholder;
 	
 	//if sorting is case senstitive or not
 	private boolean caseSensitiveSorting = true;
 	
 	//active sorting types
-	public List<SortingType> sorting;
+	private List<SortingType> sorting;
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
@@ -49,21 +49,21 @@ public class Sorting {
 		this.tab = tab;
 		types.put("GROUPS", new Groups());
 		types.put("GROUP_PERMISSIONS", new GroupPermission());
-		if (tab.getConfiguration().premiumconfig != null) {
-			sortingPlaceholder = tab.getConfiguration().premiumconfig.getString("sorting-placeholder", "%some_level_maybe?%");
-			caseSensitiveSorting = tab.getConfiguration().premiumconfig.getBoolean("case-sentitive-sorting", true);
-			types.put("PLACEHOLDER", new Placeholder(sortingPlaceholder));
-			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(sortingPlaceholder));
-			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(sortingPlaceholder));
-			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(sortingPlaceholder));
-			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(sortingPlaceholder));
-			sorting = compile(tab.getConfiguration().premiumconfig.getString("sorting-type", "GROUPS"));
+		if (tab.getConfiguration().getPremiumConfig() != null) {
+			sortingPlaceholder = tab.getConfiguration().getPremiumConfig().getString("sorting-placeholder", "%some_level_maybe?%");
+			caseSensitiveSorting = tab.getConfiguration().getPremiumConfig().getBoolean("case-sentitive-sorting", true);
+			types.put("PLACEHOLDER", new Placeholder(getSortingPlaceholder()));
+			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(getSortingPlaceholder()));
+			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(getSortingPlaceholder()));
+			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(getSortingPlaceholder()));
+			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(getSortingPlaceholder()));
+			sorting = compile(tab.getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
 		} else {
-			sorting = new ArrayList<SortingType>();
-			if (tab.getConfiguration().config.getBoolean("sort-players-by-permissions", false)) {
-				sorting.add(types.get("GROUP_PERMISSIONS"));
+			sorting = new ArrayList<>();
+			if (tab.getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
+				getSorting().add(types.get("GROUP_PERMISSIONS"));
 			} else {
-				sorting.add(types.get("GROUPS"));
+				getSorting().add(types.get("GROUPS"));
 			}
 		}
 		
@@ -90,7 +90,7 @@ public class Sorting {
 	 * @return list of compiled sorting types
 	 */
 	private List<SortingType> compile(String string){
-		List<SortingType> list = new ArrayList<SortingType>();
+		List<SortingType> list = new ArrayList<>();
 		for (String element : string.split("_THEN_")) {
 			SortingType type = types.get(element.toUpperCase());
 			if (type == null) {
@@ -111,7 +111,7 @@ public class Sorting {
 	public String getTeamName(TabPlayer p) {
 		((ITabPlayer) p).setTeamNameNote("");
 		StringBuilder sb = new StringBuilder();
-		for (SortingType type : sorting) {
+		for (SortingType type : getSorting()) {
 			sb.append(type.getChars((ITabPlayer) p));
 		}
 		if (sb.length() > 12) {
@@ -149,10 +149,18 @@ public class Sorting {
 	 * @return user-friendly representation of sorting types
 	 */
 	public String typesToString() {
-		String[] elements = new String[sorting.size()];
-		for (int i=0; i<sorting.size(); i++) {
-			elements[i] = sorting.get(i).toString();
+		String[] elements = new String[getSorting().size()];
+		for (int i=0; i<getSorting().size(); i++) {
+			elements[i] = getSorting().get(i).toString();
 		}
 		return String.join(" then ", elements);
+	}
+
+	public String getSortingPlaceholder() {
+		return sortingPlaceholder;
+	}
+
+	public List<SortingType> getSorting() {
+		return sorting;
 	}
 }

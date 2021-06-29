@@ -34,13 +34,13 @@ public class PlayerUUIDCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().config.set("Users." + changed.getUniqueId().toString(), null);
+					TAB.getInstance().getConfiguration().getConfig().set("Users." + changed.getUniqueId().toString(), null);
 					changed.forceRefresh();
 					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
 				return;
 			}
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
 						savePlayer(sender, changed, type, value);
@@ -74,8 +74,8 @@ public class PlayerUUIDCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().config.getObject("Users." + player.getUniqueId() + "." + type)))) return;
-		TAB.getInstance().getConfiguration().config.set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player.getUniqueId() + "." + type)))) return;
+		TAB.getInstance().getConfiguration().getConfig().set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		player.forceRefresh();
 	}
@@ -83,9 +83,9 @@ public class PlayerUUIDCommand extends SubCommand {
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (arguments.length == 1) return getPlayers(arguments[0]);
-		List<String> suggestions = new ArrayList<String>();
+		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 2) {
-			for (String property : allProperties) {
+			for (String property : getAllProperties()) {
 				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 			}
 		}

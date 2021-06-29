@@ -40,13 +40,12 @@ public class PacketListener implements RawPacketListener {
 	}
 
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws Throwable {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException {
 		if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
 			TabPlayer attacked = null;
 			for (TabPlayer all : tab.getPlayers()) {
-				if (!all.isLoaded()) continue;
-				if (all.getArmorStandManager().hasArmorStandWithID(entityId)) {
+				if (all.isLoaded() && all.getArmorStandManager().hasArmorStandWithID(entityId)) {
 					attacked = all;
 					break;
 				}
@@ -59,7 +58,7 @@ public class PacketListener implements RawPacketListener {
 	}
 
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws Throwable {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException  {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
 		String world = ((Player)receiver.getPlayer()).getWorld().getName();
@@ -71,7 +70,7 @@ public class PacketListener implements RawPacketListener {
 		} else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
 			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			if (nms.minorVersion >= 17) {
+			if (nms.getMinorVersion() >= 17) {
 				onEntityDestroy(receiver, nms.PacketPlayOutEntityDestroy_ENTITIES.getInt(packet));
 			} else {
 				onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
@@ -85,15 +84,15 @@ public class PacketListener implements RawPacketListener {
 	 * @param entityId - entity that moved
 	 */
 	public void onEntityMove(TabPlayer receiver, int entityId) {
-		TabPlayer pl = nameTagX.entityIdMap.get(entityId);
+		TabPlayer pl = nameTagX.getEntityIdMap().get(entityId);
 		List<Entity> vehicleList;
 		if (pl != null) {
 			//player moved
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
-		} else if ((vehicleList = nameTagX.vehicles.get(entityId)) != null){
+		} else if ((vehicleList = nameTagX.getVehicles().get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Entity entity : vehicleList) {
-				TabPlayer passenger = nameTagX.entityIdMap.get(entity.getEntityId());
+				TabPlayer passenger = nameTagX.getEntityIdMap().get(entity.getEntityId());
 				if (passenger != null && passenger.getArmorStandManager() != null) {
 					tab.getCPUManager().runMeasuredTask("processing EntityMove", getFeatureType(), UsageType.PACKET_ENTITY_MOVE, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
@@ -102,7 +101,7 @@ public class PacketListener implements RawPacketListener {
 	}
 	
 	public void onEntitySpawn(TabPlayer receiver, int entityId) {
-		TabPlayer spawnedPlayer = nameTagX.entityIdMap.get(entityId);
+		TabPlayer spawnedPlayer = nameTagX.getEntityIdMap().get(entityId);
 		if (spawnedPlayer != null && spawnedPlayer.isLoaded()) {
 			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", getFeatureType(), UsageType.PACKET_NAMED_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 		}
@@ -110,7 +109,7 @@ public class PacketListener implements RawPacketListener {
 
 	public void onEntityDestroy(TabPlayer receiver, int... entities) {
 		for (int entity : entities) {
-			TabPlayer despawnedPlayer = nameTagX.entityIdMap.get(entity);
+			TabPlayer despawnedPlayer = nameTagX.getEntityIdMap().get(entity);
 			if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
 				tab.getCPUManager().runMeasuredTask("processing EntityDestroy", getFeatureType(), UsageType.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 		}

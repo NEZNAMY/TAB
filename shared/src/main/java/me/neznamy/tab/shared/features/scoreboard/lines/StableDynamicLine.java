@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text to display
 	 */
-	public StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+	protected StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
 		super(parent, lineNumber);
 		this.text = text;
 		refreshUsedPlaceholders();
@@ -41,9 +42,9 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (!parent.players.contains(refreshed)) return; //player has different scoreboard displayed
+		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
 		List<String> prefixsuffix = replaceText(refreshed, force, false);
-		if (prefixsuffix == null) return;
+		if (prefixsuffix.isEmpty()) return;
 		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 0), TabFeature.SCOREBOARD);
 	}
 
@@ -51,13 +52,13 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	public void register(TabPlayer p) {
 		p.setProperty(teamName, text);
 		List<String> prefixsuffix = replaceText(p, true, true);
-		if (prefixsuffix == null) return;
+		if (prefixsuffix.isEmpty()) return;
 		addLine(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), getScoreFor(p));
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
-		if (parent.players.contains(p) && p.getProperty(teamName).get().length() > 0) {
+		if (parent.getPlayers().contains(p) && p.getProperty(teamName).get().length() > 0) {
 			removeLine(p, getPlayerName(), teamName);
 		}
 	}
@@ -70,10 +71,10 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @param suppressToggle - if line should NOT be removed despite being empty
 	 * @return list of 2 elements for prefix/suffix
 	 */
-	protected List<String> replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
+	private List<String> replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
 		Property scoreproperty = p.getProperty(teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
-		if (!scoreproperty.update() && !force) return null;
+		if (!scoreproperty.update() && !force) return new ArrayList<>();
 		String replaced = scoreproperty.get();
 		if (p.getVersion().getMinorVersion() < 16) {
 			replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
@@ -85,7 +86,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			if (emptyBefore) {
 				//was "", now it is not
 				addLine(p, teamName, getPlayerName(), prefix, suffix, getScoreFor(p));
-				return null;
+				return new ArrayList<>();
 			} else {
 				return Arrays.asList(prefix, suffix);
 			}
@@ -94,7 +95,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 				//new string is "", but before it was not
 				removeLine(p, getPlayerName(), teamName);
 			}
-			return null;
+			return new ArrayList<>();
 		}
 	}
 	
@@ -107,7 +108,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	private String[] split(TabPlayer p, String text) {
 		int charLimit = 16;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
-			ProtocolVersion.SERVER_VERSION.getMinorVersion() >= 13 && 
+			ProtocolVersion.getServerVersion().getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug
 			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, Math.min(16, text.length())));

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.packets;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,10 +15,10 @@ import me.neznamy.tab.shared.TAB;
 public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 
 	//packet action
-	public EnumPlayerInfoAction action;
+	private EnumPlayerInfoAction action;
 
 	//list of affected players
-	public List<PlayerInfoData> entries;
+	private List<PlayerInfoData> entries;
 
 	/**
 	 * Constructs a new instance with given parameters
@@ -41,9 +42,16 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 
 	/**
 	 * Calls build method of packet builder instance and returns output
+	 * @throws NegativeArraySizeException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws Exception {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 
@@ -52,7 +60,15 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 	 */
 	@Override
 	public String toString() {
-		return String.format("PacketPlayOutPlayerInfo{action=%s,entries=%s}", action, entries);
+		return String.format("PacketPlayOutPlayerInfo{action=%s,entries=%s}", getAction(), getEntries());
+	}
+
+	public List<PlayerInfoData> getEntries() {
+		return entries;
+	}
+
+	public EnumPlayerInfoAction getAction() {
+		return action;
 	}
 
 	/**

@@ -17,34 +17,31 @@ import me.neznamy.tab.shared.features.types.Feature;
 public class GroupRefresher implements Feature {
 
 	private TAB tab;
-	public boolean groupsByPermissions;
-	public boolean usePrimaryGroup;
+	private boolean groupsByPermissions;
+	private boolean usePrimaryGroup;
 	private List<String> primaryGroupFindingList;
 	
 	public GroupRefresher(TAB tab) {
 		this.tab = tab;
-		usePrimaryGroup = tab.getConfiguration().config.getBoolean("use-primary-group", true);
-		groupsByPermissions = tab.getConfiguration().config.getBoolean("assign-groups-by-permissions", false);
-		primaryGroupFindingList = new ArrayList<String>();
-		for (Object group : tab.getConfiguration().config.getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
+		usePrimaryGroup = tab.getConfiguration().getConfig().getBoolean("use-primary-group", true);
+		groupsByPermissions = tab.getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
+		primaryGroupFindingList = new ArrayList<>();
+		for (Object group : tab.getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, new Runnable() {
+		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
-			@Override
-			public void run() {
-				for (TabPlayer p : tab.getPlayers()) {
-					((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
-				}
+			for (TabPlayer p : tab.getPlayers()) {
+				((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
 			}
 		});
 	}
 
 	public String detectPermissionGroup(TabPlayer p) {
-		if (groupsByPermissions) {
+		if (isGroupsByPermissions()) {
 			return getByPermission(p);
 		}
-		if (usePrimaryGroup) {
+		if (isUsePrimaryGroup()) {
 			return getByPrimary(p);
 		}
 		return getFromList(p);
@@ -91,5 +88,13 @@ public class GroupRefresher implements Feature {
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.GROUP_REFRESHING;
+	}
+
+	public boolean isGroupsByPermissions() {
+		return groupsByPermissions;
+	}
+
+	public boolean isUsePrimaryGroup() {
+		return usePrimaryGroup;
 	}
 }

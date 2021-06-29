@@ -78,7 +78,7 @@ public class TextColor {
 	private EnumChatFormat getClosestColor(int red, int green, int blue) {
 		double minMaxDist = 9999;
 		double maxDist;
-		EnumChatFormat legacyColor = EnumChatFormat.WHITE;
+		EnumChatFormat closestColor = EnumChatFormat.WHITE;
 		for (EnumChatFormat color : legacyColors) {
 			int rDiff = color.getRed() - red;
 			int gDiff = color.getGreen() - green;
@@ -91,10 +91,10 @@ public class TextColor {
 			if (bDiff > maxDist) maxDist = bDiff;
 			if (maxDist < minMaxDist) {
 				minMaxDist = maxDist;
-				legacyColor = color;
+				closestColor = color;
 			}
 		}
-		return legacyColor;
+		return closestColor;
 	}
 	
 	/**

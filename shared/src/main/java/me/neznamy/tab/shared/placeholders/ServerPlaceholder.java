@@ -15,7 +15,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval
 	 */
-	public ServerPlaceholder(String identifier, int refresh) {
+	protected ServerPlaceholder(String identifier, int refresh) {
 		super(identifier, refresh);
 	}
 	

@@ -31,7 +31,7 @@ public class Main extends Plugin {
 			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
 			return;
 		}
-		ProtocolVersion.SERVER_VERSION = ProtocolVersion.values()[1];
+		ProtocolVersion.setServerVersion(ProtocolVersion.values()[1]);
 		TAB.setInstance(new TAB(new BungeePlatform(this), new BungeePacketBuilder()));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
@@ -78,7 +78,7 @@ public class Main extends Plugin {
 		@Override
 		public void execute(CommandSender sender, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().disabledCommand.execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
 					sender.sendMessage(message.replace('&', '\u00a7'));
 				}
 			} else {
@@ -87,7 +87,7 @@ public class Main extends Plugin {
 					p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
 					if (p == null) return; //player not loaded correctly
 				}
-				TAB.getInstance().command.execute(p, args);
+				TAB.getInstance().getCommand().execute(p, args);
 			}
 		}
 
@@ -96,9 +96,9 @@ public class Main extends Plugin {
 			TabPlayer p = null;
 			if (sender instanceof ProxiedPlayer) {
 				p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
-				if (p == null) return new ArrayList<String>(); //player not loaded correctly
+				if (p == null) return new ArrayList<>(); //player not loaded correctly
 			}
-			return TAB.getInstance().command.complete(p, args);
+			return TAB.getInstance().getCommand().complete(p, args);
 		}
 	}
 }

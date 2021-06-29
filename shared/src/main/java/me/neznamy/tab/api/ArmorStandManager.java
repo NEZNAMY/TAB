@@ -149,7 +149,7 @@ public class ArmorStandManager {
 	 * @return list of nearby players
 	 */
 	public Set<TabPlayer> getNearbyPlayers(){
-		if (armorStands.values().size() == 0) return new HashSet<>(); //not initialized yet
+		if (armorStands.isEmpty()) return new HashSet<>(); //not initialized yet
 		synchronized (armorStands) {
 			return armorStands.values().iterator().next().getNearbyPlayers();
 		}

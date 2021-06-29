@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.yaml.snakeyaml.error.YAMLException;
+
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -26,38 +29,37 @@ public class Configs {
 	private TAB tab;
 	
 	//config.yml file
-	public ConfigurationFile config;
+	private ConfigurationFile config;
 
-	//remove-strings option
-	public List<String> removeStrings;
+	private List<String> removeStrings;
+	private boolean bukkitPermissions;
 	
 	//hidden config options
-	public boolean rgbSupport;
-	public boolean unregisterBeforeRegister;
-	public String multiWorldSeparator;
-	public String essentialsNickPrefix;
-	public boolean armorStandsAlwaysVisible; //paid private addition
-	public boolean removeGhostPlayers;
-	public boolean layout;
-	public boolean pipelineInjection;
-	public boolean bukkitPermissions;
+	private boolean rgbSupport;
+	private boolean unregisterBeforeRegister;
+	private String multiWorldSeparator;
+	private String essentialsNickPrefix;
+	private boolean armorStandsAlwaysVisible; //paid private addition
+	private boolean removeGhostPlayers;
+	private boolean layout;
+	private boolean pipelineInjection;
 
 	//animations.yml file
-	public ConfigurationFile animation;
+	private ConfigurationFile animation;
 
 	//bossbar.yml file
-	public ConfigurationFile bossbar;
+	private ConfigurationFile bossbar;
 
 	//translation.yml file
-	public ConfigurationFile translation;
+	private ConfigurationFile translation;
 	
 	//default reload message in case plugin did not load translation file due to an error
-	public String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
+	private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
 	
 	//premiumconfig.yml
-	public ConfigurationFile premiumconfig;
+	private ConfigurationFile premiumconfig;
 
-	//playerdata.yml, used for bossbar & scoreboard toggle saving
+	//private.yml, used for bossbar & scoreboard toggle saving
 	public ConfigurationFile playerdata; 
 
 	/**
@@ -70,53 +72,38 @@ public class Configs {
 	
 	/**
 	 * Loads all configuration files and converts files to latest version
-	 * @throws Exception - if I/O file opration fails or some file has broken yaml syntax
+	 * @throws IOException 
+	 * @throws YAMLException 
 	 */
-	public void loadFiles() throws Exception {
+	public void loadFiles() throws YAMLException, IOException {
 		ClassLoader loader = Configs.class.getClassLoader();
-		removeAdvancedConfig();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
-		Map<String, Object> values = animation.getValues();
+		Map<String, Object> values = getAnimationFile().getValues();
 		if (values.size() == 1 && values.containsKey("animations")) {
-			animation.setValues(animation.getConfigurationSection("animations"));
-			animation.save();
+			getAnimationFile().setValues(getAnimationFile().getConfigurationSection("animations"));
+			getAnimationFile().save();
 			TAB.getInstance().print('2', "Converted animations.yml to new format.");
 		}
 		bossbar = new YamlConfigurationFile(loader.getResourceAsStream("bossbar.yml"), new File(tab.getPlatform().getDataFolder(), "bossbar.yml"));
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
-		reloadFailed = translation.getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
+		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
 		if (tab.isPremium()) premiumconfig = new YamlConfigurationFile(loader.getResourceAsStream("premiumconfig.yml"), new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml"));
 	}
 
 	/**
-	 * Conversion from old advancedconfig.yml file
-	 */
-	private void removeAdvancedConfig() {
-		File f = new File(tab.getPlatform().getDataFolder(), "advancedconfig.yml");
-		if (f.exists()) {
-			List<String> fileLines = readAllLines(f);
-			File config = new File(tab.getPlatform().getDataFolder(), "config.yml");
-			for (String line : fileLines) {
-				if (!line.startsWith("#")) {
-					write(config, line);
-				}
-			}
-			f.delete();
-		}
-	}
-	/**
 	 * Loads config.yml and some of it's values
-	 * @throws Exception - if file has broken syntax or I/O file operation fails
+	 * @throws IOException 
+	 * @throws YAMLException 
 	 */
 	@SuppressWarnings("unchecked")
-	public void loadConfig() throws Exception {
+	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
 		removeStrings = new ArrayList<>();
-		for (String s : config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
-			removeStrings.add(s.replace('&', '\u00a7'));
+		for (String s : getConfig().getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
+			getRemoveStrings().add(s.replace('&', '\u00a7'));
 		}
-		tab.debugMode = config.getBoolean("debug", false);
+		tab.setDebugMode(getConfig().getBoolean("debug", false));
 		rgbSupport = (boolean) getSecretOption("rgb-support", true);
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		multiWorldSeparator = (String) getSecretOption("multi-world-separator", "-");
@@ -126,14 +113,14 @@ public class Configs {
 		layout = (boolean) getSecretOption("layout", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true);
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
-			bukkitPermissions = config.getBoolean("use-bukkit-permissions-manager", false);
+			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
 		
 		//checking for unnecessary copypaste in config
-		Set<Object> groups = config.getConfigurationSection("Groups").keySet();
+		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
-		Map<Object, Object> sharedProperties = new HashMap<>(config.getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
-		for (Object groupSettings : config.getConfigurationSection("Groups").values()) {
+		Map<Object, Object> sharedProperties = new HashMap<>(getConfig().getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
+		for (Object groupSettings : getConfig().getConfigurationSection("Groups").values()) {
 			if (!(groupSettings instanceof Map)) continue;
 			Map<String, Object> group = (Map<String, Object>) groupSettings;
 			for (Entry<Object, Object> sharedProperty : new HashSet<>(sharedProperties.entrySet())) {
@@ -155,8 +142,8 @@ public class Configs {
 	 * @return value with specified path or default value if not present
 	 */
 	private Object getSecretOption(String path, Object defaultValue) {
-		if (config == null) return defaultValue;
-		Object value = config.getObject(path);
+		if (getConfig() == null) return defaultValue;
+		Object value = getConfig().getObject(path);
 		return value == null ? defaultValue : value;
 	}
 	
@@ -173,10 +160,10 @@ public class Configs {
 				playerdata = new YamlConfigurationFile(null, file);
 			} catch (Exception e) {
 				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
-				return new ArrayList<String>();
+				return new ArrayList<>();
 			}
 		}
-		return playerdata.getStringList(key, new ArrayList<String>());
+		return playerdata.getStringList(key, new ArrayList<>());
 	}
 	
 	/**
@@ -204,7 +191,7 @@ public class Configs {
 	 * @return list of lines in file
 	 */
 	public List<String> readAllLines(File file) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 			String line;
@@ -231,5 +218,65 @@ public class Configs {
         } catch (Exception ex) {
             tab.getErrorManager().criticalError("Failed to write to file " + f.getName(), ex);
         }
+	}
+
+	public List<String> getRemoveStrings() {
+		return removeStrings;
+	}
+
+	public boolean isUnregisterBeforeRegister() {
+		return unregisterBeforeRegister;
+	}
+
+	public ConfigurationFile getTranslation() {
+		return translation;
+	}
+
+	public ConfigurationFile getConfig() {
+		return config;
+	}
+
+	public boolean isRemoveGhostPlayers() {
+		return removeGhostPlayers;
+	}
+
+	public ConfigurationFile getPremiumConfig() {
+		return premiumconfig;
+	}
+
+	public ConfigurationFile getBossbarConfig() {
+		return bossbar;
+	}
+
+	public boolean isLayout() {
+		return layout;
+	}
+
+	public ConfigurationFile getAnimationFile() {
+		return animation;
+	}
+
+	public boolean isRgbSupport() {
+		return rgbSupport;
+	}
+
+	public boolean isBukkitPermissions() {
+		return bukkitPermissions;
+	}
+
+	public boolean isPipelineInjection() {
+		return pipelineInjection;
+	}
+
+	public boolean isArmorStandsAlwaysVisible() {
+		return armorStandsAlwaysVisible;
+	}
+
+	public String getEssentialsNickPrefix() {
+		return essentialsNickPrefix;
+	}
+
+	public String getReloadFailedMessage() {
+		return reloadFailed;
 	}
 }
