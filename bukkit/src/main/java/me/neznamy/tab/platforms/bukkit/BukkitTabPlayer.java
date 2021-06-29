@@ -120,6 +120,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 					BarColor.valueOf(packet.color.name()), 
 					BarStyle.valueOf(packet.overlay.name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
 					flags.toArray(new BarFlag[0]));
+			bar.setProgress(packet.pct);
 			bossbars.put(packet.id, bar);
 			bar.addPlayer(player);
 			break;
