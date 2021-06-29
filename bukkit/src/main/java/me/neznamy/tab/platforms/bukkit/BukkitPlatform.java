@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,7 +11,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BukkitTABLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.BossBar_legacy;
-import me.neznamy.tab.platforms.bukkit.features.ExpansionDownloader;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
@@ -44,9 +41,6 @@ import net.milkbowl.vault.permission.Permission;
  * Bukkit implementation of Platform
  */
 public class BukkitPlatform implements Platform {
-
-	//list of used expansions
-	private Set<String> usedExpansions;
 	
 	//plugin instance
 	private JavaPlugin plugin;
@@ -92,7 +86,6 @@ public class BukkitPlatform implements Platform {
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
 		TAB tab = TAB.getInstance();
-		usedExpansions = new HashSet<String>();
 		tab.getPlaceholderManager().addRegistry(new BukkitPlaceholderRegistry(plugin));
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
 		tab.getPlaceholderManager().registerPlaceholders();
@@ -111,7 +104,6 @@ public class BukkitPlatform implements Platform {
 		if (tab.getConfiguration().config.getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
-			new ExpansionDownloader(plugin).download(usedExpansions);
 		}
 
 		for (Player p : getOnlinePlayers()) {
@@ -166,7 +158,6 @@ public class BukkitPlatform implements Platform {
 				//normal placeholder
 				String plugin = identifier.split("_")[0].substring(1).toLowerCase();
 				if (plugin.equals("some")) return;
-				usedExpansions.add(plugin);
 				if (pl.serverPlaceholderRefreshIntervals.containsKey(identifier)) {
 					registerServerPlaceholder(identifier, pl.serverPlaceholderRefreshIntervals.get(identifier));
 					return;
