@@ -3,7 +3,7 @@ version: ${project.parent.version}
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
-softdepend: [PlaceholderAPI, Vault, UltraPermissions, LuckPerms, Essentials, LibsDisguises, ProtocolSupport]
+softdepend: [PlaceholderAPI, Vault, UltraPermissions, LuckPerms, Essentials, LibsDisguises, ProtocolSupport, ViaVersion]
 website: "https://www.spigotmc.org/resources/57806/"
 description: ${project.parent.description}
 commands:
