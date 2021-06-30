@@ -85,19 +85,19 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			try {
-				if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
+				if (nms.getClass("PacketPlayOutPlayerInfo").isInstance(packet)) {
 					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (tab.getFeatureManager().getNameTagFeature() != null && antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+				if (tab.getFeatureManager().getNameTagFeature() != null && antiOverrideTeams && nms.getClass("PacketPlayOutScoreboardTeam").isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
 					return;
 				}
-				if (antiOverrideObjectives && nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+				if (antiOverrideObjectives && nms.getClass("PacketPlayOutScoreboardObjective").isInstance(packet)) {
 					tab.getFeatureManager().onObjective(player, packet);
 				}
 				tab.getFeatureManager().onPacketSend(player, packet);
@@ -107,7 +107,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			try {
 				super.write(context, packet, channelPromise);
 			} catch (Exception e) {
-				e.printStackTrace();
+				tab.getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
 		
@@ -120,8 +120,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@SuppressWarnings("unchecked")
 		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws IllegalArgumentException, IllegalAccessException {
 			long time = System.nanoTime();
-			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
-			String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
+			Collection<String> players = (Collection<String>) nms.getField("PacketPlayOutScoreboardTeam_PLAYERS").get(packetPlayOutScoreboardTeam);
+			String teamName = (String) nms.getField("PacketPlayOutScoreboardTeam_NAME").get(packetPlayOutScoreboardTeam);
 			if (players == null) return;
 			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 			Collection<String> newList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 				}
 			}
-			nms.PacketPlayOutScoreboardTeam_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+			nms.getField("PacketPlayOutScoreboardTeam_PLAYERS").set(packetPlayOutScoreboardTeam, newList);
 			tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}

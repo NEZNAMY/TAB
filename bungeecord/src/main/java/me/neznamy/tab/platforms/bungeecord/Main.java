@@ -21,7 +21,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
  */
 public class Main extends Plugin {
 
-	public static Main instance;
+	private static Main instance;
 	
 	//plugin message handler
 	private PluginMessageHandler plm;
@@ -29,6 +29,7 @@ public class Main extends Plugin {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable(){
+		instance = this;
 		if (!isVersionSupported()) {
 			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
 			return;

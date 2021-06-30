@@ -46,7 +46,7 @@ public class UltraPermissions implements PermissionPlugin {
 		}
 		Object users = api.getClass().getMethod("getUsers").invoke(api);
 		Optional<Object> optUser = (Optional<Object>) users.getClass().getMethod("name", String.class).invoke(users, p.getName());
-		if (optUser == null || !optUser.isPresent()) {
+		if (!optUser.isPresent()) {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
 			return new String[]{"<null>"};
 		}

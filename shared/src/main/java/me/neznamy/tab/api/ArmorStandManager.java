@@ -58,7 +58,7 @@ public class ArmorStandManager {
 	 */
 	public void teleport() {
 		synchronized (armorStands) {
-			armorStands.values().forEach(a -> a.teleport());
+			armorStands.values().forEach(ArmorStand::teleport);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class ArmorStandManager {
 	 */
 	public void refresh() {
 		synchronized (armorStands) {
-			armorStands.values().forEach(a -> a.refresh());
+			armorStands.values().forEach(ArmorStand::refresh);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class ArmorStandManager {
 	 */
 	public void destroy() {
 		synchronized (armorStands) {
-			armorStands.values().forEach(a -> a.destroy());
+			armorStands.values().forEach(ArmorStand::destroy);
 		}
 	}
 

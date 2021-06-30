@@ -28,7 +28,7 @@ public class DataWatcherHelper {
 	 */
 	public DataWatcherHelper(DataWatcher data) {
 		this.data = data;
-		this.registry = NMSStorage.getInstance().dataWatcherRegistry;
+		this.registry = NMSStorage.getInstance().getDataWatcherRegistry();
 	}
 	
 	/**

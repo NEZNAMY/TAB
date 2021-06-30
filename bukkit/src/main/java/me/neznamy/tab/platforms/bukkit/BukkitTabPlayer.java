@@ -52,14 +52,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 		player = p;
 		world = p.getWorld().getName();
 		try {
-			handle = NMSStorage.getInstance().getHandle.invoke(player);
-			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
+			handle = NMSStorage.getInstance().getMethod("getHandle").invoke(player);
+			playerConnection = NMSStorage.getInstance().getField("PLAYER_CONNECTION").get(handle);
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
 		}
 		try {
-			if (NMSStorage.getInstance().CHANNEL != null)
-				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
+			if (NMSStorage.getInstance().getField("CHANNEL") != null)
+				channel = (Channel) NMSStorage.getInstance().getField("CHANNEL").get(NMSStorage.getInstance().getField("NETWORK_MANAGER").get(playerConnection));
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
@@ -77,7 +77,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public long getPing() {
 		try {
-			int ping = NMSStorage.getInstance().PING.getInt(handle);
+			int ping = NMSStorage.getInstance().getField("PING").getInt(handle);
 			if (ping > 10000 || ping < 0) ping = -1;
 			return ping;
 		} catch (Exception e) {
@@ -97,7 +97,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 				handle((PacketPlayOutBoss) nmsPacket);
 				return;
 			}
-			NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
+			NMSStorage.getInstance().getMethod("sendPacket").invoke(playerConnection, nmsPacket);
 		} catch (IllegalArgumentException e) {
 			//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
 			//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
@@ -202,7 +202,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		try {
-			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getProfile.invoke(handle));
+			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getMethod("getProfile").invoke(handle));
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}

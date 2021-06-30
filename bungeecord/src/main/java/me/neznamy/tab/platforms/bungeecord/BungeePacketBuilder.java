@@ -58,12 +58,12 @@ public class BungeePacketBuilder implements PacketBuilder {
 		for (PlayerInfoData data : packet.getEntries()) {
 			Item item = new Item();
 			if (data.getDisplayName() != null) {
-				if (clientVersion.getNetworkId() >= ProtocolVersion.v1_8.getNetworkId()) {
+				if (clientVersion.getMinorVersion() >= 8) {
 					item.setDisplayName(data.getDisplayName().toString(clientVersion));
 				} else {
 					item.setDisplayName(data.getDisplayName().toLegacyText());
 				}
-			} else if (clientVersion.getNetworkId() < ProtocolVersion.v1_8.getNetworkId()) {
+			} else if (clientVersion.getMinorVersion() < 8) {
 				item.setDisplayName(data.getName()); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
 			}
 			if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);

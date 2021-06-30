@@ -156,8 +156,9 @@ public class Configs {
 		if (getPlayerdata() == null) {
 			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
 			try {
-				if (!file.exists()) file.createNewFile();
-				playerdata = new YamlConfigurationFile(null, file);
+				if (file.exists() || file.createNewFile()) {
+					playerdata = new YamlConfigurationFile(null, file);
+				}
 			} catch (Exception e) {
 				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
 				return new ArrayList<>();

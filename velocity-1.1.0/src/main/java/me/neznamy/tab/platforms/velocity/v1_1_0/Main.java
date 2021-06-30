@@ -65,6 +65,7 @@ public class Main {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
+		instance = this;
 		ProtocolVersion.setServerVersion(ProtocolVersion.values()[1]);
 		TAB.setInstance(new TAB(new VelocityPlatform(getServer()), new VelocityPacketBuilder()));
 		getServer().getEventManager().register(this, new VelocityEventListener());

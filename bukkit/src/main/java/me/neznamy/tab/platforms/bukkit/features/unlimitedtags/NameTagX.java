@@ -285,11 +285,12 @@ public class NameTagX extends NameTag {
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
 		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
-		double height = -spaceBetweenLines;
+		double height = 0;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height+=spaceBetweenLines, false, markerFor18x));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height, false, markerFor18x));
+			height += spaceBetweenLines;
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());

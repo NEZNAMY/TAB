@@ -41,8 +41,8 @@ public class PacketListener implements RawPacketListener {
 
 	@Override
 	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException {
-		if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
-			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
+		if (sender.getVersion().getMinorVersion() == 8 && nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
+			int entityId = nms.getField("PacketPlayInUseEntity_ENTITY").getInt(packet);
 			TabPlayer attacked = null;
 			for (TabPlayer all : tab.getPlayers()) {
 				if (all.isLoaded() && all.getArmorStandManager().hasArmorStandWithID(entityId)) {
@@ -51,7 +51,7 @@ public class PacketListener implements RawPacketListener {
 				}
 			}
 			if (attacked != null && attacked != sender) {
-				nms.PacketPlayInUseEntity_ENTITY.set(packet, ((Player) attacked.getPlayer()).getEntityId());
+				nms.getField("PacketPlayInUseEntity_ENTITY").set(packet, ((Player) attacked.getPlayer()).getEntityId());
 			}
 		}
 		return packet;
@@ -63,17 +63,17 @@ public class PacketListener implements RawPacketListener {
 		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
 		String world = ((Player)receiver.getPlayer()).getWorld().getName();
 		if (!receiver.isLoaded() || nameTagX.isDisabledWorld(world) || nameTagX.isDisabledWorld(nameTagX.disabledUnlimitedWorlds, world)) return;
-		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
-			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
-			onEntityMove(receiver, nms.PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
+		if (nms.getClass("PacketPlayOutEntity").isInstance(packet) && !nms.getClass("PacketPlayOutEntityLook").isInstance(packet)) { //ignoring head rotation only packets
+			onEntityMove(receiver, nms.getField("PacketPlayOutEntity_ENTITYID").getInt(packet));
+		} else if (nms.getClass("PacketPlayOutEntityTeleport").isInstance(packet)) {
+			onEntityMove(receiver, nms.getField("PacketPlayOutEntityTeleport_ENTITYID").getInt(packet));
+		} else if (nms.getClass("PacketPlayOutNamedEntitySpawn").isInstance(packet)) {
+			onEntitySpawn(receiver, nms.getField("PacketPlayOutNamedEntitySpawn_ENTITYID").getInt(packet));
+		} else if (nms.getClass("PacketPlayOutEntityDestroy").isInstance(packet)) {
 			if (nms.getMinorVersion() >= 17) {
-				onEntityDestroy(receiver, nms.PacketPlayOutEntityDestroy_ENTITIES.getInt(packet));
+				onEntityDestroy(receiver, nms.getField("PacketPlayOutEntityDestroy_ENTITIES").getInt(packet));
 			} else {
-				onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
+				onEntityDestroy(receiver, (int[]) nms.getField("PacketPlayOutEntityDestroy_ENTITIES").get(packet));
 			}
 		}
 	}

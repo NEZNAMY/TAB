@@ -1,11 +1,14 @@
 package me.neznamy.tab.platforms.velocity.v1_1_0;
 
+import java.util.Optional;
+
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 
 import me.neznamy.tab.shared.TAB;
 
@@ -35,8 +38,8 @@ public class VelocityEventListener {
 			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
 				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
 			} else {
-				String server = e.getPlayer().getCurrentServer().isPresent() ? e.getPlayer().getCurrentServer().get().getServerInfo().getName() : "null";
-				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), server);
+				Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
+				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
 			}
 		} catch (Exception ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);

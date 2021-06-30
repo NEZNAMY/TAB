@@ -58,7 +58,7 @@ public class Layout implements Loadable, JoinEventListener {
 			}
 			loadGroups(file);
 		} catch (Exception e) {
-			e.printStackTrace();
+			tab.getErrorManager().criticalError("Failed to load layout feature", e);
 		}
 	}
 	

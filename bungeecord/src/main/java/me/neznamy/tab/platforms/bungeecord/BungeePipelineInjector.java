@@ -114,7 +114,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			try {
 				super.write(context, modifiedPacket, channelPromise);
 			} catch (Exception e) {
-				e.printStackTrace();
+				tab.getErrorManager().printError("Failed to forward packet " + modifiedPacket.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
 

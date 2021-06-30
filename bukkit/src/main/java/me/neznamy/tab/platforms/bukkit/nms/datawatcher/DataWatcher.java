@@ -63,19 +63,19 @@ public class DataWatcher {
 	public Object toNMS() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
-		if (nms.newDataWatcher.getParameterCount() == 1) {
-			nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
+		if (nms.getConstructor("DataWatcher").getParameterCount() == 1) {
+			nmsWatcher = nms.getConstructor("DataWatcher").newInstance(new Object[] {null});
 		} else {
-			nmsWatcher = nms.newDataWatcher.newInstance();
+			nmsWatcher = nms.getConstructor("DataWatcher").newInstance();
 		}
 		for (DataWatcherItem item : dataValues.values()) {
 			Object position;
 			if (nms.getMinorVersion() >= 9) {
-				position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getClassType());
+				position = nms.getConstructor("DataWatcherObject").newInstance(item.getType().getPosition(), item.getType().getClassType());
 			} else {
 				position = item.getType().getPosition();
 			}
-			nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.getValue());
+			nms.getMethod("DataWatcher_REGISTER").invoke(nmsWatcher, position, item.getValue());
 		}
 		return nmsWatcher;
 	}
