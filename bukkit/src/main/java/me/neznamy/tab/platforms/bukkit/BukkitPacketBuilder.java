@@ -70,7 +70,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() >= 9) {
 			//1.9+ server, handled using bukkit api
 			return packet;
@@ -136,11 +136,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param clientVersion - client version
 	 * @return entity bossbar packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
 
 		int entityId = packet.getId().hashCode();
@@ -165,7 +164,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		Object component = stringToComponent(packet.getMessage().toString(clientVersion));
 		Constructor<?> c = nms.getConstructor("PacketPlayOutChat");
 		if (nms.getMinorVersion() >= 16) {
@@ -184,7 +183,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
 		if (nms.getMinorVersion() < 8) return null;
 		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerInfo").newInstance(nms.getEnum("EnumPlayerInfoAction")[packet.getAction().ordinal()], Array.newInstance(nms.getClass("EntityPlayer"), 0));
 		List<Object> items = new ArrayList<>();
@@ -207,7 +206,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getClass("PacketPlayOutPlayerListHeaderFooter") == null) return null;
 		if (nms.getMinorVersion() >= 17) {
 			return nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance(toNMSComponent(packet.getHeader(), clientVersion), toNMSComponent(packet.getFooter(), clientVersion));
@@ -219,12 +218,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		return nms.getConstructor("PacketPlayOutScoreboardDisplayObjective").newInstance(packet.getSlot(), newScoreboardObjective(packet.getObjectiveName()));
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		String displayName = clientVersion.getMinorVersion() < 13 ? cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("PacketPlayOutScoreboardObjective").newInstance(nms.getConstructor("ScoreboardObjective").newInstance(null, packet.getObjectiveName(), null, 
@@ -244,7 +243,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("PacketPlayOutScoreboardScore_1_13").newInstance(nms.getEnum("EnumScoreboardAction")[packet.getAction().ordinal()], packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
 		}
@@ -260,7 +259,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		Object team;
 		if (nms.getMinorVersion() >= 13) {
 			team = createTeamModern(packet, clientVersion);
@@ -286,7 +285,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return nms.getConstructor("PacketPlayOutScoreboardTeam").newInstance(team, packet.getMethod());
 	}
 	
-	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, SecurityException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
 		if (clientVersion.getMinorVersion() < 13) {
@@ -304,7 +303,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return team;
 	}
 	
-	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, SecurityException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
 		if (clientVersion.getMinorVersion() < 13) {
@@ -325,15 +324,14 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param id - entity id to destroy
 	 * @return destroy packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntityDestroyPacket(int id) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object buildEntityDestroyPacket(int id) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() >= 17) {
 			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(id);
 		}
-		return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance((Object) new int[] {id});
+		return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(new int[] {id});
 	}
 
 	/**
@@ -342,11 +340,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param dataWatcher - datawatcher
 	 * @return metadata packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntityMetadataPacket(int entityId, DataWatcher dataWatcher) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object buildEntityMetadataPacket(int entityId, DataWatcher dataWatcher) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		return nms.getConstructor("PacketPlayOutEntityMetadata").newInstance(entityId, dataWatcher.toNMS(), true);
 	}
 
@@ -359,11 +356,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param dataWatcher - datawatcher
 	 * @return entity spawn packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntitySpawnPacket(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object buildEntitySpawnPacket(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutSpawnEntityLiving").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
 		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYID", entityId);
 		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYTYPE", entityIds.get(entityType));
@@ -391,11 +387,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param location - location to teleport to
 	 * @return entity teleport packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntityTeleportPacket(int entityId, Location location) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object buildEntityTeleportPacket(int entityId, Location location) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutEntityTeleport").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
 		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_ENTITYID", entityId);
 		if (nms.getMinorVersion() >= 9) {
@@ -413,7 +408,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() < 8) return null;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.getField("PacketPlayOutPlayerInfo_ACTION").get(nmsPacket).toString());
 		List<PlayerInfoData> listData = new ArrayList<>();
@@ -429,7 +424,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalArgumentException, IllegalAccessException {
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
 		String objective = (String) nms.getField("PacketPlayOutScoreboardObjective_OBJECTIVENAME").get(nmsPacket);
 		String displayName;
 		if (nms.getMinorVersion() >= 13) {
@@ -451,7 +446,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalArgumentException, IllegalAccessException {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
 		return new PacketPlayOutScoreboardDisplayObjective(
 			nms.getField("PacketPlayOutScoreboardDisplayObjective_POSITION").getInt(nmsPacket),
 			(String) nms.getField("PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME").get(nmsPacket)
@@ -473,10 +468,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param json json as string
 	 * @return NMS component
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public Object stringToComponent(String json) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object stringToComponent(String json) throws IllegalAccessException, InvocationTargetException {
 		if (json == null) return null;
 		return nms.getMethod("ChatSerializer_DESERIALIZE").invoke(null, json);
 	}
@@ -486,9 +480,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param component - component to convert
 	 * @return converted component
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public IChatBaseComponent fromNMSComponent(Object component) throws IllegalArgumentException, IllegalAccessException {
+	public IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException {
 		long time = System.nanoTime();
 		IChatBaseComponent obj = fromNMSComponent0(component);
 		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
@@ -496,7 +489,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
-	public IChatBaseComponent fromNMSComponent0(Object component) throws IllegalArgumentException, IllegalAccessException {
+	public IChatBaseComponent fromNMSComponent0(Object component) throws IllegalAccessException {
 		if (!nms.getClass("ChatComponentText").isInstance(component)) return null; //paper
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.getField("ChatComponentText_text").get(component));
 		Object modifier = nms.getField("ChatBaseComponent_modifier").get(component);
@@ -525,10 +518,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			if (clickEvent != null) {
 				chat.onClick(ClickAction.valueOf(nms.getField("ChatClickable_action").get(clickEvent).toString().toUpperCase()), (String) nms.getField("ChatClickable_value").get(clickEvent));
 			}
-/*			Object hoverEvent = nms.ChatModifier_hoverEvent.get(modifier);
-			if (hoverEvent != null) {
-				chat.onHover(HoverAction.fromString(nms.ChatHoverable_action.get(hoverEvent).toString()), fromNMSComponent(nms.ChatHoverable_value.get(hoverEvent)));
-			}*/
 		}
 		for (Object extra : (List<Object>) nms.getField("ChatBaseComponent_extra").get(component)) {
 			chat.addExtra(fromNMSComponent0(extra));
@@ -542,11 +531,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param clientVersion - client version used to decide RGB conversion
 	 * @return converted component
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		long time = System.nanoTime();
 		Object obj = toNMSComponent0(component, clientVersion);
 		TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
@@ -554,7 +542,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
-	private Object toNMSComponent0(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private Object toNMSComponent0(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (component == null) return null;
 		Object chat = nms.getConstructor("ChatComponentText").newInstance(component.getText());
 		Object modifier;
@@ -596,7 +584,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return chat;
 	}
 
-	private Object newScoreboardObjective(String objectiveName) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private Object newScoreboardObjective(String objectiveName) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, null, stringToComponent("{\"text\":\"\"}"), null);
 		}

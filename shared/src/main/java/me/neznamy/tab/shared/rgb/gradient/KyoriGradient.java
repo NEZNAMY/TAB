@@ -7,26 +7,23 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
- * Gradient applier for <gradient:#RRGGBB:#RRGGBB>Text</gradient>
+ * Gradient applier for <gradient:#RRGGBB:#RRGGBB>Text</gradient> and <gradient:#RRGGBB|L:#RRGGBB>Text</gradient>
  */
 public class KyoriGradient extends GradientPattern {
 
-	// <gradient:#RRGGBB:#RRGGBB>Text</gradient>
 	private final Pattern pattern = Pattern.compile("<gradient:#[0-9a-fA-F]{6}:#[0-9a-fA-F]{6}>[^<]*</gradient>");
-	
-	// <gradient:#RRGGBB|L:#RRGGBB>Text</gradient>
-	private final Pattern legacy = Pattern.compile("<gradient:#[0-9a-fA-F]{6}\\|.:#[0-9a-fA-F]{6}>[^<]*</gradient>");
+
+	private final Pattern patternLegacy = Pattern.compile("<gradient:#[0-9a-fA-F]{6}\\|.:#[0-9a-fA-F]{6}>[^<]*</gradient>");
 	
 	@Override
 	public String applyPattern(String text, boolean ignorePlaceholders) {
 		if (!text.contains("<grad")) return text;
 		String replaced = text;
-		Matcher m = legacy.matcher(replaced);
+		Matcher m = patternLegacy.matcher(replaced);
 		while (m.find()) {
 			String format = m.group();
-			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(18));
-			if (legacyColor == null) continue;
+			if ((ignorePlaceholders && format.contains("%")) || legacyColor == null) continue;
 			TextColor start = new TextColor(format.substring(10, 17), legacyColor);
 			String message = format.substring(28, format.length()-11);
 			TextColor end = new TextColor(format.substring(20, 27));

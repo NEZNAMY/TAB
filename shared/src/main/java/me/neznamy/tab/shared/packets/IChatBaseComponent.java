@@ -126,7 +126,7 @@ public class IChatBaseComponent {
 	 * @return true if bold is defined and set to true, false otherwise
 	 */
 	public boolean isBold(){
-		return bold == null ? false : bold;
+		return bold == Boolean.TRUE;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class IChatBaseComponent {
 	 * @return true if italic is defined and set to true, false otherwise
 	 */
 	public boolean isItalic(){
-		return italic == null ? false : italic;
+		return italic == Boolean.TRUE;
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class IChatBaseComponent {
 	 * @return true if underlined is defined and set to true, false otherwise
 	 */
 	public boolean isUnderlined(){
-		return underlined == null ? false : underlined;
+		return underlined == Boolean.TRUE;
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class IChatBaseComponent {
 	 * @return true if strikethrough is defined and set to true, false otherwise
 	 */
 	public boolean isStrikethrough(){
-		return strikethrough == null ? false : strikethrough;
+		return strikethrough == Boolean.TRUE;
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class IChatBaseComponent {
 	 * @return true if obfuscation is defined and set to true, false otherwise
 	 */
 	public boolean isObfuscated(){
-		return obfuscated == null ? false : obfuscated;
+		return obfuscated == Boolean.TRUE;
 	}
 	
 	/**
@@ -369,26 +369,6 @@ public class IChatBaseComponent {
 	public IChatBaseComponent onHoverShowText(IChatBaseComponent text) {
 		return onHover(HoverAction.SHOW_TEXT, text);
 	}
-
-	/**
-	 * Sets hover action to SHOW_ITEM and item to given value
-	 * @param item - item to show
-	 * @return self
-	 */
-	/*	public IChatBaseComponent onHoverShowItem(ItemStack item) {
-		try {
-			String pack = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-			return onHover(HoverAction.SHOW_ITEM, Class.forName("net.minecraft.server." + pack + ".ItemStack")
-					.getMethod("save", Class.forName("net.minecraft.server." + pack + ".NBTTagCompound"))
-					.invoke(Class.forName("org.bukkit.craftbukkit." + pack + ".inventory.CraftItemStack")
-							.getMethod("asNMSCopy", ItemStack.class).invoke(null, item), 
-							Class.forName("net.minecraft.server." + pack + ".NBTTagCompound")
-							.getConstructor().newInstance()).toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return this;
-		}
-	}*/
 
 	/**
 	 * Sets hover action to SHOW_ITEM and item to given value

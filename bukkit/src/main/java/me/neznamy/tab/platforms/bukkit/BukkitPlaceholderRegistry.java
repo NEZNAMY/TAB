@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -165,13 +163,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					}
 					if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK") &&
 						(boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getPlayer())) return yesAfk;
-					if (Bukkit.getPluginManager().isPluginEnabled("AutoAFK")) {
-						Object autoafk = Bukkit.getPluginManager().getPlugin("AutoAFK");
-						Field f = autoafk.getClass().getDeclaredField("afkList");
-						f.setAccessible(true);
-						HashMap<?, ?> map = (HashMap<?, ?>) f.get(autoafk);
-						if (map.containsKey(p.getPlayer())) return yesAfk;
-					}
 				} catch (Exception e) {
 					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), e);
 				}

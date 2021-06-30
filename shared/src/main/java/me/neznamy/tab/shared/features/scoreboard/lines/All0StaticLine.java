@@ -36,7 +36,7 @@ public class All0StaticLine extends StaticLine {
 	@Override
 	public void unregister(TabPlayer p) {
 		if (text.length() > 0) {
-			removeLine(p, p.getVersion().getMinorVersion() >= 13 ? playerName : p.getVersion().getMinorVersion() >= 8 ? name : name17, teamName);
+			removeLine(p, getPlayerName(p), teamName);
 		}
 	}
 }

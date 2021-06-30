@@ -67,4 +67,14 @@ public abstract class StaticLine extends ScoreboardLine {
 	public void refreshUsedPlaceholders() {
 		//no placeholders
 	}
+	
+	protected String getPlayerName(TabPlayer viewer) {
+		if (viewer.getVersion().getMinorVersion() >= 13) {
+			return playerName;
+		} else if (viewer.getVersion().getMinorVersion() >= 8) {
+			return name;
+		} else {
+			return name17;
+		}
+	}
 }

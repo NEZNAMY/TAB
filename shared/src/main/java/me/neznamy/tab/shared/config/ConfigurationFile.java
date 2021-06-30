@@ -1,15 +1,8 @@
 package me.neznamy.tab.shared.config;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -352,7 +345,7 @@ public abstract class ConfigurationFile {
 	 */
 	public boolean hasHeader() {
 		if (header == null) return true;
-		for (String line : readAllLines(file)) {
+		for (String line : Configs.readAllLines(file)) {
 			if (line.contains("#")) return true;
 		}
 		return false;
@@ -365,36 +358,14 @@ public abstract class ConfigurationFile {
 		if (header == null) return;
 		try {
 			List<String> content = new ArrayList<>(header);
-			content.addAll(readAllLines(file));
+			content.addAll(Configs.readAllLines(file));
 			Files.delete(file.toPath());
-			file.createNewFile();
-			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
-			for (String line : content) {
-				buf.write(line + System.getProperty("line.separator"));
+			if (file.createNewFile()) {
+				Configs.write(file, content);
 			}
-			buf.close();
 		} catch (Exception ex) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to modify file " + file, ex);
 		}
-	}
-	
-	/**
-	 * Reads all lines in file and returns them as List
-	 * @return list of lines in file
-	 */
-	private List<String> readAllLines(File file) {
-		List<String> list = new ArrayList<>();
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-			String line;
-			while ((line = br.readLine()) != null) {
-				list.add(line);
-			}
-			br.close();
-		} catch (Exception ex) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to read file " + file, ex);
-		}
-		return list;
 	}
 	
 	/**

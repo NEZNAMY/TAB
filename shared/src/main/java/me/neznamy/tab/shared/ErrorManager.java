@@ -106,22 +106,31 @@ public class ErrorManager {
 		try {
 			if (!createFile(file)) return;
 			if (file.length() > 1000000) return; //not going over 1 MB
-			BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-			if (message != null) {
-				write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
-			}
-			if (error != null) {
-				write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
-				for (StackTraceElement ste : error.getStackTrace()) {
-					write(buf, "&c       at ", ste.toString(), intoConsoleToo);
+			try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
+				if (message != null) {
+					write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
 				}
+				if (error != null) {
+					write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
+					for (StackTraceElement ste : error.getStackTrace()) {
+						write(buf, "&c       at ", ste.toString(), intoConsoleToo);
+					}
+				}
+				buf.close();
 			}
-			buf.close();
 		} catch (Exception ex) {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
-			ex.printStackTrace();
+			tab.getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
+			for (StackTraceElement e : ex.getStackTrace()) {
+				tab.getPlatform().sendConsoleMessage(e.toString(), true);
+			}
 			tab.getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
-			if (error != null) error.printStackTrace();
+			if (error != null) {
+				tab.getPlatform().sendConsoleMessage(error.getClass().getName() + ": " + error.getMessage(), true);
+				for (StackTraceElement e : error.getStackTrace()) {
+					tab.getPlatform().sendConsoleMessage(e.toString(), true);
+				}
+			}
 		}
 	}
 	
@@ -134,8 +143,7 @@ public class ErrorManager {
 	private boolean createFile(File file) {
 		if (file.exists()) return true;
 		try {
-			file.createNewFile();
-			return true;
+			return file.createNewFile();
 		} catch (IOException e) {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] Failed to create file " + file.getPath() + ": " + e.getMessage(), true);
 			return false;

@@ -50,7 +50,6 @@ public class DataWatcherRegistry {
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				try {
-					field.setAccessible(true);
 					fields.put(field.getName(), field.get(null));
 				} catch (Exception e) {
 					//this will never happen

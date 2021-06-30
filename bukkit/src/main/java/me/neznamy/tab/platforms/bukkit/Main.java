@@ -67,10 +67,13 @@ public class Main extends JavaPlugin {
 			} else {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17. Disabling just to stay safe.");
 			}
-		} catch (Exception e) {
+		} catch (Exception ex) {
 			if (supportedVersions.contains(serverPackage)) {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
-				e.printStackTrace();
+				Bukkit.getConsoleSender().sendMessage(ex.getClass().getName() + ": " + ex.getMessage());
+				for (StackTraceElement e : ex.getStackTrace()) {
+					Bukkit.getConsoleSender().sendMessage(e.toString());
+				}
 			} else {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17. Disabling.");
 			}

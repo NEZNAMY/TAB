@@ -244,8 +244,6 @@ public class NMSStorage {
 		fields.put("PacketPlayOutSpawnEntityLiving_YAW", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
 		fields.put("PacketPlayOutSpawnEntityLiving_PITCH", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
 
-		fields.put("PacketPlayOutEntityDestroy_ENTITIES", getClass("PacketPlayOutEntityDestroy").getDeclaredFields()[0]);
-		fields.get("PacketPlayOutEntityDestroy_ENTITIES").setAccessible(true);
 		fields.put("PacketPlayOutNamedEntitySpawn_ENTITYID", getFields(getClass("PacketPlayOutNamedEntitySpawn"), int.class).get(0));
 
 		if (minorVersion >= 7) {
@@ -321,6 +319,12 @@ public class NMSStorage {
 		} else if (minorVersion >= 7) {
 			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
+		}
+		
+		if (minorVersion >= 17) {
+			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int.class).get(0));
+		} else {
+			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int[].class).get(0));
 		}
 	}
 

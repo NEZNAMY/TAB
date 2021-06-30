@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
  */
 public class BukkitFormat implements RGBFormatter {
 
-	//pattern for &x&R&R&G&G&B&B
 	private final Pattern pattern = Pattern.compile("[\\\u00a7&]{1}x[[\\\u00a7&]{1}0-9a-fA-F]{12}");
 	
 	@Override

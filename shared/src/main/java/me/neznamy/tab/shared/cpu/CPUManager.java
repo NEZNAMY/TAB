@@ -106,14 +106,10 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runMeasuredTask(String errorDescription, Object feature, UsageType type, Runnable task) {
-		exe.submit(() -> {
-			try {
-				long time = System.nanoTime();
-				task.run();
-				addTime(feature, type, System.nanoTime()-time);
-			} catch (Throwable t) {
-				errorManager.printError("An error occurred when " + errorDescription, t);
-			}
+		submit(errorDescription, () -> {
+			long time = System.nanoTime();
+			task.run();
+			addTime(feature, type, System.nanoTime()-time);
 		});
 	}
 
@@ -123,13 +119,7 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTask(String errorDescription, Runnable task) {
-		exe.submit(() -> {
-			try {
-				task.run();
-			} catch (Throwable t) {
-				errorManager.printError("An error occurred when " + errorDescription, t);
-			}
-		});
+		submit(errorDescription, task);
 	}
 
 	/**
@@ -142,7 +132,7 @@ public class CPUManager {
 	 */
 	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
-		exe.submit(() -> {
+		submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
 			while (true) {
 				try {
@@ -158,8 +148,6 @@ public class CPUManager {
 				} catch (InterruptedException pluginDisabled) {
 					Thread.currentThread().interrupt();
 					break;
-				} catch (Throwable t) {
-					errorManager.printError("An error occurred when " + errorDescription, t);
 				}
 			}
 		});
@@ -174,7 +162,7 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTaskLater(int delayMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
-		exe.submit(() -> {
+		submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
 				long time = System.nanoTime();
@@ -182,8 +170,16 @@ public class CPUManager {
 				addTime(feature, type, System.nanoTime()-time);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
-			} catch (Throwable t) {
-				errorManager.printError("An error occurred when " + errorDescription, t);
+			}
+		});
+	}
+	
+	private void submit(String errorDescription, Runnable task) {
+		exe.submit(() -> {
+			try {
+				task.run();
+			} catch (Exception e) {
+				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
 	}
@@ -359,27 +355,7 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addTime(Object feature, UsageType type, long nanoseconds) {
-		Map<UsageType, AtomicLong> usage = featureUsageCurrent.get(feature);
-		if (usage == null) {
-			usage = new ConcurrentHashMap<>();
-			featureUsageCurrent.put(feature, usage);
-		}
-		try {
-			if (!usage.containsKey(type)) {
-				usage.put(type, new AtomicLong());
-			}
-		} catch (NullPointerException e) {
-			//java.lang.NullPointerException: null
-			//at java.base/java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
-			//at java.base/java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
-			return;
-		}
-		AtomicLong current = usage.get(type);
-		if (current == null) {
-			usage.put(type, new AtomicLong(nanoseconds));
-		} else {
-			current.addAndGet(nanoseconds);
-		}
+		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
 
 	/**
@@ -416,12 +392,7 @@ public class CPUManager {
 	 * @param time - nanoseconds the task took
 	 */
 	private void addTime(Map<String, AtomicLong> map, String key, long time) {
-		AtomicLong current = map.get(key);
-		if (current == null) {
-			map.put(key, new AtomicLong(time));
-		} else {
-			current.addAndGet(time);
-		}
+		map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
 	}
 	
 	/**
@@ -429,11 +400,6 @@ public class CPUManager {
 	 * @param feature - feature to increment packet counter of
 	 */
 	public void packetSent(Object feature) {
-		AtomicInteger current = packetsCurrent.get(feature);
-		if (current == null) {
-			packetsCurrent.put(feature, new AtomicInteger(1));
-		} else {
-			current.addAndGet(1);
-		}
+		packetsCurrent.computeIfAbsent(feature, f -> new AtomicInteger()).incrementAndGet();
 	}
 }

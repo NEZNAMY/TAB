@@ -1,13 +1,11 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.viaversion.viaversion.api.Via;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -15,8 +13,9 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffectType;
+
+import com.viaversion.viaversion.api.Via;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -166,36 +165,11 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean isDisguised() {
-		return isDisguisedLD() || isDisguisediDis();
-	}
-
-	/**
-	 * Returns disguise status of player using LibsDisguises
-	 * @return disguise status of player using LibsDisguises
-	 */
-	private boolean isDisguisedLD() {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
-		}
-	}
-
-	/**
-	 * Returns disguise status of player using iDisguise
-	 * @return disguise status of player using iDisguise
-	 */
-	private boolean isDisguisediDis() {
-		try {
-			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isIdisguiseEnabled()) return false;
-			RegisteredServiceProvider<?> provider = Bukkit.getServicesManager().getRegistration(Class.forName("de.robingrether.idisguise.api.DisguiseAPI"));
-			Object iDisguise = provider.getProvider();
-			Method m = iDisguise.getClass().getMethod("isDisguised", Player.class);
-			m.setAccessible(true);
-			return (boolean) m.invoke(iDisguise, player);
-		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using iDisguise", e);
 		}
 	}
 

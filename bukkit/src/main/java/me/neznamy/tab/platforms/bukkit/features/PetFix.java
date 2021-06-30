@@ -69,9 +69,10 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
+	 * @throws ClassNotFoundException 
 	 */
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		if (nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
@@ -85,9 +86,9 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 		return packet;
 	}
 	
-	private boolean isInteract(Object action) {
+	private boolean isInteract(Object action) throws ClassNotFoundException {
 		if (nms.getMinorVersion() >= 17) {
-			return action.getClass().getSimpleName().equals("d");
+			return Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d").isInstance(action);
 		} else {
 			return action.toString().equals("INTERACT");
 		}

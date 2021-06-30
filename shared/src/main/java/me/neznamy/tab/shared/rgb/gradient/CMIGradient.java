@@ -7,14 +7,12 @@ import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
- * Gradient applier for {#RRGGBB>}text{#RRGGBB<}
+ * Gradient applier for {#RRGGBB>}text{#RRGGBB<} and {#RRGGBB|L>}text{#RRGGBB<}
  */
 public class CMIGradient extends GradientPattern {
 
-	// {#RRGGBB>}text{#RRGGBB<}
 	private Pattern pattern = Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
-
-	// {#RRGGBB|L>}text{#RRGGBB<}
+	
 	private Pattern patternLegacy = Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}");
 	
 	@Override
@@ -24,9 +22,8 @@ public class CMIGradient extends GradientPattern {
 		Matcher m = patternLegacy.matcher(replaced);
 		while (m.find()) {
 			String format = m.group();
-			if (ignorePlaceholders && format.contains("%")) continue;
 			EnumChatFormat legacyColor = EnumChatFormat.getByChar(format.charAt(9));
-			if (legacyColor == null) continue;
+			if ((ignorePlaceholders && format.contains("%")) || legacyColor == null) continue;
 			TextColor start = new TextColor(format.substring(1, 8), legacyColor);
 			String message = format.substring(12, format.length()-10);
 			TextColor end = new TextColor(format.substring(format.length()-9, format.length()-2));

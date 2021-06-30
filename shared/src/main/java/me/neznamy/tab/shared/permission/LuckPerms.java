@@ -7,6 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
@@ -55,26 +56,15 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	@Override
 	public String getPrefix(TabPlayer p) {
-		try {
-			if (version.startsWith("4")) return UPDATE_MESSAGE;
-			net.luckperms.api.LuckPerms api = getAPI();
-			if (api == null) {
-				return "";
-			}
-			User user = api.getUserManager().getUser(p.getUniqueId());
-			if (user == null) return "";
-			Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
-			if (!options.isPresent()) return "";
-			String prefix = user.getCachedData().getMetaData(options.get()).getPrefix();
-			return prefix == null ? "" : prefix;
-		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player prefix of " + p.getName(), e);
-			return "";
-		}
+		return getValue(p, true);
 	}
 
 	@Override
 	public String getSuffix(TabPlayer p) {
+		return getValue(p, false);
+	}
+	
+	private String getValue(TabPlayer p, boolean prefix) {
 		try {
 			if (version.startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = getAPI();
@@ -85,10 +75,16 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			if (user == null) return "";
 			Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
 			if (!options.isPresent()) return "";
-			String suffix = user.getCachedData().getMetaData(options.get()).getSuffix();
-			return suffix == null ? "" : suffix;
+			CachedMetaData data = user.getCachedData().getMetaData(options.get());
+			String value;
+			if (prefix) {
+				value = data.getPrefix();
+			} else {
+				value = data.getSuffix();
+			}
+			return value == null ? "" : value;
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player suffix of " + p.getName(), e);
+			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player " + (prefix ? "prefix" : "suffix") + " of " + p.getName(), e);
 			return "";
 		}
 	}

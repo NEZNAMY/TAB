@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,13 +28,13 @@ import me.neznamy.tab.shared.TAB;
 public class Configs {
 
 	private TAB tab;
-	
+
 	//config.yml file
 	private ConfigurationFile config;
 
 	private List<String> removeStrings;
 	private boolean bukkitPermissions;
-	
+
 	//hidden config options
 	private boolean rgbSupport;
 	private boolean unregisterBeforeRegister;
@@ -52,10 +53,10 @@ public class Configs {
 
 	//translation.yml file
 	private ConfigurationFile translation;
-	
+
 	//default reload message in case plugin did not load translation file due to an error
 	private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
-	
+
 	//premiumconfig.yml
 	private ConfigurationFile premiumconfig;
 
@@ -69,7 +70,7 @@ public class Configs {
 	public Configs(TAB tab) {
 		this.tab = tab;
 	}
-	
+
 	/**
 	 * Loads all configuration files and converts files to latest version
 	 * @throws IOException 
@@ -115,7 +116,7 @@ public class Configs {
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
-		
+
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
@@ -146,7 +147,7 @@ public class Configs {
 		Object value = getConfig().getObject(path);
 		return value == null ? defaultValue : value;
 	}
-	
+
 	/**
 	 * Returns player data with specified key
 	 * @param key - data key
@@ -158,15 +159,17 @@ public class Configs {
 			try {
 				if (file.exists() || file.createNewFile()) {
 					playerdata = new YamlConfigurationFile(null, file);
+					return playerdata.getStringList(key, new ArrayList<>());
 				}
 			} catch (Exception e) {
 				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
-				return new ArrayList<>();
 			}
+		} else {
+			return playerdata.getStringList(key, new ArrayList<>());
 		}
-		return playerdata.getStringList(key, new ArrayList<>());
+		return new ArrayList<>();
 	}
-	
+
 	/**
 	 * Returns name of world group in specified set that may consist of multiple
 	 * worlds separated with "-" or something else defined in config
@@ -186,39 +189,39 @@ public class Configs {
 		}
 		return world;
 	}
-	
+
 	/**
 	 * Reads all lines in file and returns them as List
 	 * @return list of lines in file
 	 */
-	public List<String> readAllLines(File file) {
+	public static List<String> readAllLines(File file) {
 		List<String> list = new ArrayList<>();
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
 			String line;
 			while ((line = br.readLine()) != null) {
 				list.add(line);
 			}
 			br.close();
 		} catch (Exception ex) {
-			tab.getErrorManager().criticalError("Failed to read file " + file, ex);
+			TAB.getInstance().getErrorManager().criticalError("Failed to read file " + file, ex);
 		}
 		return list;
 	}
-	
+
 	/**
 	 * Writes defined line of text to file
 	 * @param f - file to write to
 	 * @param line - line to write
 	 */
-	public void write(File f, String line){
-		try {
-            BufferedWriter buf = new BufferedWriter(new FileWriter(f, true));
-            buf.write(line + System.getProperty("line.separator"));
-            buf.close();
-        } catch (Exception ex) {
-            tab.getErrorManager().criticalError("Failed to write to file " + f.getName(), ex);
-        }
+	public static void write(File file, List<String> lines){
+		try (BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8))){
+			for (String line : lines) {
+				buf.write(line + System.getProperty("line.separator"));
+			}
+			buf.close();
+		} catch (Exception ex) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to write to file " + file.getName(), ex);
+		}
 	}
 
 	public List<String> getRemoveStrings() {

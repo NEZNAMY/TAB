@@ -8,7 +8,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.event.VelocityTABLoadEvent;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
@@ -103,7 +102,6 @@ public class VelocityPlatform implements Platform {
 
 	@Override
 	public void callLoadEvent() {
-		server.getEventManager().fire(new VelocityTABLoadEvent());
 	}
 
 	@Override

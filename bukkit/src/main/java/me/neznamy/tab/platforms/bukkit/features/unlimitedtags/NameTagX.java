@@ -116,21 +116,25 @@ public class NameTagX extends NameTag {
 			for (TabPlayer p : tab.getPlayers()) {
 				if (!p.isLoaded() || isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) continue;
 				p.getArmorStandManager().updateVisibility(false);
-				if (!disableOnBoats) continue;
-				boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
-				if (onBoat) {
-					if (!getPlayersOnBoats().contains(p)) {
-						getPlayersOnBoats().add(p);
-						updateTeamData(p);
-					}
-				} else {
-					if (getPlayersOnBoats().contains(p)) {
-						getPlayersOnBoats().remove(p);
-						updateTeamData(p);
-					}
-				}
+				if (disableOnBoats) processBoats(p);
+				
 			}
 		});
+	}
+	
+	private void processBoats(TabPlayer p) {
+		boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
+		if (onBoat) {
+			if (!getPlayersOnBoats().contains(p)) {
+				getPlayersOnBoats().add(p);
+				updateTeamData(p);
+			}
+		} else {
+			if (getPlayersOnBoats().contains(p)) {
+				getPlayersOnBoats().remove(p);
+				updateTeamData(p);
+			}
+		}
 	}
 	
 	private void startVehicleTickingTask() {
@@ -141,15 +145,15 @@ public class NameTagX extends NameTag {
 				if (isDisabledWorld(p.getWorldName()) || isDisabledWorld(disabledUnlimitedWorlds, p.getWorldName())) {
 					playersInVehicle.remove(p);
 					playerLocations.remove(p);
-					continue;
-				}
-				processVehicles(p);
-				if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
-					playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
-					processPassengers((Entity) p.getPlayer());
-					//also updating position if player is previewing since we're here as the code would be same if we want to avoid listening to move event
-					if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
-						p.getArmorStandManager().teleport(p);
+				} else {
+					processVehicles(p);
+					if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
+						playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
+						processPassengers((Entity) p.getPlayer());
+						//also updating position if player is previewing since we're here as the code would be same if we want to avoid listening to move event
+						if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
+							p.getArmorStandManager().teleport(p);
+						}
 					}
 				}
 			}
