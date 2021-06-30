@@ -472,11 +472,7 @@ public class IChatBaseComponent {
 		JSONObject json = new JSONObject();
 		if (text != null) json.put("text", text);
 		if (color != null) json.put("color", color.toString());
-		if (bold != null) json.put("bold", bold);
-		if (italic != null) json.put("italic", italic);
-		if (underlined != null) json.put("underlined", underlined);
-		if (strikethrough != null) json.put("strikethrough", strikethrough);
-		if (obfuscated != null) json.put("obfuscated", obfuscated);
+		setMagicCodes(json);
 		if (clickAction != null) {
 			JSONObject click = new JSONObject();
 			click.put("action", clickAction.toString().toLowerCase());
@@ -491,6 +487,14 @@ public class IChatBaseComponent {
 		}
 		if (extra != null) json.put("extra", extra);
 		return json.toString();
+	}
+	
+	private void setMagicCodes(JSONObject json) {
+		if (bold != null) json.put("bold", bold);
+		if (italic != null) json.put("italic", italic);
+		if (underlined != null) json.put("underlined", underlined);
+		if (strikethrough != null) json.put("strikethrough", strikethrough);
+		if (obfuscated != null) json.put("obfuscated", obfuscated);
 	}
 
 	/**
@@ -730,16 +734,20 @@ public class IChatBaseComponent {
 	public String toFlatText() {
 		StringBuilder builder = new StringBuilder();
 		if (color != null) builder.append(color.getHexCode());
-		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
-		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
-		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
-		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
-		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+		appendMagicCodes(builder);
 		if (text != null) builder.append(text);
 		for (IChatBaseComponent child : getExtra()) {
 			builder.append(child.toFlatText());
 		}
 		return builder.toString();
+	}
+	
+	private void appendMagicCodes(StringBuilder builder) {
+		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
+		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
+		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
+		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
+		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 	}
 
 	/**

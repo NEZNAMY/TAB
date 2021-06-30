@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
@@ -34,7 +34,7 @@ public class CustomLine extends ScoreboardLine {
 	 * @param suffix - suffix
 	 * @param score - score
 	 */
-	public CustomLine(Scoreboard parent, int lineNumber, String prefix, String name, String suffix, int score) {
+	public CustomLine(ScoreboardImpl parent, int lineNumber, String prefix, String name, String suffix, int score) {
 		super(parent, lineNumber);
 		this.prefix = prefix;
 		this.name = name;

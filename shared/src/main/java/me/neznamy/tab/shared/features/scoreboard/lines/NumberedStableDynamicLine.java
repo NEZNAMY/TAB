@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
  * A stable (anti-flickering) line with dynamic text (supports placeholders) with numbers 1-15
@@ -16,7 +16,7 @@ public class NumberedStableDynamicLine extends StableDynamicLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text to display
 	 */
-	public NumberedStableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+	public NumberedStableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber, text);
 	}
 

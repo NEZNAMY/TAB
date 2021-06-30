@@ -201,7 +201,6 @@ public class Configs {
 			while ((line = br.readLine()) != null) {
 				list.add(line);
 			}
-			br.close();
 		} catch (Exception ex) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to read file " + file, ex);
 		}
@@ -218,7 +217,6 @@ public class Configs {
 			for (String line : lines) {
 				buf.write(line + System.getProperty("line.separator"));
 			}
-			buf.close();
 		} catch (Exception ex) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to write to file " + file.getName(), ex);
 		}

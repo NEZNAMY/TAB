@@ -3,7 +3,9 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -335,37 +337,20 @@ public abstract class ITabPlayer implements TabPlayer {
 		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
 		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
 		String value;
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property)) != null) {
-			setProperty(property, value, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property)) != null) {
-			setProperty(property, value, "PlayerUUID: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Users." + getName() + "." + property)) != null) {
-			setProperty(property, value, "Player: " + getName());
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Users." + getUniqueId().toString() + "." + property)) != null) {
-			setProperty(property, value, "PlayerUUID: " + getName());
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property)) != null) {
-			setProperty(property, value, "Group: " + permissionGroup + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property)) != null) {
-			setProperty(property, value, "Group: _OTHER_," + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Groups." + playerGroupFromConfig + "." + property)) != null) {
-			setProperty(property, value, "Group: " + permissionGroup);
-			return;
-		}
-		if ((value = TAB.getInstance().getConfiguration().getConfig().getString("Groups._OTHER_." + property)) != null) {
-			setProperty(property, value, "Group: _OTHER_");
-			return;
+		Map<String, String> priorities = new LinkedHashMap<>();
+		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
+		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property, "PlayerUUID: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
+		priorities.put("Users." + getName() + "." + property, "Player: " + getName());
+		priorities.put("Users." + getUniqueId().toString() + "." + property, "PlayerUUID: " + getName());
+		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property, "Group: " + permissionGroup + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
+		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property, "Group: _OTHER_," + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
+		priorities.put("Groups." + playerGroupFromConfig + "." + property, "Group: " + permissionGroup);
+		priorities.put("Groups._OTHER_." + property, "Group: _OTHER_");
+		for (Entry<String, String> entry : priorities.entrySet()) {
+			if ((value = TAB.getInstance().getConfiguration().getConfig().getString(entry.getKey())) != null) {
+				setProperty(property, value, entry.getValue());
+				return;
+			}
 		}
 		setProperty(property, ifNotSet, "None");
 	}

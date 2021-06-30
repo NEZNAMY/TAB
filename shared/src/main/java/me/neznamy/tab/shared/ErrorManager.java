@@ -116,7 +116,6 @@ public class ErrorManager {
 						write(buf, "&c       at ", ste.toString(), intoConsoleToo);
 					}
 				}
-				buf.close();
 			}
 		} catch (Exception ex) {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);

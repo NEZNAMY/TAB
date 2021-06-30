@@ -95,13 +95,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return String.valueOf(((Player) p.getPlayer()).getStatistic(Statistic.DEATHS));
 			}
 		});
-		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
-			placeholders.add(new PlayerPlaceholder("%health%", 100) {
-				public String get(TabPlayer p) {
-					return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
-				}
-			});
-		}
 		placeholders.add(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
 				try {
@@ -131,6 +124,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return String.valueOf(count);
 			}
 		});
+		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
+			placeholders.add(new PlayerPlaceholder("%health%", 100) {
+				public String get(TabPlayer p) {
+					return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+				}
+			});
+		}
 		registerAFKPlaceholder();
 		registerVaultPlaceholders();
 		registerPositionPlaceholders();
@@ -161,8 +161,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return yesAfk;
 					}
-					if (Bukkit.getPluginManager().isPluginEnabled("xAntiAFK") &&
-						(boolean) Class.forName("ch.soolz.xantiafk.xAntiAFKAPI").getMethod("isAfk", Player.class).invoke(null, p.getPlayer())) return yesAfk;
 				} catch (Exception e) {
 					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), e);
 				}

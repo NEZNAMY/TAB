@@ -53,12 +53,34 @@ public class NMSStorage {
 	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
-		initializeClasses();
-		initializeConstructors();
-		initializeFields();
-		initializeMethods();
+		classes.put("EnumChatFormat", getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat"));
+		classes.put("EntityPlayer", getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer"));
+		classes.put("Entity", getNMSClass("net.minecraft.world.entity.Entity", "Entity"));
+		classes.put("EntityLiving", getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving"));
+		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
+		classes.put("PlayerConnection", getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection"));
+		classes.put("NetworkManager", getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager"));
+		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "e"));
+		fields.put("PLAYER_CONNECTION", getFields(getClass("EntityPlayer"), getClass("PlayerConnection")).get(0));
+		methods.put("getHandle", Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle"));
+		methods.put("sendPacket", getMethod(getClass("PlayerConnection"), new String[]{"sendPacket", "func_147359_a"}, getClass("Packet")));
+		if (minorVersion >= 7) {
+			fields.put("NETWORK_MANAGER", getFields(getClass("PlayerConnection"), getClass("NetworkManager")).get(0));
+		}
+		if (minorVersion >= 8) {
+			fields.put("CHANNEL", getFields(getClass("NetworkManager"), Channel.class).get(0));
+			methods.put("getProfile", getClass("EntityPlayer").getMethod("getProfile"));
+		}
 		initializeEnums();
-		dataWatcherRegistry = new DataWatcherRegistry(this, getClass("DataWatcherRegistry"));
+		initializeChatComponents();
+		initializeChatPacket();
+		initializeDataWatcher();
+		initializeEntitySpawnPacket();
+		initializeEntityTeleportPacket();
+		initializeHeaderFooterPacket();
+		initializeOtherEntityPackets();
+		initializePlayerInfoPacket();
+		initializeScoreboardPackets();
 	}
 
 	/**
@@ -77,39 +99,14 @@ public class NMSStorage {
 		return instance;
 	}
 
-	/**
-	 * Initializes required NMS classes
-	 * @throws ClassNotFoundException 
-	 */
-	private void initializeClasses() throws ClassNotFoundException {
-		classes.put("DataWatcher", getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher"));
-		classes.put("DataWatcherItem", getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject"));
-		classes.put("EntityPlayer", getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer"));
-		classes.put("EnumChatFormat", getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat"));
-		classes.put("Entity", getNMSClass("net.minecraft.world.entity.Entity", "Entity"));
-		classes.put("EntityLiving", getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving"));
-		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
-		classes.put("PacketPlayInUseEntity", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity", "PacketPlayInUseEntity", "Packet7UseEntity"));
-		classes.put("PacketPlayOutChat", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat"));
-		classes.put("PacketPlayOutEntity", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity", "PacketPlayOutEntity", "Packet30Entity"));
-		classes.put("PacketPlayOutEntityDestroy", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy", "PacketPlayOutEntityDestroy", "Packet29DestroyEntity"));
-		classes.put("PacketPlayOutEntityLook", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook"));
-		classes.put("PacketPlayOutEntityMetadata", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata"));
-		classes.put("PacketPlayOutEntityTeleport", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport"));
-		classes.put("PacketPlayOutNamedEntitySpawn", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn", "PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn"));
-		classes.put("PacketPlayOutScoreboardDisplayObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", "PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective"));
-		classes.put("PacketPlayOutScoreboardObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", "PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective"));
-		classes.put("PacketPlayOutScoreboardScore", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", "PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore"));
-		classes.put("PacketPlayOutScoreboardTeam", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam"));
-		classes.put("PacketPlayOutSpawnEntityLiving", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn"));
-		classes.put("PlayerConnection", getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection"));
-		classes.put("NetworkManager", getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager"));
-		classes.put("Scoreboard", getNMSClass("net.minecraft.world.scores.Scoreboard", "Scoreboard"));
-		classes.put("ScoreboardObjective", getNMSClass("net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective"));
-		classes.put("ScoreboardTeam", getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam"));
-		classes.put("ScoreboardScore", getNMSClass("net.minecraft.world.scores.ScoreboardScore", "ScoreboardScore"));
-		classes.put("IScoreboardCriteria", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria"));
-
+	private void initializeEnums() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		for (String name : Arrays.asList("ChatMessageType", "EnumPlayerInfoAction", "EnumGamemode", "EnumScoreboardHealthDisplay", "EnumScoreboardAction", 
+				"PacketPlayOutScoreboardTeam_a", "EnumChatFormat", "EnumNameTagVisibility", "EnumTeamPush")) {
+			if (classes.containsKey(name)) enums.put(name, (Enum[]) getClass(name).getMethod("values").invoke(null));
+		}
+	}
+	
+	private void initializeChatComponents() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
 		if (minorVersion >= 7) {
 			classes.put("ChatBaseComponent", getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent"));
 			classes.put("ChatClickable", getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable"));
@@ -120,134 +117,9 @@ public class NMSStorage {
 			classes.put("EnumClickAction", getNMSClass("net.minecraft.network.chat.ChatClickable$EnumClickAction", "ChatClickable$EnumClickAction", "EnumClickAction"));
 			classes.put("EnumHoverAction", getNMSClass("net.minecraft.network.chat.ChatHoverable$EnumHoverAction", "ChatHoverable$EnumHoverAction", "EnumHoverAction"));
 			classes.put("IChatBaseComponent", getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent"));
-			classes.put("EnumEntityUseAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction"));
-		}
-
-		if (minorVersion >= 8) {
-			classes.put("PacketPlayOutPlayerInfo", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo"));
-			classes.put("PacketPlayOutPlayerListHeaderFooter", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter"));
-			classes.put("EnumPlayerInfoAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction"));
-			classes.put("PlayerInfoData", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", "PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData"));
-			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
-			classes.put("EnumGamemode", getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode"));
-			classes.put("EnumScoreboardAction", getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction"));
-			classes.put("EnumNameTagVisibility", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility"));
-		}
-		if (minorVersion >= 9) {
-			classes.put("DataWatcherObject", getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject"));
-			classes.put("DataWatcherRegistry", getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry"));
-			classes.put("DataWatcherSerializer", getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer"));
-			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-
-		}
-		if (minorVersion >= 12) {
-			classes.put("ChatMessageType", getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType"));
-		}
-		if (minorVersion >= 16) {
-			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
-		}
-		if (minorVersion >= 17) {
-			classes.put("PacketPlayOutScoreboardTeam_a", Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a"));
-		}
-	}
-
-	/**
-	 * Initializes required NMS constructors
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 */
-	private void initializeConstructors() throws NoSuchMethodException, SecurityException {
-		constructors.put("DataWatcher", getClass("DataWatcher").getConstructors()[0]);
-		constructors.put("PacketPlayOutEntityMetadata", getClass("PacketPlayOutEntityMetadata").getConstructor(int.class, getClass("DataWatcher"), boolean.class));
-		constructors.put("ScoreboardObjective", getClass("ScoreboardObjective").getConstructors()[0]);
-		constructors.put("Scoreboard", getClass("Scoreboard").getConstructor());
-		constructors.put("ScoreboardTeam", getClass("ScoreboardTeam").getConstructor(getClass("Scoreboard"), String.class));
-		constructors.put("ScoreboardScore", getClass("ScoreboardScore").getConstructor(getClass("Scoreboard"), getClass("ScoreboardObjective"), String.class));
-		constructors.put("PacketPlayOutEntityDestroy", getConstructor(getClass("PacketPlayOutEntityDestroy"), 1));
-		constructors.put("PacketPlayOutEntityTeleport", getClass("PacketPlayOutEntityTeleport").getConstructor(getClass("Entity")));
-		constructors.put("PacketPlayOutSpawnEntityLiving", getClass("PacketPlayOutSpawnEntityLiving").getConstructor(getClass("EntityLiving")));
-		constructors.put("PacketPlayOutScoreboardDisplayObjective", getClass("PacketPlayOutScoreboardDisplayObjective").getConstructor(int.class, getClass("ScoreboardObjective")));
-		if (minorVersion >= 7) {
 			constructors.put("ChatComponentText", getClass("ChatComponentText").getConstructor(String.class));
 			constructors.put("ChatClickable", getClass("ChatClickable").getConstructor(getClass("EnumClickAction"), String.class));
 			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructors()[0]);
-		}
-		if (minorVersion >= 8) {
-			constructors.put("PacketPlayOutPlayerInfo", getClass("PacketPlayOutPlayerInfo").getConstructor(getClass("EnumPlayerInfoAction"), Array.newInstance(getClass("EntityPlayer"), 0).getClass()));
-			constructors.put("PlayerInfoData", getClass("PlayerInfoData").getConstructors()[0]);
-		}
-		if (minorVersion >= 9) {
-			constructors.put("DataWatcherObject", getClass("DataWatcherObject").getConstructors()[0]);
-		}
-		if (minorVersion >= 13) {
-			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
-			constructors.put("PacketPlayOutScoreboardScore_1_13", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("EnumScoreboardAction"), String.class, String.class, int.class));
-		} else {
-			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor());
-			constructors.put("PacketPlayOutScoreboardScore_String", getClass("PacketPlayOutScoreboardScore").getConstructor(String.class));
-			if (minorVersion >= 8) {
-				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore")));
-			} else {
-				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore"), int.class));
-			}
-		}
-		if (minorVersion >= 16) {
-			constructors.put("ChatModifier", getConstructor(getClass("ChatModifier"), 10));
-			constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), getClass("ChatMessageType"), UUID.class));
-		} else if (minorVersion >= 7) {
-			constructors.put("ChatModifier", getClass("ChatModifier").getConstructor());
-			if (minorVersion >= 12) {
-				constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), getClass("ChatMessageType")));
-			} else if (minorVersion >= 8) {
-				constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), byte.class));
-			} else {
-				constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent")));
-			}
-		}
-		if (minorVersion >= 17) {
-			constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor(getClass("IChatBaseComponent"), getClass("IChatBaseComponent")));
-		} else  {
-			if (minorVersion >= 8) {
-				constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor());
-			}
-			constructors.put("PacketPlayOutScoreboardTeam", getClass("PacketPlayOutScoreboardTeam").getConstructor(getClass("ScoreboardTeam"), int.class));
-		}
-	}
-
-	/**
-	 * Initializes required NMS fields
-	 * @throws NoSuchFieldException 
-	 */
-	private void initializeFields() throws NoSuchFieldException {
-		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "e"));
-		fields.put("PLAYER_CONNECTION", getFields(getClass("EntityPlayer"), getClass("PlayerConnection")).get(0));
-
-		fields.put("PacketPlayOutScoreboardDisplayObjective_POSITION", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), int.class).get(0));
-		fields.put("PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), String.class).get(0));
-
-		fields.put("PacketPlayOutScoreboardObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(0));
-		List<Field> list = getFields(getClass("PacketPlayOutScoreboardObjective"), int.class);
-		fields.put("PacketPlayOutScoreboardObjective_METHOD", list.get(list.size()-1));
-
-		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
-		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
-
-		fields.put("PacketPlayOutEntityTeleport_ENTITYID", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(0));
-		fields.put("PacketPlayOutEntityTeleport_YAW", getFields(getClass("PacketPlayOutEntityTeleport"), byte.class).get(0));
-		fields.put("PacketPlayOutEntityTeleport_PITCH", getFields(getClass("PacketPlayOutEntityTeleport"), byte.class).get(1));
-
-		fields.put("PacketPlayOutEntity_ENTITYID", getFields(getClass("PacketPlayOutEntity"), int.class).get(0));
-		fields.put("PacketPlayOutEntityMetadata_LIST", getFields(getClass("PacketPlayOutEntityMetadata"), List.class).get(0));
-
-		fields.put("PacketPlayOutSpawnEntityLiving_ENTITYID", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(0));
-		fields.put("PacketPlayOutSpawnEntityLiving_ENTITYTYPE", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(1));
-		fields.put("PacketPlayOutSpawnEntityLiving_YAW", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
-		fields.put("PacketPlayOutSpawnEntityLiving_PITCH", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
-
-		fields.put("PacketPlayOutNamedEntitySpawn_ENTITYID", getFields(getClass("PacketPlayOutNamedEntitySpawn"), int.class).get(0));
-
-		if (minorVersion >= 7) {
-			fields.put("NETWORK_MANAGER", getFields(getClass("PlayerConnection"), getClass("NetworkManager")).get(0));
 			fields.put("ChatBaseComponent_extra", getFields(getClass("ChatBaseComponent"), List.class).get(0));
 			fields.put("ChatBaseComponent_modifier", getFields(getClass("ChatBaseComponent"), getClass("ChatModifier")).get(0));
 			fields.put("ChatComponentText_text", getFields(getClass("ChatComponentText"), String.class).get(0));
@@ -262,126 +134,224 @@ public class NMSStorage {
 			fields.put("ChatModifier_obfuscated", booleans.get(4));
 			fields.put("ChatModifier_clickEvent", getFields(getClass("ChatModifier"), getClass("ChatClickable")).get(0));
 			fields.put("ChatModifier_hoverEvent", getFields(getClass("ChatModifier"), getClass("ChatHoverable")).get(0));
-			fields.put("PacketPlayInUseEntity_ENTITY", getFields(getClass("PacketPlayInUseEntity"), int.class).get(0));
-			fields.put("PacketPlayInUseEntity_ACTION", getFields(getClass("PacketPlayInUseEntity"), getClass("EnumEntityUseAction")).get(0));
+			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent"))); //v1.7.R4+, v1.7.R3-
+			methods.put("ChatSerializer_DESERIALIZE", getMethod(getClass("ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class));
+			methods.put("EnumClickAction_a", getMethod(getClass("EnumClickAction"), new String[]{"a", "func_150672_a"}, String.class));
+			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
 		}
-
-		if (minorVersion >= 8) {
-			fields.put("CHANNEL", getFields(getClass("NetworkManager"), Channel.class).get(0));
-			fields.put("PacketPlayOutPlayerInfo_ACTION", getFields(getClass("PacketPlayOutPlayerInfo"), getClass("EnumPlayerInfoAction")).get(0));
-			fields.put("PacketPlayOutPlayerInfo_PLAYERS", getFields(getClass("PacketPlayOutPlayerInfo"), List.class).get(0));
-			fields.put("PacketPlayOutPlayerListHeaderFooter_HEADER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(0));
-			fields.put("PacketPlayOutPlayerListHeaderFooter_FOOTER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(1));
-			fields.put("PacketPlayOutScoreboardObjective_RENDERTYPE", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("EnumScoreboardHealthDisplay")).get(0));
+		if (minorVersion >= 16) {
+			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
+			constructors.put("ChatModifier", getConstructor(getClass("ChatModifier"), 10));
+			List<Field> list = getFields(getClass("ChatHexColor"), String.class);
+			fields.put("ChatHexColor_name", list.get(list.size()-1));
+			fields.put("ChatHexColor_rgb", getFields(getClass("ChatHexColor"), int.class).get(0));
+			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), Object.class).get(0));
+			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("ChatHexColor")).get(0));
+			methods.put("ChatHexColor_ofInt", getClass("ChatHexColor").getMethod("a", int.class));
+			methods.put("ChatHexColor_ofString", getClass("ChatHexColor").getMethod("a", String.class));
+		} else if (minorVersion >= 7) {
+			constructors.put("ChatModifier", getClass("ChatModifier").getConstructor());
+			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
+			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
 		}
-
+	}
+	
+	private void initializeChatPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		classes.put("PacketPlayOutChat", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat"));
+		if (minorVersion >= 12) {
+			classes.put("ChatMessageType", getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType"));
+		}
+		if (minorVersion >= 16) {
+			constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), getClass("ChatMessageType"), UUID.class));
+		} else if (minorVersion >= 12) {
+			constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), getClass("ChatMessageType")));
+		} else if (minorVersion >= 8) {
+			constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent"), byte.class));
+		} else if (minorVersion >= 7){
+			constructors.put("PacketPlayOutChat", getClass("PacketPlayOutChat").getConstructor(getClass("IChatBaseComponent")));
+		}
+	}
+	
+	private void initializeDataWatcher() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		classes.put("DataWatcher", getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher"));
+		classes.put("DataWatcherItem", getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject"));
+		if (minorVersion >= 7) {
+			constructors.put("DataWatcher", getClass("DataWatcher").getConstructor(getClass("Entity")));
+		} else {
+			constructors.put("DataWatcher", getClass("DataWatcher").getConstructor());
+		}
 		if (minorVersion >= 9) {
+			classes.put("DataWatcherObject", getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject"));
+			classes.put("DataWatcherRegistry", getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry"));
+			classes.put("DataWatcherSerializer", getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer"));
+			constructors.put("DataWatcherObject", getClass("DataWatcherObject").getConstructor(int.class, getClass("DataWatcherSerializer")));
 			fields.put("DataWatcherItem_TYPE", getFields(getClass("DataWatcherItem"), getClass("DataWatcherObject")).get(0));
 			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
 			fields.put("DataWatcherObject_SLOT", getFields(getClass("DataWatcherObject"), int.class).get(0));
 			fields.put("DataWatcherObject_SERIALIZER", getFields(getClass("DataWatcherObject"), getClass("DataWatcherSerializer")).get(0));
-			fields.put("PacketPlayOutEntityTeleport_X", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(0));
-			fields.put("PacketPlayOutEntityTeleport_Y", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(1));
-			fields.put("PacketPlayOutEntityTeleport_Z", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(2));
+			methods.put("DataWatcher_REGISTER", getClass("DataWatcher").getMethod("register", getClass("DataWatcherObject"), Object.class));
+		} else {
+			fields.put("DataWatcherItem_TYPE", getFields(getClass("DataWatcherItem"), int.class).get(1));
+			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
+			methods.put("DataWatcher_REGISTER", getMethod(getClass("DataWatcher"), new String[]{"a", "func_75682_a"}, int.class, Object.class));
+		}
+		dataWatcherRegistry = new DataWatcherRegistry(this, getClass("DataWatcherRegistry"));
+	}
+	
+	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		classes.put("PacketPlayOutSpawnEntityLiving", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn"));
+		constructors.put("PacketPlayOutSpawnEntityLiving", getClass("PacketPlayOutSpawnEntityLiving").getConstructor(getClass("EntityLiving")));
+		fields.put("PacketPlayOutSpawnEntityLiving_ENTITYID", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(0));
+		fields.put("PacketPlayOutSpawnEntityLiving_ENTITYTYPE", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(1));
+		fields.put("PacketPlayOutSpawnEntityLiving_YAW", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
+		fields.put("PacketPlayOutSpawnEntityLiving_PITCH", getFields(getClass("PacketPlayOutSpawnEntityLiving"), byte.class).get(0));
+		if (minorVersion >= 9) {
 			fields.put("PacketPlayOutSpawnEntityLiving_UUID", getFields(getClass("PacketPlayOutSpawnEntityLiving"), UUID.class).get(0));
 			fields.put("PacketPlayOutSpawnEntityLiving_X", getFields(getClass("PacketPlayOutSpawnEntityLiving"), double.class).get(0));
 			fields.put("PacketPlayOutSpawnEntityLiving_Y", getFields(getClass("PacketPlayOutSpawnEntityLiving"), double.class).get(1));
 			fields.put("PacketPlayOutSpawnEntityLiving_Z", getFields(getClass("PacketPlayOutSpawnEntityLiving"), double.class).get(2));
 		} else {
-			//1.8-
-			fields.put("DataWatcherItem_TYPE", getFields(getClass("DataWatcherItem"), int.class).get(1));
-			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
-			fields.put("PacketPlayOutEntityTeleport_X", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(1));
-			fields.put("PacketPlayOutEntityTeleport_Y", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(2));
-			fields.put("PacketPlayOutEntityTeleport_Z", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(3));
 			fields.put("PacketPlayOutSpawnEntityLiving_X", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(2));
 			fields.put("PacketPlayOutSpawnEntityLiving_Y", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(3));
 			fields.put("PacketPlayOutSpawnEntityLiving_Z", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(4));
 		}
-
-		if (minorVersion >= 13) {
-			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("IChatBaseComponent")).get(0));
-		} else {
-			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(1));
-		}
-
 		if (minorVersion <= 14) {
 			fields.put("PacketPlayOutSpawnEntityLiving_DATAWATCHER", getFields(getClass("PacketPlayOutSpawnEntityLiving"), getClass("DataWatcher")).get(0));
 		}
-
-		if (minorVersion >= 16) {
-			//1.16+
-			list = getFields(getClass("ChatHexColor"), String.class);
-			fields.put("ChatHexColor_name", list.get(list.size()-1));
-			fields.put("ChatHexColor_rgb", getFields(getClass("ChatHexColor"), int.class).get(0));
-			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), Object.class).get(0));
-			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("ChatHexColor")).get(0));
-		} else if (minorVersion >= 7) {
-			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
-			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
+	}
+	
+	private void initializeEntityTeleportPacket() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+		classes.put("PacketPlayOutEntityTeleport", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport"));
+		constructors.put("PacketPlayOutEntityTeleport", getClass("PacketPlayOutEntityTeleport").getConstructor(getClass("Entity")));
+		fields.put("PacketPlayOutEntityTeleport_ENTITYID", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(0));
+		fields.put("PacketPlayOutEntityTeleport_YAW", getFields(getClass("PacketPlayOutEntityTeleport"), byte.class).get(0));
+		fields.put("PacketPlayOutEntityTeleport_PITCH", getFields(getClass("PacketPlayOutEntityTeleport"), byte.class).get(1));
+		if (minorVersion >= 9) {
+			fields.put("PacketPlayOutEntityTeleport_X", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(0));
+			fields.put("PacketPlayOutEntityTeleport_Y", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(1));
+			fields.put("PacketPlayOutEntityTeleport_Z", getFields(getClass("PacketPlayOutEntityTeleport"), double.class).get(2));
+		} else {
+			fields.put("PacketPlayOutEntityTeleport_X", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(1));
+			fields.put("PacketPlayOutEntityTeleport_Y", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(2));
+			fields.put("PacketPlayOutEntityTeleport_Z", getFields(getClass("PacketPlayOutEntityTeleport"), int.class).get(3));
 		}
-		
+	}
+	
+	private void initializeHeaderFooterPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		if (minorVersion >= 8) {
+			classes.put("PacketPlayOutPlayerListHeaderFooter", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter"));
+			fields.put("PacketPlayOutPlayerListHeaderFooter_HEADER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(0));
+			fields.put("PacketPlayOutPlayerListHeaderFooter_FOOTER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(1));
+			if (minorVersion >= 17) {
+				constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor(getClass("IChatBaseComponent"), getClass("IChatBaseComponent")));
+			} else {
+				constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor());
+			}
+		}
+	}
+	
+	private void initializeOtherEntityPackets() throws ClassNotFoundException, NoSuchMethodException {
+		classes.put("PacketPlayInUseEntity", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity", "PacketPlayInUseEntity", "Packet7UseEntity"));
+		classes.put("PacketPlayOutEntity", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity", "PacketPlayOutEntity", "Packet30Entity"));
+		classes.put("PacketPlayOutEntityDestroy", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy", "PacketPlayOutEntityDestroy", "Packet29DestroyEntity"));
+		classes.put("PacketPlayOutEntityLook", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook"));
+		classes.put("PacketPlayOutEntityMetadata", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata"));
+		classes.put("PacketPlayOutNamedEntitySpawn", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn", "PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn"));
+		constructors.put("PacketPlayOutEntityMetadata", getClass("PacketPlayOutEntityMetadata").getConstructor(int.class, getClass("DataWatcher"), boolean.class));
+		constructors.put("PacketPlayOutEntityDestroy", getConstructor(getClass("PacketPlayOutEntityDestroy"), 1));
+		fields.put("PacketPlayOutEntity_ENTITYID", getFields(getClass("PacketPlayOutEntity"), int.class).get(0));
+		fields.put("PacketPlayOutEntityMetadata_LIST", getFields(getClass("PacketPlayOutEntityMetadata"), List.class).get(0));
+		fields.put("PacketPlayOutNamedEntitySpawn_ENTITYID", getFields(getClass("PacketPlayOutNamedEntitySpawn"), int.class).get(0));
+		if (minorVersion >= 7) {
+			classes.put("EnumEntityUseAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction"));
+			fields.put("PacketPlayInUseEntity_ENTITY", getFields(getClass("PacketPlayInUseEntity"), int.class).get(0));
+			fields.put("PacketPlayInUseEntity_ACTION", getFields(getClass("PacketPlayInUseEntity"), getClass("EnumEntityUseAction")).get(0));
+		}
 		if (minorVersion >= 17) {
 			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int.class).get(0));
 		} else {
 			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int[].class).get(0));
 		}
 	}
-
-	/**
-	 * Initializes required NMS methods
-	 * @throws NoSuchMethodException 
-	 * @throws ClassNotFoundException 
-	 * @throws SecurityException 
-	 */
-	private void initializeMethods() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
-		methods.put("getHandle", Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle"));
-		methods.put("sendPacket", getMethod(getClass("PlayerConnection"), new String[]{"sendPacket", "func_147359_a"}, getClass("Packet")));
-		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "func_96670_d"}));
-		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
-		if (minorVersion >= 7) {
-			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent"))); //v1.7.R4+, v1.7.R3-
-			methods.put("ChatSerializer_DESERIALIZE", getMethod(getClass("ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class));
-			methods.put("EnumClickAction_a", getMethod(getClass("EnumClickAction"), new String[]{"a", "func_150672_a"}, String.class));
-			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
-		}
+	
+	private void initializePlayerInfoPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
 		if (minorVersion >= 8) {
+			classes.put("PacketPlayOutPlayerInfo", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo"));
+			classes.put("EnumPlayerInfoAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction"));
+			classes.put("PlayerInfoData", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", "PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData"));
+			classes.put("EnumGamemode", getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode"));
+			constructors.put("PacketPlayOutPlayerInfo", getClass("PacketPlayOutPlayerInfo").getConstructor(getClass("EnumPlayerInfoAction"), Array.newInstance(getClass("EntityPlayer"), 0).getClass()));
+			constructors.put("PlayerInfoData", getClass("PlayerInfoData").getConstructors()[0]);
+			fields.put("PacketPlayOutPlayerInfo_ACTION", getFields(getClass("PacketPlayOutPlayerInfo"), getClass("EnumPlayerInfoAction")).get(0));
+			fields.put("PacketPlayOutPlayerInfo_PLAYERS", getFields(getClass("PacketPlayOutPlayerInfo"), List.class).get(0));
 			methods.put("PlayerInfoData_getProfile", getClass("PlayerInfoData").getMethod("a"));
 			methods.put("PlayerInfoData_getLatency", getClass("PlayerInfoData").getMethod("b"));
 			methods.put("PlayerInfoData_getGamemode", getClass("PlayerInfoData").getMethod("c"));
 			methods.put("PlayerInfoData_getDisplayName", getClass("PlayerInfoData").getMethod("d"));
+		}
+	}
+	
+	private void initializeScoreboardPackets() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		classes.put("PacketPlayOutScoreboardDisplayObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", "PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective"));
+		classes.put("PacketPlayOutScoreboardObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", "PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective"));
+		classes.put("PacketPlayOutScoreboardScore", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", "PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore"));
+		classes.put("PacketPlayOutScoreboardTeam", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam"));
+		classes.put("Scoreboard", getNMSClass("net.minecraft.world.scores.Scoreboard", "Scoreboard"));
+		classes.put("ScoreboardObjective", getNMSClass("net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective"));
+		classes.put("ScoreboardTeam", getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam"));
+		classes.put("ScoreboardScore", getNMSClass("net.minecraft.world.scores.ScoreboardScore", "ScoreboardScore"));
+		classes.put("IScoreboardCriteria", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria"));
+		constructors.put("ScoreboardObjective", getClass("ScoreboardObjective").getConstructors()[0]);
+		constructors.put("Scoreboard", getClass("Scoreboard").getConstructor());
+		constructors.put("ScoreboardTeam", getClass("ScoreboardTeam").getConstructor(getClass("Scoreboard"), String.class));
+		constructors.put("ScoreboardScore", getClass("ScoreboardScore").getConstructor(getClass("Scoreboard"), getClass("ScoreboardObjective"), String.class));
+		constructors.put("PacketPlayOutScoreboardDisplayObjective", getClass("PacketPlayOutScoreboardDisplayObjective").getConstructor(int.class, getClass("ScoreboardObjective")));
+		fields.put("PacketPlayOutScoreboardDisplayObjective_POSITION", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), int.class).get(0));
+		fields.put("PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), String.class).get(0));
+		fields.put("PacketPlayOutScoreboardObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(0));
+		List<Field> list = getFields(getClass("PacketPlayOutScoreboardObjective"), int.class);
+		fields.put("PacketPlayOutScoreboardObjective_METHOD", list.get(list.size()-1));
+		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
+		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
+		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "func_96670_d"}));
+		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
+		if (minorVersion >= 8) {
+			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
+			classes.put("EnumScoreboardAction", getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction"));
+			classes.put("EnumNameTagVisibility", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility"));
+			fields.put("PacketPlayOutScoreboardObjective_RENDERTYPE", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("EnumScoreboardHealthDisplay")).get(0));
 			methods.put("ScoreboardTeam_setNameTagVisibility", getMethod(getClass("ScoreboardTeam"), new String[]{"setNameTagVisibility", "a"}, getClass("EnumNameTagVisibility")));
-			methods.put("getProfile", getClass("EntityPlayer").getMethod("getProfile"));
 		}
 		if (minorVersion >= 9) {
+			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
 			methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("setCollisionRule", getClass("EnumTeamPush")));
-			methods.put("DataWatcher_REGISTER", getClass("DataWatcher").getMethod("register", getClass("DataWatcherObject"), Object.class));
-		} else {
-			methods.put("DataWatcher_REGISTER", getMethod(getClass("DataWatcher"), new String[]{"a", "func_75682_a"}, int.class, Object.class));
 		}
 		if (minorVersion >= 13) {
+			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
+			constructors.put("PacketPlayOutScoreboardScore_1_13", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("EnumScoreboardAction"), String.class, String.class, int.class));
+			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("IChatBaseComponent")).get(0));
 			methods.put("ScoreboardTeam_setPrefix", getClass("ScoreboardTeam").getMethod("setPrefix", getClass("IChatBaseComponent")));
 			methods.put("ScoreboardTeam_setSuffix", getClass("ScoreboardTeam").getMethod("setSuffix", getClass("IChatBaseComponent")));
 			methods.put("ScoreboardTeam_setColor", getClass("ScoreboardTeam").getMethod("setColor", getClass("EnumChatFormat")));
 		} else {
+			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor());
+			constructors.put("PacketPlayOutScoreboardScore_String", getClass("PacketPlayOutScoreboardScore").getConstructor(String.class));
+			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(1));
 			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "func_96666_b"}, String.class));
 			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setSuffix", "func_96662_c"}, String.class));
-		}
-		if (minorVersion >= 16) {
-			methods.put("ChatHexColor_ofInt", getClass("ChatHexColor").getMethod("a", int.class));
-			methods.put("ChatHexColor_ofString", getClass("ChatHexColor").getMethod("a", String.class));
+			if (minorVersion >= 8) {
+				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore")));
+			} else {
+				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore"), int.class));
+			}
 		}
 		if (minorVersion >= 17) {
+			classes.put("PacketPlayOutScoreboardTeam_a", Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a"));
 			methods.put("PacketPlayOutScoreboardTeam_of", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam")));
 			methods.put("PacketPlayOutScoreboardTeam_ofBoolean", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), boolean.class));
 			methods.put("PacketPlayOutScoreboardTeam_ofString", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), String.class, getClass("PacketPlayOutScoreboardTeam_a")));
-		}
-	}
-
-	private void initializeEnums() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		for (String name : Arrays.asList("ChatMessageType", "EnumPlayerInfoAction", "EnumGamemode", "EnumScoreboardHealthDisplay", "EnumScoreboardAction", 
-				"PacketPlayOutScoreboardTeam_a", "EnumChatFormat", "EnumNameTagVisibility", "EnumTeamPush")) {
-			if (classes.containsKey(name)) enums.put(name, (Enum[]) getClass(name).getMethod("values").invoke(null));
+		} else {
+			constructors.put("PacketPlayOutScoreboardTeam", getClass("PacketPlayOutScoreboardTeam").getConstructor(getClass("ScoreboardTeam"), int.class));
 		}
 	}
 

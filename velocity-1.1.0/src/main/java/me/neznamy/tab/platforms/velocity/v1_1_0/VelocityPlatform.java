@@ -102,6 +102,7 @@ public class VelocityPlatform implements Platform {
 
 	@Override
 	public void callLoadEvent() {
+		//not needed here
 	}
 
 	@Override

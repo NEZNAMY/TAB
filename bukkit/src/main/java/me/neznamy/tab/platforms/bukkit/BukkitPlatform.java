@@ -81,7 +81,7 @@ public class BukkitPlatform implements Platform {
 	}
 
 	@Override
-	public void loadFeatures() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void loadFeatures() {
 		placeholderAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
@@ -107,7 +107,6 @@ public class BukkitPlatform implements Platform {
 		if (placeholderAPI != null) {
 			new TabExpansion(plugin);
 		}
-
 		for (Player p : getOnlinePlayers()) {
 			tab.addPlayer(new BukkitTabPlayer(p, Main.getProtocolVersion(p)));
 		}
@@ -137,14 +136,19 @@ public class BukkitPlatform implements Platform {
 	 * @throws IllegalAccessException 
 	 */
 	@SuppressWarnings("unchecked")
-	private Player[] getOnlinePlayers() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-		if (players instanceof Player[]) {
-			//1.7.x
-			return (Player[]) players;
-		} else {
-			//1.8+
-			return ((Collection<Player>)players).toArray(new Player[0]); 
+	private Player[] getOnlinePlayers() {
+		try {
+			Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
+			if (players instanceof Player[]) {
+				//1.7.x
+				return (Player[]) players;
+			} else {
+				//1.8+
+				return ((Collection<Player>)players).toArray(new Player[0]); 
+			}
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
+			return new Player[0];
 		}
 	}
 

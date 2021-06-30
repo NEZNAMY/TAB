@@ -54,6 +54,10 @@
 					<groupId>com.github.NEZNAMY</groupId>
 					<artifactId>YamlAssist</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.googlecode.json-simple</groupId>
+					<artifactId>json-simple</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -132,6 +136,15 @@
 			<artifactId>authlib</artifactId>
 			<version>1.11</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		
+		<!-- Bukkit Metrics -->
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bukkit</artifactId>
+			<version>2.2.1</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

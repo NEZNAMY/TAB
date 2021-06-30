@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
  * A line with static text (no placeholders) with 0 everywhere
@@ -17,7 +17,7 @@ public class All0StaticLine extends StaticLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text of line
 	 */
-	public All0StaticLine(Scoreboard parent, int lineNumber, String text) {
+	public All0StaticLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, getPlayerName(lineNumber));
 	}
 

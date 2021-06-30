@@ -8,7 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
@@ -28,7 +28,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text to display
 	 */
-	protected StableDynamicLine(Scoreboard parent, int lineNumber, String text) {
+	protected StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber);
 		this.text = text;
 		refreshUsedPlaceholders();

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,7 +42,12 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginCommand("tab").setExecutor(command);
 		Bukkit.getPluginCommand("tab").setTabCompleter(command);
 		TAB.getInstance().load();
-		new BukkitMetrics(this);
+		Metrics metrics = new Metrics(this, 5304);
+		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));
+		metrics.addCustomChart(new SimplePie("server_version", () -> "1." + NMSStorage.getInstance().getMinorVersion() + ".x"));
+		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 
 	@Override
@@ -140,7 +147,7 @@ public class Main extends JavaPlugin {
 				TabPlayer p = null;
 				if (sender instanceof Player) {
 					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
-					if (p == null) return false; //player not loaded correctly
+					if (p == null) return true; //player not loaded correctly
 				}
 				TAB.getInstance().getCommand().execute(p, args);
 			}

@@ -146,13 +146,13 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		}
 		defaultRefresh = tab.getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
-			getServerPlaceholderRefreshIntervals().put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval"));
+			getServerPlaceholderRefreshIntervals().put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval of server placeholder"));
 		}
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player").entrySet()) {
-			getPlayerPlaceholderRefreshIntervals().put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval"));
+			getPlayerPlaceholderRefreshIntervals().put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval of player placeholder"));
 		}
 		for (Entry<Object, Object> placeholder : tab.getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
-			relationalPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval"));
+			relationalPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), tab.getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval of relational placeholder"));
 		}
 	}
 	

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
  * A line with static text (no placeholders) with numbers 1-15
@@ -17,7 +17,7 @@ public class NumberedStaticLine extends StaticLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text to display
 	 */
-	public NumberedStaticLine(Scoreboard parent, int lineNumber, String text) {
+	public NumberedStaticLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber, text, "");
 	}
 

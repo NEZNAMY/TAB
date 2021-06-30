@@ -49,7 +49,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	private Map<String, String> perWorld;
 	
 	//defined scoreboards
-	private Map<String, Scoreboard> scoreboards = new HashMap<>();
+	private Map<String, ScoreboardImpl> scoreboards = new HashMap<>();
 	
 	//using 1-15
 	private boolean useNumbers;
@@ -120,7 +120,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				tab.getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
 			}
-			Scoreboard sb = new Scoreboard(this, scoreboard.toString(), title, lines, condition, childBoard);
+			ScoreboardImpl sb = new ScoreboardImpl(this, scoreboard.toString(), title, lines, condition, childBoard);
 			scoreboards.put(scoreboard.toString(), sb);
 			tab.getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
 		}
@@ -143,7 +143,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				tab.getErrorManager().startupWarn("Unknown scoreboard &e\"" + entry.getValue() + "\"&c set as per-world scoreboard in world &e\"" + entry.getKey() + "\"&c.");
 			}
 		}
-		for (Scoreboard scoreboard : scoreboards.values()) {
+		for (ScoreboardImpl scoreboard : scoreboards.values()) {
 			if (scoreboard.getChildScoreboard() != null && !scoreboards.containsKey(scoreboard.getChildScoreboard())) {
 				tab.getErrorManager().startupWarn("Unknown scoreboard &e\"" + scoreboard.getChildScoreboard() + "\"&c set as if-condition-not-met of scoreboard &e\"" + scoreboard.getName() + "\"&c.");
 			}
@@ -173,7 +173,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void unload() {
-		for (Scoreboard board : scoreboards.values()) {
+		for (ScoreboardImpl board : scoreboards.values()) {
 			board.unregister();
 		}
 		for (TabPlayer p : tab.getPlayers()) {
@@ -204,7 +204,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.isScoreboardVisible()) return;
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
-			Scoreboard board = scoreboards.get(scoreboard);
+			ScoreboardImpl board = scoreboards.get(scoreboard);
 			if (board != null) {
 				((ITabPlayer)p).setActiveScoreboard(board);
 				board.register(p);
@@ -253,7 +253,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 				scoreboard = defaultScoreboard;
 			}
 		}
-		Scoreboard board = scoreboards.get(scoreboard);
+		ScoreboardImpl board = scoreboards.get(scoreboard);
 		while (board != null && !board.isConditionMet(p)) {
 			board = scoreboards.get(board.getChildScoreboard());
 			if (board == null) return "null";
@@ -276,7 +276,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	 * Returns map of currently defined scoreboards
 	 * @return map of currently defined scoreboards
 	 */
-	public Map<String, Scoreboard> getScoreboards(){
+	public Map<String, ScoreboardImpl> getScoreboards(){
 		return scoreboards;
 	}
 

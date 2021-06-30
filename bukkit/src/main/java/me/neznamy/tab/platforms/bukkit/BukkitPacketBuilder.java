@@ -207,7 +207,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		if (nms.getClass("PacketPlayOutPlayerListHeaderFooter") == null) return null;
+		if (nms.getMinorVersion() < 8) return null;
 		if (nms.getMinorVersion() >= 17) {
 			return nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance(toNMSComponent(packet.getHeader(), clientVersion), toNMSComponent(packet.getFooter(), clientVersion));
 		}
@@ -298,8 +298,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (suffix != null && suffix.length() > 0) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
 		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
 		nms.getMethod("ScoreboardTeam_setColor").invoke(team, nms.getEnum("EnumChatFormat")[format.ordinal()]);
-		if (packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
-		if (packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
+		nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
+		nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
 		return team;
 	}
 	
@@ -314,8 +314,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		((Collection<String>)nms.getMethod("ScoreboardTeam_getPlayerNameSet").invoke(team)).addAll(packet.getPlayers());
 		if (prefix != null) nms.getMethod("ScoreboardTeam_setPrefix").invoke(team, prefix);
 		if (suffix != null) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, suffix);
-		if (nms.getClass("EnumNameTagVisibility") != null && packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
-		if (nms.getClass("EnumTeamPush") != null && packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
+		if (nms.getMinorVersion() >= 8) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
+		if (nms.getMinorVersion() >= 9) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
 		return team;
 	}
 
@@ -427,12 +427,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
 		String objective = (String) nms.getField("PacketPlayOutScoreboardObjective_OBJECTIVENAME").get(nmsPacket);
 		String displayName;
+		Object component = nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").get(nmsPacket);
 		if (nms.getMinorVersion() >= 13) {
-			Object component = nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").get(nmsPacket);
 			IChatBaseComponent c = component == null ? null : fromNMSComponent(component);
 			displayName = c == null ? null : c.toLegacyText();
 		} else {
-			displayName = (String) nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").get(nmsPacket);
+			displayName = (String) component;
 		}
 		EnumScoreboardHealthDisplay renderType = null;
 		if (nms.getMinorVersion() >= 8) {
@@ -571,11 +571,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				nms.setField(modifier, "ChatModifier_clickEvent", nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()));
 			}
 			if (component.getColor() != null) nms.setField(modifier, "ChatModifier_color", Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getColor().getLegacyColor().toString()));
-			if (component.isBold()) nms.setField(modifier, "ChatModifier_bold", true);
-			if (component.isItalic()) nms.setField(modifier, "ChatModifier_italic", true);
-			if (component.isUnderlined()) nms.setField(modifier, "ChatModifier_underlined", true);
-			if (component.isStrikethrough()) nms.setField(modifier, "ChatModifier_strikethrough", true);
-			if (component.isObfuscated()) nms.setField(modifier, "ChatModifier_obfuscated", true);
+			nms.setField(modifier, "ChatModifier_bold", component.getBold());
+			nms.setField(modifier, "ChatModifier_italic", component.getItalic());
+			nms.setField(modifier, "ChatModifier_underlined", component.getUnderlined());
+			nms.setField(modifier, "ChatModifier_strikethrough", component.getStrikethrough());
+			nms.setField(modifier, "ChatModifier_obfuscated", component.getObfuscated());
 		}
 		nms.setField(chat, "ChatBaseComponent_modifier", modifier);
 		for (IChatBaseComponent extra : component.getExtra()) {

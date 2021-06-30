@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
 import com.viaversion.viaversion.api.Via;
@@ -201,9 +203,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 				boolean vanished = (boolean) user.getClass().getMethod("isVanished").invoke(user);
 				if (vanished) return true;
 			}
-			if (player.hasMetadata("vanished") && !player.getMetadata("vanished").isEmpty()) {
-				return player.getMetadata("vanished").get(0).asBoolean();
-			}
+			List<MetadataValue> metadata = player.getMetadata("vanished");
+			return metadata != null && !metadata.isEmpty() && metadata.get(0).asBoolean();
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check vanish status of " + player.getName(), e);
 		}

@@ -7,7 +7,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
@@ -23,7 +23,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	protected int lineNumber;
 	
 	//scoreboard this line belongs to
-	protected Scoreboard parent;
+	protected ScoreboardImpl parent;
 	
 	//list of used placeholders
 	protected List<String> usedPlaceholders = new ArrayList<>();
@@ -39,7 +39,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param parent - scoreboard this line belongs to
 	 * @param lineNumber - ID of this line
 	 */
-	protected ScoreboardLine(Scoreboard parent, int lineNumber) {
+	protected ScoreboardLine(ScoreboardImpl parent, int lineNumber) {
 		this.parent = parent;
 		this.lineNumber = lineNumber;
 		teamName = "TAB-SB-TM-" + lineNumber;

@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 /**
  * A class representing a scoreboard configured in premiumconfig
  */
-public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
+public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshable {
 
 	private static final String TITLE_PROPERTY_NAME = "scoreboard-title";
 	//scoreboard manager
@@ -60,7 +60,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	 * @param displayCondition - display condition
 	 * @param childBoard - scoreboard to display if condition is not met
 	 */
-	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
+	public ScoreboardImpl(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.childBoard = childBoard;
@@ -74,7 +74,7 @@ public class Scoreboard implements me.neznamy.tab.api.Scoreboard, Refreshable {
 	 * @param title - scoreboard title
 	 * @param lines - lines of scoreboard
 	 */
-	public Scoreboard(ScoreboardManager manager, String name, String title, List<String> lines) {
+	public ScoreboardImpl(ScoreboardManager manager, String name, String title, List<String> lines) {
 		this.manager = manager;
 		this.name = name;
 		this.title = title;

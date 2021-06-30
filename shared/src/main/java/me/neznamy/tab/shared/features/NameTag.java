@@ -192,7 +192,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		}
 	}
 	
-	protected boolean getCollision(TabPlayer p) {
+	protected Boolean getCollision(TabPlayer p) {
 		if (!p.isOnline()) return false;
 		if (p.getCollisionRule() != null) return p.getCollisionRule();
 		if (!collision.containsKey(p.getName())) {

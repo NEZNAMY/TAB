@@ -13,6 +13,7 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManager;
 import me.neznamy.tab.shared.features.bossbar.BossBarLine;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -25,12 +26,12 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  * The primary API class to get instances of other API classes
  */
 public class TABAPI {
-	
-	private TABAPI() {
-	}
 
 	//placeholders registered via API
 	private static final Map<String, Placeholder> apiPlaceholders = new HashMap<>();
+
+	private TABAPI() {
+	}
 
 	/**
 	 * Returns player object from given UUID
@@ -127,7 +128,7 @@ public class TABAPI {
 		}
 		ScoreboardManager sbm = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard sb = new me.neznamy.tab.shared.features.scoreboard.Scoreboard(sbm, name, title, lines);
+		Scoreboard sb = new ScoreboardImpl(sbm, name, title, lines);
 		sbm.getApiScoreboards().add(sb);
 		return sb;
 	}
