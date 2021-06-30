@@ -28,7 +28,8 @@ public class DisabledCommand {
 					messages.add(TAB.getInstance().getConfiguration().getTranslation().getString("reloaded"));
 				}
 			} else {
-				messages.add(TAB.getInstance().getConfiguration().getTranslation().getString("no_permission"));
+				//cannot take message from file when syntax is broken
+				messages.add("&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
 			}
 		} else {
 			if (hasAdminPermission) {
