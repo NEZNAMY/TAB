@@ -162,7 +162,7 @@ public interface Platform {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().getConfig().getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter(tab));
 		if (tab.getConfiguration().isRemoveGhostPlayers()) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
-		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("change-tablist-prefix-suffix", true)) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("change-tablist-prefix-suffix", true)) {
 			Playerlist playerlist = new Playerlist(tab);
 			tab.getFeatureManager().registerFeature("playerlist", playerlist);
 			if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist, tab));

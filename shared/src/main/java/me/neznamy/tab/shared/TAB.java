@@ -64,10 +64,14 @@ public class TAB {
 	private boolean disabled;
 	
 	private PlaceholderManager placeholderManager;
+	
+	//server version, always using latest on proxies
+	private ProtocolVersion serverVersion;
 
-	public TAB(Platform platform, PacketBuilder packetBuilder) {
+	public TAB(Platform platform, PacketBuilder packetBuilder, ProtocolVersion serverVersion) {
 		this.platform = platform;
 		this.packetBuilder = packetBuilder;
+		this.serverVersion = serverVersion;
 	}
 	
 	/**
@@ -270,5 +274,9 @@ public class TAB {
 
 	public DisabledCommand getDisabledCommand() {
 		return disabledCommand;
+	}
+	
+	public ProtocolVersion getServerVersion() {
+		return serverVersion;
 	}
 }

@@ -114,7 +114,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
-				if (!update.containsKey(all)) update.put(all, new HashSet<>());
+				update.computeIfAbsent(all, k -> new HashSet<>());
 				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
@@ -130,7 +130,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			somethingChanged = true;
 			for (TabPlayer all : tab.getPlayers()) {
 				if (!all.isLoaded()) continue;
-				if (!update.containsKey(all)) update.put(all, new HashSet<>());
+				update.computeIfAbsent(all, k -> new HashSet<>());
 				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}

@@ -26,16 +26,15 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable(){
-		ProtocolVersion.setServerVersion(ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]));
 		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
 		if (!isVersionSupported()){
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
-		if (ProtocolVersion.getServerVersion() == ProtocolVersion.UNKNOWN) {
+		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), new BukkitPacketBuilder(NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
+		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
 		}
-		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), new BukkitPacketBuilder(NMSStorage.getInstance())));
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		TABCommand command = new TABCommand();
 		Bukkit.getPluginCommand("tab").setExecutor(command);
@@ -87,12 +86,12 @@ public class Main extends JavaPlugin {
 		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
 			int version = getProtocolVersionPS(player);
 			//some PS versions return -1 on unsupported server versions instead of throwing exception
-			if (version != -1 && version < ProtocolVersion.getServerVersion().getNetworkId()) return version;
+			if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			return getProtocolVersionVia(player);
 		}
-		return ProtocolVersion.getServerVersion().getNetworkId();
+		return TAB.getInstance().getServerVersion().getNetworkId();
 	}
 
 	/**
@@ -107,7 +106,7 @@ public class Main extends JavaPlugin {
 			return version;
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ProtocolSupport", e);
-			return ProtocolVersion.getServerVersion().getNetworkId();
+			return TAB.getInstance().getServerVersion().getNetworkId();
 		}
 	}
 
@@ -122,7 +121,7 @@ public class Main extends JavaPlugin {
 			return version;
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion(), e);
-			return ProtocolVersion.getServerVersion().getNetworkId();
+			return TAB.getInstance().getServerVersion().getNetworkId();
 		}
 	}
 	

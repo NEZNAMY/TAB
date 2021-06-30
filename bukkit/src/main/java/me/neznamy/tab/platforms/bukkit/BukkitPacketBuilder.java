@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -166,17 +167,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		Object component = stringToComponent(packet.getMessage().toString(clientVersion));
+		Constructor<?> c = nms.getConstructor("PacketPlayOutChat");
 		if (nms.getMinorVersion() >= 16) {
-			return nms.getConstructor("PacketPlayOutChat").newInstance(component, ((Object[])nms.getClass("ChatMessageType").getMethod("values").invoke(null))[packet.getType().ordinal()], UUID.randomUUID());
+			return c.newInstance(component, nms.getEnum("ChatMessageType")[packet.getType().ordinal()], UUID.randomUUID());
 		}
 		if (nms.getMinorVersion() >= 12) {
-			return nms.getConstructor("PacketPlayOutChat").newInstance(component, Enum.valueOf((Class<Enum>) nms.getClass("ChatMessageType"), packet.getType().toString()));
+			return c.newInstance(component, Enum.valueOf((Class<Enum>) nms.getClass("ChatMessageType"), packet.getType().toString()));
 		}
 		if (nms.getMinorVersion() >= 8) {
-			return nms.getConstructor("PacketPlayOutChat").newInstance(component, (byte) packet.getType().ordinal());
+			return c.newInstance(component, (byte) packet.getType().ordinal());
 		}
 		if (nms.getMinorVersion() == 7) {
-			return nms.getConstructor("PacketPlayOutChat").newInstance(component);
+			return c.newInstance(component);
 		}
 		throw new IllegalStateException("Not supported on <1.7");
 	}
@@ -184,7 +186,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
 		if (nms.getMinorVersion() < 8) return null;
-		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerInfo").newInstance(((Object[])nms.getClass("EnumPlayerInfoAction").getMethod("values").invoke(null))[packet.getAction().ordinal()], Array.newInstance(nms.getClass("EntityPlayer"), 0));
+		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerInfo").newInstance(nms.getEnum("EnumPlayerInfoAction")[packet.getAction().ordinal()], Array.newInstance(nms.getClass("EntityPlayer"), 0));
 		List<Object> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
 			GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
@@ -196,12 +198,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 			parameters.add(profile);
 			parameters.add(data.getLatency());
-			Object[] values = (Object[]) nms.getClass("EnumGamemode").getMethod("values").invoke(null);
-			parameters.add(data.getGameMode() == null ? null : values[values.length-EnumGamemode.values().length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
+			parameters.add(data.getGameMode() == null ? null : nms.getEnum("EnumGamemode")[nms.getEnum("EnumGamemode").length-EnumGamemode.values().length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
 			parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
 			items.add(nms.getConstructor("PlayerInfoData").newInstance(parameters.toArray()));
 		}
-		nms.getField("PacketPlayOutPlayerInfo_PLAYERS").set(nmsPacket, items);
+		nms.setField(nmsPacket, "PacketPlayOutPlayerInfo_PLAYERS", items);
 		return nmsPacket;
 	}
 
@@ -212,8 +213,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			return nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance(toNMSComponent(packet.getHeader(), clientVersion), toNMSComponent(packet.getFooter(), clientVersion));
 		}
 		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance();
-		nms.getField("PacketPlayOutPlayerListHeaderFooter_HEADER").set(nmsPacket, toNMSComponent(packet.getHeader(), clientVersion));
-		nms.getField("PacketPlayOutPlayerListHeaderFooter_FOOTER").set(nmsPacket, toNMSComponent(packet.getFooter(), clientVersion));
+		nms.setField(nmsPacket, "PacketPlayOutPlayerListHeaderFooter_HEADER", toNMSComponent(packet.getHeader(), clientVersion));
+		nms.setField(nmsPacket, "PacketPlayOutPlayerListHeaderFooter_FOOTER", toNMSComponent(packet.getFooter(), clientVersion));
 		return nmsPacket;
 	}
 
@@ -228,24 +229,24 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("PacketPlayOutScoreboardObjective").newInstance(nms.getConstructor("ScoreboardObjective").newInstance(null, packet.getObjectiveName(), null, 
 					toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion), 
-					packet.getRenderType() == null ? null : ((Object[])nms.getClass("EnumScoreboardHealthDisplay").getMethod("values").invoke(null))[packet.getRenderType().ordinal()]), 
+					packet.getRenderType() == null ? null : nms.getEnum("EnumScoreboardHealthDisplay")[packet.getRenderType().ordinal()]), 
 					packet.getMethod());
 		}
 		
 		Object nmsPacket = nms.getConstructor("PacketPlayOutScoreboardObjective").newInstance();
-		nms.getField("PacketPlayOutScoreboardObjective_OBJECTIVENAME").set(nmsPacket, packet.getObjectiveName());
-		nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").set(nmsPacket, displayName);
-		if (nms.getField("PacketPlayOutScoreboardObjective_RENDERTYPE") != null && packet.getRenderType() != null) {
-			nms.getField("PacketPlayOutScoreboardObjective_RENDERTYPE").set(nmsPacket, Enum.valueOf((Class<Enum>) nms.getClass("EnumScoreboardHealthDisplay"), packet.getRenderType().toString()));
+		nms.setField(nmsPacket, "PacketPlayOutScoreboardObjective_OBJECTIVENAME", packet.getObjectiveName());
+		nms.setField(nmsPacket, "PacketPlayOutScoreboardObjective_DISPLAYNAME", displayName);
+		if (nms.getMinorVersion() >= 8 && packet.getRenderType() != null) {
+			nms.setField(nmsPacket, "PacketPlayOutScoreboardObjective_RENDERTYPE", Enum.valueOf((Class<Enum>) nms.getClass("EnumScoreboardHealthDisplay"), packet.getRenderType().toString()));
 		}
-		nms.getField("PacketPlayOutScoreboardObjective_METHOD").set(nmsPacket, packet.getMethod());
+		nms.setField(nmsPacket, "PacketPlayOutScoreboardObjective_METHOD", packet.getMethod());
 		return nmsPacket;
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		if (nms.getMinorVersion() >= 13) {
-			return nms.getConstructor("PacketPlayOutScoreboardScore_1_13").newInstance(((Object[])nms.getClass("EnumScoreboardAction").getMethod("values").invoke(null))[packet.getAction().ordinal()], packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
+			return nms.getConstructor("PacketPlayOutScoreboardScore_1_13").newInstance(nms.getEnum("EnumScoreboardAction")[packet.getAction().ordinal()], packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
 		}
 		if (packet.getAction() == PacketPlayOutScoreboardScore.Action.REMOVE) {
 			return nms.getConstructor("PacketPlayOutScoreboardScore_String").newInstance(packet.getPlayer());
@@ -275,9 +276,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			case 2:
 				return nms.getMethod("PacketPlayOutScoreboardTeam_ofBoolean").invoke(null, team, false);
 			case 3:
-				return nms.getMethod("PacketPlayOutScoreboardTeam_ofString").invoke(null, team, packet.getPlayers().toArray(new String[0])[0], ((Object[])nms.getClass("PacketPlayOutScoreboardTeam_a").getMethod("values").invoke(null))[0]);
+				return nms.getMethod("PacketPlayOutScoreboardTeam_ofString").invoke(null, team, packet.getPlayers().toArray(new String[0])[0], nms.getEnum("PacketPlayOutScoreboardTeam_a")[0]);
 			case 4:
-				return nms.getMethod("PacketPlayOutScoreboardTeam_ofString").invoke(null, team, packet.getPlayers().toArray(new String[0])[0], ((Object[])nms.getClass("PacketPlayOutScoreboardTeam_a").getMethod("values").invoke(null))[1]);
+				return nms.getMethod("PacketPlayOutScoreboardTeam_ofString").invoke(null, team, packet.getPlayers().toArray(new String[0])[0], nms.getEnum("PacketPlayOutScoreboardTeam_a")[1]);
 			default:
 				throw new IllegalArgumentException("Invalid action: " + packet.getMethod());
 			}
@@ -297,9 +298,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (prefix != null && prefix.length() > 0) nms.getMethod("ScoreboardTeam_setPrefix").invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
 		if (suffix != null && suffix.length() > 0) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
 		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
-		nms.getMethod("ScoreboardTeam_setColor").invoke(team, ((Object[])nms.getClass("EnumChatFormat").getMethod("values").invoke(null))[format.ordinal()]);
-		if (packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? ((Object[])nms.getClass("EnumNameTagVisibility").getMethod("values").invoke(null))[0] : ((Object[])nms.getClass("EnumNameTagVisibility").getMethod("values").invoke(null))[1]);
-		if (packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? ((Object[])nms.getClass("EnumTeamPush").getMethod("values").invoke(null))[0] : ((Object[])nms.getClass("EnumTeamPush").getMethod("values").invoke(null))[1]);
+		nms.getMethod("ScoreboardTeam_setColor").invoke(team, nms.getEnum("EnumChatFormat")[format.ordinal()]);
+		if (packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
+		if (packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
 		return team;
 	}
 	
@@ -314,8 +315,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		((Collection<String>)nms.getMethod("ScoreboardTeam_getPlayerNameSet").invoke(team)).addAll(packet.getPlayers());
 		if (prefix != null) nms.getMethod("ScoreboardTeam_setPrefix").invoke(team, prefix);
 		if (suffix != null) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, suffix);
-		if (nms.getClass("EnumNameTagVisibility") != null && packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? ((Object[])nms.getClass("EnumNameTagVisibility").getMethod("values").invoke(null))[0] : ((Object[])nms.getClass("EnumNameTagVisibility").getMethod("values").invoke(null))[1]);
-		if (nms.getClass("EnumTeamPush") != null && packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? ((Object[])nms.getClass("EnumTeamPush").getMethod("values").invoke(null))[0] : ((Object[])nms.getClass("EnumTeamPush").getMethod("values").invoke(null))[1]);
+		if (nms.getClass("EnumNameTagVisibility") != null && packet.getNametagVisibility() != null) nms.getMethod("ScoreboardTeam_setNameTagVisibility").invoke(team, packet.getNametagVisibility().equals("always") ? nms.getEnum("EnumNameTagVisibility")[0] : nms.getEnum("EnumNameTagVisibility")[1]);
+		if (nms.getClass("EnumTeamPush") != null && packet.getCollisionRule() != null) nms.getMethod("ScoreboardTeam_setCollisionRule").invoke(team, packet.getCollisionRule().equals("always") ? nms.getEnum("EnumTeamPush")[0] : nms.getEnum("EnumTeamPush")[1]);
 		return team;
 	}
 
@@ -332,7 +333,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.getMinorVersion() >= 17) {
 			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(id);
 		}
-		return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(new int[] {id});
+		return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance((Object) new int[] {id});
 	}
 
 	/**
@@ -364,22 +365,22 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 */
 	public Object buildEntitySpawnPacket(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutSpawnEntityLiving").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
-		nms.getField("PacketPlayOutSpawnEntityLiving_ENTITYID").set(nmsPacket, entityId);
-		nms.getField("PacketPlayOutSpawnEntityLiving_ENTITYTYPE").set(nmsPacket, entityIds.get(entityType));
-		nms.getField("PacketPlayOutSpawnEntityLiving_YAW").set(nmsPacket, (byte)(loc.getYaw() * 256.0f / 360.0f));
-		nms.getField("PacketPlayOutSpawnEntityLiving_PITCH").set(nmsPacket, (byte)(loc.getPitch() * 256.0f / 360.0f));
-		if (nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER") != null) {
-			nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER").set(nmsPacket, dataWatcher.toNMS());
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYID", entityId);
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYTYPE", entityIds.get(entityType));
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_YAW", (byte)(loc.getYaw() * 256.0f / 360.0f));
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_PITCH", (byte)(loc.getPitch() * 256.0f / 360.0f));
+		if (nms.getMinorVersion() <= 14) {
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_DATAWATCHER", dataWatcher.toNMS());
 		}
 		if (nms.getMinorVersion() >= 9) {
-			nms.getField("PacketPlayOutSpawnEntityLiving_UUID").set(nmsPacket, uuid);
-			nms.getField("PacketPlayOutSpawnEntityLiving_X").set(nmsPacket, loc.getX());
-			nms.getField("PacketPlayOutSpawnEntityLiving_Y").set(nmsPacket, loc.getY());
-			nms.getField("PacketPlayOutSpawnEntityLiving_Z").set(nmsPacket, loc.getZ());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_UUID", uuid);
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", loc.getX());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", loc.getY());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", loc.getZ());
 		} else {
-			nms.getField("PacketPlayOutSpawnEntityLiving_X").set(nmsPacket, floor(loc.getX()*32));
-			nms.getField("PacketPlayOutSpawnEntityLiving_Y").set(nmsPacket, floor(loc.getY()*32));
-			nms.getField("PacketPlayOutSpawnEntityLiving_Z").set(nmsPacket, floor(loc.getZ()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", floor(loc.getX()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", floor(loc.getY()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", floor(loc.getZ()*32));
 		}
 		return nmsPacket;
 	}
@@ -396,18 +397,18 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 */
 	public Object buildEntityTeleportPacket(int entityId, Location location) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutEntityTeleport").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
-		nms.getField("PacketPlayOutEntityTeleport_ENTITYID").set(nmsPacket, entityId);
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_ENTITYID", entityId);
 		if (nms.getMinorVersion() >= 9) {
-			nms.getField("PacketPlayOutEntityTeleport_X").set(nmsPacket, location.getX());
-			nms.getField("PacketPlayOutEntityTeleport_Y").set(nmsPacket, location.getY());
-			nms.getField("PacketPlayOutEntityTeleport_Z").set(nmsPacket, location.getZ());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", location.getX());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", location.getY());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", location.getZ());
 		} else {
-			nms.getField("PacketPlayOutEntityTeleport_X").set(nmsPacket, floor(location.getX()*32));
-			nms.getField("PacketPlayOutEntityTeleport_Y").set(nmsPacket, floor(location.getY()*32));
-			nms.getField("PacketPlayOutEntityTeleport_Z").set(nmsPacket, floor(location.getZ()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", floor(location.getX()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", floor(location.getY()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", floor(location.getZ()*32));
 		}
-		nms.getField("PacketPlayOutEntityTeleport_YAW").set(nmsPacket, (byte) (location.getYaw()/360*256));
-		nms.getField("PacketPlayOutEntityTeleport_PITCH").set(nmsPacket, (byte) (location.getPitch()/360*256));
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_YAW", (byte) (location.getYaw()/360*256));
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_PITCH", (byte) (location.getPitch()/360*256));
 		return nmsPacket;
 	}
 
@@ -422,7 +423,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			GameProfile profile = (GameProfile) nms.getMethod("PlayerInfoData_getProfile").invoke(nmsData);
 			Object nmsComponent = nms.getMethod("PlayerInfoData_getDisplayName").invoke(nmsData);
 			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int)nms.getMethod("PlayerInfoData_getLatency").invoke(nmsData), gamemode, listName));
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int) nms.getMethod("PlayerInfoData_getLatency").invoke(nmsData), gamemode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
@@ -439,7 +440,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			displayName = (String) nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").get(nmsPacket);
 		}
 		EnumScoreboardHealthDisplay renderType = null;
-		if (nms.getField("PacketPlayOutScoreboardObjective_RENDERTYPE") != null) {
+		if (nms.getMinorVersion() >= 8) {
 			Object nmsRender = nms.getField("PacketPlayOutScoreboardObjective_RENDERTYPE").get(nmsPacket);
 			if (nmsRender != null) {
 				renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
@@ -574,25 +575,21 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				component.getStrikethrough(),
 				component.getObfuscated(),
 				component.getClickAction() == null ? null : nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()), 
-				null, //component.getHoverAction() == null ? null : nms.getConstructor("ChatHoverable.newInstance(nms.EnumHoverAction_a.invoke(null, component.getHoverAction().toString().toLowerCase()), stringToComponent(component.getHoverValue().toString())), 
-				null, null
-					);
+				null, //need to make it for 1.16
+				null, null);
 		} else {
 			modifier = nms.getConstructor("ChatModifier").newInstance();
 			if (component.getClickAction() != null){
-				nms.getField("ChatModifier_clickEvent").set(modifier, nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()));
+				nms.setField(modifier, "ChatModifier_clickEvent", nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()));
 			}
-/*			if (component.getHoverAction() != null) {
-				nms.ChatModifier_hoverEvent.set(modifier, nms.getConstructor("ChatHoverable").newInstance(nms.EnumHoverAction_a.invoke(null, (component.getHoverAction().toString().toLowerCase())), stringToComponent(component.getHoverValue().toString())));
-			}*/
-			if (component.getColor() != null) nms.getField("ChatModifier_color").set(modifier, Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getColor().getLegacyColor().toString()));
-			if (component.isBold()) nms.getField("ChatModifier_bold").set(modifier, true);
-			if (component.isItalic()) nms.getField("ChatModifier_italic").set(modifier, true);
-			if (component.isUnderlined()) nms.getField("ChatModifier_underlined").set(modifier, true);
-			if (component.isStrikethrough()) nms.getField("ChatModifier_strikethrough").set(modifier, true);
-			if (component.isObfuscated()) nms.getField("ChatModifier_obfuscated").set(modifier, true);
+			if (component.getColor() != null) nms.setField(modifier, "ChatModifier_color", Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getColor().getLegacyColor().toString()));
+			if (component.isBold()) nms.setField(modifier, "ChatModifier_bold", true);
+			if (component.isItalic()) nms.setField(modifier, "ChatModifier_italic", true);
+			if (component.isUnderlined()) nms.setField(modifier, "ChatModifier_underlined", true);
+			if (component.isStrikethrough()) nms.setField(modifier, "ChatModifier_strikethrough", true);
+			if (component.isObfuscated()) nms.setField(modifier, "ChatModifier_obfuscated", true);
 		}
-		nms.getField("ChatBaseComponent_modifier").set(chat, modifier);
+		nms.setField(chat, "ChatBaseComponent_modifier", modifier);
 		for (IChatBaseComponent extra : component.getExtra()) {
 			nms.getMethod("ChatComponentText_addSibling").invoke(chat, toNMSComponent0(extra, clientVersion));
 		}

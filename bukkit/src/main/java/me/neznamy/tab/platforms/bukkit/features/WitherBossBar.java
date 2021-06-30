@@ -36,7 +36,7 @@ public class WitherBossBar implements Listener, Loadable {
 		this.mainFeature = (BossBar) tab.getFeatureManager().getFeature("bossbar");
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, () -> teleport());
+		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, this::teleport);
 	}
 	
 	@Override

@@ -51,7 +51,7 @@ public class PacketListener implements RawPacketListener {
 				}
 			}
 			if (attacked != null && attacked != sender) {
-				nms.getField("PacketPlayInUseEntity_ENTITY").set(packet, ((Player) attacked.getPlayer()).getEntityId());
+				nms.setField(packet, "PacketPlayInUseEntity_ENTITY", ((Player) attacked.getPlayer()).getEntityId());
 			}
 		}
 		return packet;

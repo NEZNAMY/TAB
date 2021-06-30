@@ -12,7 +12,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -90,7 +89,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 					updateTeamData(p);
 				}
 				//cannot control collision rule on <1.9 servers in any way
-				if (ProtocolVersion.getServerVersion().getMinorVersion() >= 9) updateCollision(p);
+				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) updateCollision(p);
 			}
 		});
 	}
@@ -160,7 +159,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 0), TabFeature.NAMETAGS);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), TabFeature.NAMETAGS);
 		}
 	}
 
@@ -170,7 +169,11 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, visible?"always":"never", getCollision(p)?"always":"never", 0), TabFeature.NAMETAGS);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), TabFeature.NAMETAGS);
+	}
+	
+	private String translate(boolean b) {
+		return b ? "always" : "never";
 	}
 	
 	private void updateCollision(TabPlayer p) {

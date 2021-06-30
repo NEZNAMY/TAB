@@ -153,7 +153,7 @@ public class Configs {
 	 * @return list of players logged in this data key
 	 */
 	public List<String> getPlayerData(String key) {
-		if (getPlayerdata() == null) {
+		if (playerdata == null) {
 			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
 			try {
 				if (file.exists() || file.createNewFile()) {
@@ -164,7 +164,7 @@ public class Configs {
 				return new ArrayList<>();
 			}
 		}
-		return getPlayerdata().getStringList(key, new ArrayList<>());
+		return playerdata.getStringList(key, new ArrayList<>());
 	}
 	
 	/**
@@ -281,7 +281,7 @@ public class Configs {
 		return reloadFailed;
 	}
 
-	public ConfigurationFile getPlayerdata() {
+	public ConfigurationFile getPlayerDataFile() {
 		return playerdata;
 	}
 }

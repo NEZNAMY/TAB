@@ -66,8 +66,7 @@ public class Main {
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
 		instance = this;
-		ProtocolVersion.setServerVersion(ProtocolVersion.values()[1]);
-		TAB.setInstance(new TAB(new VelocityPlatform(getServer()), new VelocityPacketBuilder()));
+		TAB.setInstance(new TAB(new VelocityPlatform(getServer()), new VelocityPacketBuilder(), ProtocolVersion.values()[1]));
 		getServer().getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("btab").build(), cmd);

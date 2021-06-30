@@ -6,7 +6,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.Scoreboard;
@@ -108,7 +107,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	private String[] split(TabPlayer p, String text) {
 		int charLimit = 16;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
-			ProtocolVersion.getServerVersion().getMinorVersion() >= 13 && 
+				TAB.getInstance().getServerVersion().getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug
 			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, Math.min(16, text.length())));

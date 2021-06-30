@@ -56,9 +56,6 @@ public enum ProtocolVersion {
 	V1_4_7	(51),
 	V1_4_6	(51);
 
-	//server version, always using latest on proxies
-	private static ProtocolVersion serverVersion;
-
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private int networkId;
 	
@@ -131,13 +128,5 @@ public enum ProtocolVersion {
 			if (networkId == v.getNetworkId()) return v;
 		}
 		return UNKNOWN;
-	}
-
-	public static ProtocolVersion getServerVersion() {
-		return serverVersion;
-	}
-
-	public static void setServerVersion(ProtocolVersion serverVersion) {
-		ProtocolVersion.serverVersion = serverVersion;
 	}
 }

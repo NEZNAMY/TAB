@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import me.neznamy.tab.shared.TAB;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings("rawtypes")
 public class NMSStorage {
 
 	//instance of this class
@@ -33,11 +34,12 @@ public class NMSStorage {
 
 	//server minor version such as "16"
 	private int minorVersion;
-	
+
 	private Map<String, Class<?>> classes = new HashMap<>();
 	private Map<String, Constructor<?>> constructors = new HashMap<>();
 	private Map<String, Field> fields = new HashMap<>();
 	private Map<String, Method> methods = new HashMap<>();
+	private Map<String, Enum[]> enums = new HashMap<>();
 
 	/**
 	 * Creates new instance, initializes required NMS classes and fields
@@ -45,14 +47,17 @@ public class NMSStorage {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws ClassNotFoundException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
 	 */
-	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 		initializeClasses();
 		initializeConstructors();
 		initializeFields();
 		initializeMethods();
+		initializeEnums();
 		dataWatcherRegistry = new DataWatcherRegistry(this, getClass("DataWatcherRegistry"));
 	}
 
@@ -80,7 +85,7 @@ public class NMSStorage {
 		classes.put("DataWatcher", getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher"));
 		classes.put("DataWatcherItem", getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject"));
 		classes.put("EntityPlayer", getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer"));
-		classes.put("EnumChatFormat", (Class<Enum>) getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat"));
+		classes.put("EnumChatFormat", getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat"));
 		classes.put("Entity", getNMSClass("net.minecraft.world.entity.Entity", "Entity"));
 		classes.put("EntityLiving", getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving"));
 		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
@@ -121,11 +126,11 @@ public class NMSStorage {
 		if (minorVersion >= 8) {
 			classes.put("PacketPlayOutPlayerInfo", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo"));
 			classes.put("PacketPlayOutPlayerListHeaderFooter", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter"));
-			classes.put("EnumPlayerInfoAction", (Class<Enum>) getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction"));
+			classes.put("EnumPlayerInfoAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction"));
 			classes.put("PlayerInfoData", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", "PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData"));
-			classes.put("EnumScoreboardHealthDisplay", (Class<Enum>) getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
-			classes.put("EnumGamemode", (Class<Enum>) getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode"));
-			classes.put("EnumScoreboardAction", (Class<Enum>) getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction"));
+			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
+			classes.put("EnumGamemode", getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode"));
+			classes.put("EnumScoreboardAction", getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction"));
 			classes.put("EnumNameTagVisibility", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility"));
 		}
 		if (minorVersion >= 9) {
@@ -133,10 +138,10 @@ public class NMSStorage {
 			classes.put("DataWatcherRegistry", getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry"));
 			classes.put("DataWatcherSerializer", getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer"));
 			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-			
+
 		}
 		if (minorVersion >= 12) {
-			classes.put("ChatMessageType", (Class<Enum>) getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType"));
+			classes.put("ChatMessageType", getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType"));
 		}
 		if (minorVersion >= 16) {
 			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
@@ -219,11 +224,11 @@ public class NMSStorage {
 
 		fields.put("PacketPlayOutScoreboardDisplayObjective_POSITION", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), int.class).get(0));
 		fields.put("PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), String.class).get(0));
-		
+
 		fields.put("PacketPlayOutScoreboardObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(0));
 		List<Field> list = getFields(getClass("PacketPlayOutScoreboardObjective"), int.class);
 		fields.put("PacketPlayOutScoreboardObjective_METHOD", list.get(list.size()-1));
-		
+
 		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
 		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
 
@@ -271,7 +276,7 @@ public class NMSStorage {
 			fields.put("PacketPlayOutPlayerListHeaderFooter_FOOTER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(1));
 			fields.put("PacketPlayOutScoreboardObjective_RENDERTYPE", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("EnumScoreboardHealthDisplay")).get(0));
 		}
-		
+
 		if (minorVersion >= 9) {
 			fields.put("DataWatcherItem_TYPE", getFields(getClass("DataWatcherItem"), getClass("DataWatcherObject")).get(0));
 			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
@@ -295,13 +300,13 @@ public class NMSStorage {
 			fields.put("PacketPlayOutSpawnEntityLiving_Y", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(3));
 			fields.put("PacketPlayOutSpawnEntityLiving_Z", getFields(getClass("PacketPlayOutSpawnEntityLiving"), int.class).get(4));
 		}
-		
+
 		if (minorVersion >= 13) {
 			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("IChatBaseComponent")).get(0));
 		} else {
 			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(1));
 		}
-		
+
 		if (minorVersion <= 14) {
 			fields.put("PacketPlayOutSpawnEntityLiving_DATAWATCHER", getFields(getClass("PacketPlayOutSpawnEntityLiving"), getClass("DataWatcher")).get(0));
 		}
@@ -366,6 +371,13 @@ public class NMSStorage {
 			methods.put("PacketPlayOutScoreboardTeam_of", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam")));
 			methods.put("PacketPlayOutScoreboardTeam_ofBoolean", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), boolean.class));
 			methods.put("PacketPlayOutScoreboardTeam_ofString", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), String.class, getClass("PacketPlayOutScoreboardTeam_a")));
+		}
+	}
+
+	private void initializeEnums() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		for (String name : Arrays.asList("ChatMessageType", "EnumPlayerInfoAction", "EnumGamemode", "EnumScoreboardHealthDisplay", "EnumScoreboardAction", 
+				"PacketPlayOutScoreboardTeam_a", "EnumChatFormat", "EnumNameTagVisibility", "EnumTeamPush")) {
+			if (classes.containsKey(name)) enums.put(name, (Enum[]) getClass(name).getMethod("values").invoke(null));
 		}
 	}
 
@@ -487,7 +499,7 @@ public class NMSStorage {
 		}
 		throw new NoSuchMethodException("No constructor found in class " + clazz.getName() + " with " + parameterCount + " parameters");
 	}
-	
+
 	private Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
 		for (String name : potentialNames) {
 			try {
@@ -502,21 +514,29 @@ public class NMSStorage {
 	public int getMinorVersion() {
 		return minorVersion;
 	}
-	
+
 	public Class<?> getClass(String name){
 		return classes.get(name);
 	}
-	
-	public Constructor<?> getConstructor(String name){
+
+	public Constructor getConstructor(String name){
 		return constructors.get(name);
 	}
-	
+
 	public Field getField(String name){
 		return fields.get(name);
 	}
-	
+
 	public Method getMethod(String name) {
 		return methods.get(name);
+	}
+
+	public Enum[] getEnum(String name) {
+		return enums.get(name);
+	}
+
+	public void setField(Object obj, String field, Object value) throws IllegalAccessException {
+		fields.get(field).set(obj, value);
 	}
 
 	public DataWatcherRegistry getDataWatcherRegistry() {

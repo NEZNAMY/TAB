@@ -366,7 +366,7 @@ public abstract class ConfigurationFile {
 		try {
 			List<String> content = new ArrayList<>(header);
 			content.addAll(readAllLines(file));
-			file.delete();
+			Files.delete(file.toPath());
 			file.createNewFile();
 			BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));
 			for (String line : content) {

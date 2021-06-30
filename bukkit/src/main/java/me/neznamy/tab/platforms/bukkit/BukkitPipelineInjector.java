@@ -138,7 +138,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 				}
 			}
-			nms.getField("PacketPlayOutScoreboardTeam_PLAYERS").set(packetPlayOutScoreboardTeam, newList);
+			nms.setField(packetPlayOutScoreboardTeam, "PacketPlayOutScoreboardTeam_PLAYERS", newList);
 			tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}

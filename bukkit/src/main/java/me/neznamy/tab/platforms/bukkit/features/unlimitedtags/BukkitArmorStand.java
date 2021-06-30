@@ -17,9 +17,9 @@ import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -121,7 +121,7 @@ public class BukkitArmorStand implements ArmorStand {
 		visible = getVisibility();
 		nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 15) {
+		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
 			return new Object[] {
 					getSpawnPacket(getArmorStandLocationFor(viewer), null),
 					getMetadataPacket(dataWatcher)
@@ -291,7 +291,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
-			if (ProtocolVersion.getServerVersion().getMinorVersion() >= 9) {
+			if (NMSStorage.getInstance().getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);
 			} else {
 				y -= (sneaking ? 0.30 : 0.18);
@@ -322,15 +322,15 @@ public class BukkitArmorStand implements ArmorStand {
 			}
 		}
         //1.13+ swimming or 1.9+ flying with elytra
-        if (isSwimming() || (ProtocolVersion.getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
+        if (isSwimming() || (NMSStorage.getInstance().getMinorVersion() >= 9 && player.isGliding())) {
             return player.getLocation().getY()-1.22;
         }
 		return player.getLocation().getY();
 	}
 	
 	private boolean isSwimming() {
-		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-		return ProtocolVersion.getServerVersion().getMinorVersion() == 13 && player.isSwimming();
+		if (NMSStorage.getInstance().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+		return NMSStorage.getInstance().getMinorVersion() == 13 && player.isSwimming();
 	}
 
 	@Override

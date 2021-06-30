@@ -23,7 +23,6 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -366,7 +365,7 @@ public class NameTagX extends NameTag {
 	 */
 	@SuppressWarnings("deprecation")
 	public List<Entity> getPassengers(Entity vehicle){
-		if (ProtocolVersion.getServerVersion().getMinorVersion() >= 11) {
+		if (NMSStorage.getInstance().getMinorVersion() >= 11) {
 			return vehicle.getPassengers();
 		} else {
 			if (vehicle.getPassenger() != null) {

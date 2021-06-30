@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,15 +116,16 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 				}
 				newList.add(item);
 			}
-			nms.getField("PacketPlayOutEntityMetadata_LIST").set(packet, newList);
+			nms.setField(packet, "PacketPlayOutEntityMetadata_LIST", newList);
 		}
 		//<1.15
-		if (nms.getClass("PacketPlayOutSpawnEntityLiving").isInstance(packet) && nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER") != null) {
-			DataWatcher watcher = DataWatcher.fromNMS(nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER").get(packet));
+		Field datawatcher = nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER");
+		if (nms.getClass("PacketPlayOutSpawnEntityLiving").isInstance(packet) && datawatcher != null) {
+			DataWatcher watcher = DataWatcher.fromNMS(datawatcher.get(packet));
 			DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
 			if (petOwner != null && (petOwner.getValue() instanceof java.util.Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
 				watcher.removeValue(petOwnerPosition);
-				nms.getField("PacketPlayOutSpawnEntityLiving_DATAWATCHER").set(packet, watcher.toNMS());
+				nms.setField(packet, "PacketPlayOutSpawnEntityLiving_DATAWATCHER", watcher.toNMS());
 			}
 		}
 	}
