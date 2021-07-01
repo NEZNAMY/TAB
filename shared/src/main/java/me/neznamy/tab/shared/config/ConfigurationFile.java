@@ -37,7 +37,7 @@ public abstract class ConfigurationFile {
 	 * @throws IllegalStateException - if file does not exist and source is null
 	 * @throws IOException - if I/O file operation fails
 	 */
-	protected ConfigurationFile(InputStream source, File destination, List<String> header) throws IllegalStateException, IOException {
+	protected ConfigurationFile(InputStream source, File destination, List<String> header) throws IOException {
 		this.header = header;
 		this.file = destination;
 		if (file.getParentFile() != null) file.getParentFile().mkdirs();

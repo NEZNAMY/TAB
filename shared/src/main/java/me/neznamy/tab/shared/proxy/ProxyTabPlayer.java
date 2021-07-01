@@ -7,7 +7,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	private PluginMessageHandler plm;
 	
-	public ProxyTabPlayer(PluginMessageHandler plm) {
+	protected ProxyTabPlayer(PluginMessageHandler plm) {
 		this.plm = plm;
 	}
 	

@@ -11,7 +11,7 @@ public abstract class ProxyPlatform implements Platform {
 
 	private PluginMessageHandler plm;
 	
-	public ProxyPlatform(PluginMessageHandler plm) {
+	protected ProxyPlatform(PluginMessageHandler plm) {
 		this.plm = plm;
 	}
 	
