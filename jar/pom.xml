@@ -32,7 +32,11 @@
 					<relocations>
 						<relocation>
 							<pattern>org.bstats</pattern>
-							<shadedPattern>me.neznamy.tab.platforms</shadedPattern>
+							<shadedPattern>me.neznamy.tab.libs.org.bstats</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.json.simple</pattern>
+							<shadedPattern>me.neznamy.tab.libs.org.json.simple</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
