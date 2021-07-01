@@ -706,11 +706,7 @@ public class IChatBaseComponent {
 				builder.append(color.getLegacyColor().getFormat());
 			}
 		}
-		if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
-		if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());
-		if (isUnderlined()) builder.append(EnumChatFormat.UNDERLINE.getFormat());
-		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
-		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
+		appendMagicCodes(builder);
 		return builder.toString();
 	}
 

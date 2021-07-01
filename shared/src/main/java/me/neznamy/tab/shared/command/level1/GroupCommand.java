@@ -1,17 +1,14 @@
 package me.neznamy.tab.shared.command.level1;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 
 /**
  * Handler for "/tab group" subcommand
  */
-public class GroupCommand extends SubCommand {
+public class GroupCommand extends PropertyCommand {
 	
 	/**
 	 * Constructs new instance
@@ -81,16 +78,5 @@ public class GroupCommand extends SubCommand {
 				pl.forceRefresh();
 			}
 		}
-	}
-
-	@Override
-	public List<String> complete(TabPlayer sender, String[] arguments) {
-		List<String> suggestions = new ArrayList<>();
-		if (arguments.length == 2) {
-			for (String property : getAllProperties()) {
-				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
-			}
-		}
-		return suggestions;
 	}
 }

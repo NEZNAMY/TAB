@@ -71,7 +71,6 @@ public class NMSStorage {
 			fields.put("CHANNEL", getFields(getClass("NetworkManager"), Channel.class).get(0));
 			methods.put("getProfile", getClass("EntityPlayer").getMethod("getProfile"));
 		}
-		initializeEnums();
 		initializeChatComponents();
 		initializeChatPacket();
 		initializeDataWatcher();
@@ -81,6 +80,7 @@ public class NMSStorage {
 		initializeOtherEntityPackets();
 		initializePlayerInfoPacket();
 		initializeScoreboardPackets();
+		initializeEnums();
 	}
 
 	/**

@@ -42,35 +42,7 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 		tab.debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s", rawNumber, rawText, disabledWorlds));
-		tab.getFeatureManager().registerFeature("belowname-text-refresher", new Refreshable() {
-
-			private List<String> usedPlaceholders;
-
-			{
-				refreshUsedPlaceholders();
-			}
-
-			@Override
-			public void refresh(TabPlayer refreshed, boolean force) {
-				if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
-				refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(TEXT_PROPERTY).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.BELOWNAME_TEXT);
-			}
-
-			@Override
-			public List<String> getUsedPlaceholders() {
-				return usedPlaceholders;
-			}
-
-			@Override
-			public void refreshUsedPlaceholders() {
-				usedPlaceholders = tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawText);
-			}
-
-			@Override
-			public TabFeature getFeatureType() {
-				return TabFeature.BELOWNAME_TEXT;
-			}
-		});
+		tab.getFeatureManager().registerFeature("belowname-text-refresher", new TextRefresher());
 	}
 
 	@Override
@@ -164,5 +136,35 @@ public class BelowName implements Loadable, JoinEventListener, WorldChangeListen
 			return true;
 		}
 		return false;
+	}
+	
+	public class TextRefresher implements Refreshable {
+		
+		private List<String> usedPlaceholders;
+
+		public TextRefresher(){
+			refreshUsedPlaceholders();
+		}
+
+		@Override
+		public void refresh(TabPlayer refreshed, boolean force) {
+			if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
+			refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(TEXT_PROPERTY).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.BELOWNAME_TEXT);
+		}
+
+		@Override
+		public List<String> getUsedPlaceholders() {
+			return usedPlaceholders;
+		}
+
+		@Override
+		public void refreshUsedPlaceholders() {
+			usedPlaceholders = tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawText);
+		}
+
+		@Override
+		public TabFeature getFeatureType() {
+			return TabFeature.BELOWNAME_TEXT;
+		}
 	}
 }

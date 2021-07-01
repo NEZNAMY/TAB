@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.command.level1;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,12 +82,6 @@ public class PlayerUUIDCommand extends SubCommand {
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		if (arguments.length == 1) return getPlayers(arguments[0]);
-		List<String> suggestions = new ArrayList<>();
-		if (arguments.length == 2) {
-			for (String property : getAllProperties()) {
-				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
-			}
-		}
-		return suggestions;
+		return super.complete(sender, arguments);
 	}
 }

@@ -61,17 +61,17 @@ public class Main {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
 			return;
 		}
-		if (getServer().getConfiguration().isOnlineMode()) {
+		if (server.getConfiguration().isOnlineMode()) {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
 		instance = this;
-		TAB.setInstance(new TAB(new VelocityPlatform(getServer()), new VelocityPacketBuilder(), ProtocolVersion.values()[1]));
-		getServer().getEventManager().register(this, new VelocityEventListener());
-		VelocityTABCommand cmd = new VelocityTABCommand();
-		getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("btab").build(), cmd);
-		getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("vtab").build(), cmd);
 		plm = new VelocityPluginMessageHandler(this);
+		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), new VelocityPacketBuilder(), ProtocolVersion.values()[1]));
+		server.getEventManager().register(this, new VelocityEventListener());
+		VelocityTABCommand cmd = new VelocityTABCommand();
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
+		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));

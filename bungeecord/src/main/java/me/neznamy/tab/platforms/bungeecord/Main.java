@@ -34,11 +34,11 @@ public class Main extends Plugin {
 			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
 			return;
 		}
-		TAB.setInstance(new TAB(new BungeePlatform(this), new BungeePacketBuilder(), ProtocolVersion.values()[1]));
+		plm = new BungeePluginMessageHandler(this);
+		TAB.setInstance(new TAB(new BungeePlatform(this, plm), new BungeePacketBuilder(), ProtocolVersion.values()[1]));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
-		plm = new BungeePluginMessageHandler(this);
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 10535);
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));

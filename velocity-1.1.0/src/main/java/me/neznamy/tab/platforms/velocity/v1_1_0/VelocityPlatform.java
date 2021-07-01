@@ -7,23 +7,21 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
 /**
  * Velocity implementation of Platform
  */
-public class VelocityPlatform implements Platform {
+public class VelocityPlatform extends ProxyPlatform {
 
 	//instance of proxyserver
 	private ProxyServer server;
@@ -32,7 +30,8 @@ public class VelocityPlatform implements Platform {
 	 * Constructs new instance with given parameter
 	 * @param server - instance of proxyserver
 	 */
-	public VelocityPlatform(ProxyServer server) {
+	public VelocityPlatform(ProxyServer server, PluginMessageHandler plm) {
+		super(plm);
 		this.server = server;
 	}
 	
@@ -64,25 +63,6 @@ public class VelocityPlatform implements Platform {
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? message.replace('&', '\u00a7') : message));
-	}
-	
-	@Override
-	public void registerUnknownPlaceholder(String identifier) {
-		if (identifier.contains("_")) {
-			String plugin = identifier.split("_")[0].replace("%", "").toLowerCase();
-			if (plugin.equals("some")) return;
-			TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
-			PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
-			int refresh = pl.getDefaultRefresh();
-			if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
-			TAB.getInstance().getPlaceholderManager().registerPlaceholder(new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
-				public String get(TabPlayer p) {
-					Main.getInstance().getPluginMessageHandler().requestPlaceholder(p, identifier);
-					return getLastValues().get(p.getName());
-				}
-			});
-		}
 	}
 	
 	@Override

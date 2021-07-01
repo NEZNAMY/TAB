@@ -15,7 +15,6 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -24,6 +23,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -34,7 +34,7 @@ import net.kyori.adventure.identity.Identity;
 /**
  * TabPlayer for Velocity
  */
-public class VelocityTabPlayer extends ITabPlayer {
+public class VelocityTabPlayer extends ProxyTabPlayer {
 
 	//the velocity player
 	private Player player;
@@ -50,6 +50,7 @@ public class VelocityTabPlayer extends ITabPlayer {
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p) {
+		super (Main.getInstance().getPluginMessageHandler());
 		player = p;
 		Optional<ServerConnection> server = p.getCurrentServer();
 		if (server.isPresent()) {
@@ -202,27 +203,6 @@ public class VelocityTabPlayer extends ITabPlayer {
 	@Override
 	public UUID getTablistUUID() {
 		return tablistId;
-	}
-
-	@Override
-	public boolean isVanished() {
-		return getAttribute("vanished");
-	}
-	
-	@Override
-	public boolean isDisguised() {
-		return getAttribute("disguised");
-	}
-
-	@Override
-	public boolean hasInvisibilityPotion() {
-		return getAttribute("invisible");
-	}
-	
-	private boolean getAttribute(String name) {
-		Main.getInstance().getPluginMessageHandler().requestAttribute(this, name);
-		if (!attributes.containsKey(name)) return false;
-		return Boolean.parseBoolean(attributes.get(name));
 	}
 	
 	@Override

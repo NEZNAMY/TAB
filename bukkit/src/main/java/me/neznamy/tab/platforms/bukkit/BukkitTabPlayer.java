@@ -204,7 +204,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 				if (vanished) return true;
 			}
 			List<MetadataValue> metadata = player.getMetadata("vanished");
-			return metadata != null && !metadata.isEmpty() && metadata.get(0).asBoolean();
+			return !metadata.isEmpty() && metadata.get(0).asBoolean();
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check vanish status of " + player.getName(), e);
 		}
