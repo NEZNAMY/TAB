@@ -36,8 +36,8 @@ public class BukkitEventListener implements Listener {
 			try {
 				int i = 0;
 				int version;
-				while ((version = Main.getProtocolVersion(e.getPlayer())) == -1 && ++i < 50) {
-					Thread.sleep(1);
+				while ((version = Main.getProtocolVersion(e.getPlayer())) == -1 && ++i < 100) {
+					Thread.sleep(2);
 				}
 				if (!e.getPlayer().isOnline()) return;
 				if (i == 50) {
