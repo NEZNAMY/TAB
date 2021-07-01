@@ -25,7 +25,7 @@ public class UltraPermissions implements PermissionPlugin {
 	}
 	
 	@Override
-	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return "<null>";
 		return groups[0];
@@ -33,7 +33,7 @@ public class UltraPermissions implements PermissionPlugin {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Object api = null;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) { //meh solution but whatever
 			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);

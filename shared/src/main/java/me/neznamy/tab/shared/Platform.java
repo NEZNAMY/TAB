@@ -34,12 +34,11 @@ public interface Platform {
 	/**
 	 * Loads features from config
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
 	 */
-	public void loadFeatures() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
+	public void loadFeatures() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
 	
 	/**
 	 * Sends a message into console

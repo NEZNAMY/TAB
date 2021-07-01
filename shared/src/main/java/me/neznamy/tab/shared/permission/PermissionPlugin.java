@@ -17,10 +17,9 @@ public interface PermissionPlugin {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException;
+	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException;
 	
 	/**
 	 * Returns list of all groups players is in
@@ -30,10 +29,9 @@ public interface PermissionPlugin {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException;
+	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException;
 	
 	/**
 	 * Returns version of the permission plugin

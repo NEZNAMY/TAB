@@ -29,12 +29,11 @@ public class PacketPlayOutScoreboardDisplayObjective extends UniversalPacketPlay
 	/**
 	 * Calls build method of packet builder instance and returns output
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	

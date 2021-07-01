@@ -16,21 +16,19 @@ public interface RawPacketListener extends Feature {
 	 * @param packet - packet received
 	 * @return modified packet or null if packet should be cancelled
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws ClassNotFoundException 
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException;
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException, ClassNotFoundException;
 	
 	/**
 	 * Processes raw packet sent to client
 	 * @param receiver - packet receiver
 	 * @param packet - the packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException;
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException;
 }

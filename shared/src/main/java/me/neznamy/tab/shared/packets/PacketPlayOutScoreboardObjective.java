@@ -53,12 +53,11 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
 	}
 	

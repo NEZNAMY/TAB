@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
@@ -129,11 +128,6 @@ public class BukkitPlatform implements Platform {
 	/**
 	 * Returns list of online players from Bukkit API
 	 * @return list of online players from Bukkit API
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
 	 */
 	@SuppressWarnings("unchecked")
 	private Player[] getOnlinePlayers() {

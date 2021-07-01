@@ -56,11 +56,10 @@ public class DataWatcher {
 	 * Converts the class into an instance of NMS.DataWatcher
 	 * @return an instance of NMS.DataWatcher with same data
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object toNMS() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object toNMS() throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
 		if (nms.getMinorVersion() >= 7) {
@@ -87,11 +86,10 @@ public class DataWatcher {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static DataWatcher fromNMS(Object nmsWatcher) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public static DataWatcher fromNMS(Object nmsWatcher) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException{
 		DataWatcher watcher = new DataWatcher();
 		List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
 		if (items != null) {

@@ -50,9 +50,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * Constructs new instance for given player
 	 * @param p - velocity player
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public BungeeTabPlayer(ProxiedPlayer p) throws IllegalArgumentException, IllegalAccessException {
+	public BungeeTabPlayer(ProxiedPlayer p) throws IllegalAccessException {
 		super (Main.getInstance().getPluginMessageHandler());
 		player = p;
 		if (p.getServer() != null) {

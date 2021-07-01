@@ -53,7 +53,7 @@ public class BungeePlatform extends ProxyPlatform {
 	}
 
 	@Override
-	public void loadFeatures() throws IllegalArgumentException, IllegalAccessException {
+	public void loadFeatures() throws IllegalAccessException {
 		TAB tab = TAB.getInstance();
 		tab.getPlaceholderManager().addRegistry(new BungeePlaceholderRegistry());
 		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());

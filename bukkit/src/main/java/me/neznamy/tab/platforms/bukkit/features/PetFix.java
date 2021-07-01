@@ -68,11 +68,10 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws ClassNotFoundException 
 	 */
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException, ClassNotFoundException {
 		if (nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
@@ -97,7 +96,6 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	/**
 	 * Removes pet owner field from datawatcher
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
@@ -105,7 +103,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
 		if (nms.getClass("PacketPlayOutEntityMetadata").isInstance(packet)) {
 			List<Object> items = (List<Object>) nms.getField("PacketPlayOutEntityMetadata_LIST").get(packet);
 			if (items == null) return;

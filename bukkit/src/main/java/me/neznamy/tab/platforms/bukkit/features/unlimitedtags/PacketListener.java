@@ -40,7 +40,7 @@ public class PacketListener implements RawPacketListener {
 	}
 
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalArgumentException, IllegalAccessException {
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
 		if (sender.getVersion().getMinorVersion() == 8 && nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
 			int entityId = nms.getField("PacketPlayInUseEntity_ENTITY").getInt(packet);
 			TabPlayer attacked = null;
@@ -58,7 +58,7 @@ public class PacketListener implements RawPacketListener {
 	}
 
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalArgumentException, IllegalAccessException  {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException  {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
 		String world = ((Player)receiver.getPlayer()).getWorld().getName();

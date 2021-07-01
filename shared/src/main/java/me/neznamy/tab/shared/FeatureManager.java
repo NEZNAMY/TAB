@@ -152,10 +152,9 @@ public class FeatureManager {
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		List<PlayerInfoPacketListener> listeners = new ArrayList<>();
 		for (Feature f : getAllFeatures()) {
@@ -318,9 +317,8 @@ public class FeatureManager {
 	 * @param packet - the packet
 	 * @return true if packet should be cancelled, false if not
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalArgumentException, IllegalAccessException {
+	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = tab.getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
@@ -338,9 +336,8 @@ public class FeatureManager {
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalArgumentException, IllegalAccessException {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = tab.getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		tab.getCPUManager().addTime(TabFeature.PACKET_DESERIALIZING, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);

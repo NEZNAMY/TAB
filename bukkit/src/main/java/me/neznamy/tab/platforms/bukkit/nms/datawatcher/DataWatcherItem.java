@@ -25,9 +25,8 @@ public class DataWatcherItem {
 	 * @param nmsItem - NMS item
 	 * @return instance of this class with same data
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public static DataWatcherItem fromNMS(Object nmsItem) throws IllegalArgumentException, IllegalAccessException {
+	public static DataWatcherItem fromNMS(Object nmsItem) throws IllegalAccessException {
 		NMSStorage nms = NMSStorage.getInstance();
 		if (NMSStorage.getInstance().getMinorVersion() >= 9) {
 			Object nmsObject = nms.getField("DataWatcherItem_TYPE").get(nmsItem);

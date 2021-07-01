@@ -15,11 +15,10 @@ public interface PacketBuilder {
 	 * @param clientVersion - version of client to receive the packet
 	 * @return platform-specific packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutChat class based on custom packet class
@@ -27,13 +26,12 @@ public interface PacketBuilder {
 	 * @param clientVersion - version of client to receive the packet
 	 * @return platform-specific packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
+	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerInfo class based on custom packet class
@@ -44,11 +42,10 @@ public interface PacketBuilder {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException;
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerListHeaderFooter class based on custom packet class
@@ -56,11 +53,10 @@ public interface PacketBuilder {
 	 * @param clientVersion - version of client to receive the packet
 	 * @return platform-specific packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardDisplayObjective class based on custom packet class
@@ -68,11 +64,10 @@ public interface PacketBuilder {
 	 * @param clientVersion - version of client to receive the packet
 	 * @return platform-specific packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
@@ -82,11 +77,10 @@ public interface PacketBuilder {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException;
+	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardScore class based on custom packet class
@@ -96,11 +90,10 @@ public interface PacketBuilder {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException;
+	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
 	
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardTeam class based on custom packet class
@@ -108,13 +101,12 @@ public interface PacketBuilder {
 	 * @param clientVersion - version of client to receive the packet
 	 * @return platform-specific packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
+	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
 
 	/**
 	 * Cuts given string to specified character length (or length-1 if last character is a color character) and translates RGB to legacy colors
@@ -154,10 +146,9 @@ public interface PacketBuilder {
 	 * @param clientVersion - client version
 	 * @return The converted packet
 	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException;
 	
 	/**
 	 * Converts platform-specific instance of objective packet into custom class object
@@ -165,9 +156,8 @@ public interface PacketBuilder {
 	 * @param clientVersion - client version
 	 * @return The converted packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalArgumentException, IllegalAccessException;
+	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException;
 	
 	/**
 	 * Converts platform-specific instance of display objective packet into custom class object
@@ -175,7 +165,6 @@ public interface PacketBuilder {
 	 * @param clientVersion - client version
 	 * @return The converted packet
 	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws IllegalArgumentException, IllegalAccessException;
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException;
 }
