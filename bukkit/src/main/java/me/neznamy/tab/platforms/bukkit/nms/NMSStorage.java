@@ -268,6 +268,7 @@ public class NMSStorage {
 			fields.put("PacketPlayInUseEntity_ACTION", getFields(getClass("PacketPlayInUseEntity"), getClass("EnumEntityUseAction")).get(0));
 		}
 		if (minorVersion >= 17) {
+			classes.put("PacketPlayInUseEntity$d", Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d"));
 			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int.class).get(0));
 		} else {
 			fields.put("PacketPlayOutEntityDestroy_ENTITIES", getFields(getClass("PacketPlayOutEntityDestroy"), int[].class).get(0));

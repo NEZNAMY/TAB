@@ -18,7 +18,7 @@ public interface RawPacketListener extends Feature {
 	 * @throws IllegalAccessException 
 	 * @throws ClassNotFoundException 
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException, ClassNotFoundException;
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException;
 	
 	/**
 	 * Processes raw packet sent to client
