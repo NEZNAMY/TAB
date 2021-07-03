@@ -66,13 +66,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public boolean hasPermission(String permission) {
-		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			String merge = "hasPermission:" + permission;
-			Main.getInstance().getPluginMessageHandler().requestAttribute(this, merge);
-			if (!attributes.containsKey(merge)) return false;
-			return Boolean.parseBoolean(attributes.get(merge));
-		}
+	public boolean hasPermission0(String permission) {
 		return player.hasPermission(permission);
 	}
 	

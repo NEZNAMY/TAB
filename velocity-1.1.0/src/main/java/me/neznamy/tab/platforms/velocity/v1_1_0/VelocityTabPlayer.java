@@ -68,13 +68,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public boolean hasPermission(String permission) {
-		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			String merge = "hasPermission:" + permission;
-			Main.getInstance().getPluginMessageHandler().requestAttribute(this, merge);
-			if (!attributes.containsKey(merge)) return false;
-			return Boolean.parseBoolean(attributes.get(merge));
-		}
+	public boolean hasPermission0(String permission) {
 		return player.hasPermission(permission);
 	}
 	
@@ -136,11 +130,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			break;
 		case UPDATE_STYLE:
 			bar = bossbars.get(packet.getId());
-			//compensating for an already fixed bug for those who did not update Velocity
-			player.hideBossBar(bar);
 			bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
 			bar.color(Color.valueOf(packet.getColor().toString()));
-			player.showBossBar(bar);
 			break;
 		case UPDATE_PROPERTIES:
 			if (packet.isCreateWorldFog()) flags.add(Flag.CREATE_WORLD_FOG);
