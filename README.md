@@ -4,7 +4,7 @@ It's already been a year and I still can't see any positives of it. This way I j
   
   
 ## Compiling
-Plugin can be compiled using maven. Once you've purchased the premium version, you can enable premium features by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/TAB.java#L78) and apply your code improvements. Enabling it without purchasing the plugin may result in the features not working correctly.  
+Plugin can be compiled using maven. Once you've purchased the premium version, you can enable premium features by setting [this line to return true](https://github.com/NEZNAMY/TAB/blob/master/shared/src/main/java/me/neznamy/tab/shared/TAB.java#L82) and apply your code improvements. Enabling it without purchasing the plugin may result in the features not working correctly.  
 **No support is provided for self-compiled jars, only for official compilations.** If you compiled it yourself, it is highly likely you modified something, which might be the reason why is the plugin not working. If you didn't modify anything, you can just get the plugin from official download locations.
   
   
