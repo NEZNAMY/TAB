@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -10,6 +12,7 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.features.types.packet.DisplayObjectivePacketListener;
 import me.neznamy.tab.shared.features.types.packet.LoginPacketListener;
@@ -22,7 +25,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 /**
  * Feature handler for tablist objective feature
  */
-public class TabObjective implements Loadable, JoinEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
+public class TabObjective implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable, LoginPacketListener, DisplayObjectivePacketListener {
 
 	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
 	public static final int DISPLAY_SLOT = 0;
@@ -34,6 +37,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	private EnumScoreboardHealthDisplay displayType;
 	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
+	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 
 	public TabObjective(TAB tab) {
 		this.tab = tab;
@@ -52,7 +56,10 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	public void load() {
 		for (TabPlayer loaded : tab.getPlayers()){
 			loaded.setProperty(PROPERTY_NAME, rawValue);
-			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) continue;
+			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) {
+				playersInDisabledWorlds.add(loaded);
+				continue;
+			}
 			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		}
 		for (TabPlayer viewer : tab.getPlayers()){
@@ -65,7 +72,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()){
-			if (isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
+			if (playersInDisabledWorlds.contains(p)) continue;
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureType());
 		}
 	}
@@ -73,7 +80,10 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(PROPERTY_NAME, rawValue);
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) return;
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
+			playersInDisabledWorlds.add(connectedPlayer);
+			return;
+		}
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : tab.getPlayers()){
@@ -84,10 +94,18 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (isDisabledWorld(disabledWorlds, p.getWorldName()) && !isDisabledWorld(disabledWorlds, from)) {
+		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledNow = false;
+		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+			disabledNow = true;
+			playersInDisabledWorlds.add(p);
+		} else {
+			playersInDisabledWorlds.remove(p);
+		}
+		if (disabledNow && !disabledBefore) {
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureType());
 		}
-		if (!isDisabledWorld(disabledWorlds, p.getWorldName()) && isDisabledWorld(disabledWorlds, from)) {
+		if (!disabledNow && disabledBefore) {
 			onJoin(p);
 		}
 	}
@@ -98,7 +116,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (isDisabledWorld(disabledWorlds, refreshed.getWorldName())) return;
+		if (playersInDisabledWorlds.contains(refreshed)) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : tab.getPlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), getFeatureType());
@@ -122,7 +140,7 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (isDisabledWorld(disabledWorlds, packetReceiver.getWorldName())) return;
+		if (playersInDisabledWorlds.contains(packetReceiver)) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		for (TabPlayer all : tab.getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
@@ -131,11 +149,16 @@ public class TabObjective implements Loadable, JoinEventListener, WorldChangeLis
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (isDisabledWorld(disabledWorlds, receiver.getWorldName())) return false;
+		if (playersInDisabledWorlds.contains(receiver)) return false;
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			tab.getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (playerlist)", null, false, tab.getErrorManager().getAntiOverrideLog());
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		playersInDisabledWorlds.remove(disconnectedPlayer);
 	}
 }

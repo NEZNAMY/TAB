@@ -3,8 +3,10 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -15,13 +17,14 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * Class for handling bossbar feature
  */
-public class BossBar implements Loadable, JoinEventListener, WorldChangeListener, CommandListener {
+public class BossBar implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, CommandListener {
 
 	//tab instance
 	private TAB tab;
@@ -58,6 +61,8 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	//if bossbar is hidden by default until toggle command is used
 	private boolean hiddenByDefault;
+	
+	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -113,7 +118,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
 			for (TabPlayer p : tab.getPlayers()) {
-				if (!p.hasBossbarVisible() || isDisabledWorld(disabledWorlds, p.getWorldName())) continue;
+				if (!p.hasBossbarVisible() || playersInDisabledWorlds.contains(p)) continue;
 				for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
 					if (!bar.isConditionMet(p)) {
 						bar.remove(p);
@@ -138,11 +143,20 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
+			playersInDisabledWorlds.add(connectedPlayer);
+			return;
+		}
 		connectedPlayer.setBossbarVisible(!getBossbarOffPlayers().contains(connectedPlayer.getName()) && !hiddenByDefault, false);
 	}
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+			playersInDisabledWorlds.add(p);
+		} else {
+			playersInDisabledWorlds.remove(p);
+		}
 		for (me.neznamy.tab.api.bossbar.BossBar line : p.getActiveBossBars().toArray(new me.neznamy.tab.api.bossbar.BossBar[0])) {
 			p.removeBossBar(line);
 		}
@@ -164,7 +178,7 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 	 */
 	public void detectBossBarsAndSend(TabPlayer p) {
 		p.getActiveBossBars().clear();
-		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.hasBossbarVisible()) return;
+		if (playersInDisabledWorlds.contains(p) || !p.hasBossbarVisible()) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, getAnnouncements());
 		showBossBars(p, perWorld.get(tab.getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
@@ -229,5 +243,10 @@ public class BossBar implements Loadable, JoinEventListener, WorldChangeListener
 
 	public boolean isPermToToggle() {
 		return permToToggle;
+	}
+
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		playersInDisabledWorlds.remove(disconnectedPlayer);
 	}
 }

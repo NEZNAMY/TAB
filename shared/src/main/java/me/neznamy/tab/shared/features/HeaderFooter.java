@@ -2,7 +2,9 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -10,6 +12,7 @@ import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.types.event.QuitEventListener;
 import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -17,12 +20,13 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 /**
  * Feature handler for header and footer
  */
-public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeListener, Refreshable {
+public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable {
 
 	private static final String LINE_SEPARATOR = "\n\u00a7r";
 	private TAB tab;
 	private List<String> usedPlaceholders;
 	private List<String> disabledWorlds;
+	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 	
 	public HeaderFooter(TAB tab) {
 		this.tab = tab;
@@ -34,29 +38,45 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public void load() {
 		for (TabPlayer p : tab.getPlayers()) {
-			refresh(p, true);
+			onJoin(p);
 		}
 	}
 	
 	@Override
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()) {
-			if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) continue;
+			if (playersInDisabledWorlds.contains(p) || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), getFeatureType());
 		}
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
+			playersInDisabledWorlds.add(connectedPlayer);
+			return;
+		}
 		refresh(connectedPlayer, true);
 	}
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (p.getVersion().getMinorVersion() < 8) return;
+		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledNow = false;
 		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-			if (!isDisabledWorld(disabledWorlds, from)) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), getFeatureType());
+			disabledNow = true;
+			playersInDisabledWorlds.add(p);
 		} else {
+			playersInDisabledWorlds.remove(p);
+		}
+		if (p.getVersion().getMinorVersion() < 8) return;
+		if (disabledNow) {
+			if (!disabledBefore) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), getFeatureType());
+		} else {
+			if (disabledBefore) {
+				refresh(p, true);
+				return;
+			}
 			boolean refresh = false;
 			String headerAppend = getValue(p, "headerappend");
 			if (headerAppend.length() > 0) headerAppend = LINE_SEPARATOR + headerAppend;
@@ -91,7 +111,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 			if (footerAppend.length() > 0) footerAppend = LINE_SEPARATOR + footerAppend;
 			p.setProperty("footer", getValue(p, "footer") + footerAppend);
 		}
-		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || p.getVersion().getMinorVersion() < 8) return;
+		if (playersInDisabledWorlds.contains(p) || p.getVersion().getMinorVersion() < 8) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
 				IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
 	}
@@ -130,5 +150,10 @@ public class HeaderFooter implements Loadable, JoinEventListener, WorldChangeLis
 	@Override
 	public TabFeature getFeatureType() {
 		return TabFeature.HEADER_FOOTER;
+	}
+
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		playersInDisabledWorlds.remove(disconnectedPlayer);
 	}
 }

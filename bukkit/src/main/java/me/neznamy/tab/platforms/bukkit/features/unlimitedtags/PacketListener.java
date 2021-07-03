@@ -62,7 +62,7 @@ public class PacketListener implements RawPacketListener {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
 		String world = ((Player)receiver.getPlayer()).getWorld().getName();
-		if (!receiver.isLoaded() || nameTagX.isDisabledWorld(world) || nameTagX.isDisabledWorld(nameTagX.disabledUnlimitedWorlds, world)) return;
+		if (!receiver.isLoaded() || nameTagX.getPlayersInDisabledWorlds().contains(receiver) || nameTagX.isDisabledWorld(nameTagX.disabledUnlimitedWorlds, world)) return;
 		if (nms.getClass("PacketPlayOutEntity").isInstance(packet) && !nms.getClass("PacketPlayOutEntityLook").isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.getField("PacketPlayOutEntity_ENTITYID").getInt(packet));
 		} else if (nms.getClass("PacketPlayOutEntityTeleport").isInstance(packet)) {

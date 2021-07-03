@@ -35,6 +35,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	protected Set<String> invisiblePlayers = new HashSet<>();
 	private Sorting sorting;
 	protected Map<String, Boolean> collision = new HashMap<>();
+	protected Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 
 	public NameTag(TAB tab) {
 		this.tab = tab;
@@ -59,7 +60,10 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			updateProperties(all);
 			collision.put(all.getName(), true);
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
-			if (isDisabledWorld(all.getWorldName())) continue;
+			if (isDisabledWorld(disabledWorlds, all.getWorldName())) {
+				playersInDisabledWorlds.add(all);
+				continue;
+			}
 			registerTeam(all);
 		}
 		startRefreshingTasks();
@@ -68,7 +72,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	@Override
 	public void unload() {
 		for (TabPlayer p : tab.getPlayers()) {
-			if (!isDisabledWorld(p.getWorldName())) unregisterTeam(p);
+			if (!playersInDisabledWorlds.contains(p)) unregisterTeam(p);
 		}
 	}
 	
@@ -77,7 +81,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", TabFeature.NAMETAGS, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 
 			for (TabPlayer p : tab.getPlayers()) {
-				if (!p.isLoaded() || isDisabledWorld(p.getWorldName())) continue;
+				if (!p.isLoaded() || playersInDisabledWorlds.contains(p)) continue;
 				//nametag visibility
 				boolean invisible = p.hasInvisibilityPotion();
 				if (invisible && !invisiblePlayers.contains(p.getName())) {
@@ -93,7 +97,7 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			}
 		});
 	}
-
+	
 	public boolean isDisabledWorld(String world) {
 		return isDisabledWorld(disabledWorlds, world);
 	}
@@ -206,13 +210,13 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded()) continue;
-			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, packetReceiver);
+			if (!playersInDisabledWorlds.contains(all)) registerTeam(all, packetReceiver);
 		}
 	}
 	
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (isDisabledWorld(refreshed.getWorldName())) return;
+		if (playersInDisabledWorlds.contains(refreshed)) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -233,17 +237,23 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		collision.put(connectedPlayer.getName(), true);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
-			if (!isDisabledWorld(all.getWorldName())) registerTeam(all, connectedPlayer);
+			if (!playersInDisabledWorlds.contains(all)) {
+				registerTeam(all, connectedPlayer);
+			}
 		}
-		if (isDisabledWorld(connectedPlayer.getWorldName())) return;
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
+			playersInDisabledWorlds.add(connectedPlayer);
+			return;
+		}
 		registerTeam(connectedPlayer);
 	}
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!isDisabledWorld(disconnectedPlayer.getWorldName())) unregisterTeam(disconnectedPlayer);
+		if (!playersInDisabledWorlds.contains(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
 		collision.remove(disconnectedPlayer.getName());
+		playersInDisabledWorlds.remove(disconnectedPlayer);
 		for (TabPlayer all : tab.getPlayers()) {
 			if (all == disconnectedPlayer) continue;
 			all.showNametag(disconnectedPlayer.getUniqueId()); //clearing memory from API method
@@ -252,10 +262,18 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledNow = false;
+		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+			disabledNow = true;
+			playersInDisabledWorlds.add(p);
+		} else {
+			playersInDisabledWorlds.remove(p);
+		}
 		updateProperties(p);
-		if (isDisabledWorld(to) && !isDisabledWorld(from)) {
+		if (disabledNow && !disabledBefore) {
 			unregisterTeam(p);
-		} else if (!isDisabledWorld(to) && isDisabledWorld(from)) {
+		} else if (!disabledNow && disabledBefore) {
 			registerTeam(p);
 		} else {
 			updateTeam(p);
@@ -288,5 +306,9 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	public Sorting getSorting() {
 		return sorting;
+	}
+	
+	public Set<TabPlayer> getPlayersInDisabledWorlds(){
+		return playersInDisabledWorlds;
 	}
 }

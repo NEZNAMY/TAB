@@ -84,6 +84,8 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	//config option someone requested
 	private int joinDelay;
 	private List<TabPlayer> joinDelayed = new ArrayList<>();
+	
+	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -153,6 +155,10 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void load() {
 		for (TabPlayer p : tab.getPlayers()) {
+			if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+				playersInDisabledWorlds.add(p);
+				return;
+			}
 			p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
 		}
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", TabFeature.SCOREBOARD, UsageType.REPEATING_TASK, () -> {
@@ -183,16 +189,20 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	}
 
 	@Override
-	public void onJoin(TabPlayer p) {
+	public void onJoin(TabPlayer connectedPlayer) {
+		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
+			playersInDisabledWorlds.add(connectedPlayer);
+			return;
+		}
 		if (joinDelay > 0) {
-			joinDelayed.add(p);
+			joinDelayed.add(connectedPlayer);
 			tab.getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
-				if (((ITabPlayer)p).getOtherPluginScoreboard() == null) p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
-				joinDelayed.remove(p);
+				if (((ITabPlayer)connectedPlayer).getOtherPluginScoreboard() == null) connectedPlayer.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(connectedPlayer.getName()), false);
+				joinDelayed.remove(connectedPlayer);
 			});
 		} else {
-			p.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(p.getName()), false);
+			connectedPlayer.setScoreboardVisible(isHiddenByDefault() == getSbOffPlayers().contains(connectedPlayer.getName()), false);
 		}
 	}
 
@@ -201,7 +211,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	 * @param p - player to send scoreboard to
 	 */
 	public void sendHighestScoreboard(TabPlayer p) {
-		if (isDisabledWorld(disabledWorlds, p.getWorldName()) || !p.isScoreboardVisible()) return;
+		if (playersInDisabledWorlds.contains(p) || !p.isScoreboardVisible()) return;
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
 			ScoreboardImpl board = scoreboards.get(scoreboard);
@@ -215,6 +225,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	@Override
 	public void onQuit(TabPlayer p) {
 		unregisterScoreboard(p, false);
+		playersInDisabledWorlds.remove(p);
 	}
 
 	/**
@@ -235,6 +246,11 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+			playersInDisabledWorlds.add(p);
+		} else {
+			playersInDisabledWorlds.remove(p);
+		}
 		unregisterScoreboard(p, true);
 		sendHighestScoreboard(p);
 	}
@@ -264,7 +280,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
-		if (isDisabledWorld(disabledWorlds, sender.getWorldName())) return false;
+		if (playersInDisabledWorlds.contains(sender)) return false;
 		if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
 			tab.getCommand().execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
 			return true;

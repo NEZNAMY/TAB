@@ -34,7 +34,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded() || feature.isDisabledWorld(p.getWorldName()) || feature.isDisabledWorld(feature.disabledUnlimitedWorlds, p.getWorldName())) return;
+		if (p == null || !p.isLoaded() || feature.isInDisabledWorld(p)) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
 		});
@@ -48,7 +48,7 @@ public class EventListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent e) {
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, () -> {
 			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-			if (feature.isDisabledWorld(respawned.getWorldName()) || feature.isDisabledWorld(feature.disabledUnlimitedWorlds, respawned.getWorldName())) return;
+			if (feature.isInDisabledWorld(respawned)) return;
 			respawned.getArmorStandManager().teleport();
 		});
 	}
