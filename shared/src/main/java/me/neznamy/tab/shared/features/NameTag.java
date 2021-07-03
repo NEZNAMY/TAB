@@ -12,6 +12,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -44,10 +45,10 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 		revertedCollision = tab.getConfiguration().getConfig().getStringList("revert-collision-rule-in-" + tab.getPlatform().getSeparatorType()+"s", Arrays.asList("reverted" + tab.getPlatform().getSeparatorType()));
 		invisibleNametags = tab.getConfiguration().getConfig().getBoolean("invisible-nametags", false);
 		sorting = new Sorting(tab, this);
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX));
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
-					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
+					p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue()));
 		}
 		tab.debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, revertedCollision=%s, disabledWorlds=%s, invisibleNametags=%s",
 				collisionRule, revertedCollision, disabledWorlds, invisibleNametags));
@@ -126,8 +127,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	public void registerTeam(TabPlayer p) {
 		if (p.hasTeamHandlingPaused()) return;
-		Property tagprefix = p.getProperty("tagprefix");
-		Property tagsuffix = p.getProperty("tagsuffix");
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
@@ -137,8 +138,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	public void registerTeam(TabPlayer p, TabPlayer viewer) {
 		if (p.hasTeamHandlingPaused()) return;
-		Property tagprefix = p.getProperty("tagprefix");
-		Property tagsuffix = p.getProperty("tagsuffix");
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, TabFeature.NAMETAGS);
@@ -157,8 +158,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 
 	public void updateTeamData(TabPlayer p) {
-		Property tagprefix = p.getProperty("tagprefix");
-		Property tagsuffix = p.getProperty("tagsuffix");
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		for (TabPlayer viewer : tab.getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
@@ -168,8 +169,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 	}
 
 	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
-		Property tagprefix = p.getProperty("tagprefix");
-		Property tagsuffix = p.getProperty("tagsuffix");
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
@@ -222,8 +223,8 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.getProperty("tagprefix").update();
-			boolean suffix = refreshed.getProperty("tagsuffix").update();
+			boolean prefix = refreshed.getProperty(PropertyUtils.TAGPREFIX).update();
+			boolean suffix = refreshed.getProperty(PropertyUtils.TAGSUFFIX).update();
 			refresh = prefix || suffix;
 		}
 
@@ -282,16 +283,16 @@ public class NameTag implements Loadable, Refreshable, LoginPacketListener, Quit
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX));
 		for (TabPlayer p : tab.getPlayers()) {
 			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(
-					p.getProperty("tagprefix").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue()));
+					p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue()));
 		}
 	}
 
 	public void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig("tagprefix");
-		p.loadPropertyFromConfig("tagsuffix");
+		p.loadPropertyFromConfig(PropertyUtils.TAGPREFIX);
+		p.loadPropertyFromConfig(PropertyUtils.TAGSUFFIX);
 	}
 	
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {

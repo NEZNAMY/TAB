@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.GroupRefresher;
 
 /**
  * UltraPermissions hook
@@ -27,7 +28,7 @@ public class UltraPermissions implements PermissionPlugin {
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		String[] groups = getAllGroups(p);
-		if (groups.length == 0) return "<null>";
+		if (groups.length == 0) return GroupRefresher.DEFAULT_GROUP;
 		return groups[0];
 	}
 
@@ -42,13 +43,13 @@ public class UltraPermissions implements PermissionPlugin {
 		}
 		if (api == null) {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + version + " returned null API");
-			return new String[]{"<null>"};
+			return new String[]{GroupRefresher.DEFAULT_GROUP};
 		}
 		Object users = api.getClass().getMethod("getUsers").invoke(api);
 		Optional<Object> optUser = (Optional<Object>) users.getClass().getMethod("name", String.class).invoke(users, p.getName());
 		if (!optUser.isPresent()) {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + version + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
-			return new String[]{"<null>"};
+			return new String[]{GroupRefresher.DEFAULT_GROUP};
 		}
 		List<String> groups = new ArrayList<>();
 		Object user = optUser.get();

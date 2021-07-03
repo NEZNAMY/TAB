@@ -63,7 +63,7 @@ public class Sorting {
 			if (tab.getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
 				getSorting().add(types.get("GROUP_PERMISSIONS"));
 			} else {
-				getSorting().add(types.get("GROUPS"));
+				getSorting().add(new Groups());
 			}
 		}
 		
@@ -96,7 +96,7 @@ public class Sorting {
 				list.add(type);
 			}
 		}
-		if (list.isEmpty()) list.add(types.get("GROUPS"));
+		if (list.isEmpty()) list.add(new Groups());
 		return list;
 	}
 	

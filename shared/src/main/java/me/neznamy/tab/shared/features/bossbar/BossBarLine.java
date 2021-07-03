@@ -5,6 +5,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
@@ -104,16 +105,16 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 	 * @param to - player to send bossbar to
 	 */
 	public void create(TabPlayer to){
-		to.setProperty("bossbar-title-" + name, title);
-		to.setProperty("bossbar-progress-" + name, progress);
-		to.setProperty("bossbar-color-" + name, color);
-		to.setProperty("bossbar-style-" + name, style);
+		to.setProperty(PropertyUtils.bossbarTitle(name), title);
+		to.setProperty(PropertyUtils.bossbarProgress(name), progress);
+		to.setProperty(PropertyUtils.bossbarColor(name), color);
+		to.setProperty(PropertyUtils.bossbarStyle(name), style);
 		to.sendCustomPacket(new PacketPlayOutBoss(
 				getUuid(), 
-				to.getProperty("bossbar-title-" + name).get(), 
-				parseProgress(to.getProperty("bossbar-progress-" + name).get())/100, 
-				parseColor(to.getProperty("bossbar-color-" + name).get()), 
-				parseStyle(to.getProperty("bossbar-style-" + name).get())
+				to.getProperty(PropertyUtils.bossbarTitle(name)).get(), 
+				parseProgress(to.getProperty(PropertyUtils.bossbarProgress(name)).get())/100, 
+				parseColor(to.getProperty(PropertyUtils.bossbarColor(name)).get()), 
+				parseStyle(to.getProperty(PropertyUtils.bossbarStyle(name)).get())
 			), TabFeature.BOSSBAR
 		);
 	}
@@ -142,8 +143,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(title);
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
-				p.setProperty("bossbar-title-" + name, title);
-				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), p.getProperty("bossbar-title-" + name).get()), TabFeature.BOSSBAR);
+				p.setProperty(PropertyUtils.bossbarTitle(name), title);
+				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), p.getProperty(PropertyUtils.bossbarTitle(name)).get()), TabFeature.BOSSBAR);
 			}
 		}
 	}
@@ -154,8 +155,8 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(progress);
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
-				p.setProperty("bossbar-progress-" + name, progress);
-				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), parseProgress(p.getProperty("bossbar-progress-" + name).get())/100), TabFeature.BOSSBAR);
+				p.setProperty(PropertyUtils.bossbarProgress(name), progress);
+				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), TabFeature.BOSSBAR);
 			}
 		}
 	}
@@ -171,10 +172,10 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(color);
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
-				p.setProperty("bossbar-color-" + name, color);
+				p.setProperty(PropertyUtils.bossbarColor(name), color);
 				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), 
-					parseColor(p.getProperty("bossbar-color-" + name).get()),
-					parseStyle(p.getProperty("bossbar-style-" + name).get())
+					parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
+					parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
 				), TabFeature.BOSSBAR);
 			}
 		}
@@ -191,10 +192,10 @@ public class BossBarLine implements me.neznamy.tab.api.bossbar.BossBar {
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(style);
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (p.getActiveBossBars().contains(this)) {
-				p.setProperty("bossbar-style-" + name, style);
+				p.setProperty(PropertyUtils.bossbarStyle(name), style);
 				p.sendCustomPacket(new PacketPlayOutBoss(getUuid(), 
-					parseColor(p.getProperty("bossbar-color-" + name).get()),
-					parseStyle(p.getProperty("bossbar-style-" + name).get())
+					parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
+					parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
 				), TabFeature.BOSSBAR);
 			}
 		}

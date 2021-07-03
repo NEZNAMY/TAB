@@ -23,6 +23,7 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -42,7 +43,7 @@ public class NameTagX extends NameTag {
 	protected List<String> disabledUnlimitedWorlds;
 	
 	//list of defined dynamic lines
-	private List<String> dynamicLines = Arrays.asList("belowname", "nametag", "abovename");
+	private List<String> dynamicLines = Arrays.asList(PropertyUtils.BELOWNAME, PropertyUtils.NAMETAG, PropertyUtils.ABOVENAME);
 	
 	//map of defined static lines
 	private Map<String, Object> staticLines = new ConcurrentHashMap<>();
@@ -82,7 +83,7 @@ public class NameTagX extends NameTag {
 		spaceBetweenLines = tab.getConfiguration().getConfig().getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
 		disabledUnlimitedWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
 		if (tab.getConfiguration().getPremiumConfig() != null) {
-			List<String> realList = tab.getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList("abovename", "nametag", "belowname", "another"));
+			List<String> realList = tab.getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
 			dynamicLines = new ArrayList<>();
 			dynamicLines.addAll(realList);
 			Collections.reverse(dynamicLines);
@@ -302,7 +303,7 @@ public class NameTagX extends NameTag {
 	 */
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
-		pl.setProperty("nametag", pl.getProperty("tagprefix").getCurrentRawValue() + pl.getProperty("customtagname").getCurrentRawValue() + pl.getProperty("tagsuffix").getCurrentRawValue());
+		pl.setProperty(PropertyUtils.NAMETAG, pl.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + pl.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + pl.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
 		double height = 0;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
@@ -367,13 +368,13 @@ public class NameTagX extends NameTag {
 	@Override
 	public void updateProperties(TabPlayer p) {
 		super.updateProperties(p);
-		p.loadPropertyFromConfig("customtagname", p.getName());
-		p.setProperty("nametag", p.getProperty("tagprefix").getCurrentRawValue() + p.getProperty("customtagname").getCurrentRawValue() + p.getProperty("tagsuffix").getCurrentRawValue());
+		p.loadPropertyFromConfig(PropertyUtils.CUSTOMTAGNAME, p.getName());
+		p.setProperty(PropertyUtils.NAMETAG, p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
 		for (String property : dynamicLines) {
-			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
+			if (!property.equals(PropertyUtils.NAMETAG)) p.loadPropertyFromConfig(property);
 		}
 		for (String property : staticLines.keySet()) {
-			if (!property.equals("nametag")) p.loadPropertyFromConfig(property);
+			if (!property.equals(PropertyUtils.NAMETAG)) p.loadPropertyFromConfig(property);
 		}
 	}
 
@@ -397,7 +398,7 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tagprefix", "customtagname", "tagsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.CUSTOMTAGNAME, PropertyUtils.TAGSUFFIX));
 		for (String line : dynamicLines) {
 			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
@@ -405,9 +406,9 @@ public class NameTagX extends NameTag {
 			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (TabPlayer p : tab.getPlayers()) {
-			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tagprefix").getCurrentRawValue(), 
-					p.getProperty("customtagname").getCurrentRawValue(), p.getProperty("tagsuffix").getCurrentRawValue(),
-					p.getProperty("abovename").getCurrentRawValue(), p.getProperty("belowname").getCurrentRawValue()));
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), 
+					p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(),
+					p.getProperty(PropertyUtils.ABOVENAME).getCurrentRawValue(), p.getProperty(PropertyUtils.BELOWNAME).getCurrentRawValue()));
 		}
 	}
 

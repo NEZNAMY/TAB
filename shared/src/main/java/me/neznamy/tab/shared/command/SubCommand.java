@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 /**
  * Abstract class representing a subcommand of "/tab" command
@@ -13,10 +14,10 @@ import me.neznamy.tab.shared.TAB;
 public abstract class SubCommand {
 
 	//all properties assignable with a command
-	private static String[] allProperties = {"tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname"};
+	private static String[] allProperties = {PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME};
 	
 	//properties that require unlimited nametag mode
-	protected final List<String> extraProperties = Arrays.asList("abovename", "belowname", "customtagname");
+	protected final List<String> extraProperties = Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
 	
 	//name of this subcommand
 	private String name;

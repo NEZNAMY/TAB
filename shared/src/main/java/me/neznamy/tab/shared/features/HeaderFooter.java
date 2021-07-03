@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.Loadable;
@@ -80,22 +81,22 @@ public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListe
 			boolean refresh = false;
 			String headerAppend = getValue(p, "headerappend");
 			if (headerAppend.length() > 0) headerAppend = LINE_SEPARATOR + headerAppend;
-			String header = getValue(p, "header") + headerAppend;
-			if (!p.getProperty("header").getOriginalRawValue().equals(header)) {
-				p.setProperty("header", header);
+			String header = getValue(p, PropertyUtils.HEADER) + headerAppend;
+			if (!p.getProperty(PropertyUtils.HEADER).getOriginalRawValue().equals(header)) {
+				p.setProperty(PropertyUtils.HEADER, header);
 				refresh = true;
 			}
 			
 			String footerAppend = getValue(p, "footerappend");
 			if (footerAppend.length() > 0) footerAppend = LINE_SEPARATOR + footerAppend;
-			String footer = getValue(p, "footer") + footerAppend;
-			if (!p.getProperty("footer").getOriginalRawValue().equals(footer)) {
-				p.setProperty("footer", footer);
+			String footer = getValue(p, PropertyUtils.FOOTER) + footerAppend;
+			if (!p.getProperty(PropertyUtils.FOOTER).getOriginalRawValue().equals(footer)) {
+				p.setProperty(PropertyUtils.FOOTER, footer);
 				refresh = true;
 			}
 			if (refresh) {
-				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
-						IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
+				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.HEADER).updateAndGet()), 
+						IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.FOOTER).updateAndGet())), getFeatureType());
 			}
 		}
 	}
@@ -105,15 +106,15 @@ public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListe
 		if (force) {
 			String headerAppend = getValue(p, "headerappend");
 			if (headerAppend.length() > 0) headerAppend = LINE_SEPARATOR + headerAppend;
-			p.setProperty("header", getValue(p, "header") + headerAppend);
+			p.setProperty(PropertyUtils.HEADER, getValue(p, PropertyUtils.HEADER) + headerAppend);
 			
 			String footerAppend = getValue(p, "footerappend");
 			if (footerAppend.length() > 0) footerAppend = LINE_SEPARATOR + footerAppend;
-			p.setProperty("footer", getValue(p, "footer") + footerAppend);
+			p.setProperty(PropertyUtils.FOOTER, getValue(p, PropertyUtils.FOOTER) + footerAppend);
 		}
 		if (playersInDisabledWorlds.contains(p) || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty("header").updateAndGet()), 
-				IChatBaseComponent.optimizedComponent(p.getProperty("footer").updateAndGet())), getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.HEADER).updateAndGet()), 
+				IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.FOOTER).updateAndGet())), getFeatureType());
 	}
 	
 	@Override
@@ -144,7 +145,7 @@ public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListe
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("header", "footer");
+		usedPlaceholders = tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.HEADER, PropertyUtils.FOOTER);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -72,9 +73,9 @@ public class DebugCommand extends SubCommand {
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.getDisabledWorlds(), analyzed.getWorldName());
-			showProperty(sender, analyzed, "tabprefix", disabledPlayerlist);
-			showProperty(sender, analyzed, "tabsuffix", disabledPlayerlist);
-			showProperty(sender, analyzed, "customtabname", disabledPlayerlist);
+			showProperty(sender, analyzed, PropertyUtils.TABPREFIX, disabledPlayerlist);
+			showProperty(sender, analyzed, PropertyUtils.TABSUFFIX, disabledPlayerlist);
+			showProperty(sender, analyzed, PropertyUtils.CUSTOMTABNAME, disabledPlayerlist);
 		} else {
 			sendMessage(sender, "&atabprefix: &cDisabled");
 			sendMessage(sender, "&atabsuffix: &cDisabled");
@@ -82,8 +83,8 @@ public class DebugCommand extends SubCommand {
 		}
 		if (tab.getFeatureManager().getNameTagFeature() != null) {
 			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
-			showProperty(sender, analyzed, "tagprefix", disabledNametags);
-			showProperty(sender, analyzed, "tagsuffix", disabledNametags);
+			showProperty(sender, analyzed, PropertyUtils.TAGPREFIX, disabledNametags);
+			showProperty(sender, analyzed, PropertyUtils.TAGSUFFIX, disabledNametags);
 			for (Object line : getExtraLines()) {
 				showProperty(sender, analyzed, line.toString(), disabledNametags);
 			}
@@ -192,11 +193,11 @@ public class DebugCommand extends SubCommand {
 		if (TAB.getInstance().isPremium()) {
 			List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().getPremiumConfig().getObject("unlimited-nametag-mode-dynamic-lines"));
 			lines.addAll(TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines").keySet());
-			lines.remove("nametag");
-			lines.add("customtagname");
+			lines.remove(PropertyUtils.NAMETAG);
+			lines.add(PropertyUtils.CUSTOMTAGNAME);
 			return lines;
 		} else {
-			return Arrays.asList("customtagname", "belowname", "abovename");
+			return Arrays.asList(PropertyUtils.CUSTOMTAGNAME, PropertyUtils.BELOWNAME, PropertyUtils.ABOVENAME);
 		}
 	}
 

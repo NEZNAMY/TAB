@@ -16,6 +16,8 @@ import me.neznamy.tab.shared.features.types.Feature;
  */
 public class GroupRefresher implements Feature {
 
+	public static final String DEFAULT_GROUP = "NONE";
+	
 	private TAB tab;
 	private boolean groupsByPermissions;
 	private boolean usePrimaryGroup;
@@ -51,7 +53,7 @@ public class GroupRefresher implements Feature {
 		try {
 			return tab.getPermissionPlugin().getPrimaryGroup(p);
 		} catch (Exception e) {
-			return tab.getErrorManager().printError("<null>", "Failed to get permission group of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
+			return tab.getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission group of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
 		}
 	}
 
@@ -68,10 +70,10 @@ public class GroupRefresher implements Feature {
 				}
 				return playerGroups[0];
 			} else {
-				return "<null>";
+				return DEFAULT_GROUP;
 			}
 		} catch (Exception e) {
-			return tab.getErrorManager().printError("<null>", "Failed to get permission groups of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
+			return tab.getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission groups of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
 		}
 	}
 
@@ -82,7 +84,7 @@ public class GroupRefresher implements Feature {
 			}
 		}
 		tab.getErrorManager().oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
-		return "<null>";
+		return DEFAULT_GROUP;
 	}
 
 	@Override

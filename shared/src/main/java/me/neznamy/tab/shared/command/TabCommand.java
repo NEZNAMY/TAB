@@ -8,6 +8,7 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.level1.AnnounceCommand;
 import me.neznamy.tab.shared.command.level1.BossBarCommand;
@@ -55,7 +56,7 @@ public class TabCommand extends SubCommand {
 		if (tab.isPremium()) {
 			registerSubCommand(new ScoreboardCommand());
 		}
-		Set<String> properties = Sets.newHashSet("tabprefix", "tabsuffix", "tagprefix", "tagsuffix", "customtabname", "abovename", "belowname", "customtagname");
+		Set<String> properties = Sets.newHashSet(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
 		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
 		}

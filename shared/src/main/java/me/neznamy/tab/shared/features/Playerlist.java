@@ -8,6 +8,7 @@ import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -118,9 +119,9 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
-		Property prefix = p.getProperty("tabprefix");
-		Property name = p.getProperty("customtabname");
-		Property suffix = p.getProperty("tabsuffix");
+		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
+		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
+		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
 		if (prefix == null || name == null || suffix == null) {
 			return null;
 		}
@@ -141,15 +142,15 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.getProperty("tabprefix").update();
-			boolean name = refreshed.getProperty("customtabname").update();
-			boolean suffix = refreshed.getProperty("tabsuffix").update();
+			boolean prefix = refreshed.getProperty(PropertyUtils.TABPREFIX).update();
+			boolean name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME).update();
+			boolean suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX).update();
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Property prefix = refreshed.getProperty("tabprefix");
-			Property name = refreshed.getProperty("customtabname");
-			Property suffix = refreshed.getProperty("tabsuffix");
+			Property prefix = refreshed.getProperty(PropertyUtils.TABPREFIX);
+			Property name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME);
+			Property suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX);
 			for (TabPlayer viewer : tab.getPlayers()) {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
 				String format;
@@ -164,9 +165,9 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 		}
 	}
 	private void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig("tabprefix");
-		p.loadPropertyFromConfig("customtabname", p.getName());
-		p.loadPropertyFromConfig("tabsuffix");
+		p.loadPropertyFromConfig(PropertyUtils.TABPREFIX);
+		p.loadPropertyFromConfig(PropertyUtils.CUSTOMTABNAME, p.getName());
+		p.loadPropertyFromConfig(PropertyUtils.TABSUFFIX);
 	}
 
 	@Override
@@ -198,10 +199,10 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive("tabprefix", "customtabname", "tabsuffix"));
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX));
 		for (TabPlayer p : tab.getPlayers()) {
-			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty("tabprefix").getCurrentRawValue(),
-					p.getProperty("customtabname").getCurrentRawValue(), p.getProperty("tabsuffix").getCurrentRawValue()));
+			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue(),
+					p.getProperty(PropertyUtils.CUSTOMTABNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TABSUFFIX).getCurrentRawValue()));
 		}
 	}
 

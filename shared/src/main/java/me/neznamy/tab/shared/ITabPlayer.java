@@ -34,7 +34,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	protected String name;
 	protected UUID uniqueId;
 	protected String world;
-	private String permissionGroup = "<null>";
+	private String permissionGroup = GroupRefresher.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
 	private String forcedTeamName;
@@ -113,7 +113,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty("nametag",getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
+			setProperty(PropertyUtils.NAMETAG,getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		forceRefresh();
@@ -124,7 +124,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " permanently to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
 		((PlayerCommand)TAB.getInstance().getCommand().getSubcommands().get("player")).savePlayer(null, getName(), type.toString(), value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty("nametag", getProperty("tagprefix").getCurrentRawValue() + getProperty("customtagname").getCurrentRawValue() + getProperty("tagsuffix").getCurrentRawValue(), null);
+			setProperty(PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		Property pr = getProperty(type.toString());
 		if (pr == null) return;

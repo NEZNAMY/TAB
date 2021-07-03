@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.types.event.QuitEventListener;
@@ -55,7 +56,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	}
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
-		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty("tabprefix").getFormat(null) + player.getProperty("customtabname").getFormat(null) + player.getProperty("tabsuffix").getFormat(null)));
+		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + player.getProperty(PropertyUtils.TABSUFFIX).getFormat(null)));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
 			for (TabPlayer all : tab.getPlayers()) {
@@ -71,7 +72,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			maxPlayer = player;
 			updateAllNames(player);
 		}
-		return formatName(player.getProperty("tabprefix").getFormat(viewer) + player.getProperty("customtabname").getFormat(viewer), player.getProperty("tabsuffix").getFormat(viewer));
+		return formatName(player.getProperty(PropertyUtils.TABPREFIX).getFormat(viewer) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(viewer), player.getProperty(PropertyUtils.TABSUFFIX).getFormat(viewer));
 	}
 	
 	public String formatName(String prefixAndName, String suffix) {
@@ -115,7 +116,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	 * @return width of player's tablist name format
 	 */
 	private int getPlayerNameWidth(TabPlayer p) {
-		String format = p.getProperty("tabprefix").getFormat(null) + p.getProperty("customtabname").getFormat(null) + p.getProperty("tabsuffix").getFormat(null);
+		String format = p.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + p.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + p.getProperty(PropertyUtils.TABSUFFIX).getFormat(null);
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -35,10 +36,10 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return UPDATE_MESSAGE;
 		net.luckperms.api.LuckPerms api = getAPI();
 		if (api == null) {
-			return "<null>";
+			return GroupRefresher.DEFAULT_GROUP;
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return "<null>";
+		if (user == null) return GroupRefresher.DEFAULT_GROUP;
 		return user.getPrimaryGroup();
 	}
 
@@ -47,10 +48,10 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		if (version.startsWith("4")) return new String[]{UPDATE_MESSAGE};
 		net.luckperms.api.LuckPerms api = getAPI();
 		if (api == null) {
-			return new String[]{"<null>"};
+			return new String[]{GroupRefresher.DEFAULT_GROUP};
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return new String[] {"<null>"};
+		if (user == null) return new String[] {GroupRefresher.DEFAULT_GROUP};
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 	}
 
