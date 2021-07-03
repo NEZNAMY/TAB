@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,8 +49,11 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private Object essentials;
 	
 	//essentials methods
-	private Method getUser;
-	private Method getNickname;
+	private Method essGetUser;
+	private Method essGetNickname;
+	private Method essIsAfk;
+	
+	private Method purpurIsAfk;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -67,8 +71,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		}
 		if (essentials != null) {
 			try {
-				getUser = Class.forName("com.earth2me.essentials.Essentials").getMethod("getUser", Player.class);
-				getNickname = Class.forName("com.earth2me.essentials.User").getMethod("getNickname");
+				essGetUser = Class.forName("com.earth2me.essentials.Essentials").getMethod("getUser", Player.class);
+				essGetNickname = Class.forName("com.earth2me.essentials.User").getMethod("getNickname");
+				essIsAfk = Class.forName("com.earth2me.essentials.User").getMethod("isAfk");
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to load essentials methods", e);
 			}
@@ -143,21 +148,27 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers AFK placeholder
 	 */
 	private void registerAFKPlaceholder() {
+		Plugin afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
+		boolean antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
+		try {
+			purpurIsAfk = Player.class.getMethod("isAfk");
+		} catch (NoSuchMethodException | SecurityException e1) {
+			//not purpur
+		}
 		String noAfk = TAB.getInstance().getConfiguration().getConfig().getString("placeholders.afk-no", "");
 		String yesAfk = TAB.getInstance().getConfiguration().getConfig().getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
 		placeholders.add(new PlayerPlaceholder("%afk%", 500) {
 			public String get(TabPlayer p) {
 				try {
 					if (essentials != null) {
-						Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
-						if ((boolean) user.getClass().getMethod("isAfk").invoke(user)) return yesAfk;
+						Object user = essGetUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
+						if ((boolean) essIsAfk.invoke(user)) return yesAfk;
 					}
-					if (Bukkit.getPluginManager().isPluginEnabled("AFKPlus")) {
-						Object afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
+					if (afkplus != null) {
 						Object afkplusplayer = afkplus.getClass().getMethod("getPlayer", UUID.class).invoke(afkplus, p.getUniqueId());
 						if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return yesAfk;
 					}
-					if (Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus")) {
+					if (antiafkplus) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return yesAfk;
 					}
@@ -165,8 +176,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), e);
 				}
 				try {
-					//purpur AFK API
-					if ((boolean) p.getPlayer().getClass().getMethod("isAfk").invoke(p.getPlayer())) return yesAfk;
+					if (purpurIsAfk != null && (boolean) purpurIsAfk.invoke(p.getPlayer())) return yesAfk;
 				} catch (Exception e) {
 					//not purpur
 				}
@@ -187,23 +197,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			placeholders.add(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(TabPlayer p) {
-					try {
-						String prefix = chat.getPlayerPrefix((Player) p.getPlayer());
-						return prefix != null ? prefix : "";
-					} catch (Exception e) {
-						return TAB.getInstance().getErrorManager().printError("", "Placeholder %vault-prefix% threw an exception", e);
-					}
+					return chat.getPlayerPrefix((Player) p.getPlayer());
 				}
 			});
 			placeholders.add(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(TabPlayer p) {
-					try {
-						String suffix = chat.getPlayerSuffix((Player) p.getPlayer());
-						return suffix != null ? suffix : "";
-					} catch (Exception e) {
-						return TAB.getInstance().getErrorManager().printError("", "Placeholder %vault-suffix% threw an exception", e);
-					}
+					return chat.getPlayerSuffix((Player) p.getPlayer());
 				}
 			});
 		} else {
@@ -248,10 +248,10 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		if (essentials != null) {
 			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 1000) {
 				public String get(TabPlayer p) {
-					if (getNickname == null) return "<Internal plugin error>";
+					if (essGetNickname == null) return "<Internal plugin error>";
 					String name = null;
 					try {
-						name = (String) getNickname.invoke(getUser.invoke(essentials, p.getPlayer()));
+						name = (String) essGetNickname.invoke(essGetUser.invoke(essentials, p.getPlayer()));
 					} catch (Exception e) {
 						TAB.getInstance().getErrorManager().printError("Failed to get Essentials nickname of " + p.getName(), e);
 					}
