@@ -17,6 +17,9 @@ public class PropertyUtils {
 	public static final String NAMETAG = "nametag";
 	public static final String BELOWNAME = "belowname";
 	
+	private PropertyUtils() {
+	}
+	
 	public static String bossbarTitle(String name) {
 		return "bossbar-title-" + name;
 	}
