@@ -42,13 +42,13 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
+			return new VaultBridge(plm);
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else {
-			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
+			return new VaultBridge(plm);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class BungeePlatform extends ProxyPlatform {
 		if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManager(tab));
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			tab.addPlayer(new BungeeTabPlayer(p));
+			tab.addPlayer(new BungeeTabPlayer(p, plm));
 		}
 	}
 	

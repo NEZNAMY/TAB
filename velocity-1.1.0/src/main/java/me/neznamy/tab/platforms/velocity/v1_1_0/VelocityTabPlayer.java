@@ -17,6 +17,7 @@ import com.velocitypowered.api.util.GameProfile.Property;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
@@ -49,8 +50,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * Constructs new instance for given player
 	 * @param p - velocity player
 	 */
-	public VelocityTabPlayer(Player p) {
-		super (Main.getInstance().getPluginMessageHandler());
+	public VelocityTabPlayer(Player p, PluginMessageHandler plm) {
+		super(plm);
 		player = p;
 		Optional<ServerConnection> server = p.getCurrentServer();
 		if (server.isPresent()) {

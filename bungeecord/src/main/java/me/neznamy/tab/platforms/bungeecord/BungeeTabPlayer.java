@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
@@ -51,8 +52,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 * @throws IllegalAccessException 
 	 */
-	public BungeeTabPlayer(ProxiedPlayer p) throws IllegalAccessException {
-		super (Main.getInstance().getPluginMessageHandler());
+	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) throws IllegalAccessException {
+		super (plm);
 		player = p;
 		if (p.getServer() != null) {
 			world = p.getServer().getInfo().getName();

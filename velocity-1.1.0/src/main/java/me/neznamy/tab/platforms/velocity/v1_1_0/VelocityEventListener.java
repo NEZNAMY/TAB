@@ -11,12 +11,19 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
  * The core for velocity forwarding events into all enabled features
  */
 public class VelocityEventListener {
 
+	private PluginMessageHandler plm;
+	
+	public VelocityEventListener(PluginMessageHandler plm) {
+		this.plm = plm;
+	}
+	
 	/**
 	 * Disconnect event listener to forward the event to all features
 	 * @param e - disconnect event
@@ -36,7 +43,7 @@ public class VelocityEventListener {
 		if (TAB.getInstance().isDisabled()) return;
 		try {
 			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
+				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
 			} else {
 				Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
 				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");

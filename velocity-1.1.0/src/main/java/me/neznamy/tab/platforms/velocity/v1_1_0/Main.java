@@ -30,25 +30,16 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 @Plugin(id = "tab", name = "TAB", version = TAB.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
-	private static Main instance;
-	
 	//instance of proxyserver
 	private ProxyServer server;
 	
 	//metrics factory I guess
 	private Metrics.Factory metricsFactory;
 
-	//plugin message handler
-	private PluginMessageHandler plm;
-
 	@Inject
 	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
 		this.server = server;
 		this.metricsFactory = metricsFactory;
-	}
-	
-	public static Main getInstance() {
-		return instance;
 	}
 
 	/**
@@ -65,10 +56,9 @@ public class Main {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
-		instance = this;
-		plm = new VelocityPluginMessageHandler(this);
+		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
 		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), new VelocityPacketBuilder(), ProtocolVersion.values()[1]));
-		server.getEventManager().register(this, new VelocityEventListener());
+		server.getEventManager().register(this, new VelocityEventListener(plm));
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
@@ -104,10 +94,6 @@ public class Main {
 	public static Component stringToComponent(String string) {
 		if (string == null) return null;
 		return GsonComponentSerializer.gson().deserialize(string);
-	}
-	
-	public PluginMessageHandler getPluginMessageHandler() {
-		return plm;
 	}
 
 	public ProxyServer getServer() {

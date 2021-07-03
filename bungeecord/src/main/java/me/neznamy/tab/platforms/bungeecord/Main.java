@@ -21,22 +21,16 @@ import net.md_5.bungee.api.plugin.TabExecutor;
  */
 public class Main extends Plugin {
 
-	private static Main instance;
-	
-	//plugin message handler
-	private PluginMessageHandler plm;
-
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable(){
-		instance = this;
 		if (!isVersionSupported()) {
 			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
 			return;
 		}
-		plm = new BungeePluginMessageHandler(this);
+		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
 		TAB.setInstance(new TAB(new BungeePlatform(this, plm), new BungeePacketBuilder(), ProtocolVersion.values()[1]));
-		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
+		getProxy().getPluginManager().registerListener(this, new BungeeEventListener(plm));
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();
@@ -44,10 +38,6 @@ public class Main extends Plugin {
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
-	}
-	
-	public static Main getInstance() {
-		return instance;
 	}
 	
 	/**
@@ -66,10 +56,6 @@ public class Main extends Plugin {
 	@Override
 	public void onDisable() {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
-	}
-	
-	public PluginMessageHandler getPluginMessageHandler() {
-		return plm;
 	}
 
 	/**

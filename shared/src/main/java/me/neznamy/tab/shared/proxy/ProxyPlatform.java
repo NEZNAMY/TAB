@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 public abstract class ProxyPlatform implements Platform {
 
-	private PluginMessageHandler plm;
+	protected PluginMessageHandler plm;
 	
 	protected ProxyPlatform(PluginMessageHandler plm) {
 		this.plm = plm;

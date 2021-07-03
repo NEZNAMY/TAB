@@ -39,11 +39,11 @@ public class VelocityPlatform extends ProxyPlatform {
 	public PermissionPlugin detectPermissionPlugin() {
 		Optional<PluginContainer> luckperms = server.getPluginManager().getPlugin("luckperms");
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
+			return new VaultBridge(plm);
 		} else if (luckperms.isPresent()) {
 			return new LuckPerms(luckperms.get().getDescription().getVersion().get());
 		} else {
-			return new VaultBridge(Main.getInstance().getPluginMessageHandler());
+			return new VaultBridge(plm);
 		}
 	}
 	
@@ -56,7 +56,7 @@ public class VelocityPlatform extends ProxyPlatform {
 		loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist(tab));
 		for (Player p : server.getAllPlayers()) {
-			tab.addPlayer(new VelocityTabPlayer(p));
+			tab.addPlayer(new VelocityTabPlayer(p, plm));
 		}
 	}
 	
