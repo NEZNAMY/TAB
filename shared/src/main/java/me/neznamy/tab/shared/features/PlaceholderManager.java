@@ -276,7 +276,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 	public List<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
 		List<String> base = new ArrayList<>();
 		for (String string : strings) {
-			for (String s : detectAll(string)) {
+			for (String s : detectAll(color(string))) {
 				if (!base.contains(s)) base.add(s);
 			}
 		}
@@ -284,7 +284,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
 			if (pl == null) continue;
 			for (String nestedString : pl.getNestedStrings()) {
-				base.addAll(getUsedPlaceholderIdentifiersRecursive(nestedString));
+				base.addAll(getUsedPlaceholderIdentifiersRecursive(color(nestedString)));
 			}
 		}
 		return base;
@@ -314,7 +314,7 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 		}
 		if (object instanceof String) {
 			for (String placeholder : detectAll((String) object)) {
-				getAllUsedPlaceholderIdentifiers().add(placeholder);
+				getAllUsedPlaceholderIdentifiers().add(color(placeholder));
 			}
 		}
 	}

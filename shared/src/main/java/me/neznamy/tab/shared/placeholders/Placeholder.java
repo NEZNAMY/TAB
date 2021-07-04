@@ -99,6 +99,7 @@ public abstract class Placeholder {
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
+			newValue = TAB.getInstance().getPlaceholderManager().color(newValue);
 			if (s.equals(identifier)) {
 				//small performance and memory save
 				return newValue;

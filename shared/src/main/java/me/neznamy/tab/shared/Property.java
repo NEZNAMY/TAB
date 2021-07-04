@@ -41,7 +41,7 @@ public class Property {
 	public Property(TabPlayer owner, String rawValue, String source) {
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
+		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : TAB.getInstance().getPlaceholderManager().color(rawValue)), true);
 		analyze(this.rawValue);
 		update();
 	}
@@ -71,7 +71,7 @@ public class Property {
 	 */
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
-			this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
+			this.temporaryValue = RGBUtils.getInstance().applyFormats(TAB.getInstance().getPlaceholderManager().color(temporaryValue), true);
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
@@ -86,7 +86,7 @@ public class Property {
 	 */
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = RGBUtils.getInstance().applyFormats(newValue, true);
+		rawValue = RGBUtils.getInstance().applyFormats(TAB.getInstance().getPlaceholderManager().color(newValue), true);
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();
