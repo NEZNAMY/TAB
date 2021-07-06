@@ -101,12 +101,12 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					tab.getFeatureManager().onObjective(player, packet);
 				}
 				tab.getFeatureManager().onPacketSend(player, packet);
-			} catch (Exception e){
+			} catch (Throwable e){
 				tab.getErrorManager().printError("An error occurred when reading packets", e);
 			}
 			try {
 				super.write(context, packet, channelPromise);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				tab.getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}

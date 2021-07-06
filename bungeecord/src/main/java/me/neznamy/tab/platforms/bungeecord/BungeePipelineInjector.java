@@ -108,12 +108,12 @@ public class BungeePipelineInjector extends PipelineInjector {
 					tab.getFeatureManager().onLoginPacket(player);
 					return;
 				}
-			} catch (Exception e){
+			} catch (Throwable e){
 				tab.getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
 			try {
 				super.write(context, modifiedPacket, channelPromise);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				tab.getErrorManager().printError("Failed to forward packet " + modifiedPacket.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
