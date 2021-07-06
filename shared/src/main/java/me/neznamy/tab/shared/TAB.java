@@ -25,7 +25,7 @@ public class TAB {
 	private static TAB instance;
 	
 	//version of plugin
-	public static final String PLUGIN_VERSION = "2.9.2-pre1";
+	public static final String PLUGIN_VERSION = "2.9.2-pre2";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
