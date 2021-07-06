@@ -178,7 +178,7 @@ public class CPUManager {
 		exe.submit(() -> {
 			try {
 				task.run();
-			} catch (Exception e) {
+			} catch (Exception | Error e) {
 				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
