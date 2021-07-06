@@ -121,13 +121,13 @@ public class ErrorManager {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
 			tab.getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
 			for (StackTraceElement e : ex.getStackTrace()) {
-				tab.getPlatform().sendConsoleMessage(e.toString(), true);
+				tab.getPlatform().sendConsoleMessage("\t" + e.toString(), true);
 			}
 			tab.getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
 			if (error != null) {
 				tab.getPlatform().sendConsoleMessage(error.getClass().getName() + ": " + error.getMessage(), true);
 				for (StackTraceElement e : error.getStackTrace()) {
-					tab.getPlatform().sendConsoleMessage(e.toString(), true);
+					tab.getPlatform().sendConsoleMessage("\t" + e.toString(), true);
 				}
 			}
 		}

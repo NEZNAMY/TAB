@@ -79,7 +79,7 @@ public class Main extends JavaPlugin {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
 				Bukkit.getConsoleSender().sendMessage(ex.getClass().getName() + ": " + ex.getMessage());
 				for (StackTraceElement e : ex.getStackTrace()) {
-					Bukkit.getConsoleSender().sendMessage(e.toString());
+					Bukkit.getConsoleSender().sendMessage("\t" + e.toString());
 				}
 			} else {
 				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17. Disabling.");
