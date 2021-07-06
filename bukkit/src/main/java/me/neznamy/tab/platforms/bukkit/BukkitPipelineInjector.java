@@ -131,7 +131,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					continue;
 				}
 				if (!tab.getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && !p.hasTeamHandlingPaused() && 
-						!p.getTeamName().equals(teamName)) {
+						!teamName.equals(p.getTeamName())) {
 					logTeamOverride(teamName, entry);
 				} else {
 					newList.add(entry);
