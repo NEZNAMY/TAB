@@ -6,6 +6,7 @@ package me.neznamy.tab.shared;
 public enum ProtocolVersion {
 
 	UNKNOWN	(999),
+	V1_17_1	(756),
 	V1_17	(755),
 	V1_16_5 (754),
 	V1_16_4	(754),

@@ -328,10 +328,12 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @throws InstantiationException 
 	 */
 	public Object buildEntityDestroyPacket(int id) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		if (nms.getMinorVersion() >= 17) {
+		try {
+			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(new int[] {id});
+		} catch (IllegalArgumentException e) {
+			//1.17.0
 			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(id);
 		}
-		return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(new int[] {id});
 	}
 
 	/**
