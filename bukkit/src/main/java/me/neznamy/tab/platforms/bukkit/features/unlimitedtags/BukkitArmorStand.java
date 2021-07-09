@@ -311,7 +311,7 @@ public class BukkitArmorStand implements ArmorStand {
 			if (vehicle.getType().toString().contains("HORSE")) { //covering all 3 horse types
 				return vehicle.getLocation().getY() + 0.85;
 			}
-			if (vehicle.getType().toString().contains("DONKEY")) { //1.11+
+			if (vehicle.getType().toString().equals("DONKEY")) { //1.11+
 				return vehicle.getLocation().getY() + 0.525;
 			}
 			if (vehicle.getType() == EntityType.PIG) {
