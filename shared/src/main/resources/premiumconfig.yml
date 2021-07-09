@@ -10,6 +10,11 @@
 sorting-type: GROUPS
 sorting-placeholder: "%some_level_maybe?%"
 
+#if sorting type is set to PLACEHOLDER, list all possible outputs here in order you want them in tablist
+placeholder-order:
+- value1
+- value2
+
 #by default, names are sorted as A-Z _ a-z
 #by disabling you will make it Aa-Zz
 #this also applies for everything else, such as sorting by placeholder (factions, ..)
