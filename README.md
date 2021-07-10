@@ -35,7 +35,7 @@ Discord invite link: https://discord.gg/EaSvdk6
   <dependency>
     <groupId>com.github.NEZNAMY</groupId>
     <artifactId>TAB</artifactId>
-    <version>2.9.0</version>
+    <version>2.9.2</version>
   </dependency>
 </dependencies>
  ```
