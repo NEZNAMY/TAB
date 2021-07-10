@@ -150,6 +150,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		for (PlayerInfoData data : packet.getEntries()) {
 			switch (packet.getAction()) {
 			case ADD_PLAYER:
+				if (player.getTabList().containsEntry(data.getUniqueId())) continue;
 				player.getTabList().addEntry(TabListEntry.builder()
 						.tabList(player.getTabList())
 						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
