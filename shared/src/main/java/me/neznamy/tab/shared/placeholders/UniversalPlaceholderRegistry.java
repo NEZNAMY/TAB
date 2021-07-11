@@ -241,8 +241,13 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			String no = TAB.getInstance().getConfiguration().getPremiumConfig().getString("conditions." + condition + ".false");
 			Condition c = Condition.compile(condition.toString(), list, type, yes, no);
 			Condition.getConditions().put(condition.toString(), c);
-			TAB.getInstance().getPlaceholderManager().getAllUsedPlaceholderIdentifiers().add("%condition:" + condition + "%");
-			placeholders.add(new PlayerPlaceholder("%condition:" + c.getName() + "%", TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100)) {
+			String identifier = "%condition:" + c.getName() + "%";
+			TAB.getInstance().getPlaceholderManager().getAllUsedPlaceholderIdentifiers().add(identifier);
+			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
+			if (TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
+				refresh = TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().get(identifier);
+			}
+			placeholders.add(new PlayerPlaceholder(identifier, refresh) {
 
 				@Override
 				public String get(TabPlayer p) {
