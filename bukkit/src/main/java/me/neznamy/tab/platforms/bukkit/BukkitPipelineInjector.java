@@ -10,7 +10,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
@@ -27,8 +26,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	 * @param tab - tab instance
 	 * @param nms - nms storage
 	 */
-	public BukkitPipelineInjector(TAB tab, NMSStorage nms){
-		super(tab);
+	public BukkitPipelineInjector(NMSStorage nms){
 		this.nms = nms;
 	}
 	
@@ -75,10 +73,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@Override
 		public void channelRead(ChannelHandlerContext context, Object packet) {
 			try {
-				Object modifiedPacket = tab.getFeatureManager().onPacketReceive(player, packet);
+				Object modifiedPacket = TAB.getInstance().getFeatureManager().onPacketReceive(player, packet);
 				if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
 			} catch (Exception e){
-				tab.getErrorManager().printError("An error occurred when reading packets", e);
+				TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
 			}
 		}
 
@@ -86,28 +84,28 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			try {
 				if (nms.getClass("PacketPlayOutPlayerInfo").isInstance(packet)) {
-					super.write(context, tab.getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (tab.getFeatureManager().getNameTagFeature() != null && antiOverrideTeams && nms.getClass("PacketPlayOutScoreboardTeam").isInstance(packet)) {
+				if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null && antiOverrideTeams && nms.getClass("PacketPlayOutScoreboardTeam").isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && antiOverrideObjectives && tab.getFeatureManager().onDisplayObjective(player, packet)) {
+				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && antiOverrideObjectives && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
 					return;
 				}
 				if (antiOverrideObjectives && nms.getClass("PacketPlayOutScoreboardObjective").isInstance(packet)) {
-					tab.getFeatureManager().onObjective(player, packet);
+					TAB.getInstance().getFeatureManager().onObjective(player, packet);
 				}
-				tab.getFeatureManager().onPacketSend(player, packet);
+				TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
 			} catch (Throwable e){
-				tab.getErrorManager().printError("An error occurred when reading packets", e);
+				TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
 			}
 			try {
 				super.write(context, packet, channelPromise);
 			} catch (Throwable e) {
-				tab.getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
+				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
 		
@@ -125,12 +123,12 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 			Collection<String> newList = new ArrayList<>();
 			for (String entry : players) {
-				TabPlayer p = tab.getPlayer(entry);
+				TabPlayer p = TAB.getInstance().getPlayer(entry);
 				if (p == null) {
 					newList.add(entry);
 					continue;
 				}
-				if (!tab.getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && !p.hasTeamHandlingPaused() && 
+				if (!TAB.getInstance().getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && !p.hasTeamHandlingPaused() && 
 						!teamName.equals(p.getTeamName())) {
 					logTeamOverride(teamName, entry);
 				} else {
@@ -138,7 +136,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				}
 			}
 			nms.setField(packetPlayOutScoreboardTeam, "PacketPlayOutScoreboardTeam_PLAYERS", newList);
-			tab.getCPUManager().addTime(TabFeature.NAMETAGS, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}
 }

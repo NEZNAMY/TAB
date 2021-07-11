@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -272,7 +272,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers synchronous placeholders
 	 */
 	private void registerSyncPlaceholders() {
-		PlaceholderManager pl = TAB.getInstance().getPlaceholderManager();
+		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		for (String identifier : pl.getAllUsedPlaceholderIdentifiers()) {
 			if (identifier.startsWith("%sync:")) {
 				int refresh;

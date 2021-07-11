@@ -5,9 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -15,7 +12,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 /**
  * Sets ping of all players in the packet to configured value to prevent hacked clients from seeing exact ping value of each player
  */
-public class PingSpoof implements PlayerInfoPacketListener, Loadable {
+public class PingSpoof extends TabFeature {
 
 	//fake ping value
 	private int value;
@@ -37,8 +34,8 @@ public class PingSpoof implements PlayerInfoPacketListener, Loadable {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.PING_SPOOF;
+	public String getFeatureType() {
+		return "Ping spoof";
 	}
 
 	@Override

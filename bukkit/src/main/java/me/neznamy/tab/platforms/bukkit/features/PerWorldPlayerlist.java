@@ -15,15 +15,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.TabFeature;
 
 /**
  * Per-world-playerlist feature handler
  */
 @SuppressWarnings("deprecation")
-public class PerWorldPlayerlist implements Loadable, Listener {
+public class PerWorldPlayerlist extends TabFeature implements Listener {
 	
 	//plugin instance
 	private JavaPlugin plugin;
@@ -74,14 +73,14 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(TabFeature.PER_WORLD_PLAYERLIST, UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 	}
 	
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(TabFeature.PER_WORLD_PLAYERLIST, UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 	}
 	
 	private void checkPlayer(Player p) {
@@ -106,5 +105,10 @@ public class PerWorldPlayerlist implements Loadable, Listener {
 			}
 		}
 		return viewerWorldGroup.equals(targetWorldGroup);
+	}
+
+	@Override
+	public String getFeatureType() {
+		return "Per world playerlist";
 	}
 }

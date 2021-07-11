@@ -7,33 +7,29 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.Feature;
 
 /**
  * Permission group refresher
  */
-public class GroupRefresher implements Feature {
+public class GroupRefresher extends TabFeature {
 
 	public static final String DEFAULT_GROUP = "NONE";
 	
-	private TAB tab;
 	private boolean groupsByPermissions;
 	private boolean usePrimaryGroup;
 	private List<String> primaryGroupFindingList;
 	
-	public GroupRefresher(TAB tab) {
-		this.tab = tab;
-		usePrimaryGroup = tab.getConfiguration().getConfig().getBoolean("use-primary-group", true);
-		groupsByPermissions = tab.getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
+	public GroupRefresher() {
+		usePrimaryGroup = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-primary-group", true);
+		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 		primaryGroupFindingList = new ArrayList<>();
-		for (Object group : tab.getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
+		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
-			for (TabPlayer p : tab.getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
 			}
 		});
@@ -51,15 +47,15 @@ public class GroupRefresher implements Feature {
 
 	public String getByPrimary(TabPlayer p) {
 		try {
-			return tab.getPermissionPlugin().getPrimaryGroup(p);
+			return TAB.getInstance().getPermissionPlugin().getPrimaryGroup(p);
 		} catch (Exception e) {
-			return tab.getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission group of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
+			return TAB.getInstance().getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission group of " + p.getName() + " using " + TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion(), e);
 		}
 	}
 
 	public String getFromList(TabPlayer p) {
 		try {
-			String[] playerGroups = tab.getPermissionPlugin().getAllGroups(p);
+			String[] playerGroups = TAB.getInstance().getPermissionPlugin().getAllGroups(p);
 			if (playerGroups != null && playerGroups.length > 0) {
 				for (String groupFromList : primaryGroupFindingList) {
 					for (String playerGroup : playerGroups) {
@@ -73,7 +69,7 @@ public class GroupRefresher implements Feature {
 				return DEFAULT_GROUP;
 			}
 		} catch (Exception e) {
-			return tab.getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission groups of " + p.getName() + " using " + tab.getPermissionPlugin().getName() + " v" + tab.getPermissionPlugin().getVersion(), e);
+			return TAB.getInstance().getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission groups of " + p.getName() + " using " + TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion(), e);
 		}
 	}
 
@@ -83,13 +79,13 @@ public class GroupRefresher implements Feature {
 				return String.valueOf(group);
 			}
 		}
-		tab.getErrorManager().oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
+		TAB.getInstance().getErrorManager().oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
 		return DEFAULT_GROUP;
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.GROUP_REFRESHING;
+	public Object getFeatureType() {
+		return "Permission group refreshing";
 	}
 
 	public boolean isGroupsByPermissions() {

@@ -10,33 +10,28 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
 /**
  * An additional class with additional code for <1.9 servers due to an entity being required
  */
-public class WitherBossBar implements Listener, Loadable {
+public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
 	//distance of wither in blocks
 	private static final int WITHER_DISTANCE = 75;
-	
-	//main bossbar feature
-	private BossBar mainFeature;
 	
 	/**
 	 * Constructs a new instance of the class
 	 * @param mainFeature - main bossbar feature
 	 */
-	public WitherBossBar(TAB tab, JavaPlugin plugin) {
-		this.mainFeature = (BossBar) tab.getFeatureManager().getFeature("bossbar");
+	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		tab.getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", TabFeature.BOSSBAR, UsageType.TELEPORTING_ENTITY, this::teleport);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", getFeatureType(), UsageType.TELEPORTING_ENTITY, this::teleport);
 	}
 	
 	@Override
@@ -48,11 +43,11 @@ public class WitherBossBar implements Listener, Loadable {
 	 * Updates wither location for all players
 	 */
 	private void teleport() {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-			for (me.neznamy.tab.api.bossbar.BossBar l : all.getActiveBossBars()) {
+		for (BossBar line : getRegisteredBossBars().values()) {
+			for (TabPlayer all : line.getPlayers()) {
+				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 				try {
-					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(l.getUniqueId().hashCode(), getWitherLocation(all)), TabFeature.BOSSBAR);
+					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), getFeatureType());
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
 				}
@@ -70,7 +65,7 @@ public class WitherBossBar implements Listener, Loadable {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", TabFeature.BOSSBAR, UsageType.PLAYER_RESPAWN_EVENT, () -> mainFeature.detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**

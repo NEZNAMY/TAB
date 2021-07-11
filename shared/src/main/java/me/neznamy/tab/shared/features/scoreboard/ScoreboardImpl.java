@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.lines.All0StableDynamicLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.All0StaticLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.NumberedStableDynamicLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.NumberedStaticLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
-import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -24,11 +24,10 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 /**
  * A class representing a scoreboard configured in premiumconfig
  */
-public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshable {
+public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
-	private static final String TITLE_PROPERTY_NAME = "scoreboard-title";
 	//scoreboard manager
-	private ScoreboardManager manager;
+	private ScoreboardManagerImpl manager;
 	
 	//name of this scoreboard
 	private String name;
@@ -47,9 +46,6 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 	
 	//players currently seeing this scoreboard
 	private Set<TabPlayer> players = new HashSet<>();
-	
-	//placeholders used in title
-	private List<String> usedPlaceholders;
 
 	/**
 	 * Constructs new instance with given parameters and registers lines to feature manager
@@ -60,11 +56,10 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 	 * @param displayCondition - display condition
 	 * @param childBoard - scoreboard to display if condition is not met
 	 */
-	public ScoreboardImpl(ScoreboardManager manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
+	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
 		this(manager, name, title, lines);
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.childBoard = childBoard;
-		refreshUsedPlaceholders();
 	}
 
 	/**
@@ -74,15 +69,16 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 	 * @param title - scoreboard title
 	 * @param lines - lines of scoreboard
 	 */
-	public ScoreboardImpl(ScoreboardManager manager, String name, String title, List<String> lines) {
+	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines) {
 		this.manager = manager;
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
 			ScoreboardLine score = registerLine(i+1, lines.get(i));
-			this.getLines().add(score);
+			getLines().add(score);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
+		refreshUsedPlaceholders();
 	}
 
 	/**
@@ -97,14 +93,14 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 			return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
 		}
 		if (text.contains("%")) {
-			if (getManager().isUseNumbers()) {
+			if (manager.isUsingNumbers()) {
 				return new NumberedStableDynamicLine(this, lineNumber, text);
 			} else {
 				return new All0StableDynamicLine(this, lineNumber, text);
 			}
 		}
 		//static text
-		if (getManager().isUseNumbers()) {
+		if (manager.isUsingNumbers()) {
 			if (text.length() > 26) {
 				return new NumberedStaticLine(this, lineNumber, text);
 			} else {
@@ -138,24 +134,16 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 		return childBoard;
 	}
 
-	/**
-	 * Returns list of users currently seeing this scoreboard
-	 * @return list of users currently seeing this scoreboard
-	 */
-	public Set<TabPlayer> getRegisteredUsers(){
-		return getPlayers();
-	}
-
 	@Override
-	public void register(TabPlayer p) {
+	public void addPlayer(TabPlayer p) {
 		if (getPlayers().contains(p)) return; //already registered
-		p.setProperty(TITLE_PROPERTY_NAME, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManager.OBJECTIVE_NAME, p.getProperty(TITLE_PROPERTY_NAME).get(), ScoreboardManager.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
+		p.setProperty(PropertyUtils.SCOREBOARD_TITLE, title);
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
 		for (ScoreboardLine s : getLines()) {
 			s.register(p);
 		}
-		getPlayers().add(p);
-		((ITabPlayer)p).setActiveScoreboard(this);
+		players.add(p);
+		manager.getActiveScoreboards().remove(p);
 	}
 
 	/**
@@ -163,32 +151,26 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 	 */
 	public void unregister() {
 		for (TabPlayer all : getPlayers().toArray(new TabPlayer[0])) {
-			unregister(all);
+			removePlayer(all);
 		}
-		getPlayers().clear();
-		getLines().clear();
+		players.clear();
 	}
 
 	@Override
-	public void unregister(TabPlayer p) {
+	public void removePlayer(TabPlayer p) {
 		if (!getPlayers().contains(p)) return; //not registered
-		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManager.OBJECTIVE_NAME), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), getFeatureType());
 		for (ScoreboardLine s : getLines()) {
 			s.unregister(p);
 		}
-		getPlayers().remove(p);
-		((ITabPlayer)p).setActiveScoreboard(null);
+		players.remove(p);
+		manager.getActiveScoreboards().remove(p);
 	}
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (refreshed.getProperty(TITLE_PROPERTY_NAME) == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManager.OBJECTIVE_NAME, refreshed.getProperty(TITLE_PROPERTY_NAME).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabFeature.SCOREBOARD);
-	}
-
-	@Override
-	public List<String> getUsedPlaceholders() {
-		return usedPlaceholders;
+		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), getFeatureType());
 	}
 
 	@Override
@@ -197,19 +179,20 @@ public class ScoreboardImpl implements me.neznamy.tab.api.Scoreboard, Refreshabl
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.SCOREBOARD;
+	public String getFeatureType() {
+		return manager.getFeatureType();
 	}
 
 	public List<ScoreboardLine> getLines() {
 		return lines;
 	}
 
+	@Override
 	public Set<TabPlayer> getPlayers() {
 		return players;
 	}
 
-	public ScoreboardManager getManager() {
+	public ScoreboardManagerImpl getManager() {
 		return manager;
 	}
 }

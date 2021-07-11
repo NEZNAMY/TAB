@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.bossbar.BossBar;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
 /**
  * Handler for "/tab announce bar" subcommand
  */
-public class SendBarCommand extends SubCommand{
+public class SendBarCommand extends SubCommand {
 
 	/**
 	 * Constructs new instance
@@ -24,7 +24,7 @@ public class SendBarCommand extends SubCommand{
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		BossBar feature = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager feature = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (feature == null) {
 			sendMessage(sender, "&4This command requires the bossbar feature to be enabled.");
 			return;
@@ -46,40 +46,26 @@ public class SendBarCommand extends SubCommand{
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}
-		BossBarLine bar = feature.getLines().get(barname);
+		BossBar bar = feature.getBossBar(barname);
 		if (bar == null) {
 			sendMessage(sender, "No bar found with name \"" + bar + "\"");
 			return;
 		}
-		new Thread(() -> {
-			try {
-				if (target.hasBossbarVisible()) {
-					bar.create(target);
-					target.getActiveBossBars().add(bar);
-				}
-				Thread.sleep(duration*1000L);
-				if (target.hasBossbarVisible()) {
-					bar.remove(target);
-					target.getActiveBossBars().remove(bar);
-				}
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
-		}).start();
+		feature.sendBossBarTemporarily(target, bar.getName(), duration);
 	}
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		BossBar b = (BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager b = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (b == null) return new ArrayList<>();
 		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {
 			return getPlayers(arguments[0]);
 		} else if (arguments.length == 2) {
-			for (String bar : b.getLines().keySet()) {
+			for (String bar : b.getRegisteredBossBars().keySet()) {
 				if (bar.toLowerCase().startsWith(arguments[1].toLowerCase())) suggestions.add(bar);
 			}
-		} else if (arguments.length == 3 && b.getLines().get(arguments[1]) != null){
+		} else if (arguments.length == 3 && b.getBossBar(arguments[1]) != null){
 			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
 				if (time.startsWith(arguments[2])) suggestions.add(time);
 			}

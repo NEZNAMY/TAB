@@ -1,10 +1,9 @@
 package me.neznamy.tab.shared.command.level1;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 /**
  * Handler for "/tab scoreboard [on/off/toggle] [player] [options]" subcommand
@@ -20,12 +19,12 @@ public class ScoreboardCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (scoreboard == null) {
 			sendMessage(sender, "&cScoreboard feature is not enabled, therefore toggle command cannot be used.");
 			return;
 		}
-		if (scoreboard.isPermToToggle() && !hasPermission(sender, "tab.togglescoreboard")) {
+		if (scoreboard.requiresPermissionToToggle() && !hasPermission(sender, "tab.togglescoreboard")) {
 			sendMessage(sender, getTranslation("no_permission"));
 			return;
 		}
@@ -33,7 +32,7 @@ public class ScoreboardCommand extends SubCommand {
 			if (sender == null) {
 				sendMessage(sender, "Toggle command must be ran from the game");
 			} else {
-				sender.toggleScoreboard(true);
+				scoreboard.toggleScoreboard(sender, true);
 			}
 			return;
 		}
@@ -46,18 +45,18 @@ public class ScoreboardCommand extends SubCommand {
 				return;
 			}
 		}
-		if (((ITabPlayer)p).getOtherPluginScoreboard() != null) return; //not overriding other plugins
+		if (scoreboard.getOtherPluginScoreboards().containsKey(p)) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
 		if (args.length >= 1) {
 			switch(args[0]) {
 			case "on":
-				p.setScoreboardVisible(true, !silent);
+				scoreboard.setScoreboardVisible(p, true, !silent);
 				break;
 			case "off":
-				p.setScoreboardVisible(false, !silent);
+				scoreboard.setScoreboardVisible(p, false, !silent);
 				break;
 			case "toggle":
-				p.toggleScoreboard(!silent);
+				scoreboard.toggleScoreboard(p, !silent);
 				break;
 			default:
 				break;

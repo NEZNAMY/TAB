@@ -72,7 +72,6 @@ public class GroupCommand extends PropertyCommand {
 		}
 		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Groups." + group.replace(".", "@#@") + "." + type)))) return;
 		TAB.getInstance().getConfiguration().getConfig().set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();

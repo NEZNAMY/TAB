@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
@@ -35,7 +34,7 @@ public class EventListener implements Listener {
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || !p.isLoaded() || feature.isInDisabledWorld(p)) return;
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", TabFeature.NAMETAGX, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", feature.getFeatureType(), UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
 		});
 	}
@@ -46,7 +45,7 @@ public class EventListener implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", TabFeature.NAMETAGX, UsageType.PLAYER_RESPAWN_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", feature.getFeatureType(), UsageType.PLAYER_RESPAWN_EVENT, () -> {
 			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 			if (feature.isInDisabledWorld(respawned)) return;
 			respawned.getArmorStandManager().teleport();

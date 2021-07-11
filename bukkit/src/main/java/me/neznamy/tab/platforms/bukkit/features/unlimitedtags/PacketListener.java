@@ -8,15 +8,14 @@ import org.bukkit.entity.Player;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.packet.RawPacketListener;
+import me.neznamy.tab.shared.features.TabFeature;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
  * Bukkit events are too unreliable and delayed/ahead which causes desync
  */
-public class PacketListener implements RawPacketListener {
+public class PacketListener extends TabFeature {
 
 	//main feature
 	private NameTagX nameTagX;
@@ -132,7 +131,7 @@ public class PacketListener implements RawPacketListener {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.NAMETAGX;
+	public String getFeatureType() {
+		return nameTagX.getFeatureType();
 	}
 }

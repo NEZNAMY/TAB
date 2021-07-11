@@ -17,6 +17,13 @@ public class PropertyUtils {
 	public static final String NAMETAG = "nametag";
 	public static final String BELOWNAME = "belowname";
 	
+	public static final String SCOREBOARD_TITLE = "scoreboard-title";
+	
+	public static final String BELOWNAME_NUMBER = "belowname-number";
+	public static final String BELOWNAME_TEXT = "belowname-text";
+	
+	public static final String YELLOW_NUMBER = "yellow-number";
+	
 	private PropertyUtils() {
 	}
 	

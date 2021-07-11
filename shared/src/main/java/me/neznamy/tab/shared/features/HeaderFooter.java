@@ -2,50 +2,37 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
-import me.neznamy.tab.shared.features.types.event.QuitEventListener;
-import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 /**
  * Feature handler for header and footer
  */
-public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListener, WorldChangeListener, Refreshable {
+public class HeaderFooter extends TabFeature {
 
 	private static final String LINE_SEPARATOR = "\n\u00a7r";
-	private TAB tab;
-	private List<String> usedPlaceholders;
-	private List<String> disabledWorlds;
-	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 	
-	public HeaderFooter(TAB tab) {
-		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
+	public HeaderFooter() {
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
-		tab.debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s", disabledWorlds));
+		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s", disabledWorlds));
 	}
 	
 	@Override
 	public void load() {
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			onJoin(p);
 		}
 	}
 	
 	@Override
 	public void unload() {
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (playersInDisabledWorlds.contains(p) || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), getFeatureType());
 		}
@@ -116,27 +103,22 @@ public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListe
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.HEADER).updateAndGet()), 
 				IChatBaseComponent.optimizedComponent(p.getProperty(PropertyUtils.FOOTER).updateAndGet())), getFeatureType());
 	}
-	
-	@Override
-	public List<String> getUsedPlaceholders() {
-		return usedPlaceholders;
-	}
 
 	private String getValue(TabPlayer p, String property) {
-		String worldGroup = tab.getConfiguration().getWorldGroupOf(tab.getConfiguration().getConfig().getConfigurationSection("per-" + tab.getPlatform().getSeparatorType() + "-settings").keySet(), p.getWorldName());
+		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), p.getWorldName());
 		String[] priorities = {
-				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + property,
-				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + property,
+				"per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getName() + "." + property,
+				"per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + p.getUniqueId().toString() + "." + property,
 				"Users." + p.getName() + "." + property,
 				"Users." + p.getUniqueId().toString() + "." + property,
-				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + property,
-				"per-" + tab.getPlatform().getSeparatorType() + "-settings." + worldGroup + "." + property,
+				"per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + p.getGroup() + "." + property,
+				"per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + "." + property,
 				"Groups." + p.getGroup() + "." + property,
 				property
 		};
 		List<String> lines = null;
 		for (String path : priorities) {
-			lines = tab.getConfiguration().getConfig().getStringList(path);
+			lines = TAB.getInstance().getConfiguration().getConfig().getStringList(path);
 			if (lines != null) break;
 		}
 		if (lines == null) lines = new ArrayList<>();
@@ -145,12 +127,12 @@ public class HeaderFooter implements Loadable, JoinEventListener, QuitEventListe
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.HEADER, PropertyUtils.FOOTER);
+		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.HEADER, PropertyUtils.FOOTER);
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.HEADER_FOOTER;
+	public String getFeatureType() {
+		return "Header/Footer";
 	}
 
 	@Override

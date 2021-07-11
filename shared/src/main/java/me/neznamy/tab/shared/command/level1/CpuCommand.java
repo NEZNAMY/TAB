@@ -107,7 +107,7 @@ public class CpuCommand extends SubCommand {
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
 			}
-			String core = String.format("&8&l%s &7%s (%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
+			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
 				messages.add(String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)));
@@ -126,7 +126,7 @@ public class CpuCommand extends SubCommand {
 			for (Float f : entry.getValue().values()) {
 				featureTotal += f;
 			}
-			String core = String.format("&8&l%s &7%s (%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
+			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
 				messages.add("&3" + type.getKey().toString() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");

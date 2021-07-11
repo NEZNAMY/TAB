@@ -1,6 +1,9 @@
 package me.neznamy.tab.api.bossbar;
 
+import java.util.Set;
 import java.util.UUID;
+
+import me.neznamy.tab.api.TabPlayer;
 
 public interface BossBar {
 
@@ -84,4 +87,22 @@ public interface BossBar {
 	 * @return entered style as string
 	 */
 	public String getStyle();
+	
+	/**
+	 * Sends this bossbar to specified player. If the player already sees this bossbar, nothing happens.
+	 * @param player - player to register this bossbar to
+	 */
+	public void addPlayer(TabPlayer player);
+	
+	/**
+	 * Removes this bossbar from specified player. If the player does not see this bossbat, nothing happens.
+	 * @param player - player to remove this bossbar from
+	 */
+	public void removePlayer(TabPlayer player);
+	
+	/**
+	 * Returns set of players seeing this bossbar
+	 * @return set of players seeing this bossbar
+	 */
+	public Set<TabPlayer> getPlayers();
 }

@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.features.PlaceholderManager;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
@@ -25,7 +25,7 @@ public class TAB {
 	private static TAB instance;
 	
 	//version of plugin
-	public static final String PLUGIN_VERSION = "2.9.2";
+	public static final String PLUGIN_VERSION = "3.0.0-SNAPSHOT";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
@@ -63,7 +63,7 @@ public class TAB {
 	
 	private boolean disabled;
 	
-	private PlaceholderManager placeholderManager;
+	private PlaceholderManagerImpl placeholderManager;
 	
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
@@ -148,11 +148,11 @@ public class TAB {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManager(this);
 			cpu = new CPUManager(errorManager);
-			featureManager = new FeatureManager(this);
+			featureManager = new FeatureManager();
 			configuration = new Configs(this);
 			configuration.loadFiles();
 			setPermissionPlugin(platform.detectPermissionPlugin());
-			placeholderManager = new PlaceholderManager(this);
+			placeholderManager = new PlaceholderManagerImpl();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
 			setCommand(new TabCommand(this));
@@ -247,7 +247,7 @@ public class TAB {
 		return disabled;
 	}
 	
-	public PlaceholderManager getPlaceholderManager() {
+	public PlaceholderManagerImpl getPlaceholderManager() {
 		return placeholderManager;
 	}
 

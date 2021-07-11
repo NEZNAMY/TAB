@@ -5,9 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -18,7 +15,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
  * the bottom of tablist with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
-public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
+public class SpectatorFix extends TabFeature {
 
 	//if bypass permission should be enabled
 	private boolean allowBypass;
@@ -44,8 +41,8 @@ public class SpectatorFix implements PlayerInfoPacketListener, Loadable {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.SPECTATOR_FIX;
+	public String getFeatureType() {
+		return "Spectator fix";
 	}
 	
 	@Override

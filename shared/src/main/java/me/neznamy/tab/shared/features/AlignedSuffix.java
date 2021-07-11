@@ -10,31 +10,26 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.event.QuitEventListener;
-import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
  * Additional code for Playerlist class to secure alignment
  */
-public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
+public class AlignedSuffix extends TabFeature {
 
-	private TAB tab;
 	private int maxWidth;
 	private TabPlayer maxPlayer;
 	private Map<Character, Byte> widths = new HashMap<>();
 	private Playerlist playerlist;
 
-	public AlignedSuffix(Playerlist playerlist, TAB tab) {
-		this.tab = tab;
+	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		Map<Integer, Integer> widthOverrides = tab.getConfiguration().getPremiumConfig().getConfigurationSection("character-width-overrides");
+		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths.put((char)(int)entry.getKey(), (byte)(int)entry.getValue());
 		}
-		tab.debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
+		TAB.getInstance().debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
 	}
 	
 	/**
@@ -51,7 +46,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			}
 			br.close();
 		} catch (Exception ex) {
-			tab.getErrorManager().criticalError("Failed to read character widths from file", ex);
+			TAB.getInstance().getErrorManager().criticalError("Failed to read character widths from file", ex);
 		}
 	}
 
@@ -59,7 +54,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + player.getProperty(PropertyUtils.TABSUFFIX).getFormat(null)));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
-			for (TabPlayer all : tab.getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getPlayers()) {
 				int localWidth = getPlayerNameWidth(all);
 				if (localWidth > maxWidth) {
 					maxWidth = localWidth;
@@ -84,7 +79,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 			//will investigate later
 			newFormat += buildSpaces(12);
 		}
-		newFormat += tab.getPlaceholderManager().getLastColors(prefixAndName) + suffix;
+		newFormat += TAB.getInstance().getPlaceholderManager().getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
 	
@@ -160,7 +155,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	}
 
 	private void updateAllNames(TabPlayer exception) {
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all == exception) continue;
 			playerlist.refresh(all, true);
 		}
@@ -171,7 +166,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 		int oldMaxWidth = maxWidth;
 		maxWidth = 0;
 		maxPlayer = null;
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = getPlayerNameWidth(all);
 			if (localWidth > maxWidth) {
@@ -183,7 +178,7 @@ public class AlignedSuffix implements QuitEventListener, WorldChangeListener {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.ALIGNED_TABSUFFIX;
+	public String getFeatureType() {
+		return "Aligned tabsuffix";
 	}
 }

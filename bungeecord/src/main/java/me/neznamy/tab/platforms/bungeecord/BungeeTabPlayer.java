@@ -52,7 +52,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 * @throws IllegalAccessException 
 	 */
-	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) throws IllegalAccessException {
+	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
 		super (plm);
 		player = p;
 		if (p.getServer() != null) {
@@ -60,7 +60,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 		} else {
 			world = "-";
 		}
-		channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
+		try {
+			channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
+		} catch (IllegalAccessException e) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + player.getName(), e);
+		}
 		uniqueId = p.getUniqueId();
 		name = p.getName();
 		init();

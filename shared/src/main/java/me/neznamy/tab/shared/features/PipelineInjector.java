@@ -2,9 +2,6 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
 
 /**
  * A large source of hate. Packet intercepting to secure proper functionality of some features:
@@ -16,13 +13,10 @@ import me.neznamy.tab.shared.features.types.event.JoinEventListener;
  * PetFix - to remove owner field from entity data
  * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
  */
-public abstract class PipelineInjector implements JoinEventListener, Loadable {
+public abstract class PipelineInjector extends TabFeature {
 
 	//name of the pipeline decoder injected in netty
 	public static final String DECODER_NAME = "TAB";
-	
-	//tab instance
-	protected TAB tab;
 	
 	//preventing spam when packet is sent to everyone
 	private String lastTeamOverrideMessage;
@@ -35,10 +29,9 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	 * Constructs new instance
 	 * @param tab
 	 */
-	protected PipelineInjector(TAB tab) {
-		this.tab = tab;
-		antiOverrideTeams = tab.getConfiguration().getConfig().getBoolean("anti-override.scoreboard-teams", true);
-		antiOverrideObjectives = tab.getConfiguration().getConfig().getBoolean("anti-override.scoreboard-objectives", true);
+	protected PipelineInjector() {
+		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.scoreboard-teams", true);
+		antiOverrideObjectives = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.scoreboard-objectives", true);
 	}
 	
 	/**
@@ -51,14 +44,14 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	
 	@Override
 	public void load() {
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			inject(p);
 		}
 	}
 
 	@Override
 	public void unload() {
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			uninject(p);
 		}
 	}
@@ -69,8 +62,8 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 	}
 	
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.PIPELINE_INJECTION;
+	public Object getFeatureType() {
+		return "Pipeline injection";
 	}
 	
 	protected void logTeamOverride(String team, String player) {
@@ -78,7 +71,7 @@ public abstract class PipelineInjector implements JoinEventListener, Loadable {
 		//not logging the same message for every online player who received the packet
 		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
 			lastTeamOverrideMessage = message;
-			tab.getErrorManager().printError(message, null, false, tab.getErrorManager().getAntiOverrideLog());
+			TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 		}
 	}
 }

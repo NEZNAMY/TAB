@@ -25,7 +25,6 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 
@@ -76,31 +75,30 @@ public class NameTagX extends NameTag {
 	 * @param nms - nms storage
 	 * @param tab - tab instance
 	 */
-	public NameTagX(JavaPlugin plugin, NMSStorage nms, TAB tab) {
-		super(tab);
-		markerFor18x = tab.getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
-		disableOnBoats = tab.getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = tab.getConfiguration().getConfig().getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
-		disabledUnlimitedWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
-		if (tab.getConfiguration().getPremiumConfig() != null) {
-			List<String> realList = tab.getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
+	public NameTagX(JavaPlugin plugin, NMSStorage nms) {
+		markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
+		disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
+		spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
+		disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
+		if (TAB.getInstance().getConfiguration().getPremiumConfig() != null) {
+			List<String> realList = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
 			dynamicLines = new ArrayList<>();
 			dynamicLines.addAll(realList);
 			Collections.reverse(dynamicLines);
-			staticLines = tab.getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines");
+			staticLines = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines");
 		}
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		tab.getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, tab));
-		tab.debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
+		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, TAB.getInstance()));
+		TAB.getInstance().debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
 
 	@Override
 	public void load() {
 		super.load();
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			getEntityIdMap().put(((Player) all.getPlayer()).getEntityId(), all);
 			loadArmorStands(all);
 			if (isDisabledWorld(disabledUnlimitedWorlds, all.getWorldName())) {
@@ -108,7 +106,7 @@ public class NameTagX extends NameTag {
 			}
 			if (isInDisabledWorld(all)) continue;
 			loadPassengers(all);
-			for (TabPlayer viewer : tab.getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 				spawnArmorStands(all, viewer, false);
 			}
 		}
@@ -117,9 +115,9 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 			
-			for (TabPlayer p : tab.getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded() || isInDisabledWorld(p)) continue;
 				p.getArmorStandManager().updateVisibility(false);
 				if (disableOnBoats) processBoats(p);
@@ -144,7 +142,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVehicleTickingTask() {
-		tab.getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", TabFeature.NAMETAGX, UsageType.TICKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", getFeatureType(), UsageType.TICKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded()) continue;
@@ -205,7 +203,7 @@ public class NameTagX extends NameTag {
 	public void unload() {
 		super.unload();
 		HandlerList.unregisterAll(eventListener);
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().destroy();
 		}
 		getEntityIdMap().clear();
@@ -222,7 +220,7 @@ public class NameTagX extends NameTag {
 		}
 		if (isInDisabledWorld(connectedPlayer)) return;
 		loadPassengers(connectedPlayer);
-		for (TabPlayer viewer : tab.getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
 		}
 	}
@@ -252,14 +250,14 @@ public class NameTagX extends NameTag {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		getEntityIdMap().remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
-		tab.getCPUManager().runTaskLater(100, "processing onQuit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+		TAB.getInstance().getCPUManager().runTaskLater(100, "processing onQuit", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
 	@Override
@@ -274,7 +272,7 @@ public class NameTagX extends NameTag {
 		p.getArmorStandManager().destroy();
 		loadArmorStands(p);
 		loadPassengers(p);
-		for (TabPlayer viewer : tab.getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			viewer.getArmorStandManager().destroy(p);
 			if (nearby.contains(viewer) && to.equals(viewer.getWorldName())) spawnArmorStands(p, viewer, true);
 		}
@@ -343,7 +341,7 @@ public class NameTagX extends NameTag {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
 			loadPassengers(refreshed);
-			for (TabPlayer viewer : tab.getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 				if (viewer == refreshed) continue;
 				if (viewer.getWorldName().equals(refreshed.getWorldName())) {
 					refreshed.getArmorStandManager().spawn(viewer);
@@ -398,23 +396,23 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.CUSTOMTAGNAME, PropertyUtils.TAGSUFFIX));
+		usedPlaceholders = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.CUSTOMTAGNAME, PropertyUtils.TAGSUFFIX));
 		for (String line : dynamicLines) {
-			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
 		for (String line : staticLines.keySet()) {
-			usedPlaceholders.addAll(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
 		}
-		for (TabPlayer p : tab.getPlayers()) {
-			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), 
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), 
 					p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(),
 					p.getProperty(PropertyUtils.ABOVENAME).getCurrentRawValue(), p.getProperty(PropertyUtils.BELOWNAME).getCurrentRawValue()));
 		}
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.NAMETAGX;
+	public String getFeatureType() {
+		return "Unlimited Nametags";
 	}
 
 	@Override

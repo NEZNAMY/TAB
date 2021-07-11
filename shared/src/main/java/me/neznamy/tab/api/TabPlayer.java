@@ -1,13 +1,10 @@
 package me.neznamy.tab.api;
 
-import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -107,30 +104,7 @@ public interface TabPlayer {
 	 */
 	public void forceRefresh();
 
-
-	/**
-	 * Displays a scoreboard created using TABAPI.createScoreboard method and disables 
-	 * automatic scoreboard assigning until this is reverted using removeCustomScoreboard()
-	 * @see removeCustomScoreboard
-	 */
-	public void showScoreboard(Scoreboard scoreboard);
-
-
-	/**
-	 * Displays a scoreboard defined in premiumconfig.yml and disabled automatic
-	 * scoreboard assignment until this is reverted using removeCustomScoreboard()
-	 * @see removeCustomScoreboard
-	 */
-	public void showScoreboard(String name);
-
-
-	/**
-	 * Removes forced scoreboard sent using one of the showScoreboard methods
-	 * @see showScoreboard
-	 */
-	public void removeCustomScoreboard();
-
-
+	
 	/**
 	 * Returns player's name
 	 * @return Player's name
@@ -188,7 +162,7 @@ public interface TabPlayer {
 	 * @param packet - packet to send
 	 * @param feature - feature to increment sent packet counter of 
 	 */
-	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature);
+	public void sendCustomPacket(UniversalPacketPlayOut packet, Object feature);
 
 	/**
 	 * Sends the player a platform-specific packet
@@ -202,7 +176,7 @@ public interface TabPlayer {
 	 * @param packet - an instance of packet depending on platform
 	 * @param feature - feature to increment sent packet counter of 
 	 */
-	public void sendPacket(Object packet, TabFeature feature);
+	public void sendPacket(Object packet, Object feature);
 
 	/**
 	 * Returns player's property by name
@@ -272,27 +246,6 @@ public interface TabPlayer {
 	public boolean isLoaded();
 
 	/**
-	 * Returns true if player has bossbar visible, false if player hid bossbar(s) using bossbar
-	 * toggle command
-	 * @return true if visible, false if toggled
-	 */
-	public boolean hasBossbarVisible();
-
-	/**
-	 * Sets bossbar visibility for the player and performs all packet sending if new value is
-	 * different than previous value (true->false, false->true)
-	 * @param visible - whether bossbar should be visible or not
-	 * @param sendToggleMessage - if toggle message should be sent or not
-	 */
-	public void setBossbarVisible(boolean visible, boolean sendToggleMessage);
-
-	/**
-	 * Returns list of all bossbars player can currently see
-	 * @return list of all bossbars player can see
-	 */
-	public Set<BossBar> getActiveBossBars();
-
-	/**
 	 * Sets property with specified name to new value. If property did no exist before, it is
 	 * created. If it existed, it is overridden
 	 * @param identifier - property name
@@ -346,26 +299,6 @@ public interface TabPlayer {
 	public boolean isDisguised();
 
 	/**
-	 * Sets scoreboard visibility and sends packets if value changed. Sends toggle message configured
-	 * in premiumconfig if value changed and sendToggleMessage is true
-	 * @param visible - new visibility value
-	 * @param sendToggleMessage - whether toggle message should be sent or not
-	 */
-	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage);
-
-	/**
-	 * Toggles scoreboard visibility and sends toggle message if sendToggleMessage is true
-	 * @param sendToggleMessage - whether toggle message should be sent or not
-	 */
-	public void toggleScoreboard(boolean sendToggleMessage);
-
-	/**
-	 * Returns true if player can see scoreboard, false if toggled
-	 * @return true if visible, false if not
-	 */
-	public boolean isScoreboardVisible();
-
-	/**
 	 * Returns true if player has invisiblity potion, false if not. For bukkit, API is used, for bungeecord
 	 * bukkit bridge is used
 	 * @return true if has invisiblity potion, false if not
@@ -373,29 +306,11 @@ public interface TabPlayer {
 	public boolean hasInvisibilityPotion();
 
 	/**
-	 * Returns true if scoreboard is forced using API method, false if not
-	 * @return true if forced via API, false if not
-	 */
-	public boolean hasForcedScoreboard();
-
-	/**
 	 * Currently only PV hook on bungeecord for global playerlist function. Looking to expand this
 	 * in the future
 	 * @return true if vanished with PV on bungeecord
 	 */
 	public boolean isVanished();
-
-	/**
-	 * Shows specificed bossbar to the player
-	 * @param bossbar - bossbar to show
-	 */
-	public void showBossBar(BossBar bossbar);
-
-	/**
-	 * Hides specified bossbar if previously shown using showBossBar method
-	 * @param bossbar - bossbar to hide back
-	 */
-	public void removeBossBar(BossBar bossbar);
 
 	/**
 	 * Internal method for bukkit bridge data collection (disguise status, invisiblity status)
@@ -421,12 +336,6 @@ public interface TabPlayer {
 	 * @param armorStandManager - new instance
 	 */
 	public void setArmorStandManager(ArmorStandManager armorStandManager);
-
-	/**
-	 * Internal method that returns player's active scoreboard
-	 * @return player's active scoreboard
-	 */
-	public Scoreboard getActiveScoreboard();
 	
 	/**
 	 * Forces new team name for the player until this method is called again with null argument and 

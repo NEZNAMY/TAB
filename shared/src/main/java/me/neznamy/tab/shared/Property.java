@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
@@ -150,8 +149,7 @@ public class Property {
 		long time = System.nanoTime();
 		String string = getCurrentRawValue();
 		for (String identifier : placeholders) {
-			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-			if (pl != null) string = pl.set(string, owner);
+			string = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(string, owner);
 		}
 		string = TAB.getInstance().getPlaceholderManager().color(string);
 		string = applyRemoveStrings(string);
@@ -192,7 +190,7 @@ public class Property {
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
 			RelationalPlaceholder pl = (RelationalPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-			if (pl != null) format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
+			format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
 		}
 		return format;
 	}

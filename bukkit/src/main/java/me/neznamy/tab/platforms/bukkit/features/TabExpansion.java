@@ -7,6 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
@@ -60,10 +62,10 @@ public class TabExpansion extends PlaceholderExpansion {
 		if (player == null) return "";
 		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
 		if (identifier.equals("scoreboard_visible")) {
-			return translate(p.isScoreboardVisible());
+			return translate(hasScoreboardVisible(p));
 		}
 		if (identifier.equals("bossbar_visible")) {
-			return translate(p.hasBossbarVisible());
+			return translate(hasBossBarVisible(p));
 		}
 		if (identifier.equals("ntpreview")) {
 			return translate(p.isPreviewingNametag());
@@ -76,6 +78,18 @@ public class TabExpansion extends PlaceholderExpansion {
 			return new Property(p, "%" + identifier.substring(12) + "%").get();
 		}
 		return getProperty(identifier, p);
+	}
+	
+	private boolean hasBossBarVisible(TabPlayer p) {
+		BossBarManager boss = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		if (boss == null) return false;
+		return boss.hasBossBarVisible(p);
+	}
+	
+	private boolean hasScoreboardVisible(TabPlayer p) {
+		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		if (scoreboard == null) return false;
+		return scoreboard.hasScoreboardVisible(p);
 	}
 	
 	private String translate(boolean b) {

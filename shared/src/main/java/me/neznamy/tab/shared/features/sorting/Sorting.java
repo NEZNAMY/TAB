@@ -8,7 +8,6 @@ import java.util.Map;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
@@ -24,9 +23,6 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  * Class for handling player sorting rules
  */
 public class Sorting {
-
-	//tab instance
-	private TAB tab;
 
 	//map of all registered sorting types
 	private Map<String, SortingType> types = new HashMap<>();
@@ -45,31 +41,30 @@ public class Sorting {
 	 * @param tab - tab instance
 	 * @param nametags - nametag feature
 	 */
-	public Sorting(TAB tab, NameTag nametags) {
-		this.tab = tab;
+	public Sorting(NameTag nametags) {
 		types.put("GROUPS", new Groups());
 		types.put("GROUP_PERMISSIONS", new GroupPermission());
-		if (tab.getConfiguration().getPremiumConfig() != null) {
-			sortingPlaceholder = tab.getConfiguration().getPremiumConfig().getString("sorting-placeholder", "%some_level_maybe?%");
-			caseSensitiveSorting = tab.getConfiguration().getPremiumConfig().getBoolean("case-sentitive-sorting", true);
+		if (TAB.getInstance().getConfiguration().getPremiumConfig() != null) {
+			sortingPlaceholder = TAB.getInstance().getConfiguration().getPremiumConfig().getString("sorting-placeholder", "%some_level_maybe?%");
+			caseSensitiveSorting = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("case-sentitive-sorting", true);
 			types.put("PLACEHOLDER", new Placeholder(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(getSortingPlaceholder()));
 			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(getSortingPlaceholder()));
-			usedSortingTypes = compile(tab.getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
+			usedSortingTypes = compile(TAB.getInstance().getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
 		} else {
 			usedSortingTypes = new ArrayList<>();
-			if (tab.getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
+			if (TAB.getInstance().getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
 				getSorting().add(types.get("GROUP_PERMISSIONS"));
 			} else {
 				getSorting().add(new Groups());
 			}
 		}
 		
-		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", TabFeature.SORTING, UsageType.REFRESHING_TEAM_NAME, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", "Sorting", UsageType.REFRESHING_TEAM_NAME, () -> {
 
-			for (TabPlayer p : tab.getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded() || p.getForcedTeamName() != null || p.hasTeamHandlingPaused()) continue;
 				String newName = getTeamName(p);
 				if (!p.getTeamName().equals(newName)) {
@@ -91,7 +86,7 @@ public class Sorting {
 		for (String element : string.split("_THEN_")) {
 			SortingType type = types.get(element.toUpperCase());
 			if (type == null) {
-				tab.getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ". &bUsing GROUPS");
+				TAB.getInstance().getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ". &bUsing GROUPS");
 			} else {
 				list.add(type);
 			}
@@ -132,7 +127,7 @@ public class Sorting {
 		String potentialTeamName = currentName.toString();
 		if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 		potentialTeamName += (char)id;
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all == p) continue;
 			if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
 				return checkTeamName(p, currentName, id+1);

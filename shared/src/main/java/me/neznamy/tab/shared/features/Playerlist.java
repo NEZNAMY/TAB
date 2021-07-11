@@ -2,22 +2,13 @@ package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
-import me.neznamy.tab.shared.features.types.event.QuitEventListener;
-import me.neznamy.tab.shared.features.types.event.WorldChangeListener;
-import me.neznamy.tab.shared.features.types.packet.PlayerInfoPacketListener;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -26,55 +17,23 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 /**
  * Feature handler for tablist prefix/name/suffix
  */
-public class Playerlist implements JoinEventListener, QuitEventListener, Loadable, WorldChangeListener, Refreshable {
+public class Playerlist extends TabFeature {
 
-	private TAB tab;
-	private Set<String> usedPlaceholders;
-	private List<String> disabledWorlds;
 	private boolean antiOverrideNames;
 	private boolean antiOverrideTablist;
 	private boolean disabling = false;
-	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 
-	public Playerlist(TAB tab) {
-		this.tab = tab;
-		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
-		antiOverrideNames = tab.getConfiguration().getConfig().getBoolean("anti-override.usernames", true) && tab.getFeatureManager().isFeatureEnabled("injection");
+	public Playerlist() {
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
+		antiOverrideNames = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.usernames", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 		refreshUsedPlaceholders();
-		antiOverrideTablist = tab.getConfiguration().getConfig().getBoolean("anti-override.tablist-names", true) && tab.getFeatureManager().isFeatureEnabled("injection");
-		if (antiOverrideTablist) {
-			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
-
-				@Override
-				public TabFeature getFeatureType() {
-					return TabFeature.TABLIST_NAMES;
-				}
-
-				@Override
-				public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-					if (disabling) return;
-					if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
-					for (PlayerInfoData playerInfoData : info.getEntries()) {
-						TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.getUniqueId());
-						if (packetPlayer != null && !playersInDisabledWorlds.contains(packetPlayer)) {
-							playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
-							//preventing plugins from changing player name as nametag feature would not work correctly
-							if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && tab.getFeatureManager().getNameTagFeature() != null && !playerInfoData.getName().equals(packetPlayer.getName()) && antiOverrideNames) {
-								tab.getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.getName() + "\" for viewer " + receiver.getName(), null, false, tab.getErrorManager().getAntiOverrideLog());
-								playerInfoData.setName(packetPlayer.getName());
-							}
-						}
-					}
-				}
-				
-			});
-		}
-		tab.debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", getDisabledWorlds(), antiOverrideTablist));
+		antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.tablist-names", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+		TAB.getInstance().debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", disabledWorlds, antiOverrideTablist));
 	}
 
 	@Override
 	public void load(){
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (isDisabledWorld(disabledWorlds, all.getWorldName())) {
 				playersInDisabledWorlds.add(all);
 				updateProperties(all);
@@ -88,10 +47,10 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 	public void unload(){
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
-		for (TabPlayer p : tab.getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			if (!playersInDisabledWorlds.contains(p)) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
 		}
-		for (TabPlayer all : tab.getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureType());
 		}
 	}
@@ -108,7 +67,7 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
-				for (TabPlayer viewer : tab.getPlayers()) {
+				for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())));
 				}
@@ -126,7 +85,7 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			return null;
 		}
 		String format;
-		AlignedSuffix alignedSuffix = (AlignedSuffix) tab.getFeatureManager().getFeature("alignedsuffix");
+		AlignedSuffix alignedSuffix = (AlignedSuffix) TAB.getInstance().getFeatureManager().getFeature("alignedsuffix");
 		if (alignedSuffix != null) {
 			format = alignedSuffix.formatName(prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
 		} else {
@@ -151,10 +110,10 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			Property prefix = refreshed.getProperty(PropertyUtils.TABPREFIX);
 			Property name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME);
 			Property suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX);
-			for (TabPlayer viewer : tab.getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
 				String format;
-				AlignedSuffix alignedSuffix = (AlignedSuffix) tab.getFeatureManager().getFeature("alignedsuffix");
+				AlignedSuffix alignedSuffix = (AlignedSuffix) TAB.getInstance().getFeatureManager().getFeature("alignedsuffix");
 				if (alignedSuffix != null) {
 					format = alignedSuffix.formatNameAndUpdateLeader(refreshed, viewer);
 				} else {
@@ -171,11 +130,6 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 	}
 
 	@Override
-	public List<String> getUsedPlaceholders() {
-		return new ArrayList<>(usedPlaceholders);
-	}
-
-	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
 			playersInDisabledWorlds.add(connectedPlayer);
@@ -186,7 +140,7 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			refresh(connectedPlayer, true);
 			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 			List<PlayerInfoData> list = new ArrayList<>();
-			for (TabPlayer all : tab.getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getPlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
 				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
 			}
@@ -194,21 +148,38 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) tab.getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
+		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
 	}
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX));
-		for (TabPlayer p : tab.getPlayers()) {
-			usedPlaceholders.addAll(tab.getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue(),
+		usedPlaceholders = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX));
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue(),
 					p.getProperty(PropertyUtils.CUSTOMTABNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TABSUFFIX).getCurrentRawValue()));
+		}
+	}
+	
+	@Override
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		if (disabling || !antiOverrideTablist) return;
+		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+		for (PlayerInfoData playerInfoData : info.getEntries()) {
+			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+			if (packetPlayer != null && !playersInDisabledWorlds.contains(packetPlayer)) {
+				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
+				//preventing plugins from changing player name as nametag feature would not work correctly
+				if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && TAB.getInstance().getFeatureManager().getNameTagFeature() != null && !playerInfoData.getName().equals(packetPlayer.getName()) && antiOverrideNames) {
+					TAB.getInstance().getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.getName() + "\" for viewer " + receiver.getName(), null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
+					playerInfoData.setName(packetPlayer.getName());
+				}
+			}
 		}
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.TABLIST_NAMES;
+	public String getFeatureType() {
+		return "Tablist prefix/suffix";
 	}
 
 	public List<String> getDisabledWorlds() {

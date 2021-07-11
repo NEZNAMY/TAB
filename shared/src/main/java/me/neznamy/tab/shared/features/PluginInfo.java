@@ -2,8 +2,6 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.TabFeature;
-import me.neznamy.tab.shared.features.types.event.CommandListener;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.rgb.TextColor;
@@ -11,7 +9,7 @@ import me.neznamy.tab.shared.rgb.TextColor;
 /*
  * Sends plugin info to command sender
  */
-public class PluginInfo implements CommandListener {
+public class PluginInfo extends TabFeature {
 	
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
@@ -25,7 +23,7 @@ public class PluginInfo implements CommandListener {
 	}
 	
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.OTHER;
+	public String getFeatureType() {
+		return "Plugin info";
 	}
 }

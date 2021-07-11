@@ -6,10 +6,9 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.cpu.TabFeature;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
-import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
@@ -17,7 +16,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 /**
  * Abstract class representing a line of scoreboard
  */
-public abstract class ScoreboardLine implements Refreshable {
+public abstract class ScoreboardLine extends TabFeature {
 
 	//ID of this line
 	protected int lineNumber;
@@ -57,12 +56,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param p - player to unregister line to
 	 */
 	public abstract void unregister(TabPlayer p);
-	
-	@Override
-	public List<String> getUsedPlaceholders() {
-		return usedPlaceholders;
-	}
-	
+
 	/**
 	 * Splits the text into 2 with given max length of first string
 	 * @param string - string to split
@@ -85,8 +79,8 @@ public abstract class ScoreboardLine implements Refreshable {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.SCOREBOARD;
+	public String getFeatureType() {
+		return parent.getFeatureType();
 	}
 	
 	/**
@@ -111,8 +105,8 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param value - number
 	 */
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManager.OBJECTIVE_NAME, fakeplayer, value), TabFeature.SCOREBOARD);
-		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), parent.getFeatureType());
+		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, parent.getFeatureType());
 	}
 	
 	/**
@@ -122,7 +116,7 @@ public abstract class ScoreboardLine implements Refreshable {
 	 * @param teamName - team name
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManager.OBJECTIVE_NAME, fakeplayer, 0), TabFeature.SCOREBOARD);
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabFeature.SCOREBOARD);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), parent.getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), parent.getFeatureType());
 	}
 }

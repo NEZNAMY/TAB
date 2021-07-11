@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -12,19 +11,14 @@ import java.util.UUID;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
-import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.command.level1.PlayerCommand;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
+import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * The core class for player
@@ -43,19 +37,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version = TAB.getInstance().getServerVersion();
 	protected Channel channel;
-	private boolean bossbarVisible;
 
 	private boolean previewingNametag;
-	private Set<BossBar> activeBossBars = new HashSet<>();
 	private Boolean forcedCollision;
 	private boolean onJoinFinished;
 	private boolean hiddenNametag;
 	private Set<UUID> hiddenNametagFor = new HashSet<>();
-
-	private Scoreboard activeScoreboard;
-	private boolean scoreboardVisible;
-	private Scoreboard forcedScoreboard;
-	private String otherPluginScoreboard;
 	private boolean teamHandlingPaused;
 
 	protected Map<String, String> attributes = new HashMap<>();
@@ -115,7 +102,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
 			setProperty(PropertyUtils.NAMETAG,getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		forceRefresh();
 	}
 
@@ -129,7 +115,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		Property pr = getProperty(type.toString());
 		if (pr == null) return;
 		pr.changeRawValue(value);
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		forceRefresh();
 	}
 
@@ -179,40 +164,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void showScoreboard(Scoreboard scoreboard) {
-		if (forcedScoreboard != null) {
-			forcedScoreboard.unregister(this);
-		}
-		if (activeScoreboard != null) {
-			activeScoreboard.unregister(this);
-			activeScoreboard = null;
-		}
-		forcedScoreboard = scoreboard;
-		scoreboard.register(this);
-	}
-
-	@Override
-	public void showScoreboard(String name) {
-		ScoreboardManager sbm = ((ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard"));
-		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard scoreboard = sbm.getScoreboards().get(name);
-		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name: " + name);
-		showScoreboard(scoreboard);
-	}
-
-	@Override
-	public void removeCustomScoreboard() {
-		if (forcedScoreboard == null) return;
-		ScoreboardManager sbm = ((ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard"));
-		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
-		Scoreboard sb = sbm.getScoreboards().get(sbm.detectHighestScoreboard(this));
-		if (sb == null) return; //no scoreboard available
-		activeScoreboard = sb;
-		sb.register(this);
-		forcedScoreboard = null;
-	}
-
-	@Override
 	public ProtocolVersion getVersion() {
 		return version;
 	}
@@ -235,7 +186,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void sendCustomPacket(UniversalPacketPlayOut packet, TabFeature feature) {
+	public void sendCustomPacket(UniversalPacketPlayOut packet, Object feature) {
 		sendCustomPacket(packet);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}
@@ -285,41 +236,6 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void markAsLoaded() {
 		onJoinFinished = true;
-	}
-
-	@Override
-	public boolean hasBossbarVisible() {
-		return bossbarVisible;
-	}
-
-	@Override
-	public void setBossbarVisible(boolean visible, boolean sendToggleMessage) {
-		bossbarVisible = visible;
-		me.neznamy.tab.shared.features.bossbar.BossBar feature = (me.neznamy.tab.shared.features.bossbar.BossBar) TAB.getInstance().getFeatureManager().getFeature("bossbar");
-		if (feature == null) return;
-		if (hasBossbarVisible()) {
-			feature.detectBossBarsAndSend(this);
-			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on"), true);
-			if (feature.isRememberToggleChoice()) {
-				feature.getBossbarOffPlayers().remove(getName());
-				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", feature.getBossbarOffPlayers());
-			}
-		} else {
-			for (BossBar line : getActiveBossBars().toArray(new BossBar[0])) {
-				removeBossBar(line);
-			}
-			getActiveBossBars().clear();
-			if (sendToggleMessage) sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off"), true);
-			if (feature.isRememberToggleChoice() && !feature.getBossbarOffPlayers().contains(getName())) {
-				feature.getBossbarOffPlayers().add(getName());
-				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", feature.getBossbarOffPlayers());
-			}
-		}
-	}
-
-	@Override
-	public Set<BossBar> getActiveBossBars(){
-		return activeBossBars;
 	}
 
 	@Override
@@ -394,64 +310,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return forcedCollision;
 	}
 
-	@Override
-	public void setScoreboardVisible(boolean visible, boolean sendToggleMessage) {
-		if (scoreboardVisible == visible) return;
-		scoreboardVisible = visible;
-		ScoreboardManager scoreboardManager = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
-		if (scoreboardManager == null) return;
-		if (visible) {
-			scoreboardManager.sendHighestScoreboard(this);
-			if (sendToggleMessage) {
-				sendMessage(scoreboardManager.getScoreboardOn(), true);
-			}
-			if (scoreboardManager.isRememberToggleChoice()) {
-				if (scoreboardManager.isHiddenByDefault()) {
-					scoreboardManager.getSbOffPlayers().add(getName());
-				} else {
-					scoreboardManager.getSbOffPlayers().remove(getName());
-				}
-				synchronized (scoreboardManager.getSbOffPlayers()){
-					TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
-				}
-			}
-		} else {
-			scoreboardManager.unregisterScoreboard(this, true);
-			if (sendToggleMessage) {
-				sendMessage(scoreboardManager.getScoreboardOff(), true);
-			}
-			if (scoreboardManager.isRememberToggleChoice()) {
-				if (scoreboardManager.isHiddenByDefault()) {
-					scoreboardManager.getSbOffPlayers().remove(getName());
-				} else {
-					scoreboardManager.getSbOffPlayers().add(getName());
-				}
-				synchronized (scoreboardManager.getSbOffPlayers()){
-					TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(scoreboardManager.getSbOffPlayers()));
-				}
-			}
-		}
-	}
-
-	@Override
-	public void toggleScoreboard(boolean sendToggleMessage) {
-		setScoreboardVisible(!scoreboardVisible, sendToggleMessage);
-	}
-
-	@Override
-	public boolean isScoreboardVisible() {
-		return scoreboardVisible;
-	}
-
-	public void setActiveScoreboard(Scoreboard board) {
-		activeScoreboard = board;
-	}
-
-	@Override
-	public Scoreboard getActiveScoreboard() {
-		return activeScoreboard;
-	}
-
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
 		if (this.permissionGroup.equals(permissionGroup)) return;
 		if (permissionGroup != null) {
@@ -463,25 +321,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (refreshIfChanged) {
 			forceRefresh();
 		}
-	}
-
-	@Override
-	public boolean hasForcedScoreboard() {
-		return forcedScoreboard != null;
-	}
-
-	@Override
-	public void showBossBar(BossBar bossbar) {
-		BossBarLine line = (BossBarLine) bossbar;
-		line.create(this);
-		activeBossBars.add(line);
-	}
-
-	@Override
-	public void removeBossBar(BossBar bossbar) {
-		BossBarLine line = (BossBarLine) bossbar;
-		line.remove(this);
-		activeBossBars.remove(line);
 	}
 
 	@Override
@@ -512,16 +351,8 @@ public abstract class ITabPlayer implements TabPlayer {
 		attributes.put(attribute, value);
 	}
 
-	public void setOtherPluginScoreboard(String objectiveName) {
-		this.otherPluginScoreboard = objectiveName;
-	}
-
-	public String getOtherPluginScoreboard() {
-		return otherPluginScoreboard;
-	}
-
 	@Override
-	public void sendPacket(Object nmsPacket, TabFeature feature) {
+	public void sendPacket(Object nmsPacket, Object feature) {
 		sendPacket(nmsPacket);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}

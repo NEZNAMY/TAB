@@ -16,10 +16,8 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
-import me.neznamy.tab.shared.cpu.TabFeature;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.types.Loadable;
-import me.neznamy.tab.shared.features.types.event.JoinEventListener;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -27,20 +25,18 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoActio
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
-public class Layout implements Loadable, JoinEventListener {
+public class Layout extends TabFeature {
 
-	private TAB tab;
 	private LayoutDirection direction;
 	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
 	private List<ParentGroup> parentGroups = new ArrayList<>();
 	private Map<String, ChildGroup> childGroups = new HashMap<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
 
-	public Layout(TAB tab) {
-		this.tab = tab;
+	public Layout() {
 		try {
-			new File(tab.getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
-			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(tab.getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
+			new File(TAB.getInstance().getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
+			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
 			direction = parseDirection(file.getString("direction", "COLUMNS"));
 			for (int i=1; i<=80; i++) {
 				fixedSlots.put(i, new FixedSlot(i, "", null));
@@ -58,7 +54,7 @@ public class Layout implements Loadable, JoinEventListener {
 			}
 			loadGroups(file);
 		} catch (Exception e) {
-			tab.getErrorManager().criticalError("Failed to load layout feature", e);
+			TAB.getInstance().getErrorManager().criticalError("Failed to load layout feature", e);
 		}
 	}
 	
@@ -66,7 +62,7 @@ public class Layout implements Loadable, JoinEventListener {
 		try {
 			return LayoutDirection.valueOf(value);
 		} catch (Exception e) {
-			tab.getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
+			TAB.getInstance().getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutDirection.values()) + ". &bUsing COLUMNS");
 			return LayoutDirection.COLUMNS;
 		}
 	}
@@ -145,8 +141,8 @@ public class Layout implements Loadable, JoinEventListener {
 	}
 
 	@Override
-	public TabFeature getFeatureType() {
-		return TabFeature.TABLIST_LAYOUT;
+	public String getFeatureType() {
+		return "Tablist layout";
 	}
 
 	@Override
@@ -155,7 +151,7 @@ public class Layout implements Loadable, JoinEventListener {
 		for (FixedSlot s : fixedSlots.values()) {
 			s.onJoin(connectedPlayer);
 		}
-		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(tab.getPlayers())).entrySet()) {
+		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(TAB.getInstance().getPlayers())).entrySet()) {
 			int slot = translateSlot(entry.getKey());
 			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
@@ -172,10 +168,10 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void load() {
-		tab.getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
-			List<TabPlayer> players = sortPlayers(tab.getPlayers());
-			for (TabPlayer p : tab.getPlayers()) {
+			List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
+			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded()) continue;
 				List<PlayerInfoData> list = new ArrayList<>();
 				for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
@@ -185,8 +181,8 @@ public class Layout implements Loadable, JoinEventListener {
 				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
 			}
 		});
-		List<TabPlayer> players = sortPlayers(tab.getPlayers());
-		for (TabPlayer p : tab.getPlayers()) {
+		List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (FixedSlot s : fixedSlots.values()) {
 				s.onJoin(p);
@@ -201,8 +197,8 @@ public class Layout implements Loadable, JoinEventListener {
 
 	@Override
 	public void unload() {
-		List<TabPlayer> players = sortPlayers(tab.getPlayers());
-		for (TabPlayer p : tab.getPlayers()) {
+		List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
+		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());

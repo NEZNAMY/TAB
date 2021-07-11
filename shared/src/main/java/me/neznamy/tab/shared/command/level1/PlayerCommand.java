@@ -73,7 +73,6 @@ public class PlayerCommand extends SubCommand {
 		}
 		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player + "." + type)))) return;
 		TAB.getInstance().getConfiguration().getConfig().set("Users." + player + "." + type, value.length() == 0 ? null : value);
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		TabPlayer pl = TAB.getInstance().getPlayer(player);
 		if (pl != null) {
 			pl.forceRefresh();

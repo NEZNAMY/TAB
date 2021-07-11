@@ -75,7 +75,6 @@ public class PlayerUUIDCommand extends SubCommand {
 		}
 		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player.getUniqueId() + "." + type)))) return;
 		TAB.getInstance().getConfiguration().getConfig().set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
-		TAB.getInstance().getPlaceholderManager().checkForRegistration(value);
 		player.forceRefresh();
 	}
 	
