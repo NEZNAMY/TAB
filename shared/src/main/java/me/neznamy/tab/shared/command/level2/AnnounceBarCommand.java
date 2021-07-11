@@ -46,6 +46,10 @@ public class AnnounceBarCommand extends SubCommand{
 			sendMessage(sender, "Bar not found");
 			return;
 		}
+		if (feature.getAnnouncements().contains(barname)) {
+			sendMessage(sender, "This bossbar is already being announced");
+			return;
+		}
 		new Thread(() -> {
 			try {
 				feature.getAnnouncements().add(barname);
