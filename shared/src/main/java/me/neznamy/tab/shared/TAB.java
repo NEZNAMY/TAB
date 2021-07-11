@@ -143,7 +143,7 @@ public class TAB {
 	/**
 	 * Loads the entire plugin
 	 */
-	public void load() {
+	public String load() {
 		try {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManager(this);
@@ -162,12 +162,15 @@ public class TAB {
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
 			disabled = false;
+			return configuration.getTranslation().getString("reloaded");
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
+			return configuration.getReloadFailedMessage().replace("%file%", brokenFile);
 		} catch (Exception e) {
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
+			return "&cFailed to enable due to an internal plugin error. Check console for more info.";
 		}
 	}
 	

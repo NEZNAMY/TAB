@@ -21,12 +21,7 @@ public class DisabledCommand {
 		List<String> messages = new ArrayList<>();
 		if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 			if (hasReloadPermission) {
-				TAB.getInstance().load();
-				if (TAB.getInstance().isDisabled()) {
-					messages.add(TAB.getInstance().getConfiguration().getReloadFailedMessage().replace("%file%", TAB.getInstance().getBrokenFile()));
-				} else {
-					messages.add(TAB.getInstance().getConfiguration().getTranslation().getString("reloaded"));
-				}
+				messages.add(TAB.getInstance().load());
 			} else {
 				//cannot take message from file when syntax is broken
 				messages.add("&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
@@ -35,7 +30,7 @@ public class DisabledCommand {
 			if (hasAdminPermission) {
 				String command = TAB.getInstance().getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
 				messages.add("&m                                                                                ");
-				messages.add(" &cPlugin is disabled due to a broken configuration file (" + TAB.getInstance().getBrokenFile() + "). Check console for more details.");
+				messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
 				messages.add(" &8>> &3&l" + command + " reload");
 				messages.add("      - &7Reloads plugin and config");
 				messages.add("&m                                                                                ");
