@@ -118,7 +118,7 @@ public class BossBar implements Loadable, JoinEventListener, QuitEventListener, 
 		tab.getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, () -> {
 
 			for (TabPlayer p : tab.getPlayers()) {
-				if (!p.hasBossbarVisible() || playersInDisabledWorlds.contains(p)) continue;
+				if (!p.isLoaded() || !p.hasBossbarVisible() || playersInDisabledWorlds.contains(p)) continue;
 				for (BossBarLine bar : p.getActiveBossBars().toArray(new BossBarLine[0])) {
 					if (!bar.isConditionMet(p)) {
 						bar.remove(p);
