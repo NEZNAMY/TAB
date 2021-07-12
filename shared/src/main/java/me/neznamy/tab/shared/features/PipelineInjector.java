@@ -23,15 +23,13 @@ public abstract class PipelineInjector extends TabFeature {
 	
 	//anti-override rules
 	protected boolean antiOverrideTeams;
-	protected boolean antiOverrideObjectives;
 	
 	/**
 	 * Constructs new instance
 	 * @param tab
 	 */
 	protected PipelineInjector() {
-		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.scoreboard-teams", true);
-		antiOverrideObjectives = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.scoreboard-objectives", true);
+		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	}
 	
 	/**

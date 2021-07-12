@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.sorting.types.GroupPermission;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
+import me.neznamy.tab.shared.features.sorting.types.Permissions;
 import me.neznamy.tab.shared.features.sorting.types.Placeholder;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderAtoZ;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderHighToLow;
@@ -25,10 +26,7 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
 public class Sorting {
 
 	//map of all registered sorting types
-	private Map<String, SortingType> types = new HashMap<>();
-	
-	//placeholder to sort by, if sorting type uses it
-	private String sortingPlaceholder;
+	private Map<String, Function<String, SortingType>> types = new HashMap<>();
 	
 	//if sorting is case senstitive or not
 	private boolean caseSensitiveSorting = true;
@@ -42,30 +40,20 @@ public class Sorting {
 	 * @param nametags - nametag feature
 	 */
 	public Sorting(NameTag nametags) {
-		types.put("GROUPS", new Groups());
-		types.put("GROUP_PERMISSIONS", new GroupPermission());
-		if (TAB.getInstance().getConfiguration().getPremiumConfig() != null) {
-			sortingPlaceholder = TAB.getInstance().getConfiguration().getPremiumConfig().getString("sorting-placeholder", "%some_level_maybe?%");
-			caseSensitiveSorting = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("case-sentitive-sorting", true);
-			types.put("PLACEHOLDER", new Placeholder(getSortingPlaceholder()));
-			types.put("PLACEHOLDER_A_TO_Z", new PlaceholderAtoZ(getSortingPlaceholder()));
-			types.put("PLACEHOLDER_Z_TO_A", new PlaceholderZtoA(getSortingPlaceholder()));
-			types.put("PLACEHOLDER_LOW_TO_HIGH", new PlaceholderLowToHigh(getSortingPlaceholder()));
-			types.put("PLACEHOLDER_HIGH_TO_LOW", new PlaceholderHighToLow(getSortingPlaceholder()));
-			usedSortingTypes = compile(TAB.getInstance().getConfiguration().getPremiumConfig().getString("sorting-type", "GROUPS"));
-		} else {
-			usedSortingTypes = new ArrayList<>();
-			if (TAB.getInstance().getConfiguration().getConfig().getBoolean("sort-players-by-permissions", false)) {
-				getSorting().add(types.get("GROUP_PERMISSIONS"));
-			} else {
-				getSorting().add(new Groups());
-			}
-		}
+		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sentitive-sorting", true);
+		types.put("GROUPS", (options) -> new Groups(options));
+		types.put("PERMISSIONS", (options) -> new Permissions(options));
+		types.put("PLACEHOLDER", (options) -> new Placeholder(options));
+		types.put("PLACEHOLDER_A_TO_Z", (options) -> new PlaceholderAtoZ(options));
+		types.put("PLACEHOLDER_Z_TO_A", (options) -> new PlaceholderZtoA(options));
+		types.put("PLACEHOLDER_LOW_TO_HIGH", (options) -> new PlaceholderLowToHigh(options));
+		types.put("PLACEHOLDER_HIGH_TO_LOW", (options) -> new PlaceholderHighToLow(options));
+		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<String>()));
 		
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", "Sorting", UsageType.REFRESHING_TEAM_NAME, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
-				if (!p.isLoaded() || p.getForcedTeamName() != null || p.hasTeamHandlingPaused()) continue;
+				if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) continue;
 				String newName = getTeamName(p);
 				if (!p.getTeamName().equals(newName)) {
 					nametags.unregisterTeam(p);
@@ -77,21 +65,20 @@ public class Sorting {
 	}
 	
 	/**
-	 * Compiles sorting type chain into classes
-	 * @param string - sorting types separated by "_THEN_"
+	 * Compiles sorting type list into classes
 	 * @return list of compiled sorting types
 	 */
-	private List<SortingType> compile(String string){
+	private List<SortingType> compile(List<String> options){
 		List<SortingType> list = new ArrayList<>();
-		for (String element : string.split("_THEN_")) {
-			SortingType type = types.get(element.toUpperCase());
-			if (type == null) {
-				TAB.getInstance().getErrorManager().startupWarn("\"&e" + type + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ". &bUsing GROUPS");
+		for (String element : options) {
+			String[] arr = element.split(":");
+			if (!types.containsKey(arr[0].toUpperCase())) {
+				TAB.getInstance().getErrorManager().startupWarn("\"&e" + arr[0].toUpperCase() + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ".");
 			} else {
+				SortingType type = types.get(arr[0].toUpperCase()).apply(arr.length == 1 ? "" : arr[1]);
 				list.add(type);
 			}
 		}
-		if (list.isEmpty()) list.add(new Groups());
 		return list;
 	}
 	
@@ -146,10 +133,6 @@ public class Sorting {
 			elements[i] = getSorting().get(i).toString();
 		}
 		return String.join(" then ", elements);
-	}
-
-	public String getSortingPlaceholder() {
-		return sortingPlaceholder;
 	}
 
 	public List<SortingType> getSorting() {

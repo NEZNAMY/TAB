@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 import me.neznamy.tab.shared.rgb.TextColor;
@@ -549,7 +549,7 @@ public class IChatBaseComponent {
 	 * @return organized component from colored text
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
-		String text = TAB.getInstance().getPlaceholderManager().color(originalText);
+		String text = EnumChatFormat.color(originalText);
 		if (TAB.getInstance().getConfiguration().isRgbSupport()) {
 			text = RGBUtils.getInstance().applyFormats(text, false);
 		}

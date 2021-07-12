@@ -1,13 +1,12 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 
 /**
  * Representation of any placeholder
@@ -23,9 +22,6 @@ public abstract class Placeholder {
 	//premium replacements
 	protected Map<Object, String> replacements = new HashMap<>();
 	
-	//placeholders used in outputs of replacements
-	private List<String> outputPlaceholders = new ArrayList<>();
-	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
 	 * @param identifier - placeholder identifier
@@ -36,11 +32,11 @@ public abstract class Placeholder {
 		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
 		this.identifier = identifier;
 		this.refresh = refresh;
-		if (TAB.getInstance().isPremium()) loadReplacements();
+		loadReplacements();
 	}
 
 	private void loadReplacements() {
-		Map<Object, Object> original = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
+		Map<Object, Object> original = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
@@ -54,9 +50,6 @@ public abstract class Placeholder {
 			}
 			if (key.equals("else") && value.equals("%value%")) {
 				TAB.getInstance().print('9', "Hint: Placeholder " + identifier + " has configured \"else\" replacement to %value%, which is default behavior already. You can remove it for cleaner configuration.");
-			}
-			for (String id : TAB.getInstance().getPlaceholderManager().detectAll(entry.getValue().toString())) {
-				if (!outputPlaceholders.contains(id)) outputPlaceholders.add(id);
 			}
 		}
 	}
@@ -76,15 +69,7 @@ public abstract class Placeholder {
 	public int getRefresh() {
 		return refresh;
 	}
-	
-	/**
-	 * Returns list of all nested strings containing placeholder that this placeholder may return
-	 * @return list of all nested strings containing placeholder that this placeholder may return
-	 */
-	public String[] getNestedStrings(){
-		return replacements.values().toArray(new String[0]);
-	}
-	
+
 	/**
 	 * Replaces this placeholder in given string and returns output
 	 * @param s - string to replace this placeholder in
@@ -95,11 +80,11 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), p);
+			String newValue = setPlaceholders(findReplacement(replacements, EnumChatFormat.color(value)), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
-			newValue = TAB.getInstance().getPlaceholderManager().color(newValue);
+			newValue = EnumChatFormat.color(newValue);
 			if (s.equals(identifier)) {
 				//small performance and memory save
 				return newValue;
@@ -146,11 +131,11 @@ public abstract class Placeholder {
 	 * @return text with replaced placeholders in output
 	 */
 	protected String setPlaceholders(String text, TabPlayer p) {
+		if (!text.contains("%")) return text;
 		String replaced = text;
-		for (String s : outputPlaceholders) {
-			if (s.equals("%value%")) continue;
-			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(s);
-			if (pl != null && replaced.contains(pl.getIdentifier())) replaced = pl.set(replaced, p);
+		for (String s : TAB.getInstance().getPlaceholderManager().detectPlaceholders(replaced)) {
+			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;
+			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced, p);
 		}
 		return replaced;
 	}

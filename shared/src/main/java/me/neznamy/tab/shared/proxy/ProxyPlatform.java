@@ -19,7 +19,7 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public Placeholder registerUnknownPlaceholder(String identifier) {
 		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
-		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+		PlaceholderManagerImpl pl = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
 		int refresh = pl.getDefaultRefresh();
 		if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
 		if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
@@ -29,7 +29,7 @@ public abstract class ProxyPlatform implements Platform {
 				return getLastValues().get(p.getName());
 			}
 		};
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(p);
+		pl.registerPlaceholder(p);
 		return p;
 	}
 }

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 
 /**
  * A relational placeholder (output different for every pair of players)
@@ -49,7 +49,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!getLastValues().containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		String value = getLastValues().get(viewer.getName() + "-" + target.getName());
-		String newValue = setPlaceholders(findReplacement(replacements, TAB.getInstance().getPlaceholderManager().color(value)), target);
+		String newValue = setPlaceholders(findReplacement(replacements, EnumChatFormat.color(value)), target);
 		if (newValue.contains("%value%")) {
 			newValue = newValue.replace("%value%", value);
 		}

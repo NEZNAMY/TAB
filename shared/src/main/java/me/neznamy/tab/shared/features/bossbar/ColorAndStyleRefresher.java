@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.List;
+import java.util.HashSet;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
@@ -15,9 +15,6 @@ public class ColorAndStyleRefresher extends TabFeature {
 
 	//bossbar line this text belongs to
 	private BossBarLine line;
-	
-	//list of used placeholders in text
-	private List<String> usedPlaceholders;
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -38,8 +35,8 @@ public class ColorAndStyleRefresher extends TabFeature {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getColor());
-		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getStyle()));
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(line.getColor()));
+		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(line.getStyle()));
 	}
 
 	@Override

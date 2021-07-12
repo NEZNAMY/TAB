@@ -33,18 +33,17 @@ public abstract class ConfigurationFile {
 	 * Constructs new instance and copies file from source to destination if it does not exist
 	 * @param source - source to copy from if file does not exist
 	 * @param destination - destination to load
-	 * @param header - comments on top of the file
 	 * @throws IllegalStateException - if file does not exist and source is null
 	 * @throws IOException - if I/O file operation fails
 	 */
-	protected ConfigurationFile(InputStream source, File destination, List<String> header) throws IOException {
-		this.header = header;
+	protected ConfigurationFile(InputStream source, File destination) throws IOException {
 		this.file = destination;
 		if (file.getParentFile() != null) file.getParentFile().mkdirs();
 		if (!file.exists()) {
 			if (source == null) throw new IllegalStateException("File does not exist and source is null");
 			Files.copy(source, file.toPath());
 		}
+		this.header = detectHeader();
 	}
 	
 	/**
@@ -297,6 +296,7 @@ public abstract class ConfigurationFile {
 	 * @param value - value to save
 	 */
 	public void set(String path, Object value) {
+		TAB.getInstance().getPlatform().sendConsoleMessage("[TAB] Inserting missing config option \"" + path + "\" with value \"" + value + "\"", false);
 		set(values, path, value);
 		save();
 	}
@@ -339,18 +339,18 @@ public abstract class ConfigurationFile {
 		return key;
 	}
 	
-	/**
-	 * Returns whether the file contains header with comments or not
-	 * @return true if contains or configured header is null, false otherwise
-	 */
-	public boolean hasHeader() {
-		if (header == null) return true;
+	private List<String> detectHeader(){
+		List<String> header = new ArrayList<>();
 		for (String line : Configs.readAllLines(file)) {
-			if (line.contains("#")) return true;
+			if (line.startsWith("#")) {
+				header.add(line);
+			} else {
+				break;
+			}
 		}
-		return false;
+		return header;
 	}
-	
+
 	/**
 	 * Inserts header into file
 	 */
@@ -373,8 +373,8 @@ public abstract class ConfigurationFile {
 	 * @param simpleKeys - keys to check
 	 * @return Set of all used identifiers
 	 */
-	public List<String> getUsedPlaceholderIdentifiersRecursive(String... simpleKeys){
-		return TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(getUsedPlaceholders(values, simpleKeys).toArray(new String[0]));
+	public Set<String> getUsedPlaceholders(String... simpleKeys){
+		return getUsedPlaceholders(values, simpleKeys);
 	}
 	
 	/**
@@ -387,7 +387,7 @@ public abstract class ConfigurationFile {
 		Set<String> placeholders = new HashSet<>();
 		for (Entry<String, Object> entry : map.entrySet()) {
 			for (String simpleKey : simpleKeys) {
-				if (String.valueOf(entry.getKey()).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
+				if (String.valueOf(entry.getKey()).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(String.valueOf(entry.getValue())));
 			}
 			if (entry.getValue() instanceof Map) {
 				placeholders.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
@@ -395,7 +395,7 @@ public abstract class ConfigurationFile {
 			if (entry.getValue() instanceof List) {
 				for (Object obj : (List<Object>)entry.getValue()) {
 					for (String simpleKey : simpleKeys) {
-						if (String.valueOf(obj).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectAll(String.valueOf(entry.getValue())));
+						if (String.valueOf(obj).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(String.valueOf(entry.getValue())));
 					}
 				}
 			}

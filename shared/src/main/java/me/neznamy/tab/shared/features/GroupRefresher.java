@@ -17,11 +17,9 @@ public class GroupRefresher extends TabFeature {
 	public static final String DEFAULT_GROUP = "NONE";
 	
 	private boolean groupsByPermissions;
-	private boolean usePrimaryGroup;
 	private List<String> primaryGroupFindingList;
 	
 	public GroupRefresher() {
-		usePrimaryGroup = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-primary-group", true);
 		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 		primaryGroupFindingList = new ArrayList<>();
 		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
@@ -39,10 +37,7 @@ public class GroupRefresher extends TabFeature {
 		if (isGroupsByPermissions()) {
 			return getByPermission(p);
 		}
-		if (isUsePrimaryGroup()) {
-			return getByPrimary(p);
-		}
-		return getFromList(p);
+		return getByPrimary(p);
 	}
 
 	public String getByPrimary(TabPlayer p) {
@@ -90,9 +85,5 @@ public class GroupRefresher extends TabFeature {
 
 	public boolean isGroupsByPermissions() {
 		return groupsByPermissions;
-	}
-
-	public boolean isUsePrimaryGroup() {
-		return usePrimaryGroup;
 	}
 }

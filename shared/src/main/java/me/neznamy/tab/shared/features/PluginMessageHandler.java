@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Universal interface for both proxies to manage plugin messages
@@ -46,7 +47,7 @@ public interface PluginMessageHandler {
 	 * @param player - plugin message receiver
 	 * @param in - incoming message
 	 */
-	public default void onPluginMessage(TabPlayer player, ByteArrayDataInput in) {
+	public default void onPluginMessage(ProxyTabPlayer player, ByteArrayDataInput in) {
 		if (TAB.getInstance().isDisabled()) return; //reload in progress
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){

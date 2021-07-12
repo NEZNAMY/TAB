@@ -3,28 +3,24 @@ package me.neznamy.tab.platforms.bukkit;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
 
 /**
  * Bukkit registry to register bukkit-only placeholders
@@ -37,20 +33,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//plugin instance
 	private JavaPlugin plugin;
 
-	//vault economy
-	private Economy economy;
-
 	//vault chat
 	private Chat chat;
-
-	//placeholder registry buffer
-	private List<Placeholder> placeholders;
 
 	private Object essentials;
 	
 	//essentials methods
 	private Method essGetUser;
-	private Method essGetNickname;
 	private Method essIsAfk;
 	
 	private Method purpurIsAfk;
@@ -64,15 +53,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		this.plugin = plugin;
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			RegisteredServiceProvider<Economy> rspEconomy = Bukkit.getServicesManager().getRegistration(Economy.class);
-			if (rspEconomy != null) economy = rspEconomy.getProvider();
 			RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
 			if (rspChat != null) chat = rspChat.getProvider();
 		}
 		if (essentials != null) {
 			try {
 				essGetUser = Class.forName("com.earth2me.essentials.Essentials").getMethod("getUser", Player.class);
-				essGetNickname = Class.forName("com.earth2me.essentials.User").getMethod("getNickname");
 				essIsAfk = Class.forName("com.earth2me.essentials.User").getMethod("isAfk");
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to load essentials methods", e);
@@ -81,26 +67,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	@Override
-	public List<Placeholder> registerPlaceholders() {
-		placeholders = new ArrayList<>();
-		placeholders.add(new PlayerPlaceholder("%money%", 1000) {
-			public String get(TabPlayer p) {
-				if (economy != null) return decimal2.format(economy.getBalance((Player) p.getPlayer()));
-				return "-";
-			}
-		});
-
-		placeholders.add(new PlayerPlaceholder("%displayname%", 500) {
+	public void registerPlaceholders(PlaceholderManager manager) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
 			public String get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%deaths%", 1000) {
-			public String get(TabPlayer p) {
-				return String.valueOf(((Player) p.getPlayer()).getStatistic(Statistic.DEATHS));
-			}
-		});
-		placeholders.add(new ServerPlaceholder("%tps%", 1000) {
+		manager.registerServerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
 			public String get() {
 				try {
 					Object nmsServer = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
@@ -111,7 +84,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
 			public String get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
@@ -120,34 +93,40 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return String.valueOf(count);
 			}
 		});
-		placeholders.add(new PlayerPlaceholder("%canseestaffonline%", 2000) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
 			public String get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (all.isStaff() && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				}
+				return String.valueOf(count);
+			}
+		});
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%nonstaffonline%", 2000) {
+			public String get(TabPlayer p) {
+				int count = TAB.getInstance().getPlayers().size();
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count--;
 				}
 				return String.valueOf(count);
 			}
 		});
 		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
-			placeholders.add(new PlayerPlaceholder("%health%", 100) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%health%", 100) {
 				public String get(TabPlayer p) {
 					return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
 				}
 			});
 		}
-		registerAFKPlaceholder();
-		registerVaultPlaceholders();
-		registerPositionPlaceholders();
-		registerEssentialsPlaceholders();
-		registerSyncPlaceholders();
-		return placeholders;
+		registerAFKPlaceholder(manager);
+		registerVaultPlaceholders(manager);
+		registerSyncPlaceholders(manager);
 	}
 
 	/**
 	 * Registers AFK placeholder
 	 */
-	private void registerAFKPlaceholder() {
+	private void registerAFKPlaceholder(PlaceholderManager manager) {
 		Plugin afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
 		boolean antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
 		try {
@@ -155,9 +134,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		} catch (NoSuchMethodException | SecurityException e1) {
 			//not purpur
 		}
-		String noAfk = TAB.getInstance().getConfiguration().getConfig().getString("placeholders.afk-no", "");
-		String yesAfk = TAB.getInstance().getConfiguration().getConfig().getString("placeholders.afk-yes", " &4*&4&lAFK&4*&r");
-		placeholders.add(new PlayerPlaceholder("%afk%", 500) {
+		String noAfk = "no";
+		String yesAfk = "yes";
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
 			public String get(TabPlayer p) {
 				try {
 					if (essentials != null) {
@@ -182,87 +161,35 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 				return noAfk;
 			}
-			@Override
-			public String[] getNestedStrings(){
-				return new String[] {yesAfk, noAfk};
-			}
 		});
 	}
 
 	/**
 	 * Registers vault placeholders
 	 */
-	private void registerVaultPlaceholders() {
+	private void registerVaultPlaceholders(PlaceholderManager manager) {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
-			placeholders.add(new PlayerPlaceholder("%vault-prefix%", 500) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public String get(TabPlayer p) {
 					return chat.getPlayerPrefix((Player) p.getPlayer());
 				}
 			});
-			placeholders.add(new PlayerPlaceholder("%vault-suffix%", 500) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public String get(TabPlayer p) {
 					return chat.getPlayerSuffix((Player) p.getPlayer());
 				}
 			});
 		} else {
-			placeholders.add(new ServerPlaceholder("%vault-prefix%", 1000000) {
+			manager.registerServerPlaceholder(new ServerPlaceholder("%vault-prefix%", 1000000) {
 				public String get() {
 					return "";
 				}
 			});
-			placeholders.add(new ServerPlaceholder("%vault-suffix%", 1000000) {
+			manager.registerServerPlaceholder(new ServerPlaceholder("%vault-suffix%", 1000000) {
 				public String get() {
 					return "";
-				}
-			});
-		}
-	}
-
-	/**
-	 * Registers position placeholders
-	 */
-	private void registerPositionPlaceholders() {
-		placeholders.add(new PlayerPlaceholder("%xPos%", 100) {
-			public String get(TabPlayer p) {
-				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockX());
-			}
-		});
-		placeholders.add(new PlayerPlaceholder("%yPos%", 100) {
-			public String get(TabPlayer p) {
-				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockY());
-			}
-		});
-		placeholders.add(new PlayerPlaceholder("%zPos%", 100) {
-			public String get(TabPlayer p) {
-				return String.valueOf(((Player) p.getPlayer()).getLocation().getBlockZ());
-			}
-		});
-	}
-
-	/**
-	 * Registers essentials placeholders
-	 */
-	private void registerEssentialsPlaceholders() {
-		if (essentials != null) {
-			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 1000) {
-				public String get(TabPlayer p) {
-					if (essGetNickname == null) return "<Internal plugin error>";
-					String name = null;
-					try {
-						name = (String) essGetNickname.invoke(essGetUser.invoke(essentials, p.getPlayer()));
-					} catch (Exception e) {
-						TAB.getInstance().getErrorManager().printError("Failed to get Essentials nickname of " + p.getName(), e);
-					}
-					if (name == null || name.length() == 0) return p.getName();
-					return TAB.getInstance().getConfiguration().getEssentialsNickPrefix() + name;
-				}
-			});
-		} else {
-			placeholders.add(new PlayerPlaceholder("%essentialsnick%", 100000000) {
-				public String get(TabPlayer p) {
-					return p.getName();
 				}
 			});
 		}
@@ -271,8 +198,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	/**
 	 * Registers synchronous placeholders
 	 */
-	private void registerSyncPlaceholders() {
-		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+	private void registerSyncPlaceholders(PlaceholderManager manager) {
+		PlaceholderManagerImpl pl = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
 		for (String identifier : pl.getAllUsedPlaceholderIdentifiers()) {
 			if (identifier.startsWith("%sync:")) {
 				int refresh;
@@ -283,7 +210,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				} else {
 					refresh = pl.getDefaultRefresh();
 				}
-				placeholders.add(new PlayerPlaceholder(identifier, refresh) {
+				manager.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 					@Override
 					public String get(TabPlayer p) {

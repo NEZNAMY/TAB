@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -10,8 +8,8 @@ import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -23,9 +21,6 @@ public abstract class ScoreboardLine extends TabFeature {
 	
 	//scoreboard this line belongs to
 	protected ScoreboardImpl parent;
-	
-	//list of used placeholders
-	protected List<String> usedPlaceholders = new ArrayList<>();
 	
 	//scoreboard team name of player in this line
 	protected String teamName;

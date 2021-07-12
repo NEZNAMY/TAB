@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.proxy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -7,6 +10,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	private PluginMessageHandler plm;
+	private Map<String, String> attributes = new HashMap<>();
 	
 	protected ProxyTabPlayer(PluginMessageHandler plm) {
 		this.plm = plm;
@@ -41,6 +45,10 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 			return Boolean.parseBoolean(attributes.get(merge));
 		}
 		return hasPermission0(permission);
+	}
+	
+	public void setAttribute(String attribute, String value) {
+		attributes.put(attribute, value);
 	}
 	
 	public abstract boolean hasPermission0(String permission);

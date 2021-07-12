@@ -24,7 +24,7 @@ public class UpdateChecker {
 				br.close();
 				con.disconnect();
 				if (!versionString.equals(currentRelease)) {
-					tab.getPlatform().sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + tab.getPluginVersion(), true);
+					tab.getPlatform().sendConsoleMessage("&a[TAB] Version " + versionString + " is out! Your version: " + TAB.PLUGIN_VERSION, true);
 					tab.getPlatform().sendConsoleMessage("&a[TAB] Get the update at https://www.spigotmc.org/resources/57806/", true);
 				}
 			} catch (Exception e) {

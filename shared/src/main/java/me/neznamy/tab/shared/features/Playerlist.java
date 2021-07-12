@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -24,10 +23,9 @@ public class Playerlist extends TabFeature {
 	private boolean disabling = false;
 
 	public Playerlist() {
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
-		antiOverrideNames = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.usernames", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
+		antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 		refreshUsedPlaceholders();
-		antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("anti-override.tablist-names", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 		TAB.getInstance().debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", disabledWorlds, antiOverrideTablist));
 	}
 
@@ -153,10 +151,12 @@ public class Playerlist extends TabFeature {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX));
+		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX);
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue(),
-					p.getProperty(PropertyUtils.CUSTOMTABNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TABSUFFIX).getCurrentRawValue()));
+			if (!p.isLoaded()) continue;
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue()));
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.CUSTOMTABNAME).getCurrentRawValue()));
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TABSUFFIX).getCurrentRawValue()));
 		}
 	}
 	

@@ -2,12 +2,14 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
@@ -35,7 +37,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(text);
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(text));
 	}
 
 	@Override
@@ -109,7 +111,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 				TAB.getInstance().getServerVersion().getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug
-			String lastColors = TAB.getInstance().getPlaceholderManager().getLastColors(text.substring(0, Math.min(16, text.length())));
+			String lastColors = EnumChatFormat.getLastColors(text.substring(0, Math.min(16, text.length())));
 			charLimit -= lastColors.length() == 0 ? 2 : lastColors.length();
 		}
 		String prefix;
@@ -121,7 +123,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 				prefix = prefix.substring(0, charLimit-1);
 				suffix = '\u00a7' + suffix;
 			}
-			String last = TAB.getInstance().getPlaceholderManager().getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefix));
+			String last = EnumChatFormat.getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefix));
 			suffix = last + suffix;
 		} else {
 			prefix = text;

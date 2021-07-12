@@ -19,6 +19,7 @@ import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -51,8 +52,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public PlaceholderManagerImpl(){
 		findAllUsed(TAB.getInstance().getConfiguration().getConfig().getValues());
 		findAllUsed(TAB.getInstance().getConfiguration().getAnimationFile().getValues());
-		findAllUsed(TAB.getInstance().getConfiguration().getBossbarConfig().getValues());
-		if (TAB.getInstance().getConfiguration().getPremiumConfig() != null) findAllUsed(TAB.getInstance().getConfiguration().getPremiumConfig().getValues());
 		loadRefreshIntervals();
 		AtomicInteger atomic = new AtomicInteger();
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureType(), UsageType.REPEATING_TASK, () -> {
@@ -236,15 +235,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public void addRegistry(PlaceholderRegistry registry) {
 		this.registry.add(registry);
 	}
-	
-	public void registerPlaceholders() {
-		for (PlaceholderRegistry r : registry) {
-			for (Placeholder p : r.registerPlaceholders()) {
-				registerPlaceholder(p);
-			}
-		}
-	}
-	
+
 	public int getRelationalRefresh(String identifier) {
 		if (relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
 			return relationalPlaceholderRefreshIntervals.get(identifier);
@@ -255,41 +246,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	public Collection<Placeholder> getAllPlaceholders(){
 		return new ArrayList<>(registeredPlaceholders.values());
-	}
-	
-	public Placeholder getPlaceholder(String identifier) {
-		Placeholder p = registeredPlaceholders.get(identifier);
-		if (p == null) {
-			p = TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
-		}
-		return p;
-	}
-	
-	public List<String> getUsedPlaceholderIdentifiersRecursive(String... strings){
-		List<String> base = new ArrayList<>();
-		for (String string : strings) {
-			for (String s : detectAll(color(string))) {
-				if (!base.contains(s)) base.add(s);
-			}
-		}
-		for (String placeholder : new HashSet<>(base)) {
-			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
-			if (pl == null) continue;
-			for (String nestedString : pl.getNestedStrings()) {
-				base.addAll(getUsedPlaceholderIdentifiersRecursive(color(nestedString)));
-			}
-		}
-		return base;
-	}
-	
-	public List<String> detectAll(String text){
-		List<String> placeholders = new ArrayList<>();
-		if (text == null) return placeholders;
-		Matcher m = placeholderPattern.matcher(text);
-		while (m.find()) {
-			placeholders.add(m.group());
-		}
-		return placeholders;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -305,8 +261,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			}
 		}
 		if (object instanceof String) {
-			for (String placeholder : detectAll((String) object)) {
-				getAllUsedPlaceholderIdentifiers().add(color(placeholder));
+			for (String placeholder : detectPlaceholders((String) object)) {
+				getAllUsedPlaceholderIdentifiers().add(EnumChatFormat.color(placeholder));
 			}
 		}
 	}
@@ -316,75 +272,40 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 	}
 	
-	//code taken from bukkit, so it can work on bungee too
-	public String color(String textToTranslate){
-		if (textToTranslate == null) return null;
-		if (!textToTranslate.contains("&")) return textToTranslate;
-		char[] b = textToTranslate.toCharArray();
-		for (int i = 0; i < b.length - 1; i++) {
-			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)){
-				b[i] = '\u00a7';
-				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
-			}
-		}
-		return new String(b);
-	}
-	
-	//code taken from bukkit, so it can work on bungee too
-	public String getLastColors(String input) {
-		String result = "";
-		int length = input.length();
-		for (int index = length - 1; index > -1; index--){
-			char section = input.charAt(index);
-			if ((section == '\u00a7' || section == '&') && (index < length - 1)){
-				char c = input.charAt(index + 1);
-				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
-					result = "\u00a7" + c + result;
-					if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
-						break;
-					}
-				}
-			}
-		}
-		return result;
-	}
-	
-
-	/**
-	 * Registers a player placeholder (placeholder with player-specific output)
-	 * @param placeholder - Placeholder handler
-	 * @see registerServerPlaceholder
-	 * @see registerServerConstant
-	 */
 	@Override
 	public void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
 		registerPlaceholder(placeholder);
-		getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
-		refreshPlaceholderUsage();
 	}
 
-	/**
-	 * Registers a server placeholder (placeholder with same output for all players)
-	 * @param placeholder - Placeholder handler
-	 * @see registerPlayerPlaceholder
-	 * @see registerServerConstant
-	 */
 	@Override
 	public void registerServerPlaceholder(ServerPlaceholder placeholder) {
 		registerPlaceholder(placeholder);
-		getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
-		refreshPlaceholderUsage();
 	}
 
-	/**
-	 * Registers a relational placeholder (different output for each player pair)
-	 * @param placeholder - Placeholder handler
-	 */
 	@Override
 	public void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
 		registerPlaceholder(placeholder);
-		getAllUsedPlaceholderIdentifiers().add(placeholder.getIdentifier());
-		refreshPlaceholderUsage();
+	}
+	
+	@Override
+	public List<String> detectPlaceholders(String text){
+		List<String> placeholders = new ArrayList<>();
+		if (text == null) return placeholders;
+		Matcher m = placeholderPattern.matcher(text);
+		while (m.find()) {
+			placeholders.add(m.group());
+		}
+		return placeholders;
+	}
+	
+	
+	@Override
+	public Placeholder getPlaceholder(String identifier) {
+		Placeholder p = registeredPlaceholders.get(identifier);
+		if (p == null) {
+			p = TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+		}
+		return p;
 	}
 
 	@Override

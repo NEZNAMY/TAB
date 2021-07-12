@@ -95,7 +95,7 @@ public interface BossBar {
 	public void addPlayer(TabPlayer player);
 	
 	/**
-	 * Removes this bossbar from specified player. If the player does not see this bossbat, nothing happens.
+	 * Removes this bossbar from specified player. If the player does not see this bossbar, nothing happens.
 	 * @param player - player to remove this bossbar from
 	 */
 	public void removePlayer(TabPlayer player);

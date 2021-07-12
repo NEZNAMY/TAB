@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -23,11 +24,13 @@ public class BelowName extends TabFeature {
 
 	private String rawNumber;
 	private String rawText;
+	private boolean antiOverride;
 
 	public BelowName() {
-		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("classic-vanilla-belowname.number", "%health%");
-		rawText = TAB.getInstance().getConfiguration().getConfig().getString("classic-vanilla-belowname.text", "Health");
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.belowname", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
+		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
+		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
+		antiOverride = TAB.getInstance().getConfiguration().getConfig().getBoolean("belowname-objective.anti-override", true);
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
 		refreshUsedPlaceholders();
 		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s", rawNumber, rawText, disabledWorlds));
 		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", new TextRefresher());
@@ -108,7 +111,7 @@ public class BelowName extends TabFeature {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawNumber);
+		usedPlaceholders =  new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(rawNumber));
 	}
 
 	@Override
@@ -118,7 +121,7 @@ public class BelowName extends TabFeature {
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (playersInDisabledWorlds.contains(packetReceiver)) return;
+		if (playersInDisabledWorlds.contains(packetReceiver) || !antiOverride) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, packetReceiver.getProperty(PropertyUtils.BELOWNAME_TEXT).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TEXT_USAGE);
 		for (TabPlayer all : TAB.getInstance().getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
@@ -127,7 +130,7 @@ public class BelowName extends TabFeature {
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (playersInDisabledWorlds.contains(receiver)) return false;
+		if (playersInDisabledWorlds.contains(receiver) || !antiOverride) return false;
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (belowname)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 			return true;
@@ -149,7 +152,7 @@ public class BelowName extends TabFeature {
 
 		@Override
 		public void refreshUsedPlaceholders() {
-			usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawText);
+			usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(rawText));
 		}
 
 		@Override

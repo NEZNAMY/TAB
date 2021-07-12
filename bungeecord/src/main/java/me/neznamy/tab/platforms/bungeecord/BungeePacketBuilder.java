@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketBuilder;

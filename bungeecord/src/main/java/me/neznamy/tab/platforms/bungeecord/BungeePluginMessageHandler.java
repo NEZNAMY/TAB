@@ -36,7 +36,7 @@ public class BungeePluginMessageHandler implements Listener, PluginMessageHandle
 		if (!event.getTag().equalsIgnoreCase(CHANNEL_NAME)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
 			long time = System.nanoTime();
-			TabPlayer receiver = TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+			BungeeTabPlayer receiver = (BungeeTabPlayer) TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 			if (receiver == null) return;
 			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setCancelled(true);

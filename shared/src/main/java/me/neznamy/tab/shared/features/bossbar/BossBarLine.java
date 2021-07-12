@@ -18,8 +18,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
  */
 public class BossBarLine implements BossBar {
 
-	//bossbar manager
-	private BossBarManagerImpl manager;
+	private static final String FEATURE_TYPE = "Bossbar";
 	
 	//bossbar name
 	private String name;
@@ -54,8 +53,7 @@ public class BossBarLine implements BossBar {
 	 * @param title - bossbar title
 	 * @param progress - bossbar progress
 	 */
-	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress) {
-		this.manager = manager;
+	public BossBarLine(String name, String displayCondition, String color, String style, String title, String progress) {
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.uuid = UUID.randomUUID();
@@ -123,7 +121,7 @@ public class BossBarLine implements BossBar {
 		this.title = title;
 		for (TabPlayer p : players) {
 			p.setProperty(PropertyUtils.bossbarTitle(name), title);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), manager.getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), FEATURE_TYPE);
 		}
 	}
 
@@ -132,7 +130,7 @@ public class BossBarLine implements BossBar {
 		this.progress = progress;
 		for (TabPlayer p : players) {
 			p.setProperty(PropertyUtils.bossbarProgress(name), progress);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), manager.getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), FEATURE_TYPE);
 		}
 	}
 
@@ -149,7 +147,7 @@ public class BossBarLine implements BossBar {
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), manager.getFeatureType());
+			), FEATURE_TYPE);
 		}
 	}
 
@@ -166,7 +164,7 @@ public class BossBarLine implements BossBar {
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), manager.getFeatureType());
+			), FEATURE_TYPE);
 		}
 	}
 
@@ -209,7 +207,7 @@ public class BossBarLine implements BossBar {
 				parseProgress(player.getProperty(PropertyUtils.bossbarProgress(name)).get())/100, 
 				parseColor(player.getProperty(PropertyUtils.bossbarColor(name)).get()), 
 				parseStyle(player.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), manager.getFeatureType()
+			), FEATURE_TYPE
 		);
 	}
 
@@ -217,7 +215,7 @@ public class BossBarLine implements BossBar {
 	public void removePlayer(TabPlayer player) {
 		if (!players.contains(player)) return;
 		players.remove(player);
-		player.sendCustomPacket(new PacketPlayOutBoss(uuid), manager.getFeatureType());
+		player.sendCustomPacket(new PacketPlayOutBoss(uuid), FEATURE_TYPE);
 	}
 
 	@Override

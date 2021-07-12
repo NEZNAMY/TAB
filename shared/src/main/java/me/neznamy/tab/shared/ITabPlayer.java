@@ -1,20 +1,17 @@
 package me.neznamy.tab.shared;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.command.level1.PlayerCommand;
 import me.neznamy.tab.shared.features.GroupRefresher;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
@@ -35,17 +32,11 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	private Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
-	protected ProtocolVersion version = TAB.getInstance().getServerVersion();
+	protected ProtocolVersion version;
 	protected Channel channel;
 
 	private boolean previewingNametag;
-	private Boolean forcedCollision;
 	private boolean onJoinFinished;
-	private boolean hiddenNametag;
-	private Set<UUID> hiddenNametagFor = new HashSet<>();
-	private boolean teamHandlingPaused;
-
-	protected Map<String, String> attributes = new HashMap<>();
 
 	protected void init() {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
@@ -106,19 +97,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void setValuePermanently(EnumProperty type, String value) {
-		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " permanently to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		((PlayerCommand)TAB.getInstance().getCommand().getSubcommands().get("player")).savePlayer(null, getName(), type.toString(), value);
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty(PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
-		}
-		Property pr = getProperty(type.toString());
-		if (pr == null) return;
-		pr.changeRawValue(value);
-		forceRefresh();
-	}
-
-	@Override
 	public String getTemporaryValue(EnumProperty type) {
 		Property pr = getProperty(type.toString());
 		return pr == null ? null : pr.getTemporaryValue();
@@ -137,25 +115,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public String getOriginalValue(EnumProperty type) {
 		return getProperty(type.toString()).getOriginalRawValue();
-	}
-
-	@Override
-	public void hideNametag() {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
-		hiddenNametag = true;
-		TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this);
-	}
-
-	@Override
-	public void showNametag() {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
-		hiddenNametag = false;
-		TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this);
-	}
-
-	@Override
-	public boolean hasHiddenNametag() {
-		return hiddenNametag;
 	}
 
 	@Override
@@ -217,11 +176,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public boolean isPreviewingNametag() {
 		return previewingNametag;
-	}
-
-	@Override
-	public boolean isStaff() {
-		return hasPermission("tab.staff");
 	}
 
 	@Override
@@ -300,16 +254,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return teamNameNote;
 	}
 
-	@Override
-	public void setCollisionRule(Boolean collision) {
-		this.forcedCollision = collision;
-	}
-
-	@Override
-	public Boolean getCollisionRule() {
-		return forcedCollision;
-	}
-
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
 		if (this.permissionGroup.equals(permissionGroup)) return;
 		if (permissionGroup != null) {
@@ -324,78 +268,14 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void hideNametag(UUID viewer) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
-		if (hiddenNametagFor.add(viewer)) {
-			TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this, TAB.getInstance().getPlayer(viewer));
-			if (armorStandManager != null) armorStandManager.updateVisibility(true);
-		}
-	}
-
-	@Override
-	public void showNametag(UUID viewer) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null) return;
-		if (hiddenNametagFor.remove(viewer)) {
-			TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(this, TAB.getInstance().getPlayer(viewer));
-			if (armorStandManager != null) armorStandManager.updateVisibility(true);
-		}
-	}
-
-	@Override
-	public boolean hasHiddenNametag(UUID viewer) {
-		return hiddenNametagFor.contains(viewer);
-	}
-
-	@Override
-	public void setAttribute(String attribute, String value) {
-		attributes.put(attribute, value);
-	}
-
-	@Override
 	public void sendPacket(Object nmsPacket, Object feature) {
 		sendPacket(nmsPacket);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}
-	
-	@Override
-	public void forceTeamName(String name) {
-		if (String.valueOf(forcedTeamName).equals(name)) return;
-		if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
-		NameTag nametags = TAB.getInstance().getFeatureManager().getNameTagFeature();
-		if (nametags == null) return;
-		nametags.unregisterTeam(this);
-		forcedTeamName = name;
-		nametags.registerTeam(this);
-		if (name != null) teamNameNote = "Set using API";
-	}
-	
-	@Override
-	public String getForcedTeamName() {
-		return forcedTeamName;
-	}
-	
-	@Override
-	public void pauseTeamHandling() {
-		if (teamHandlingPaused) return;
-		NameTag f = TAB.getInstance().getFeatureManager().getNameTagFeature();
-		if (f != null && !f.isDisabledWorld(getWorldName())) {
-			f.unregisterTeam(this);
-		}
-		teamHandlingPaused = true; //setting to true after, so unregisterTeam method runs
-	}
 
-	@Override
-	public void resumeTeamHandling() {
-		if (!teamHandlingPaused) return;
-		teamHandlingPaused = false; //setting to false before, so registerTeam method runs
-		NameTag f = TAB.getInstance().getFeatureManager().getNameTagFeature();
-		if (f != null && !f.isDisabledWorld(getWorldName())) {
-			f.registerTeam(this);
-		}
-	}
-	
-	@Override
-	public boolean hasTeamHandlingPaused() {
-		return teamHandlingPaused;
-	}
+	/**
+	 * Returns gamemode of the player (0 for survival, 1 creative, 2 adventure, 3 spectator)
+	 * @return gamemode of the player
+	 */
+	public abstract int getGamemode();
 }

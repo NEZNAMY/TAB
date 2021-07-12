@@ -76,17 +76,15 @@ public class NameTagX extends NameTag {
 	 * @param tab - tab instance
 	 */
 	public NameTagX(JavaPlugin plugin, NMSStorage nms) {
-		markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false);
-		disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true);
-		spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("unlimited-nametag-prefix-suffix-mode.space-between-lines", 0.22);
-		disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-worlds.unlimited-nametags", Arrays.asList("disabledworld"));
-		if (TAB.getInstance().getConfiguration().getPremiumConfig() != null) {
-			List<String> realList = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("unlimited-nametag-mode-dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
-			dynamicLines = new ArrayList<>();
-			dynamicLines.addAll(realList);
-			Collections.reverse(dynamicLines);
-			staticLines = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("unlimited-nametag-mode-static-lines");
-		}
+		markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
+		disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
+		spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
+		disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
+		List<String> realList = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
+		dynamicLines = new ArrayList<>();
+		dynamicLines.addAll(realList);
+		Collections.reverse(dynamicLines);
+		staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
 		refreshUsedPlaceholders();
 		eventListener = new EventListener(this);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
@@ -396,17 +394,18 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TAGPREFIX, PropertyUtils.CUSTOMTAGNAME, PropertyUtils.TAGSUFFIX));
+		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.TAGPREFIX, PropertyUtils.CUSTOMTAGNAME, PropertyUtils.TAGSUFFIX);
 		for (String line : dynamicLines) {
-			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(line));
 		}
 		for (String line : staticLines.keySet()) {
-			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(line));
+			usedPlaceholders.addAll(TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(line));
 		}
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue(), 
-					p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue(), p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(),
-					p.getProperty(PropertyUtils.ABOVENAME).getCurrentRawValue(), p.getProperty(PropertyUtils.BELOWNAME).getCurrentRawValue()));
+			if (!p.isLoaded()) continue;
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue())); 
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue()));
+			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue()));
 		}
 	}
 

@@ -18,7 +18,7 @@ public class HeaderFooter extends TabFeature {
 	private static final String LINE_SEPARATOR = "\n\u00a7r";
 	
 	public HeaderFooter() {
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.header-footer", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
 		refreshUsedPlaceholders();
 		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s", disabledWorlds));
 	}
@@ -127,7 +127,7 @@ public class HeaderFooter extends TabFeature {
 	
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.HEADER, PropertyUtils.FOOTER);
+		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.HEADER, PropertyUtils.FOOTER);
 	}
 
 	@Override

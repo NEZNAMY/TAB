@@ -43,7 +43,7 @@ public class GlobalPlayerlist extends TabFeature {
 			}
 		}
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
-				spyServers, sharedServers, displayAsSpectators, isVanishedAsSpectators(), isolateUnlistedServers));
+				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
 		startTask();
 	}
 	

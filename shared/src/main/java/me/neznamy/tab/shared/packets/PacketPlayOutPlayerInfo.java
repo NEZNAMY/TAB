@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -50,8 +50,8 @@ public class PacketPlayOutPlayerInfo extends UniversalPacketPlayOut {
 	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
-		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		return TAB.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
 	}
 
 	/**

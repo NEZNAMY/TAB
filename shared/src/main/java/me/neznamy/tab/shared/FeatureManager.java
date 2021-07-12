@@ -122,7 +122,7 @@ public class FeatureManager {
 	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		long time = System.nanoTime();
-		PacketPlayOutPlayerInfo info = TAB.getInstance().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
+		PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();
@@ -271,7 +271,7 @@ public class FeatureManager {
 	 */
 	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();
@@ -289,7 +289,7 @@ public class FeatureManager {
 	 */
 	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();

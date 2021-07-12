@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
@@ -29,7 +29,7 @@ public class Main extends Plugin {
 			return;
 		}
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
-		TAB.setInstance(new TAB(new BungeePlatform(this, plm), new BungeePacketBuilder(), ProtocolVersion.values()[1]));
+		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.values()[1]));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener(plm));
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
@@ -37,7 +37,6 @@ public class Main extends Plugin {
 		Metrics metrics = new Metrics(this, 10535);
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
-		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 	
 	/**

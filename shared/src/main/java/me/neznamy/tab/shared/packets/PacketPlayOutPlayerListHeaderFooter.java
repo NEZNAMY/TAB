@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.InvocationTargetException;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -44,15 +44,12 @@ public class PacketPlayOutPlayerListHeaderFooter extends UniversalPacketPlayOut 
 	 */
 	@Override
 	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
+		return TAB.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
 	}
-	
-	/**
-	 * An override to toString() method for better output
-	 */
+
 	@Override
 	public String toString() {
-		return String.format("PacketPlayOutPlayerListHeaderFooter{header=%s,footer=%s}", getHeader(), getFooter());
+		return String.format("PacketPlayOutPlayerListHeaderFooter{header=%s,footer=%s}", header, footer);
 	}
 
 	public IChatBaseComponent getFooter() {

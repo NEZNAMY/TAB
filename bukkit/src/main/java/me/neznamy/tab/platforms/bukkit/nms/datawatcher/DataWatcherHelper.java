@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import java.util.Optional;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
@@ -70,7 +70,7 @@ public class DataWatcherHelper {
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
 		if (NMSStorage.getInstance().getMinorVersion() >= 13) {
 			try {
-				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to create component", e);
 			}

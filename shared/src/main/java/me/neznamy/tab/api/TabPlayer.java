@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -19,13 +18,6 @@ public interface TabPlayer {
 	 * @param value The value to be used
 	 */
 	public void setValueTemporarily(EnumProperty type, String value);
-
-	/**
-	 * Changes the requested property of a player permanently (saved into config too)
-	 * @param type Type of property
-	 * @param value The value to be used
-	 */
-	public void setValuePermanently(EnumProperty type, String value);
 
 	/**
 	 * Returns temporary value of player's property or null if not set
@@ -57,60 +49,15 @@ public interface TabPlayer {
 	public String getOriginalValue(EnumProperty type);
 
 	/**
-	 * Makes player's nametag globally invisible
-	 * @see showNametag 
-	 * @see hasHiddenNametag
-	 */
-	public void hideNametag();
-
-	/**
-	 * Hides player's nametag for specified player until it's shown again
-	 * @param viewer - player to hide nametag for
-	 */
-	public void hideNametag(UUID viewer);
-
-	/**
-	 * Makes player's nametag visible again
-	 * @see hideNametag
-	 * @see hasHiddenNametag
-	 */
-	public void showNametag();
-
-	/**
-	 * Shows player's nametag for specified viewer if it was hidden before
-	 * @param viewer - player to show nametag back for
-	 */
-	public void showNametag(UUID viewer);
-
-
-	/**
-	 * Return whether player has hidden nametag or not
-	 * @return Whether player has hidden nametag or not
-	 * @see hideNametag
-	 * @see showNametag
-	 */
-	public boolean hasHiddenNametag();
-
-	/**
-	 * Returns true if nametag is hidden for specified viewer, false if not
-	 * @param viewer - player to check visibility status for
-	 * @return true if hidden, false if not
-	 */
-	public boolean hasHiddenNametag(UUID viewer);
-
-
-	/**
 	 * Refreshes all visuals on the player
 	 */
 	public void forceRefresh();
 
-	
 	/**
 	 * Returns player's name
 	 * @return Player's name
 	 */
 	public String getName();
-
 
 	/**
 	 * Returns player's UUID
@@ -133,7 +80,7 @@ public interface TabPlayer {
 
 	/**
 	 * Returns platform-specific entity
-	 * @return an instance of bukkit/bungee/velocity player depending on platform
+	 * @return an instance of bukkit/bungee player depending on platform
 	 */
 	public Object getPlayer();
 
@@ -216,12 +163,6 @@ public interface TabPlayer {
 	public boolean isPreviewingNametag();
 
 	/**
-	 * Returns whether player has tab.staff permission or not
-	 * @return whether player is staff or not
-	 */
-	public boolean isStaff();
-
-	/**
 	 * Returns player's channel or null if server is 1.7 or older
 	 * @return player's channel
 	 */
@@ -280,18 +221,6 @@ public interface TabPlayer {
 	public String getTeamNameNote();
 
 	/**
-	 * Forces collision rule for the player. Setting it to null will remove forced value
-	 * @param collision - forced collision rule
-	 */
-	public void setCollisionRule(Boolean collision);
-
-	/**
-	 * Returns forced collision rule or null if collision is not forced using setCollisionRule
-	 * @return forced value or null if not forced
-	 */
-	public Boolean getCollisionRule();
-
-	/**
 	 * Returns true if player is disguised using iDisguide or LibsDisguises on bukkit, LibsDisguises 
 	 * only on bungeecord via bukkit bridge
 	 * @return true if player is disguised, false if not
@@ -313,18 +242,11 @@ public interface TabPlayer {
 	public boolean isVanished();
 
 	/**
-	 * Internal method for bukkit bridge data collection (disguise status, invisiblity status)
-	 * @param attribute - attribute name
-	 * @param value - attribute value
-	 */
-	public void setAttribute(String attribute, String value);
-
-	/**
 	 * Returns true if player is online according to server
 	 * @return true if online, false if not
 	 */
 	public boolean isOnline();
-	
+
 	/**
 	 * Returns player's armor stand manager if unlimited nametag mode is enabled, null if disabled
 	 * @return player's armor stand manager
@@ -336,41 +258,4 @@ public interface TabPlayer {
 	 * @param armorStandManager - new instance
 	 */
 	public void setArmorStandManager(ArmorStandManager armorStandManager);
-	
-	/**
-	 * Forces new team name for the player until this method is called again with null argument and 
-	 * performs all actions to change player's team name
-	 * @param name - forced team name
-	 */
-	public void forceTeamName(String name);
-	
-	/**
-	 * Returns forced team name or null if not forced
-	 * @return forced team name or null if not forced
-	 */
-	public String getForcedTeamName();
-	
-	/**
-	 * Returns gamemode of the player (0 for survival, 1 creative, 2 adventure, 3 spectator)
-	 * @return gamemode of the player
-	 */
-	public int getGamemode();
-	
-	/**
-	 * Unregisters player's team and no longer handles it, as well as disables anti-override for teams.
-	 * This can be resumed using resumeTeamHandling(). If team handling was paused already, nothing happens.
-	 */
-	public void pauseTeamHandling();
-	
-	/**
-	 * Resumes team handling if it was before paused using pauseTeamHandling(), if not, nothing happens
-	 */
-	public void resumeTeamHandling();
-	
-	/**
-	 * Returns true if team handling is paused for this player using pauseTeamHandling(), false if not or 
-	 * it was resumed already using resumeTeamHandling
-	 * @return true if paused, false if not
-	 */
-	public boolean hasTeamHandlingPaused();
 }

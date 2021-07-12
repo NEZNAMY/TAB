@@ -19,13 +19,6 @@ public class ReloadCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		TAB.getInstance().unload();
-		TAB.getInstance().load();
-		if (TAB.getInstance().isDisabled()) {
-			if (sender != null) {
-				sendMessage(sender, TAB.getInstance().getConfiguration().getReloadFailedMessage().replace("%file%", TAB.getInstance().getBrokenFile()));
-			}
-		} else {
-			sendMessage(sender, getTranslation("reloaded"));
-		}
+		sendMessage(sender, TAB.getInstance().load());
 	}
 }

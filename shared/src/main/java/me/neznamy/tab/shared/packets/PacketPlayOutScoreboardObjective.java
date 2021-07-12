@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.InvocationTargetException;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -57,8 +57,8 @@ public class PacketPlayOutScoreboardObjective extends UniversalPacketPlayOut {
 	 * @throws InstantiationException 
 	 */
 	@Override
-	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		return TAB.getInstance().getPacketBuilder().build(this, clientVersion);
+	protected Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		return TAB.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
 	}
 	
 	/**

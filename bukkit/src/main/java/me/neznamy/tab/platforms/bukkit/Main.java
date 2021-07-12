@@ -16,9 +16,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.viaversion.viaversion.api.Via;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -33,7 +33,7 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
-		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), new BukkitPacketBuilder(NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
+		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
 		}
@@ -47,7 +47,6 @@ public class Main extends JavaPlugin {
 		metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getPermissionPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("server_version", () -> "1." + NMSStorage.getInstance().getMinorVersion() + ".x"));
-		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 
 	@Override
@@ -129,7 +128,7 @@ public class Main extends JavaPlugin {
 			int version = Via.getAPI().getPlayerVersion(player.getUniqueId());
 			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
 			return version;
-		} catch (Exception e) {
+		} catch (Exception | NoClassDefFoundError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion(), e);
 			return TAB.getInstance().getServerVersion().getNetworkId();
 		}

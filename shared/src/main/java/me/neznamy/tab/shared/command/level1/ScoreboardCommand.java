@@ -24,7 +24,7 @@ public class ScoreboardCommand extends SubCommand {
 			sendMessage(sender, "&cScoreboard feature is not enabled, therefore toggle command cannot be used.");
 			return;
 		}
-		if (scoreboard.requiresPermissionToToggle() && !hasPermission(sender, "tab.togglescoreboard")) {
+		if (!hasPermission(sender, "tab.togglescoreboard")) {
 			sendMessage(sender, getTranslation("no_permission"));
 			return;
 		}

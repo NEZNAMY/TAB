@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.api;
 
 /**
  * Enum class representing all possibly used protocol versions

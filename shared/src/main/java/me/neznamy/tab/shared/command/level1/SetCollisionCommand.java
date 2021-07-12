@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.command.level1;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.features.NameTag;
 
 public class SetCollisionCommand extends SubCommand {
 
@@ -15,6 +16,11 @@ public class SetCollisionCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
+		NameTag feature = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		if (feature == null) {
+			sendMessage(sender, "This command requires nametag feature enabled");
+			return;
+		}
 		if (args.length == 2) {
 			TabPlayer target = TAB.getInstance().getPlayer(args[0]);
 			if (target == null) {
@@ -22,9 +28,8 @@ public class SetCollisionCommand extends SubCommand {
 				return;
 			}
 			try {
-				boolean value = Boolean.parseBoolean(args[1]);
-				target.setCollisionRule(value);
-				TAB.getInstance().getFeatureManager().getNameTagFeature().updateTeamData(target);
+				feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
+				feature.updateTeamData(target);
 			} catch (Exception e) {
 				sendMessage(sender, "&c\"" + args[1] + "\" is not a valid true/false value");
 			}

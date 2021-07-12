@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 
@@ -78,18 +79,24 @@ public interface Platform {
 	 * @return name of config file of the platform
 	 */
 	public String getConfigName();
+	
+	/**
+	 * Returns platform-specific packet builder
+	 * @return platform-specific packet builder
+	 */
+	public PacketBuilder getPacketBuilder();
 
 	/**
 	 * Loads universal features present on all platforms with the same configuration
 	 */
 	public default void loadUniversalFeatures() {
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().getConfig().getBoolean("enable-header-footer", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter());
+		if (tab.getConfiguration().getConfig().getBoolean("header-footer.enabled", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter());
 		if (tab.getConfiguration().isRemoveGhostPlayers()) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
-		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("change-tablist-prefix-suffix", true)) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
 			Playerlist playerlist = new Playerlist();
 			tab.getFeatureManager().registerFeature("playerlist", playerlist);
-			if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			if (tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
 		tab.getFeatureManager().registerFeature("group", new GroupRefresher());
 		tab.getFeatureManager().registerFeature("info", new PluginInfo());

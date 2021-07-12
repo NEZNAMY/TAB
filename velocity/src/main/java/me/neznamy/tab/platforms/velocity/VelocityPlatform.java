@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
@@ -26,6 +27,8 @@ public class VelocityPlatform extends ProxyPlatform {
 
 	//instance of proxyserver
 	private ProxyServer server;
+	
+	private VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -51,11 +54,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		tab.getPlaceholderManager().addRegistry(new VelocityPlaceholderRegistry(server));
-		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
-		tab.getPlaceholderManager().registerPlaceholders();
+		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		loadUniversalFeatures();
-		if (tab.getConfiguration().getBossbarConfig().getBoolean("bossbar-enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
+		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 		for (Player p : server.getAllPlayers()) {
 			tab.addPlayer(new VelocityTabPlayer(p, plm));
@@ -95,5 +97,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public String getConfigName() {
 		return "velocityconfig.yml";
+	}
+
+	@Override
+	public PacketBuilder getPacketBuilder() {
+		return packetBuilder;
 	}
 }

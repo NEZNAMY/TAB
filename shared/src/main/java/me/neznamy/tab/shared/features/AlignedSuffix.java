@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
@@ -25,7 +26,7 @@ public class AlignedSuffix extends TabFeature {
 	public AlignedSuffix(Playerlist playerlist) {
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
-		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("character-width-overrides");
+		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths.put((char)(int)entry.getKey(), (byte)(int)entry.getValue());
 		}
@@ -79,7 +80,7 @@ public class AlignedSuffix extends TabFeature {
 			//will investigate later
 			newFormat += buildSpaces(12);
 		}
-		newFormat += TAB.getInstance().getPlaceholderManager().getLastColors(prefixAndName) + suffix;
+		newFormat += EnumChatFormat.getLastColors(prefixAndName) + suffix;
 		return newFormat;
 	}
 	

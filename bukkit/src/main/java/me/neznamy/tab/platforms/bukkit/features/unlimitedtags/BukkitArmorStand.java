@@ -216,7 +216,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	protected Object getTeleportPacket(TabPlayer viewer) {
 		try {
-			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(entityId, getArmorStandLocationFor(viewer));
+			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(entityId, getArmorStandLocationFor(viewer));
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityTeleport", e);
 		}
@@ -228,7 +228,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	protected Object getDestroyPacket() {
 		try {
-			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityDestroyPacket(entityId);
+			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityDestroyPacket(entityId);
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityDestroy", e);
 		}
@@ -241,7 +241,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	protected Object getMetadataPacket(DataWatcher dataWatcher) {
 		try {
-			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
+			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityMetadata", e);
 		}
@@ -255,7 +255,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	protected Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
 		try {
-			return ((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);
+			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutSpawnEntityLiving", e);
 		}
@@ -275,9 +275,10 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	protected boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || (((NameTagX)TAB.getInstance().getFeatureManager().getFeature("nametagx")).getPlayersOnBoats().contains(owner))) return false;
+		NameTagX feature = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
+		if (((BukkitTabPlayer)owner).isDisguised() || feature.getPlayersOnBoats().contains(owner)) return false;
 		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !owner.hasHiddenNametag() && property.get().length() > 0;
+		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !feature.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 
 	/**
@@ -358,7 +359,8 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visibility;
-		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || owner.hasHiddenNametag(viewer.getUniqueId())) {
+		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || 
+				((NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx")).hasHiddenNametag(owner, viewer)) {
 			visibility = false;
 		} else {
 			visibility = visible;

@@ -51,9 +51,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//list of players with disabled scoreboard
 	private Set<String> sbOffPlayers = new HashSet<>();
 	
-	//permission required to toggle
-	private boolean permToToggle;
-	
 	//if use-numbers is false, displaying this number in all lines
 	private int staticNumber;
 	
@@ -88,31 +85,30 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @param tab - tab instance
 	 */
 	public ScoreboardManagerImpl() {
-		toggleCommand = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboard.toggle-command", "/sb");
-		useNumbers = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("scoreboard.use-numbers", false);
-		permToToggle = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("scoreboard.permission-required-to-toggle", false);
-		disabledWorlds = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
-		defaultScoreboard = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		perWorld = TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("scoreboard.per-world");
-		rememberToggleChoice = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("scoreboard.remember-toggle-choice", false);
-		hiddenByDefault = TAB.getInstance().getConfiguration().getPremiumConfig().getBoolean("scoreboard.hidden-by-default", false);
-		scoreboardOn = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboard-on", "&2Scorebord enabled");
-		scoreboardOff = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboard-off", "&7Scoreboard disabled");
+		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
+		useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
+		defaultScoreboard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
+		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-world");
+		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
+		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
+		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-on", "&2Scorebord enabled");
+		scoreboardOff = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-off", "&7Scoreboard disabled");
 		if (rememberToggleChoice) {
 			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(TAB.getInstance().getConfiguration().getPlayerData("scoreboard-off")));
 		}
-		staticNumber = TAB.getInstance().getConfiguration().getPremiumConfig().getInt("scoreboard.static-number", 0);
-		joinDelay = TAB.getInstance().getConfiguration().getPremiumConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
+		staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
+		joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
-		for (Object scoreboard : TAB.getInstance().getConfiguration().getPremiumConfig().getConfigurationSection("scoreboards").keySet()) {
-			String condition = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".display-condition");
-			String childBoard = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".if-condition-not-met");
-			String title = TAB.getInstance().getConfiguration().getPremiumConfig().getString("scoreboards." + scoreboard + ".title");
+		for (Object scoreboard : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards").keySet()) {
+			String condition = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".display-condition");
+			String childBoard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".if-condition-not-met");
+			String title = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".title");
 			if (title == null) {
 				title = "<Title not defined>";
 				TAB.getInstance().getErrorManager().missingAttribute("Scoreboard", scoreboard, "title");
 			}
-			List<String> lines = TAB.getInstance().getConfiguration().getPremiumConfig().getStringList("scoreboards." + scoreboard + ".lines");
+			List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.scoreboards." + scoreboard + ".lines");
 			if (lines == null) {
 				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				TAB.getInstance().getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
@@ -122,9 +118,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
 		}
 		checkForMisconfiguration();
-		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, permToToggle=%s, disabledWorlds=%s"
+		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
 				+ ", defaultScoreboard=%s, perWorld=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
-				toggleCommand, useNumbers, permToToggle, disabledWorlds, defaultScoreboard, perWorld, rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
+				toggleCommand, useNumbers, disabledWorlds, defaultScoreboard, perWorld, rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
 	}
 
 	/**
@@ -419,10 +415,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	
 	public Map<TabPlayer, String> getOtherPluginScoreboards(){
 		return otherPluginScoreboard;
-	}
-	
-	public boolean requiresPermissionToToggle() {
-		return permToToggle;
 	}
 
 	@Override

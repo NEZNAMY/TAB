@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.util.List;
-
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
-import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 
@@ -26,15 +24,14 @@ public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 	}
 	
 	@Override
-	public List<Placeholder> registerPlaceholders() {
-		List<Placeholder> placeholders = super.registerPlaceholders();
+	public void registerPlaceholders(PlaceholderManager manager) {
+		super.registerPlaceholders(manager);
 		for (RegisteredServer rServer : server.getAllServers()) {
-			placeholders.add(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
+			manager.registerServerPlaceholder(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
 				public String get() {
 					return String.valueOf(rServer.getPlayersConnected().size());
 				}
 			});
 		}
-		return placeholders;
 	}
 }

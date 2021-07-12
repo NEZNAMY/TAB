@@ -50,9 +50,9 @@ public abstract class SimpleCondition {
 	 */
 	protected void setSides(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
-		leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectAll(leftSide);
+		leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide);
 		this.rightSide = rightSide;
-		rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectAll(rightSide);
+		rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(rightSide);
 	}
 	
 	/**

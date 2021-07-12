@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.packets;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
@@ -131,7 +130,7 @@ public enum EnumChatFormat {
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
 		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string); //translating RGB into legacy for nametags
-		String last = TAB.getInstance().getPlaceholderManager().getLastColors(legacyText);
+		String last = getLastColors(legacyText);
 		if (last != null && last.length() > 0) {
 			char c = last.toCharArray()[1];
 			for (EnumChatFormat e : values) {
@@ -177,5 +176,38 @@ public enum EnumChatFormat {
 			if (format.red == red && format.green == green && format.blue == blue) return format;
 		}
 		return null;
+	}
+	
+	//code taken from bukkit, so it can work on bungee too
+	public static String color(String textToTranslate){
+		if (textToTranslate == null) return null;
+		if (!textToTranslate.contains("&")) return textToTranslate;
+		char[] b = textToTranslate.toCharArray();
+		for (int i = 0; i < b.length - 1; i++) {
+			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)){
+				b[i] = '\u00a7';
+				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
+			}
+		}
+		return new String(b);
+	}
+	
+	//code taken from bukkit, so it can work on bungee too
+	public static String getLastColors(String input) {
+		String result = "";
+		int length = input.length();
+		for (int index = length - 1; index > -1; index--){
+			char section = input.charAt(index);
+			if ((section == '\u00a7' || section == '&') && (index < length - 1)){
+				char c = input.charAt(index + 1);
+				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
+					result = "\u00a7" + c + result;
+					if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 }

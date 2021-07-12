@@ -43,7 +43,7 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 		if (!event.getIdentifier().getId().equalsIgnoreCase(CHANNEL_NAME)) return;
 		if (event.getTarget() instanceof Player) {
 			long time = System.nanoTime();
-			TabPlayer receiver = TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
+			VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
 			if (receiver == null) return;
 			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setResult(ForwardResult.handled());

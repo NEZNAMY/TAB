@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
 public abstract class StaticLine extends ScoreboardLine {
@@ -22,7 +22,7 @@ public abstract class StaticLine extends ScoreboardLine {
 	
 	protected StaticLine(ScoreboardImpl parent, int lineNumber, String text, String forcedNameStart) {
 		super(parent, lineNumber);
-		this.text = TAB.getInstance().getPlaceholderManager().color(text);
+		this.text = EnumChatFormat.color(text);
 		String legacy = RGBUtils.getInstance().convertRGBtoLegacy(this.text);
 		//1.8+
 		String[] v18 = splitText(forcedNameStart, legacy, 40);
@@ -49,7 +49,7 @@ public abstract class StaticLine extends ScoreboardLine {
 			prefixValue = prefixOther[0];
 			String other = prefixOther[1];
 			if (playerNameStart.length() > 0) {
-				other = playerNameStart + TAB.getInstance().getPlaceholderManager().getLastColors(prefixValue) + other;
+				other = playerNameStart + EnumChatFormat.getLastColors(prefixValue) + other;
 			}
 			String[] nameSuffix = split(other, maxNameLength);
 			nameValue = nameSuffix[0];

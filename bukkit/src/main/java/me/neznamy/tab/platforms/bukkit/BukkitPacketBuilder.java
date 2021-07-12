@@ -20,9 +20,9 @@ import com.viaversion.viaversion.libs.gson.JsonParser;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
@@ -164,7 +164,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 		Object component = stringToComponent(packet.getMessage().toString(clientVersion));
 		Constructor<?> c = nms.getConstructor("PacketPlayOutChat");
 		if (nms.getMinorVersion() >= 16) {
@@ -183,7 +183,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException {
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() < 8) return null;
 		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerInfo").newInstance(nms.getEnum("EnumPlayerInfoAction")[packet.getAction().ordinal()], Array.newInstance(nms.getClass("EntityPlayer"), 0));
 		List<Object> items = new ArrayList<>();
@@ -223,7 +223,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		String displayName = clientVersion.getMinorVersion() < 13 ? cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("PacketPlayOutScoreboardObjective").newInstance(nms.getConstructor("ScoreboardObjective").newInstance(null, packet.getObjectiveName(), null, 
@@ -243,7 +243,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("PacketPlayOutScoreboardScore_1_13").newInstance(nms.getEnum("EnumScoreboardAction")[packet.getAction().ordinal()], packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
 		}
@@ -259,7 +259,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 		Object team;
 		if (nms.getMinorVersion() >= 13) {
 			team = createTeamModern(packet, clientVersion);
@@ -285,7 +285,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return nms.getConstructor("PacketPlayOutScoreboardTeam").newInstance(team, packet.getMethod());
 	}
 	
-	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, SecurityException {
+	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
 		if (clientVersion.getMinorVersion() < 13) {
@@ -303,7 +303,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		return team;
 	}
 	
-	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException, SecurityException {
+	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
 		if (clientVersion.getMinorVersion() < 13) {

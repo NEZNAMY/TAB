@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import java.util.HashSet;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
@@ -65,7 +67,9 @@ public class CustomLine extends ScoreboardLine {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(prefix, name, suffix);
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(prefix));
+		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(name));
+		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(suffix));
 	}
 
 	@Override

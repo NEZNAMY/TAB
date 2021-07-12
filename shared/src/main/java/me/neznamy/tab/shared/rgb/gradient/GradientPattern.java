@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.rgb.gradient;
 
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.rgb.TextColor;
 
 /**
@@ -24,7 +24,7 @@ public abstract class GradientPattern {
 	 */	
 	protected String asGradient(TextColor start, String text, TextColor end) {
 		//lazy support for magic codes in gradients
-		String magicCodes = TAB.getInstance().getPlaceholderManager().getLastColors(text);
+		String magicCodes = EnumChatFormat.getLastColors(text);
 		String decolorized = text.substring(magicCodes.length());
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();

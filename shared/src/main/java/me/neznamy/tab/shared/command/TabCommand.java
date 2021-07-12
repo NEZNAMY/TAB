@@ -51,9 +51,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new ReloadCommand());
 		registerSubCommand(new SendCommand());
 		registerSubCommand(new SetCollisionCommand());
-		if (tab.isPremium()) {
-			registerSubCommand(new ScoreboardCommand());
-		}
+		registerSubCommand(new ScoreboardCommand());
 		Set<String> properties = Sets.newHashSet(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
 		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
@@ -85,7 +83,7 @@ public class TabCommand extends SubCommand {
 	 * @param sender - player who ran command or null if from console
 	 */
 	private void help(TabPlayer sender){
-		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + tab.getPluginVersion(), true);
+		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
 		if ((sender == null || sender.hasPermission("tab.admin"))) {
 			String command = tab.getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
 			String prefix = " &8>> &3&l";

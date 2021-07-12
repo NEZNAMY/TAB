@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
@@ -15,7 +16,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 /**
  * Feature handler for tablist objective feature
  */
-public class TabObjective extends TabFeature {
+public class YellowNumber extends TabFeature {
 
 	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
 	public static final int DISPLAY_SLOT = 0;
@@ -23,10 +24,12 @@ public class TabObjective extends TabFeature {
 
 	private String rawValue;
 	private EnumScoreboardHealthDisplay displayType;
+	private boolean antiOverride;
 
-	public TabObjective() {
-		rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist", "%ping%");
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("disable-features-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s.yellow-number", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
+	public YellowNumber() {
+		rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
+		antiOverride = TAB.getInstance().getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.anti-override", true);
+		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
 		refreshUsedPlaceholders();
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
@@ -109,7 +112,7 @@ public class TabObjective extends TabFeature {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(rawValue);
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(rawValue));
 	}
 
 	@Override
@@ -119,7 +122,7 @@ public class TabObjective extends TabFeature {
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (playersInDisabledWorlds.contains(packetReceiver)) return;
+		if (playersInDisabledWorlds.contains(packetReceiver) || !antiOverride) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureType());
 		for (TabPlayer all : TAB.getInstance().getPlayers()){
 			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
@@ -128,7 +131,7 @@ public class TabObjective extends TabFeature {
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (playersInDisabledWorlds.contains(receiver)) return false;
+		if (playersInDisabledWorlds.contains(receiver) || !antiOverride) return false;
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (playerlist)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 			return true;

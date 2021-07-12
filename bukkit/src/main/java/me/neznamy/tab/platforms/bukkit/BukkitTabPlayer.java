@@ -21,9 +21,9 @@ import com.viaversion.viaversion.api.Via;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.rgb.RGBUtils;

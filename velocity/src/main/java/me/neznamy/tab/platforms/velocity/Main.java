@@ -16,8 +16,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
@@ -57,7 +57,7 @@ public class Main {
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
 		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
-		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), new VelocityPacketBuilder(), ProtocolVersion.values()[1]));
+		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.values()[1]));
 		server.getEventManager().register(this, new VelocityEventListener(plm));
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
@@ -65,7 +65,6 @@ public class Main {
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
-		metrics.addCustomChart(new SimplePie("using_premium_version", () -> TAB.getInstance().isPremium() ? "Yes" : "No"));
 	}
 
 	/**

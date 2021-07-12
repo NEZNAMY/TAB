@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.TAB;
 /**
  * Sorting by permission nodes tab.sort.<name>, where names are defined in sorting list
  */
-public class GroupPermission extends SortingType {
+public class Permissions extends SortingType {
 
 	//map of sorted groups in config
 	private LinkedHashMap<String, String> sortedGroups;
@@ -16,8 +16,8 @@ public class GroupPermission extends SortingType {
 	/**
 	 * Constructs new instance
 	 */
-	public GroupPermission() {
-		sortedGroups = loadSortingList();
+	public Permissions(String options) {
+		sortedGroups = convertSortingElements(options.split(","));
 	}
 	
 	@Override

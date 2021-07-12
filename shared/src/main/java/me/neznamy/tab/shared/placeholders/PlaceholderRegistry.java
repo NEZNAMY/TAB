@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.List;
+import me.neznamy.tab.api.PlaceholderManager;
 
 /**
  * An interface to be implemented by classes which offer internal placeholders that can be registered into the system
@@ -8,8 +8,8 @@ import java.util.List;
 public interface PlaceholderRegistry {
 
 	/**
-	 * Returns list of all placeholders that can be registered
-	 * @return list of all placeholders that can be registered
+	 * Registers all placeholders into placeholder manager
+	 * @param manager - placeholder manager to register placeholders to
 	 */
-	public List<Placeholder> registerPlaceholders();
+	public void registerPlaceholders(PlaceholderManager manager);
 }

@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
+import java.util.HashSet;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.TabFeature;
@@ -30,7 +32,7 @@ public class ProgressRefresher extends TabFeature {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(line.getProgress());
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(line.getProgress()));
 	}
 
 	@Override

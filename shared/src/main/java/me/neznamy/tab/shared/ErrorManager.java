@@ -108,7 +108,7 @@ public class ErrorManager {
 			if (file.length() > 1000000) return; //not going over 1 MB
 			try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
 				if (message != null) {
-					write(buf, "&c[TAB v" + tab.getPluginVersion() + (tab.isPremium() ? " Premium": "") + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
+					write(buf, "&c[TAB v" + TAB.PLUGIN_VERSION + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
 				}
 				if (error != null) {
 					write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);

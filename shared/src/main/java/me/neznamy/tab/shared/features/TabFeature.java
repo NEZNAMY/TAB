@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
 public abstract class TabFeature {
 
-	protected List<String> usedPlaceholders;
+	protected Set<String> usedPlaceholders = new HashSet<>();
 	protected List<String> disabledWorlds;
 	protected Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
 	
@@ -115,7 +115,7 @@ public abstract class TabFeature {
 	 * Returns list of all used placeholders in this feature
 	 * @return list of all used placeholders in this feature
 	 */
-	public List<String> getUsedPlaceholders() {
+	public Set<String> getUsedPlaceholders() {
 		return usedPlaceholders;
 	}
 	

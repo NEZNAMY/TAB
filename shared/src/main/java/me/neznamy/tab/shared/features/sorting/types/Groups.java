@@ -16,8 +16,8 @@ public class Groups extends SortingType {
 	/**
 	 * Constructs new instance
 	 */
-	public Groups() {
-		sortedGroups = loadSortingList();
+	public Groups(String options) {
+		sortedGroups = convertSortingElements(options.split(","));
 	}
 
 	@Override

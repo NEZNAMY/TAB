@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public abstract class SortingType {
 	 */
 	protected SortingType(String sortingPlaceholder){
 		this.sortingPlaceholder = sortingPlaceholder;
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(sortingPlaceholder);
+		usedPlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(sortingPlaceholder);
 	}
 	
 	/**
@@ -57,17 +56,18 @@ public abstract class SortingType {
 	 * Loads sorting list from config and applies sorting numbers
 	 * @return map of lowercased groups with their sorting characters
 	 */
-	protected LinkedHashMap<String, String> loadSortingList() {
+	protected LinkedHashMap<String, String> convertSortingElements(String[] elements) {
 		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<>();
 		int index = 1;
-		List<String> configList = TAB.getInstance().getConfiguration().getConfig().getStringList("group-sorting-priority-list", Arrays.asList("Owner", "Admin", "Mod", "Helper", "Builder", "Premium", "Player", "default"));
-		int charCount = String.valueOf(configList.size()).length(); //1 char for <10 groups, 2 chars for <100 etc
-		for (Object group : configList){
+		int charCount = String.valueOf(elements.length).length(); //1 char for <10 groups, 2 chars for <100 etc
+		for (String group : elements){
+			while (group.startsWith(" ")) group = group.substring(1);
+			while (group.endsWith(" ")) group = group.substring(0, group.length()-1);
 			String sort = String.valueOf(index);
 			while (sort.length() < charCount) { 
 				sort = "0" + sort;
 			}
-			for (String group0 : String.valueOf(group).toLowerCase().split(" ")) {
+			for (String group0 : group.toLowerCase().split(" ")) {
 				sortedGroups.put(group0, sort);
 			}
 			index++;

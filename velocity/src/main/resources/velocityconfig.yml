@@ -88,23 +88,6 @@ placeholders:
   remove-strings:
     - "[]"
     - "< >"
-
-#aliases for %server%
-server-aliases:
-  hub: "&eHub"
-  survival: "&bSurvival"
-  plot: "&cPlot"
-
-#aliases for %rank%, this is not the place where group prefix is defined!
-rank-aliases:
-  Admin: "&4&lADMIN"
-  Mod: "&b&lMOD"
-  Premium: "&6&lPREMIUM"
-  Ultra: "&b&lULTRA"
-  Legend: "&a&lLEGEND"
-  Titan: "&c&lTITAN"
-  Youtuber: "&c&lYOUTUBE"
-  _OTHER_: "&7No Rank"
   
 disable-features-in-servers:
   header-footer:

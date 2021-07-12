@@ -93,10 +93,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 					}
 					TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 				}
-				if (modifiedPacket instanceof ScoreboardDisplay && antiOverrideObjectives && TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
+				if (modifiedPacket instanceof ScoreboardDisplay && TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
 					return;
 				}
-				if (modifiedPacket instanceof ScoreboardObjective && antiOverrideObjectives) {
+				if (modifiedPacket instanceof ScoreboardObjective) {
 					TAB.getInstance().getFeatureManager().onObjective(player, modifiedPacket);
 				}
 				//client reset packet
@@ -126,7 +126,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (col.contains(p.getName()) && !TAB.getInstance().getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && 
-						!p.hasTeamHandlingPaused() && !packet.getName().equals(p.getTeamName())) {
+						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
 					logTeamOverride(packet.getName(), p.getName());
 					col.remove(p.getName());
 				}

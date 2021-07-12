@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.sql.rowset.CachedRowSet;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -39,7 +43,6 @@ public class Configs {
 	private boolean rgbSupport;
 	private boolean unregisterBeforeRegister;
 	private String multiWorldSeparator;
-	private String essentialsNickPrefix;
 	private boolean armorStandsAlwaysVisible; //paid private addition
 	private boolean removeGhostPlayers;
 	private boolean layout;
@@ -48,20 +51,22 @@ public class Configs {
 	//animations.yml file
 	private ConfigurationFile animation;
 
-	//bossbar.yml file
-	private ConfigurationFile bossbar;
-
 	//translation.yml file
 	private ConfigurationFile translation;
 
 	//default reload message in case plugin did not load translation file due to an error
 	private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
 
-	//premiumconfig.yml
-	private ConfigurationFile premiumconfig;
-
 	//playerdata.yml, used for bossbar & scoreboard toggle saving
-	private ConfigurationFile playerdata; 
+	private ConfigurationFile playerdata;
+	
+	private ConfigurationFile groupConfig;
+	
+	private Map<String, Object> groups;
+	
+	private ConfigurationFile userConfig;
+	
+	private MySQL mysql;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -86,10 +91,8 @@ public class Configs {
 			getAnimationFile().save();
 			TAB.getInstance().print('2', "Converted animations.yml to new format.");
 		}
-		bossbar = new YamlConfigurationFile(loader.getResourceAsStream("bossbar.yml"), new File(tab.getPlatform().getDataFolder(), "bossbar.yml"));
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
 		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
-		if (tab.isPremium()) premiumconfig = new YamlConfigurationFile(loader.getResourceAsStream("premiumconfig.yml"), new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml"));
 	}
 
 	/**
@@ -99,7 +102,7 @@ public class Configs {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"), Arrays.asList("# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml", ""));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		removeStrings = new ArrayList<>();
 		for (String s : getConfig().getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			getRemoveStrings().add(s.replace('&', '\u00a7'));
@@ -108,7 +111,6 @@ public class Configs {
 		rgbSupport = (boolean) getSecretOption("rgb-support", true);
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		multiWorldSeparator = (String) getSecretOption("multi-world-separator", "-");
-		essentialsNickPrefix = (String) getSecretOption("essentials-nickname-prefix", "");
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		layout = (boolean) getSecretOption("layout", false);
@@ -116,6 +118,15 @@ public class Configs {
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
+		if (config.getBoolean("mysql.enabled", false)) {
+			mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
+					config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
+			mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
+		} else {
+			groupConfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+			userConfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+		}
+		loadGroups();
 
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
@@ -242,14 +253,6 @@ public class Configs {
 		return removeGhostPlayers;
 	}
 
-	public ConfigurationFile getPremiumConfig() {
-		return premiumconfig;
-	}
-
-	public ConfigurationFile getBossbarConfig() {
-		return bossbar;
-	}
-
 	public boolean isLayout() {
 		return layout;
 	}
@@ -274,15 +277,28 @@ public class Configs {
 		return armorStandsAlwaysVisible;
 	}
 
-	public String getEssentialsNickPrefix() {
-		return essentialsNickPrefix;
-	}
-
 	public String getReloadFailedMessage() {
 		return reloadFailed;
 	}
 
 	public ConfigurationFile getPlayerDataFile() {
 		return playerdata;
+	}
+	
+	public void loadGroups() {
+		if (mysql != null) {
+			try {
+				CachedRowSet crs = mysql.getCRS("select * from tab_groups");
+				String group = crs.getString("group");
+				String property = crs.getString("property");
+				String value = crs.getString("value");
+				String world = crs.getString("world");
+				String server = crs.getString("server");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			groups = groupConfig.getValues();
+		}
 	}
 }

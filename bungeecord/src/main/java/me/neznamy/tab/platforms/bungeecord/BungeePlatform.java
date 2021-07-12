@@ -10,9 +10,10 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
@@ -30,6 +31,8 @@ public class BungeePlatform extends ProxyPlatform {
 
 	//instance of plugin
 	private Plugin plugin;
+	
+	private BungeePacketBuilder packetBuilder = new BungeePacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -56,18 +59,17 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		tab.getPlaceholderManager().addRegistry(new BungeePlaceholderRegistry());
-		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
-		tab.getPlaceholderManager().registerPlaceholders();
+		new BungeePlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector());
-		if (tab.getConfiguration().getConfig().getBoolean("change-nametag-prefix-suffix", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
 		loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
-		if (tab.getConfiguration().getConfig().getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective());
-		if (tab.getConfiguration().getConfig().getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().getConfig().getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
-		if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
-		if (tab.getConfiguration().getBossbarConfig().getBoolean("bossbar-enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
+		if (tab.getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) tab.getFeatureManager().registerFeature("tabobjective", new YellowNumber());
+		if (tab.getConfiguration().getConfig().getBoolean("prevent-spectator-effect.enabled", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
+		if (tab.getConfiguration().getConfig().getBoolean("belowname-objective.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
+		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p, plm));
@@ -108,5 +110,10 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public String getConfigName() {
 		return "bungeeconfig.yml";
+	}
+
+	@Override
+	public PacketBuilder getPacketBuilder() {
+		return packetBuilder;
 	}
 }

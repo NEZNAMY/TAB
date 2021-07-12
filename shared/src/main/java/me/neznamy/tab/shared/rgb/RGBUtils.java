@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.rgb.format.BukkitFormat;
@@ -128,7 +127,7 @@ public class RGBUtils {
 	 */
 	public String convertRGBtoLegacy(String text) {
 		if (text == null) return null;
-		if (!text.contains("#")) return TAB.getInstance().getPlaceholderManager().color(text);
+		if (!text.contains("#")) return EnumChatFormat.color(text);
 		String applied = applyFormats(text, false);
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < applied.length(); i++){

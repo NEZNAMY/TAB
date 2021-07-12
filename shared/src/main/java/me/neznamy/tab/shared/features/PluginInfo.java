@@ -14,8 +14,8 @@ public class PluginInfo extends TabFeature {
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		String command = TAB.getInstance().getPlatform().getSeparatorType().equals("server")? "/btab" : "/tab";
-		if (message.equalsIgnoreCase(command) && (!TAB.getInstance().isPremium() || sender.hasPermission("tab.admin"))){
-			IChatBaseComponent component = new IChatBaseComponent("TAB v" + TAB.getInstance().getPluginVersion()).setColor(new TextColor(EnumChatFormat.DARK_AQUA)).onHoverShowText('\u00a7' + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+		if (message.equalsIgnoreCase(command) && sender.hasPermission("tab.admin")){
+			IChatBaseComponent component = new IChatBaseComponent("TAB v" + TAB.PLUGIN_VERSION).setColor(new TextColor(EnumChatFormat.DARK_AQUA)).onHoverShowText('\u00a7' + "aClick to visit plugin's spigot page").onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
 			component.addExtra(new IChatBaseComponent(" by _NEZNAMY_").setColor(new TextColor(EnumChatFormat.BLACK)));
 			sender.sendMessage(component);
 		}

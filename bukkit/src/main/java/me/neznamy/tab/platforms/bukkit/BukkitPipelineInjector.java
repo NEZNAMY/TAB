@@ -92,10 +92,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && antiOverrideObjectives && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
+				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
 					return;
 				}
-				if (antiOverrideObjectives && nms.getClass("PacketPlayOutScoreboardObjective").isInstance(packet)) {
+				if (nms.getClass("PacketPlayOutScoreboardObjective").isInstance(packet)) {
 					TAB.getInstance().getFeatureManager().onObjective(player, packet);
 				}
 				TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
@@ -128,8 +128,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 					continue;
 				}
-				if (!TAB.getInstance().getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && !p.hasTeamHandlingPaused() && 
-						!teamName.equals(p.getTeamName())) {
+				if (!TAB.getInstance().getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && 
+						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
 					logTeamOverride(teamName, entry);
 				} else {
 					newList.add(entry);

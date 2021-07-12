@@ -7,19 +7,24 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.PlaceholderManager;
+import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.api.team.ScoreboardTeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
 /**
  * Universal variable and method storage
  */
-public class TAB {
+public class TAB implements TabAPI {
 	
 	//plugin instance
 	private static TAB instance;
@@ -53,10 +58,7 @@ public class TAB {
 	
 	//name of broken configuration file filled on load and used in disabledCommand
 	private String brokenFile = "-";
-	
-	//platform-specific packet builder
-	private PacketBuilder packetBuilder;
-	
+
 	private Configs configuration;
 	
 	private boolean debugMode;
@@ -68,18 +70,9 @@ public class TAB {
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
 
-	public TAB(Platform platform, PacketBuilder packetBuilder, ProtocolVersion serverVersion) {
+	public TAB(Platform platform, ProtocolVersion serverVersion) {
 		this.platform = platform;
-		this.packetBuilder = packetBuilder;
 		this.serverVersion = serverVersion;
-	}
-	
-	/**
-	 * Returns true if this compilation is premium, false if not
-	 * @return true if this is premium version, false if not
-	 */
-	public boolean isPremium() {
-		return false;
 	}
 	
 	/**
@@ -89,28 +82,7 @@ public class TAB {
 	public Collection<TabPlayer> getPlayers(){
 		return data.values();
 	}
-	
-	/**
-	 * Returns player by name
-	 * @param name - exact name of player
-	 * @return the player
-	 */
-	public TabPlayer getPlayer(String name) {
-		for (TabPlayer p : data.values()) {
-			if (p.getName().equals(name)) return p;
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns player by uuid
-	 * @param uniqueId - player uuid
-	 * @return the player
-	 */
-	public TabPlayer getPlayer(UUID uniqueId) {
-		return data.get(uniqueId);
-	}
-	
+
 	/**
 	 * Returns player by tablist uuid. This is required due to Velocity as player uuid and tablist uuid do ont match there
 	 * @param tablistId - tablist id of player
@@ -137,7 +109,7 @@ public class TAB {
 	 * @param message - message to be sent into console
 	 */
 	public void debug(String message) {
-		if (isDebugMode()) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
+		if (debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
 	
 	/**
@@ -151,11 +123,11 @@ public class TAB {
 			featureManager = new FeatureManager();
 			configuration = new Configs(this);
 			configuration.loadFiles();
-			setPermissionPlugin(platform.detectPermissionPlugin());
+			permissionPlugin = platform.detectPermissionPlugin();
 			placeholderManager = new PlaceholderManagerImpl();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
-			setCommand(new TabCommand(this));
+			command = new TabCommand(this);
 			featureManager.load();
 			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
 			errorManager.printConsoleWarnCount();
@@ -219,67 +191,80 @@ public class TAB {
 		return cpu;
 	}
 	
-	public PacketBuilder getPacketBuilder() {
-		return packetBuilder;
-	}
-	
 	public ErrorManager getErrorManager() {
 		return errorManager;
 	}
 
-	public PermissionPlugin getPermissionPlugin() {
-		return permissionPlugin;
-	}
-
-	public void setPermissionPlugin(PermissionPlugin permissionPlugin) {
-		this.permissionPlugin = permissionPlugin;
-	}
-
-	public String getPluginVersion() {
-		return PLUGIN_VERSION;
-	}
-	
 	public Configs getConfiguration() {
 		return configuration;
 	}
-	
+
+	public ProtocolVersion getServerVersion() {
+		return serverVersion;
+	}
+
 	public boolean isDisabled() {
 		return disabled;
-	}
-	
-	public PlaceholderManagerImpl getPlaceholderManager() {
-		return placeholderManager;
 	}
 
 	public TabCommand getCommand() {
 		return command;
 	}
 
-	public void setCommand(TabCommand command) {
-		this.command = command;
+	public PermissionPlugin getPermissionPlugin() {
+		return permissionPlugin;
+	}
+
+	public void setDebugMode(boolean debug) {
+		debugMode = debug;
+	}
+
+	public void setBrokenFile(String file) {
+		brokenFile = file;
+	}
+
+	public CharSequence getBrokenFile() {
+		return brokenFile;
+	}
+
+	public DisabledCommand getDisabledCommand() {
+		return disabledCommand;
 	}
 
 	public boolean isDebugMode() {
 		return debugMode;
 	}
 
-	public void setDebugMode(boolean debugMode) {
-		this.debugMode = debugMode;
-	}
-
-	public String getBrokenFile() {
-		return brokenFile;
-	}
-
-	public void setBrokenFile(String brokenFile) {
-		this.brokenFile = brokenFile;
-	}
-
-	public DisabledCommand getDisabledCommand() {
-		return disabledCommand;
+	@Override
+	public BossBarManager getBossBarManager() {
+		return (BossBarManager) featureManager.getFeature("bossbar");
 	}
 	
-	public ProtocolVersion getServerVersion() {
-		return serverVersion;
+	@Override
+	public ScoreboardManager getScoreboardManager() {
+		return (ScoreboardManager) featureManager.getFeature("scoreboard");
+	}
+	
+	@Override
+	public ScoreboardTeamManager getScoreboardTeamManager() {
+		return featureManager.getNameTagFeature();
+	}
+	
+	@Override
+	public PlaceholderManager getPlaceholderManager() {
+		return placeholderManager;
+	}
+	
+	@Override
+	public TabPlayer getPlayer(String name) {
+		for (TabPlayer p : data.values()) {
+			if (p.getName().equals(name)) return p;
+		}
+		return null;
+	}
+	
+	@Override
+	public TabPlayer getPlayer(UUID uniqueId) {
+		return data.get(uniqueId);
 	}
 }

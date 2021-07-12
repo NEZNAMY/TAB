@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.packets;
 
 import java.lang.reflect.InvocationTargetException;
 
-import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -15,14 +15,13 @@ public abstract class UniversalPacketPlayOut {
 	 * @param clientVersion - version of player to create packet for
 	 * @return the raw packet
 	 * @throws InvocationTargetException 
-
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 * @throws NegativeArraySizeException 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	protected abstract Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, NegativeArraySizeException;
+	protected abstract Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
 	
 	/**
 	 * Calls build(...) and wraps it into a try/catch

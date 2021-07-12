@@ -14,10 +14,13 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 /**
  * The main condition class
  */
-public abstract class Condition {
+public class Condition {
 	
 	//map of all defined conditions in premiumconfig
 	private static Map<String, Condition> conditions = new HashMap<>();
+	
+	//condition type
+	private ConditionType type;
 	
 	//name of this condition
 	private String name;
@@ -38,12 +41,14 @@ public abstract class Condition {
 	 * @param yes - value to return if condition is met
 	 * @param no - value to return if condition is not met
 	 */
-	protected Condition(String name, List<String> conditions, String yes, String no) {
+	protected Condition(ConditionType type, String name, List<String> conditions, String yes, String no) {
+		this.type = type;
 		this.name = name;
 		this.yes = yes;
 		this.no = no;
 		if (conditions == null) {
 			TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
+			return;
 		}
 		for (String line : conditions) {
 			SimpleCondition condition = SimpleCondition.compile(line);
@@ -77,7 +82,19 @@ public abstract class Condition {
 	 * @param p - player to check
 	 * @return true if met, false if not
 	 */
-	public abstract boolean isMet(TabPlayer p);
+	public boolean isMet(TabPlayer p) {
+		if (type == ConditionType.AND) {
+			for (SimpleCondition condition : subconditions) {
+				if (!condition.isMet(p)) return false;
+			}
+			return true;
+		} else {
+			for (SimpleCondition condition : subconditions) {
+				if (condition.isMet(p)) return true;
+			}
+			return false;
+		}
+	}
 
 	/**
 	 * Compiles condition from given parameters
@@ -96,14 +113,7 @@ public abstract class Condition {
 			type = ConditionType.AND;
 			if (conditions.size() > 1) TAB.getInstance().getErrorManager().startupWarn("Invalid condition type: " + conditionType);
 		}
-		switch(type) {
-		case AND:
-			return new ConditionAND(name, conditions, yes, no);
-		case OR:
-			return new ConditionOR(name, conditions, yes, no);
-		default: 
-			return null;
-		}
+		return new Condition(type, name, conditions, yes, no);
 	}
 	
 	/**

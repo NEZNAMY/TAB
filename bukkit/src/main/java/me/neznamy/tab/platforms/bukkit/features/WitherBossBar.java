@@ -47,7 +47,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 				try {
-					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), getFeatureType());
+					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), getFeatureType());
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
 				}

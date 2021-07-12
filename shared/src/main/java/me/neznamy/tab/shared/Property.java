@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.rgb.RGBUtils;
 
@@ -40,7 +41,7 @@ public class Property {
 	public Property(TabPlayer owner, String rawValue, String source) {
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : TAB.getInstance().getPlaceholderManager().color(rawValue)), true);
+		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : EnumChatFormat.color(rawValue)), true);
 		analyze(this.rawValue);
 		update();
 	}
@@ -52,7 +53,7 @@ public class Property {
 	private void analyze(String value) {
 		List<String> placeholders0 = new ArrayList<>();
 		List<String> relPlaceholders0 = new ArrayList<>();
-		for (String identifier : TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(value)) {
+		for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders0.add(identifier);
 			} else {
@@ -70,7 +71,7 @@ public class Property {
 	 */
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
-			this.temporaryValue = RGBUtils.getInstance().applyFormats(TAB.getInstance().getPlaceholderManager().color(temporaryValue), true);
+			this.temporaryValue = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(temporaryValue), true);
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
@@ -85,7 +86,7 @@ public class Property {
 	 */
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = RGBUtils.getInstance().applyFormats(TAB.getInstance().getPlaceholderManager().color(newValue), true);
+		rawValue = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(newValue), true);
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();
@@ -151,7 +152,7 @@ public class Property {
 		for (String identifier : placeholders) {
 			string = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(string, owner);
 		}
-		string = TAB.getInstance().getPlaceholderManager().color(string);
+		string = EnumChatFormat.color(string);
 		string = applyRemoveStrings(string);
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;

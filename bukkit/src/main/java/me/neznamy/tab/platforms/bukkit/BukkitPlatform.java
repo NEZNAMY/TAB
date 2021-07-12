@@ -25,9 +25,10 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.TabObjective;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -50,6 +51,8 @@ public class BukkitPlatform implements Platform {
 	//nms storage
 	private NMSStorage nms;
 	
+	private BukkitPacketBuilder packetBuilder;
+	
 	//booleans to check plugin presence
 	private Plugin placeholderAPI;
 	private boolean viaversion;
@@ -65,6 +68,7 @@ public class BukkitPlatform implements Platform {
 	public BukkitPlatform(JavaPlugin plugin, NMSStorage nms) {
 		this.plugin = plugin;
 		this.nms = nms;
+		packetBuilder = new BukkitPacketBuilder(nms);
 	}
 
 	@Override
@@ -88,27 +92,26 @@ public class BukkitPlatform implements Platform {
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
 		TAB tab = TAB.getInstance();
-		tab.getPlaceholderManager().addRegistry(new BukkitPlaceholderRegistry(plugin));
-		tab.getPlaceholderManager().addRegistry(new UniversalPlaceholderRegistry());
-		tab.getPlaceholderManager().registerPlaceholders();
+		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (nms.getMinorVersion() >= 8 && tab.getConfiguration().isPipelineInjection()) {
 			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		}
 		loadNametagFeature(tab);
 		loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
-		if (tab.getConfiguration().getConfig().getString("yellow-number-in-tablist", "%ping%").length() > 0) tab.getFeatureManager().registerFeature("tabobjective", new TabObjective());
-		if (tab.getConfiguration().getConfig().getBoolean("do-not-move-spectators", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().getConfig().getBoolean("classic-vanilla-belowname.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
-		if (tab.getConfiguration().getPremiumConfig() != null && tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
-		if (tab.getConfiguration().getBossbarConfig().getBoolean("bossbar-enabled", false)) {
+		if (tab.getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) tab.getFeatureManager().registerFeature("tabobjective", new YellowNumber());
+		if (tab.getConfiguration().getConfig().getBoolean("prevent-spectator-effect.enabled", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
+		if (tab.getConfiguration().getConfig().getBoolean("belowname-objective.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
+		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (nms.getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 			}
 		}
-		if (nms.getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
+		if (nms.getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
 		if (placeholderAPI != null) {
 			new TabExpansion(plugin);
@@ -123,8 +126,8 @@ public class BukkitPlatform implements Platform {
 	 * @param tab - tab instance
 	 */
 	private void loadNametagFeature(TAB tab) {
-		if (tab.getConfiguration().getConfig().getBoolean("change-nametag-prefix-suffix", true)) {
-			if (tab.getConfiguration().getConfig().getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false) && nms.getMinorVersion() >= 8) {
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
+			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && nms.getMinorVersion() >= 8) {
 				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms));
 			} else {
 				tab.getFeatureManager().registerFeature("nametag16", new NameTag());
@@ -160,7 +163,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public Placeholder registerUnknownPlaceholder(String identifier) {
-		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+		PlaceholderManagerImpl pl = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
 		if (identifier.startsWith("%rel_")) {
 			//relational placeholder
 			return registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));
@@ -190,7 +193,7 @@ public class BukkitPlatform implements Platform {
 				return pl.setPlaceholders(null, identifier);
 			}
 		};
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(p);
+		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(p);
 		return p;
 	}
 	
@@ -208,7 +211,7 @@ public class BukkitPlatform implements Platform {
 				return pl.setPlaceholders((Player) p.getPlayer(), identifier);
 			}
 		};
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(p);
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(p);
 		return p;
 	}
 	
@@ -231,7 +234,7 @@ public class BukkitPlatform implements Platform {
 				return identifier;
 			}
 		};
-		TAB.getInstance().getPlaceholderManager().registerPlaceholder(p);
+		TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(p);
 		return p;
 	}
 	
@@ -296,5 +299,10 @@ public class BukkitPlatform implements Platform {
 
 	public boolean isEssentialsEnabled() {
 		return essentials;
+	}
+
+	@Override
+	public PacketBuilder getPacketBuilder() {
+		return packetBuilder;
 	}
 }

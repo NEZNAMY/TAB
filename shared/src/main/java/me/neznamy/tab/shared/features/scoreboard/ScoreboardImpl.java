@@ -175,7 +175,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	@Override
 	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().getUsedPlaceholderIdentifiersRecursive(title);
+		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(title));
 	}
 
 	@Override
