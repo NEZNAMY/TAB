@@ -33,7 +33,7 @@ public class PlayerUUIDCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getConfig().set("Users." + changed.getUniqueId().toString(), null);
+					TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
 					changed.forceRefresh();
 					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 				}
@@ -73,8 +73,8 @@ public class PlayerUUIDCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player.getUniqueId() + "." + type)))) return;
-		TAB.getInstance().getConfiguration().getConfig().set("Users." + player.getUniqueId() + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, null, null)))) return;
+		TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, null, null, value.length() == 0 ? null : value);
 		player.forceRefresh();
 	}
 	

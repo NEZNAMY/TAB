@@ -26,7 +26,7 @@ public class GroupCommand extends PropertyCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getConfig().set("Groups." + group, null);
+					TAB.getInstance().getConfiguration().getGroups().remove(group);
 					for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.forceRefresh();
@@ -70,8 +70,8 @@ public class GroupCommand extends PropertyCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Groups." + group.replace(".", "@#@") + "." + type)))) return;
-		TAB.getInstance().getConfiguration().getConfig().set("Groups." + group.replace(".", "@#@") + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, null, null)))) return;
+		TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, null, null, value.length() == 0 ? null : value);
 		for (TabPlayer pl : TAB.getInstance().getPlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();

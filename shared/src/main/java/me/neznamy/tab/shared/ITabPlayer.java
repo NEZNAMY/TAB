@@ -1,9 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
@@ -25,6 +23,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	protected String name;
 	protected UUID uniqueId;
 	protected String world;
+	protected String server;
 	private String permissionGroup = GroupRefresher.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
@@ -204,8 +203,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void loadPropertyFromConfig(String property, String ifNotSet) {
-		String playerGroupFromConfig = permissionGroup.replace(".", "@#@");
-		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
+/*		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
 		String value;
 		Map<String, String> priorities = new LinkedHashMap<>();
 		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
@@ -221,6 +219,17 @@ public abstract class ITabPlayer implements TabPlayer {
 				setProperty(property, value, entry.getValue());
 				return;
 			}
+		}*/
+		String value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
+		if (value == null) {
+			value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
+		}
+		if (value == null) {
+			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup().replace(".", "@#@"), property, server, world);
+		}
+		if (value != null) {
+			setProperty(property, value, "TODO");
+			return;
 		}
 		setProperty(property, ifNotSet, "None");
 	}

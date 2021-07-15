@@ -18,13 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.sql.rowset.CachedRowSet;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
+import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
+import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 
 /**
  * Core of loading configuration files
@@ -60,11 +62,9 @@ public class Configs {
 	//playerdata.yml, used for bossbar & scoreboard toggle saving
 	private ConfigurationFile playerdata;
 	
-	private ConfigurationFile groupConfig;
+	private PropertyConfiguration groups;
 	
-	private Map<String, Object> groups;
-	
-	private ConfigurationFile userConfig;
+	private PropertyConfiguration users;
 	
 	private MySQL mysql;
 
@@ -119,14 +119,20 @@ public class Configs {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
 		if (config.getBoolean("mysql.enabled", false)) {
-			mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
-					config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
-			mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
+			try {
+				mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
+						config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
+				groups = new MySQLGroupConfiguration(mysql);
+				users = new MySQLUserConfiguration(mysql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				groups = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+				users = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+			}
 		} else {
-			groupConfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-			userConfig = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+			groups = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+			users = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
 		}
-		loadGroups();
 
 		//checking for unnecessary copypaste in config
 		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
@@ -284,21 +290,16 @@ public class Configs {
 	public ConfigurationFile getPlayerDataFile() {
 		return playerdata;
 	}
-	
-	public void loadGroups() {
-		if (mysql != null) {
-			try {
-				CachedRowSet crs = mysql.getCRS("select * from tab_groups");
-				String group = crs.getString("group");
-				String property = crs.getString("property");
-				String value = crs.getString("value");
-				String world = crs.getString("world");
-				String server = crs.getString("server");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			groups = groupConfig.getValues();
-		}
+
+	public PropertyConfiguration getGroups() {
+		return groups;
+	}
+
+	public PropertyConfiguration getUsers() {
+		return users;
+	}
+
+	public MySQL getMysql() {
+		return mysql;
 	}
 }

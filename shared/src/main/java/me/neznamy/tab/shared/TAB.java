@@ -155,6 +155,7 @@ public class TAB implements TabAPI {
 		try {
 			long time = System.currentTimeMillis();
 			cpu.cancelAllTasks();
+			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
 			data.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);

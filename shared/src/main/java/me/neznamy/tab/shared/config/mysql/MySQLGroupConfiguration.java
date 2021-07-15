@@ -1,0 +1,85 @@
+package me.neznamy.tab.shared.config.mysql;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.rowset.CachedRowSet;
+
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.MySQL;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
+
+public class MySQLGroupConfiguration implements PropertyConfiguration {
+
+	private MySQL mysql;
+
+	private Map<String, Map<String, String>> values = new HashMap<>();
+	private Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
+	private Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
+
+	public MySQLGroupConfiguration(MySQL mysql) {
+		this.mysql = mysql;
+		try {
+			mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
+			CachedRowSet crs = mysql.getCRS("select * from tab_groups");
+			while (crs.next()) {
+				String group = crs.getString("group");
+				String property = crs.getString("property");
+				String value = crs.getString("value");
+				String world = crs.getString("world");
+				String server = crs.getString("server");
+				TAB.getInstance().debug("Loaded group: " + String.format("%s, %s, %s, %s, %s", group, property, value, world, server));
+				setProperty0(group, property, server, world, value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void setProperty(String group, String property, String server, String world, String value) {
+		try {
+			if (getProperty(group, property, server, world) != null) {
+				mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", group, property, world, server);
+			}
+			setProperty0(group, property, server, world, value);
+			if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", group, property, value, world, server);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String querySymbol(boolean isNull) {
+		return isNull ? "is" : "=";
+	}
+
+	private void setProperty0(String group, String property, String server, String world, String value) {
+		if (server != null) {
+			perServer.computeIfAbsent(server, s -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
+		} else if (world != null) {
+			perWorld.computeIfAbsent(world, w -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
+		} else {
+			values.computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
+		}
+	}
+
+	@Override
+	public String getProperty(String group, String property, String server, String world) {
+		String value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property);
+		if (value == null) {
+			value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property);
+		}
+		if (value == null) {
+			value = values.getOrDefault(group, new HashMap<>()).get(property);
+		}
+		return value;
+	}
+
+	@Override
+	public void remove(String group) {
+		values.getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, null, null));
+		perWorld.keySet().forEach(world -> perWorld.get(world).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, world, null)));
+		perServer.keySet().forEach(server -> perServer.get(server).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, server, null, null)));
+	}
+}

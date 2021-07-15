@@ -1,18 +1,19 @@
-package me.neznamy.tab.shared.config;
+package me.neznamy.tab.shared.config.file;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.Configs;
 
 /**
  * Abstract class for configuration file
@@ -271,12 +272,12 @@ public abstract class ConfigurationFile {
 	public <K, V> Map<K, V> getConfigurationSection(String path) {
 		if (path == null || path.length() == 0) return (Map<K, V>) values;
 		Object value = getObject(path, null);
-		if (value == null) return new HashMap<>();
+		if (value == null) return new LinkedHashMap<>();
 		if (value instanceof Map) {
 			return (Map<K, V>) value;
 		} else {
 			dataMismatch(path, Map.class, value.getClass());
-			return new HashMap<>();
+			return new LinkedHashMap<>();
 		}
 	}
 	
@@ -313,7 +314,7 @@ public abstract class ConfigurationFile {
 			String keyWord = getRealKey(map, path.split("\\.")[0]);
 			Object submap = map.get(keyWord);
 			if (!(submap instanceof Map)) {
-				submap = new HashMap<String, Object>();
+				submap = new LinkedHashMap<>();
 			}
 			map.put(keyWord.replace("@#@", "."), set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
 		} else {

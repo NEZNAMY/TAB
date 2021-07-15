@@ -5,12 +5,11 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 
 /**
  * Handler for "/tab player" subcommand
  */
-public class PlayerCommand extends SubCommand {
+public class PlayerCommand extends PropertyCommand {
 	
 	/**
 	 * Constructs new instance
@@ -28,7 +27,7 @@ public class PlayerCommand extends SubCommand {
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getConfig().set("Users." + player, null);
+					TAB.getInstance().getConfiguration().getUsers().remove(player);
 					TabPlayer pl = TAB.getInstance().getPlayer(player);
 					if (pl != null) {
 						pl.forceRefresh();
@@ -71,8 +70,8 @@ public class PlayerCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getConfig().getObject("Users." + player + "." + type)))) return;
-		TAB.getInstance().getConfiguration().getConfig().set("Users." + player + "." + type, value.length() == 0 ? null : value);
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null)))) return;
+		TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, null, null, value.length() == 0 ? null : value);
 		TabPlayer pl = TAB.getInstance().getPlayer(player);
 		if (pl != null) {
 			pl.forceRefresh();

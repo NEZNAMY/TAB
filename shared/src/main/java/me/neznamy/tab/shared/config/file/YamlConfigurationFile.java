@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.config;
+package me.neznamy.tab.shared.config.file;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			yaml = new Yaml(options);
 			input = new FileInputStream(file);
 			values = (Map<String, Object>) yaml.load(input);
-			if (values == null) values = new HashMap<String, Object>();
+			if (values == null) values = new LinkedHashMap<String, Object>();
 			input.close();
 		} catch (YAMLException e) {
 			if (input != null) input.close();

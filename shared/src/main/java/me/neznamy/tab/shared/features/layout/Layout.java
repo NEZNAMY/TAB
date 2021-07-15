@@ -14,8 +14,8 @@ import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
