@@ -10,11 +10,11 @@ Plugin can be compiled using maven. Once you've purchased the premium version, y
   
 ## Links
 Free version  
-    https://github.com/NEZNAMY/TAB/releases  
+    MC-Market: https://www.mc-market.org/resources/20631/  
+    Github releases: https://github.com/NEZNAMY/TAB/releases  
 Premium version  
-    Polymart (releases): https://polymart.org/resource/484  
-    MC-Market (releases): https://www.mc-market.org/resources/14009/  
-    Pre-releases on discord for verified buyers  
+    Polymart: https://polymart.org/resource/484  
+    MC-Market: https://www.mc-market.org/resources/14009/  
 Bukkit bridge https://www.spigotmc.org/resources/83966/  
 Wiki https://github.com/NEZNAMY/TAB/wiki  
 Discord invite link: https://discord.gg/EaSvdk6  
