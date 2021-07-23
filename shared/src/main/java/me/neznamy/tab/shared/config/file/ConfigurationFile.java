@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.Configs;
@@ -367,40 +365,5 @@ public abstract class ConfigurationFile {
 		} catch (Exception ex) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to modify file " + file, ex);
 		}
-	}
-	
-	/**
-	 * Finds all used placeholder identifiers in the file including nested placeholders in given keys
-	 * @param simpleKeys - keys to check
-	 * @return Set of all used identifiers
-	 */
-	public Set<String> getUsedPlaceholders(String... simpleKeys){
-		return getUsedPlaceholders(values, simpleKeys);
-	}
-	
-	/**
-	 * Returns Set of all used placeholder identifiers in given map and keys
-	 * @param map - map to search
-	 * @param simpleKeys - names of keys to look for
-	 * @return Set of used identifiers
-	 */
-	private Set<String> getUsedPlaceholders(Map<String, Object> map, String... simpleKeys){
-		Set<String> placeholders = new HashSet<>();
-		for (Entry<String, Object> entry : map.entrySet()) {
-			for (String simpleKey : simpleKeys) {
-				if (String.valueOf(entry.getKey()).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(String.valueOf(entry.getValue())));
-			}
-			if (entry.getValue() instanceof Map) {
-				placeholders.addAll(getUsedPlaceholders((Map<String, Object>)entry.getValue(), simpleKeys));
-			}
-			if (entry.getValue() instanceof List) {
-				for (Object obj : (List<Object>)entry.getValue()) {
-					for (String simpleKey : simpleKeys) {
-						if (String.valueOf(obj).equals(simpleKey)) placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(String.valueOf(entry.getValue())));
-					}
-				}
-			}
-		}
-		return placeholders;
 	}
 }

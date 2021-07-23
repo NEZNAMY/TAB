@@ -56,9 +56,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 		super (plm);
 		player = p;
 		if (p.getServer() != null) {
-			world = p.getServer().getInfo().getName();
+			server = p.getServer().getInfo().getName();
 		} else {
-			world = "-";
+			server = "-";
 		}
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
@@ -82,7 +82,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public void sendPacket(Object nmsPacket) {
+		long time = System.nanoTime();
 		if (nmsPacket != null && player.isConnected()) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
+		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 	
 	@Override

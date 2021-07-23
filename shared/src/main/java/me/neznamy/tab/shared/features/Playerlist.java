@@ -23,17 +23,17 @@ public class Playerlist extends TabFeature {
 	private boolean disabling = false;
 
 	public Playerlist() {
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
+		super("Tablist prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-servers"),
+				TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-worlds"));
 		antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
-		refreshUsedPlaceholders();
-		TAB.getInstance().debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, antiOverrideTablist=%s", disabledWorlds, antiOverrideTablist));
+		TAB.getInstance().debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTablist=%s", disabledWorlds, disabledServers, antiOverrideTablist));
 	}
 
 	@Override
 	public void load(){
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			if (isDisabledWorld(disabledWorlds, all.getWorldName())) {
-				playersInDisabledWorlds.add(all);
+			if (isDisabled(all.getServer(), all.getWorld())) {
+				disabledPlayers.add(all);
 				updateProperties(all);
 				return;
 			}
@@ -46,22 +46,22 @@ public class Playerlist extends TabFeature {
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			if (!playersInDisabledWorlds.contains(p)) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
+			if (!disabledPlayers.contains(p)) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
 		}
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureType());
+			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureName());
 		}
 	}
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledBefore = disabledPlayers.contains(p);
 		boolean disabledNow = false;
-		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			playersInDisabledWorlds.add(p);
+			disabledPlayers.add(p);
 		} else {
-			playersInDisabledWorlds.remove(p);
+			disabledPlayers.remove(p);
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
@@ -93,7 +93,7 @@ public class Playerlist extends TabFeature {
 	}
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (playersInDisabledWorlds.contains(refreshed)) return;
+		if (disabledPlayers.contains(refreshed)) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -117,20 +117,20 @@ public class Playerlist extends TabFeature {
 				} else {
 					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 				}
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID(), IChatBaseComponent.optimizedComponent(format))), getFeatureType());
+				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID(), IChatBaseComponent.optimizedComponent(format))), getFeatureName());
 			}
 		}
 	}
 	private void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(PropertyUtils.TABPREFIX);
-		p.loadPropertyFromConfig(PropertyUtils.CUSTOMTABNAME, p.getName());
-		p.loadPropertyFromConfig(PropertyUtils.TABSUFFIX);
+		p.loadPropertyFromConfig(this, PropertyUtils.TABPREFIX);
+		p.loadPropertyFromConfig(this, PropertyUtils.CUSTOMTABNAME, p.getName());
+		p.loadPropertyFromConfig(this, PropertyUtils.TABSUFFIX);
 	}
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
-			playersInDisabledWorlds.add(connectedPlayer);
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			disabledPlayers.add(connectedPlayer);
 			updateProperties(connectedPlayer);
 			return;
 		}
@@ -142,31 +142,20 @@ public class Playerlist extends TabFeature {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
 				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
 			}
-			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
+			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureName());
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
+		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureName(), UsageType.PLAYER_JOIN_EVENT, r);
 	}
 
-	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX);
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			if (!p.isLoaded()) continue;
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TABPREFIX).getCurrentRawValue()));
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.CUSTOMTABNAME).getCurrentRawValue()));
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TABSUFFIX).getCurrentRawValue()));
-		}
-	}
-	
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (disabling || !antiOverrideTablist) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
-			if (packetPlayer != null && !playersInDisabledWorlds.contains(packetPlayer)) {
+			if (packetPlayer != null && !disabledPlayers.contains(packetPlayer)) {
 				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
 				//preventing plugins from changing player name as nametag feature would not work correctly
 				if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && TAB.getInstance().getFeatureManager().getNameTagFeature() != null && !playerInfoData.getName().equals(packetPlayer.getName()) && antiOverrideNames) {
@@ -177,17 +166,7 @@ public class Playerlist extends TabFeature {
 		}
 	}
 
-	@Override
-	public String getFeatureType() {
-		return "Tablist prefix/suffix";
-	}
-
 	public List<String> getDisabledWorlds() {
 		return disabledWorlds;
-	}
-
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		playersInDisabledWorlds.remove(disconnectedPlayer);
 	}
 }

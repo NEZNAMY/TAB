@@ -70,6 +70,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param lines - lines of scoreboard
 	 */
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines) {
+		super(manager.getFeatureName());
 		this.manager = manager;
 		this.name = name;
 		this.title = title;
@@ -78,7 +79,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 			getLines().add(score);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
-		refreshUsedPlaceholders();
 	}
 
 	/**
@@ -137,8 +137,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void addPlayer(TabPlayer p) {
 		if (getPlayers().contains(p)) return; //already registered
-		p.setProperty(PropertyUtils.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, getFeatureType());
+		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, getFeatureName());
 		for (ScoreboardLine s : getLines()) {
 			s.register(p);
 		}
@@ -159,7 +159,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void removePlayer(TabPlayer p) {
 		if (!getPlayers().contains(p)) return; //not registered
-		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), getFeatureName());
 		for (ScoreboardLine s : getLines()) {
 			s.unregister(p);
 		}
@@ -170,17 +170,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), getFeatureType());
-	}
-
-	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(title));
-	}
-
-	@Override
-	public String getFeatureType() {
-		return manager.getFeatureType();
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), getFeatureName());
 	}
 
 	public List<ScoreboardLine> getLines() {

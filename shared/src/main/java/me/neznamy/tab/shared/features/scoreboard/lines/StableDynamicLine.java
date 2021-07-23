@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -32,12 +31,6 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	protected StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber);
 		this.text = text;
-		refreshUsedPlaceholders();
-	}
-
-	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(text));
 	}
 
 	@Override
@@ -45,12 +38,12 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
 		List<String> prefixsuffix = replaceText(refreshed, force, false);
 		if (prefixsuffix.isEmpty()) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 0), getFeatureType());
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 0), getFeatureName());
 	}
 
 	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(teamName, text);
+		p.setProperty(this, teamName, text);
 		List<String> prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix.isEmpty()) return;
 		addLine(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), getScoreFor(p));
@@ -108,7 +101,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	private String[] split(TabPlayer p, String text) {
 		int charLimit = 16;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
-				TAB.getInstance().getServerVersion().getMinorVersion() >= 13 && 
+			TAB.getInstance().getServerVersion().getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug
 			String lastColors = EnumChatFormat.getLastColors(text.substring(0, Math.min(16, text.length())));

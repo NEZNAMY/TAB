@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
@@ -85,10 +86,16 @@ public interface TabPlayer {
 	public Object getPlayer();
 
 	/**
-	 * Returns player's current world name (server on bungeecord)
-	 * @return name of world (server on bungeecord) where player is currently in
+	 * Returns player's current world name (on bungeecord this requires bridge installed)
+	 * @return name of world where player is currently in, null on bungeecord if bridge is not installed
 	 */
-	public String getWorldName();
+	public String getWorld();
+	
+	/**
+	 * Returns player's current server name on bungeecord (on bukkit this returns null)
+	 * @return name of server where player is currently in, null on bukkit
+	 */
+	public String getServer();
 
 	/**
 	 * Performs platform-specific API call to check for permission and returns the result
@@ -109,7 +116,7 @@ public interface TabPlayer {
 	 * @param packet - packet to send
 	 * @param feature - feature to increment sent packet counter of 
 	 */
-	public void sendCustomPacket(UniversalPacketPlayOut packet, Object feature);
+	public void sendCustomPacket(UniversalPacketPlayOut packet, String feature);
 
 	/**
 	 * Sends the player a platform-specific packet
@@ -123,7 +130,7 @@ public interface TabPlayer {
 	 * @param packet - an instance of packet depending on platform
 	 * @param feature - feature to increment sent packet counter of 
 	 */
-	public void sendPacket(Object packet, Object feature);
+	public void sendPacket(Object packet, String feature);
 
 	/**
 	 * Returns player's property by name
@@ -188,17 +195,19 @@ public interface TabPlayer {
 
 	/**
 	 * Sets property with specified name to new value. If property did no exist before, it is
-	 * created. If it existed, it is overridden
+	 * created and true is returned. If it existed, it is overridden and true is returned. False is returned othewise.
+	 * @param feature - feature using this property to get placeholders registered
 	 * @param identifier - property name
 	 * @param rawValue - new raw value
+	 * @return true if value changed / did not exist, false if value did not change
 	 */
-	public void setProperty(String identifier, String rawValue);
+	public boolean setProperty(TabFeature feature, String identifier, String rawValue);
 
 	/**
 	 * Loads property from config using standard property loading algorithm
 	 * @param property - property name to load
 	 */
-	public void loadPropertyFromConfig(String property);
+	public void loadPropertyFromConfig(TabFeature feature, String property);
 
 	/**
 	 * Loads property from config using standard property loading algorithm. If the property is
@@ -206,7 +215,7 @@ public interface TabPlayer {
 	 * @param property - property name to load
 	 * @param ifNotSet - value to use if property is not defined in config
 	 */
-	public void loadPropertyFromConfig(String property, String ifNotSet);
+	public void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
 
 	/**
 	 * Returns name of player's scoreboard team or null if nametag feature is disabled

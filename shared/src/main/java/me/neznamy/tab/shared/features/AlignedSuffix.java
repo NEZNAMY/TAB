@@ -24,6 +24,7 @@ public class AlignedSuffix extends TabFeature {
 	private Playerlist playerlist;
 
 	public AlignedSuffix(Playerlist playerlist) {
+		super("Aligned tabsuffix");
 		this.playerlist = playerlist;
 		loadWidthsFromFile();
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
@@ -176,10 +177,5 @@ public class AlignedSuffix extends TabFeature {
 			}
 		}
 		return oldMaxWidth != maxWidth;
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "Aligned tabsuffix";
 	}
 }

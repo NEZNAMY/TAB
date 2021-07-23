@@ -32,12 +32,11 @@ public class ErrorManager {
 
 	//error logs
 	private File errorLog;
-	private File papiErrorLog;
 	private File antiOverrideLog;
-	
+
 	//plugin instance
 	private TAB tab;
-	
+
 	/**
 	 * Constructs new instance
 	 * @param tab - tab instance
@@ -45,7 +44,6 @@ public class ErrorManager {
 	public ErrorManager(TAB tab) {
 		this.tab = tab;
 		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
-		papiErrorLog = new File(tab.getPlatform().getDataFolder(), "PlaceholderAPI.errors.log");
 		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
 		if (getErrorLog().exists() && getErrorLog().length() > 10) {
 			startupWarn("File &e" + getErrorLog().getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
@@ -132,7 +130,7 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Creates the file if it does not exist. Returns true if file already existed or creation was successful
 	 * or false if file does not exist and creation failed due to an exception which is then printed into console
@@ -160,7 +158,7 @@ public class ErrorManager {
 		buf.write(getCurrentTime() + removeColors(prefix) + message + System.getProperty("line.separator"));
 		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
 	}
-	
+
 	/**
 	 * Removes all color codes from defined text
 	 * @param text - text to remove colors from
@@ -263,7 +261,7 @@ public class ErrorManager {
 			return oneTimeConsoleError(defaultValue, formatNumberError(place, string));
 		}
 	}
-	
+
 	private String formatNumberError(String place, String value) {
 		return String.format("%s only accepts numeric values! (Attempted to use \"%s\")", place, value);
 	}
@@ -321,7 +319,7 @@ public class ErrorManager {
 		}
 		return interval;
 	}
-	
+
 	/**
 	 * Makes interval divisible by 50 and sends error message if it was not already or was 0 or less
 	 * @param identifier - placeholder identifier
@@ -415,9 +413,5 @@ public class ErrorManager {
 
 	public File getErrorLog() {
 		return errorLog;
-	}
-
-	public File getPapiErrorLog() {
-		return papiErrorLog;
 	}
 }

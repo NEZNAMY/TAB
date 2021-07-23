@@ -229,9 +229,8 @@ public class BukkitPlatform implements Platform {
 				try {
 					return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
 				} catch (Exception t) {
-					TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + " generated an error when setting relational placeholder " + identifier + " for viewer " + viewer.getName() + " and target " + target.getName(), t, false, TAB.getInstance().getErrorManager().getPapiErrorLog());
+					return identifier;
 				}
-				return identifier;
 			}
 		};
 		TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(p);
@@ -239,7 +238,7 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	/**
-	 * Runs PlaceholderAPI call and returns the output. If the task fails, error is logged and "ERROR" returned instead
+	 * Runs PlaceholderAPI call and returns the output. Returns identifier if call throws an exception.
 	 * @param player - player to set placeholder for
 	 * @param placeholder - placeholder
 	 * @return result from PlaceholderAPI
@@ -248,9 +247,7 @@ public class BukkitPlatform implements Platform {
 		if (placeholderAPI == null) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
-		} catch (Exception t) {
-			String playername = (player == null ? "<null>" : player.getName());
-			TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, TAB.getInstance().getErrorManager().getPapiErrorLog());
+		} catch (Throwable t) {
 			return "ERROR";
 		}
 	}

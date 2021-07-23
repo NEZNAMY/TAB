@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 /**
  * Universal interface for both proxies to manage plugin messages
  */
-public interface PluginMessageHandler {
+public abstract class PluginMessageHandler {
 
 	//name of plugin messaging channel
 	public String CHANNEL_NAME = "tab:placeholders";
@@ -23,7 +23,7 @@ public interface PluginMessageHandler {
 	 * @param player - player to request placeholder for
 	 * @param placeholder - placeholder identifier
 	 */
-	public default void requestPlaceholder(TabPlayer player, String placeholder) {
+	public void requestPlaceholder(TabPlayer player, String placeholder) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Placeholder");
 		out.writeUTF(placeholder);
@@ -35,19 +35,19 @@ public interface PluginMessageHandler {
 	 * @param player - player to request attribute for
 	 * @param attribute - attribute
 	 */
-	public default void requestAttribute(TabPlayer player, String attribute) {
+	public void requestAttribute(TabPlayer player, String attribute) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Attribute");
 		out.writeUTF(attribute);
 		sendPluginMessage(player, out.toByteArray());
 	}
-	
+
 	/**
 	 * Handles incoming plugin message with tab's channel name
 	 * @param player - plugin message receiver
 	 * @param in - incoming message
 	 */
-	public default void onPluginMessage(ProxyTabPlayer player, ByteArrayDataInput in) {
+	public void onPluginMessage(ProxyTabPlayer player, ByteArrayDataInput in) {
 		if (TAB.getInstance().isDisabled()) return; //reload in progress
 		String subChannel = in.readUTF();
 		if (subChannel.equalsIgnoreCase("Placeholder")){
@@ -55,13 +55,9 @@ public interface PluginMessageHandler {
 			String output = in.readUTF();
 			long cpu = in.readLong();
 			PlayerPlaceholder pl = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
-			if (pl != null) {
-				pl.getLastValues().put(player.getName(), output);
-				pl.getForceUpdate().add(player.getName());
-				TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
-			} else {
-				TAB.getInstance().debug("Received output for unknown placeholder " + placeholder);
-			}
+			pl.getLastValues().put(player.getName(), output);
+			pl.getForceUpdate().add(player.getName());
+			TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 		}
 		if (subChannel.equals("Attribute")) {
 			String attribute = in.readUTF();
@@ -73,11 +69,11 @@ public interface PluginMessageHandler {
 			((ITabPlayer) player).setGroup(group, true);
 		}
 	}
-	
+
 	/**
 	 * Sends plugin message
 	 * @param player - player to go through
 	 * @param message - message
 	 */
-	public void sendPluginMessage(TabPlayer player, byte[] message);
+	public abstract void sendPluginMessage(TabPlayer player, byte[] message);
 }

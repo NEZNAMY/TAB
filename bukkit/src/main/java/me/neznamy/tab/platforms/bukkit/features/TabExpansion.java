@@ -75,7 +75,7 @@ public class TabExpansion extends PlaceholderExpansion {
 		}
 		if (identifier.startsWith("placeholder_")) {
 			//using Property function for fast & easy handling of nested placeholders and different placeholder types
-			return new Property(p, "%" + identifier.substring(12) + "%").get();
+			return new Property(null, p, "%" + identifier.substring(12) + "%").get();
 		}
 		return getProperty(identifier, p);
 	}

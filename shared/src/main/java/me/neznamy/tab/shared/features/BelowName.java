@@ -1,8 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -25,31 +22,32 @@ public class BelowName extends TabFeature {
 	private String rawNumber;
 	private String rawText;
 	private boolean antiOverride;
+	private TabFeature textRefresher;
 
 	public BelowName() {
+		super("Belowname number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),
+				TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-worlds"));
 		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
 		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
 		antiOverride = TAB.getInstance().getConfiguration().getConfig().getBoolean("belowname-objective.anti-override", true);
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
-		refreshUsedPlaceholders();
-		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s", rawNumber, rawText, disabledWorlds));
-		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", new TextRefresher());
+		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, disabledWorlds, disabledServers));
+		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", textRefresher = new TextRefresher());
 	}
 
 	@Override
 	public void load() {
 		for (TabPlayer loaded : TAB.getInstance().getPlayers()){
-			loaded.setProperty(PropertyUtils.BELOWNAME_NUMBER, rawNumber);
-			loaded.setProperty(PropertyUtils.BELOWNAME_TEXT, rawText);
-			if (isDisabledWorld(disabledWorlds, loaded.getWorldName())) {
-				playersInDisabledWorlds.add(loaded);
+			loaded.setProperty(this, PropertyUtils.BELOWNAME_NUMBER, rawNumber);
+			loaded.setProperty(textRefresher, PropertyUtils.BELOWNAME_TEXT, rawText);
+			if (isDisabled(loaded.getServer(), loaded.getWorld())) {
+				disabledPlayers.add(loaded);
 				continue;
 			}
 			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, loaded.getProperty(PropertyUtils.BELOWNAME_TEXT).updateAndGet(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TEXT_USAGE);
 		}
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()){
 			for (TabPlayer target : TAB.getInstance().getPlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), getFeatureType());
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), getFeatureName());
 			}
 		}
 	}
@@ -57,36 +55,36 @@ public class BelowName extends TabFeature {
 	@Override
 	public void unload() {
 		for (TabPlayer p : TAB.getInstance().getPlayers()){
-			if (playersInDisabledWorlds.contains(p)) continue;
+			if (disabledPlayers.contains(p)) continue;
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), TEXT_USAGE);
 		}
 	}
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(PropertyUtils.BELOWNAME_NUMBER, rawNumber);
-		connectedPlayer.setProperty(PropertyUtils.BELOWNAME_TEXT, rawText);
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
-			playersInDisabledWorlds.add(connectedPlayer);
+		connectedPlayer.setProperty(this, PropertyUtils.BELOWNAME_NUMBER, rawNumber);
+		connectedPlayer.setProperty(textRefresher, PropertyUtils.BELOWNAME_TEXT, rawText);
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			disabledPlayers.add(connectedPlayer);
 			return;
 		}
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, connectedPlayer.getProperty(PropertyUtils.BELOWNAME_TEXT).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TEXT_USAGE);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getPlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), number), getFeatureType());
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), number), getFeatureName());
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureName());
 		}
 	}
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledBefore = disabledPlayers.contains(p);
 		boolean disabledNow = false;
-		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			playersInDisabledWorlds.add(p);
+			disabledPlayers.add(p);
 		} else {
-			playersInDisabledWorlds.remove(p);
+			disabledPlayers.remove(p);
 		}
 		if (disabledNow && !disabledBefore) {
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), TEXT_USAGE);
@@ -102,35 +100,25 @@ public class BelowName extends TabFeature {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (playersInDisabledWorlds.contains(refreshed)) return;
+		if (disabledPlayers.contains(refreshed)) return;
 		int number = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), number), getFeatureType());
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), number), getFeatureName());
 		}
 	}
 
 	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders =  new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(rawNumber));
-	}
-
-	@Override
-	public Object getFeatureType() {
-		return "Belowname number";
-	}
-
-	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (playersInDisabledWorlds.contains(packetReceiver) || !antiOverride) return;
+		if (disabledPlayers.contains(packetReceiver) || !antiOverride) return;
 		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, packetReceiver.getProperty(PropertyUtils.BELOWNAME_TEXT).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TEXT_USAGE);
 		for (TabPlayer all : TAB.getInstance().getPlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureType());
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureName());
 		}
 	}
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (playersInDisabledWorlds.contains(receiver) || !antiOverride) return false;
+		if (disabledPlayers.contains(receiver) || !antiOverride) return false;
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (belowname)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 			return true;
@@ -141,28 +129,13 @@ public class BelowName extends TabFeature {
 	public class TextRefresher extends TabFeature {
 
 		public TextRefresher(){
-			refreshUsedPlaceholders();
+			super(TEXT_USAGE);
 		}
 
 		@Override
 		public void refresh(TabPlayer refreshed, boolean force) {
-			if (playersInDisabledWorlds.contains(refreshed)) return;
+			if (disabledPlayers.contains(refreshed)) return;
 			refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TEXT_USAGE);
 		}
-
-		@Override
-		public void refreshUsedPlaceholders() {
-			usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(rawText));
-		}
-
-		@Override
-		public String getFeatureType() {
-			return TEXT_USAGE;
-		}
-	}
-
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		playersInDisabledWorlds.remove(disconnectedPlayer);
 	}
 }

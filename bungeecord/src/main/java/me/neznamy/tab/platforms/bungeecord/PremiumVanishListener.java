@@ -30,10 +30,10 @@ public class PremiumVanishListener implements Listener {
 			boolean perm = all.hasPermission("tab.seevanished");
 			if (all == vanished || perm) {
 				if (perm && list.isVanishedAsSpectators()) {
-					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, new PlayerInfoData(vanished.getUniqueId(), EnumGamemode.SPECTATOR)), list.getFeatureType());
+					all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, new PlayerInfoData(vanished.getUniqueId(), EnumGamemode.SPECTATOR)), list.getFeatureName());
 				}
 			} else {
-				all.sendCustomPacket(list.getRemovePacket(vanished), list.getFeatureType());
+				all.sendCustomPacket(list.getRemovePacket(vanished), list.getFeatureName());
 			}
 		}
 	}
@@ -49,7 +49,7 @@ public class PremiumVanishListener implements Listener {
 		if (list == null) return;
 		TabPlayer unvanished = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished, viewer), list.getFeatureType());
+			if (list.shouldSee(viewer, unvanished)) viewer.sendCustomPacket(list.getAddPacket(unvanished, viewer), list.getFeatureName());
 		}
 	}
 }

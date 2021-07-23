@@ -20,12 +20,13 @@ public class GroupRefresher extends TabFeature {
 	private List<String> primaryGroupFindingList;
 	
 	public GroupRefresher() {
+		super("Permission group refreshing");
 		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 		primaryGroupFindingList = new ArrayList<>();
 		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureName(), UsageType.REPEATING_TASK, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
@@ -48,26 +49,6 @@ public class GroupRefresher extends TabFeature {
 		}
 	}
 
-	public String getFromList(TabPlayer p) {
-		try {
-			String[] playerGroups = TAB.getInstance().getPermissionPlugin().getAllGroups(p);
-			if (playerGroups != null && playerGroups.length > 0) {
-				for (String groupFromList : primaryGroupFindingList) {
-					for (String playerGroup : playerGroups) {
-						if (playerGroup.equalsIgnoreCase(groupFromList)) {
-							return playerGroup;
-						}
-					}
-				}
-				return playerGroups[0];
-			} else {
-				return DEFAULT_GROUP;
-			}
-		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission groups of " + p.getName() + " using " + TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion(), e);
-		}
-	}
-
 	public String getByPermission(TabPlayer p) {
 		for (Object group : primaryGroupFindingList) {
 			if (p.hasPermission("tab.group." + group)) {
@@ -76,11 +57,6 @@ public class GroupRefresher extends TabFeature {
 		}
 		TAB.getInstance().getErrorManager().oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
 		return DEFAULT_GROUP;
-	}
-
-	@Override
-	public Object getFeatureType() {
-		return "Permission group refreshing";
 	}
 
 	public boolean isGroupsByPermissions() {

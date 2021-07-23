@@ -34,6 +34,7 @@ public class Layout extends TabFeature {
 	private Map<Integer, UUID> uuids = new HashMap<>();
 
 	public Layout() {
+		super("Tablist layout");
 		try {
 			new File(TAB.getInstance().getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
 			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
@@ -141,11 +142,6 @@ public class Layout extends TabFeature {
 	}
 
 	@Override
-	public String getFeatureType() {
-		return "Tablist layout";
-	}
-
-	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (FixedSlot s : fixedSlots.values()) {
@@ -155,7 +151,7 @@ public class Layout extends TabFeature {
 			int slot = translateSlot(entry.getKey());
 			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
-		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureType());
+		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureName());
 	}
 
 	private int translateSlot(int slot) {
@@ -168,7 +164,7 @@ public class Layout extends TabFeature {
 
 	@Override
 	public void load() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureName(), UsageType.REPEATING_TASK, () -> {
 
 			List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
@@ -178,7 +174,7 @@ public class Layout extends TabFeature {
 					int slot = translateSlot(entry.getKey());
 					list.add(new PlayerInfoData(uuids.get(slot), entry.getValue()));
 				}
-				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
+				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureName());
 			}
 		});
 		List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
@@ -191,7 +187,7 @@ public class Layout extends TabFeature {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureName());
 		}
 	}
 
@@ -204,7 +200,7 @@ public class Layout extends TabFeature {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData(uuids.get(slot)));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), getFeatureName());
 		}
 	}
 }

@@ -44,7 +44,6 @@ public class Configs {
 	//hidden config options
 	private boolean rgbSupport;
 	private boolean unregisterBeforeRegister;
-	private String multiWorldSeparator;
 	private boolean armorStandsAlwaysVisible; //paid private addition
 	private boolean removeGhostPlayers;
 	private boolean layout;
@@ -102,7 +101,7 @@ public class Configs {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		removeStrings = new ArrayList<>();
 		for (String s : getConfig().getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
 			getRemoveStrings().add(s.replace('&', '\u00a7'));
@@ -110,7 +109,6 @@ public class Configs {
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
 		rgbSupport = (boolean) getSecretOption("rgb-support", true);
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-		multiWorldSeparator = (String) getSecretOption("multi-world-separator", "-");
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		layout = (boolean) getSecretOption("layout", false);
@@ -193,10 +191,10 @@ public class Configs {
 	 * @param world - name of world to find group of
 	 * @return name of world group
 	 */
-	public String getWorldGroupOf(Set<?> groups, String world) {
+/*	public String getWorldGroupOf(Set<?> groups, String world) {
 		if (groups.isEmpty()) return world;
 		for (Object worldGroup : groups) {
-			for (String definedWorld : worldGroup.toString().split(multiWorldSeparator)) {
+			for (String definedWorld : worldGroup.toString().split(";")) {
 				if (definedWorld.endsWith("*")) {
 					if (world.toLowerCase().startsWith(definedWorld.substring(0, definedWorld.length()-1).toLowerCase())) return worldGroup.toString();
 				} else {
@@ -205,7 +203,7 @@ public class Configs {
 			}
 		}
 		return world;
-	}
+	}*/
 
 	/**
 	 * Reads all lines in file and returns them as List

@@ -38,6 +38,7 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	 * @param tab - tab instance
 	 */
 	public PerWorldPlayerlist(JavaPlugin plugin, TAB tab) {
+		super("Per world playerlist");
 		this.plugin = plugin;
 		allowBypass = tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
 		ignoredWorlds = tab.getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
@@ -73,14 +74,14 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 	}
 	
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 	}
 	
 	private void checkPlayer(Player p) {
@@ -105,10 +106,5 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 			}
 		}
 		return viewerWorldGroup.equals(targetWorldGroup);
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "Per world playerlist";
 	}
 }

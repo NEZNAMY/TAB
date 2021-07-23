@@ -1,10 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.HashSet;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 
@@ -21,8 +18,8 @@ public class ColorAndStyleRefresher extends TabFeature {
 	 * @param line - bossbar line this text belongs to
 	 */
 	public ColorAndStyleRefresher(BossBarLine line) {
+		super("BossBar");
 		this.line = line;
-		refreshUsedPlaceholders();
 	}
 	
 	@Override
@@ -30,17 +27,6 @@ public class ColorAndStyleRefresher extends TabFeature {
 		if (!line.getPlayers().contains(refreshed)) return;
 		Property color = refreshed.getProperty("bossbar-color-" + line.getName());
 		Property style = refreshed.getProperty("bossbar-style-" + line.getName());
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())), getFeatureType());
-	}
-
-	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(line.getColor()));
-		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(line.getStyle()));
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "BossBar";
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseColor(color.updateAndGet()), line.parseStyle(style.updateAndGet())), getFeatureName());
 	}
 }

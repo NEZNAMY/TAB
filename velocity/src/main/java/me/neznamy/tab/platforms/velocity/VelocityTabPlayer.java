@@ -55,10 +55,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		player = p;
 		Optional<ServerConnection> server = p.getCurrentServer();
 		if (server.isPresent()) {
-			world = server.get().getServerInfo().getName();
+			super.server = server.get().getServerInfo().getName();
 		} else {
 			//tab reload while a player is connecting, how unfortunate
-			world = "<null>";
+			super.server = "<null>";
 		}
 		name = p.getUsername();
 		uniqueId = p.getUniqueId();
@@ -80,6 +80,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public void sendPacket(Object packet) {
+		long time = System.nanoTime();
 		if (packet == null || !player.isActive()) return;
 		if (packet instanceof PacketPlayOutChat){
 			handle((PacketPlayOutChat) packet);
@@ -93,6 +94,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		if (packet instanceof PacketPlayOutPlayerInfo) {
 			handle((PacketPlayOutPlayerInfo) packet);
 		}
+		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
 	private void handle(PacketPlayOutChat packet) {

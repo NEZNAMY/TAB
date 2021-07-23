@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
 
 /**
  * Representation of any placeholder
@@ -80,13 +79,12 @@ public abstract class Placeholder {
 		try {
 			String value = getLastValue(p);
 			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, EnumChatFormat.color(value)), p);
+			String newValue = setPlaceholders(findReplacement(replacements, value), p);
 			if (newValue.contains("%value%")) {
 				newValue = newValue.replace("%value%", value);
 			}
-			newValue = EnumChatFormat.color(newValue);
 			if (s.equals(identifier)) {
-				//small performance and memory save
+				//small cpu and memory save
 				return newValue;
 			} else {
 				return s.replace(identifier, newValue);

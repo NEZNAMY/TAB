@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.config.file;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -27,24 +28,32 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
 	@Override
 	public String getProperty(String name, String property, String server, String world) {
-		String value = getString("per-server." + server + "." + name + "." + property);
-		if ((value = getString("per-server." + server + "._DEFAULT_." + property)) != null) {
+		Object value = getObject("per-server." + server + "." + name + "." + property);
+		if ((value = getObject("per-server." + server + "._DEFAULT_." + property)) != null) {
 			//TODO return source;
-			return value;
+			return toString(value);
 		}
-		if ((value = getString("per-world." + world + "." + name + "." + property)) != null) {
-			return value;
+		if ((value = getObject("per-world." + world + "." + name + "." + property)) != null) {
+			return toString(value);
 		}
-		if ((value = getString("per-world." + world + "._DEFAULT_." + property)) != null) {
-			return value;
+		if ((value = getObject("per-world." + world + "._DEFAULT_." + property)) != null) {
+			return toString(value);
 		}
-		if ((value = getString(name + "." + property)) != null) {
-			return value;
+		if ((value = getObject(name + "." + property)) != null) {
+			return toString(value);
 		}
-		if ((value = getString("_DEFAULT_." + property)) != null) {
-			return value;
+		if ((value = getObject("_DEFAULT_." + property)) != null) {
+			return toString(value);
 		}
 		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String toString(Object obj) {
+		if (obj instanceof List) {
+			return String.join("\n", (String[]) ((List<Object>)obj).toArray(new String[0]));
+		}
+		return obj.toString();
 	}
 
 	@Override

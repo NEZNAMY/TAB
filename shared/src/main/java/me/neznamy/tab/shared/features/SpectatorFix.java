@@ -22,6 +22,7 @@ public class SpectatorFix extends TabFeature {
 	 * Constructs new instance and loads config options
 	 */
 	public SpectatorFix() {
+		super("Spectator fix");
 		TAB.getInstance().debug(String.format("Loaded SpectatorFix feature"));
 	}
 	
@@ -37,11 +38,6 @@ public class SpectatorFix extends TabFeature {
 		}
 	}
 
-	@Override
-	public String getFeatureType() {
-		return "Spectator fix";
-	}
-	
 	@Override
 	public void load() {
 		updateAll(false);
@@ -60,7 +56,7 @@ public class SpectatorFix extends TabFeature {
 				if (p == target) continue;
 				list.add(new PlayerInfoData(p.getUniqueId(), realGamemode ? EnumGamemode.values()[((ITabPlayer) p).getGamemode()+1] : EnumGamemode.CREATIVE));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), getFeatureName());
 		}
 	}
 }

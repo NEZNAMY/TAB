@@ -68,7 +68,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, getTeamNameNote(analyzed));
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
-			boolean disabledPlayerlist = playerlist.isDisabledWorld(playerlist.getDisabledWorlds(), analyzed.getWorldName());
+			boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, PropertyUtils.TABPREFIX, disabledPlayerlist);
 			showProperty(sender, analyzed, PropertyUtils.TABSUFFIX, disabledPlayerlist);
 			showProperty(sender, analyzed, PropertyUtils.CUSTOMTABNAME, disabledPlayerlist);
@@ -78,7 +78,7 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
 		if (tab.getFeatureManager().getNameTagFeature() != null) {
-			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName());
+			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, PropertyUtils.TAGPREFIX, disabledNametags);
 			showProperty(sender, analyzed, PropertyUtils.TAGSUFFIX, disabledNametags);
 			for (Object line : getExtraLines()) {
@@ -137,7 +137,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	private String getTeamName(TabPlayer analyzed) {
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null) {
-			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName())) {
+			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld())) {
 				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
 			} else {
 				return "&eTeam name: &a" + analyzed.getTeamName();
@@ -154,7 +154,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	private String getTeamNameNote(TabPlayer analyzed) {
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null && 
-			!TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabledWorld(analyzed.getWorldName()) && 
+			!TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
 			analyzed.getTeamNameNote() != null)
 				return "&eTeam name note: &a" + analyzed.getTeamNameNote();
 		return "";

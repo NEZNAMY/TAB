@@ -10,6 +10,7 @@ import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat;
 import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
@@ -41,13 +42,18 @@ public abstract class ITabPlayer implements TabPlayer {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
 	}
 
-	private void setProperty(String identifier, String rawValue, String source) {
+	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
 		Property p = getProperty(identifier);
 		if (p == null) {
-			properties.put(identifier, new Property(this, rawValue, source));
+			properties.put(identifier, new Property(feature, this, rawValue, source));
+			return true;
 		} else {
-			p.changeRawValue(rawValue);
-			p.setSource(source);
+			if (!p.getOriginalRawValue().equals(rawValue)) {
+				p.changeRawValue(rawValue);
+				p.setSource(source);
+				return true;
+			}
+			return false;
 		}
 	}
 	
@@ -90,7 +96,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty(PropertyUtils.NAMETAG,getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
+			setProperty(TAB.getInstance().getFeatureManager().getNameTagFeature(), PropertyUtils.NAMETAG,getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}
@@ -127,24 +133,30 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public String getWorldName() {
+	public String getWorld() {
 		return world;
 	}
+	
+	@Override
+	public String getServer() {
+		return server;
+	}
 
-	public void setWorldName(String name) {
+	public void setWorld(String name) {
 		world = name;
+	}
+	
+	public void setServer(String name) {
+		server = name;
 	}
 
 	@Override
 	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		Object p = packet.create(getVersion());
-		long time = System.nanoTime();
-		sendPacket(p);
-		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
+		sendPacket(packet.create(getVersion()));
 	}
 
 	@Override
-	public void sendCustomPacket(UniversalPacketPlayOut packet, Object feature) {
+	public void sendCustomPacket(UniversalPacketPlayOut packet, String feature) {
 		sendCustomPacket(packet);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}
@@ -192,46 +204,29 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void setProperty(String identifier, String rawValue) {
-		setProperty(identifier, rawValue, null);
+	public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
+		return setProperty(feature, identifier, rawValue, null);
 	}
 
 	@Override
-	public void loadPropertyFromConfig(String property) {
-		loadPropertyFromConfig(property, "");
+	public void loadPropertyFromConfig(TabFeature feature, String property) {
+		loadPropertyFromConfig(feature, property, "");
 	}
 
 	@Override
-	public void loadPropertyFromConfig(String property, String ifNotSet) {
-/*		String worldGroup = TAB.getInstance().getConfiguration().getWorldGroupOf(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings").keySet(), getWorldName());
-		String value;
-		Map<String, String> priorities = new LinkedHashMap<>();
-		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getName() + "." + property, "Player: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Users." + getUniqueId().toString() + "." + property, "PlayerUUID: " + getName() + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-		priorities.put("Users." + getName() + "." + property, "Player: " + getName());
-		priorities.put("Users." + getUniqueId().toString() + "." + property, "PlayerUUID: " + getName());
-		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups." + playerGroupFromConfig + "." + property, "Group: " + permissionGroup + ", " + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-		priorities.put("per-" + TAB.getInstance().getPlatform().getSeparatorType() + "-settings." + worldGroup + ".Groups._OTHER_." + property, "Group: _OTHER_," + TAB.getInstance().getPlatform().getSeparatorType() + ": " + worldGroup);
-		priorities.put("Groups." + playerGroupFromConfig + "." + property, "Group: " + permissionGroup);
-		priorities.put("Groups._OTHER_." + property, "Group: _OTHER_");
-		for (Entry<String, String> entry : priorities.entrySet()) {
-			if ((value = TAB.getInstance().getConfiguration().getConfig().getString(entry.getKey())) != null) {
-				setProperty(property, value, entry.getValue());
-				return;
-			}
-		}*/
+	public void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
 		String value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
 		if (value == null) {
 			value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
 		}
 		if (value == null) {
-			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup().replace(".", "@#@"), property, server, world);
+			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
 		}
 		if (value != null) {
-			setProperty(property, value, "TODO");
+			setProperty(feature, property, value, "TODO");
 			return;
 		}
-		setProperty(property, ifNotSet, "None");
+		setProperty(feature, property, ifNotSet, "None");
 	}
 
 	@Override
@@ -277,7 +272,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void sendPacket(Object nmsPacket, Object feature) {
+	public void sendPacket(Object nmsPacket, String feature) {
 		sendPacket(nmsPacket);
 		TAB.getInstance().getCPUManager().packetSent(feature);
 	}

@@ -16,7 +16,7 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * A class to request and read PlaceholderAPI values from bukkit server
  */
-public class BungeePluginMessageHandler implements Listener, PluginMessageHandler {
+public class BungeePluginMessageHandler extends PluginMessageHandler implements Listener {
 
 	/**
 	 * Constructs new instance with given parameter and registers events/channel

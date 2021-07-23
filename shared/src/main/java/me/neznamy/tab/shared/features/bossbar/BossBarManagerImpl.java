@@ -1,13 +1,12 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
@@ -32,6 +30,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//per-world / per-server bossbars
 	private Map<String, List<String>> perWorld;
+	private Map<String, List<String>> perServer;
 
 	//registered bossbars
 	private Map<String, BossBar> lines = new HashMap<>();
@@ -57,8 +56,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	//if bossbar is hidden by default until toggle command is used
 	private boolean hiddenByDefault;
 
-	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
-
 	private Set<TabPlayer> visiblePlayers = new HashSet<>();
 
 	/**
@@ -66,11 +63,13 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 * @param tab - tab instance
 	 */
 	public BossBarManagerImpl() {
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", Arrays.asList("disabled" + TAB.getInstance().getPlatform().getSeparatorType()));
+		super("Bossbar", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
+				TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
 		defaultBars = TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.default-bars", new ArrayList<>());
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-"+TAB.getInstance().getPlatform().getSeparatorType());
+		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-world");
+		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-server");
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
 			lines.put(bar.toString(), loadFromConfig(bar.toString()));
 		}
@@ -93,7 +92,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (rememberToggleChoice) {
 			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerData("bossbar-off");
 		}
-		((PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager()).getAllUsedPlaceholderIdentifiers().add("%countdown%");
+		TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().putIfAbsent("%countdown%", new HashSet<>()).add(this);
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
@@ -147,17 +146,18 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureName(), UsageType.REPEATING_TASK, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
-				if (!p.isLoaded() || !hasBossBarVisible(p) || playersInDisabledWorlds.contains(p)) continue;
+				if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) continue;
 				for (BossBar line : lines.values()) {
 					if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
 						line.removePlayer(p);
 					}
 				}
 				showBossBars(p, defaultBars);
-				showBossBars(p, perWorld.get(TAB.getInstance().getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
+				showBossBars(p, perWorld.get(p.getWorld()));
+				showBossBars(p, perServer.get(p.getServer()));
 			}
 		});
 	}
@@ -173,8 +173,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
-			playersInDisabledWorlds.add(connectedPlayer);
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			disabledPlayers.add(connectedPlayer);
 			return;
 		}
 		setBossBarVisible(connectedPlayer, !bossbarOffPlayers.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
@@ -182,10 +182,10 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-			playersInDisabledWorlds.add(p);
+		if (isDisabled(p.getServer(), p.getWorld())) {
+			disabledPlayers.add(p);
 		} else {
-			playersInDisabledWorlds.remove(p);
+			disabledPlayers.remove(p);
 		}
 		for (BossBar line : lines.values()) {
 			line.removePlayer(p);
@@ -207,10 +207,11 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 * @param p - player to process
 	 */
 	protected void detectBossBarsAndSend(TabPlayer p) {
-		if (playersInDisabledWorlds.contains(p) || !hasBossBarVisible(p)) return;
+		if (disabledPlayers.contains(p) || !hasBossBarVisible(p)) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements.stream().map(BossBar::getName).collect(Collectors.toList()));
-		showBossBars(p, perWorld.get(TAB.getInstance().getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName())));
+		showBossBars(p, perWorld.get(p.getWorld()));
+		showBossBars(p, perServer.get(p.getServer()));
 	}
 
 	/**
@@ -229,13 +230,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	@Override
-	public String getFeatureType() {
-		return "Bossbar";
-	}
-
-	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		playersInDisabledWorlds.remove(disconnectedPlayer);
+		super.onQuit(disconnectedPlayer);
 		visiblePlayers.remove(disconnectedPlayer);
 		for (BossBar line : lines.values()) {
 			line.removePlayer(disconnectedPlayer);
@@ -249,7 +245,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public BossBar createBossBar(String name, String title, String progress, String color, String style) {
-		BossBar bar = new BossBarLine(name, null, color, style, title, progress);
+		BossBar bar = new BossBarLine( name, null, color, style, title, progress);
 		lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}

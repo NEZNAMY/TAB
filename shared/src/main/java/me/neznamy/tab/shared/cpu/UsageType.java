@@ -10,6 +10,7 @@ public enum UsageType {
 	PLAYER_JOIN_EVENT("PlayerJoinEvent"),
 	PLAYER_QUIT_EVENT("PlayerQuitEvent"),
 	WORLD_SWITCH_EVENT("PlayerChangedWorldEvent"),
+	SERVER_SWITCH_EVENT("ServerSwitchEvent"),
 	PLAYER_TOGGLE_SNEAK_EVENT("PlayerToggleSneakEvent"),
 	PLAYER_MOVE_EVENT("PlayerMoveEvent"),
 	PLAYER_RESPAWN_EVENT("PlayerRespawnEvent"),

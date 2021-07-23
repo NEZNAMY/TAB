@@ -7,7 +7,10 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -17,6 +20,7 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
@@ -59,6 +63,16 @@ public class VelocityPlatform extends ProxyPlatform {
 		loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
+			
+			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				plm.requestAttribute(all, "world");
+				if (!all.getWorld().equals(((ProxyTabPlayer)all).getAttribute("world"))){
+					((ITabPlayer)all).setWorld(((ProxyTabPlayer)all).getAttribute("world"));
+					TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
+				}
+			}
+		});
 		for (Player p : server.getAllPlayers()) {
 			tab.addPlayer(new VelocityTabPlayer(p, plm));
 		}

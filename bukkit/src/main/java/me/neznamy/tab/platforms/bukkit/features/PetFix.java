@@ -34,6 +34,7 @@ public class PetFix extends TabFeature {
 	 * @param nms
 	 */
 	public PetFix(NMSStorage nms) {
+		super("Pet name fix");
 		this.nms = nms;
 		petOwnerPosition = getPetOwnerPosition();
 		TAB.getInstance().debug("Loaded PetFix feature");
@@ -125,11 +126,6 @@ public class PetFix extends TabFeature {
 				nms.setField(packet, "PacketPlayOutSpawnEntityLiving_DATAWATCHER", watcher.toNMS());
 			}
 		}
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "Pet name fix";
 	}
 
 	/**

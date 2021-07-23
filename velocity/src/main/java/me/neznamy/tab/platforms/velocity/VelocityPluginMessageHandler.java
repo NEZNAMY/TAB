@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 /**
  * A class to request and read PlaceholderAPI values from bukkit server
  */
-public class VelocityPluginMessageHandler implements PluginMessageHandler {
+public class VelocityPluginMessageHandler extends PluginMessageHandler {
 
 	//channel identifier
 	private MinecraftChannelIdentifier mc;

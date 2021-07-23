@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
@@ -21,10 +22,10 @@ public class FeatureManager {
 
 	private String deserializing = "Packet deserializing";
 	private String serializing = "Packet serializing";
-	
+
 	//list of registered features
 	private Map<String, TabFeature> features = new LinkedHashMap<>();
-	
+
 	/**
 	 * Registers a feature
 	 * 
@@ -34,7 +35,7 @@ public class FeatureManager {
 	public void registerFeature(String featureName, TabFeature featureHandler) {
 		features.put(featureName, featureHandler);
 	}
-	
+
 	/**
 	 * Unregisters feature making it no longer receive events. This does not run unload method nor cancel
 	 * tasks created by the feature
@@ -43,7 +44,7 @@ public class FeatureManager {
 	public void unregisterFeature(String featureName) {
 		features.remove(featureName);
 	}
-	
+
 	/**
 	 * Returns whether a feature with said name is registered or not
 	 * 
@@ -53,7 +54,7 @@ public class FeatureManager {
 	public boolean isFeatureEnabled(String name) {
 		return features.containsKey(name);
 	}
-	
+
 	/**
 	 * Returns feature handler by it's name
 	 * 
@@ -63,37 +64,37 @@ public class FeatureManager {
 	public TabFeature getFeature(String name) {
 		return features.get(name);
 	}
-	
+
 	/**
 	 * Returns list of all loaded features
 	 * @return list of all loaded features
 	 */
 	public Collection<TabFeature> getAllFeatures(){
 		try {
-			return features.values();
+			return new ArrayList<>(features.values());
 		} catch (ConcurrentModificationException e) {
 			return getAllFeatures();
 		}
 	}
-	
+
 	/**
-	 * Calls load() on all features that implement Loadable
+	 * Calls load() on all features
 	 * This function is called on plugin startup
 	 */
 	public void load() {
 		getAllFeatures().forEach(f -> f.load());
 	}
-	
+
 	/**
-	 * Calls unload() on all features that implement Loadable
+	 * Calls unload() on all features
 	 * This function is called on plugin unload
 	 */
 	public void unload() {
 		getAllFeatures().forEach(f -> f.unload());
 	}
-	
+
 	/**
-	 * Calls refresh(...) on all features that implement Refreshable
+	 * Calls refresh(...) on all features
 	 * 
 	 * @param refreshed - player to be refreshed
 	 * @param force - whether refresh should be forced or not
@@ -101,17 +102,9 @@ public class FeatureManager {
 	public void refresh(TabPlayer refreshed, boolean force) {
 		getAllFeatures().forEach(f -> f.refresh(refreshed, force));
 	}
-	
+
 	/**
-	 * Calls refreshUsedPlaceholders() on all features that implement Refreshable
-	 * This function is called when new placeholders enter the game (usually when a command to assign property is ran)
-	 */
-	public void refreshUsedPlaceholders() {
-		getAllFeatures().forEach(f -> f.refreshUsedPlaceholders());
-	}
-	
-	/**
-	 * Calls onPacketSend(...) on all features that implement PlayerInfoPacketListener and measures how long it took them to process
+	 * Calls onPacketSend(...) on all features
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
@@ -127,16 +120,16 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();
 			f.onPacketSend(receiver, info);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
 		Object pack = info.create(receiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(serializing, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		return pack;
 	}
-	
+
 	/**
-	 * Calls onQuit(...) on all features that implement QuitEventListener and measures how long it took them to process
+	 * Calls onQuit(...) on all features
 	 * 
 	 * @param disconnectedPlayer - player who disconnected
 	 */
@@ -145,13 +138,13 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			long time = System.nanoTime();
 			f.onQuit(disconnectedPlayer);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
 		}
 		TAB.getInstance().removePlayer(disconnectedPlayer);
 	}
-	
+
 	/**
-	 * Calls onJoin(...) on all features that implement JoinEventListener and measures how long it took them to process
+	 * Calls onJoin(...) on all features
 	 * 
 	 * @param connectedPlayer - player who connected
 	 */
@@ -165,18 +158,18 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			long time = System.nanoTime();
 			f.onJoin(connectedPlayer);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded();
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
-	
+
 	/**
-	 * Calls onWorldChange(...) on all features that implement WorldChangeListener and measures how long it took them to process
+	 * Calls onWorldChange(...) on all features
 	 * 
-	 * @param changed - player who switched world (or server on proxy)
-	 * @param from - name of the previous world/server
-	 * @param to - name of the new world/server
+	 * @param changed - player who switched world
+	 * @param from - name of the previous world
+	 * @param to - name of the new world
 	 */
 	public void onWorldChange(UUID playerUUID, String to) {
 		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
@@ -184,17 +177,35 @@ public class FeatureManager {
 			TAB.getInstance().getCPUManager().runTaskLater(100, "processing delayed world/server switch", "Other", UsageType.WORLD_SWITCH_EVENT, () -> onWorldChange(playerUUID, to));
 			return;
 		}
-		String from = changed.getWorldName();
-		((ITabPlayer)changed).setWorldName(to);
+		String from = changed.getWorld();
+		((ITabPlayer)changed).setWorld(to);
 		for (TabFeature f : getAllFeatures()) {
 			long time = System.nanoTime();
 			f.onWorldChange(changed, from, to);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.WORLD_SWITCH_EVENT, System.nanoTime()-time);
 		}
 	}
-	
+
 	/**
-	 * Calls onCommand(...) on all features that implement CommandListener and measures how long it took them to process
+	 * Calls onServerChange(...) on all features
+	 * 
+	 * @param changed - player who switched server
+	 * @param from - name of the previous server
+	 * @param to - name of the new server
+	 */
+	public void onServerChange(UUID playerUUID, String to) {
+		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
+		String from = changed.getServer();
+		((ITabPlayer)changed).setServer(to);
+		for (TabFeature f : getAllFeatures()) {
+			long time = System.nanoTime();
+			f.onServerChange(changed, from, to);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.SERVER_SWITCH_EVENT, System.nanoTime()-time);
+		}
+	}
+
+	/**
+	 * Calls onCommand(...) on all features
 	 * 
 	 * @param sender - command sender
 	 * @param command - command line including /
@@ -206,13 +217,13 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			long time = System.nanoTime();
 			if (f.onCommand(sender, command)) cancel = true;
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
 		}
 		return cancel;
 	}
-	
+
 	/**
-	 * Calls onPacketReceive(...) on all features that implement RawPacketListener and measures how long it took them to process
+	 * Calls onPacketReceive(...) on all features
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - IN packet coming from player
@@ -225,15 +236,15 @@ public class FeatureManager {
 			try {
 				if (newPacket != null) newPacket = f.onPacketReceive(receiver, newPacket);
 			} catch (IllegalAccessException e) {
-				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
+				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_IN, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PACKET_READING_IN, System.nanoTime()-time);
 		}
 		return newPacket;
 	}
-	
+
 	/**
-	 * Calls onPacketSend(...) on all features that implement RawPacketListener and measures how long it took them to process
+	 * Calls onPacketSend(...) on all features
 	 * 
 	 * @param receiver - packet receiver
 	 * @param packet - OUT packet coming from the server
@@ -244,12 +255,12 @@ public class FeatureManager {
 			try {
 				f.onPacketSend(receiver, packet);
 			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | InstantiationException e) {
-				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureType() + " failed to read packet", e);
+				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 	}
-	
+
 	/**
 	 * Calls onLoginPacket on all featurs that implement LoginPacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
@@ -258,10 +269,10 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			long time = System.nanoTime();
 			f.onLoginPacket(packetReceiver);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.PACKET_LOGIN, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.PACKET_LOGIN, System.nanoTime()-time);
 		}
 	}
-	
+
 	/**
 	 * Calls onPacketSend on all featurs that implement DisplayObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
@@ -276,12 +287,12 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();
 			boolean cancel = f.onPacketSend(packetReceiver, display);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 			if (cancel) return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
@@ -294,10 +305,10 @@ public class FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			time = System.nanoTime();
 			f.onPacketSend(packetReceiver, display);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureType(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}
-	
+
 	/**
 	 * Returns currently loaded nametag feature or null if disabled
 	 * @return currently loaded nametag feature

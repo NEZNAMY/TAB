@@ -13,23 +13,19 @@ import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 public class GhostPlayerFix extends TabFeature {
 
 	public GhostPlayerFix() {
+		super("Ghost player fix");
 		TAB.getInstance().debug("Loaded GhostPlayerFix feature");
 	}
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", getFeatureType(), UsageType.PLAYER_QUIT_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", getFeatureName(), UsageType.PLAYER_QUIT_EVENT, () -> {
 
 			if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
 			for (TabPlayer all : TAB.getInstance().getPlayers()) {
 				if (all == disconnectedPlayer) continue;
-				all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), getFeatureType());
+				all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), getFeatureName());
 			}
 		});
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "Ghost player fix";
 	}
 }

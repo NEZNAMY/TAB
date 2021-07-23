@@ -1,10 +1,8 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,7 +20,6 @@ import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
 	private boolean collisionRule;
-	private List<String> revertedCollision;
 	private boolean invisibleNametags;
 	protected Set<String> invisiblePlayers = new HashSet<>();
 	private Sorting sorting;
@@ -34,20 +31,15 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 	private Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
 	public NameTag() {
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-"+TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
+		super("Nametags", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
+				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
 		collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
-		revertedCollision = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.revert-collision-rule-in-" + TAB.getInstance().getPlatform().getSeparatorType()+"s", new ArrayList<>());
 		invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
 		sorting = new Sorting(this);
-		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX);
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue()));
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue()));
-		}
-		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, revertedCollision=%s, disabledWorlds=%s, invisibleNametags=%s",
-				collisionRule, revertedCollision, disabledWorlds, invisibleNametags));
+		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
+				collisionRule, disabledWorlds, disabledServers, invisibleNametags));
 	}
-	
+
 	@Override
 	public void load(){
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
@@ -56,28 +48,28 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 			collision.put(all.getName(), true);
 			hiddenNametagFor.put(all, new HashSet<>());
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
-			if (isDisabledWorld(disabledWorlds, all.getWorldName())) {
-				playersInDisabledWorlds.add(all);
+			if (isDisabled(all.getServer(), all.getWorld())) {
+				disabledPlayers.add(all);
 				continue;
 			}
 			registerTeam(all);
 		}
 		startRefreshingTasks();
 	}
-	
+
 	@Override
 	public void unload() {
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			if (!playersInDisabledWorlds.contains(p)) unregisterTeam(p);
+			if (!disabledPlayers.contains(p)) unregisterTeam(p);
 		}
 	}
-	
+
 	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureType(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureName(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
-				if (!p.isLoaded() || playersInDisabledWorlds.contains(p)) continue;
+				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
 				//nametag visibility
 				boolean invisible = p.hasInvisibilityPotion();
 				if (invisible && !invisiblePlayers.contains(p.getName())) {
@@ -93,10 +85,6 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 			}
 		});
 	}
-	
-	public boolean isDisabledWorld(String world) {
-		return isDisabledWorld(disabledWorlds, world);
-	}
 
 	public Set<String> getInvisiblePlayers(){
 		return invisiblePlayers;
@@ -106,13 +94,13 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		if (hasTeamHandlingPaused(p)) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureType());
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureName());
 		}
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
 		if (hasTeamHandlingPaused(p)) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureType());
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureName());
 	}
 
 	public void registerTeam(TabPlayer p) {
@@ -122,7 +110,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureType());
+			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureName());
 		}
 	}
 
@@ -132,7 +120,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureType());
+		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureName());
 	}
 
 	public void updateTeam(TabPlayer p) {
@@ -154,7 +142,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureType());
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureName());
 		}
 	}
 
@@ -164,13 +152,13 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureType());
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureName());
 	}
-	
+
 	private String translate(boolean b) {
 		return b ? "always" : "never";
 	}
-	
+
 	private void updateCollision(TabPlayer p) {
 		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null || !p.isOnline()) return;
 		if (forcedCollision.containsKey(p)) {
@@ -179,35 +167,35 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 				updateTeamData(p);
 			}
 		} else {
-			boolean newCollision = !p.isDisguised() && revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule;
+			boolean newCollision = !p.isDisguised() && collisionRule;
 			if (collision.get(p.getName()) == null || getCollision(p) != newCollision) {
 				collision.put(p.getName(), newCollision);
 				updateTeamData(p);
 			}
 		}
 	}
-	
+
 	protected boolean getCollision(TabPlayer p) {
 		if (!p.isOnline()) return false;
 		if (getCollisionRule(p) != null) return getCollisionRule(p);
 		if (!collision.containsKey(p.getName())) {
-			collision.put(p.getName(), revertedCollision.contains(p.getWorldName()) ? !collisionRule : collisionRule);
+			collision.put(p.getName(), collisionRule);
 		}
 		return collision.get(p.getName());
 	}
-	
+
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (!all.isLoaded()) continue;
-			if (!playersInDisabledWorlds.contains(all)) registerTeam(all, packetReceiver);
+			if (!disabledPlayers.contains(all)) registerTeam(all, packetReceiver);
 		}
 	}
-	
+
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (playersInDisabledWorlds.contains(refreshed)) return;
+		if (disabledPlayers.contains(refreshed)) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -229,23 +217,23 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		hiddenNametagFor.put(connectedPlayer, new HashSet<>());
 		for (TabPlayer all : TAB.getInstance().getPlayers()) {
 			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
-			if (!playersInDisabledWorlds.contains(all)) {
+			if (!disabledPlayers.contains(all)) {
 				registerTeam(all, connectedPlayer);
 			}
 		}
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
-			playersInDisabledWorlds.add(connectedPlayer);
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			disabledPlayers.add(connectedPlayer);
 			return;
 		}
 		registerTeam(connectedPlayer);
 	}
-	
+
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!playersInDisabledWorlds.contains(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
+		super.onQuit(disconnectedPlayer);
+		if (!disabledPlayers.contains(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
 		collision.remove(disconnectedPlayer.getName());
-		playersInDisabledWorlds.remove(disconnectedPlayer);
 		hiddenNametag.remove(disconnectedPlayer);
 		hiddenNametagFor.remove(disconnectedPlayer);
 		teamHandlingPaused.remove(disconnectedPlayer);
@@ -258,13 +246,13 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = playersInDisabledWorlds.contains(p);
+		boolean disabledBefore = disabledPlayers.contains(p);
 		boolean disabledNow = false;
-		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
+		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			playersInDisabledWorlds.add(p);
+			disabledPlayers.add(p);
 		} else {
-			playersInDisabledWorlds.remove(p);
+			disabledPlayers.remove(p);
 		}
 		updateProperties(p);
 		if (disabledNow && !disabledBefore) {
@@ -276,37 +264,22 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		}
 	}
 
-	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = TAB.getInstance().getConfiguration().getConfig().getUsedPlaceholders(PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX);
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			if (!p.isLoaded()) continue;
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue()));
-			usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue()));
-		}
+	public void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig(this, PropertyUtils.TAGPREFIX);
+		p.loadPropertyFromConfig(this, PropertyUtils.TAGSUFFIX);
 	}
 
-	public void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(PropertyUtils.TAGPREFIX);
-		p.loadPropertyFromConfig(PropertyUtils.TAGSUFFIX);
-	}
-	
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
 		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && 
-			!invisibleNametags && !invisiblePlayers.contains(p.getName());
-	}
-	
-	@Override
-	public String getFeatureType() {
-		return "Nametags";
+				!invisibleNametags && !invisiblePlayers.contains(p.getName());
 	}
 
 	public Sorting getSorting() {
 		return sorting;
 	}
-	
-	public Set<TabPlayer> getPlayersInDisabledWorlds(){
-		return playersInDisabledWorlds;
+
+	public Set<TabPlayer> getDisabledPlayers(){
+		return disabledPlayers;
 	}
 
 
@@ -351,11 +324,11 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		return hiddenNametagFor.get(player).contains(viewer);
 	}
 
-	
+
 	@Override
 	public void pauseTeamHandling(TabPlayer player) {
 		if (teamHandlingPaused.contains(player)) return;
-		if (!playersInDisabledWorlds.contains(player)) unregisterTeam(player);
+		if (!disabledPlayers.contains(player)) unregisterTeam(player);
 		teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
 	}
 
@@ -363,14 +336,14 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 	public void resumeTeamHandling(TabPlayer player) {
 		if (!teamHandlingPaused.contains(player)) return;
 		teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
-		if (!playersInDisabledWorlds.contains(player)) registerTeam(player);
+		if (!disabledPlayers.contains(player)) registerTeam(player);
 	}
-	
+
 	@Override
 	public boolean hasTeamHandlingPaused(TabPlayer player) {
 		return teamHandlingPaused.contains(player);
 	}
-	
+
 	@Override
 	public void forceTeamName(TabPlayer player, String name) {
 		if (String.valueOf(forcedTeamName.get(player)).equals(name)) return;
@@ -380,7 +353,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		registerTeam(player);
 		if (name != null) ((ITabPlayer)player).setTeamNameNote("Set using API");
 	}
-	
+
 	@Override
 	public String getForcedTeamName(TabPlayer player) {
 		return forcedTeamName.get(player);

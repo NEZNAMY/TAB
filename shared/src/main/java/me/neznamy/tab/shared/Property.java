@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.packets.EnumChatFormat;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 import me.neznamy.tab.shared.rgb.RGBUtils;
@@ -13,6 +14,9 @@ import me.neznamy.tab.shared.rgb.RGBUtils;
  */
 public class Property {
 
+	//feature using this property to track used placeholders
+	private TabFeature feature;
+	
 	//owner of the property
 	private TabPlayer owner;
 	
@@ -34,14 +38,15 @@ public class Property {
 	//used relational placeholders in current raw value
 	private List<String> relPlaceholders;
 
-	public Property(TabPlayer owner, String rawValue) {
-		this(owner, rawValue, null);
+	public Property(TabFeature feature, TabPlayer owner, String rawValue) {
+		this(feature, owner, rawValue, null);
 	}
 	
-	public Property(TabPlayer owner, String rawValue, String source) {
+	public Property(TabFeature feature, TabPlayer owner, String rawValue, String source) {
+		this.feature = feature;
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : EnumChatFormat.color(rawValue)), true);
+		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
 		analyze(this.rawValue);
 		update();
 	}
@@ -63,6 +68,10 @@ public class Property {
 		//avoiding rare concurrent modification in #update
 		placeholders = placeholders0;
 		relPlaceholders = relPlaceholders0;
+		if (feature != null) {
+			feature.addUsedPlaceholders(placeholders);
+			feature.addUsedPlaceholders(relPlaceholders);
+		}
 	}
 	
 	/**
@@ -71,7 +80,7 @@ public class Property {
 	 */
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
-			this.temporaryValue = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(temporaryValue), true);
+			this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
@@ -86,7 +95,7 @@ public class Property {
 	 */
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(newValue), true);
+		rawValue = RGBUtils.getInstance().applyFormats(newValue, true);
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();

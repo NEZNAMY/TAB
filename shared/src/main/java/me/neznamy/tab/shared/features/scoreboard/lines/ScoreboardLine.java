@@ -34,6 +34,7 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param lineNumber - ID of this line
 	 */
 	protected ScoreboardLine(ScoreboardImpl parent, int lineNumber) {
+		super(parent.getFeatureName());
 		this.parent = parent;
 		this.lineNumber = lineNumber;
 		teamName = "TAB-SB-TM-" + lineNumber;
@@ -73,11 +74,6 @@ public abstract class ScoreboardLine extends TabFeature {
 		return playerName;
 	}
 
-	@Override
-	public String getFeatureType() {
-		return parent.getFeatureType();
-	}
-	
 	/**
 	 * Builds forced name start based on line number
 	 * @param lineNumber - ID of line
@@ -100,8 +96,8 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param value - number
 	 */
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), parent.getFeatureType());
-		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, parent.getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), getFeatureName());
+		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, getFeatureName());
 	}
 	
 	/**
@@ -111,7 +107,7 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param teamName - team name
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), parent.getFeatureType());
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), parent.getFeatureType());
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), getFeatureName());
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), getFeatureName());
 	}
 }

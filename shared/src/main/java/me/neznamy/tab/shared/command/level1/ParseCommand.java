@@ -23,7 +23,7 @@ public class ParseCommand extends SubCommand{
 			String replaced = String.join(" ", args);
 			String message = ("&6Replacing placeholder &e%placeholder%" + (sender == null ? "" : "&6 for player &e" + sender.getName())).replace('&', '\u00a7').replace("%placeholder%", replaced);
 			sendRawMessage(sender, message);
-			replaced = new Property(sender, replaced).get();
+			replaced = new Property(null, sender, replaced).get();
 			IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
 			if (sender != null) {
 				sender.sendMessage(colored);

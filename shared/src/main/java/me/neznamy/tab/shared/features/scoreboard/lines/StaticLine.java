@@ -57,17 +57,7 @@ public abstract class StaticLine extends ScoreboardLine {
 		}
 		return new String[]{prefixValue, nameValue, suffixValue};
 	}
-	
-	@Override
-	public void refresh(TabPlayer refreshed, boolean force) {
-		//nothing to refresh
-	}
 
-	@Override
-	public void refreshUsedPlaceholders() {
-		//no placeholders
-	}
-	
 	protected String getPlayerName(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() >= 13) {
 			return playerName;

@@ -1,20 +1,33 @@
 package me.neznamy.tab.shared.features;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
 public abstract class TabFeature {
 
-	protected Set<String> usedPlaceholders = new HashSet<>();
+	private String featureName;
+	protected List<String> disabledServers;
 	protected List<String> disabledWorlds;
-	protected Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
+	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
+	
+	protected TabFeature(String featureName) {
+		this.featureName = featureName;
+	}
+	
+	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
+		this.featureName = featureName;
+		this.disabledServers = disabledServers;
+		this.disabledWorlds = disabledWorlds;
+	}
 	
 	/**
 	 * Loads all players and sends packets
@@ -44,15 +57,27 @@ public abstract class TabFeature {
 	 * Processes quit event
 	 * @param disconnectedPlayer - player who disconnected
 	 */
-	public void onQuit(TabPlayer disconnectedPlayer) {}
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		disabledPlayers.remove(disconnectedPlayer);
+	}
 	
 	/**
-	 * Processes world/server switch
-	 * @param changed - player who switched world/server
-	 * @param from - world/server player changed from
-	 * @param to - world/server player changed to
+	 * Processes world switch
+	 * @param changed - player who switched world
+	 * @param from - world player changed from
+	 * @param to - world player changed to
 	 */
 	public void onWorldChange(TabPlayer changed, String from, String to) {}
+	
+	/**
+	 * Processes server switch
+	 * @param changed - player who switched server
+	 * @param from - server player changed from
+	 * @param to - server player changed to
+	 */
+	public void onServerChange(TabPlayer changed, String from, String to) {
+		onWorldChange(changed, null, null);
+	}
 	
 	/**
 	 * Processes the packet send and returns true if packet should be cancelled
@@ -90,7 +115,7 @@ public abstract class TabFeature {
 	 * @throws IllegalAccessException 
 	 * @throws ClassNotFoundException 
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException{return packet;}
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {return packet;}
 	
 	/**
 	 * Processes raw packet sent to client
@@ -102,7 +127,7 @@ public abstract class TabFeature {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException{}
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {}
 
 	/**
 	 * Performs refresh of specified player
@@ -110,34 +135,36 @@ public abstract class TabFeature {
 	 * @param force - if refresh should be forced despite refresh seemingly not needed
 	 */
 	public void refresh(TabPlayer refreshed, boolean force) {}
-	
+
 	/**
-	 * Returns list of all used placeholders in this feature
-	 * @return list of all used placeholders in this feature
+	 * Registers this feature as one using specified placeholders
+	 * @param placeholders - placeholders to add as used in this feature
 	 */
-	public Set<String> getUsedPlaceholders() {
-		return usedPlaceholders;
+	public void addUsedPlaceholders(Collection<String> placeholders) {
+		placeholders.forEach(p -> TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent(p, x -> new HashSet<>()).add(this));
 	}
 	
 	/**
-	 * Refreshes list of used placeholders in this feature
-	 */
-	public void refreshUsedPlaceholders() {}
-	
-	/**
-	 * Returns true if world belongs in disabled worlds, false if not
-	 * @param disabledWorlds - disabled worlds list
+	 * Returns true if world or server is disabled, false if not
 	 * @param world - world to check
+	 * @param server - server to check
 	 * @return true if feature should be disabled, false if not
 	 */
-	public boolean isDisabledWorld(List<String> disabledWorlds, String world) {
-		if (disabledWorlds == null) return false;
-		boolean contains = contains(disabledWorlds, world);
-		if (disabledWorlds.contains("WHITELIST")) contains = !contains;
-		return contains;
+	public boolean isDisabled(String server, String world) {
+		if (disabledWorlds != null) {
+			boolean contains = contains(disabledWorlds, world);
+			if (disabledWorlds.contains("WHITELIST")) contains = !contains;
+			if (contains) return true;
+		}
+		if (disabledServers != null) {
+			boolean contains = contains(disabledServers, server);
+			if (disabledServers.contains("WHITELIST")) contains = !contains;
+			if (contains) return true;
+		}
+		return false;
 	}
 	
-	private boolean contains(List<String> list, String element) {
+	protected boolean contains(List<String> list, String element) {
 		if (element == null) return false;
 		for (String s : list) {
 			if (s.endsWith("*")) {
@@ -150,8 +177,10 @@ public abstract class TabFeature {
 	}
 	
 	/**
-	 * Returns name of the feature displayed in /tab cpu. Can be anything which then .toString() will be called on.
+	 * Returns name of the feature displayed in /tab cpu.
 	 * @return name of the feature displayed in /tab cpu
 	 */
-	public abstract Object getFeatureType();
+	public String getFeatureName() {
+		return featureName;
+	}
 }

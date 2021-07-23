@@ -125,7 +125,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packet.getPlayers() == null) return;
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
-				if (col.contains(p.getName()) && !TAB.getInstance().getFeatureManager().getNameTagFeature().getPlayersInDisabledWorlds().contains(p) && 
+				if (col.contains(p.getName()) && !TAB.getInstance().getFeatureManager().getNameTagFeature().getDisabledPlayers().contains(p) && 
 						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
 					logTeamOverride(packet.getName(), p.getName());
 					col.remove(p.getName());

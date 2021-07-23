@@ -23,16 +23,30 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"%", 1000) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%world%", 1000) {
 			public String get(TabPlayer p) {
-				return p.getWorldName();
+				return p.getWorld();
 			}
 		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%"+TAB.getInstance().getPlatform().getSeparatorType()+"online%", 1000) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%worldonline%", 1000) {
 			public String get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getPlayers()){
-					if (p.getWorldName().equals(all.getWorldName())) count++;
+					if (String.valueOf(p.getWorld()).equals(all.getWorld())) count++;
+				}
+				return String.valueOf(count);
+			}
+		});
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%server%", 1000) {
+			public String get(TabPlayer p) {
+				return p.getServer();
+			}
+		});
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%serveronline%", 1000) {
+			public String get(TabPlayer p) {
+				int count = 0;
+				for (TabPlayer all : TAB.getInstance().getPlayers()){
+					if (String.valueOf(p.getServer()).equals(all.getServer())) count++;
 				}
 				return String.valueOf(count);
 			}
@@ -55,7 +69,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
 		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%ping%", 50) {
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%ping%", 500) {
 			public String get(TabPlayer p) {
 				return String.valueOf(p.getPing());
 			}
@@ -117,12 +131,12 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 */
 	private void registerLuckPermsPlaceholders(PlaceholderManager manager) {
 		if (TAB.getInstance().getPermissionPlugin() instanceof LuckPerms) {
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 500) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 1000) {
 				public String get(TabPlayer p) {
 					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getPrefix(p);
 				}
 			});
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 500) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 1000) {
 				public String get(TabPlayer p) {
 					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getSuffix(p);
 				}
@@ -159,7 +173,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			Condition.getConditions().put(condition.toString(), c);
 			String identifier = "%condition:" + c.getName() + "%";
 			PlaceholderManagerImpl pm = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
-			pm.getAllUsedPlaceholderIdentifiers().add(identifier);
 			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 			if (pm.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = pm.getPlayerPlaceholderRefreshIntervals().get(identifier);

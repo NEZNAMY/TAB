@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
+import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.Via;
 
 import io.netty.buffer.ByteBuf;
@@ -88,23 +89,23 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
+		long time = System.nanoTime();
 		if (nmsPacket == null || !player.isOnline()) return;
 		try {
-			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled() && nmsPacket instanceof ByteBuf) {
+			if (nmsPacket instanceof ByteBuf && ((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled()) {
 				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
-				return;
-			}
-			if (nmsPacket instanceof PacketPlayOutBoss) {
+			} else if (nmsPacket instanceof PacketPlayOutBoss) {
 				handle((PacketPlayOutBoss) nmsPacket);
-				return;
+			} else {
+				NMSStorage.getInstance().getMethod("sendPacket").invoke(playerConnection, nmsPacket);
 			}
-			NMSStorage.getInstance().getMethod("sendPacket").invoke(playerConnection, nmsPacket);
 		} catch (IllegalArgumentException e) {
 			//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
 			//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
+		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
@@ -178,7 +179,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		try {
-			return Class.forName("com.mojang.authlib.GameProfile").getMethod("getProperties").invoke(NMSStorage.getInstance().getMethod("getProfile").invoke(handle));
+			return ((GameProfile)NMSStorage.getInstance().getMethod("getProfile").invoke(handle)).getProperties();
 		} catch (Exception e) {
 			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
 		}

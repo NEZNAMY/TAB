@@ -43,6 +43,11 @@ public class BossBarLine implements BossBar {
 	
 	//set of players seeing this bossbar
 	private Set<TabPlayer> players = new HashSet<>();
+	
+	//refreshers
+	private TextRefresher textRefresher;
+	private ProgressRefresher progressRefresher;
+	private ColorAndStyleRefresher colorAndStyleRefresher;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -61,9 +66,9 @@ public class BossBarLine implements BossBar {
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, new TextRefresher(this));
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, new ProgressRefresher(this));
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, new ColorAndStyleRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher = new TextRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher = new ProgressRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher = new ColorAndStyleRefresher(this));
 	}
 	
 	/**
@@ -120,7 +125,7 @@ public class BossBarLine implements BossBar {
 	public void setTitle(String title) {
 		this.title = title;
 		for (TabPlayer p : players) {
-			p.setProperty(PropertyUtils.bossbarTitle(name), title);
+			p.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), FEATURE_TYPE);
 		}
 	}
@@ -129,7 +134,7 @@ public class BossBarLine implements BossBar {
 	public void setProgress(String progress) {
 		this.progress = progress;
 		for (TabPlayer p : players) {
-			p.setProperty(PropertyUtils.bossbarProgress(name), progress);
+			p.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), FEATURE_TYPE);
 		}
 	}
@@ -143,7 +148,7 @@ public class BossBarLine implements BossBar {
 	public void setColor(String color) {
 		this.color = color;
 		for (TabPlayer p : players) {
-			p.setProperty(PropertyUtils.bossbarColor(name), color);
+			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarColor(name), color);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
@@ -160,7 +165,7 @@ public class BossBarLine implements BossBar {
 	public void setStyle(String style) {
 		this.style = style;
 		for (TabPlayer p : players) {
-			p.setProperty(PropertyUtils.bossbarStyle(name), style);
+			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarStyle(name), style);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
@@ -197,10 +202,10 @@ public class BossBarLine implements BossBar {
 	public void addPlayer(TabPlayer player) {
 		if (players.contains(player)) return;
 		players.add(player);
-		player.setProperty(PropertyUtils.bossbarTitle(name), title);
-		player.setProperty(PropertyUtils.bossbarProgress(name), progress);
-		player.setProperty(PropertyUtils.bossbarColor(name), color);
-		player.setProperty(PropertyUtils.bossbarStyle(name), style);
+		player.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
+		player.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
+		player.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarColor(name), color);
+		player.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarStyle(name), style);
 		player.sendCustomPacket(new PacketPlayOutBoss(
 				uuid, 
 				player.getProperty(PropertyUtils.bossbarTitle(name)).get(), 

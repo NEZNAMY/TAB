@@ -1,9 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import java.util.HashSet;
-
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
@@ -41,7 +38,6 @@ public class CustomLine extends ScoreboardLine {
 		this.name = name;
 		this.suffix = suffix;
 		this.score = score;
-		refreshUsedPlaceholders();
 	}
 
 	@Override
@@ -60,23 +56,16 @@ public class CustomLine extends ScoreboardLine {
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
-						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 0), getFeatureType());
+						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 0), getFeatureName());
 			}
 		}
 	}
 
 	@Override
-	public void refreshUsedPlaceholders() {
-		usedPlaceholders = new HashSet<>(TAB.getInstance().getPlaceholderManager().detectPlaceholders(prefix));
-		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(name));
-		usedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(suffix));
-	}
-
-	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(teamName + "-prefix", prefix);
-		p.setProperty(teamName + "-name", name);
-		p.setProperty(teamName + "-suffix", suffix);
+		p.setProperty(this, teamName + "-prefix", prefix);
+		p.setProperty(this, teamName + "-name", name);
+		p.setProperty(this, teamName + "-suffix", suffix);
 		addLine(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
 				p.getProperty(teamName + "-suffix").get(), score);
 	}

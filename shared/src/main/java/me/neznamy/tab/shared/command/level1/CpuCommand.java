@@ -138,12 +138,12 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToConsole() {
-		Map<Object, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<String, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<>();
-		for (Entry<Object, AtomicInteger> entry : packets.entrySet()) {
+		for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
 			count += entry.getValue().get();
-			messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey().toString() + " - " + entry.getValue());
+			messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey() + " - " + entry.getValue());
 		}
 		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + count, true);
 		for (String message : messages) {
@@ -152,12 +152,12 @@ public class CpuCommand extends SubCommand {
 	}
 	
 	public void sendPacketCountToPlayer(TabPlayer sender) {
-		Map<Object, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
+		Map<String, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
 		int count = 0;
 		List<String> messages = new ArrayList<>();
-		for (Entry<Object, AtomicInteger> entry : packets.entrySet()) {
+		for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
 			count += entry.getValue().get();
-			messages.add("&3" + entry.getKey().toString() + " - " + entry.getValue());
+			messages.add("&3" + entry.getKey() + " - " + entry.getValue());
 		}
 		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + count).replace('&', '\u00a7'));
 		message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));

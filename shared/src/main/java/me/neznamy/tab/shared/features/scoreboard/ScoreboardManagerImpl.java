@@ -38,6 +38,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	
 	//per-world / per-server scoreboards
 	private Map<String, String> perWorld;
+	private Map<String, String> perServer;
 	
 	//defined scoreboards
 	private Map<String, Scoreboard> scoreboards = new HashMap<>();
@@ -70,8 +71,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	private int joinDelay;
 	private List<TabPlayer> joinDelayed = new ArrayList<>();
 	
-	private Set<TabPlayer> playersInDisabledWorlds = new HashSet<>();
-	
 	private Map<TabPlayer, Scoreboard> forcedScoreboard = new HashMap<>();
 	
 	private Map<TabPlayer, Scoreboard> activeScoreboard = new HashMap<>();
@@ -85,11 +84,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @param tab - tab instance
 	 */
 	public ScoreboardManagerImpl() {
+		super("Scoreboard");
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
 		useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
 		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		defaultScoreboard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-world");
+		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-server");
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
 		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-on", "&2Scorebord enabled");
@@ -146,13 +147,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	@Override
 	public void load() {
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-				playersInDisabledWorlds.add(p);
+			if (isDisabled(p.getServer(), p.getWorld())) {
+				disabledPlayers.add(p);
 				return;
 			}
 			setScoreboardVisible(p, hiddenByDefault == sbOffPlayers.contains(p.getName()), false);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", getFeatureType(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", getFeatureName(), UsageType.REPEATING_TASK, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getPlayers()) {
 				if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
@@ -178,13 +179,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabledWorld(disabledWorlds, connectedPlayer.getWorldName())) {
-			playersInDisabledWorlds.add(connectedPlayer);
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			disabledPlayers.add(connectedPlayer);
 			return;
 		}
 		if (joinDelay > 0) {
 			joinDelayed.add(connectedPlayer);
-			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, () -> {
+			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureName(), UsageType.PLAYER_JOIN_EVENT, () -> {
 				
 				if (!otherPluginScoreboard.containsKey(connectedPlayer)) setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
 				joinDelayed.remove(connectedPlayer);
@@ -199,7 +200,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @param p - player to send scoreboard to
 	 */
 	public void sendHighestScoreboard(TabPlayer p) {
-		if (playersInDisabledWorlds.contains(p) || !hasScoreboardVisible(p)) return;
+		if (disabledPlayers.contains(p) || !hasScoreboardVisible(p)) return;
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
@@ -213,7 +214,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	@Override
 	public void onQuit(TabPlayer p) {
 		unregisterScoreboard(p, false);
-		playersInDisabledWorlds.remove(p);
+		disabledPlayers.remove(p);
 		forcedScoreboard.remove(p);
 		activeScoreboard.remove(p);
 		visiblePlayers.remove(p);
@@ -238,10 +239,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-			playersInDisabledWorlds.add(p);
+		if (isDisabled(p.getServer(), p.getWorld())) {
+			disabledPlayers.add(p);
 		} else {
-			playersInDisabledWorlds.remove(p);
+			disabledPlayers.remove(p);
 		}
 		unregisterScoreboard(p, true);
 		sendHighestScoreboard(p);
@@ -261,7 +262,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @return highest scoreboard player should see
 	 */
 	public String detectHighestScoreboard(TabPlayer p) {
-		String scoreboard = perWorld.get(TAB.getInstance().getConfiguration().getWorldGroupOf(perWorld.keySet(), p.getWorldName()));
+		String scoreboard = perWorld.get(p.getWorld());
+		if (scoreboard == null) {
+			scoreboard = perServer.get(p.getServer());
+		}
 		if (scoreboard == null) {
 			if (defaultScoreboard.equalsIgnoreCase("NONE")) {
 				return "null";
@@ -280,7 +284,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
-		if (playersInDisabledWorlds.contains(sender)) return false;
+		if (disabledPlayers.contains(sender)) return false;
 		if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
 			TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
 			return true;
@@ -289,17 +293,12 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public String getFeatureType() {
-		return "Scoreboard";
-	}
-
-	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
 			if (activeScoreboard.containsKey(receiver)) {
-				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureType(), UsageType.ANTI_OVERRIDE, () -> activeScoreboard.get(receiver).removePlayer(receiver));
+				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureName(), UsageType.ANTI_OVERRIDE, () -> activeScoreboard.get(receiver).removePlayer(receiver));
 			}
 		}
 		return false;
@@ -310,7 +309,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			otherPluginScoreboard.remove(receiver);
-			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureType(), UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureName(), UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
 	}
 

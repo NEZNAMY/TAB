@@ -21,6 +21,7 @@ public class PingSpoof extends TabFeature {
 	 * Constructs new instance and loads config options
 	 */
 	public PingSpoof() {
+		super("Ping spoof");
 		value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
 		TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
 	}
@@ -31,11 +32,6 @@ public class PingSpoof extends TabFeature {
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			playerInfoData.setLatency(value);
 		}
-	}
-
-	@Override
-	public String getFeatureType() {
-		return "Ping spoof";
 	}
 
 	@Override
@@ -54,7 +50,7 @@ public class PingSpoof extends TabFeature {
 			list.add(new PlayerInfoData(p.getUniqueId(), realPing ? (int) p.getPing() : 0));
 		}
 		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), getFeatureType());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), getFeatureName());
 		}
 	}
 }

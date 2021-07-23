@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 
 public class FixedSlot {
 
@@ -15,7 +16,7 @@ public class FixedSlot {
 	}
 	
 	public void onJoin(TabPlayer p) {
-		p.setProperty("SLOT-" + slot, text);
+		p.setProperty(TAB.getInstance().getFeatureManager().getFeature("layout"), "SLOT-" + slot, text);
 	}	
 	
 	public int getSlot() {

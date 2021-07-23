@@ -16,6 +16,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.base.Preconditions;
+
 import me.neznamy.tab.shared.ErrorManager;
 
 /**
@@ -33,7 +35,7 @@ public class CPUManager {
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
 	
 	//packets sent in the current 10 seconds
-	private Map<Object, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
+	private Map<String, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
 
 	//nanoseconds worked in the previous 10 seconds
 	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<>();
@@ -42,7 +44,7 @@ public class CPUManager {
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
 	
 	//packets sent in the previous 10 seconds
-	private Map<Object, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
+	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
 	//thread pool
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -56,7 +58,7 @@ public class CPUManager {
 	 */
 	public CPUManager(ErrorManager errorManager) {
 		this.errorManager = errorManager;
-		exe.submit(() -> {
+		submit("refreshing cpu stats", () -> {
 
 			try {
 				while (true) {
@@ -105,7 +107,11 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runMeasuredTask(String errorDescription, Object feature, UsageType type, Runnable task) {
+	public void runMeasuredTask(String errorDescription, String feature, UsageType type, Runnable task) {
+		Preconditions.checkNotNull(errorDescription, "errorDescription");
+		Preconditions.checkNotNull(feature, "feature");
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -119,6 +125,8 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTask(String errorDescription, Runnable task) {
+		Preconditions.checkNotNull(errorDescription, "errorDescription");
+		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, task);
 	}
 
@@ -130,7 +138,12 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
+		Preconditions.checkArgument(intervalMilliseconds > 0, "intervalMilliseconds must be > 0");
+		Preconditions.checkNotNull(errorDescription, "errorDescription");
+		Preconditions.checkNotNull(feature, "feature");
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(task, "task");
 		if (intervalMilliseconds <= 0) return;
 		submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
@@ -161,7 +174,12 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, Object feature, UsageType type, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
+		Preconditions.checkArgument(delayMilliseconds > 0, "delayMilliseconds must be > 0");
+		Preconditions.checkNotNull(errorDescription, "errorDescription");
+		Preconditions.checkNotNull(feature, "feature");
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -213,7 +231,7 @@ public class CPUManager {
 	 * Returns map of sent packets per feature in previous 10 seconds
 	 * @return map of sent packets per feature
 	 */
-	public Map<Object, AtomicInteger> getSentPackets(){
+	public Map<String, AtomicInteger> getSentPackets(){
 		return sortByValue1(packetsPrevious);
 	}
 
@@ -354,7 +372,9 @@ public class CPUManager {
 	 * @param type - usage to add time to of the feature
 	 * @param nanoseconds - time to add
 	 */
-	public void addTime(Object feature, UsageType type, long nanoseconds) {
+	public void addTime(String feature, UsageType type, long nanoseconds) {
+		Preconditions.checkNotNull(feature, "feature");
+		Preconditions.checkNotNull(type, "type");
 		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
 
@@ -399,7 +419,7 @@ public class CPUManager {
 	 * Increments packets sent by 1 of specified feature
 	 * @param feature - feature to increment packet counter of
 	 */
-	public void packetSent(Object feature) {
+	public void packetSent(String feature) {
 		packetsCurrent.computeIfAbsent(feature, f -> new AtomicInteger()).incrementAndGet();
 	}
 }

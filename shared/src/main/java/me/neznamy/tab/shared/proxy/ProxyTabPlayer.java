@@ -18,22 +18,23 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	
 	@Override
 	public boolean isVanished() {
-		return getAttribute("vanished");
+		return Boolean.parseBoolean(getAttribute("vanished"));
 	}
 	
 	@Override
 	public boolean isDisguised() {
-		return getAttribute("disguised");
-	}
-	@Override
-	public boolean hasInvisibilityPotion() {
-		return getAttribute("invisible");
+		return Boolean.parseBoolean(getAttribute("disguised"));
 	}
 	
-	private boolean getAttribute(String name) {
+	@Override
+	public boolean hasInvisibilityPotion() {
+		return Boolean.parseBoolean(getAttribute("invisible"));
+	}
+
+	public String getAttribute(String name) {
 		plm.requestAttribute(this, name);
-		if (!attributes.containsKey(name)) return false;
-		return Boolean.parseBoolean(attributes.get(name));
+		if (!attributes.containsKey(name)) return "false";
+		return attributes.get(name);
 	}
 	
 	@Override

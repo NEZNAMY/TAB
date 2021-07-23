@@ -11,6 +11,10 @@ import me.neznamy.tab.shared.rgb.TextColor;
  */
 public class PluginInfo extends TabFeature {
 	
+	public PluginInfo() {
+		super("Plugin info");
+	}
+
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
 		String command = TAB.getInstance().getPlatform().getSeparatorType().equals("server")? "/btab" : "/tab";
@@ -20,10 +24,5 @@ public class PluginInfo extends TabFeature {
 			sender.sendMessage(component);
 		}
 		return false;
-	}
-	
-	@Override
-	public String getFeatureType() {
-		return "Plugin info";
 	}
 }

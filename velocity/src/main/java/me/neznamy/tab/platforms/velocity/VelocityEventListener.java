@@ -46,7 +46,7 @@ public class VelocityEventListener {
 				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
 			} else {
 				Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
-				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
+				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
 			}
 		} catch (Exception ex){
 			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);

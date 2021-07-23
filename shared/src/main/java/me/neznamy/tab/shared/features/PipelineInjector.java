@@ -29,6 +29,7 @@ public abstract class PipelineInjector extends TabFeature {
 	 * @param tab
 	 */
 	protected PipelineInjector() {
+		super("Pipeline injection");
 		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	}
 	
@@ -58,12 +59,7 @@ public abstract class PipelineInjector extends TabFeature {
 	public void onJoin(TabPlayer connectedPlayer) {
 		inject(connectedPlayer);
 	}
-	
-	@Override
-	public Object getFeatureType() {
-		return "Pipeline injection";
-	}
-	
+
 	protected void logTeamOverride(String team, String player) {
 		String message = "Something just tried to add player " + player + " into team " + team;
 		//not logging the same message for every online player who received the packet

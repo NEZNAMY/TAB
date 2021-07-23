@@ -3,8 +3,6 @@
 scoreboard-teams:
   enabled: true
   enable-collision: true
-  revert-collision-rule-in-worlds:
-    - revertedworld
   invisible-nametags: false
   anti-override: true
 
@@ -15,6 +13,8 @@ scoreboard-teams:
   case-sentitive-sorting: true
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
   unlimited-nametag-mode:
     enabled: false
     use-marker-tag-for-1-8-x-clients: false
@@ -37,11 +37,15 @@ tablist-name-formatting:
   anti-override: true
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
 
 header-footer:
   enabled: true
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
   header:
     - "&3&lServer name"
     - "&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
@@ -74,6 +78,8 @@ yellow-number-in-tablist:
   anti-override: true
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
 
 belowname-objective:
   enabled: true
@@ -82,6 +88,8 @@ belowname-objective:
   anti-override: true
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
 prevent-spectator-effect:
@@ -97,6 +105,8 @@ bossbar:
     - ServerInfo
   disable-in-worlds:
     - disabledworld
+  disable-in-servers:
+    - disabledserver
   per-world:
     testworld: 
       - "test"
@@ -144,6 +154,8 @@ scoreboard:
   delay-on-join-milliseconds: 0
   disable-in-worlds: 
     - disabledworld
+  disable-in-servers:
+    - disabledserver
   # scoreboard with the highest priority
   default-scoreboard: "admin"
   per-world:
