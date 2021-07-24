@@ -3,10 +3,11 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
 
 /**
  * Feature handler for header and footer
@@ -21,14 +22,14 @@ public class HeaderFooter extends TabFeature {
 	
 	@Override
 	public void load() {
-		TAB.getInstance().getPlayers().forEach(p -> onJoin(p));
+		TAB.getInstance().getOnlinePlayers().forEach(p -> onJoin(p));
 	}
 	
 	@Override
 	public void unload() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (disabledPlayers.contains(p) || p.getVersion().getMinorVersion() < 8) continue;
-			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), this);
 		}
 	}
 	
@@ -53,7 +54,7 @@ public class HeaderFooter extends TabFeature {
 		}
 		if (p.getVersion().getMinorVersion() < 8) return;
 		if (disabledNow) {
-			if (!disabledBefore) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), getFeatureName());
+			if (!disabledBefore) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), this);
 		} else {
 			if (disabledBefore) {
 				refresh(p, true);
@@ -67,7 +68,7 @@ public class HeaderFooter extends TabFeature {
 				refresh = true;
 			}
 			if (refresh) {
-				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(PropertyUtils.HEADER).get(), p.getProperty(PropertyUtils.FOOTER).get()), getFeatureName());
+				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(PropertyUtils.HEADER).get(), p.getProperty(PropertyUtils.FOOTER).get()), this);
 			}
 		}
 	}
@@ -79,7 +80,7 @@ public class HeaderFooter extends TabFeature {
 			p.setProperty(this, PropertyUtils.FOOTER, getProperty(p, PropertyUtils.FOOTER));
 		}
 		if (disabledPlayers.contains(p) || p.getVersion().getMinorVersion() < 8) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(PropertyUtils.HEADER).updateAndGet(), p.getProperty(PropertyUtils.FOOTER).updateAndGet()), getFeatureName());
+		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(PropertyUtils.HEADER).updateAndGet(), p.getProperty(PropertyUtils.FOOTER).updateAndGet()), this);
 	}
 
 	private String getProperty(TabPlayer p, String property) {

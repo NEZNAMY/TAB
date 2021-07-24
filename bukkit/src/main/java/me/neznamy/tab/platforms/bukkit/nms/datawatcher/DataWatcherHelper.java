@@ -3,10 +3,10 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import java.util.Optional;
 
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
  * A class to help assigning DataWatcher items as positions often change per-version

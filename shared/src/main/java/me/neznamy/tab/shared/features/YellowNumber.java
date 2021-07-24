@@ -1,14 +1,15 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
 
 /**
  * Feature handler for tablist objective feature
@@ -38,26 +39,26 @@ public class YellowNumber extends TabFeature {
 
 	@Override
 	public void load() {
-		for (TabPlayer loaded : TAB.getInstance().getPlayers()){
+		for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()){
 			loaded.setProperty(this, PropertyUtils.YELLOW_NUMBER, rawValue);
 			if (isDisabled(loaded.getServer(), loaded.getWorld())) {
 				disabledPlayers.add(loaded);
 				continue;
 			}
-			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureName());
+			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
 		}
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()){
-			for (TabPlayer target : TAB.getInstance().getPlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), getFeatureName());
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()){
+			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()){
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), this);
 			}
 		}
 	}
 
 	@Override
 	public void unload() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()){
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()){
 			if (disabledPlayers.contains(p)) continue;
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
 		}
 	}
 
@@ -68,11 +69,11 @@ public class YellowNumber extends TabFeature {
 			disabledPlayers.add(connectedPlayer);
 			return;
 		}
-		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureName());
+		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
 		int value = getValue(connectedPlayer);
-		for (TabPlayer all : TAB.getInstance().getPlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), value), getFeatureName());
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureName());
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), value), this);
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
 		}
 	}
 
@@ -87,7 +88,7 @@ public class YellowNumber extends TabFeature {
 			disabledPlayers.remove(p);
 		}
 		if (disabledNow && !disabledBefore) {
-			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
 		}
 		if (!disabledNow && disabledBefore) {
 			onJoin(p);
@@ -102,17 +103,17 @@ public class YellowNumber extends TabFeature {
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (disabledPlayers.contains(refreshed)) return;
 		int value = getValue(refreshed);
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), getFeatureName());
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), this);
 		}
 	}
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		if (disabledPlayers.contains(packetReceiver) || !antiOverride) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, getFeatureName());
-		for (TabPlayer all : TAB.getInstance().getPlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), getFeatureName());
+		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
 		}
 	}
 

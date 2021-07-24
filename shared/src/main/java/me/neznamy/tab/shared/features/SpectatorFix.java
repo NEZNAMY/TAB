@@ -3,13 +3,13 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
  * Cancelling gamemode change packet to spectator gamemode to avoid players being moved on
@@ -49,14 +49,14 @@ public class SpectatorFix extends TabFeature {
 	}
 	
 	private void updateAll(boolean realGamemode) {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (p.hasPermission("tab.spectatorbypass")) continue;
 			List<PlayerInfoData> list = new ArrayList<>();
-			for (TabPlayer target : TAB.getInstance().getPlayers()) {
+			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
 				if (p == target) continue;
-				list.add(new PlayerInfoData(p.getUniqueId(), realGamemode ? EnumGamemode.values()[((ITabPlayer) p).getGamemode()+1] : EnumGamemode.CREATIVE));
+				list.add(new PlayerInfoData(p.getUniqueId(), realGamemode ? EnumGamemode.values()[p.getGamemode()+1] : EnumGamemode.CREATIVE));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
 		}
 	}
 }

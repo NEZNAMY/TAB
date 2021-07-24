@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
  * Additional code for Playerlist class to secure alignment
@@ -56,7 +57,7 @@ public class AlignedSuffix extends TabFeature {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + player.getProperty(PropertyUtils.TABSUFFIX).getFormat(null)));
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
-			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				int localWidth = getPlayerNameWidth(all);
 				if (localWidth > maxWidth) {
 					maxWidth = localWidth;
@@ -157,7 +158,7 @@ public class AlignedSuffix extends TabFeature {
 	}
 
 	private void updateAllNames(TabPlayer exception) {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == exception) continue;
 			playerlist.refresh(all, true);
 		}
@@ -168,7 +169,7 @@ public class AlignedSuffix extends TabFeature {
 		int oldMaxWidth = maxWidth;
 		maxWidth = 0;
 		maxPlayer = null;
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = getPlayerNameWidth(all);
 			if (localWidth > maxWidth) {

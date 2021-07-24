@@ -31,7 +31,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", getFeatureName(), UsageType.TELEPORTING_ENTITY, this::teleport);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, UsageType.TELEPORTING_ENTITY, this::teleport);
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 				try {
-					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), getFeatureName());
+					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), this);
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
 				}
@@ -65,7 +65,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", getFeatureName(), UsageType.PLAYER_RESPAWN_EVENT, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, UsageType.PLAYER_RESPAWN_EVENT, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**

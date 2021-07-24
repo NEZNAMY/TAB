@@ -21,27 +21,27 @@ import com.viaversion.viaversion.libs.gson.JsonParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.chat.TextColor;
+import me.neznamy.tab.api.chat.IChatBaseComponent.ClickAction;
+import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.IChatBaseComponent.ClickAction;
-import me.neznamy.tab.shared.packets.PacketBuilder;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss.Action;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.rgb.TextColor;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitPacketBuilder implements PacketBuilder {
@@ -126,7 +126,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 			return buf;
 		} catch (Exception t) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to create 1.9 bossbar packet using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", t);
+			TAB.getInstance().getErrorManager().printError("Failed to create 1.9 bossbar packet using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", t);
+			return null;
 		}
 	}
 

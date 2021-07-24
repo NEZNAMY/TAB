@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.proxy;
 
+import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Platform;
+import me.neznamy.tab.api.placeholder.Placeholder;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 public abstract class ProxyPlatform implements Platform {
 

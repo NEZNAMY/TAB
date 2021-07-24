@@ -6,13 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
-import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -75,7 +76,7 @@ public class TabExpansion extends PlaceholderExpansion {
 		}
 		if (identifier.startsWith("placeholder_")) {
 			//using Property function for fast & easy handling of nested placeholders and different placeholder types
-			return new Property(null, p, "%" + identifier.substring(12) + "%").get();
+			return new PropertyImpl(null, p, "%" + identifier.substring(12) + "%").get();
 		}
 		return getProperty(identifier, p);
 	}

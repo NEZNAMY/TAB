@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
@@ -43,14 +44,14 @@ public abstract class PipelineInjector extends TabFeature {
 	
 	@Override
 	public void load() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			inject(p);
 		}
 	}
 
 	@Override
 	public void unload() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			uninject(p);
 		}
 	}

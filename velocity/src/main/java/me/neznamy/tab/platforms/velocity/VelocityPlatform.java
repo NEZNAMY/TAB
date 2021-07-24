@@ -7,16 +7,16 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -60,12 +60,12 @@ public class VelocityPlatform extends ProxyPlatform {
 		TAB tab = TAB.getInstance();
 		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		loadUniversalFeatures();
+		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
 			
-			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				plm.requestAttribute(all, "world");
 				if (!all.getWorld().equals(((ProxyTabPlayer)all).getAttribute("world"))){
 					((ITabPlayer)all).setWorld(((ProxyTabPlayer)all).getAttribute("world"));

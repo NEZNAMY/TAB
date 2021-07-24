@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.command.SubCommand;
@@ -185,7 +185,7 @@ public class DebugCommand extends SubCommand {
 		if (disabled) {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + TAB.getInstance().getPlatform().getSeparatorType());
 		} else {
-			Property pr = analyzed.getProperty(property);
+			PropertyImpl pr = (PropertyImpl) analyzed.getProperty(property);
 			String rawValue = pr.getCurrentRawValue().replace('\u00a7', '&');
 			String value = String.format(("&a%s: &e\"&r%s&r&e\" &7(%s) &7(Source: %s)").replace('&', '\u00a7'), property, rawValue, rawValue.length(), pr.getSource());
 			sendRawMessage(sender, value);
@@ -194,6 +194,6 @@ public class DebugCommand extends SubCommand {
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		return arguments.length == 1 ? getPlayers(arguments[0]) : new ArrayList<>();
+		return arguments.length == 1 ? getOnlinePlayers(arguments[0]) : new ArrayList<>();
 	}
 }

@@ -23,11 +23,11 @@ import com.viaversion.viaversion.api.Via;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.rgb.RGBUtils;
 
 /**
  * TabPlayer for Bukkit
@@ -172,7 +172,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(false, "Failed to check disguise status using LibsDisguises", e);
+			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
+			return false;
 		}
 	}
 
@@ -181,7 +182,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			return ((GameProfile)NMSStorage.getInstance().getMethod("getProfile").invoke(handle)).getProperties();
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to get skin of " + getName(), e);
+			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
+			return null;
 		}
 	}
 

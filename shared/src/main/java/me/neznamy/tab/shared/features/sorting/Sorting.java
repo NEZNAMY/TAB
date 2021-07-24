@@ -50,9 +50,9 @@ public class Sorting {
 		types.put("PLACEHOLDER_HIGH_TO_LOW", (options) -> new PlaceholderHighToLow(options));
 		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<String>()));
 		
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", "Sorting", UsageType.REFRESHING_TEAM_NAME, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", nametags, UsageType.REFRESHING_TEAM_NAME, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) continue;
 				String newName = getTeamName(p);
 				if (!p.getTeamName().equals(newName)) {
@@ -114,7 +114,7 @@ public class Sorting {
 		String potentialTeamName = currentName.toString();
 		if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
 		potentialTeamName += (char)id;
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == p) continue;
 			if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
 				return checkTeamName(p, currentName, id+1);

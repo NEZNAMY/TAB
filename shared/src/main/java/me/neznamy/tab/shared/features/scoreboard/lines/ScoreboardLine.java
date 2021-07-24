@@ -2,14 +2,14 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.Arrays;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.features.TabFeature;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore.Action;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -96,8 +96,8 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param value - number
 	 */
 	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), getFeatureName());
-		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, getFeatureName());
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), this);
+		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, this);
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param teamName - team name
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), getFeatureName());
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), getFeatureName());
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), this);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), this);
 	}
 }

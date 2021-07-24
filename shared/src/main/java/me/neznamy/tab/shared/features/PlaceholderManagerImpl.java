@@ -16,13 +16,14 @@ import java.util.regex.Pattern;
 import com.google.common.base.Preconditions;
 
 import me.neznamy.tab.api.PlaceholderManager;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * Messy class for placeholder management
@@ -46,7 +47,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		super("Refreshing placeholders");
 		loadRefreshIntervals();
 		AtomicInteger atomic = new AtomicInteger();
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, () -> {
 
 			int loopTime = atomic.addAndGet(50);
 			Map<TabPlayer, Set<TabFeature>> update = null; //not initializing if not needed
@@ -72,9 +73,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
-		for (TabPlayer p1 : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
 			if (!p1.isLoaded()) continue;
-			for (TabPlayer p2 : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
 				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<>());
@@ -95,7 +96,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private boolean updatePlayerPlaceholder(PlayerPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> update) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
 				update.computeIfAbsent(all, k -> new HashSet<>());
@@ -112,7 +113,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		long startTime = System.nanoTime();
 		if (placeholder.update()) {
 			somethingChanged = true;
-			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (!all.isLoaded()) continue;
 				update.computeIfAbsent(all, k -> new HashSet<>());
 				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
@@ -169,7 +170,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void load() {
-		TAB.getInstance().getPlayers().forEach(p -> onJoin(p));
+		TAB.getInstance().getOnlinePlayers().forEach(p -> onJoin(p));
 	}
 
 	@Override
@@ -177,7 +178,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (String identifier : placeholderUsage.keySet()) {
 			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					((RelationalPlaceholder)pl).update(connectedPlayer, all);
 					((RelationalPlaceholder)pl).update(all, connectedPlayer);
 				}
@@ -193,7 +194,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (String identifier : placeholderUsage.keySet()) {
 			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					((RelationalPlaceholder)pl).getLastValues().remove(all.getName() + "-" + disconnectedPlayer.getName());
 					((RelationalPlaceholder)pl).getLastValues().remove(disconnectedPlayer.getName() + "-" + all.getName());
 				}

@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 
 public abstract class SortingType {
 
@@ -44,7 +44,7 @@ public abstract class SortingType {
 		if (sortingPlaceholder.contains("%")) {
 			for (String identifier : usedPlaceholders) {
 				Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-				if (pl != null && replaced.contains(pl.getIdentifier())) {
+				if (replaced.contains(pl.getIdentifier())) {
 					replaced = pl.set(replaced, player);
 				}
 			}

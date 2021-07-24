@@ -2,12 +2,13 @@ package me.neznamy.tab.shared;
 
 import java.util.Collection;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 /**
  * Soon to be removed assistant for easier packet creating
@@ -28,7 +29,7 @@ public class PacketAPI {
 	 * @param players - player list
 	 * @param color - color field (1.13+)
 	 */
-	public static synchronized void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color, String feature) {
+	public static synchronized void registerScoreboardTeam(TabPlayer to, String teamName, String prefix, String suffix, boolean enumNameTagVisibility, boolean enumTeamPush, Collection<String> players, EnumChatFormat color, TabFeature feature) {
 		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister() && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
 			to.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), feature);
 		}
@@ -43,7 +44,7 @@ public class PacketAPI {
 	 * @param position - objective position (0 = Playerlist, 1 = Sidebar, 2 = Belowname)
 	 * @param displayType - display type of the value (only supported in Playerlist)
 	 */
-	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, String feature) {
+	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, TabFeature feature) {
 		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister() && TAB.getInstance().getPlatform().getSeparatorType().equals("world")) {
 			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName), feature);
 		}

@@ -6,16 +6,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.ScoreboardTeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.sorting.Sorting;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
@@ -42,7 +43,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
 	@Override
 	public void load(){
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
 			updateProperties(all);
 			collision.put(all.getName(), true);
@@ -59,16 +60,16 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
 	@Override
 	public void unload() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (!disabledPlayers.contains(p)) unregisterTeam(p);
 		}
 	}
 
 	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureName(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
 				//nametag visibility
 				boolean invisible = p.hasInvisibilityPotion();
@@ -93,24 +94,24 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 	public void unregisterTeam(TabPlayer p) {
 		if (hasTeamHandlingPaused(p)) return;
 		if (p.getTeamName() == null) return;
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureName());
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
 		}
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
 		if (hasTeamHandlingPaused(p)) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), getFeatureName());
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
 	}
 
 	public void registerTeam(TabPlayer p) {
 		if (hasTeamHandlingPaused(p)) return;
 		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureName());
+			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, this);
 		}
 	}
 
@@ -120,7 +121,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, getFeatureName());
+		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, this);
 	}
 
 	public void updateTeam(TabPlayer p) {
@@ -138,11 +139,11 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 	public void updateTeamData(TabPlayer p) {
 		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureName());
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), this);
 		}
 	}
 
@@ -152,7 +153,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), getFeatureName());
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), this);
 	}
 
 	private String translate(boolean b) {
@@ -187,7 +188,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded()) continue;
 			if (!disabledPlayers.contains(all)) registerTeam(all, packetReceiver);
 		}
@@ -215,7 +216,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		updateProperties(connectedPlayer);
 		collision.put(connectedPlayer.getName(), true);
 		hiddenNametagFor.put(connectedPlayer, new HashSet<>());
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
 			if (!disabledPlayers.contains(all)) {
 				registerTeam(all, connectedPlayer);
@@ -238,7 +239,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		hiddenNametagFor.remove(disconnectedPlayer);
 		teamHandlingPaused.remove(disconnectedPlayer);
 		forcedTeamName.remove(disconnectedPlayer);
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == disconnectedPlayer) continue;
 			hiddenNametagFor.get(all).remove(disconnectedPlayer); //clearing memory from API method
 		}

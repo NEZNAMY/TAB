@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -31,7 +31,7 @@ public class ParentGroup {
 			if (child.getTitle() != null) {
 				String[] title = child.getTitle().split("\\n");
 				for (String line : title) {
-					texts.add(IChatBaseComponent.optimizedComponent(new Property(TAB.getInstance().getFeatureManager().getFeature("layout"), viewer, line).get()));
+					texts.add(IChatBaseComponent.optimizedComponent(new PropertyImpl(TAB.getInstance().getFeatureManager().getFeature("layout"), viewer, line).get()));
 				}
 			}
 			for (TabPlayer selectedPlayer : selected) {

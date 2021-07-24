@@ -1,15 +1,15 @@
 package me.neznamy.tab.platforms.velocity;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.packets.PacketBuilder;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 
 /**
  * Packet builder for Velocity platform

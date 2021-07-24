@@ -14,9 +14,9 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.TabFeature;
 
 /**
  * Per-world-playerlist feature handler

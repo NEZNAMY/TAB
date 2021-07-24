@@ -7,14 +7,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
  * Feature handler for global playerlist feature
@@ -42,34 +43,34 @@ public class GlobalPlayerlist extends TabFeature {
 
 	@Override
 	public void load() {
-		for (TabPlayer displayed : TAB.getInstance().getPlayers()) {
-			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+		for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer.getServer().equals(displayed.getServer())) continue;
-				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), getFeatureName());
+				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), this);
 			}
 		}
 		startTask();
 	}
 
 	private void startTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", this, UsageType.REPEATING_TASK, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (vanishedPlayers.contains(p) && !p.isVanished()) {
 					vanishedPlayers.remove(p);
-					for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 						if (viewer == p) continue;
 						if (shouldSee(viewer, p)) {
-							viewer.sendCustomPacket(getAddPacket(p, viewer), getFeatureName());
+							viewer.sendCustomPacket(getAddPacket(p, viewer), this);
 						}
 					}
 				}
 				if (!vanishedPlayers.contains(p) && p.isVanished()) {
 					vanishedPlayers.add(p);
-					for (TabPlayer all : TAB.getInstance().getPlayers()) {
+					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 						if (all == p) continue;
 						if (!shouldSee(all, p)) {
-							all.sendCustomPacket(getRemovePacket(p), getFeatureName());
+							all.sendCustomPacket(getRemovePacket(p), this);
 						}
 					}
 				}
@@ -93,23 +94,23 @@ public class GlobalPlayerlist extends TabFeature {
 
 	@Override
 	public void unload() {
-		for (TabPlayer displayed : TAB.getInstance().getPlayers()) {
+		for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
 			PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
-			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
-				if (!displayed.getServer().equals(viewer.getServer())) viewer.sendCustomPacket(displayedRemovePacket, getFeatureName());
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				if (!displayed.getServer().equals(viewer.getServer())) viewer.sendCustomPacket(displayedRemovePacket, this);
 			}
 		}
 	}
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == connectedPlayer) continue;
 			if (shouldSee(all, connectedPlayer)) {
-				all.sendCustomPacket(getAddPacket(connectedPlayer, all), getFeatureName());
+				all.sendCustomPacket(getAddPacket(connectedPlayer, all), this);
 			}
 			if (shouldSee(connectedPlayer, all)) {
-				connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), getFeatureName());
+				connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
 			}
 		}
 	}
@@ -117,12 +118,12 @@ public class GlobalPlayerlist extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", getFeatureName(), UsageType.PLAYER_QUIT_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, UsageType.PLAYER_QUIT_EVENT, () -> {
 
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
-			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == disconnectedPlayer) continue;
-				all.sendCustomPacket(remove, getFeatureName());
+				all.sendCustomPacket(remove, this);
 			}
 		});
 	}
@@ -130,17 +131,17 @@ public class GlobalPlayerlist extends TabFeature {
 	@Override
 	public void onServerChange(TabPlayer p, String from, String to) {
 		PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == p) continue;
 			if (shouldSee(all, p)) {
-				all.sendCustomPacket(getAddPacket(p, all), getFeatureName());
+				all.sendCustomPacket(getAddPacket(p, all), this);
 			} else {
-				all.sendCustomPacket(removeChanged, getFeatureName());
+				all.sendCustomPacket(removeChanged, this);
 			}
 			if (shouldSee(p, all)) {
-				p.sendCustomPacket(getAddPacket(all, p), getFeatureName());
+				p.sendCustomPacket(getAddPacket(all, p), this);
 			} else {
-				p.sendCustomPacket(getRemovePacket(all), getFeatureName());
+				p.sendCustomPacket(getRemovePacket(all), this);
 			}
 		}
 	}

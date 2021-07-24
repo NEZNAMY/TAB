@@ -14,22 +14,23 @@ import org.bukkit.entity.Pose;
 import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.ArmorStand;
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
 
 /**
  * A class representing an armor stand attached to a player (if the feature is enabled)
  */
 public class BukkitArmorStand implements ArmorStand {
 
-	public static final String FEATURE_TYPE = "Unlimited Nametags";
+	private NameTagX manager;
+	
 	//owner of the armor stand
 	private TabPlayer owner;
 
@@ -70,7 +71,8 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param yOffset - offset in blocks
 	 * @param staticOffset - if offset is static or not
 	 */
-	public BukkitArmorStand(int entityId, TabPlayer owner, Property property, double yOffset, boolean staticOffset, boolean markerFor18x) {
+	public BukkitArmorStand(NameTagX manager, int entityId, TabPlayer owner, Property property, double yOffset, boolean staticOffset, boolean markerFor18x) {
+		this.manager = manager;
 		this.entityId = entityId;
 		this.owner = owner;
 		this.staticOffset = staticOffset;
@@ -107,7 +109,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(getTeleportPacket(all), FEATURE_TYPE);
+			all.sendPacket(getTeleportPacket(all), manager);
 		}
 	}
 
@@ -136,7 +138,7 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void spawn(TabPlayer viewer) {
 		for (Object packet : getSpawnPackets(viewer)) {
-			viewer.sendPacket(packet, FEATURE_TYPE);
+			viewer.sendPacket(packet, manager);
 		}
 	}
 
@@ -152,19 +154,19 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void destroy(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
-		viewer.sendPacket(getDestroyPacket(), FEATURE_TYPE);
+		viewer.sendPacket(getDestroyPacket(), manager);
 	}
 
 	@Override
 	public void teleport() {
 		for (TabPlayer all : getNearbyPlayers()) {
-			all.sendPacket(getTeleportPacket(all), FEATURE_TYPE);
+			all.sendPacket(getTeleportPacket(all), manager);
 		}
 	}
 
 	@Override
 	public void teleport(TabPlayer viewer) {
-		viewer.sendPacket(getTeleportPacket(viewer), FEATURE_TYPE);
+		viewer.sendPacket(getTeleportPacket(viewer), manager);
 	}
 
 	@Override
@@ -175,17 +177,17 @@ public class BukkitArmorStand implements ArmorStand {
 			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendPacket(getDestroyPacket(), FEATURE_TYPE);
+					viewer.sendPacket(getDestroyPacket(), manager);
 				} else {
 					spawn(viewer);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendPacket(getDestroyPacket(), FEATURE_TYPE);
+				viewer.sendPacket(getDestroyPacket(), manager);
 				Runnable spawn = () -> spawn(viewer);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", FEATURE_TYPE, UsageType.V1_8_0_BUG_COMPENSATION, spawn);
+					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, UsageType.V1_8_0_BUG_COMPENSATION, spawn);
 				} else {
 					spawn.run();
 				}
@@ -195,7 +197,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getPlayers()) all.sendPacket(getDestroyPacket(), FEATURE_TYPE);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendPacket(getDestroyPacket(), manager);
 		nearbyPlayers.clear();
 	}
 
@@ -218,7 +220,8 @@ public class BukkitArmorStand implements ArmorStand {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(entityId, getArmorStandLocationFor(viewer));
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityTeleport", e);
+			TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
+			return null;
 		}
 	}
 	
@@ -230,7 +233,8 @@ public class BukkitArmorStand implements ArmorStand {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityDestroyPacket(entityId);
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityDestroy", e);
+			TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityDestroy", e);
+			return null;
 		}
 	}
 	
@@ -243,7 +247,8 @@ public class BukkitArmorStand implements ArmorStand {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutEntityMetadata", e);
+			TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityMetadata", e);
+			return null;
 		}
 	}
 	
@@ -257,7 +262,8 @@ public class BukkitArmorStand implements ArmorStand {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(null, "Failed to create PacketPlayOutSpawnEntityLiving", e);
+			TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutSpawnEntityLiving", e);
+			return null;
 		}
 	}
 
@@ -266,7 +272,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	protected void updateMetadata() {
 		for (TabPlayer viewer : getNearbyPlayers()) {
-			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), FEATURE_TYPE);
+			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), manager);
 		}
 	}
 
@@ -275,10 +281,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	protected boolean getVisibility() {
-		NameTagX feature = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
-		if (((BukkitTabPlayer)owner).isDisguised() || feature.getPlayersOnBoats().contains(owner)) return false;
+		if (((BukkitTabPlayer)owner).isDisguised() || manager.getPlayersOnBoats().contains(owner)) return false;
 		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !feature.hasHiddenNametag(owner) && property.get().length() > 0;
+		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 
 	/**
@@ -359,8 +364,7 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visibility;
-		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || 
-				((NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx")).hasHiddenNametag(owner, viewer)) {
+		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || manager.hasHiddenNametag(owner, viewer)) {
 			visibility = false;
 		} else {
 			visibility = visible;

@@ -27,7 +27,7 @@ public class GroupCommand extends PropertyCommand {
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
 					TAB.getInstance().getConfiguration().getGroups().remove(group);
-					for (TabPlayer pl : TAB.getInstance().getPlayers()) {
+					for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
 						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 							pl.forceRefresh();
 						}
@@ -72,7 +72,7 @@ public class GroupCommand extends PropertyCommand {
 		}
 		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, null, null)))) return;
 		TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, null, null, value.length() == 0 ? null : value);
-		for (TabPlayer pl : TAB.getInstance().getPlayers()) {
+		for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
 				pl.forceRefresh();
 			}

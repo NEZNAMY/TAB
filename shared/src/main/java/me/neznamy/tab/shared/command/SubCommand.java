@@ -109,9 +109,9 @@ public abstract class SubCommand {
 	 * @param nameStart - beginning of the name
 	 * @return List of compatible players
 	 */
-	public List<String> getPlayers(String nameStart){
+	public List<String> getOnlinePlayers(String nameStart){
 		List<String> suggestions = new ArrayList<>();
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
 		}
 		return suggestions;

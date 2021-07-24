@@ -9,8 +9,15 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.api.PermissionPlugin;
+import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BukkitTABLoadEvent;
+import me.neznamy.tab.api.placeholder.Placeholder;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
+import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -18,7 +25,7 @@ import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
-import me.neznamy.tab.shared.Platform;
+import me.neznamy.tab.shared.ErrorManagerImpl;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.NameTag;
@@ -28,15 +35,9 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.packets.PacketBuilder;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
-import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
@@ -98,7 +99,7 @@ public class BukkitPlatform implements Platform {
 			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		}
 		loadNametagFeature(tab);
-		loadUniversalFeatures();
+		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
 		if (tab.getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) tab.getFeatureManager().registerFeature("tabobjective", new YellowNumber());
 		if (tab.getConfiguration().getConfig().getBoolean("prevent-spectator-effect.enabled", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
@@ -186,7 +187,7 @@ public class BukkitPlatform implements Platform {
 	 */
 	private ServerPlaceholder registerServerPlaceholder(String identifier, int refresh) {
 		BukkitPlatform pl = this;
-		ServerPlaceholder p = new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
+		ServerPlaceholder p = new ServerPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)){
 			
 			@Override
 			public String get() {
@@ -204,7 +205,7 @@ public class BukkitPlatform implements Platform {
 	 */
 	private PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh) {
 		BukkitPlatform pl = this;
-		PlayerPlaceholder p = new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
+		PlayerPlaceholder p = new PlayerPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer p) {
@@ -221,7 +222,7 @@ public class BukkitPlatform implements Platform {
 	 * @param refresh - refresh interval in milliseconds
 	 */
 	private RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh) {
-		RelationalPlaceholder p = new RelationalPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
+		RelationalPlaceholder p = new RelationalPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {

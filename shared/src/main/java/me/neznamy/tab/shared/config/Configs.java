@@ -1,12 +1,9 @@
 package me.neznamy.tab.shared.config;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -21,9 +18,9 @@ import java.util.Set;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
-import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
@@ -42,7 +39,6 @@ public class Configs {
 	private boolean bukkitPermissions;
 
 	//hidden config options
-	private boolean rgbSupport;
 	private boolean unregisterBeforeRegister;
 	private boolean armorStandsAlwaysVisible; //paid private addition
 	private boolean removeGhostPlayers;
@@ -107,7 +103,6 @@ public class Configs {
 			getRemoveStrings().add(s.replace('&', '\u00a7'));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
-		rgbSupport = (boolean) getSecretOption("rgb-support", true);
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
@@ -206,23 +201,6 @@ public class Configs {
 	}*/
 
 	/**
-	 * Reads all lines in file and returns them as List
-	 * @return list of lines in file
-	 */
-	public static List<String> readAllLines(File file) {
-		List<String> list = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
-			String line;
-			while ((line = br.readLine()) != null) {
-				list.add(line);
-			}
-		} catch (Exception ex) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to read file " + file, ex);
-		}
-		return list;
-	}
-
-	/**
 	 * Writes defined line of text to file
 	 * @param f - file to write to
 	 * @param line - line to write
@@ -263,10 +241,6 @@ public class Configs {
 
 	public ConfigurationFile getAnimationFile() {
 		return animation;
-	}
-
-	public boolean isRgbSupport() {
-		return rgbSupport;
 	}
 
 	public boolean isBukkitPermissions() {

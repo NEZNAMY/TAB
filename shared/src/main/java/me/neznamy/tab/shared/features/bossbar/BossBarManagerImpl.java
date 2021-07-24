@@ -10,15 +10,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.TabFeature;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * Class for handling bossbar feature
@@ -138,17 +138,17 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			text = "";
 			TAB.getInstance().getErrorManager().missingAttribute("BossBar", bar, "text");
 		}
-		return new BossBarLine(bar, condition, color, style, text, progress);
+		return new BossBarLine(this, bar, condition, color, style, text, progress);
 	}
 
 	@Override
 	public void load() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar permissions", this, UsageType.REPEATING_TASK, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) continue;
 				for (BossBar line : lines.values()) {
 					if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
@@ -165,7 +165,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	@Override
 	public void unload() {
 		for (BossBar line : lines.values()) {
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				line.removePlayer(p);
 			}
 		}
@@ -245,7 +245,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public BossBar createBossBar(String name, String title, String progress, String color, String style) {
-		BossBar bar = new BossBarLine( name, null, color, style, title, progress);
+		BossBar bar = new BossBarLine(this, name, null, color, style, title, progress);
 		lines.put(bar.getName(), (BossBarLine) bar);
 		return bar;
 	}
@@ -324,12 +324,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			try {
 				announcements.add(line);
 				announceEndTime = (System.currentTimeMillis() + duration*1000);
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasBossBarVisible(all)) continue;
 					line.addPlayer(all);
 				}
 				Thread.sleep(duration*1000L);
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasBossBarVisible(all)) continue;
 					line.removePlayer(all);
 				}

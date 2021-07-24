@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.permission;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;

@@ -7,14 +7,15 @@ import java.util.UUID;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.CrossPlatformPacket;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.features.GroupRefresher;
-import me.neznamy.tab.shared.features.TabFeature;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat;
-import me.neznamy.tab.shared.packets.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.shared.packets.UniversalPacketPlayOut;
 
 /**
  * The core class for player
@@ -43,9 +44,9 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
-		Property p = getProperty(identifier);
+		PropertyImpl p = (PropertyImpl) getProperty(identifier);
 		if (p == null) {
-			properties.put(identifier, new Property(feature, this, rawValue, source));
+			properties.put(identifier, new PropertyImpl(feature, this, rawValue, source));
 			return true;
 		} else {
 			if (!p.getOriginalRawValue().equals(rawValue)) {
@@ -96,7 +97,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty(TAB.getInstance().getFeatureManager().getNameTagFeature(), PropertyUtils.NAMETAG,getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
+			setProperty(TAB.getInstance().getFeatureManager().getNameTagFeature(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}
@@ -151,14 +152,24 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void sendCustomPacket(UniversalPacketPlayOut packet) {
-		sendPacket(packet.create(getVersion()));
+	public void sendCustomPacket(CrossPlatformPacket packet) {
+		sendCustomPacket(packet, null);
 	}
 
 	@Override
-	public void sendCustomPacket(UniversalPacketPlayOut packet, String feature) {
-		sendCustomPacket(packet);
-		TAB.getInstance().getCPUManager().packetSent(feature);
+	public void sendCustomPacket(CrossPlatformPacket packet, TabFeature feature) {
+		try {
+			sendPacket(packet.build(getVersion()), feature);
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + getClass().getSimpleName(), e);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void sendPacket(Object nmsPacket, TabFeature feature) {
+		sendPacket(nmsPacket);
+		if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature.getFeatureName());
 	}
 
 	@Override
@@ -270,16 +281,4 @@ public abstract class ITabPlayer implements TabPlayer {
 			forceRefresh();
 		}
 	}
-
-	@Override
-	public void sendPacket(Object nmsPacket, String feature) {
-		sendPacket(nmsPacket);
-		TAB.getInstance().getCPUManager().packetSent(feature);
-	}
-
-	/**
-	 * Returns gamemode of the player (0 for survival, 1 creative, 2 adventure, 3 spectator)
-	 * @return gamemode of the player
-	 */
-	public abstract int getGamemode();
 }

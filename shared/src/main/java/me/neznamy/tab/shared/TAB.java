@@ -7,7 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.PlaceholderManager;
+import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
@@ -18,68 +20,73 @@ import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
+import me.neznamy.tab.shared.features.AlignedSuffix;
+import me.neznamy.tab.shared.features.GhostPlayerFix;
+import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PluginInfo;
+import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.layout.Layout;
 
 /**
  * Universal variable and method storage
  */
-public class TAB implements TabAPI {
-	
+public class TAB extends TabAPI {
+
 	//plugin instance
 	private static TAB instance;
-	
+
 	//version of plugin
 	public static final String PLUGIN_VERSION = "3.0.0-SNAPSHOT";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
-	
+
 	//the command
 	private TabCommand command;
 
 	//command used if plugin is disabled due to a broken configuration file
 	private final DisabledCommand disabledCommand = new DisabledCommand();
-	
+
 	//platform interface
 	private Platform platform;
-	
+
 	//cpu manager
 	private CPUManager cpu;
-	
+
 	//error manager
-	private ErrorManager errorManager;
-	
+	private ErrorManagerImpl errorManager;
+
 	//permission plugin interface
 	private PermissionPlugin permissionPlugin;
-	
+
 	//feature manager
-	private FeatureManager featureManager;
-	
+	private FeatureManagerImpl featureManager;
+
 	//name of broken configuration file filled on load and used in disabledCommand
 	private String brokenFile = "-";
 
 	private Configs configuration;
-	
+
 	private boolean debugMode;
-	
+
 	private boolean disabled;
-	
+
 	private PlaceholderManagerImpl placeholderManager;
-	
+
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
 
 	public TAB(Platform platform, ProtocolVersion serverVersion) {
 		this.platform = platform;
 		this.serverVersion = serverVersion;
+		TabAPI.setInstance(this);
 	}
-	
-	/**
-	 * Returns all players
-	 * @return all players
-	 */
-	public Collection<TabPlayer> getPlayers(){
+
+	@Override
+	public Collection<TabPlayer> getOnlinePlayers(){
 		return data.values();
 	}
 
@@ -94,7 +101,7 @@ public class TAB implements TabAPI {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Sends console message with tab prefix and specified message and color
 	 * @param color - color to use
@@ -103,7 +110,7 @@ public class TAB implements TabAPI {
 	public void print(char color, String message) {
 		platform.sendConsoleMessage("&" + color + "[TAB] " + message, true);
 	}
-	
+
 	/**
 	 * Sends a console message with debug prefix if debug is enabled in config
 	 * @param message - message to be sent into console
@@ -111,16 +118,16 @@ public class TAB implements TabAPI {
 	public void debug(String message) {
 		if (debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
-	
+
 	/**
 	 * Loads the entire plugin
 	 */
 	public String load() {
 		try {
 			long time = System.currentTimeMillis();
-			this.errorManager = new ErrorManager(this);
+			this.errorManager = new ErrorManagerImpl(this);
 			cpu = new CPUManager(errorManager);
-			featureManager = new FeatureManager();
+			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
 			permissionPlugin = platform.detectPermissionPlugin();
@@ -129,7 +136,7 @@ public class TAB implements TabAPI {
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
-			getPlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
+			getOnlinePlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
@@ -145,7 +152,7 @@ public class TAB implements TabAPI {
 			return "&cFailed to enable due to an internal plugin error. Check console for more info.";
 		}
 	}
-	
+
 	/**
 	 * Properly unloads the entire plugin
 	 */
@@ -163,36 +170,57 @@ public class TAB implements TabAPI {
 			errorManager.criticalError("Failed to disable", e);
 		}
 	}
-	
+
+	/**
+	 * Loads universal features present on all platforms with the same configuration
+	 */
+	public void loadUniversalFeatures() {
+		TAB tab = TAB.getInstance();
+		if (tab.getConfiguration().getConfig().getBoolean("header-footer.enabled", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter());
+		if (tab.getConfiguration().isRemoveGhostPlayers()) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (tab.getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
+			Playerlist playerlist = new Playerlist();
+			tab.getFeatureManager().registerFeature("playerlist", playerlist);
+			if (tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+		}
+		tab.getFeatureManager().registerFeature("group", new GroupRefresher());
+		tab.getFeatureManager().registerFeature("info", new PluginInfo());
+		new UpdateChecker(tab);
+		if (tab.getConfiguration().isLayout()) tab.getFeatureManager().registerFeature("layout", new Layout());
+	}
+
 	public void addPlayer(TabPlayer player) {
 		data.put(player.getUniqueId(), player);
 	}
-	
+
 	public void removePlayer(TabPlayer player) {
 		data.remove(player.getUniqueId());
 	}
-	
+
 	public static TAB getInstance() {
 		return instance;
 	}
-	
+
 	public static void setInstance(TAB instance) {
 		TAB.instance = instance;
 	}
-	
-	public FeatureManager getFeatureManager() {
+
+	@Override
+	public FeatureManagerImpl getFeatureManager() {
 		return featureManager;
 	}
-	
+
+	@Override
 	public Platform getPlatform() {
 		return platform;
 	}
-	
+
 	public CPUManager getCPUManager() {
 		return cpu;
 	}
-	
-	public ErrorManager getErrorManager() {
+
+	@Override
+	public ErrorManagerImpl getErrorManager() {
 		return errorManager;
 	}
 
@@ -224,7 +252,7 @@ public class TAB implements TabAPI {
 		brokenFile = file;
 	}
 
-	public CharSequence getBrokenFile() {
+	public String getBrokenFile() {
 		return brokenFile;
 	}
 
@@ -240,22 +268,22 @@ public class TAB implements TabAPI {
 	public BossBarManager getBossBarManager() {
 		return (BossBarManager) featureManager.getFeature("bossbar");
 	}
-	
+
 	@Override
 	public ScoreboardManager getScoreboardManager() {
 		return (ScoreboardManager) featureManager.getFeature("scoreboard");
 	}
-	
+
 	@Override
 	public ScoreboardTeamManager getScoreboardTeamManager() {
 		return featureManager.getNameTagFeature();
 	}
-	
+
 	@Override
 	public PlaceholderManager getPlaceholderManager() {
 		return placeholderManager;
 	}
-	
+
 	@Override
 	public TabPlayer getPlayer(String name) {
 		for (TabPlayer p : data.values()) {
@@ -263,7 +291,7 @@ public class TAB implements TabAPI {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public TabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);

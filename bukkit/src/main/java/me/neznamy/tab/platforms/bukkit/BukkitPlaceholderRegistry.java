@@ -14,12 +14,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
 
 /**
@@ -87,7 +87,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
 			public String get(TabPlayer p) {
 				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 				}
 				return String.valueOf(count);
@@ -96,7 +96,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
 			public String get(TabPlayer p) {
 				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 				}
 				return String.valueOf(count);
@@ -104,8 +104,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%nonstaffonline%", 2000) {
 			public String get(TabPlayer p) {
-				int count = TAB.getInstance().getPlayers().size();
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
+				int count = TAB.getInstance().getOnlinePlayers().size();
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count--;
 				}
 				return String.valueOf(count);
@@ -152,7 +152,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return yesAfk;
 					}
 				} catch (Exception e) {
-					return TAB.getInstance().getErrorManager().printError("", "Failed to check AFK status of " + p.getName(), e);
+					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
 				}
 				try {
 					if (purpurIsAfk != null && (boolean) purpurIsAfk.invoke(p.getPlayer())) return yesAfk;

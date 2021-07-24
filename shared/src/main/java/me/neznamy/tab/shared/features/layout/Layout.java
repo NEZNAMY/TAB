@@ -12,17 +12,17 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.file.ConfigurationFile;
-import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.TabFeature;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -147,11 +147,11 @@ public class Layout extends TabFeature {
 		for (FixedSlot s : fixedSlots.values()) {
 			s.onJoin(connectedPlayer);
 		}
-		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(TAB.getInstance().getPlayers())).entrySet()) {
+		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(TAB.getInstance().getOnlinePlayers())).entrySet()) {
 			int slot = translateSlot(entry.getKey());
 			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
-		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureName());
+		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 	}
 
 	private int translateSlot(int slot) {
@@ -164,21 +164,21 @@ public class Layout extends TabFeature {
 
 	@Override
 	public void load() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "ticking layout", this, UsageType.REPEATING_TASK, () -> {
 
-			List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
 				List<PlayerInfoData> list = new ArrayList<>();
 				for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 					int slot = translateSlot(entry.getKey());
 					list.add(new PlayerInfoData(uuids.get(slot), entry.getValue()));
 				}
-				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureName());
+				p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
 			}
 		});
-		List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (FixedSlot s : fixedSlots.values()) {
 				s.onJoin(p);
@@ -187,20 +187,20 @@ public class Layout extends TabFeature {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 		}
 	}
 
 	@Override
 	public void unload() {
-		List<TabPlayer> players = sortPlayers(TAB.getInstance().getPlayers());
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());
 				list.add(new PlayerInfoData(uuids.get(slot)));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), getFeatureName());
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
 		}
 	}
 }

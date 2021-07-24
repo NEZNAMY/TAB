@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -26,9 +27,9 @@ public class GroupRefresher extends TabFeature {
 		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, UsageType.REPEATING_TASK, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
 			}
 		});
@@ -45,7 +46,8 @@ public class GroupRefresher extends TabFeature {
 		try {
 			return TAB.getInstance().getPermissionPlugin().getPrimaryGroup(p);
 		} catch (Exception e) {
-			return TAB.getInstance().getErrorManager().printError(DEFAULT_GROUP, "Failed to get permission group of " + p.getName() + " using " + TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion(), e);
+			TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + p.getName() + " using " + TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion(), e);
+			return DEFAULT_GROUP;
 		}
 	}
 

@@ -20,9 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -95,7 +95,7 @@ public class NameTagX extends NameTag {
 	@Override
 	public void load() {
 		super.load();
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			getEntityIdMap().put(((Player) all.getPlayer()).getEntityId(), all);
 			loadArmorStands(all);
 			if (isDisabled(all.getWorld())) {
@@ -103,7 +103,7 @@ public class NameTagX extends NameTag {
 			}
 			if (isInDisabledWorld(all)) continue;
 			loadPassengers(all);
-			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				spawnArmorStands(all, viewer, false);
 			}
 		}
@@ -112,9 +112,9 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", getFeatureName(), UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 			
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isInDisabledWorld(p)) continue;
 				p.getArmorStandManager().updateVisibility(false);
 				if (disableOnBoats) processBoats(p);
@@ -139,9 +139,9 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVehicleTickingTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", getFeatureName(), UsageType.TICKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", this, UsageType.TICKING_VEHICLES, () -> {
 			
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
 				if (isInDisabledWorld(p)) {
 					playersInVehicle.remove(p);
@@ -200,7 +200,7 @@ public class NameTagX extends NameTag {
 	public void unload() {
 		super.unload();
 		HandlerList.unregisterAll(eventListener);
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().destroy();
 		}
 		getEntityIdMap().clear();
@@ -217,7 +217,7 @@ public class NameTagX extends NameTag {
 		}
 		if (isInDisabledWorld(connectedPlayer)) return;
 		loadPassengers(connectedPlayer);
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
 		}
 	}
@@ -247,14 +247,14 @@ public class NameTagX extends NameTag {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		getEntityIdMap().remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
-		TAB.getInstance().getCPUManager().runTaskLater(100, "processing onQuit", getFeatureName(), UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+		TAB.getInstance().getCPUManager().runTaskLater(100, "processing onQuit", this, UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
 	@Override
@@ -269,7 +269,7 @@ public class NameTagX extends NameTag {
 		p.getArmorStandManager().destroy();
 		loadArmorStands(p);
 		loadPassengers(p);
-		for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			viewer.getArmorStandManager().destroy(p);
 			if (nearby.contains(viewer) && to.equals(viewer.getWorld())) spawnArmorStands(p, viewer, true);
 		}
@@ -303,13 +303,13 @@ public class NameTagX extends NameTag {
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(idCounter++, pl, p, height, false, markerFor18x));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(this, idCounter++, pl, p, height, false, markerFor18x));
 			height += spaceBetweenLines;
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true, markerFor18x));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(this, idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true, markerFor18x));
 		}
 		fixArmorStandHeights(pl);
 	}
@@ -338,7 +338,7 @@ public class NameTagX extends NameTag {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
 			loadPassengers(refreshed);
-			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer == refreshed) continue;
 				if (viewer.getWorld().equals(refreshed.getWorld())) {
 					refreshed.getArmorStandManager().spawn(viewer);

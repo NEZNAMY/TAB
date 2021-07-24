@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.features.bossbar;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.TabFeature;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 
 /**
  * An implementation of Refreshable for bossbar progress
@@ -24,6 +24,6 @@ public class ProgressRefresher extends TabFeature {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!line.getPlayers().contains(refreshed)) return;
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseProgress(refreshed.getProperty("bossbar-progress-" + line.getName()).updateAndGet())/100), getFeatureName());
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseProgress(refreshed.getProperty("bossbar-progress-" + line.getName()).updateAndGet())/100), this);
 	}
 }

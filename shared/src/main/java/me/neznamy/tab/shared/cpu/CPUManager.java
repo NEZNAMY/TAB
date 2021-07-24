@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.base.Preconditions;
 
-import me.neznamy.tab.shared.ErrorManager;
+import me.neznamy.tab.api.ErrorManager;
+import me.neznamy.tab.api.TabFeature;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -29,7 +30,7 @@ public class CPUManager {
 	private static final int BUFFER_SIZE_MILLIS = 10000;
 
 	//nanoseconds worked in the current 10 seconds
-	private Map<Object, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
+	private Map<String, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
@@ -38,7 +39,7 @@ public class CPUManager {
 	private Map<String, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
 
 	//nanoseconds worked in the previous 10 seconds
-	private Map<Object, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<>();
+	private Map<String, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
@@ -107,7 +108,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runMeasuredTask(String errorDescription, String feature, UsageType type, Runnable task) {
+	public void runMeasuredTask(String errorDescription, TabFeature feature, UsageType type, Runnable task) {
 		Preconditions.checkNotNull(errorDescription, "errorDescription");
 		Preconditions.checkNotNull(feature, "feature");
 		Preconditions.checkNotNull(type, "type");
@@ -130,6 +131,18 @@ public class CPUManager {
 		submit(errorDescription, task);
 	}
 
+	/**
+	 * Starts a new task with defined repeat interval that measures cpu usage
+	 * @param intervalMilliseconds - task interval
+	 * @param errorDescription - description to use if this task throws an error
+	 * @param feature - feature to add cpu usage to
+	 * @param type - usage type to add cpu usage to
+	 * @param task - the task
+	 */
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+		startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
+	}
+	
 	/**
 	 * Starts a new task with defined repeat interval that measures cpu usage
 	 * @param intervalMilliseconds - task interval
@@ -166,6 +179,18 @@ public class CPUManager {
 		});
 	}
 
+	/**
+	 * Runs task with a delay and measures how long it took to process
+	 * @param delayMilliseconds - how long to run the task after
+	 * @param errorDescription - description to use if this task throws an error
+	 * @param feature - feature to add cpu usage to
+	 * @param type - usage type to add cpu usage to
+	 * @param task - the task
+	 */
+	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+		runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
+	}
+	
 	/**
 	 * Runs task with a delay and measures how long it took to process
 	 * @param delayMilliseconds - how long to run the task after
@@ -261,7 +286,7 @@ public class CPUManager {
 	 */
 	public Map<Object, Map<UsageType, Float>> getFeatureUsage(){
 		Map<Object, EnumMap<UsageType, Long>> total = new HashMap<>();
-		for (Entry<Object, Map<UsageType, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
+		for (Entry<String, Map<UsageType, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
 			Object key = nanos.getKey();
 			if (!total.containsKey(key)) {
 				total.put(key, new EnumMap<>(UsageType.class));
@@ -366,6 +391,16 @@ public class CPUManager {
 		return total;
 	}
 
+	/**
+	 * Adds cpu time to specified feature and usage type
+	 * @param feature - feature to add time to
+	 * @param type - usage to add time to of the feature
+	 * @param nanoseconds - time to add
+	 */
+	public void addTime(TabFeature feature, UsageType type, long nanoseconds) {
+		addTime(feature.getFeatureName(), type, nanoseconds);
+	}
+	
 	/**
 	 * Adds cpu time to specified feature and usage type
 	 * @param feature - feature to add time to

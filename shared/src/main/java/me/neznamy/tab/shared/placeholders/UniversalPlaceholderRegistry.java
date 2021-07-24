@@ -5,9 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
@@ -31,7 +34,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%worldonline%", 1000) {
 			public String get(TabPlayer p) {
 				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (String.valueOf(p.getWorld()).equals(all.getWorld())) count++;
 				}
 				return String.valueOf(count);
@@ -45,7 +48,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%serveronline%", 1000) {
 			public String get(TabPlayer p) {
 				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getPlayers()){
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (String.valueOf(p.getServer()).equals(all.getServer())) count++;
 				}
 				return String.valueOf(count);
@@ -57,13 +60,13 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		});
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
-		SimpleDateFormat timeFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
+		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		manager.registerServerPlaceholder(new ServerPlaceholder("%time%", 900) {
 			public String get() {
 				return timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
 		});
-		SimpleDateFormat dateFormat = TAB.getInstance().getErrorManager().createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
+		SimpleDateFormat dateFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		manager.registerServerPlaceholder(new ServerPlaceholder("%date%", 60000) {
 			public String get() {
 				return dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
@@ -98,6 +101,21 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		registerMemoryPlaceholders(manager);
 		registerAnimationPlaceholders(manager);
 		registerConditionPlaceholders(manager);
+	}
+	
+	/**
+	 * Evaluates inserted date format, returns default one and console error message if not valid
+	 * @param value - date format to evaluate
+	 * @param defaultValue - value to use if not valid
+	 * @return evaluated date format
+	 */
+	private SimpleDateFormat createDateFormat(String value, String defaultValue) {
+		try {
+			return new SimpleDateFormat(value, Locale.ENGLISH);
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
+			return new SimpleDateFormat(defaultValue);
+		}
 	}
 
 	/**

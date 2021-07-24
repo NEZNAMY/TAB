@@ -3,11 +3,12 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
  * Sets ping of all players in the packet to configured value to prevent hacked clients from seeing exact ping value of each player
@@ -46,11 +47,11 @@ public class PingSpoof extends TabFeature {
 	
 	private void updateAll(boolean realPing) {
 		List<PlayerInfoData> list = new ArrayList<>();
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			list.add(new PlayerInfoData(p.getUniqueId(), realPing ? (int) p.getPing() : 0));
 		}
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), getFeatureName());
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), this);
 		}
 	}
 }

@@ -60,7 +60,7 @@ public class SendBarCommand extends SubCommand {
 		if (b == null) return new ArrayList<>();
 		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {
-			return getPlayers(arguments[0]);
+			return getOnlinePlayers(arguments[0]);
 		} else if (arguments.length == 2) {
 			for (String bar : b.getRegisteredBossBars().keySet()) {
 				if (bar.toLowerCase().startsWith(arguments[1].toLowerCase())) suggestions.add(bar);

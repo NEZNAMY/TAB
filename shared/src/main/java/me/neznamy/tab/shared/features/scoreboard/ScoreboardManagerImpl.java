@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.TabFeature;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardObjective;
 
 /**
  * Feature handler for scoreboard feature
@@ -146,16 +146,16 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void load() {
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (isDisabled(p.getServer(), p.getWorld())) {
 				disabledPlayers.add(p);
 				return;
 			}
 			setScoreboardVisible(p, hiddenByDefault == sbOffPlayers.contains(p.getName()), false);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", getFeatureName(), UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", this, UsageType.REPEATING_TASK, () -> {
 
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
 					announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) continue;
 				Scoreboard board = activeScoreboard.get(p);
@@ -185,7 +185,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		}
 		if (joinDelay > 0) {
 			joinDelayed.add(connectedPlayer);
-			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, "processing player join", getFeatureName(), UsageType.PLAYER_JOIN_EVENT, () -> {
+			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, "processing player join", this, UsageType.PLAYER_JOIN_EVENT, () -> {
 				
 				if (!otherPluginScoreboard.containsKey(connectedPlayer)) setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
 				joinDelayed.remove(connectedPlayer);
@@ -298,7 +298,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
 			if (activeScoreboard.containsKey(receiver)) {
-				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureName(), UsageType.ANTI_OVERRIDE, () -> activeScoreboard.get(receiver).removePlayer(receiver));
+				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, UsageType.ANTI_OVERRIDE, () -> activeScoreboard.get(receiver).removePlayer(receiver));
 			}
 		}
 		return false;
@@ -309,7 +309,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			otherPluginScoreboard.remove(receiver);
-			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", getFeatureName(), UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));
 		}
 	}
 
@@ -424,14 +424,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			try {
 				announcement = sb;
 				Map<TabPlayer, Scoreboard> previous = new HashMap<>();
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasScoreboardVisible(all)) continue;
 					previous.put(all, activeScoreboard.get(all));
 					if (activeScoreboard.containsKey(all)) activeScoreboard.get(all).removePlayer(all);
 					sb.addPlayer(all);
 				}
 				Thread.sleep(duration*1000L);
-				for (TabPlayer all : TAB.getInstance().getPlayers()) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasScoreboardVisible(all)) continue;
 					sb.removePlayer(all);
 					if (previous.get(all) != null) previous.get(all).addPlayer(all);

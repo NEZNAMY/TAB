@@ -28,7 +28,7 @@ public class Animation {
 	public Animation(String name, List<String> list, int interval){
 		this.name = name;
 		this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
-		this.messages =  TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
+		this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
 	}
 	
 	/**

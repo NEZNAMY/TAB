@@ -124,7 +124,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			long time = System.nanoTime();
 			if (packet.getPlayers() == null) return;
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (TabPlayer p : TAB.getInstance().getPlayers()) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (col.contains(p.getName()) && !TAB.getInstance().getFeatureManager().getNameTagFeature().getDisabledPlayers().contains(p) && 
 						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
 					logTeamOverride(packet.getName(), p.getName());
@@ -143,14 +143,18 @@ public class BungeePipelineInjector extends PipelineInjector {
 		 */
 		private Object deserialize(ByteBuf buf) {
 			int marker = buf.readerIndex();
-			int packetId = buf.readByte();
-			for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
-				if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
-					DefinedPacket packet = e.getValue().get();
-					packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-					buf.release();
-					return packet;
+			try {
+				int packetId = buf.readByte();
+				for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
+					if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
+						DefinedPacket packet = e.getValue().get();
+						packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+						buf.release();
+						return packet;
+					}
 				}
+			} catch (Exception e) {
+				//OverflowPacketException someone got, no idea why
 			}
 			buf.readerIndex(marker);
 			return buf;

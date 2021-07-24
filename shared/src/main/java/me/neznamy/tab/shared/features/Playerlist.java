@@ -3,15 +3,16 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.shared.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 /**
  * Feature handler for tablist prefix/name/suffix
@@ -31,7 +32,7 @@ public class Playerlist extends TabFeature {
 
 	@Override
 	public void load(){
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				disabledPlayers.add(all);
 				updateProperties(all);
@@ -45,11 +46,11 @@ public class Playerlist extends TabFeature {
 	public void unload(){
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
-		for (TabPlayer p : TAB.getInstance().getPlayers()) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (!disabledPlayers.contains(p)) updatedPlayers.add(new PlayerInfoData(p.getTablistUUID()));
 		}
-		for (TabPlayer all : TAB.getInstance().getPlayers()) {
-			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), getFeatureName());
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), this);
 		}
 	}
 
@@ -65,9 +66,9 @@ public class Playerlist extends TabFeature {
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
-				for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
-					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())));
+					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())), this);
 				}
 			}
 		} else {
@@ -108,7 +109,7 @@ public class Playerlist extends TabFeature {
 			Property prefix = refreshed.getProperty(PropertyUtils.TABPREFIX);
 			Property name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME);
 			Property suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX);
-			for (TabPlayer viewer : TAB.getInstance().getPlayers()) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
 				String format;
 				AlignedSuffix alignedSuffix = (AlignedSuffix) TAB.getInstance().getFeatureManager().getFeature("alignedsuffix");
@@ -117,7 +118,7 @@ public class Playerlist extends TabFeature {
 				} else {
 					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 				}
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID(), IChatBaseComponent.optimizedComponent(format))), getFeatureName());
+				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(refreshed.getTablistUUID(), IChatBaseComponent.optimizedComponent(format))), this);
 			}
 		}
 	}
@@ -138,15 +139,15 @@ public class Playerlist extends TabFeature {
 			refresh(connectedPlayer, true);
 			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 			List<PlayerInfoData> list = new ArrayList<>();
-			for (TabPlayer all : TAB.getInstance().getPlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
 				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
 			}
-			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureName());
+			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureName(), UsageType.PLAYER_JOIN_EVENT, r);
+		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, UsageType.PLAYER_JOIN_EVENT, r);
 	}
 
 	@Override

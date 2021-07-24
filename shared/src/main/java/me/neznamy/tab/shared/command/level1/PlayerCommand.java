@@ -80,7 +80,7 @@ public class PlayerCommand extends PropertyCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (arguments.length == 1) return getPlayers(arguments[0]);
+		if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
 		return super.complete(sender, arguments);
 	}
 }

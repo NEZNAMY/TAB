@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
-import me.neznamy.tab.shared.packets.PacketPlayOutScoreboardTeam;
 
 /**
  * Fully customizable line, to use this class user must follow the following formula in a line
@@ -56,7 +56,7 @@ public class CustomLine extends ScoreboardLine {
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
-						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 0), getFeatureName());
+						refreshed.getProperty(teamName + "-suffix").get(), "always", "always", 0), this);
 			}
 		}
 	}

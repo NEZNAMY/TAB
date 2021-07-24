@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.rgb.RGBUtils;
 
 public abstract class StaticLine extends ScoreboardLine {
 

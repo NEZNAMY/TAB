@@ -13,6 +13,7 @@
 		<module>bungeecord</module>
 		<module>velocity</module>
 		<module>jar</module>
+		<module>api</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -71,6 +71,11 @@
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
+			<artifactId>api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>me.neznamy</groupId>
 			<artifactId>velocity-1.1.0</artifactId>
 			<version>${project.version}</version>
 		</dependency>

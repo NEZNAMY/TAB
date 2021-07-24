@@ -8,9 +8,9 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.PacketPlayOutBoss;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
  */
 public class BossBarLine implements BossBar {
 
-	private static final String FEATURE_TYPE = "Bossbar";
+	private BossBarManagerImpl manager;
 	
 	//bossbar name
 	private String name;
@@ -51,6 +51,7 @@ public class BossBarLine implements BossBar {
 
 	/**
 	 * Constructs new instance with given parameters
+	 * @param manager - bossbar manager to count sent packets for
 	 * @param name - name of bossbar
 	 * @param displayCondition - display condition
 	 * @param color - bossbar color
@@ -58,7 +59,8 @@ public class BossBarLine implements BossBar {
 	 * @param title - bossbar title
 	 * @param progress - bossbar progress
 	 */
-	public BossBarLine(String name, String displayCondition, String color, String style, String title, String progress) {
+	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress) {
+		this.manager = manager;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.uuid = UUID.randomUUID();
@@ -126,7 +128,7 @@ public class BossBarLine implements BossBar {
 		this.title = title;
 		for (TabPlayer p : players) {
 			p.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), FEATURE_TYPE);
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), manager);
 		}
 	}
 
@@ -135,7 +137,7 @@ public class BossBarLine implements BossBar {
 		this.progress = progress;
 		for (TabPlayer p : players) {
 			p.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), FEATURE_TYPE);
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), manager);
 		}
 	}
 
@@ -152,7 +154,7 @@ public class BossBarLine implements BossBar {
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), FEATURE_TYPE);
+			), manager);
 		}
 	}
 
@@ -169,7 +171,7 @@ public class BossBarLine implements BossBar {
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
 				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
 				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), FEATURE_TYPE);
+			), manager);
 		}
 	}
 
@@ -212,7 +214,7 @@ public class BossBarLine implements BossBar {
 				parseProgress(player.getProperty(PropertyUtils.bossbarProgress(name)).get())/100, 
 				parseColor(player.getProperty(PropertyUtils.bossbarColor(name)).get()), 
 				parseStyle(player.getProperty(PropertyUtils.bossbarStyle(name)).get())
-			), FEATURE_TYPE
+			), manager
 		);
 	}
 
@@ -220,7 +222,7 @@ public class BossBarLine implements BossBar {
 	public void removePlayer(TabPlayer player) {
 		if (!players.contains(player)) return;
 		players.remove(player);
-		player.sendCustomPacket(new PacketPlayOutBoss(uuid), FEATURE_TYPE);
+		player.sendCustomPacket(new PacketPlayOutBoss(uuid), manager);
 	}
 
 	@Override

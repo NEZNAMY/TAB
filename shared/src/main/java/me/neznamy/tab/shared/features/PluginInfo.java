@@ -1,10 +1,11 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.packets.EnumChatFormat;
-import me.neznamy.tab.shared.packets.IChatBaseComponent;
-import me.neznamy.tab.shared.rgb.TextColor;
 
 /*
  * Sends plugin info to command sender

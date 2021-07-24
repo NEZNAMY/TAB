@@ -329,7 +329,12 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 9) {
 			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-			methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("setCollisionRule", getClass("EnumTeamPush")));
+			try {
+				methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("setCollisionRule", getClass("EnumTeamPush")));
+			} catch (NoSuchMethodException e) {
+				//v1_9_R1
+				methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("a", getClass("EnumTeamPush")));
+			}
 		}
 		if (minorVersion >= 13) {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
