@@ -145,14 +145,18 @@ public class BungeePipelineInjector extends PipelineInjector {
 		 */
 		private Object deserialize(ByteBuf buf) {
 			int marker = buf.readerIndex();
-			int packetId = buf.readByte();
-			for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
-				if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
-					DefinedPacket packet = e.getValue().get();
-					packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-					buf.release();
-					return packet;
+			try {
+				int packetId = buf.readByte();
+				for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
+					if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
+						DefinedPacket packet = e.getValue().get();
+						packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+						buf.release();
+						return packet;
+					}
 				}
+			} catch (Exception e) {
+				//OverflowPacketException someone got, no idea why
 			}
 			buf.readerIndex(marker);
 			return buf;
