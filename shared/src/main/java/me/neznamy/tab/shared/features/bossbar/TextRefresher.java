@@ -17,7 +17,7 @@ public class TextRefresher extends TabFeature {
 	 * @param line - bossbar line this text belongs to
 	 */
 	public TextRefresher(BossBarLine line) {
-		super("Bossbar");
+		super("BossBar");
 		this.line = line;
 	}
 	

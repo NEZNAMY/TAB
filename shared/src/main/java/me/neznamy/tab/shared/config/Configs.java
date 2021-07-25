@@ -42,7 +42,6 @@ public class Configs {
 	private boolean unregisterBeforeRegister;
 	private boolean armorStandsAlwaysVisible; //paid private addition
 	private boolean removeGhostPlayers;
-	private boolean layout;
 	private boolean pipelineInjection;
 
 	//animations.yml file
@@ -56,6 +55,8 @@ public class Configs {
 
 	//playerdata.yml, used for bossbar & scoreboard toggle saving
 	private ConfigurationFile playerdata;
+	
+	private ConfigurationFile layout;
 	
 	private PropertyConfiguration groups;
 	
@@ -87,6 +88,7 @@ public class Configs {
 			TAB.getInstance().print('2', "Converted animations.yml to new format.");
 		}
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
+		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
 		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
 	}
 
@@ -95,7 +97,6 @@ public class Configs {
 	 * @throws IOException 
 	 * @throws YAMLException 
 	 */
-	@SuppressWarnings("unchecked")
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		removeStrings = new ArrayList<>();
@@ -106,7 +107,6 @@ public class Configs {
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
-		layout = (boolean) getSecretOption("layout", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true);
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
@@ -126,8 +126,11 @@ public class Configs {
 			groups = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
 			users = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
 		}
-
-		//checking for unnecessary copypaste in config
+		hintDefaultProperties();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void hintDefaultProperties() {
 		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
 		if (groups.size() < 2) return;
 		Map<Object, Object> sharedProperties = new HashMap<>(getConfig().getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
@@ -142,7 +145,7 @@ public class Configs {
 			}
 		}
 		for (Object property : sharedProperties.keySet()) {
-			tab.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _OTHER_ for cleaner and smaller config.");
+			tab.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _DEFAULT_ for cleaner and smaller config.");
 		}
 	}
 
@@ -235,7 +238,7 @@ public class Configs {
 		return removeGhostPlayers;
 	}
 
-	public boolean isLayout() {
+	public ConfigurationFile getLayout() {
 		return layout;
 	}
 

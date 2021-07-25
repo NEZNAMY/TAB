@@ -17,7 +17,7 @@ public class ProgressRefresher extends TabFeature {
 	 * @param line - bossbar line this text belongs to
 	 */
 	public ProgressRefresher(BossBarLine line) {
-		super("Bossbar");
+		super("BossBar");
 		this.line = line;
 	}
 	

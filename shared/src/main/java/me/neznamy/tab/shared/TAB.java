@@ -186,7 +186,7 @@ public class TAB extends TabAPI {
 		tab.getFeatureManager().registerFeature("group", new GroupRefresher());
 		tab.getFeatureManager().registerFeature("info", new PluginInfo());
 		new UpdateChecker(tab);
-		if (tab.getConfiguration().isLayout()) tab.getFeatureManager().registerFeature("layout", new Layout());
+		if (tab.getConfiguration().getLayout().getBoolean("enabled", false)) tab.getFeatureManager().registerFeature("layout", new Layout());
 	}
 
 	public void addPlayer(TabPlayer player) {

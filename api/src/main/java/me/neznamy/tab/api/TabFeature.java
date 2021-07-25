@@ -17,12 +17,29 @@ public abstract class TabFeature {
 	protected List<String> disabledWorlds;
 	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
 	
+	private boolean onPacketSendDisplayOverride;
+	private boolean onPacketSendObjectiveOverride;
+	private boolean onPacketSendInfoOverride;
+	private boolean onPacketSendOverride;
+	private boolean onPacketReceiveOverride;
+	private boolean onCommandOverride;
+	
 	protected TabFeature(String featureName) {
 		this.featureName = featureName;
+		try {
+			onPacketSendDisplayOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendObjectiveOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendInfoOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendOverride = getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
+			onPacketReceiveOverride = getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
+			onCommandOverride = getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class;
+		} catch (Exception e) {
+			TabAPI.getInstance().getErrorManager().criticalError("Failed to load feature method overrides", e);
+		}
 	}
 	
 	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
-		this.featureName = featureName;
+		this(featureName);
 		this.disabledServers = disabledServers;
 		this.disabledWorlds = disabledWorlds;
 	}
@@ -30,12 +47,16 @@ public abstract class TabFeature {
 	/**
 	 * Loads all players and sends packets
 	 */
-	public void load() {}
+	public void load() {
+		//empty by default
+	}
 	
 	/**
 	 * Unloads all players and sends clear packets
 	 */
-	public void unload() {}
+	public void unload() {
+		//empty by default
+	}
 	
 	/**
 	 * Processes command from player
@@ -43,13 +64,17 @@ public abstract class TabFeature {
 	 * @param message - command line
 	 * @return true if event should be cancelled, false if not
 	 */
-	public boolean onCommand(TabPlayer sender, String message) {return false;}
+	public boolean onCommand(TabPlayer sender, String message) {
+		return false;
+	}
 	
 	/**
 	 * Processes join event
 	 * @param connectedPlayer - player who connected
 	 */
-	public void onJoin(TabPlayer connectedPlayer) {}
+	public void onJoin(TabPlayer connectedPlayer) {
+		//empty by default
+	}
 	
 	/**
 	 * Processes quit event
@@ -65,7 +90,9 @@ public abstract class TabFeature {
 	 * @param from - world player changed from
 	 * @param to - world player changed to
 	 */
-	public void onWorldChange(TabPlayer changed, String from, String to) {}
+	public void onWorldChange(TabPlayer changed, String from, String to) {
+		//empty by default
+	}
 	
 	/**
 	 * Processes server switch
@@ -83,27 +110,35 @@ public abstract class TabFeature {
 	 * @param packet - received packet
 	 * @return true if packet should be cancelled, false if not
 	 */
-	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {return false;}
+	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		return false;
+	}
 	
 	/**
 	 * Processes login packet, only available on bungeecord
 	 * @param packetReceiver - player receiving client reset packet
 	 */
-	public void onLoginPacket(TabPlayer packetReceiver) {}
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		//empty by default
+	}
 	
 	/**
 	 * Processes the packet send
 	 * @param receiver - player receiving packet
 	 * @param packet - received packet
 	 */
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {}
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
+		//empty by default
+	}
 	
 	/**
 	 * Processes the packet send and possibly modifies it
 	 * @param receiver - player receiving packet
 	 * @param packet - received packet
 	 */
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {}
+	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+		//empty by default
+	}
 	
 	/**
 	 * Processes raw packet sent by client
@@ -113,7 +148,9 @@ public abstract class TabFeature {
 	 * @throws IllegalAccessException 
 	 * @throws ClassNotFoundException 
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {return packet;}
+	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+		return packet;
+	}
 	
 	/**
 	 * Processes raw packet sent to client
@@ -125,14 +162,18 @@ public abstract class TabFeature {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {}
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+		//empty by default
+	}
 
 	/**
 	 * Performs refresh of specified player
 	 * @param refreshed - player to refresh
 	 * @param force - if refresh should be forced despite refresh seemingly not needed
 	 */
-	public void refresh(TabPlayer refreshed, boolean force) {}
+	public void refresh(TabPlayer refreshed, boolean force) {
+		//empty by default
+	}
 
 	/**
 	 * Registers this feature as one using specified placeholders
@@ -180,5 +221,29 @@ public abstract class TabFeature {
 	 */
 	public String getFeatureName() {
 		return featureName;
+	}
+
+	public boolean isOnPacketSendDisplayOverride() {
+		return onPacketSendDisplayOverride;
+	}
+
+	public boolean isOnPacketSendInfoOverride() {
+		return onPacketSendInfoOverride;
+	}
+
+	public boolean isOnPacketSendObjectiveOverride() {
+		return onPacketSendObjectiveOverride;
+	}
+
+	public boolean isOnCommandOverride() {
+		return onCommandOverride;
+	}
+
+	public boolean isOnPacketReceiveOverride() {
+		return onPacketReceiveOverride;
+	}
+
+	public boolean isOnPacketSendOverride() {
+		return onPacketSendOverride;
 	}
 }

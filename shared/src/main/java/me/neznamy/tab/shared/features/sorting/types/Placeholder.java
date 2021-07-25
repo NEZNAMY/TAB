@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -19,20 +17,8 @@ public class Placeholder extends SortingType {
 	 * Constructs new instance with given parameter
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
-	public Placeholder(String sortingPlaceholder) {
-		super(sortingPlaceholder);
-		sortingMap = new LinkedHashMap<>();
-		int index = 1;
-		List<String> values = TAB.getInstance().getConfiguration().getConfig().getStringList("placeholder-order", Arrays.asList("value1", "value2"));
-		int charCount = String.valueOf(values.size()).length(); //1 char for <10 values, 2 chars for <100 etc
-		for (Object value : values){
-			String sort = String.valueOf(index);
-			while (sort.length() < charCount) { 
-				sort = "0" + sort;
-			}
-			sortingMap.put(value.toString().replace('&', '\u00a7'), sort);
-			index++;
-		}
+	public Placeholder(String options) {
+		sortingMap = convertSortingElements(options.split(","));
 	}
 
 	@Override

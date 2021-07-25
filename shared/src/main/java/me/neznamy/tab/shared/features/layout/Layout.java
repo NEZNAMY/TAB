@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,15 +7,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -35,28 +33,22 @@ public class Layout extends TabFeature {
 
 	public Layout() {
 		super("Tablist layout");
-		try {
-			new File(TAB.getInstance().getPlatform().getDataFolder() + File.separator + "layout").mkdirs();
-			ConfigurationFile file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout/default.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "layout" + File.separator + "default.yml"));
-			direction = parseDirection(file.getString("direction", "COLUMNS"));
-			for (int i=1; i<=80; i++) {
-				fixedSlots.put(i, new FixedSlot(i, "", null));
-				uuids.put(i, UUID.randomUUID());
-			}
-			for (String fixedSlot : file.getStringList("fixed-slots")) {
-				String[] array = fixedSlot.split(":");
-				int slot = Integer.parseInt(array[0]);
-				String text = array[1];
-				String skin = null;
-				if (array.length == 3) {
-					skin = array[2];
-				}
-				fixedSlots.put(slot, new FixedSlot(slot, text, skin));
-			}
-			loadGroups(file);
-		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to load layout feature", e);
+		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
+		for (int slot=1; slot<=80; slot++) {
+			fixedSlots.put(slot, new FixedSlot(slot, ""));
+			uuids.put(slot, UUID.randomUUID());
 		}
+		for (String fixedSlot : TAB.getInstance().getConfiguration().getLayout().getStringList("fixed-slots")) {
+			String[] array = fixedSlot.split(":");
+			int slot = Integer.parseInt(array[0]);
+			String text = array[1];
+			fixedSlots.put(slot, new FixedSlot(slot, text));
+		}
+		for (Entry<Integer, FixedSlot> entry : fixedSlots.entrySet()) {
+			if (entry.getValue().getText().length() > 0) 
+				TAB.getInstance().getFeatureManager().registerFeature("layout-slot-" + entry.getKey(), entry.getValue());
+		}
+		loadGroups(TAB.getInstance().getConfiguration().getLayout());
 	}
 	
 	private LayoutDirection parseDirection(String value) {
@@ -101,11 +93,7 @@ public class Layout extends TabFeature {
 		Map<Integer, IChatBaseComponent> result = new HashMap<>();
 
 		for (int i=1; i<=80; i++) {
-			result.put(i, new IChatBaseComponent(""));
-		}
-
-		for (FixedSlot fixed : fixedSlots.values()) {
-			result.put(fixed.getSlot(), IChatBaseComponent.optimizedComponent(fixed.getText(viewer)));
+			if (fixedSlots.get(i).getText().length() == 0) result.put(i, new IChatBaseComponent(""));
 		}
 
 		for (ParentGroup parent : parentGroups) {
@@ -124,7 +112,7 @@ public class Layout extends TabFeature {
 	private List<TabPlayer> sortPlayers(Collection<TabPlayer> players){
 		Map<TabPlayer, String> teamMap = new HashMap<>();
 		for (TabPlayer p : players) {
-			teamMap.put(p, p.getTeamName());
+			teamMap.put(p, String.valueOf(p.getTeamName()));
 		}
 		teamMap = sortByValue(teamMap);
 		return new ArrayList<>(teamMap.keySet());
@@ -144,12 +132,9 @@ public class Layout extends TabFeature {
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		List<PlayerInfoData> list = new ArrayList<>();
-		for (FixedSlot s : fixedSlots.values()) {
-			s.onJoin(connectedPlayer);
-		}
 		for (Entry<Integer, IChatBaseComponent> entry : doTick(connectedPlayer, sortPlayers(TAB.getInstance().getOnlinePlayers())).entrySet()) {
 			int slot = translateSlot(entry.getKey());
-			list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
+			list.add(new PlayerInfoData((char)1 + String.format("SLOT%02d", slot), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 		}
 		connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 	}
@@ -180,12 +165,9 @@ public class Layout extends TabFeature {
 		List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			List<PlayerInfoData> list = new ArrayList<>();
-			for (FixedSlot s : fixedSlots.values()) {
-				s.onJoin(p);
-			}
 			for (Entry<Integer, IChatBaseComponent> entry : doTick(p, new ArrayList<>(players)).entrySet()) {
 				int slot = translateSlot(entry.getKey());
-				list.add(new PlayerInfoData((char)1 + "SLOT-" + (slot < 10 ? "0" + slot : String.valueOf(slot)), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
+				list.add(new PlayerInfoData((char)1 + String.format("SLOT%02d", slot), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, entry.getValue()));
 			}
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 		}

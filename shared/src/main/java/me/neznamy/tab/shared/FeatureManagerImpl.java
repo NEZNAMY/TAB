@@ -102,6 +102,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnPacketSendInfoOverride()) continue;
 			time = System.nanoTime();
 			f.onPacketSend(receiver, info);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
@@ -199,6 +200,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		if (sender == null) return false;
 		boolean cancel = false;
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnCommandOverride()) continue;
 			long time = System.nanoTime();
 			if (f.onCommand(sender, command)) cancel = true;
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.COMMAND_PREPROCESS, System.nanoTime()-time);
@@ -216,6 +218,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	public Object onPacketReceive(TabPlayer receiver, Object packet){
 		Object newPacket = packet;
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnPacketReceiveOverride()) continue;
 			long time = System.nanoTime();
 			try {
 				if (newPacket != null) newPacket = f.onPacketReceive(receiver, newPacket);
@@ -235,6 +238,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onPacketSend(TabPlayer receiver, Object packet){
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnPacketSendOverride()) continue;
 			long time = System.nanoTime();
 			try {
 				f.onPacketSend(receiver, packet);
@@ -269,6 +273,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnPacketSendDisplayOverride()) continue;
 			time = System.nanoTime();
 			boolean cancel = f.onPacketSend(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
@@ -287,6 +292,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : getAllFeatures()) {
+			if (!f.isOnPacketSendObjectiveOverride()) continue;
 			time = System.nanoTime();
 			f.onPacketSend(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);

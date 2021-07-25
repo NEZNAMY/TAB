@@ -359,7 +359,6 @@ public abstract class ConfigurationFile {
 	public void fixHeader() {
 		if (header == null) return;
 		try {
-			;
 			List<String> content = new ArrayList<>(header);
 			content.addAll(Files.readAllLines(file.toPath()));
 			Files.delete(file.toPath());

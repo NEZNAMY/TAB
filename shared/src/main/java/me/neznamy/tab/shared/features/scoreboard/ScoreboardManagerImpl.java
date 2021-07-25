@@ -30,9 +30,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//toggle command
 	private String toggleCommand;
 	
-	//list of disabled worlds/servers
-	private List<String> disabledWorlds;
-	
 	//default scoreboard
 	private String defaultScoreboard;
 	

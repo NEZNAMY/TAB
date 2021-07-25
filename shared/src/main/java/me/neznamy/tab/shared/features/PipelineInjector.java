@@ -31,7 +31,8 @@ public abstract class PipelineInjector extends TabFeature {
 	 */
 	protected PipelineInjector() {
 		super("Pipeline injection");
-		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
+		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
+				TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	}
 	
 	/**

@@ -19,8 +19,6 @@ import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.packet.Login;
-import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
@@ -82,29 +80,32 @@ public class BungeePipelineInjector extends PipelineInjector {
 			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
 			TAB.getInstance().getCPUManager().addTime("Packet deserializing", UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 			try {
-				if (modifiedPacket instanceof PlayerListItem) {
+				switch(modifiedPacket.getClass().getSimpleName()) {
+				case "PlayerListItem":
 					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, modifiedPacket), channelPromise);
 					return;
-				}
-				if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametag16") && antiOverrideTeams) {
-					time = System.nanoTime();
-					if (modifiedPacket instanceof Team) {
+				case "Team":
+					if (antiOverrideTeams) {
+						time = System.nanoTime();
 						modifyPlayers((Team) modifiedPacket);
+						TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					}
-					TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
-				}
-				if (modifiedPacket instanceof ScoreboardDisplay && TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
-					return;
-				}
-				if (modifiedPacket instanceof ScoreboardObjective) {
+					break;
+				case "ScoreboardDisplay":
+					if (TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
+						return;
+					}
+					break;
+				case "ScoreboardObjective":
 					TAB.getInstance().getFeatureManager().onObjective(player, modifiedPacket);
-				}
-				//client reset packet
-				if (modifiedPacket instanceof Login) {
+					break;
+				case "Login":
 					//making sure to not send own packets before login packet is actually sent
 					super.write(context, modifiedPacket, channelPromise);
 					TAB.getInstance().getFeatureManager().onLoginPacket(player);
 					return;
+				default:
+					break;
 				}
 			} catch (Throwable e){
 				TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
