@@ -89,8 +89,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		long time = System.nanoTime();
 		if (nmsPacket == null || !player.isOnline()) return;
+		long time = System.nanoTime();
 		try {
 			if (nmsPacket instanceof ByteBuf && ((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled()) {
 				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);

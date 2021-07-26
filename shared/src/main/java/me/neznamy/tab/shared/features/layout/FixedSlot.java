@@ -13,13 +13,15 @@ import me.neznamy.tab.shared.TAB;
 
 public class FixedSlot extends TabFeature {
 
+	private Layout layout;
 	private UUID id;
 	private int slot;
 	private String text;
 
-	public FixedSlot(int slot, String text) {
+	public FixedSlot(Layout layout, UUID id, int slot, String text) {
 		super("Tablist layout");
-		this.id = UUID.randomUUID();
+		this.layout = layout;
+		this.id = id;
 		this.slot = slot;
 		this.text = text;
 	}
@@ -36,14 +38,14 @@ public class FixedSlot extends TabFeature {
 	@Override
 	public void onJoin(TabPlayer p) {
 		p.setProperty(this, "SLOT-" + slot, text);
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData((char)1 + String.format("SLOT%02d", slot), id, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty("SLOT-" + slot).get()))), this);
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(layout.formatSlot(slot), id, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty("SLOT-" + slot).get()))), this);
 	}	
 
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, IChatBaseComponent.optimizedComponent(p.getProperty("SLOT-" + slot).updateAndGet()))), this);
 	}
-	
+
 	@Override
 	public void unload() {
 		TAB.getInstance().getOnlinePlayers().forEach(p -> p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id)), this));

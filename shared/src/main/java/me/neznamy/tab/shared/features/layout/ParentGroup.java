@@ -6,54 +6,36 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.PropertyImpl;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
 
 	private Condition condition;
-	private List<Integer> slots;
-	private List<ChildGroup> childGroups;
-	
-	public ParentGroup(Condition condition, List<Integer> slots, List<ChildGroup> childGroups) {
+	private int[] slots;
+	private Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
+
+	public ParentGroup(Layout layout, Condition condition, int[] slots) {
 		this.condition = condition;
 		this.slots = slots;
-		this.childGroups = childGroups;
-	}
-	
-	public Map<Integer, IChatBaseComponent> createLayout(TabPlayer viewer, List<TabPlayer> playersMeetingCondition){
-		List<IChatBaseComponent> texts = new ArrayList<>();
-		for (ChildGroup child : childGroups) {
-			List<TabPlayer> selected = child.selectPlayers(playersMeetingCondition);
-			if (child.getTitle() != null) {
-				String[] title = child.getTitle().split("\\n");
-				for (String line : title) {
-					texts.add(IChatBaseComponent.optimizedComponent(new PropertyImpl(TAB.getInstance().getFeatureManager().getFeature("layout"), viewer, line).get()));
-				}
-			}
-			for (TabPlayer selectedPlayer : selected) {
-				texts.add(((Playerlist)TAB.getInstance().getFeatureManager().getFeature("playerlist")).getTabFormat(selectedPlayer, viewer));
-			}
-			playersMeetingCondition.removeAll(selected);
+		for (int slot : slots) {
+			playerSlots.put(slot, new PlayerSlot(layout, layout.uuids.get(slot), slot));
 		}
-		
-		Map<Integer, IChatBaseComponent> map = new HashMap<>();
+	}
+
+	public void tick(TabPlayer viewer, List<TabPlayer> remainingPlayers){
 		int index = 0;
-		for (Integer slot : slots) {
-			if (texts.size() > index) {
-				map.put(slot, texts.get(index));
-			} else {
-				map.put(slot, new IChatBaseComponent(""));
-			}
-			index++;
+		for (TabPlayer p : new ArrayList<>(remainingPlayers)) {
+			if (index == slots.length || (condition != null && !condition.isMet(p))) continue;
+			int slot = slots[index++];
+			playerSlots.get(slot).setPlayer(p);
+			remainingPlayers.remove(p);
 		}
-		return map;
+		while (index < slots.length) {
+			playerSlots.get(slots[index++]).setPlayer(null);
+		}
 	}
 	
-	public Condition getCondition() {
-		return condition;
+	public void onJoin(TabPlayer p) {
+		playerSlots.values().forEach(s -> s.onJoin(p));
 	}
 }

@@ -61,7 +61,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		});
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
 		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
-		manager.registerServerPlaceholder(new ServerPlaceholder("%time%", 900) {
+		manager.registerServerPlaceholder(new ServerPlaceholder("%time%", 500) {
 			public String get() {
 				return timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
 			}
