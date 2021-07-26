@@ -68,18 +68,18 @@ public class PetFix extends TabFeature {
 	 * @throws IllegalAccessException 
 	 */
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
 		if (nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
-				return null;
+				return true;
 			}
 			if (isInteract(nms.getField("PacketPlayInUseEntity_ACTION").get(packet))) {
 				//this is the first packet, saving player so the next packet can be cancelled
 				lastInteractFix.put(sender.getName(), System.currentTimeMillis());
 			}
 		}
-		return packet;
+		return false;
 	}
 	
 	private boolean isInteract(Object action) {

@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.base.Preconditions;
-
 import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.TabFeature;
 
@@ -109,10 +107,6 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runMeasuredTask(String errorDescription, TabFeature feature, UsageType type, Runnable task) {
-		Preconditions.checkNotNull(errorDescription, "errorDescription");
-		Preconditions.checkNotNull(feature, "feature");
-		Preconditions.checkNotNull(type, "type");
-		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -126,8 +120,6 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTask(String errorDescription, Runnable task) {
-		Preconditions.checkNotNull(errorDescription, "errorDescription");
-		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, task);
 	}
 
@@ -152,11 +144,6 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
-		Preconditions.checkArgument(intervalMilliseconds > 0, "intervalMilliseconds must be > 0");
-		Preconditions.checkNotNull(errorDescription, "errorDescription");
-		Preconditions.checkNotNull(feature, "feature");
-		Preconditions.checkNotNull(type, "type");
-		Preconditions.checkNotNull(task, "task");
 		if (intervalMilliseconds <= 0) return;
 		submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
@@ -200,11 +187,6 @@ public class CPUManager {
 	 * @param task - the task
 	 */
 	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
-		Preconditions.checkArgument(delayMilliseconds > 0, "delayMilliseconds must be > 0");
-		Preconditions.checkNotNull(errorDescription, "errorDescription");
-		Preconditions.checkNotNull(feature, "feature");
-		Preconditions.checkNotNull(type, "type");
-		Preconditions.checkNotNull(task, "task");
 		submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -408,8 +390,6 @@ public class CPUManager {
 	 * @param nanoseconds - time to add
 	 */
 	public void addTime(String feature, UsageType type, long nanoseconds) {
-		Preconditions.checkNotNull(feature, "feature");
-		Preconditions.checkNotNull(type, "type");
 		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
 

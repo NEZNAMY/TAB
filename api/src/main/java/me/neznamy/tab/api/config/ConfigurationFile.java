@@ -208,23 +208,7 @@ public abstract class ConfigurationFile {
 			return defaultValue;
 		}
 	}
-	
-	/**
-	 * Returns config option with specified path or null if not present
-	 * @param path - path to the value
-	 * @return value from file or null if not present
-	 */
-	public Boolean getBoolean(String path) {
-		Object value = getObject(path, null);
-		if (value == null) return null;
-		try {
-			return Boolean.parseBoolean(value.toString());
-		} catch (Exception e) {
-			dataMismatch(path, Boolean.class, value.getClass());
-			return null;
-		}
-	}
-	
+
 	/**
 	 * Gets config option with specified path. If the option is not present and defaultValue is not null,
 	 * value is inserted, save() called and defaultValue returned.

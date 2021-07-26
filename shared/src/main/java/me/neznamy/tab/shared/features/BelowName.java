@@ -119,7 +119,7 @@ public class BelowName extends TabFeature {
 	}
 
 	@Override
-	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (disabledPlayers.contains(receiver) || !antiOverride) return false;
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (belowname)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());

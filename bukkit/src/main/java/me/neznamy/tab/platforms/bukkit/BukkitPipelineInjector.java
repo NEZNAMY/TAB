@@ -73,8 +73,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@Override
 		public void channelRead(ChannelHandlerContext context, Object packet) {
 			try {
-				Object modifiedPacket = TAB.getInstance().getFeatureManager().onPacketReceive(player, packet);
-				if (modifiedPacket != null) super.channelRead(context, modifiedPacket);
+				if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
+				super.channelRead(context, packet);
 			} catch (Exception e){
 				TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
 			}

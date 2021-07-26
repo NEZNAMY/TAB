@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.ScoreboardTeamManager;
 
@@ -85,4 +86,6 @@ public abstract class TabAPI {
 	public abstract FeatureManager getFeatureManager();
 
 	public abstract void setBrokenFile(String path);
+
+	public abstract ConfigurationFile getConfig();
 }

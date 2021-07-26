@@ -108,13 +108,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 */
 	private BossBarLine loadFromConfig(String bar) {
 		String condition = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".display-condition", null);
-		if (condition == null) {
-			Object permRequired = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.bars." + bar + ".permission-required");
-			if (permRequired != null && (boolean) permRequired) {
-				condition = "permission:TAB.getInstance().bossbar." + bar;
-			}
-		}
-		
 		String style = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".style");
 		String color = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".color");
 		String progress = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".progress");

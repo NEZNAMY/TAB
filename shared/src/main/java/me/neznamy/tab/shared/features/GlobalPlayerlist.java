@@ -163,7 +163,7 @@ public class GlobalPlayerlist extends TabFeature {
 	}
 
 	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
 				//not preventing NPC removals

@@ -13,7 +13,7 @@ public class BukkitTABLoadEvent extends Event {
 
 	@Override
 	public HandlerList getHandlers(){
-		return handlers;
+		return getHandlerList();
 	}
 	
 	public static HandlerList getHandlerList() {

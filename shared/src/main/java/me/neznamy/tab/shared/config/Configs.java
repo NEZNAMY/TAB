@@ -9,12 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -117,36 +113,13 @@ public class Configs {
 						config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
 				groupFile = new MySQLGroupConfiguration(mysql);
 				userFile = new MySQLUserConfiguration(mysql);
+				return;
 			} catch (SQLException e) {
 				TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
-				groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-				userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
-			}
-		} else {
-			groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-			userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
-		}
-		hintDefaultProperties();
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void hintDefaultProperties() {
-		Set<String> groups = getConfig().getValues().keySet();
-		if (groups.size() < 2) return;
-		Map<Object, Object> sharedProperties = new HashMap<>(getConfig().getConfigurationSection(groups.toArray(new String[0])[0])); //cloning to not delete from original one
-		for (Object groupSettings : getConfig().getConfigurationSection("Groups").values()) {
-			if (!(groupSettings instanceof Map)) continue;
-			Map<String, Object> group = (Map<String, Object>) groupSettings;
-			for (Entry<Object, Object> sharedProperty : new HashSet<>(sharedProperties.entrySet())) {
-				String property = sharedProperty.getKey().toString();
-				if (!group.containsKey(property) || !String.valueOf(group.get(property)).equals(sharedProperty.getValue())) {
-					sharedProperties.remove(property);
-				}
 			}
 		}
-		for (Object property : sharedProperties.keySet()) {
-			tab.print('9', "Hint: All of your groups have the same value of \"&d" + property + "&9\" set. Delete it from all groups and add it only to _DEFAULT_ for cleaner and smaller config.");
-		}
+		groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+		userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
 	}
 
 	/**

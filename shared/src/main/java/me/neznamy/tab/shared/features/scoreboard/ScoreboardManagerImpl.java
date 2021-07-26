@@ -290,7 +290,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
@@ -302,7 +302,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
+	public void onObjective(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
 		if (packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			otherPluginScoreboard.remove(receiver);

@@ -61,15 +61,18 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 	}
 
 	@Override
-	public String getProperty(String user, String property, String server, String world) {
-		String value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property);
-		if (value == null) {
-			value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property);
+	public String[] getProperty(String user, String property, String server, String world) {
+		String value = null;
+		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, "user=" + user + ",server=" + server};
 		}
-		if (value == null) {
-			value = values.getOrDefault(user, new HashMap<>()).get(property);
+		if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, "user=" + user + ",world=" + world};
 		}
-		return value;
+		if ((value = values.getOrDefault(user, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, "user=" + user};
+		}
+		return null;
 	}
 
 	@Override

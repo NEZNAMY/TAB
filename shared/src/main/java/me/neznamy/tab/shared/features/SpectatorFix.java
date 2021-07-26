@@ -27,7 +27,7 @@ public class SpectatorFix extends TabFeature {
 	}
 	
 	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (receiver.hasPermission("tab.spectatorbypass")) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {

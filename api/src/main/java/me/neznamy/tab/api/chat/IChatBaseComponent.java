@@ -65,6 +65,25 @@ public class IChatBaseComponent {
 	 */
 	public IChatBaseComponent() {
 	}
+	
+	/**
+	 * Constructs a new component which is a clone of provided component
+	 * @param component - component to clone
+	 */
+	public IChatBaseComponent(IChatBaseComponent component) {
+		setText(component.text);
+		setBold(component.bold);
+		setColor(component.color);
+		setItalic(component.italic);
+		setObfuscated(component.obfuscated);
+		setStrikethrough(component.strikethrough);
+		setUnderlined(component.underlined);
+		if (component.hoverAction != null) onHover(component.hoverAction, component.hoverValue);
+		if (component.clickAction != null) onClick(component.clickAction, component.clickValue);
+		for (IChatBaseComponent child : component.getExtra()) {
+			addExtra(child);
+		}
+	}
 
 	/**
 	 * Constructs new instance with given text
@@ -741,27 +760,7 @@ public class IChatBaseComponent {
 		if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 	}
-
-	/**
-	 * Creates a complete clone of this component and returns it
-	 * @return a clone identical to current component
-	 */
-	public IChatBaseComponent clone() {
-		IChatBaseComponent component = new IChatBaseComponent(text);
-		component.setBold(bold);
-		component.setColor(color);
-		component.setItalic(italic);
-		component.setObfuscated(obfuscated);
-		component.setStrikethrough(strikethrough);
-		component.setUnderlined(underlined);
-		if (hoverAction != null) component.onHover(hoverAction, hoverValue);
-		if (clickAction != null) component.onClick(clickAction, clickValue);
-		for (IChatBaseComponent child : getExtra()) {
-			component.addExtra(child.clone());
-		}
-		return component;
-	}
-
+	
 	/**
 	 * Returns the most optimized component based on text. Returns null if text is null,
 	 * organized component if RGB colors are used or simple component with only text field

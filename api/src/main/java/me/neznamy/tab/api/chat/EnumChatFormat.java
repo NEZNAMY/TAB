@@ -194,20 +194,21 @@ public enum EnumChatFormat {
 	
 	//code taken from bukkit, so it can work on bungee too
 	public static String getLastColors(String input) {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
 			if ((section == '\u00a7' || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
-					result = "\u00a7" + c + result;
+					result.insert(0, '\u00a7');
+					result.insert(1, c);
 					if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
 						break;
 					}
 				}
 			}
 		}
-		return result;
+		return result.toString();
 	}
 }

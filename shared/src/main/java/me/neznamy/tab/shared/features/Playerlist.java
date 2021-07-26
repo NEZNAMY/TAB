@@ -151,7 +151,7 @@ public class Playerlist extends TabFeature {
 	}
 
 	@Override
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (disabling || !antiOverrideTablist) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {

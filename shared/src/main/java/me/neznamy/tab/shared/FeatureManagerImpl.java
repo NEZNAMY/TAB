@@ -104,7 +104,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			if (!f.isOnPacketSendInfoOverride()) continue;
 			time = System.nanoTime();
-			f.onPacketSend(receiver, info);
+			f.onPlayerInfo(receiver, info);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
@@ -215,19 +215,19 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packet - IN packet coming from player
 	 * @return altered packet or null if packet should be cancelled
 	 */
-	public Object onPacketReceive(TabPlayer receiver, Object packet){
-		Object newPacket = packet;
+	public boolean onPacketReceive(TabPlayer receiver, Object packet){
+		boolean cancel = false;
 		for (TabFeature f : getAllFeatures()) {
 			if (!f.isOnPacketReceiveOverride()) continue;
 			long time = System.nanoTime();
 			try {
-				if (newPacket != null) newPacket = f.onPacketReceive(receiver, newPacket);
+				cancel = f.onPacketReceive(receiver, packet);
 			} catch (IllegalAccessException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_READING_IN, System.nanoTime()-time);
 		}
-		return newPacket;
+		return cancel;
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			if (!f.isOnPacketSendDisplayOverride()) continue;
 			time = System.nanoTime();
-			boolean cancel = f.onPacketSend(packetReceiver, display);
+			boolean cancel = f.onDisplayObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 			if (cancel) return true;
 		}
@@ -294,7 +294,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		for (TabFeature f : getAllFeatures()) {
 			if (!f.isOnPacketSendObjectiveOverride()) continue;
 			time = System.nanoTime();
-			f.onPacketSend(packetReceiver, display);
+			f.onObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}

@@ -14,12 +14,14 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.ScoreboardTeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
+import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.AlignedSuffix;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -29,6 +31,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.UpdateChecker;
 import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Universal variable and method storage
@@ -187,6 +190,18 @@ public class TAB extends TabAPI {
 		tab.getFeatureManager().registerFeature("info", new PluginInfo());
 		new UpdateChecker(tab);
 		if (tab.getConfiguration().getLayout().getBoolean("enabled", false)) tab.getFeatureManager().registerFeature("layout", new Layout());
+		if (platform.getSeparatorType().equals("server")) {
+			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
+				
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+					String world = ((ProxyTabPlayer)all).getAttribute("world");
+					if (!all.getWorld().equals(world)){
+						((ITabPlayer)all).setWorld(world);
+						TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
+					}
+				}
+			});
+		}
 	}
 
 	public void addPlayer(TabPlayer player) {
@@ -296,5 +311,10 @@ public class TAB extends TabAPI {
 	@Override
 	public TabPlayer getPlayer(UUID uniqueId) {
 		return data.get(uniqueId);
+	}
+
+	@Override
+	public ConfigurationFile getConfig() {
+		return configuration.getConfig();
 	}
 }

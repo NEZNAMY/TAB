@@ -3,12 +3,9 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.io.File;
 
 import me.neznamy.tab.api.PermissionPlugin;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.BungeeTABLoadEvent;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag;
@@ -23,7 +20,6 @@ import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
-import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -75,16 +71,6 @@ public class BungeePlatform extends ProxyPlatform {
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
-			
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				String world = ((ProxyTabPlayer)all).getAttribute("world");
-				if (!all.getWorld().equals(world)){
-					((ITabPlayer)all).setWorld(world);
-					TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
-				}
-			}
-		});
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p, plm));
 		}

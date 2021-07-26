@@ -165,7 +165,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void sendPacket(Object nmsPacket, TabFeature feature) {
 		sendPacket(nmsPacket);
@@ -226,7 +225,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
-		String value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
+		String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
 		if (value == null) {
 			value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
 		}
@@ -234,7 +233,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
 		}
 		if (value != null) {
-			setProperty(feature, property, value, "TODO");
+			setProperty(feature, property, value[0], value[1]);
 			return;
 		}
 		setProperty(feature, property, ifNotSet, "None");

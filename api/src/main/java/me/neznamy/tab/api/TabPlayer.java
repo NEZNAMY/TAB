@@ -105,9 +105,7 @@ public interface TabPlayer {
 	/**
 	 * Sends the player a custom universal packet
 	 * @param packet - packet to send
-	 * @deprecated - use sendCustomPacket(CrossPlatformPacket, TabFeature)
 	 */
-	@Deprecated
 	public void sendCustomPacket(CrossPlatformPacket packet);
 
 	/**
@@ -121,9 +119,7 @@ public interface TabPlayer {
 	/**
 	 * Sends the player a platform-specific packet
 	 * @param packet - an instance of packet depending on platform
-	 * @deprecated - use sendPacket(Object, TabFeature)
 	 */
-	@Deprecated
 	public void sendPacket(Object packet);
 
 	/**

@@ -62,7 +62,7 @@ public class MySQL {
 				ps = prepareStatement(query, vars);
 				ps.execute();
 			} finally {
-				ps.close();
+				if (ps != null) ps.close();
 			}
 			
 		} else {
@@ -73,15 +73,20 @@ public class MySQL {
 
 	private PreparedStatement prepareStatement(String query, Object... vars) throws SQLException {
 		if (isConnected()) {
-			PreparedStatement ps = con.prepareStatement(query);
-			int i = 0;
-			if (query.contains("?") && vars.length != 0) {
-				for (Object obj : vars) {
-					i++;
-					ps.setObject(i, obj);
+			PreparedStatement ps = null;
+			try { 
+				ps = con.prepareStatement(query);
+				int i = 0;
+				if (query.contains("?") && vars.length != 0) {
+					for (Object obj : vars) {
+						i++;
+						ps.setObject(i, obj);
+					}
 				}
+				return ps;
+			} finally {
+				if (ps != null) ps.close();
 			}
-			return ps;
 		} else {
 			openConnection();
 			return prepareStatement(query, vars);
@@ -92,12 +97,16 @@ public class MySQL {
 		if (isConnected()) {
 			PreparedStatement ps = prepareStatement(query, vars);
 			ResultSet rs = ps.executeQuery();
-			CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
-			crs.populate(rs);
-			rs.close();
-			ps.close();
-			crs.close();
-			return crs;
+			CachedRowSet crs = null;
+			try {
+				crs = RowSetProvider.newFactory().createCachedRowSet();
+				crs.populate(rs);
+				return crs;
+			} finally {
+				rs.close();
+				ps.close();
+				if (crs != null) crs.close();
+			}
 		} else {
 			openConnection();
 			return getCRS(query, vars);

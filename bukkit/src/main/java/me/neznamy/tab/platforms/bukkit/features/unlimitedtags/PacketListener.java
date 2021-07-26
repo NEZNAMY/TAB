@@ -40,7 +40,7 @@ public class PacketListener extends TabFeature {
 	}
 
 	@Override
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
 		if (sender.getVersion().getMinorVersion() == 8 && nms.getClass("PacketPlayInUseEntity").isInstance(packet)) {
 			int entityId = nms.getField("PacketPlayInUseEntity_ENTITY").getInt(packet);
 			TabPlayer attacked = null;
@@ -54,7 +54,7 @@ public class PacketListener extends TabFeature {
 				nms.setField(packet, "PacketPlayInUseEntity_ENTITY", ((Player) attacked.getPlayer()).getEntityId());
 			}
 		}
-		return packet;
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")

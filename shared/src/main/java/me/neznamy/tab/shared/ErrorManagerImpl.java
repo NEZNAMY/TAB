@@ -236,17 +236,17 @@ public class ErrorManagerImpl implements ErrorManager {
 	 */
 	public int fixAnimationInterval(String name, int interval) {
 		if (interval == 0) {
-			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.");
+			startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.", name));
 			return 1000;
 		}
 		if (interval < 0) {
-			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+". Refresh cannot be negative! &bUsing 1000.");
+			startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s. Refresh cannot be negative! &bUsing 1000.", name, interval));
 			return 1000;
 		}
 		if (interval % 50 != 0) {
 			int newInterval = interval - interval%50;
 			if (newInterval == 0) newInterval = 50;
-			startupWarn("Animation \"&e" + name + "&c\" has refresh interval of "+interval+" which is not divisible by 50! &bUsing " + newInterval + ".");
+			startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s which is not divisible by 50! &bUsing %s.", name, interval, newInterval));
 			return newInterval;
 		}
 		return interval;

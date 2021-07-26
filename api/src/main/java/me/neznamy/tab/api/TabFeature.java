@@ -27,11 +27,11 @@ public abstract class TabFeature {
 	protected TabFeature(String featureName) {
 		this.featureName = featureName;
 		try {
-			onPacketSendDisplayOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class;
-			onPacketSendObjectiveOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class;
-			onPacketSendInfoOverride = getClass().getMethod("onPacketSend", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendDisplayOverride = getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendObjectiveOverride = getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class;
+			onPacketSendInfoOverride = getClass().getMethod("onPlayerInfo", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class;
 			onPacketSendOverride = getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
-			onPacketReceiveOverride = getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
+			onPacketReceiveOverride = getClass().getMethod("onPacketReceive", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
 			onCommandOverride = getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class;
 		} catch (Exception e) {
 			TabAPI.getInstance().getErrorManager().criticalError("Failed to load feature method overrides", e);
@@ -110,7 +110,7 @@ public abstract class TabFeature {
 	 * @param packet - received packet
 	 * @return true if packet should be cancelled, false if not
 	 */
-	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		return false;
 	}
 	
@@ -127,7 +127,7 @@ public abstract class TabFeature {
 	 * @param receiver - player receiving packet
 	 * @param packet - received packet
 	 */
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
+	public void onObjective(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
 		//empty by default
 	}
 	
@@ -136,7 +136,7 @@ public abstract class TabFeature {
 	 * @param receiver - player receiving packet
 	 * @param packet - received packet
 	 */
-	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
+	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		//empty by default
 	}
 	
@@ -144,11 +144,11 @@ public abstract class TabFeature {
 	 * Processes raw packet sent by client
 	 * @param sender - packet sender
 	 * @param packet - packet received
-	 * @return modified packet or null if packet should be cancelled
+	 * @return true if false should be cancelled, false if not
 	 * @throws IllegalAccessException
 	 */
-	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
-		return packet;
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+		return false;
 	}
 	
 	/**

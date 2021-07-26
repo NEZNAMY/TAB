@@ -151,13 +151,6 @@ public class PacketPlayOutPlayerInfo implements CrossPlatformPacket {
 		}
 
 		/**
-		 * Creates and returns a clone of this instance
-		 */
-		public PlayerInfoData clone() {
-			return new PlayerInfoData(name, uniqueId, skin, latency, gameMode, displayName);
-		}
-
-		/**
 		 * An override to toString() method for better output
 		 */
 		@Override
