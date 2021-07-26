@@ -103,10 +103,7 @@ public class CpuCommand extends SubCommand {
 	public void sendToConsole(Map<Object, Map<UsageType, Float>> features) {
 		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
 		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
-			float featureTotal = 0;
-			for (Float f : entry.getValue().values()) {
-				featureTotal += f;
-			}
+			double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
 			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
@@ -122,10 +119,7 @@ public class CpuCommand extends SubCommand {
 	public void sendToPlayer(TabPlayer sender, Map<Object, Map<UsageType, Float>> features) {
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
 		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
-			float featureTotal = 0;
-			for (Float f : entry.getValue().values()) {
-				featureTotal += f;
-			}
+			double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
 			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
 			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
@@ -139,13 +133,11 @@ public class CpuCommand extends SubCommand {
 	
 	public void sendPacketCountToConsole() {
 		Map<String, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
-		int count = 0;
 		List<String> messages = new ArrayList<>();
 		for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
-			count += entry.getValue().get();
 			messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey() + " - " + entry.getValue());
 		}
-		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + count, true);
+		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + packets.values().stream().mapToInt(AtomicInteger::get).sum(), true);
 		for (String message : messages) {
 			TAB.getInstance().getPlatform().sendConsoleMessage(message, true);
 		}
@@ -153,13 +145,11 @@ public class CpuCommand extends SubCommand {
 	
 	public void sendPacketCountToPlayer(TabPlayer sender) {
 		Map<String, AtomicInteger> packets = TAB.getInstance().getCPUManager().getSentPackets();
-		int count = 0;
 		List<String> messages = new ArrayList<>();
 		for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
-			count += entry.getValue().get();
 			messages.add("&3" + entry.getKey() + " - " + entry.getValue());
 		}
-		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + count).replace('&', '\u00a7'));
+		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + packets.values().stream().mapToInt(AtomicInteger::get).sum()).replace('&', '\u00a7'));
 		message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
 		sender.sendMessage(message);
 	}

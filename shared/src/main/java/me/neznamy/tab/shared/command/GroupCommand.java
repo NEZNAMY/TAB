@@ -20,43 +20,51 @@ public class GroupCommand extends PropertyCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		//<name> <property> [value...]
-		if (args.length > 1) {
-			String group = args[0];
-			String type = args[1].toLowerCase();
-			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
-			if (type.equals("remove")) {
-				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getGroups().remove(group);
-					for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-						if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
-							pl.forceRefresh();
-						}
+		if (args.length <= 1) {
+			help(sender);
+			return;
+		}
+		String group = args[0];
+		String type = args[1].toLowerCase();
+		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
+		if (type.equals("remove")) {
+			if (hasPermission(sender, "tab.remove")) {
+				TAB.getInstance().getConfiguration().getGroups().remove(group);
+				for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
+					if (pl.getGroup().equals(group) || group.equals("_DEFAULT_")){
+						pl.forceRefresh();
 					}
-					sendMessage(sender, getTranslation("data_removed").replace("%category%", "group").replace("%value%", group));
+				}
+				sendMessage(sender, getTranslation("data_removed").replace("%category%", "group").replace("%value%", group));
+			} else {
+				sendMessage(sender, getTranslation("no_permission"));
+			}
+			return;
+		}
+		for (String property : getAllProperties()) {
+			if (type.equals(property)) {
+				if (hasPermission(sender, "tab.change." + property)) {
+					saveGroup(sender, group, type, value);
+					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
+						sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
+					}
+				} else {
+					sendMessage(sender, getTranslation("no_permission"));
 				}
 				return;
 			}
-			for (String property : getAllProperties()) {
-				if (type.equals(property)) {
-					if (hasPermission(sender, "tab.change." + property)) {
-						saveGroup(sender, group, type, value);
-						if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
-							sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
-						}
-					} else {
-						sendMessage(sender, getTranslation("no_permission"));
-					}
-					return;
-				}
-			}
 		}
+		help(sender);
+	}
+
+	private void help(TabPlayer sender) {
 		sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
 		sendMessage(sender, "&7Valid Properties are:");
 		sendMessage(sender, " - &9tabprefix&3/&9tabsuffix&3/&9customtabname");
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
-	
+
 	/**
 	 * Saves new group settings into config
 	 * @param sender - command sender or null if console

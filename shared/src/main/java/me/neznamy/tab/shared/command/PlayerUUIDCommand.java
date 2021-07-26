@@ -21,43 +21,53 @@ public class PlayerUUIDCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		//<uuid> <property> [value...]
-		if (args.length > 1) {
-			String name = args[0];
-			TabPlayer changed = TAB.getInstance().getPlayer(name);
-			if (changed == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
-				return;
+		if (args.length <= 1) {
+			help(sender);
+			return;
+		}
+
+		String name = args[0];
+		TabPlayer changed = TAB.getInstance().getPlayer(name);
+		if (changed == null) {
+			sendMessage(sender, getTranslation("player_not_found"));
+			return;
+		}
+		String type = args[1].toLowerCase();
+		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
+		if (type.equals("remove")) {
+			if (hasPermission(sender, "tab.remove")) {
+				TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
+				changed.forceRefresh();
+				sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
+			} else {
+				sendMessage(sender, getTranslation("no_permission"));
 			}
-			String type = args[1].toLowerCase();
-			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
-			if (type.equals("remove")) {
-				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
-					changed.forceRefresh();
-					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
-				}
-				return;
-			}
-			for (String property : getAllProperties()) {
-				if (type.equals(property)) {
-					if (hasPermission(sender, "tab.change." + property)) {
-						savePlayer(sender, changed, type, value);
-						if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
-							sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
-						}
-					} else {
-						sendMessage(sender, getTranslation("no_permission"));
+			return;
+		}
+		for (String property : getAllProperties()) {
+			if (type.equals(property)) {
+				if (hasPermission(sender, "tab.change." + property)) {
+					savePlayer(sender, changed, type, value);
+					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
+						sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
 					}
-					return;
+				} else {
+					sendMessage(sender, getTranslation("no_permission"));
 				}
+				return;
 			}
 		}
+		help(sender);
+	}
+
+	private void help(TabPlayer sender) {
 		sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
 		sendMessage(sender, "&7Valid Properties are:");
 		sendMessage(sender, " - &9tabprefix&3/&9tabsuffix&3/&9customtabname");
 		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
 		sendMessage(sender, " - &9belowname&3/&9abovename");
 	}
+	
 	
 	/**
 	 * Saves new player settings into config

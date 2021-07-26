@@ -144,7 +144,7 @@ public class IChatBaseComponent {
 	 * @return true if bold is defined and set to true, false otherwise
 	 */
 	public boolean isBold(){
-		return bold == Boolean.TRUE;
+		return Boolean.TRUE.equals(bold);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class IChatBaseComponent {
 	 * @return true if italic is defined and set to true, false otherwise
 	 */
 	public boolean isItalic(){
-		return italic == Boolean.TRUE;
+		return Boolean.TRUE.equals(italic);
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class IChatBaseComponent {
 	 * @return true if underlined is defined and set to true, false otherwise
 	 */
 	public boolean isUnderlined(){
-		return underlined == Boolean.TRUE;
+		return Boolean.TRUE.equals(underlined);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class IChatBaseComponent {
 	 * @return true if strikethrough is defined and set to true, false otherwise
 	 */
 	public boolean isStrikethrough(){
-		return strikethrough == Boolean.TRUE;
+		return Boolean.TRUE.equals(strikethrough);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class IChatBaseComponent {
 	 * @return true if obfuscation is defined and set to true, false otherwise
 	 */
 	public boolean isObfuscated(){
-		return obfuscated == Boolean.TRUE;
+		return Boolean.TRUE.equals(obfuscated);
 	}
 
 	/**
