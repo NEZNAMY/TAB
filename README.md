@@ -17,7 +17,7 @@ Premium version
     MC-Market: https://www.mc-market.org/resources/14009/  
 Bukkit bridge https://www.spigotmc.org/resources/83966/  
 Wiki https://github.com/NEZNAMY/TAB/wiki  
-Discord invite link: https://discord.gg/EaSvdk6  
+Discord: https://discord.gg/EaSvdk6  
 
 
 ## Maven Repository
