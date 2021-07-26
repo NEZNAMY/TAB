@@ -1,9 +1,8 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.SendBarCommand;
 
 /**

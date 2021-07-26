@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -260,7 +261,7 @@ public class NMSStorage {
 		constructors.put("PacketPlayOutEntityMetadata", getClass("PacketPlayOutEntityMetadata").getConstructor(int.class, getClass("DataWatcher"), boolean.class));
 		fields.put("PacketPlayOutEntity_ENTITYID", getFields(getClass("PacketPlayOutEntity"), int.class).get(0));
 		fields.put("PacketPlayOutEntityDestroy_ENTITIES", getClass("PacketPlayOutEntityDestroy").getDeclaredFields()[0]);
-		fields.get("PacketPlayOutEntityDestroy_ENTITIES").setAccessible(true);
+		setAccessible(fields.get("PacketPlayOutEntityDestroy_ENTITIES"));
 		fields.put("PacketPlayOutEntityMetadata_LIST", getFields(getClass("PacketPlayOutEntityMetadata"), List.class).get(0));
 		fields.put("PacketPlayOutNamedEntitySpawn_ENTITYID", getFields(getClass("PacketPlayOutNamedEntitySpawn"), int.class).get(0));
 		if (minorVersion >= 7) {
@@ -447,7 +448,7 @@ public class NMSStorage {
 		List<Field> list = new ArrayList<>();
 		for (Field field : clazz.getDeclaredFields()) {
 			if (field.getType() == type) {
-				field.setAccessible(true);
+				setAccessible(field);
 				list.add(field);
 			}
 		}
@@ -464,7 +465,7 @@ public class NMSStorage {
 	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
 		for (Field f : clazz.getDeclaredFields()) {
 			if (f.getName().equals(name) || (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name))) {
-				f.setAccessible(true);
+				setAccessible(f);
 				return f;
 			}
 		}
@@ -477,7 +478,7 @@ public class NMSStorage {
 	private Constructor<?> getConstructor(Class<?> clazz, int parameterCount) throws NoSuchMethodException {
 		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
 			if (c.getParameterCount() == parameterCount) {
-				c.setAccessible(true);
+				setAccessible(c);
 				return c;
 			}
 		}
@@ -525,5 +526,9 @@ public class NMSStorage {
 
 	public DataWatcherRegistry getDataWatcherRegistry() {
 		return dataWatcherRegistry;
+	}
+	
+	private void setAccessible(AccessibleObject o) {
+		o.setAccessible(true);
 	}
 }

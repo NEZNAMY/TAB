@@ -1,8 +1,7 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.NameTag;
 
 public class SetCollisionCommand extends SubCommand {

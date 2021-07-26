@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 

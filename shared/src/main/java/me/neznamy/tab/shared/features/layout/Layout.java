@@ -46,6 +46,7 @@ public class Layout extends TabFeature {
 			if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature("layout-slot-" + slot, f);
 		}
 		loadGroups();
+		TAB.getInstance().debug("Loaded Layout feature");
 	}
 
 	private Direction parseDirection(String value) {

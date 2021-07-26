@@ -63,12 +63,13 @@ public abstract class SortingType {
 		for (String group : elements){
 			while (group.startsWith(" ")) group = group.substring(1);
 			while (group.endsWith(" ")) group = group.substring(0, group.length()-1);
-			String sort = String.valueOf(index);
-			while (sort.length() < charCount) { 
-				sort = "0" + sort;
+			StringBuilder sb = new StringBuilder();
+			sb.append(index);
+			while (sb.length() < charCount) { 
+				sb.insert(0, "0");
 			}
 			for (String group0 : group.toLowerCase().split(" ")) {
-				sortedGroups.put(group0, sort);
+				sortedGroups.put(group0, sb.toString());
 			}
 			index++;
 		}

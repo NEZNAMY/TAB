@@ -1,48 +1,45 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 
 /**
- * Handler for "/tab playeruuid" subcommand
+ * Handler for "/tab player" subcommand
  */
-public class PlayerUUIDCommand extends SubCommand {
-
+public class PlayerCommand extends PropertyCommand {
+	
 	/**
 	 * Constructs new instance
 	 */
-	public PlayerUUIDCommand() {
-		super("playeruuid", null);
+	public PlayerCommand() {
+		super("player", null);
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		//<uuid> <property> [value...]
+		//<name> <property> [value...]
 		if (args.length > 1) {
-			String name = args[0];
-			TabPlayer changed = TAB.getInstance().getPlayer(name);
-			if (changed == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
-				return;
-			}
+			String player = args[0];
 			String type = args[1].toLowerCase();
 			String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 			if (type.equals("remove")) {
 				if (hasPermission(sender, "tab.remove")) {
-					TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
-					changed.forceRefresh();
-					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
+					TAB.getInstance().getConfiguration().getUsers().remove(player);
+					TabPlayer pl = TAB.getInstance().getPlayer(player);
+					if (pl != null) {
+						pl.forceRefresh();
+					}
+					sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", player));
 				}
 				return;
 			}
 			for (String property : getAllProperties()) {
 				if (type.equals(property)) {
 					if (hasPermission(sender, "tab.change." + property)) {
-						savePlayer(sender, changed, type, value);
+						savePlayer(sender, player, type, value);
 						if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
 							sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
 						}
@@ -67,15 +64,18 @@ public class PlayerUUIDCommand extends SubCommand {
 	 * @param type - property type
 	 * @param value - new value
 	 */
-	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
+	public void savePlayer(TabPlayer sender, String player, String type, String value){
 		if (value.length() > 0){
-			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
 		} else {
-			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, null, null)[0]))) return;
-		TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, null, null, value.length() == 0 ? null : value);
-		player.forceRefresh();
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null)[0]))) return;
+		TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, null, null, value.length() == 0 ? null : value);
+		TabPlayer pl = TAB.getInstance().getPlayer(player);
+		if (pl != null) {
+			pl.forceRefresh();
+		}
 	}
 	
 	@Override

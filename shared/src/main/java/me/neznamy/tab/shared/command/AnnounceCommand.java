@@ -1,9 +1,8 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
 
@@ -24,8 +23,8 @@ public class AnnounceCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length == 0) {
-			sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");
-			sendMessage(sender, "Currently supported types: &lbar");
+			sendMessage(sender, "Usage: /tab announce <type> <name> <length>");
+			sendMessage(sender, "Currently supported types: &lbar, scoreboard");
 			return;
 		}
 		String arg0 = args[0].toLowerCase();
@@ -37,8 +36,8 @@ public class AnnounceCommand extends SubCommand {
 				sendMessage(sender, getTranslation("no_permission"));
 			}
 		} else {
-			sendMessage(sender, "Usage: /tab announce <type> <bar name> <length>");
-			sendMessage(sender, "Currently supported types: &lbar");
+			sendMessage(sender, "Usage: /tab announce <type> <name> <length>");
+			sendMessage(sender, "Currently supported types: &lbar, scoreboard");
 		}
 	}
 }

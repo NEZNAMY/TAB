@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -11,7 +11,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
@@ -35,19 +34,15 @@ public class CpuCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		TAB tab = TAB.getInstance();
 		Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
-		float placeholdersTotal = 0;
-		for (Float time : placeholders.values()) placeholdersTotal += time;
+		double placeholdersTotal = placeholders.values().stream().mapToDouble(Float::floatValue).sum();
 
 		Map<String, Float> bridgeplaceholders = tab.getCPUManager().getBridgeUsage();
-		float bridgeplaceholdersTotal = 0;
-		for (Float time : bridgeplaceholders.values()) bridgeplaceholdersTotal += time;
+		double bridgeplaceholdersTotal = bridgeplaceholders.values().stream().mapToDouble(Float::floatValue).sum();
 
 		Map<Object, Map<UsageType, Float>> features = tab.getCPUManager().getFeatureUsage();
-		float featuresTotal = 0;
+		double featuresTotal = 0;
 		for (Map<UsageType, Float> map : features.values()) {
-			for (Float time : map.values()) {
-				featuresTotal += time;
-			}
+			featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
 		}
 
 		sendMessage(sender, " ");
@@ -55,27 +50,14 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds");
 		sendMessage(sender, SEPARATOR);
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders:");
-		int printCounter = 0;
-		for (Entry<String, Float> entry : placeholders.entrySet()) {
-			if (printCounter++ == 5) break;
-			String refresh = "";
-			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
-			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
-			String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
-			sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
-		}
+		printPlaceholders(sender, tab.getCPUManager().getPlaceholderUsage());
 		sendMessage(sender, SEPARATOR);
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Some internal separately measured methods:");
-		for (Entry<String, Float> entry : tab.getCPUManager().getMethodUsage().entrySet()) {
-			sendMessage(sender, String.format("&8&l%s &7%s: %s%%", LINE_CHAR, entry.getKey(), colorize(decimal3.format(entry.getValue()), 5, 2)));
-		}
+		printMethods(sender);
 		sendMessage(sender, SEPARATOR);
-		if (tab.getPlatform().getSeparatorType().equals("server")) {
-			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Placeholder usage on Bukkit servers:");
-			for (Entry<String, Float> entry : bridgeplaceholders.entrySet()) {
-				if (entry.getValue() < 0.1) continue;
-				sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey(), colorize(decimal3.format(entry.getValue()), 1, 0.3f)));
-			}
+		if (!tab.getCPUManager().getBridgeUsage().isEmpty()) {
+			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders on Bukkit servers:");
+			printPlaceholders(sender, tab.getCPUManager().getBridgeUsage());
 			sendMessage(sender, SEPARATOR);
 		}
 		if (sender != null) {
@@ -91,13 +73,31 @@ public class CpuCommand extends SubCommand {
 			sendPacketCountToConsole();
 		}
 		sendMessage(sender, String.format("&8&l%s &6&lPlaceholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(placeholdersTotal), 10, 5)));
-		if (tab.getPlatform().getSeparatorType().equals("server")) {
+		if (!tab.getCPUManager().getBridgeUsage().isEmpty()) {
 			sendMessage(sender, String.format("&8&l%s &6&lBukkit bridge placeholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(bridgeplaceholdersTotal), 10, 5)));
 		}
 		sendMessage(sender, String.format("&8&l%s &6&lPlugin internals: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal-placeholdersTotal), 10, 5)));
 		sendMessage(sender, String.format("&8&l%s &6&lTotal: &e&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal + bridgeplaceholdersTotal), 10, 5)));
 		sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
+	}
+
+	private void printPlaceholders(TabPlayer sender, Map<String, Float> map) {
+		int printCounter = 0;
+		for (Entry<String, Float> entry : map.entrySet()) {
+			if (printCounter++ == 5) break;
+			String refresh = "";
+			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
+			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
+			String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
+			sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
+		}
+	}
+	
+	private void printMethods(TabPlayer sender) {
+		for (Entry<String, Float> entry : TAB.getInstance().getCPUManager().getMethodUsage().entrySet()) {
+			sendMessage(sender, String.format("&8&l%s &7%s: %s%%", LINE_CHAR, entry.getKey(), colorize(decimal3.format(entry.getValue()), 5, 2)));
+		}
 	}
 
 	public void sendToConsole(Map<Object, Map<UsageType, Float>> features) {

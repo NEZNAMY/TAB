@@ -107,12 +107,12 @@ public class BungeePipelineInjector extends PipelineInjector {
 				default:
 					break;
 				}
-			} catch (Throwable e){
+			} catch (Exception | NoClassDefFoundError e){
 				TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
 			try {
 				super.write(context, modifiedPacket, channelPromise);
-			} catch (Throwable e) {
+			} catch (Exception | NoClassDefFoundError e) {
 				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + modifiedPacket.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}

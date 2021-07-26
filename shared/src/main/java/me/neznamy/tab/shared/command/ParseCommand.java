@@ -1,9 +1,8 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyImpl;
-import me.neznamy.tab.shared.command.SubCommand;
 
 /**
  * Handler for "/tab parse" subcommand

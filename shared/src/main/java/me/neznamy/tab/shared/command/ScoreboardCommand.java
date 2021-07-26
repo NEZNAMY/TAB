@@ -1,8 +1,7 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 /**
@@ -36,15 +35,7 @@ public class ScoreboardCommand extends SubCommand {
 			}
 			return;
 		}
-		TabPlayer p = sender;
-		if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
-			if (hasPermission(sender, "tab.togglescoreboard.other")) {
-				p = TAB.getInstance().getPlayer(args[1]);
-			} else {
-				sendMessage(sender, getTranslation("no_permission"));
-				return;
-			}
-		}
+		TabPlayer p = getTarget(sender, args);
 		if (scoreboard.getOtherPluginScoreboards().containsKey(p)) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
 		if (args.length >= 1) {
@@ -62,5 +53,17 @@ public class ScoreboardCommand extends SubCommand {
 				break;
 			}
 		}
+	}
+	
+	private TabPlayer getTarget(TabPlayer sender, String[] args) {
+		TabPlayer target = sender;
+		if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
+			if (hasPermission(sender, "tab.togglescoreboard.other")) {
+				target = TAB.getInstance().getPlayer(args[1]);
+			} else {
+				sendMessage(sender, getTranslation("no_permission"));
+			}
+		}
+		return target;
 	}
 }

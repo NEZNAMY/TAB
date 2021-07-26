@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.command.level1;
+package me.neznamy.tab.shared.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.command.SubCommand;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.Playerlist;

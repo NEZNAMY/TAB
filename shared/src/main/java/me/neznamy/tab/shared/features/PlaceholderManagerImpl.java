@@ -50,19 +50,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, () -> {
 
 			int loopTime = atomic.addAndGet(50);
-			Map<TabPlayer, Set<TabFeature>> update = null; //not initializing if not needed
-			Map<TabPlayer, Set<TabFeature>> forceUpdate = null;
+			Map<TabPlayer, Set<TabFeature>> update = new HashMap<>();
+			Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>();
 			boolean somethingChanged = false;
 			for (String identifier : placeholderUsage.keySet()) {
 				Placeholder placeholder = getPlaceholder(identifier);
 				if (loopTime % placeholder.getRefresh() != 0) continue;
-				if (placeholder instanceof RelationalPlaceholder) {
-					if (forceUpdate == null) forceUpdate = new HashMap<>();
-					if (updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
-				}
-				if (update == null) {
-					update = new HashMap<>();
-				}
+				if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
 				if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
 				if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
 			}
@@ -142,21 +136,19 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
-		if (forceUpdate != null) 
-			for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-				if (forceUpdate.containsKey(entry.getKey())) {
-					entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
-				}
+		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+			if (forceUpdate.containsKey(entry.getKey())) {
+				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 			}
+		}
 		long startRefreshTime = System.nanoTime();
-		if (forceUpdate != null) 
-			for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
-				for (TabFeature r : entry.getValue()) {
-					long startTime = System.nanoTime();
-					r.refresh(entry.getKey(), true);
-					TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), UsageType.REFRESHING, System.nanoTime()-startTime);
-				}
+		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
+			for (TabFeature r : entry.getValue()) {
+				long startTime = System.nanoTime();
+				r.refresh(entry.getKey(), true);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), UsageType.REFRESHING, System.nanoTime()-startTime);
 			}
+		}
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
