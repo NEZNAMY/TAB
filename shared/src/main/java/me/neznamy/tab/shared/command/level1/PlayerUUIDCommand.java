@@ -73,7 +73,7 @@ public class PlayerUUIDCommand extends SubCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, null, null)))) return;
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, null, null)[0]))) return;
 		TAB.getInstance().getConfiguration().getUsers().setProperty(player.getUniqueId().toString(), type, null, null, value.length() == 0 ? null : value);
 		player.forceRefresh();
 	}

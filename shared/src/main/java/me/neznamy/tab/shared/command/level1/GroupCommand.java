@@ -70,7 +70,7 @@ public class GroupCommand extends PropertyCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, null, null)))) return;
+		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, null, null)[0]))) return;
 		TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, null, null, value.length() == 0 ? null : value);
 		for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
 			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){

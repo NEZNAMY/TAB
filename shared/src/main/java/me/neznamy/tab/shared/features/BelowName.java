@@ -2,10 +2,9 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -22,7 +21,6 @@ public class BelowName extends TabFeature {
 
 	private String rawNumber;
 	private String rawText;
-	private boolean antiOverride;
 	private TabFeature textRefresher;
 
 	public BelowName() {
@@ -30,7 +28,6 @@ public class BelowName extends TabFeature {
 				TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-worlds"));
 		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
 		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
-		antiOverride = TAB.getInstance().getConfiguration().getConfig().getBoolean("belowname-objective.anti-override", true);
 		textRefresher = new TextRefresher();
 		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, disabledWorlds, disabledServers));
 		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", textRefresher);
@@ -107,25 +104,6 @@ public class BelowName extends TabFeature {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), number), this);
 		}
-	}
-
-	@Override
-	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (disabledPlayers.contains(packetReceiver) || !antiOverride) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, packetReceiver.getProperty(PropertyUtils.BELOWNAME_TEXT).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, textRefresher);
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
-		}
-	}
-
-	@Override
-	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (disabledPlayers.contains(receiver) || !antiOverride) return false;
-		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
-			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (belowname)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
-			return true;
-		}
-		return false;
 	}
 
 	public class TextRefresher extends TabFeature {

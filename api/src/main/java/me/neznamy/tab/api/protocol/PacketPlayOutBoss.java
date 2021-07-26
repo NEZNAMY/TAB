@@ -47,29 +47,6 @@ public class PacketPlayOutBoss implements CrossPlatformPacket {
 	 * @param pct - bossbar progress
 	 * @param color - bossbar color
 	 * @param overlay - bossbar style
-	 * @param darkenScreen - darker screen if bossbar is displayed
-	 * @param playMusic - play boss music when bossbar is displayed
-	 * @param createWorldFog - create fog if bossbar is displayed
-	 */
-	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		this.operation = Action.ADD;
-		this.id = id;
-		this.name = name;
-		this.pct = pct;
-		this.color = color;
-		this.overlay = overlay;
-		this.darkenScreen = darkenScreen;
-		this.playMusic = playMusic;
-		this.createWorldFog = createWorldFog;
-	}
-
-	/**
-	 * Constructs new packet based on given parameters with ADD action
-	 * @param id - bossbar uuid
-	 * @param name - bossbar title
-	 * @param pct - bossbar progress
-	 * @param color - bossbar color
-	 * @param overlay - bossbar style
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		this.operation = Action.ADD;
@@ -205,6 +182,19 @@ public class PacketPlayOutBoss implements CrossPlatformPacket {
 
 	public boolean isPlayMusic() {
 		return playMusic;
+	}
+	
+
+	public void setDarkenScreen(boolean darkenScreen) {
+		this.darkenScreen = darkenScreen;
+	}
+
+	public void setCreateWorldFog(boolean createWorldFog) {
+		this.createWorldFog = createWorldFog;
+	}
+
+	public void setPlayMusic(boolean playMusic) {
+		this.playMusic = playMusic;
 	}
 
 	/**

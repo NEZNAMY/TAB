@@ -103,9 +103,9 @@ public class MySQL {
 				crs.populate(rs);
 				return crs;
 			} finally {
+				if (crs != null) crs.close();
 				rs.close();
 				ps.close();
-				if (crs != null) crs.close();
 			}
 		} else {
 			openConnection();

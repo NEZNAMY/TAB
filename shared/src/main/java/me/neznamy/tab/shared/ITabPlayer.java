@@ -226,13 +226,13 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
 		String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
-		if (value == null) {
+		if (value.length == 0) {
 			value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
 		}
-		if (value == null) {
+		if (value.length == 0) {
 			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
 		}
-		if (value != null) {
+		if (value.length > 0) {
 			setProperty(feature, property, value[0], value[1]);
 			return;
 		}

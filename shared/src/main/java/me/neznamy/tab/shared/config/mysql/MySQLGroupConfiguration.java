@@ -72,7 +72,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 		if ((value = values.getOrDefault(group, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, "group=" + group};
 		}
-		return null;
+		return new String[0];
 	}
 
 	@Override

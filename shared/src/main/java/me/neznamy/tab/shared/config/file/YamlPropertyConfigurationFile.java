@@ -51,7 +51,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 		if ((value = getObject("_DEFAULT_." + property)) != null) {
 			return new String[] {toString(value), category + "=_DEFAULT_"};
 		}
-		return null;
+		return new String[0];
 	}
 	
 	@SuppressWarnings("unchecked")

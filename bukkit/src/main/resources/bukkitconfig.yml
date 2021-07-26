@@ -75,7 +75,6 @@ header-footer:
 yellow-number-in-tablist:
   enabled: true
   value: "%ping%"
-  anti-override: true
   disable-in-worlds:
     - disabledworld
   disable-in-servers:
@@ -85,7 +84,6 @@ belowname-objective:
   enabled: true
   number: "%health%"
   text: "&c❤"
-  anti-override: true
   disable-in-worlds:
     - disabledworld
   disable-in-servers:

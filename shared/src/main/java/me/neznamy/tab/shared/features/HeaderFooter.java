@@ -91,18 +91,18 @@ public class HeaderFooter extends TabFeature {
 	
 	private String getFromConfig(TabPlayer p, String property) {
 		String[] value;
-		if ((value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.getServer(), p.getWorld())) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getName(), property, p.getServer(), p.getWorld())).length > 0) {
 			return value[0];
 		}
-		if ((value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getUniqueId().toString(), property, p.getServer(), p.getWorld())) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getUsers().getProperty(p.getUniqueId().toString(), property, p.getServer(), p.getWorld())).length > 0) {
 			return value[0];
 		}
-		if ((value = TAB.getInstance().getConfiguration().getGroups().getProperty(p.getGroup(), property, p.getServer(), p.getWorld())) != null) {
+		if ((value = TAB.getInstance().getConfiguration().getGroups().getProperty(p.getGroup(), property, p.getServer(), p.getWorld())).length > 0) {
 			return value[0];
 		}
 		List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-server." + p.getServer() + "." + property);
 		if (lines == null) {
-			lines =  TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + p.getWorld() + "." + property);
+			lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + p.getWorld() + "." + property);
 		}
 		if (lines == null) {
 			 lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);

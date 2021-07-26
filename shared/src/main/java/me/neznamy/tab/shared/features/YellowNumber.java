@@ -2,10 +2,9 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -22,19 +21,17 @@ public class YellowNumber extends TabFeature {
 
 	private String rawValue;
 	private EnumScoreboardHealthDisplay displayType;
-	private boolean antiOverride;
 
 	public YellowNumber() {
 		super("Yellow number", TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-worlds"));
 		rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
-		antiOverride = TAB.getInstance().getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.anti-override", true);
 		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
 		} else {
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
-		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, displayType=%s", rawValue, disabledWorlds, displayType));
+		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, disabledWorlds, disabledServers, displayType));
 	}
 
 	@Override
@@ -106,24 +103,5 @@ public class YellowNumber extends TabFeature {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), this);
 		}
-	}
-
-	@Override
-	public void onLoginPacket(TabPlayer packetReceiver) {
-		if (disabledPlayers.contains(packetReceiver) || !antiOverride) return;
-		PacketAPI.registerScoreboardObjective(packetReceiver, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			if (all.isLoaded()) packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
-		}
-	}
-
-	@Override
-	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (disabledPlayers.contains(receiver) || !antiOverride) return false;
-		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
-			TAB.getInstance().getErrorManager().printError("Something just tried to register objective \"" + packet.getObjectiveName() + "\" in position " + packet.getSlot() + " (playerlist)", null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
-			return true;
-		}
-		return false;
 	}
 }

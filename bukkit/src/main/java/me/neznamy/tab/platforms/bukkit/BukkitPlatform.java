@@ -247,7 +247,7 @@ public class BukkitPlatform implements Platform {
 		if (placeholderAPI == null) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
-		} catch (Throwable t) {
+		} catch (Exception | NoClassDefFoundError t) {
 			return "ERROR";
 		}
 	}

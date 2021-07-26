@@ -476,7 +476,7 @@ public class IChatBaseComponent {
 	 * Returns boolean value of requested key
 	 * @param jsonObject - object to get value from
 	 * @param key - name of key
-	 * @return true if json object contains key and value is true, false otherwise
+	 * @return value from json object or null if not present
 	 */
 	private static Boolean getBoolean(JSONObject jsonObject, String key) {
 		if (jsonObject.containsKey(key)) {

@@ -72,7 +72,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 		if ((value = values.getOrDefault(user, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, "user=" + user};
 		}
-		return null;
+		return new String[0];
 	}
 
 	@Override
