@@ -78,8 +78,9 @@ public class BungeePlatform extends ProxyPlatform {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
 			
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (!String.valueOf(all.getWorld()).equals(((ProxyTabPlayer)all).getAttribute("world"))){
-					((ITabPlayer)all).setWorld(((ProxyTabPlayer)all).getAttribute("world"));
+				String world = ((ProxyTabPlayer)all).getAttribute("world");
+				if (!all.getWorld().equals(world)){
+					((ITabPlayer)all).setWorld(world);
 					TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
 				}
 			}

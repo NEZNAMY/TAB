@@ -35,7 +35,7 @@ public abstract class Placeholder {
 	}
 
 	private void loadReplacements() {
-/*		Map<Object, Object> original = TabAPI.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
+		Map<Object, Object> original = TabAPI.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
@@ -50,7 +50,7 @@ public abstract class Placeholder {
 			if (key.equals("else") && value.equals("%value%")) {
 				TabAPI.getInstance().getPlatform().sendConsoleMessage("&9[TAB] Hint: Placeholder " + identifier + " has configured \"else\" replacement to %value%, which is default behavior already. You can remove it for cleaner configuration.", true);
 			}
-		}*/
+		}
 	}
 	
 	/**

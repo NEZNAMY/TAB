@@ -41,14 +41,14 @@ public class Sorting {
 	 */
 	public Sorting(NameTag nametags) {
 		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sentitive-sorting", true);
-		types.put("GROUPS", (options) -> new Groups(options));
-		types.put("PERMISSIONS", (options) -> new Permissions(options));
-		types.put("PLACEHOLDER", (options) -> new Placeholder(options));
-		types.put("PLACEHOLDER_A_TO_Z", (options) -> new PlaceholderAtoZ(options));
-		types.put("PLACEHOLDER_Z_TO_A", (options) -> new PlaceholderZtoA(options));
-		types.put("PLACEHOLDER_LOW_TO_HIGH", (options) -> new PlaceholderLowToHigh(options));
-		types.put("PLACEHOLDER_HIGH_TO_LOW", (options) -> new PlaceholderHighToLow(options));
-		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<String>()));
+		types.put("GROUPS", Groups::new);
+		types.put("PERMISSIONS", Permissions::new);
+		types.put("PLACEHOLDER", Placeholder::new);
+		types.put("PLACEHOLDER_A_TO_Z", PlaceholderAtoZ::new);
+		types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
+		types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
+		types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
+		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
 		
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", nametags, UsageType.REFRESHING_TEAM_NAME, () -> {
 

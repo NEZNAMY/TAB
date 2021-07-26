@@ -18,22 +18,18 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 	private Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
 	private Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
 
-	public MySQLGroupConfiguration(MySQL mysql) {
+	public MySQLGroupConfiguration(MySQL mysql) throws SQLException {
 		this.mysql = mysql;
-		try {
-			mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
-			CachedRowSet crs = mysql.getCRS("select * from tab_groups");
-			while (crs.next()) {
-				String group = crs.getString("group");
-				String property = crs.getString("property");
-				String value = crs.getString("value");
-				String world = crs.getString("world");
-				String server = crs.getString("server");
-				TAB.getInstance().debug("Loaded group: " + String.format("%s, %s, %s, %s, %s", group, property, value, world, server));
-				setProperty0(group, property, server, world, value);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
+		CachedRowSet crs = mysql.getCRS("select * from tab_groups");
+		while (crs.next()) {
+			String group = crs.getString("group");
+			String property = crs.getString("property");
+			String value = crs.getString("value");
+			String world = crs.getString("world");
+			String server = crs.getString("server");
+			TAB.getInstance().debug("Loaded group: " + String.format("%s, %s, %s, %s, %s", group, property, value, world, server));
+			setProperty0(group, property, server, world, value);
 		}
 	}
 
@@ -46,7 +42,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 			setProperty0(group, property, server, world, value);
 			if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", group, property, value, world, server);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
 		}
 	}
 	

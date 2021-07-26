@@ -131,7 +131,7 @@ public enum EnumChatFormat {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
 		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string); //translating RGB into legacy for nametags
 		String last = getLastColors(legacyText);
-		if (last != null && last.length() > 0) {
+		if (last.length() > 0) {
 			char c = last.toCharArray()[1];
 			for (EnumChatFormat e : values) {
 				if (e.character == c) return e;

@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -28,26 +27,12 @@ public class MySQL {
 		this.username = username;
 		this.password = password;
 		openConnection();
-/*		TAB.getInstance().getCPUManager().runTask("connecting to MySQL", () -> {
-			while(true) {
-				try {
-					Thread.sleep(1200000);
-					closeConnection();
-					openConnection();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
-		});*/
 	}
 	
 	private void openConnection() throws SQLException {
 		if (!isConnected()) {
 			con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
 			TAB.getInstance().getPlatform().sendConsoleMessage("&a[TAB] Successfully connected to MySQL", true);
-//			new Exception().printStackTrace();
 		}
 	}
 	
@@ -56,7 +41,7 @@ public class MySQL {
 			try {
 				con.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				TAB.getInstance().getErrorManager().printError("Failed to close MySQL connection", e);
 			}
 		}
 	}
@@ -65,16 +50,21 @@ public class MySQL {
 		try {
 			return con != null && !con.isClosed();
 		} catch (Exception e) {
-			e.printStackTrace();
+			TAB.getInstance().getErrorManager().printError("Failed to check MySQL connection", e);
 		}
 		return false;
 	}
 
 	public void execute(String query, Object... vars) throws SQLException {
 		if (isConnected()) {
-			PreparedStatement ps = prepareStatement(query, vars);
-			ps.execute();
-			ps.close();
+			PreparedStatement ps = null;
+			try {
+				ps = prepareStatement(query, vars);
+				ps.execute();
+			} finally {
+				ps.close();
+			}
+			
 		} else {
 			openConnection();
 			execute(query, vars);
@@ -98,7 +88,7 @@ public class MySQL {
 		}
 	}
 
-	public CachedRowSet getCRS(String query, Object... vars) throws InterruptedException, ExecutionException, SQLException {
+	public CachedRowSet getCRS(String query, Object... vars) throws SQLException {
 		if (isConnected()) {
 			PreparedStatement ps = prepareStatement(query, vars);
 			ResultSet rs = ps.executeQuery();
@@ -106,6 +96,7 @@ public class MySQL {
 			crs.populate(rs);
 			rs.close();
 			ps.close();
+			crs.close();
 			return crs;
 		} else {
 			openConnection();

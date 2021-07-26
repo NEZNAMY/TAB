@@ -58,9 +58,9 @@ public class Configs {
 	
 	private ConfigurationFile layout;
 	
-	private PropertyConfiguration groups;
+	private PropertyConfiguration groupFile;
 	
-	private PropertyConfiguration users;
+	private PropertyConfiguration userFile;
 	
 	private MySQL mysql;
 
@@ -115,25 +115,25 @@ public class Configs {
 			try {
 				mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
 						config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
-				groups = new MySQLGroupConfiguration(mysql);
-				users = new MySQLUserConfiguration(mysql);
+				groupFile = new MySQLGroupConfiguration(mysql);
+				userFile = new MySQLUserConfiguration(mysql);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				groups = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-				users = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+				TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
+				groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+				userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
 			}
 		} else {
-			groups = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-			users = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+			groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
+			userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
 		}
 		hintDefaultProperties();
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void hintDefaultProperties() {
-		Set<Object> groups = getConfig().getConfigurationSection("Groups").keySet();
+		Set<String> groups = getConfig().getValues().keySet();
 		if (groups.size() < 2) return;
-		Map<Object, Object> sharedProperties = new HashMap<>(getConfig().getConfigurationSection("Groups." + groups.toArray()[0])); //cloning to not delete from original one
+		Map<Object, Object> sharedProperties = new HashMap<>(getConfig().getConfigurationSection(groups.toArray(new String[0])[0])); //cloning to not delete from original one
 		for (Object groupSettings : getConfig().getConfigurationSection("Groups").values()) {
 			if (!(groupSettings instanceof Map)) continue;
 			Map<String, Object> group = (Map<String, Object>) groupSettings;
@@ -182,26 +182,6 @@ public class Configs {
 		}
 		return new ArrayList<>();
 	}
-
-	/**
-	 * Returns name of world group in specified set that may consist of multiple
-	 * worlds separated with "-" or something else defined in config
-	 * @param world - name of world to find group of
-	 * @return name of world group
-	 */
-/*	public String getWorldGroupOf(Set<?> groups, String world) {
-		if (groups.isEmpty()) return world;
-		for (Object worldGroup : groups) {
-			for (String definedWorld : worldGroup.toString().split(";")) {
-				if (definedWorld.endsWith("*")) {
-					if (world.toLowerCase().startsWith(definedWorld.substring(0, definedWorld.length()-1).toLowerCase())) return worldGroup.toString();
-				} else {
-					if (world.equalsIgnoreCase(definedWorld)) return worldGroup.toString();
-				}
-			}
-		}
-		return world;
-	}*/
 
 	/**
 	 * Writes defined line of text to file
@@ -267,11 +247,11 @@ public class Configs {
 	}
 
 	public PropertyConfiguration getGroups() {
-		return groups;
+		return groupFile;
 	}
 
 	public PropertyConfiguration getUsers() {
-		return users;
+		return userFile;
 	}
 
 	public MySQL getMysql() {

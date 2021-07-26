@@ -29,9 +29,12 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
 	@Override
 	public String getProperty(String name, String property, String server, String world) {
-		Object value = getObject("per-server." + server + "." + name + "." + property);
-		if ((value = getObject("per-server." + server + "._DEFAULT_." + property)) != null) {
+		Object value = null;
+		if ((value = getObject("per-server." + server + "." + name + "." + property)) != null) {
 			//TODO return source;
+			return toString(value);
+		}
+		if ((value = getObject("per-server." + server + "._DEFAULT_." + property)) != null) {
 			return toString(value);
 		}
 		if ((value = getObject("per-world." + world + "." + name + "." + property)) != null) {
@@ -52,7 +55,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	@SuppressWarnings("unchecked")
 	private String toString(Object obj) {
 		if (obj instanceof List) {
-			return String.join("\n", (String[]) ((List<Object>)obj).toArray(new String[0]));
+			return String.join("\n", ((List<Object>)obj).toArray(new String[0]));
 		}
 		return obj.toString();
 	}

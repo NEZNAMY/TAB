@@ -41,7 +41,7 @@ public abstract class ConfigurationFile {
 			if (source == null) throw new IllegalStateException("File does not exist and source is null");
 			Files.copy(source, file.toPath());
 		}
-		this.header = detectHeader();
+		detectHeader();
 	}
 	
 	/**
@@ -338,7 +338,7 @@ public abstract class ConfigurationFile {
 	}
 	
 	private List<String> detectHeader(){
-		List<String> header = new ArrayList<>();
+		header = new ArrayList<>();
 		try {
 			for (String line : Files.readAllLines(file.toPath())) {
 				if (line.startsWith("#")) {

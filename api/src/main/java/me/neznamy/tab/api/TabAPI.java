@@ -83,4 +83,6 @@ public abstract class TabAPI {
 	 * @return feature manager instance
 	 */
 	public abstract FeatureManager getFeatureManager();
+
+	public abstract void setBrokenFile(String path);
 }

@@ -25,7 +25,6 @@ import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
-import me.neznamy.tab.shared.ErrorManagerImpl;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.NameTag;
@@ -187,7 +186,7 @@ public class BukkitPlatform implements Platform {
 	 */
 	private ServerPlaceholder registerServerPlaceholder(String identifier, int refresh) {
 		BukkitPlatform pl = this;
-		ServerPlaceholder p = new ServerPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)){
+		ServerPlaceholder p = new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 			
 			@Override
 			public String get() {
@@ -205,7 +204,7 @@ public class BukkitPlatform implements Platform {
 	 */
 	private PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh) {
 		BukkitPlatform pl = this;
-		PlayerPlaceholder p = new PlayerPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)) {
+		PlayerPlaceholder p = new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer p) {
@@ -222,7 +221,7 @@ public class BukkitPlatform implements Platform {
 	 * @param refresh - refresh interval in milliseconds
 	 */
 	private RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh) {
-		RelationalPlaceholder p = new RelationalPlaceholder(identifier, ((ErrorManagerImpl) TAB.getInstance().getErrorManager()).fixPlaceholderInterval(identifier, refresh)) {
+		RelationalPlaceholder p = new RelationalPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
 			public String get(TabPlayer viewer, TabPlayer target) {

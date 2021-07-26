@@ -170,7 +170,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(p -> onJoin(p));
+		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
 	}
 
 	@Override

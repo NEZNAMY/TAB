@@ -65,7 +65,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * This function is called on plugin startup
 	 */
 	public void load() {
-		getAllFeatures().forEach(f -> f.load());
+		getAllFeatures().forEach(TabFeature::load);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * This function is called on plugin unload
 	 */
 	public void unload() {
-		getAllFeatures().forEach(f -> f.unload());
+		getAllFeatures().forEach(TabFeature::unload);
 	}
 
 	/**

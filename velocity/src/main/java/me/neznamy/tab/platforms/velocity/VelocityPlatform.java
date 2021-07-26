@@ -49,7 +49,8 @@ public class VelocityPlatform extends ProxyPlatform {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			return new VaultBridge(plm);
 		} else if (luckperms.isPresent()) {
-			return new LuckPerms(luckperms.get().getDescription().getVersion().get());
+			Optional<String> version = luckperms.get().getDescription().getVersion();
+			return new LuckPerms(version.isPresent() ? version.get() : "null");
 		} else {
 			return new VaultBridge(plm);
 		}
@@ -66,9 +67,9 @@ public class VelocityPlatform extends ProxyPlatform {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
 			
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				plm.requestAttribute(all, "world");
-				if (!all.getWorld().equals(((ProxyTabPlayer)all).getAttribute("world"))){
-					((ITabPlayer)all).setWorld(((ProxyTabPlayer)all).getAttribute("world"));
+				String world = ((ProxyTabPlayer)all).getAttribute("world");
+				if (!all.getWorld().equals(world)){
+					((ITabPlayer)all).setWorld(world);
 					TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
 				}
 			}

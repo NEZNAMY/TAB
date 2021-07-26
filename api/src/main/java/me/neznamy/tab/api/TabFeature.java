@@ -145,8 +145,7 @@ public abstract class TabFeature {
 	 * @param sender - packet sender
 	 * @param packet - packet received
 	 * @return modified packet or null if packet should be cancelled
-	 * @throws IllegalAccessException 
-	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException
 	 */
 	public Object onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
 		return packet;

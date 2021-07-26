@@ -18,22 +18,18 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 	private Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
 	private Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
 
-	public MySQLUserConfiguration(MySQL mysql) {
+	public MySQLUserConfiguration(MySQL mysql) throws SQLException {
 		this.mysql = mysql;
-		try {
-			mysql.execute("create table if not exists tab_users (`user` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
-			CachedRowSet crs = mysql.getCRS("select * from tab_users");
-			while (crs.next()) {
-				String user = crs.getString("user");
-				String property = crs.getString("property");
-				String value = crs.getString("value");
-				String world = crs.getString("world");
-				String server = crs.getString("server");
-				TAB.getInstance().debug("Loaded user: " + String.format("%s, %s, %s, %s, %s", user, property, value, world, server));
-				setProperty0(user, property, server, world, value);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		mysql.execute("create table if not exists tab_users (`user` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
+		CachedRowSet crs = mysql.getCRS("select * from tab_users");
+		while (crs.next()) {
+			String user = crs.getString("user");
+			String property = crs.getString("property");
+			String value = crs.getString("value");
+			String world = crs.getString("world");
+			String server = crs.getString("server");
+			TAB.getInstance().debug("Loaded user: " + String.format("%s, %s, %s, %s, %s", user, property, value, world, server));
+			setProperty0(user, property, server, world, value);
 		}
 	}
 
@@ -46,7 +42,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 			setProperty0(user, property, server, world, value);
 			if (value != null) mysql.execute("insert into `tab_users` (`user`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", user, property, value, world, server);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
 		}
 	}
 	

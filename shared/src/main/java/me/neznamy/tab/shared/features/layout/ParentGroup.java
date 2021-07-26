@@ -18,11 +18,11 @@ public class ParentGroup {
 		this.condition = condition;
 		this.slots = slots;
 		for (int slot : slots) {
-			playerSlots.put(slot, new PlayerSlot(layout, layout.uuids.get(slot), slot));
+			playerSlots.put(slot, new PlayerSlot(layout, layout.getUUID(slot), slot));
 		}
 	}
 
-	public void tick(TabPlayer viewer, List<TabPlayer> remainingPlayers){
+	public void tick(List<TabPlayer> remainingPlayers){
 		int index = 0;
 		for (TabPlayer p : new ArrayList<>(remainingPlayers)) {
 			if (index == slots.length || (condition != null && !condition.isMet(p))) continue;

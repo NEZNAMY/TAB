@@ -47,9 +47,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	//players with toggled bossbar
 	private List<String> bossbarOffPlayers = new ArrayList<>();
 
-	//list of worlds / servers where bossbar feature is disabled entirely
-	private List<String> disabledWorlds;
-
 	//time when bossbar announce ends, used for placeholder
 	private long announceEndTime;
 
@@ -246,7 +243,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	@Override
 	public BossBar createBossBar(String name, String title, String progress, String color, String style) {
 		BossBar bar = new BossBarLine(this, name, null, color, style, title, progress);
-		lines.put(bar.getName(), (BossBarLine) bar);
+		lines.put(bar.getName(), bar);
 		return bar;
 	}
 

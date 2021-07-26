@@ -248,6 +248,7 @@ public class TAB extends TabAPI {
 		debugMode = debug;
 	}
 
+	@Override
 	public void setBrokenFile(String file) {
 		brokenFile = file;
 	}

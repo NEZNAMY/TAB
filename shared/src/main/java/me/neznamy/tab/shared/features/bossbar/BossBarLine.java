@@ -45,9 +45,9 @@ public class BossBarLine implements BossBar {
 	private Set<TabPlayer> players = new HashSet<>();
 	
 	//refreshers
-	private TextRefresher textRefresher;
-	private ProgressRefresher progressRefresher;
-	private ColorAndStyleRefresher colorAndStyleRefresher;
+	private TextRefresher textRefresher = new TextRefresher(this);
+	private ProgressRefresher progressRefresher = new ProgressRefresher(this);
+	private ColorAndStyleRefresher colorAndStyleRefresher = new ColorAndStyleRefresher(this);
 
 	/**
 	 * Constructs new instance with given parameters
@@ -68,9 +68,9 @@ public class BossBarLine implements BossBar {
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher = new TextRefresher(this));
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher = new ProgressRefresher(this));
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher = new ColorAndStyleRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher);
 	}
 	
 	/**

@@ -23,7 +23,7 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	 * @param plugin - instance of main class
 	 */
 	public BungeePluginMessageHandler(Plugin plugin) {
-		ProxyServer.getInstance().registerChannel(CHANNEL_NAME);
+		ProxyServer.getInstance().registerChannel(channelName);
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
 	}
 
@@ -33,7 +33,7 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		if (!event.getTag().equalsIgnoreCase(CHANNEL_NAME)) return;
+		if (!event.getTag().equalsIgnoreCase(channelName)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
 			long time = System.nanoTime();
 			BungeeTabPlayer receiver = (BungeeTabPlayer) TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
@@ -47,6 +47,6 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
 		if (((ProxiedPlayer) player.getPlayer()).getServer() == null) return; //not connected to any server yet
-		((ProxiedPlayer) player.getPlayer()).getServer().sendData(CHANNEL_NAME, message);
+		((ProxiedPlayer) player.getPlayer()).getServer().sendData(channelName, message);
 	}
 }

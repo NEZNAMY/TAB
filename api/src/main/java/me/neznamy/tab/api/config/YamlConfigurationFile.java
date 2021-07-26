@@ -51,7 +51,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			if (input != null) input.close();
 			TabAPI tab = TabAPI.getInstance();
 			tab.getErrorManager().startupWarn("File " + destination + " has broken syntax.");
-//			tab.setBrokenFile(file.getPath());
+			tab.setBrokenFile(file.getPath());
 			tab.getPlatform().sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
 			List<String> suggestions = YamlAssist.getSuggestions(file);
 			if (!suggestions.isEmpty()) {

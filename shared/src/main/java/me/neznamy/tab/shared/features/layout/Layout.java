@@ -27,7 +27,7 @@ public class Layout extends TabFeature {
 	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
 	private List<Integer> emptySlots = new ArrayList<>();
 	private List<ParentGroup> parentGroups = new ArrayList<>();
-	public Map<Integer, UUID> uuids = new HashMap<>();
+	private Map<Integer, UUID> uuids = new HashMap<>();
 
 	public Layout() {
 		super("Tablist layout");
@@ -78,9 +78,9 @@ public class Layout extends TabFeature {
 		}
 	}
 
-	private void tick(TabPlayer viewer, List<TabPlayer> players) {
+	private void tick(List<TabPlayer> players) {
 		for (ParentGroup parent : parentGroups) {
-			parent.tick(viewer, players);
+			parent.tick(players);
 		}
 	}
 
@@ -124,14 +124,9 @@ public class Layout extends TabFeature {
 
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(p -> onJoin(p));
+		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, UsageType.REPEATING_TASK, () -> {
-
-			List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded()) continue;
-				tick(p, new ArrayList<>(players));
-			}
+			tick(new ArrayList<>(sortPlayers(TAB.getInstance().getOnlinePlayers())));
 		});
 	}
 
@@ -144,6 +139,10 @@ public class Layout extends TabFeature {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
 		}
+	}
+
+	public UUID getUUID(int slot) {
+		return uuids.get(slot);
 	}
 
 	public enum Direction {

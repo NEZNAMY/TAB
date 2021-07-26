@@ -23,7 +23,7 @@ public class SpectatorFix extends TabFeature {
 	 */
 	public SpectatorFix() {
 		super("Spectator fix");
-		TAB.getInstance().debug(String.format("Loaded SpectatorFix feature"));
+		TAB.getInstance().debug("Loaded SpectatorFix feature");
 	}
 	
 	@Override
