@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
@@ -64,6 +62,10 @@ public class TAB {
 	private boolean disabled;
 	
 	private PlaceholderManager placeholderManager;
+
+	private static boolean isPaperSpigot;
+
+	public static List<String> paperSpigotNames = Arrays.asList("paper","tuinity","purpur","airplane","purplane","yatopia","tacospigot");
 	
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
@@ -282,4 +284,8 @@ public class TAB {
 	public ProtocolVersion getServerVersion() {
 		return serverVersion;
 	}
+
+	public boolean getPaperSpigot(){ return isPaperSpigot; }
+
+	public void setPaperSpigot(boolean isPaperSpigot){ this.isPaperSpigot = isPaperSpigot;}
 }

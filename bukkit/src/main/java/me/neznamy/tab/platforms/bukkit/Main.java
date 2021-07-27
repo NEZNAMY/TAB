@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -36,6 +37,17 @@ public class Main extends JavaPlugin {
 		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), new BukkitPacketBuilder(NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
+		}
+
+		//iterate through PaperSpigot forks list to see if running server version is supported
+		for (String v : TAB.paperSpigotNames) {
+			if(Bukkit.getServer().getVersion().toLowerCase().contains(v)){
+				TAB.getInstance().setPaperSpigot(true);
+				break;
+			}
+		}
+		if(TAB.getInstance().getPaperSpigot() == false){
+			Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] \u00A76Warning: %mspt% won't work because you are not running PaperSpigot! Using:"+Bukkit.getServer().getVersion());
 		}
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		TABCommand command = new TABCommand();
