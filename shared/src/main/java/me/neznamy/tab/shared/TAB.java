@@ -62,10 +62,6 @@ public class TAB {
 	private boolean disabled;
 	
 	private PlaceholderManager placeholderManager;
-
-	private static boolean isPaperSpigot;
-
-	public static List<String> paperSpigotNames = Arrays.asList("paper","tuinity","purpur","airplane","purplane","yatopia","tacospigot");
 	
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
@@ -285,7 +281,4 @@ public class TAB {
 		return serverVersion;
 	}
 
-	public boolean getPaperSpigot(){ return isPaperSpigot; }
-
-	public void setPaperSpigot(boolean isPaperSpigot){ this.isPaperSpigot = isPaperSpigot;}
 }

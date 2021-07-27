@@ -115,18 +115,16 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 		});
-		if(TAB.getInstance().getPaperSpigot()==false){
 
-		} else {
+		try{
+			Class.forName("com.destroystokyo.paper.PaperConfig");
 			placeholders.add(new ServerPlaceholder("%mspt%", 1000) {
 				public String get() {
-					try {
 						return String.valueOf(roundDown.format(Bukkit.getAverageTickTime()));
-					} catch(Exception e){
-						return null;
-					}
 				}
 			});
+		}catch(Exception e){
+			Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] \u00A76Warning: %mspt% won't work because you are not running PaperSpigot! Using: "+Bukkit.getServer().getVersion());
 		}
 		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(TabPlayer p) {

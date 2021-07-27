@@ -38,17 +38,6 @@ public class Main extends JavaPlugin {
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
 		}
-
-		//iterate through PaperSpigot forks list to see if running server version is supported
-		for (String v : TAB.paperSpigotNames) {
-			if(Bukkit.getServer().getVersion().toLowerCase().contains(v)){
-				TAB.getInstance().setPaperSpigot(true);
-				break;
-			}
-		}
-		if(TAB.getInstance().getPaperSpigot() == false){
-			Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] \u00A76Warning: %mspt% won't work because you are not running PaperSpigot! Using:"+Bukkit.getServer().getVersion());
-		}
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
 		TABCommand command = new TABCommand();
 		Bukkit.getPluginCommand("tab").setExecutor(command);
