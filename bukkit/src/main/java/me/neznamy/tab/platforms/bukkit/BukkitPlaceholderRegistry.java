@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -82,6 +83,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public List<Placeholder> registerPlaceholders() {
+		NumberFormat roundDown = NumberFormat.getInstance();
+		roundDown.setRoundingMode(RoundingMode.DOWN);
+		roundDown.setMaximumFractionDigits(2);
 		placeholders = new ArrayList<>();
 		placeholders.add(new PlayerPlaceholder("%money%", 1000) {
 			public String get(TabPlayer p) {
@@ -111,6 +115,17 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 		});
+
+		try{
+			Class.forName("com.destroystokyo.paper.PaperConfig");
+			placeholders.add(new ServerPlaceholder("%mspt%", 1000) {
+				public String get() {
+						return String.valueOf(roundDown.format(Bukkit.getAverageTickTime()));
+				}
+			});
+		}catch(Exception e){
+			Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] \u00A76Warning: %mspt% won't work because you are not running PaperSpigot! Using: "+Bukkit.getServer().getVersion());
+		}
 		placeholders.add(new PlayerPlaceholder("%canseeonline%", 2000) {
 			public String get(TabPlayer p) {
 				int count = 0;
