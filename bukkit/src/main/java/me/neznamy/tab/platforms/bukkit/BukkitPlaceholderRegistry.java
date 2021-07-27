@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -37,12 +38,14 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private Chat chat;
 
 	private Object essentials;
-	
-	//essentials methods
 	private Method essGetUser;
 	private Method essIsAfk;
 	
 	private Method purpurIsAfk;
+	
+	private Object server;
+	private Field recentTps;
+	
 
 	/**
 	 * Constructs new instance with given parameter
@@ -69,57 +72,61 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		} catch (NoSuchMethodException | SecurityException e1) {
 			//not purpur
 		}
+		try {
+			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
+			recentTps = server.getClass().getField("recentTps");
+		} catch (Exception e) {
+			//not spigot
+		}
 	}
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
 			}
 		});
 		manager.registerServerPlaceholder(new ServerPlaceholder("%tps%", 1000) {
-			public String get() {
+			public Object get() {
 				try {
-					Object nmsServer = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
-					double value = ((double[]) nmsServer.getClass().getField("recentTps").get(nmsServer))[0];
-					return decimal2.format(Math.min(20, value));
+					return decimal2.format(Math.min(20, ((double[]) recentTps.get(server))[0]));
 				} catch (Exception t) {
 					return "-1";
 				}
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 				}
-				return String.valueOf(count);
+				return count;
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 				}
-				return String.valueOf(count);
+				return count;
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%nonstaffonline%", 2000) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				int count = TAB.getInstance().getOnlinePlayers().size();
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count--;
 				}
-				return String.valueOf(count);
+				return count;
 			}
 		});
 		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%health%", 100) {
-				public String get(TabPlayer p) {
-					return String.valueOf((int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+				public Object get(TabPlayer p) {
+					return (int) Math.ceil(((Player) p.getPlayer()).getHealth());
 				}
 			});
 		}
@@ -134,28 +141,26 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerAFKPlaceholder(PlaceholderManager manager) {
 		Plugin afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
 		boolean antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
-		String noAfk = "no";
-		String yesAfk = "yes";
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				try {
 					if (essentials != null) {
 						Object user = essGetUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
-						if ((boolean) essIsAfk.invoke(user)) return yesAfk;
+						if ((boolean) essIsAfk.invoke(user)) return true;
 					}
 					if (afkplus != null) {
 						Object afkplusplayer = afkplus.getClass().getMethod("getPlayer", UUID.class).invoke(afkplus, p.getUniqueId());
-						if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return yesAfk;
+						if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return true;
 					}
 					if (antiafkplus) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return yesAfk;
+						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
 					}
-					if (purpurIsAfk != null && (boolean) purpurIsAfk.invoke(p.getPlayer())) return yesAfk;
+					if (purpurIsAfk != null && (boolean) purpurIsAfk.invoke(p.getPlayer())) return true;
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
 				}
-				return noAfk;
+				return false;
 			}
 		});
 	}
@@ -167,24 +172,24 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
-				public String get(TabPlayer p) {
+				public Object get(TabPlayer p) {
 					return chat.getPlayerPrefix((Player) p.getPlayer());
 				}
 			});
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
-				public String get(TabPlayer p) {
+				public Object get(TabPlayer p) {
 					return chat.getPlayerSuffix((Player) p.getPlayer());
 				}
 			});
 		} else {
 			manager.registerServerPlaceholder(new ServerPlaceholder("%vault-prefix%", 1000000) {
-				public String get() {
+				public Object get() {
 					return "";
 				}
 			});
 			manager.registerServerPlaceholder(new ServerPlaceholder("%vault-suffix%", 1000000) {
-				public String get() {
+				public Object get() {
 					return "";
 				}
 			});
@@ -209,7 +214,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				manager.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 					@Override
-					public String get(TabPlayer p) {
+					public Object get(TabPlayer p) {
 						Bukkit.getScheduler().runTask(plugin, () -> {
 
 							long time = System.nanoTime();

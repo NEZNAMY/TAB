@@ -3,6 +3,7 @@ package me.neznamy.tab.api.placeholder;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 
@@ -32,7 +33,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 */
 	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
 		String mapKey = viewer.getName() + "-" + target.getName();
-		String newValue = get(viewer, target);
+		String newValue = String.valueOf(get(viewer, target));
 		if (!getLastValues().containsKey(mapKey) || !getLastValues().get(mapKey).equals(newValue)) {
 			getLastValues().put(mapKey, newValue);
 			return true;
@@ -49,7 +50,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!getLastValues().containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		String value = getLastValues().get(viewer.getName() + "-" + target.getName());
-		String newValue = setPlaceholders(findReplacement(replacements, EnumChatFormat.color(value)), target);
+		String newValue = String.valueOf(setPlaceholders(TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, EnumChatFormat.color(value)), target));
 		if (newValue.contains("%value%")) {
 			newValue = newValue.replace("%value%", value);
 		}
@@ -65,7 +66,7 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
 	 * @return new value
 	 */
-	public abstract String get(TabPlayer viewer, TabPlayer target);
+	public abstract Object get(TabPlayer viewer, TabPlayer target);
 
 	public Map<String, String> getLastValues() {
 		return lastValue;

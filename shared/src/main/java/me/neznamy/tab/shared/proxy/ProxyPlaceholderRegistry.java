@@ -11,21 +11,21 @@ public abstract class ProxyPlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (!all.isVanished() || p.hasPermission("tab.seevanished")) count++;
 				}
-				return String.valueOf(count);
+				return count;
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (all.hasPermission("tab.staff") && (!all.isVanished() || p.hasPermission("tab.seevanished"))) count++;
 				}
-				return String.valueOf(count);
+				return count;
 			}
 		});
 	}

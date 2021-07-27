@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,36 +42,37 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
 	//map of String-Set of features using placeholder
-	private Map<String, Set<TabFeature>> placeholderUsage = new HashMap<>();
+	private Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+	
+	private AtomicInteger atomic = new AtomicInteger();
 
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders");
 		loadRefreshIntervals();
-		AtomicInteger atomic = new AtomicInteger();
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, () -> {
-
-			int loopTime = atomic.addAndGet(50);
-			Map<TabPlayer, Set<TabFeature>> update = new HashMap<>();
-			Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>();
-			boolean somethingChanged = false;
-			for (String identifier : placeholderUsage.keySet()) {
-				Placeholder placeholder = getPlaceholder(identifier);
-				if (loopTime % placeholder.getRefresh() != 0) continue;
-				if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
-				if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
-				if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
-			}
-			if (somethingChanged) refresh(forceUpdate, update);
-		});
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, this::refresh);
+	}
+	
+	private void refresh() {
+		int loopTime = atomic.addAndGet(50);
+		int size = TAB.getInstance().getOnlinePlayers().size();
+		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
+		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
+		boolean somethingChanged = false;
+		for (String identifier : placeholderUsage.keySet()) {
+			Placeholder placeholder = getPlaceholder(identifier);
+			if (loopTime % placeholder.getRefresh() != 0) continue;
+			if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
+			if (placeholder instanceof PlayerPlaceholder && updatePlayerPlaceholder((PlayerPlaceholder) placeholder, update)) somethingChanged = true;
+			if (placeholder instanceof ServerPlaceholder && updateServerPlaceholder((ServerPlaceholder) placeholder, update)) somethingChanged = true;
+		}
+		if (somethingChanged) refresh(forceUpdate, update);
 	}
 
 	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
-			if (!p1.isLoaded()) continue;
 			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
-				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<>());
 					forceUpdate.get(p2).addAll(placeholderUsage.get(placeholder.getIdentifier()));
@@ -91,7 +93,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
 				update.computeIfAbsent(all, k -> new HashSet<>());
 				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
@@ -233,7 +234,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	@Override
 	public List<String> detectPlaceholders(String text){
 		List<String> placeholders = new ArrayList<>();
-		if (text == null) return placeholders;
+		if (text == null || !text.contains("%")) return placeholders;
 		Matcher m = placeholderPattern.matcher(text);
 		while (m.find()) {
 			placeholders.add(m.group());
@@ -266,5 +267,27 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	@Override
 	public Map<String, Set<TabFeature>> getPlaceholderUsage() {
 		return placeholderUsage;
+	}
+	
+	@Override
+	public Object findReplacement(Map<Object, String> replacements, Object output) {
+		if (replacements.isEmpty()) return output;
+		if (replacements.containsKey(output)) {
+			return replacements.get(output);
+		}
+		try {
+			float actualValue = Float.parseFloat(String.valueOf(output).replace(",", ""));
+			for (Entry<Object, String> entry : replacements.entrySet()) {
+				String key = entry.getKey().toString();
+				if (key.contains("-")) {
+					String[] arr = key.split("-");
+					if (Float.parseFloat(arr[0]) <= actualValue && actualValue <= Float.parseFloat(arr[1])) return entry.getValue();
+				}
+			}
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			//nope
+		}
+		if (replacements.containsKey("else")) return replacements.get("else");
+		return output;
 	}
 }

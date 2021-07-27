@@ -23,9 +23,9 @@ public class DataWatcherRegistry {
 	/**
 	 * Initializes required NMS classes and fields
 	 */
-	public DataWatcherRegistry(NMSStorage nms, Class<?> registry) {
+	public DataWatcherRegistry(NMSStorage nms) {
 		if (nms.getMinorVersion() >= 9) {
-			Map<String, Object> fields = getStaticFields(registry);
+			Map<String, Object> fields = getStaticFields(nms.getClass("DataWatcherRegistry"));
 			registryByte = fields.get("a");
 			registryInteger = fields.get("b");
 			registryFloat = fields.get("c");
@@ -46,9 +46,9 @@ public class DataWatcherRegistry {
 	 */
 	private Map<String, Object> getStaticFields(Class<?> clazz){
 		Map<String, Object> fields = new HashMap<>();
-		if (clazz == null) return fields;
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
+				field.setAccessible(true);
 				try {
 					fields.put(field.getName(), field.get(null));
 				} catch (Exception e) {

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.Placeholder;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -81,13 +81,11 @@ public abstract class SimpleCondition {
 	 * @return replaced string
 	 */
 	public String parseSide(TabPlayer p, String value, List<String> placeholders) {
-		String result = value;
+		Object result = value;
 		for (String identifier : placeholders) {
-			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-			if (pl != null) result = pl.set(result, p);
+			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result.toString(), p);
 		}
-		if (result.contains("&")) result = result.replace('&', '\u00a7');
-		return result;
+		return EnumChatFormat.color(result.toString());
 	}
 	
 	/**

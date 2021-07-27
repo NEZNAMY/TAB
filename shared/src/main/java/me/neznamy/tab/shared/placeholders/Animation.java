@@ -1,7 +1,11 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -18,6 +22,9 @@ public class Animation {
 	//change interval
 	private int interval;
 	
+	//all nested placeholders used in animation frames
+	private List<String> nestedPlaceholders;
+	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
 	 * refresh is not divisible by 50
@@ -29,6 +36,12 @@ public class Animation {
 		this.name = name;
 		this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
 		this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
+		Set<String> placeholders = new HashSet<>();
+		for (int i=0; i<messages.length; i++) {
+			messages[i] = EnumChatFormat.color(messages[i]);
+			placeholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
+		}
+		nestedPlaceholders = new ArrayList<>(placeholders);
 	}
 	
 	/**
@@ -61,5 +74,13 @@ public class Animation {
 	 */
 	public int getInterval() {
 		return interval;
+	}
+
+	/**
+	 * Returns array of all placeholders used in all frames
+	 * @return array of all placeholders used in all frames
+	 */
+	public List<String> getNestedPlaceholders() {
+		return nestedPlaceholders;
 	}
 }

@@ -196,7 +196,7 @@ public class NMSStorage {
 			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
 			methods.put("DataWatcher_REGISTER", getMethod(getClass("DataWatcher"), new String[]{"a", "func_75682_a"}, int.class, Object.class));
 		}
-		dataWatcherRegistry = new DataWatcherRegistry(this, getClass("DataWatcherRegistry"));
+		dataWatcherRegistry = new DataWatcherRegistry(this);
 	}
 	
 	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
@@ -319,6 +319,7 @@ public class NMSStorage {
 		fields.put("PacketPlayOutScoreboardObjective_METHOD", list.get(list.size()-1));
 		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
 		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
+		fields.put("IScoreboardCriteria", getFields(getClass("IScoreboardCriteria"), getClass("IScoreboardCriteria")).get(0));
 		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "func_96670_d"}));
 		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
 		if (minorVersion >= 8) {
@@ -410,12 +411,13 @@ public class NMSStorage {
 				return Class.forName("net.minecraft.server." + serverPackage + "." + name);
 			} catch (ClassNotFoundException e) {
 				//modded server?
-				return Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+				Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
 			} catch (NullPointerException e) {
 				//nested class in modded server
 				throw new ClassNotFoundException(name);
 			}
 		}
+		throw new ClassNotFoundException(name);
 	}
 
 	/**

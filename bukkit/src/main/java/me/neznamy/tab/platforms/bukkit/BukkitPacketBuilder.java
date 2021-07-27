@@ -591,6 +591,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (nms.getMinorVersion() >= 13) {
 			return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, null, stringToComponent("{\"text\":\"\"}"), null);
 		}
-		return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, nms.getFields(nms.getClass("IScoreboardCriteria"), nms.getClass("IScoreboardCriteria")).get(0).get(null));
+		return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, nms.getField("IScoreboardCriteria").get(null));
 	}
 }

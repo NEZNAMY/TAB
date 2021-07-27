@@ -189,7 +189,7 @@ public class BukkitPlatform implements Platform {
 		ServerPlaceholder p = new ServerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
 			
 			@Override
-			public String get() {
+			public Object get() {
 				return pl.setPlaceholders(null, identifier);
 			}
 		};
@@ -207,7 +207,7 @@ public class BukkitPlatform implements Platform {
 		PlayerPlaceholder p = new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)) {
 
 			@Override
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				return pl.setPlaceholders((Player) p.getPlayer(), identifier);
 			}
 		};

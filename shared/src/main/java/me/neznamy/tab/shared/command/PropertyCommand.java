@@ -14,10 +14,9 @@ public abstract class PropertyCommand extends SubCommand {
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		List<String> suggestions = new ArrayList<>();
-		if (arguments.length == 2) {
-			for (String property : getAllProperties()) {
-				if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
-			}
+		if (arguments.length != 2) return suggestions;
+		for (String property : getAllProperties()) {
+			if (property.startsWith(arguments[1].toLowerCase())) suggestions.add(property);
 		}
 		return suggestions;
 	}

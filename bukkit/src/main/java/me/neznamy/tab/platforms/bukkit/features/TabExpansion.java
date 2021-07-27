@@ -9,7 +9,6 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
 import me.neznamy.tab.shared.PropertyImpl;
@@ -106,7 +105,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	private String findReplacement(String placeholder, Player player) {
 		String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
 		Map<Object, String> replacements = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + placeholder);
-		return Placeholder.findReplacement(replacements, output).replace("%value%", output);
+		return TAB.getInstance().getPlaceholderManager().findReplacement(replacements, output).toString().replace("%value%", output);
 	}
 	
 	/**

@@ -1,6 +1,8 @@
 package me.neznamy.tab.api.placeholder;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,7 +41,7 @@ public abstract class Placeholder {
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
-			replacements.put(key.replace('&', '\u00a7'), value);
+			replacements.put(key.replace('&', '\u00a7'), value.replace('&', '\u00a7'));
 			//snakeyaml converts yes & no to booleans, making them not work when used without "
 			if (key.equals("true")) {
 				replacements.put("yes", value);
@@ -72,12 +74,13 @@ public abstract class Placeholder {
 	 * @param p - player to set placeholder for
 	 * @return string with this placeholder replaced
 	 */
-	public String set(String s, TabPlayer p) {
+	public Object set(String s, TabPlayer p) {
 		try {
-			String value = getLastValue(p);
-			if (value == null) value = "";
-			String newValue = setPlaceholders(findReplacement(replacements, value), p);
-			newValue = replace(newValue, "%value%", value);
+			Object originalvalue = getLastValue(p);
+			Object value = TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
+			if (!(value instanceof String)) return value;
+			String newValue = setPlaceholders(value, p).toString();
+			newValue = replace(newValue, "%value%", originalvalue.toString());
 			return replace(s, identifier, newValue);
 		} catch (Exception t) {
 			TabAPI.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
@@ -85,52 +88,29 @@ public abstract class Placeholder {
 		}
 	}
 	
+	public List<String> getNestedPlaceholders(String output) {
+		if (!output.contains("%")) return Collections.emptyList();
+		return TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(output);
+	}
+	
 	private String replace(String string, String original, String replacement) {
 		if (!string.contains(original)) return string;
 		if (string.equals(original)) return replacement;
 		return string.replace(original, replacement);
 	}
-	
-	/**
-	 * Finds placeholder output replacement
-	 * @param replacements - map of replacements from premiumconfig
-	 * @param originalOutput - original output of the placeholder
-	 * @return replaced placeholder output
-	 */
-	public static String findReplacement(Map<Object, String> replacements, String originalOutput) {
-		if (replacements.isEmpty()) return originalOutput;
-		if (replacements.containsKey(originalOutput)) {
-			return replacements.get(originalOutput);
-		}
-		for (Entry<Object, String> entry : replacements.entrySet()) {
-			String key = entry.getKey().toString();
-			if (key.contains("-")) {
-				try {
-					float low = Float.parseFloat(key.split("-")[0]);
-					float high = Float.parseFloat(key.split("-")[1]);
-					float actualValue = Float.parseFloat(originalOutput.replace(",", ""));
-					if (low <= actualValue && actualValue <= high) return entry.getValue();
-				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-					//nope
-				}
-			}
-		}
-		if (replacements.containsKey("else")) return replacements.get("else");
-		return originalOutput;
-	}
-	
+
 	/**
 	 * Applies all placeholders from outputs
 	 * @param text - replaced placeholder
 	 * @param p - player to replace for
 	 * @return text with replaced placeholders in output
 	 */
-	protected String setPlaceholders(String text, TabPlayer p) {
-		if (!text.contains("%")) return text;
-		String replaced = text;
-		for (String s : TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(replaced)) {
+	protected Object setPlaceholders(Object text, TabPlayer p) {
+		if (identifier.equals(text) || !(text instanceof String)) return text;
+		Object replaced = (String) text;
+		for (String s : getNestedPlaceholders((String) text)) {
 			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;
-			replaced = TabAPI.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced, p);
+			replaced = TabAPI.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
 		return replaced;
 	}
@@ -140,5 +120,5 @@ public abstract class Placeholder {
 	 * @param p - player to check value for
 	 * @return last known value
 	 */
-	public abstract String getLastValue(TabPlayer p);
+	public abstract Object getLastValue(TabPlayer p);
 }

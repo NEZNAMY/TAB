@@ -50,4 +50,12 @@ public interface PlaceholderManager {
 	 * @return placeholder usage map
 	 */
 	public Map<String, Set<TabFeature>> getPlaceholderUsage();
+	
+	/**
+	 * Finds placeholder output replacement
+	 * @param replacements - map of replacements from premiumconfig
+	 * @param originalOutput - original output of the placeholder
+	 * @return replaced placeholder output
+	 */
+	public Object findReplacement(Map<Object, String> replacements, Object output);
 }

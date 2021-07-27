@@ -21,23 +21,23 @@ public class BungeePlaceholderRegistry extends ProxyPlaceholderRegistry {
 	public void registerPlaceholders(PlaceholderManager manager) {
 		super.registerPlaceholders(manager);
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
-			public String get(TabPlayer p) {
+			public Object get(TabPlayer p) {
 				return ((ProxiedPlayer) p.getPlayer()).getDisplayName();
 			}
 		});
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
 			manager.registerServerPlaceholder(new ServerPlaceholder("%online_" + server.getKey() + "%", 1000) {
-				public String get() {
-					return String.valueOf(server.getValue().getPlayers().size());
+				public Object get() {
+					return server.getValue().getPlayers().size();
 				}
 			});
 			manager.registerServerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
-				public String get() {
+				public Object get() {
 					int count = server.getValue().getPlayers().size();
 					for (ProxiedPlayer p : server.getValue().getPlayers()) {
 						if (((BungeeTabPlayer)TAB.getInstance().getPlayer(p.getUniqueId())).isVanished()) count--;
 					}
-					return String.valueOf(count);
+					return count;
 				}
 			});
 		}

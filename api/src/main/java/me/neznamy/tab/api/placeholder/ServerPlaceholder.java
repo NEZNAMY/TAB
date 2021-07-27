@@ -8,7 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class ServerPlaceholder extends Placeholder{
 
 	//last known value of the placeholder
-	private String lastValue;
+	private Object lastValue;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -24,14 +24,13 @@ public abstract class ServerPlaceholder extends Placeholder{
 	 * @return true if value changed, false if not
 	 */
 	public boolean update() {
-		String newValue = get();
-		if (newValue == null) newValue = "";
+		Object newValue = get();
 		
 		//make invalid placeholders return identifier instead of nothing
-		if (newValue.equals(identifier) && lastValue == null) {
+		if (identifier.equals(newValue) && lastValue == null) {
 			lastValue = identifier;
 		}
-		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && (lastValue == null || !lastValue.equals(newValue))) {
+		if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
 			lastValue = newValue;
 			return true;
 		}
@@ -39,7 +38,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	}
 
 	@Override
-	public String getLastValue(TabPlayer p) {
+	public Object getLastValue(TabPlayer p) {
 		if (lastValue == null) update();
 		return lastValue;
 	}
@@ -48,5 +47,5 @@ public abstract class ServerPlaceholder extends Placeholder{
 	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
 	 * @return new value
 	 */
-	public abstract String get();
+	public abstract Object get();
 }

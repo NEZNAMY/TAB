@@ -13,7 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class PlayerPlaceholder extends Placeholder {
 
 	//last known values
-	private Map<String, String> lastValues = new HashMap<>();
+	private Map<String, Object> lastValues = new HashMap<>();
 	
 	//list of players with force update
 	private Set<String> forceUpdate = new HashSet<>();
@@ -33,27 +33,26 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @return true if value changed since last time, false if not
 	 */
 	public boolean update(TabPlayer p) {
-		String newValue = get(p);
-		if (newValue == null) newValue = "";
+		Object newValue = get(p);
 		
 		//make invalid placeholders return identifier instead of nothing
-		if (newValue.equals(identifier) && !getLastValues().containsKey(p.getName())) {
-			getLastValues().put(p.getName(), identifier);
+		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
+			lastValues.put(p.getName(), identifier);
 		}
 		//using String.valueOf to remove one check and fix rare NPE caused by multi thread access
-		if (!newValue.equals("ERROR") && !newValue.equals(identifier) && !String.valueOf(getLastValues().get(p.getName())).equals(newValue)) {
-			getLastValues().put(p.getName(), newValue);
+		if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (!lastValues.containsKey(p.getName()) || !lastValues.get(p.getName()).equals(newValue))) {
+			lastValues.put(p.getName(), newValue);
 			return true;
 		}
-		if (getForceUpdate().contains(p.getName())) {
-			getForceUpdate().remove(p.getName());
+		if (forceUpdate.contains(p.getName())) {
+			forceUpdate.remove(p.getName());
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public String getLastValue(TabPlayer p) {
+	public Object getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValues.containsKey(p.getName())) {
 			update(p);
@@ -66,9 +65,9 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @param p - player to get placeholder value for
 	 * @return value placeholder returned
 	 */
-	public abstract String get(TabPlayer p);
+	public abstract Object get(TabPlayer p);
 
-	public Map<String, String> getLastValues() {
+	public Map<String, Object> getLastValues() {
 		return lastValues;
 	}
 

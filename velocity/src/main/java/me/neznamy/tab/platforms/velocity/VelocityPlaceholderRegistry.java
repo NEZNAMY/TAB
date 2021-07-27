@@ -28,8 +28,8 @@ public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 		super.registerPlaceholders(manager);
 		for (RegisteredServer rServer : server.getAllServers()) {
 			manager.registerServerPlaceholder(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
-				public String get() {
-					return String.valueOf(rServer.getPlayersConnected().size());
+				public Object get() {
+					return rServer.getPlayersConnected().size();
 				}
 			});
 		}

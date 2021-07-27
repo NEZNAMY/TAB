@@ -126,17 +126,22 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 */
 	private void checkForMisconfiguration() {
 		if (!defaultScoreboard.equalsIgnoreCase("NONE") && !scoreboards.containsKey(defaultScoreboard)) {
-			TAB.getInstance().getErrorManager().startupWarn("Unknown scoreboard &e\"" + defaultScoreboard + "\"&c set as default scoreboard.");
+			TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as default scoreboard.", defaultScoreboard));
 			defaultScoreboard = "NONE";
 		}
 		for (Entry<String, String> entry : perWorld.entrySet()) {
 			if (!scoreboards.containsKey(entry.getValue())) {
-				TAB.getInstance().getErrorManager().startupWarn("Unknown scoreboard &e\"" + entry.getValue() + "\"&c set as per-world scoreboard in world &e\"" + entry.getKey() + "\"&c.");
+				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as per-world scoreboard in world &e\"%s\"&c.", entry.getValue(), entry.getKey()));
+			}
+		}
+		for (Entry<String, String> entry : perServer.entrySet()) {
+			if (!scoreboards.containsKey(entry.getValue())) {
+				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as per-server scoreboard in server &e\"%s\"&c.", entry.getValue(), entry.getKey()));
 			}
 		}
 		for (Scoreboard scoreboard : scoreboards.values()) {
 			if (((ScoreboardImpl) scoreboard).getChildScoreboard() != null && !scoreboards.containsKey(((ScoreboardImpl) scoreboard).getChildScoreboard())) {
-				TAB.getInstance().getErrorManager().startupWarn("Unknown scoreboard &e\"" + ((ScoreboardImpl) scoreboard).getChildScoreboard() + "\"&c set as if-condition-not-met of scoreboard &e\"" + scoreboard.getName() + "\"&c.");
+				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as if-condition-not-met of scoreboard &e\"%s\"&c.",((ScoreboardImpl) scoreboard).getChildScoreboard(), scoreboard.getName()));
 			}
 		}
 	}
@@ -150,20 +155,21 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			}
 			setScoreboardVisible(p, hiddenByDefault == sbOffPlayers.contains(p.getName()), false);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", this, UsageType.REPEATING_TASK, () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
-					announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) continue;
-				Scoreboard board = activeScoreboard.get(p);
-				String current = board == null ? "null" : board.getName();
-				String highest = detectHighestScoreboard(p);
-				if (!current.equals(highest)) {
-					if (activeScoreboard.containsKey(p)) activeScoreboard.get(p).removePlayer(p);
-					sendHighestScoreboard(p);
-				}
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", this, UsageType.REPEATING_TASK, this::refreshConditions);
+	}
+	
+	private void refreshConditions() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
+				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) continue;
+			Scoreboard board = activeScoreboard.get(p);
+			String current = board == null ? "null" : board.getName();
+			String highest = detectHighestScoreboard(p);
+			if (!current.equals(highest)) {
+				if (activeScoreboard.containsKey(p)) activeScoreboard.get(p).removePlayer(p);
+				sendHighestScoreboard(p);
 			}
-		});
+		}
 	}
 
 	@Override

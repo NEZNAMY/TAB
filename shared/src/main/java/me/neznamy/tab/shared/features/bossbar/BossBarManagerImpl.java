@@ -93,8 +93,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
-			public String get() {
-				return String.valueOf((announceEndTime - System.currentTimeMillis()) / 1000);
+			public Object get() {
+				return (announceEndTime - System.currentTimeMillis()) / 1000;
 			}
 		});
 		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, perWorld=%s, remember_toggle_choice=%s",

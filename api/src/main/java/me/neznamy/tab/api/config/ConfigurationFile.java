@@ -85,6 +85,10 @@ public abstract class ConfigurationFile {
 			Object value = values;
 			for (String tab : path.split("\\.")) {
 				//reverting compensation for groups with "." in their name
+				if (value == null) {
+					if (defaultValue != null) set(path, defaultValue);
+					return defaultValue;
+				}
 				tab = tab.replace("@#@", ".");
 				value = getIgnoreCase((Map<Object, Object>) value, tab);
 			}

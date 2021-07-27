@@ -79,12 +79,6 @@ public class Layout extends TabFeature {
 		}
 	}
 
-	private void tick(List<TabPlayer> players) {
-		for (ParentGroup parent : parentGroups) {
-			parent.tick(players);
-		}
-	}
-
 	private List<TabPlayer> sortPlayers(Collection<TabPlayer> players){
 		Map<TabPlayer, String> teamMap = new HashMap<>();
 		for (TabPlayer p : players) {
@@ -126,7 +120,13 @@ public class Layout extends TabFeature {
 	@Override
 	public void load() {
 		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, UsageType.REPEATING_TASK, () -> tick(new ArrayList<>(sortPlayers(TAB.getInstance().getOnlinePlayers()))));
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, UsageType.REPEATING_TASK, () -> {
+			
+			List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
+			for (ParentGroup parent : parentGroups) {
+				parent.tick(players);
+			}
+		});
 	}
 
 	@Override

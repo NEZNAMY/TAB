@@ -105,7 +105,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.isOnPacketSendInfoOverride()) continue;
 			time = System.nanoTime();
 			f.onPlayerInfo(receiver, info);
-			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_READING_OUT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
 		Object pack = info.build(receiver.getVersion());

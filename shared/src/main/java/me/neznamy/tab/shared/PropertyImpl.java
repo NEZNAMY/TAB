@@ -24,6 +24,9 @@ public class PropertyImpl implements Property {
 	//raw value
 	private String rawValue;
 	
+	//raw value using %s ready for string formatter
+	private String rawFormattedValue;
+	
 	//value assigned via API
 	private String temporaryValue;
 	
@@ -34,10 +37,10 @@ public class PropertyImpl implements Property {
 	private String source;
 
 	//used placeholders in current raw value
-	private List<String> placeholders;
+	private String[] placeholders;
 	
 	//used relational placeholders in current raw value
-	private List<String> relPlaceholders;
+	private String[] relPlaceholders;
 
 	public PropertyImpl(TabFeature feature, TabPlayer owner, String rawValue) {
 		this(feature, owner, rawValue, null);
@@ -66,12 +69,24 @@ public class PropertyImpl implements Property {
 				placeholders0.add(identifier);
 			}
 		}
-		//avoiding rare concurrent modification in #update
-		placeholders = placeholders0;
-		relPlaceholders = relPlaceholders0;
+		String rawFormattedValue0 = value;
+		for (String placeholder : placeholders0) {
+			rawFormattedValue0 = rawFormattedValue0.replaceFirst(placeholder, "%s");
+		}
+		if (rawFormattedValue0.contains("%")) {
+			int index = rawFormattedValue0.lastIndexOf('%');
+			if (rawFormattedValue0.length() == index+1 || rawFormattedValue0.charAt(index+1) != 's') {
+				StringBuilder sb = new StringBuilder(rawFormattedValue0);
+				sb.insert(index+1, "%");
+				rawFormattedValue0 = sb.toString();
+			}
+		}
+		placeholders = placeholders0.toArray(new String[0]);
+		relPlaceholders = relPlaceholders0.toArray(new String[0]);
+		rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
 		if (feature != null) {
-			feature.addUsedPlaceholders(placeholders);
-			feature.addUsedPlaceholders(relPlaceholders);
+			feature.addUsedPlaceholders(placeholders0);
+			feature.addUsedPlaceholders(relPlaceholders0);
 		}
 	}
 	
@@ -137,10 +152,11 @@ public class PropertyImpl implements Property {
 	@Override
 	public boolean update() {
 		long time = System.nanoTime();
-		String string = getCurrentRawValue();
-		for (String identifier : placeholders) {
-			string = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(string, owner);
+		Object[] values = new Object[placeholders.length];
+		for (int i=0; i<placeholders.length; i++) {
+			values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
 		}
+		String string = placeholders.length == 0 ? rawFormattedValue : String.format(rawFormattedValue, values);
 		string = EnumChatFormat.color(string);
 		string = applyRemoveStrings(string);
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
