@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.event;
+package me.neznamy.tab.platforms.bukkit;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

@@ -48,7 +48,7 @@ public class PingSpoof extends TabFeature {
 	private void updateAll(boolean realPing) {
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			list.add(new PlayerInfoData(p.getUniqueId(), realPing ? (int) p.getPing() : 0));
+			list.add(new PlayerInfoData(p.getUniqueId(), realPing ? p.getPing() : 0));
 		}
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), this);

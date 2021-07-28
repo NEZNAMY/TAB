@@ -150,6 +150,7 @@ scoreboard:
   # if use-numbers is disabled, this number will show in red next to all lines
   static-number: 0
   delay-on-join-milliseconds: 0
+  respect-other-plugins: true
   disable-in-worlds: 
     - disabledworld
   disable-in-servers:
@@ -221,8 +222,8 @@ placeholder-output-replacements:
     "yes": "&7| Vanished"
     "no": ""
   "%afk%":
-    "yes": " &o[AFK]&r"
-    "no": ""
+    true: " &o[AFK]&r"
+    false: ""
   "%tps%":
     "15-20": "&a%value%"
     "10-15": "&e%value%"

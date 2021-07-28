@@ -74,8 +74,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public long getPing() {
-		return player.getPing();
+	public int getPing() {
+		return (int) player.getPing();
 	}
 	
 	@Override

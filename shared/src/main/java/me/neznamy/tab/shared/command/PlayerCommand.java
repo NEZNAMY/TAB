@@ -78,7 +78,8 @@ public class PlayerCommand extends PropertyCommand {
 		} else {
 			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
 		}
-		if (String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null)[0]))) return;
+		String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null);
+		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
 		TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, null, null, value.length() == 0 ? null : value);
 		TabPlayer pl = TAB.getInstance().getPlayer(player);
 		if (pl != null) {

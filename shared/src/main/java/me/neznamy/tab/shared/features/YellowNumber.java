@@ -104,4 +104,8 @@ public class YellowNumber extends TabFeature {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), this);
 		}
 	}
+	
+	public String getRawValue() {
+		return rawValue;
+	}
 }

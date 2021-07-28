@@ -177,7 +177,7 @@ public interface TabPlayer {
 	 * Returns player's ping calculated by server
 	 * @return player's ping
 	 */
-	public long getPing();
+	public int getPing();
 
 	/**
 	 * Returns player's platform-specific skin data

@@ -74,13 +74,11 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
 			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
 				if (placeholder.update(p1, p2)) {
-					if (!forceUpdate.containsKey(p2)) forceUpdate.put(p2, new HashSet<>());
-					forceUpdate.get(p2).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+					forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 				if (placeholder.update(p2, p1)) {
-					if (!forceUpdate.containsKey(p1)) forceUpdate.put(p1, new HashSet<>());
-					forceUpdate.get(p1).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+					forceUpdate.computeIfAbsent(p1, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 			}
@@ -272,8 +270,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	@Override
 	public Object findReplacement(Map<Object, String> replacements, Object output) {
 		if (replacements.isEmpty()) return output;
-		if (replacements.containsKey(output)) {
-			return replacements.get(output);
+		if (replacements.containsKey(output.toString())) {
+			return replacements.get(output.toString());
 		}
 		try {
 			float actualValue = Float.parseFloat(String.valueOf(output).replace(",", ""));

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -82,7 +83,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
+		NumberFormat roundDown = NumberFormat.getInstance();
+		roundDown.setRoundingMode(RoundingMode.DOWN);
+		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%displayname%", 500) {
+			
+			@SuppressWarnings("deprecation")
 			public Object get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
 			}
@@ -96,6 +102,30 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			}
 		});
+		try {
+			Class.forName("com.destroystokyo.paper.PaperConfig");
+			manager.registerServerPlaceholder(new ServerPlaceholder("%mspt%", 1000) {
+				public Object get() {
+					return roundDown.format(Bukkit.getAverageTickTime());
+				}
+			});
+		} catch(Exception e){
+			//not paper
+		}
+		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%health%", 100) {
+				public Object get(TabPlayer p) {
+					return (int) Math.ceil(((Player) p.getPlayer()).getHealth());
+				}
+			});
+		}
+		registerOnlinePlaceholders(manager);
+		registerAFKPlaceholder(manager);
+		registerVaultPlaceholders(manager);
+		registerSyncPlaceholders(manager);
+	}
+	
+	private void registerOnlinePlaceholders(PlaceholderManager manager) {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
 			public Object get(TabPlayer p) {
 				int count = 0;
@@ -123,16 +153,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				return count;
 			}
 		});
-		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%health%", 100) {
-				public Object get(TabPlayer p) {
-					return (int) Math.ceil(((Player) p.getPlayer()).getHealth());
-				}
-			});
-		}
-		registerAFKPlaceholder(manager);
-		registerVaultPlaceholders(manager);
-		registerSyncPlaceholders(manager);
 	}
 
 	/**
@@ -156,7 +176,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
 					}
-					if (purpurIsAfk != null && (boolean) purpurIsAfk.invoke(p.getPlayer())) return true;
+					if (purpurIsAfk != null && ((Player)p).getPlayer().isAfk()) return true;
 				} catch (Exception e) {
 					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
 				}

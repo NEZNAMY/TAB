@@ -3,24 +3,19 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.io.File;
 
 import me.neznamy.tab.api.PermissionPlugin;
-import me.neznamy.tab.api.event.BungeeTABLoadEvent;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -64,11 +59,6 @@ public class BungeePlatform extends ProxyPlatform {
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector());
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
 		tab.loadUniversalFeatures();
-		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
-		if (tab.getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) tab.getFeatureManager().registerFeature("tabobjective", new YellowNumber());
-		if (tab.getConfiguration().getConfig().getBoolean("prevent-spectator-effect.enabled", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().getConfig().getBoolean("belowname-objective.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
@@ -77,9 +67,8 @@ public class BungeePlatform extends ProxyPlatform {
 	}
 	
 	@Override
-	@SuppressWarnings("deprecation")
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		ProxyServer.getInstance().getConsole().sendMessage(translateColors ? message.replace('&', '\u00a7') : message);
+		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? message.replace('&', '\u00a7') : message));
 	}
 	
 	@Override

@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
@@ -40,7 +39,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			return GroupRefresher.DEFAULT_GROUP;
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return GroupRefresher.DEFAULT_GROUP;
+		if (user == null) return GroupRefresher.DEFAULT_GROUP; //pretend like nothing is wrong
 		return user.getPrimaryGroup();
 	}
 
@@ -52,7 +51,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			return new String[]{GroupRefresher.DEFAULT_GROUP};
 		}
 		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return new String[] {GroupRefresher.DEFAULT_GROUP};
+		if (user == null) return new String[] {GroupRefresher.DEFAULT_GROUP}; //pretend like nothing is wrong
 		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 	}
 
@@ -86,7 +85,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			}
 			return value == null ? "" : value;
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving player " + (prefix ? "prefix" : "suffix") + " of " + p.getName(), e);
+			//pretend like nothing is wrong
 			return "";
 		}
 	}
@@ -95,8 +94,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		try {
 			return LuckPermsProvider.get();
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("LuckPerms v" + version + " threw an exception when retrieving API instance: " + e.getMessage());
-			TAB.getInstance().getErrorManager().printError("Just a side note: LuckPerms is installed, otherwise server would not say it is. LuckPerms is declared as softdependecy and all code runs at onEnable or later, constructor is unused.");
+			//pretend like nothing is wrong
 			return null;
 		}
 	}

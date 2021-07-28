@@ -245,4 +245,8 @@ public abstract class TabFeature {
 	public boolean isOnPacketSendOverride() {
 		return onPacketSendOverride;
 	}
+
+	public Set<TabPlayer> getDisabledPlayers() {
+		return disabledPlayers;
+	}
 }

@@ -10,18 +10,13 @@
 	<artifactId>shared</artifactId>
 
 	<repositories>
-
-		<!-- LuckPerms5 -->
 		<repository>
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
-
 	</repositories>
 
 	<dependencies>
-
-		<!-- LuckPerms5 -->
 		<dependency>
 			<groupId>net.luckperms</groupId>
 			<artifactId>api</artifactId>
@@ -29,7 +24,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- TAB API -->
 		<dependency>
 			<groupId>me.neznamy</groupId>
 			<artifactId>api</artifactId>
@@ -41,14 +35,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>30.1.1-jre</version>
+			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.28</version>
-			<scope>compile</scope>
-		</dependency>
-
 	</dependencies>
 </project>

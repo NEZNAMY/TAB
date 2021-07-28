@@ -10,85 +10,19 @@
 	<artifactId>api</artifactId>
 
 	<repositories>
-
-		<repository>
-			<id>luck-repo</id>
-			<url>https://ci.lucko.me/plugin/repository/everything/</url>
-		</repository>
-
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-		
-		<!-- YamlAssist -->
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-
 	</repositories>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-lang</groupId>
-					<artifactId>commons-lang</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
-		<dependency>
-			<groupId>net.md-5</groupId>
-			<artifactId>bungeecord-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-config</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>
-						netty-transport-native-unix-common
-					</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-protocol</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-event</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
+	<dependencies>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>4.1.63.Final</version>
 		</dependency>
-		
-		<!-- json-simple -->
+
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -100,8 +34,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- YamlAssist -->
+
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.28</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.github.NEZNAMY</groupId>
 			<artifactId>YamlAssist</artifactId>

@@ -103,7 +103,7 @@ public class Configs {
 		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
-		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true);
+		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
 		if (tab.getPlatform().getSeparatorType().equals("server")) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}

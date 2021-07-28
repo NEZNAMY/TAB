@@ -77,7 +77,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	}
 
 	@Override
-	public long getPing() {
+	public int getPing() {
 		try {
 			int ping = NMSStorage.getInstance().getField("PING").getInt(handle);
 			if (ping > 10000 || ping < 0) ping = -1;

@@ -261,9 +261,9 @@ public class NameTagX extends NameTag {
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);
 		if (isDisabled(p.getWorld())) {
-			disabledPlayers.add(p);
+			getDisabledPlayers().add(p);
 		} else {
-			disabledPlayers.remove(p);
+			getDisabledPlayers().remove(p);
 		}
 		Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
 		p.getArmorStandManager().destroy();
@@ -421,6 +421,6 @@ public class NameTagX extends NameTag {
 	}
 	
 	public boolean isInDisabledWorld(TabPlayer p) {
-		return disabledPlayers.contains(p) || isDisabled(p.getWorld());
+		return getDisabledPlayers().contains(p) || isDisabled(p.getWorld());
 	}
 }

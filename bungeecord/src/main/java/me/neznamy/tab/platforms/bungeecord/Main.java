@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -21,11 +22,10 @@ import net.md_5.bungee.api.plugin.TabExecutor;
  */
 public class Main extends Plugin {
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable(){
 		if (!isVersionSupported()) {
-			ProxyServer.getInstance().getConsole().sendMessage("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/");
+			ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
 			return;
 		}
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
@@ -69,12 +69,11 @@ public class Main extends Plugin {
 			super("btab", null);
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void execute(CommandSender sender, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(message.replace('&', '\u00a7'));
+					sender.sendMessage(new TextComponent(message.replace('&', '\u00a7')));
 				}
 			} else {
 				TabPlayer p = null;

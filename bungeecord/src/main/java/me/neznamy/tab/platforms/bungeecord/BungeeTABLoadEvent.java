@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.event;
+package me.neznamy.tab.platforms.bungeecord;
 
 import net.md_5.bungee.api.plugin.Event;
 

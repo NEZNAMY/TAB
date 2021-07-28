@@ -107,7 +107,7 @@ public abstract class Placeholder {
 	 */
 	protected Object setPlaceholders(Object text, TabPlayer p) {
 		if (identifier.equals(text) || !(text instanceof String)) return text;
-		Object replaced = (String) text;
+		Object replaced = text;
 		for (String s : getNestedPlaceholders((String) text)) {
 			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;
 			replaced = TabAPI.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);

@@ -19,6 +19,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -28,6 +29,7 @@ public class Layout extends TabFeature {
 	private List<Integer> emptySlots = new ArrayList<>();
 	private List<ParentGroup> parentGroups = new ArrayList<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
+	private YellowNumberFix yellowNumberFix;
 
 	public Layout() {
 		super("Tablist layout");
@@ -47,6 +49,11 @@ public class Layout extends TabFeature {
 		}
 		loadGroups();
 		TAB.getInstance().debug("Loaded Layout feature");
+		TAB.getInstance().getFeatureManager().registerFeature("latency", new LatencyRefresher(this));
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("tabobjective")) {
+			yellowNumberFix = new YellowNumberFix(this, (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective"));
+			TAB.getInstance().getFeatureManager().registerFeature("yellownumberfix", yellowNumberFix);
+		}
 	}
 
 	private Direction parseDirection(String value) {
@@ -82,6 +89,7 @@ public class Layout extends TabFeature {
 	private List<TabPlayer> sortPlayers(Collection<TabPlayer> players){
 		Map<TabPlayer, String> teamMap = new HashMap<>();
 		for (TabPlayer p : players) {
+			if (!p.isLoaded()) continue;
 			teamMap.put(p, String.valueOf(p.getTeamName()));
 		}
 		teamMap = sortByValue(teamMap);
@@ -142,6 +150,14 @@ public class Layout extends TabFeature {
 
 	public UUID getUUID(int slot) {
 		return uuids.get(slot);
+	}
+	
+	public List<ParentGroup> getGroups(){
+		return parentGroups;
+	}
+
+	public YellowNumberFix getYellowNumberFix() {
+		return yellowNumberFix;
 	}
 
 	public enum Direction {

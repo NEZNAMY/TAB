@@ -282,7 +282,6 @@ public abstract class ConfigurationFile {
 	 * @param value - value to save
 	 */
 	public void set(String path, Object value) {
-		TabAPI.getInstance().getPlatform().sendConsoleMessage("[TAB] Inserting missing config option \"" + path + "\" with value \"" + value + "\"", false);
 		set(values, path, value);
 		save();
 	}

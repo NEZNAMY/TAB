@@ -32,6 +32,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	
 	@Override
 	public void inject(TabPlayer player) {
+		if (player.getChannel() == null) return; //hello A248
 		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
 			//fake player or waterfall bug
 			return;
@@ -46,6 +47,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 
 	@Override
 	public void uninject(TabPlayer player) {
+		if (player.getChannel() == null) return; //hello A248
 		try {
 			if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
 		} catch (NoSuchElementException e) {

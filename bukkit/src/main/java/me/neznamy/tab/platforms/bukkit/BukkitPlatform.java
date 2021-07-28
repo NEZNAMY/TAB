@@ -12,28 +12,22 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.event.BukkitTABLoadEvent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
+import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.NameTag;
-import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.UltraPermissions;
@@ -94,16 +88,9 @@ public class BukkitPlatform implements Platform {
 		TAB tab = TAB.getInstance();
 		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		if (nms.getMinorVersion() >= 8 && tab.getConfiguration().isPipelineInjection()) {
-			tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
-		}
+		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		loadNametagFeature(tab);
 		tab.loadUniversalFeatures();
-		if (tab.getConfiguration().getConfig().getBoolean("ping-spoof.enabled", false)) tab.getFeatureManager().registerFeature("pingspoof", new PingSpoof());
-		if (tab.getConfiguration().getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) tab.getFeatureManager().registerFeature("tabobjective", new YellowNumber());
-		if (tab.getConfiguration().getConfig().getBoolean("prevent-spectator-effect.enabled", false)) tab.getFeatureManager().registerFeature("spectatorfix", new SpectatorFix());
-		if (tab.getConfiguration().getConfig().getBoolean("belowname-objective.enabled", true)) tab.getFeatureManager().registerFeature("belowname", new BelowName());
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard.enabled", false)) tab.getFeatureManager().registerFeature("scoreboard", new ScoreboardManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (nms.getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));

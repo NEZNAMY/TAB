@@ -76,7 +76,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public long getPing() {
+	public int getPing() {
 		return player.getPing();
 	}
 	

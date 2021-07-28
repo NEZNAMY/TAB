@@ -23,14 +23,18 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.cpu.CPUManager;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.AlignedSuffix;
+import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
-import me.neznamy.tab.shared.features.UpdateChecker;
+import me.neznamy.tab.shared.features.SpectatorFix;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -178,18 +182,21 @@ public class TAB extends TabAPI {
 	 * Loads universal features present on all platforms with the same configuration
 	 */
 	public void loadUniversalFeatures() {
-		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().getConfig().getBoolean("header-footer.enabled", true)) tab.getFeatureManager().registerFeature("headerfooter", new HeaderFooter());
-		if (tab.getConfiguration().isRemoveGhostPlayers()) tab.getFeatureManager().registerFeature("ghostplayerfix", new GhostPlayerFix());
-		if (tab.getServerVersion().getMinorVersion() >= 8 && tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
+		if (configuration.getConfig().getBoolean("header-footer.enabled", true)) featureManager.registerFeature("headerfooter", new HeaderFooter());
+		if (configuration.isRemoveGhostPlayers()) featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (serverVersion.getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
 			Playerlist playerlist = new Playerlist();
-			tab.getFeatureManager().registerFeature("playerlist", playerlist);
-			if (tab.getConfiguration().getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) tab.getFeatureManager().registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			featureManager.registerFeature("playerlist", playerlist);
+			if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
 		}
-		tab.getFeatureManager().registerFeature("group", new GroupRefresher());
-		tab.getFeatureManager().registerFeature("info", new PluginInfo());
-		new UpdateChecker(tab);
-		if (tab.getConfiguration().getLayout().getBoolean("enabled", false)) tab.getFeatureManager().registerFeature("layout", new Layout());
+		if (configuration.getConfig().getBoolean("ping-spoof.enabled", false)) featureManager.registerFeature("pingspoof", new PingSpoof());
+		if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) featureManager.registerFeature("tabobjective", new YellowNumber());
+		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) featureManager.registerFeature("spectatorfix", new SpectatorFix());
+		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
+		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
+		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new Layout());
+		featureManager.registerFeature("group", new GroupRefresher());
+		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
 			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
 				

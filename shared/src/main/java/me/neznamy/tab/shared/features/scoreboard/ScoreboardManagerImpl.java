@@ -64,6 +64,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//currently active scoreboard announcement
 	private Scoreboard announcement;
 	
+	//hiding TAB's scoreboard when another plugin sends one
+	private boolean respectOtherPlugins;
+	
 	//config option someone requested
 	private int joinDelay;
 	private List<TabPlayer> joinDelayed = new ArrayList<>();
@@ -90,6 +93,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-server");
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
+		respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
 		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboardOff = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-off", "&7Scoreboard disabled");
 		if (rememberToggleChoice) {
@@ -297,7 +301,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
+		if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
 			if (activeScoreboard.containsKey(receiver)) {
@@ -309,7 +313,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onObjective(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
-		if (packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
+		if (respectOtherPlugins && packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			otherPluginScoreboard.remove(receiver);
 			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));

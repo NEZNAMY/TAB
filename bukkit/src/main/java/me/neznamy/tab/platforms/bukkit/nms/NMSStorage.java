@@ -21,7 +21,7 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import me.neznamy.tab.shared.TAB;
 
-@SuppressWarnings("rawtypes")
+
 public class NMSStorage {
 
 	//instance of this class
@@ -40,7 +40,7 @@ public class NMSStorage {
 	private Map<String, Constructor<?>> constructors = new HashMap<>();
 	private Map<String, Field> fields = new HashMap<>();
 	private Map<String, Method> methods = new HashMap<>();
-	private Map<String, Enum[]> enums = new HashMap<>();
+	private Map<String, Enum<?>[]> enums = new HashMap<>();
 
 	/**
 	 * Creates new instance, initializes required NMS classes and fields
@@ -506,7 +506,7 @@ public class NMSStorage {
 		return classes.get(name);
 	}
 
-	public Constructor getConstructor(String name){
+	public Constructor<?> getConstructor(String name){
 		return constructors.get(name);
 	}
 
@@ -518,7 +518,7 @@ public class NMSStorage {
 		return methods.get(name);
 	}
 
-	public Enum[] getEnum(String name) {
+	public Enum<?>[] getEnum(String name) {
 		return enums.get(name);
 	}
 
@@ -530,7 +530,7 @@ public class NMSStorage {
 		return dataWatcherRegistry;
 	}
 	
-	private void setAccessible(AccessibleObject o) {
+	public void setAccessible(AccessibleObject o) {
 		o.setAccessible(true);
 	}
 }

@@ -13,6 +13,7 @@ public class ParentGroup {
 	private Condition condition;
 	private int[] slots;
 	private Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
+	private Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
 	public ParentGroup(Layout layout, Condition condition, int[] slots) {
 		this.condition = condition;
@@ -24,11 +25,13 @@ public class ParentGroup {
 
 	public void tick(List<TabPlayer> remainingPlayers){
 		int index = 0;
+		players.clear();
 		for (TabPlayer p : new ArrayList<>(remainingPlayers)) {
 			if (index == slots.length || (condition != null && !condition.isMet(p))) continue;
 			int slot = slots[index++];
 			playerSlots.get(slot).setPlayer(p);
 			remainingPlayers.remove(p);
+			players.put(p, playerSlots.get(slot));
 		}
 		while (index < slots.length) {
 			playerSlots.get(slots[index++]).setPlayer(null);
@@ -37,5 +40,9 @@ public class ParentGroup {
 	
 	public void onJoin(TabPlayer p) {
 		playerSlots.values().forEach(s -> s.onJoin(p));
+	}
+	
+	public Map<TabPlayer, PlayerSlot> getPlayers() {
+		return players;
 	}
 }

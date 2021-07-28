@@ -11,10 +11,10 @@
 
 	<repositories>
 
-		<!-- Spigot API -->
+		<!-- API -->
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>purpur</id>
+			<url>https://repo.pl3x.net/</url>
 		</repository>
 
 		<!-- PlaceholderAPI -->
@@ -58,31 +58,89 @@
 					<groupId>com.googlecode.json-simple</groupId>
 					<artifactId>json-simple</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.yaml</groupId>
+					<artifactId>snakeyaml</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
-		<!-- Spigot API -->
+		<!-- API -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
+			<groupId>net.pl3x.purpur</groupId>
+			<artifactId>purpur-api</artifactId>
+			<version>1.17.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
+				<exclusion>
+					<groupId>it.unimi.dsi</groupId>
+					<artifactId>fastutil</artifactId>
+				</exclusion>
 				<exclusion>
 					<groupId>commons-lang</groupId>
 					<artifactId>commons-lang</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-gson
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-plain
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.ow2.asm</groupId>
+					<artifactId>asm-commons</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>
+						adventure-text-serializer-legacy
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.ow2.asm</groupId>
+					<artifactId>asm</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
 				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>adventure-text-minimessage</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>adventure-key</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jetbrains</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>examination-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>examination-string</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.googlecode.json-simple</groupId>
+					<artifactId>json-simple</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
